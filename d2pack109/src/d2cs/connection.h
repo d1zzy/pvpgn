@@ -63,7 +63,7 @@ typedef struct
 	t_queue				* outqueue;
 	unsigned int			outsize;
 	unsigned int			outsizep;
-	t_queue				* inqueue;
+	t_packet			* inqueue;
 	unsigned int			insize;
 	t_d2charinfo_summary const	* charinfo;
 	unsigned int			d2gs_id;
@@ -102,15 +102,13 @@ extern int d2cs_conn_set_class(t_connection * c, t_conn_class class);
 extern t_conn_state d2cs_conn_get_state(t_connection const * c);
 extern int d2cs_conn_set_state(t_connection * c, t_conn_state state);
 extern t_queue * * d2cs_conn_get_out_queue(t_connection const * c);
-extern t_queue * * d2cs_conn_get_in_queue(t_connection const * c);
+extern t_packet * d2cs_conn_get_in_queue(t_connection const * c);
+extern void d2cs_conn_set_in_queue(t_connection * c, t_packet * packet);
 extern unsigned int d2cs_conn_get_in_size(t_connection const * c);
 extern unsigned int d2cs_conn_get_out_size(t_connection const * c);
 extern int conn_push_outqueue(t_connection * c, t_packet * packet);
 extern t_packet * conn_peek_outqueue(t_connection * c);
 extern t_packet * conn_pull_outqueue(t_connection * c);
-extern int conn_push_inqueue(t_connection * c, t_packet * packet);
-extern t_packet * conn_peek_inqueue(t_connection * c);
-extern t_packet * conn_pull_inqueue(t_connection * c);
 extern int conn_add_socket_flag(t_connection * c, unsigned int flag);
 extern int conn_process_packet(t_connection * c, t_packet * packet, t_packet_handle_table * table,
 				unsigned int table_size);

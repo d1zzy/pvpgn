@@ -66,6 +66,9 @@
 #  include <time.h>
 # endif
 #endif
+#ifdef HAVE_ASSERT_H
+# include <assert.h>
+#endif
 
 #include "compat/psock.h"
 #include "compat/strcasecmp.h"
@@ -98,7 +101,7 @@ static t_list		* connlist_dead=NULL;
 static unsigned int	total_connection=0;
 
 static int conn_handle_connecting(t_connection * c);
-static int conn_create_packet(t_connection * c);
+static t_packet * conn_create_packet(t_connection * c);
 static int conn_handle_packet(t_connection * c, t_packet * packet);
 static int conn_handle_read(t_connection * c);
 static int conn_handle_write(t_connection * c);
@@ -147,10 +150,13 @@ extern int d2cs_connlist_destroy(void)
 	t_connection 	* c;
 	t_elem		* curr;
 	
-	d2cs_connlist_reap();
-	if (list_destroy(connlist_dead))
-		eventlog(eventlog_level_error,__FUNCTION__,"error destroy conndead list");
-	connlist_dead = NULL;
+
+        if (connlist_dead) {
+                d2cs_connlist_reap();
+                if (list_destroy(connlist_dead))
+                        eventlog(eventlog_level_error,__FUNCTION__,"error destroy conndead list");
+                connlist_dead = NULL;
+        }
 
 	BEGIN_HASHTABLE_TRAVERSE_DATA(connlist_head, c)
 	{
@@ -243,7 +249,7 @@ extern t_connection * d2cs_connlist_find_connection_by_charname(char const * cha
 	return NULL;
 }
 
-static int conn_create_packet(t_connection * c)
+static t_packet * conn_create_packet(t_connection * c)
 {
 	t_packet	* packet;
 
@@ -254,15 +260,14 @@ static int conn_create_packet(t_connection * c)
 		CASE(conn_class_bnetd, packet=packet_create(packet_class_d2cs_bnetd));
 		default:
 			eventlog(eventlog_level_error,__FUNCTION__,"got bad connection class %d",c->class);
-			return -1;
+			return NULL;
 	}
 	if (!packet) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error create packet");
-		return 0;
+		return NULL;
 	}
-	conn_push_inqueue(c,packet);
-	packet_del_ref(packet);
-	return 0;
+	d2cs_conn_set_in_queue(c,packet);
+	return packet;
 }
 
 static int conn_handle_connecting(t_connection * c)
@@ -313,11 +318,12 @@ static int conn_handle_read(t_connection * c)
 	t_packet	* packet;
 	int		retval;
 
-	if (!queue_get_length((t_queue const * const *)&c->inqueue)) {
-		if (conn_create_packet(c)<0) return -1;
+	packet = d2cs_conn_get_in_queue(c);
+	if (!packet) {
+		packet = conn_create_packet(c);
+		if (!packet) return -1;
 		c->insize=0;
 	}
-	if (!(packet=conn_peek_inqueue(c))) return 0;
 
 	switch (net_recv_packet(c->sock,packet,&c->insize)) {
 		case -1:
@@ -328,7 +334,7 @@ static int conn_handle_read(t_connection * c)
 			break;
 		case 1:
 			c->insize=0;
-			packet=conn_pull_inqueue(c);
+			d2cs_conn_set_in_queue(c,NULL);
 			retval=conn_handle_packet(c,packet);
 			packet_del_ref(packet);
 			break;
@@ -485,7 +491,7 @@ extern int d2cs_conn_destroy(t_connection * c, t_elem ** curr)
 	if (c->account) xfree((void *)c->account);
 	if (c->charinfo) xfree((void *)c->charinfo);
 	if (c->charname) d2cs_conn_set_charname(c,NULL);
-	queue_clear(&c->inqueue);
+	if (c->inqueue) packet_del_ref(c->inqueue);
 	queue_clear(&c->outqueue);
 
 	if (connlist_dead) list_remove_data(connlist_dead, c, curr);
@@ -544,12 +550,18 @@ extern int d2cs_conn_set_class(t_connection * c, t_conn_class class)
 	return 0;
 }
 
-extern t_queue * * d2cs_conn_get_in_queue(t_connection const * c)
+extern t_packet * d2cs_conn_get_in_queue(t_connection const * c)
 {
 	ASSERT(c,NULL);
-	return (t_queue * *)&c->inqueue;
+	return c->inqueue;
 }
-	
+
+extern void d2cs_conn_set_in_queue(t_connection * c, t_packet *packet)
+{
+	assert(c);
+	c->inqueue = packet;
+}
+
 extern unsigned int d2cs_conn_get_out_size(t_connection const * c)
 {
 	ASSERT(c,0);
@@ -613,47 +625,6 @@ extern t_packet * conn_pull_outqueue(t_connection * c)
     }
 
     return NULL;
-}
-
-extern int conn_push_inqueue(t_connection * c, t_packet * packet)
-{
-    if (!c)
-    {
-        eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection");
-        return -1;
-    }
-
-    if (!packet)
-    {
-        eventlog(eventlog_level_error, __FUNCTION__, "got NULL packet");
-        return -1;
-    }
-
-    queue_push_packet((t_queue * *)&c->inqueue, packet);
-
-    return 0;
-}
-
-extern t_packet * conn_peek_inqueue(t_connection * c)
-{
-    if (!c)
-    {
-        eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection");
-        return NULL;
-    }
-
-    return queue_peek_packet((t_queue const * const *)&c->inqueue);
-}
-
-extern t_packet * conn_pull_inqueue(t_connection * c)
-{
-    if (!c)
-    {
-        eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection");
-        return NULL;
-    }
-
-    return queue_pull_packet((t_queue * *)&c->inqueue);
 }
 
 extern int conn_add_socket_flag(t_connection * c, unsigned int flag)

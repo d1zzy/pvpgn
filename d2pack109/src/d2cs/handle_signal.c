@@ -128,8 +128,7 @@ extern int handle_signal(void)
 			return -1;
 		}
 		if (trans_reload(d2cs_prefs_get_transfile(),TRANS_D2CS)<0) {
-			eventlog(eventlog_level_error,__FUNCTION__,"error reloading trans list,exitting");
-			return -1;
+	    		eventlog(eventlog_level_error,__FUNCTION__,"could not reload trans list");
 		}
 
         eventlog_clear_level();

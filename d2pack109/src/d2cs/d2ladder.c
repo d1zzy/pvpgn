@@ -226,9 +226,9 @@ extern int d2ladder_destroy(void)
 				ladder_data[i].info=NULL;
 			}
 		}
+		xfree(ladder_data);
+		ladder_data=NULL;
 	}
-	xfree(ladder_data);
-	ladder_data=NULL;
 	max_ladder_type=0;
 	return 0;
 }
