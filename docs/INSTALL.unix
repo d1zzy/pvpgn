@@ -1,0 +1,48 @@
+	PvPGN Install instructions for the Linux/Unix version
+       -------------------------------------------------------
+
+1. First get your hands on a PvPGN source tarball or a binary package (RPM/etc).
+If you got the source follow instructions bellow, if you got a binary package 
+jump to step 4
+
+2. Unpack the tarball, change current directory to the source directory (ex. 
+pvpgn-<version>/src) and run configure. You will need to provide configure with 
+your custom options, ex.
+
+./configure --prefix=<path>
+
+It will configure the source distribution to compile and install in the <path> 
+location.
+
+Check using ./configure --help for all available options.
+
+3. Compile and install PvPGN using
+
+$ make
+$ make install
+
+WARNING !! make install it will also overwrite the configuration files. Make a 
+backup of them before doing "make install" (read more about this in the UPDATE 
+file).
+
+Now you just need to edit the config files and adjust them acording to your 
+system. Have fun!
+
+4. (only for binary PvPGN distributions)
+Depending on the type of package you have obtained (ex RPM, deb, tgz) you will 
+have to install the package using the right package tool.
+
+Examples:
+
+$ rpm -ivh pvpgn-<ver>.rpm
+
+or
+
+$ installpkg pvpgn-<ver>.tgz
+
+or
+
+$ dpkg -i pvpgn-<ver>.deb
+
+After you install the binary package you will need to adjust PvPGN configuration 
+files (usually installed in /etc/pvpgn dir). Have fun!
