@@ -7,7 +7,8 @@
 clients (thus it supports all BNETD supported clients plus the most recent 
 ones). 
     This release only includes d2cs/d2dbs as needed to host a Diablo II 1.09 
-closed realm. It only supports d2gs 1.09d
+closed realm. It only supports d2gs 1.09d. This package NEEDS a "bnetd" server 
+configured to work (for example use a "bnetd" from a PvPGN release).
 
 The list of supported clients and their minimum verion required is:
 - Diablo 2 v1.09 
