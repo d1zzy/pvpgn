@@ -22,7 +22,6 @@
 #ifdef JUST_NEED_TYPES
 # include "common/field_sizes.h"
 # include "common/init_protocol.h"
-# include "common/bnet_protocol.h"
 # include "common/d2game_protocol.h"
 # include "d2cs/d2cs_protocol.h"
 # include "d2cs/d2cs_d2gs_protocol.h"
@@ -31,7 +30,6 @@
 # define JUST_NEED_TYPES
 # include "common/field_sizes.h"
 # include "common/init_protocol.h"
-# include "common/bnet_protocol.h"
 # include "common/d2game_protocol.h"
 # include "d2cs/d2cs_protocol.h"
 # include "d2cs/d2cs_d2gs_protocol.h"
@@ -43,7 +41,6 @@ typedef enum
 {
     packet_class_none,
     packet_class_init,
-    packet_class_bnet,
     packet_class_raw,
     packet_class_d2game,
     packet_class_d2gs,
@@ -75,105 +72,9 @@ typedef struct
     {
         char data[MAX_PACKET_SIZE];
         
-        t_bnet_generic   bnet;
         t_d2game_generic d2game;
         
 	t_client_initconn client_initconn;
-	
-        t_server_authreply1         server_authreply1;
-        t_server_authreq1           server_authreq1;
-        t_client_authreq1           client_authreq1;
-        t_server_authreply_109      server_authreply_109;
-        t_server_authreq_109        server_authreq_109;
-        t_client_authreq_109        client_authreq_109;
-        t_client_cdkey              client_cdkey;
-        t_server_cdkeyreply         server_cdkeyreply;
-        t_client_statsreq           client_statsreq;
-        t_server_statsreply         server_statsreply;
-        t_client_loginreq1          client_loginreq1;
-        t_server_loginreply1        server_loginreply1;
-        t_client_progident          client_progident;
-        t_client_progident2         client_progident2;
-        t_client_joinchannel        client_joinchannel;
-        t_server_channellist        server_channellist;
-        t_server_serverlist         server_serverlist;
-        t_server_message            server_message;
-        t_client_message            client_message;
-        t_client_gamelistreq        client_gamelistreq;
-        t_server_gamelistreply      server_gamelistreply;
-        t_client_unknown_1b         client_unknown_1b;
-        t_client_startgame1         client_startgame1;
-        t_server_startgame1_ack     server_startgame1_ack;
-        t_client_startgame3         client_startgame3;
-        t_server_startgame3_ack     server_startgame3_ack;
-        t_client_startgame4         client_startgame4;
-        t_server_startgame4_ack     server_startgame4_ack;
-        t_client_leavechannel       client_leavechannel;
-        t_client_closegame          client_closegame;
-        t_client_mapauthreq1        client_mapauthreq1;
-        t_server_mapauthreply1      server_mapauthreply1;
-        t_client_mapauthreq2        client_mapauthreq2;
-        t_server_mapauthreply2      server_mapauthreply2;
-        t_client_ladderreq          client_ladderreq;
-        t_server_ladderreply        server_ladderreply;
-	t_client_laddersearchreq    client_laddersearchreq;
-	t_server_laddersearchreply  server_laddersearchreply;
-        t_client_adreq              client_adreq;
-        t_server_adreply            server_adreply;
-        t_client_adack              client_adack;
-	t_client_adclick            client_adclick;
-	t_client_adclick2           client_adclick2;
-	t_server_adclickreply2      server_adclickreply2;
-        t_client_game_report        client_gamerep;
-        t_server_sessionkey1        server_sessionkey1;
-        t_server_sessionkey2        server_sessionkey2;
-        t_client_createacctreq1     client_createacctreq1;
-        t_server_createacctreply1   server_createacctreply1;
-        t_client_changepassreq      client_changepassreq;
-        t_server_changepassack      server_changepassack;
-        t_client_iconreq            client_iconreq;
-        t_server_iconreply          server_iconreply;
-        t_client_statsupdate        client_statsupdate;
-        t_client_countryinfo1       client_countryinfo1;
-        t_client_countryinfo_109    client_countryinfo_109;
-        t_client_unknown_2b         client_unknown_2b;
-        t_client_compinfo1          client_compinfo1;
-        t_client_compinfo2          client_compinfo2;
-        t_server_compreply          server_compreply;
-        t_server_echoreq            server_echoreq;
-        t_client_echoreply          client_echoreply;
-        t_client_playerinforeq      client_playerinforeq;
-        t_server_playerinforeply    server_playerinforeply;
-	t_client_pingreq            client_pingreq;
-	t_server_pingreply          server_pingreply;
-        t_client_cdkey2             client_cdkey2;
-        t_server_cdkeyreply2        server_cdkeyreply2;
-        t_client_cdkey3             client_cdkey3;
-        t_server_cdkeyreply3        server_cdkeyreply3;
-        t_server_regsnoopreq        server_regsnoopreq;
-        t_client_regsnoopreply      client_regsnoopreply;
-        t_client_realmlistreq       client_realmlistreq;
-        t_server_realmlistreply     server_realmlistreply;
-        t_client_realmjoinreq       client_realmjoinreq;
-        t_server_realmjoinreply     server_realmjoinreply;
-        t_client_realmjoinreq_109   client_realmjoinreq_109;
-        t_server_realmjoinreply_109 server_realmjoinreply_109;
-        t_client_unknown_37         client_unknown_37;
-        t_server_unknown_37         server_unknown_37;
-        t_client_unknown_39         client_unknown_39;
-        t_client_loginreq2          client_loginreq2;
-        t_server_loginreply2        server_loginreply2;
-        t_client_loginreq_w3          client_loginreq_w3;
-        t_server_loginreply_w3        server_loginreply_w3;
-	t_client_createacctreq2     client_createacctreq2;
-	t_server_createacctreply2   server_createacctreply2;
-	t_client_changegameport	   client_changegameport;
-	t_client_motd_w3           client_motd_w3;
-	t_server_motd_w3           server_motd_w3;
-	t_client_logonproofreq     client_logonproofreq;
-	t_server_logonproofreply   server_logonproofreply;
-	t_client_createaccount_w3  client_createaccount_w3;
-	t_server_createaccount_w3  server_createaccount_w3;
 
         t_d2cs_bnetd_generic            d2cs_bnetd;
         t_bnetd_d2cs_authreq            bnetd_d2cs_authreq;
@@ -228,18 +129,7 @@ typedef struct
         t_d2cs_client_charlistreply     d2cs_client_charlistreply;
         t_client_d2cs_convertcharreq    client_d2cs_convertcharreq;
         t_d2cs_client_convertcharreply  d2cs_client_convertcharreply;
-		// 5/14/02 - THEUNDYING - USED FOR THE FRIENDS LIST
-		// [zap-zero] 20020516
-
-	t_client_changeclient			client_changeclient;
-
-	/* new packets supporting D2 1.10 & War3 1.13 */
-	t_client_setemailreply	   client_setemailreq;
-	t_server_setemailreq	   server_setemailreply;
-	t_client_getpasswordreq	   client_getpasswordreq;
-	t_client_changeemailreq	   client_changeemailreq;
-	t_client_crashdump	   client_crashdump;
-	} u;
+    } u;
 } t_packet;
 
 #endif
