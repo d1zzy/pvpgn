@@ -438,6 +438,7 @@ extern t_connection * d2cs_conn_create(int sock, unsigned int local_addr, unsign
 	c->charname=NULL;
 	c->account=NULL;
 	c->sock=sock;
+	c->fdw_idx = -1;
 	c->socket_flag=0;
 	c->local_addr=local_addr;
 	c->local_port=local_port;
@@ -495,7 +496,7 @@ extern int d2cs_conn_destroy(t_connection * c, t_elem ** curr)
 	queue_clear(&c->outqueue);
 
 	if (connlist_dead) list_remove_data(connlist_dead, c, curr);
-	fdwatch_del_fd(c->sock);
+	fdwatch_del_fd(c->fdw_idx);
 	psock_shutdown(c->sock,PSOCK_SHUT_RDWR);
 	psock_close(c->sock);
 
@@ -595,7 +596,7 @@ extern int conn_push_outqueue(t_connection * c, t_packet * packet)
     }
 
     queue_push_packet((t_queue * *)&c->outqueue, packet);
-    if (!c->outsizep++) fdwatch_update_fd(c->sock, fdwatch_type_read | fdwatch_type_write);
+    if (!c->outsizep++) fdwatch_update_fd(c->fdw_idx, fdwatch_type_read | fdwatch_type_write);
 
     return 0;
 }
@@ -620,7 +621,7 @@ extern t_packet * conn_pull_outqueue(t_connection * c)
     }
 
     if (c->outsizep) {
-        if (!(--c->outsizep)) fdwatch_update_fd(c->sock, fdwatch_type_read);
+        if (!(--c->outsizep)) fdwatch_update_fd(c->fdw_idx, fdwatch_type_read);
         return queue_pull_packet((t_queue * *)&c->outqueue);
     }
 
@@ -830,3 +831,9 @@ extern unsigned int conn_get_bnetd_sessionnum(t_connection const * c)
 	return c->bnetd_sessionnum;
 }
 
+extern int conn_add_fd(t_connection * c, t_fdwatch_type rw, fdwatch_handler handler)
+{
+	assert(c);
+	c->fdw_idx = fdwatch_add_fd(c->sock,rw,handler,c);
+	return c->fdw_idx;
+}

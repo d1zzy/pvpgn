@@ -27,6 +27,8 @@ typedef struct
 	char const	* bnetdaddr;
 	char const	* charsavedir;
 	char const	* charinfodir;
+        char const      * bak_charsavedir;
+        char const      * bak_charinfodir;
 	char const	* ladderdir;
 	char const	* newbiefile;
 	char const	* motd;
@@ -62,6 +64,7 @@ typedef struct
 	unsigned int	d2gs_restart_delay;
         char const      * charlist_sort;
         char const      * charlist_sort_order;
+        unsigned int    max_connections;
 } t_prefs;
 
 extern int d2cs_prefs_load(char const * filename);
@@ -73,6 +76,8 @@ extern char const * d2cs_prefs_get_logfile(void);
 extern char const * prefs_get_servaddrs(void);
 extern char const * prefs_get_charsave_dir(void);
 extern char const * prefs_get_charinfo_dir(void);
+extern char const * prefs_get_bak_charsave_dir(void);
+extern char const * prefs_get_bak_charinfo_dir(void);
 extern char const * prefs_get_charsave_newbie(void);
 extern char const * prefs_get_motd(void);
 extern char const * prefs_get_realmname(void);
@@ -111,5 +116,6 @@ extern char const * prefs_get_d2cs_account_allowed_symbols(void);
 extern unsigned int prefs_get_d2gs_restart_delay(void);
 extern char const * prefs_get_charlist_sort(void);
 extern char const * prefs_get_charlist_sort_order(void);
+extern unsigned int prefs_get_max_connections(void);
 
 #endif

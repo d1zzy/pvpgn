@@ -347,7 +347,11 @@
 # define PACKED_ATTR()
 #endif
 
-#define BNETD_MAX_SOCKETS 4096
+/* default maxim number of sockets in the fdwatch pool */
+#define BNETD_MAX_SOCKETS 1000
+
+/* Used for FDSETSIZE redefine (only on WIN32 so so far) */
+#define BNETD_MAX_SOCKVAL 8192
 
 /*
  * select() hackery... works most places, need to add autoconf checks
@@ -360,7 +364,7 @@
 /* Win32 defaults to 64, BSD and Linux default to 1024 */
 /* FIXME: how big can this be before things break? */
 #ifdef WIN32
-# define FD_SETSIZE BNETD_MAX_SOCKETS
+# define FD_SETSIZE BNETD_MAX_SOCKVAL
 #endif
 
 #ifdef HAVE_EPOLL_CREATE

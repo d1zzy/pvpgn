@@ -21,6 +21,7 @@
 #include "common/queue.h"
 #include "common/hashtable.h"
 #include "common/packet.h"
+#include "common/fdwatch.h"
 #include "d2charfile.h"
 #include "gamequeue.h"
 
@@ -51,6 +52,7 @@ typedef struct
 	char const			* charname;
 	char const			* account;
 	int				sock;
+	int				fdw_idx;
 	unsigned int			socket_flag;
 	unsigned int			addr;
 	unsigned int			local_addr;
@@ -131,6 +133,7 @@ extern t_gq * conn_get_gamequeue(t_connection const * c);
 extern int conn_set_gamequeue(t_connection * c, t_gq * gq);
 extern int conn_set_bnetd_sessionnum(t_connection * c, unsigned int sessionnum);
 extern unsigned int conn_get_bnetd_sessionnum(t_connection const * c);
+extern int conn_add_fd(t_connection * c, t_fdwatch_type rw, fdwatch_handler handler);
 extern int connlist_check_timeout(void);
 
 #endif

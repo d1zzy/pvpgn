@@ -120,14 +120,22 @@ static int server_listen(void)
 		if (sock<0) {
 			eventlog(eventlog_level_error,__FUNCTION__,"error listen socket");
 			return -1;
-		} 
-		eventlog(eventlog_level_info,__FUNCTION__,"listen on %s", addr_num_to_addr_str(addr_get_ip(curr_laddr),addr_get_port(curr_laddr)));
+		}
+
 		if (psock_ctl(sock,PSOCK_NONBLOCK)<0) {
 			eventlog(eventlog_level_error,__FUNCTION__,"error set listen socket in non-blocking mode");
 		}
+
 		laddr_data.i = sock;
 		addr_set_data(curr_laddr,laddr_data);
-		fdwatch_add_fd(sock, fdwatch_type_read, d2cs_server_handle_accept, curr_laddr);
+
+		if (fdwatch_add_fd(sock, fdwatch_type_read, d2cs_server_handle_accept, curr_laddr)<0) {
+		    eventlog(eventlog_level_error,__FUNCTION__,"error adding socket %d to fdwatch pool (max sockets?)",sock);
+		    psock_close(sock);
+		    return -1;
+		}
+
+		eventlog(eventlog_level_info,__FUNCTION__,"listen on %s", addr_num_to_addr_str(addr_get_ip(curr_laddr),addr_get_port(curr_laddr)));
 	}
 	END_LIST_TRAVERSE_DATA()
 	return 0;
@@ -179,7 +187,12 @@ static int server_accept(int sock)
 		psock_close(csock);
 		return -1;
 	}
-	fdwatch_add_fd(csock, fdwatch_type_read, d2cs_server_handle_tcp, cc);
+	if (conn_add_fd(cc, fdwatch_type_read, d2cs_server_handle_tcp)<0) {
+		eventlog(eventlog_level_error,__FUNCTION__,"error adding socket %d to fdwatch pool (max sockets?)",csock);
+		d2cs_conn_set_state(cc,conn_state_destroy);
+		return -1;
+	}
+
 	return 0;
 }
 

@@ -31,6 +31,10 @@ servaddrs		=	0.0.0.0:6113
 # bnetd default listening port is 6112
 #bnetdaddr		=	xxx.xxx.xxx.xxx:6112
 
+# Set this to the maximum number of concurrent connections allowed on 
+# this server.
+max_connections = 1000
+
 # This sets the realm to Classic or LOD or Both
 # Classic = 0
 # LOD = 1
@@ -82,6 +86,8 @@ loglevels = fatal,error,warn,info,debug,trace
 logfile			=	/usr/local/var/d2cs.log
 charsavedir		=	/usr/local/var/charsave
 charinfodir		=	/usr/local/var/charinfo
+bak_charsavedir		=	/usr/local/var/bak/charsave
+bak_charinfodir		=	/usr/local/var/bak/charinfo
 ladderdir		=	/usr/local/var/ladders
 newbiefile		=	/usr/local/var/files/newbie.save
 transfile               =       /usr/local/etc/address_translation.conf

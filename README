@@ -22,15 +22,22 @@ first.
 
 -----
 
-We're always looking for good coders (mainly C/C++) or 
+We're always looking for good coders (C coders) or 
 anyone who can contribute to our project in any way.
 
-Do you need support ?
+Project homepages/distribution sites:
+- project home and main distribution site: http://pvpgn.berlios.de
+- alternate project home: http://www.pvpgn.org
+- alternate distribution site: http://www.pvpgn.de
 
-1. read the documentation at http://pvpgndocs.sf.net
+Support channels:
 
-2. if that did not helped try the mailing lists at pvpgn-users@lists.sf.net
+1. BugTracker (preffered support method):
+http://developer.berlios.de/bugs/?group_id=2291
 
-3. if that did not helped try the forums at http://forums.pvpgn.org/
+2. Mailing List: pvpgn-users@lists.berlios.de ( to subscribe go here 
+https://lists.berlios.de/mailman/listinfo/pvpgn-users )
 
-4. if everything above faild, try IRC at #pvpgn/irc.pvpgn.org
+3. Forums: http://forums.pvpgn.org
+
+4. IRC live support: #pvpgn on irc.pvpgn.org

@@ -35,6 +35,7 @@
 # endif
 #endif
 #include "common/eventlog.h"
+#define FDWATCH_BACKEND
 #include "fdwatch.h"
 #ifdef HAVE_SELECT
 #include "fdwatch_select.h"
@@ -52,46 +53,47 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
-int fdw_maxfd;
-int *fdw_rw = NULL;
-void ** fdw_data = NULL;
-fdwatch_handler *fdw_hnd;
+int fdw_maxcons;
+t_fdwatch_fd *fdw_fds = NULL;
 
 static t_fdw_backend * fdw = NULL;
+static DECLARE_ELIST_INIT(freelist);
+static DECLARE_ELIST_INIT(uselist);
 
-extern int fdwatch_init(void)
+extern int fdwatch_init(int maxcons)
 {
-    fdw_maxfd = get_socket_limit();
-    if (fdw_maxfd < 1) {
-	eventlog(eventlog_level_fatal, __FUNCTION__, "too few sockets available (%d)",fdw_maxfd);
+    int i, maxsys;
+
+    maxsys = get_socket_limit();
+    if (maxsys > 0) maxcons = (maxcons < maxsys) ? maxcons : maxsys;
+    if (maxcons < 32) {
+	eventlog(eventlog_level_fatal, __FUNCTION__, "too few sockets available (%d)",maxcons);
 	return -1;
     }
+    fdw_maxcons = maxcons;
 
-    fdw_rw = xmalloc(sizeof(int) * fdw_maxfd);
-    fdw_data = xmalloc(sizeof(void *) * fdw_maxfd);
-    fdw_hnd = xmalloc(sizeof(fdwatch_handler) * fdw_maxfd);
-
-    /* initilize the arrays (poisoning) */
-    memset(fdw_rw, 0, sizeof(int) * fdw_maxfd);
-    memset(fdw_data, 0, sizeof(void*) * fdw_maxfd);
-    memset(fdw_hnd, 0, sizeof(fdwatch_handler) * fdw_maxfd);
+    fdw_fds = xmalloc(sizeof(t_fdwatch_fd) * fdw_maxcons);
+    memset(fdw_fds, 0, sizeof(t_fdwatch_fd) * fdw_maxcons);
+    /* add all slots to the freelist */
+    for(i = 0; i < fdw_maxcons; i++)
+	elist_add_tail(&freelist,&(fdw_fds[i].freelist));
 
 #ifdef HAVE_EPOLL
     fdw = &fdw_epoll;
-    if (!fdw->init(fdw_maxfd)) goto ok;
+    if (!fdw->init(fdw_maxcons)) goto ok;
 #endif
 #ifdef HAVE_KQUEUE
     fdw = &fdw_kqueue;
-    if (!fdw->init(fdw_maxfd)) goto ok;
+    if (!fdw->init(fdw_maxcons)) goto ok;
 #endif
 #ifdef HAVE_POLL
     fdw = &fdw_poll;
-    if (!fdw->init(fdw_maxfd)) goto ok;
+    if (!fdw->init(fdw_maxcons)) goto ok;
     goto ok;
 #endif
 #ifdef HAVE_SELECT
     fdw = &fdw_select;
-    if (!fdw->init(fdw_maxfd)) goto ok;
+    if (!fdw->init(fdw_maxcons)) goto ok;
 #endif
 
     eventlog(eventlog_level_fatal, __FUNCTION__, "Found no working fdwatch layer");
@@ -106,37 +108,84 @@ ok:
 extern int fdwatch_close(void)
 {
     if (fdw) { fdw->close(); fdw = NULL; }
-    if (fdw_rw) { xfree((void*)fdw_rw); fdw_rw = NULL; }
-    if (fdw_data) { xfree((void*)fdw_data); fdw_data = NULL; }
-    if (fdw_hnd) { xfree((void*)fdw_hnd); fdw_hnd = NULL; }
+    if (fdw_fds) { xfree((void*)fdw_fds); fdw_fds = NULL; }
+    elist_init(&freelist);
+    elist_init(&uselist);
 
     return 0;
 }
 
 extern int fdwatch_add_fd(int fd, t_fdwatch_type rw, fdwatch_handler h, void *data)
 {
-    if (fdw->add_fd(fd, rw)) return -1;
-    fdw_rw[fd] = rw;
-    fdw_data[fd] = data;
-    fdw_hnd[fd] = h;
+    t_fdwatch_fd *cfd;
+
+    if (elist_empty(&freelist)) return -1;	/* max sockets reached */
+
+    cfd = elist_entry(elist_next(&freelist),t_fdwatch_fd,freelist);
+    fdw_fd(cfd) = fd;
+
+    if (fdw->add_fd(fdw_idx(cfd), rw)) return -1;
+
+    /* add it to used sockets list, remove it from free list */
+    elist_add_tail(&uselist,&cfd->uselist);
+    elist_del(&cfd->freelist);
+
+    fdw_rw(cfd) = rw;
+    fdw_data(cfd) = data;
+    fdw_hnd(cfd) = h;
+
+    return fdw_idx(cfd);
+}
+
+extern int fdwatch_update_fd(int idx, t_fdwatch_type rw)
+{
+    if (idx<0 || idx>=fdw_maxcons) {
+	eventlog(eventlog_level_error,__FUNCTION__,"out of bounds idx [%d] (max: %d)",idx, fdw_maxcons);
+	return -1;
+    }
+    /* do not allow completly reset the access because then backend codes 
+     * can get confused */
+    if (!rw) {
+	eventlog(eventlog_level_error,__FUNCTION__,"tried to reset rw, not allowed");
+	return -1;
+    }
+
+    if (!fdw_rw(fdw_fds + idx)) {
+	eventlog(eventlog_level_error,__FUNCTION__,"found reseted rw");
+	return -1;
+    }
+
+    if (fdw->add_fd(idx, rw)) return -1;
+    fdw_rw(&fdw_fds[idx]) = rw;
 
     return 0;
 }
 
-extern int fdwatch_update_fd(int fd, t_fdwatch_type rw)
+extern int fdwatch_del_fd(int idx)
 {
-    if (fdw->add_fd(fd, rw)) return -1;
-    fdw_rw[fd] = rw;
+    t_fdwatch_fd *cfd;
 
-    return 0;
-}
+    if (idx<0 || idx>=fdw_maxcons) {
+	eventlog(eventlog_level_error,__FUNCTION__,"out of bounds idx [%d] (max: %d)",idx, fdw_maxcons);
+	return -1;
+    }
 
-extern int fdwatch_del_fd(int fd)
-{
-    fdw_rw[fd] = fdwatch_type_none;
-    fdw_data[fd] = NULL;
-    fdw_hnd[fd] = NULL;
-    fdw->del_fd(fd);
+    cfd = fdw_fds + idx;
+    if (!fdw_rw(cfd)) {
+	eventlog(eventlog_level_error,__FUNCTION__,"found reseted rw");
+	return -1;
+    }
+
+    fdw->del_fd(idx);
+
+    /* remove it from uselist, add it to freelist */
+    elist_del(&cfd->uselist);
+    elist_add_tail(&freelist,&cfd->freelist);
+
+    fdw_fd(cfd) = 0;
+    fdw_rw(cfd) = 0;
+    fdw_data(cfd) = NULL;
+    fdw_hnd(cfd) = NULL;
 
     return 0;
 }
@@ -149,4 +198,14 @@ extern int fdwatch(long timeout_msec)
 extern void fdwatch_handle(void)
 {
     fdw->handle();
+}
+
+extern void fdwatch_traverse(t_fdw_cb cb, void *data)
+{
+    t_elist *curr;
+
+    elist_for_each(curr,&uselist)
+    {
+	if (cb(elist_entry(curr,t_fdwatch_fd,uselist),data)) break;
+    }
 }

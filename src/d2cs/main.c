@@ -110,7 +110,7 @@ static int init(void)
 	d2ladder_init();
 	if(trans_load(d2cs_prefs_get_transfile(),TRANS_D2CS)<0)
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not load trans list");
-	fdwatch_init();
+	fdwatch_init(prefs_get_max_connections());
 	return 0;
 }
 

@@ -124,6 +124,9 @@ static unsigned int dbs_packet_charlock(t_d2dbs_connection* conn);
 static unsigned int dbs_packet_updateladder(t_d2dbs_connection* conn);
 static int dbs_verify_ipaddr(char const * addrlist,t_d2dbs_connection * c);
 
+static int dbs_packet_fix_charinfo(t_d2dbs_connection * conn,char * AccountName,char * CharName,char * charsave);
+static void dbs_packet_set_charinfo_level(char * CharName,char * charinfo);
+
 static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn, char * AccountName,char * CharName,char * data,unsigned int datalen)
 {
 	char filename[MAX_PATH];
@@ -398,13 +401,16 @@ static unsigned int dbs_packet_savedata(t_d2dbs_connection * conn)
 	}
 
 	if (datatype==D2GS_DATA_CHARSAVE) {
-		if (dbs_packet_savedata_charsave(conn,AccountName,CharName,readpos,datalen)>0) {
+		if (dbs_packet_savedata_charsave(conn,AccountName,CharName,readpos,datalen)>0 &&
+		    dbs_packet_fix_charinfo(conn,AccountName,CharName,readpos)) {
 			result=D2DBS_SAVE_DATA_SUCCESS;
 		} else {
 			datalen=0;
 			result=D2DBS_SAVE_DATA_FAILED    ;
 		}
 	} else if (datatype==D2GS_DATA_PORTRAIT) {
+		/* if level is > 255 , sets level to 255 */
+		dbs_packet_set_charinfo_level(CharName,readpos);
 		if (dbs_packet_savedata_charinfo(conn,AccountName,CharName,readpos,datalen)>0) {
 			result=D2DBS_SAVE_DATA_SUCCESS;
 		} else {
@@ -797,4 +803,97 @@ int dbs_keepalive(void)
 		tempc->nCharsInWriteBuffer += writelen;
 	}
 	return 0;
+}
+
+/*************************************************************************************/
+#define CHARINFO_SIZE			0xC0
+#define CHARINFO_PORTRAIT_LEVEL_OFFSET	0x89
+#define CHARINFO_PORTRAIT_STATUS_OFFSET	0x8A
+#define CHARINFO_SUMMARY_LEVEL_OFFSET	0xB8
+#define CHARINFO_SUMMARY_STATUS_OFFSET	0xB4
+#define CHARINFO_PORTRAIT_GFX_OFFSET	0x72
+#define CHARINFO_PORTRAIT_COLOR_OFFSET	0x7E
+
+#define CHARSAVE_LEVEL_OFFSET		0x2B
+#define CHARSAVE_STATUS_OFFSET		0x24
+#define CHARSAVE_GFX_OFFSET		0x88
+#define CHARSAVE_COLOR_OFFSET		0x98
+
+#define charstatus_to_portstatus(status) ((((status & 0xFF00) << 1) | (status & 0x00FF)) | 0x8080)
+#define portstatus_to_charstatus(status) (((status & 0x7F00) >> 1) | (status & 0x007F))
+
+static void dbs_packet_set_charinfo_level(char * CharName,char * charinfo)
+{
+    if (prefs_get_difficulty_hack()) { /* difficulty hack enabled */
+	unsigned int	level = bn_int_get(&charinfo[CHARINFO_SUMMARY_LEVEL_OFFSET]);
+	unsigned int	plevel = bn_byte_get(&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET]);
+	
+	/* levels 257 thru 355 */
+	if (level != plevel) {
+	    eventlog(eventlog_level_info,__FUNCTION__,"level mis-match for %s ( %u != %u ) setting to 255",CharName,level,plevel);
+	    bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET],255);
+	    bn_int_set((bn_int *)&charinfo[CHARINFO_SUMMARY_LEVEL_OFFSET],255);
+	}
+    }
+}
+
+static int dbs_packet_fix_charinfo(t_d2dbs_connection * conn,char * AccountName,char * CharName,char * charsave)
+{
+    if (prefs_get_difficulty_hack()) {
+	unsigned char	charinfo[CHARINFO_SIZE];
+	unsigned int	level = bn_byte_get(&charsave[CHARSAVE_LEVEL_OFFSET]);
+	unsigned short	status = bn_short_get(&charsave[CHARSAVE_STATUS_OFFSET]);
+	unsigned short	pstatus = charstatus_to_portstatus(status);
+	int		i;
+	
+	/*
+	 * charinfo is only updated from level 1 to 99 (d2gs issue)
+	 * from 100 to 256 d2gs does not send it
+	 * when value rolls over (level 256 = 0)
+	 * and charactar reaches level 257 (rolled over to level 1)
+	 * d2gs starts sending it agian until level 356 (rolled over to 100)
+	 * is reached agian. etc. etc. etc.
+	 */
+	if (level == 0) /* level 256, 512, 768, etc */
+	    level = 255;
+	
+	if (level < 100)
+	    return 1; /* d2gs will send charinfo - level will be set to 255 at that time if needed */
+	
+	eventlog(eventlog_level_info,__FUNCTION__,"level %u > 99 for %s",level,CharName);
+	
+	if(!(dbs_packet_getdata_charinfo(conn,AccountName,CharName,charinfo,CHARINFO_SIZE))) {
+	    eventlog(eventlog_level_error,__FUNCTION__,"unable to get charinfo for %s",CharName);
+	    return 0;
+	}
+	
+	/* if level in charinfo file is already set to 255,
+	 * then is must have been set when d2gs sent the charinfo 
+	 * and got a level mis-match (levels 257 - 355)
+	 * or level is actually 255. In eather case we set to 255
+	 * this should work for any level mod
+	 */
+	if (bn_byte_get(&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET]) == 255)
+	    level = 255;
+	
+	eventlog(eventlog_level_info,__FUNCTION__,"updating charinfo for %s -> level = %u , status = 0x%04X , pstatus = 0x%04X",CharName,level,status,pstatus);
+	bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET],level);
+	bn_int_set((bn_int *)&charinfo[CHARINFO_SUMMARY_LEVEL_OFFSET],level);
+	bn_short_set((bn_short *)&charinfo[CHARINFO_PORTRAIT_STATUS_OFFSET],pstatus);
+	bn_int_set((bn_int *)&charinfo[CHARINFO_SUMMARY_STATUS_OFFSET],status);
+	
+	for (i=0;i<11;i++) {
+	    bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_GFX_OFFSET+i],bn_byte_get(&charsave[CHARSAVE_GFX_OFFSET+i]));
+	    bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_COLOR_OFFSET+i],bn_byte_get(&charsave[CHARSAVE_GFX_OFFSET+i]));
+	}
+	
+	if (!(dbs_packet_savedata_charinfo(conn,AccountName,CharName,charinfo,CHARINFO_SIZE))) {
+	    eventlog(eventlog_level_error,__FUNCTION__,"unable to save charinfo for %s",CharName);
+	    return 0;
+	}
+	
+	return 1; /* charinfo updated */
+    }
+    
+    return 1; /* difficulty hack not enabled */
 }

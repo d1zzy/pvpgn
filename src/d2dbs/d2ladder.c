@@ -212,8 +212,8 @@ int d2ladder_find_pos(t_d2ladder * d2ladder, t_d2ladder_info * info)
 	
 	i=d2ladder->len;
 	while (i--) {
-		if (d2ladder->info[i].experience >= info->experience) {
-			if (strcmp(d2ladder->info[i].charname,info->charname)) {
+		if (d2ladder->info[i].experience > info->experience) {
+			if (strncasecmp(d2ladder->info[i].charname,info->charname, MAX_CHARNAME_LEN)) {
 				i++;
 			}
 			break;

@@ -124,6 +124,8 @@
 
 #define D2CS_CHARINFO_DIR	"/usr/local/var/charinfo"
 #define D2CS_CHARSAVE_DIR	"/usr/local/var/charsave"
+#define D2CS_BAK_CHARINFO_DIR	"/usr/local/var/bak/charinfo"
+#define D2CS_BAK_CHARSAVE_DIR	"/usr/local/var/bak/charsave"
 #define D2CS_CHARSAVE_NEWBIE	"/usr/local/var/files/newbie.save"
 #define D2CS_TRANS_FILE		"/usr/local/etc/address_translation.conf"
 #define D2CS_LADDER_DIR		"/usr/local/var/ladders"
