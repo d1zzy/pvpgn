@@ -143,13 +143,13 @@ static void fdw_epoll_handle(void)
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called");
     for (i = 0; i < sr; i++)
     {
-//      eventlog(eventlog_level_trace, __FUNCTION__, "checking %d ident: %d read: %d write: %d", i, kqevents[i].ident, kqevents[i].filter & EVFILT_READ, kqevents[i].filter & EVFILT_WRITE);
+//      eventlog(eventlog_level_trace, __FUNCTION__, "checking %d ident: %d events: %d", i, epevents[i].data.fd, epevents[i].events);
 
-	if (fdw_rw[epevents[i].data.fd] & fdwatch_type_read && epevents[i].events & EPOLLIN)
+	if (fdw_rw[epevents[i].data.fd] & fdwatch_type_read && epevents[i].events & (EPOLLIN | EPOLLERR | EPOLLHUP))
 	    if (fdw_hnd[epevents[i].data.fd] (fdw_data[epevents[i].data.fd], fdwatch_type_read) == -2)
 		continue;
 
-	if (fdw_rw[epevents[i].data.fd] & fdwatch_type_write && epevents[i].events & EPOLLOUT)
+	if (fdw_rw[epevents[i].data.fd] & fdwatch_type_write && epevents[i].events & (EPOLLOUT | EPOLLERR | EPOLLHUP))
 	    fdw_hnd[epevents[i].data.fd] (fdw_data[epevents[i].data.fd], fdwatch_type_write);
 
     }
