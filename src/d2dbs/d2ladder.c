@@ -98,7 +98,6 @@ int d2ladder_check(void);
 int d2ladder_readladder(void);
 
 int d2ladder_insert(t_d2ladder * d2ladder,t_d2ladder_info * pcharladderinfo);
-int d2ladder_find_char(t_d2ladder * d2ladder, t_d2ladder_info * info);
 int d2ladder_find_char_all(t_d2ladder * d2ladder, t_d2ladder_info * info);
 int d2ladder_find_pos(t_d2ladder * d2ladder, t_d2ladder_info * info);
 int d2ladder_update_info_and_pos(t_d2ladder * d2ladder, t_d2ladder_info * info, int oldpos, int newpos);
@@ -233,7 +232,7 @@ int d2ladder_insert(t_d2ladder * d2ladder,t_d2ladder_info * info)
 	/*
 	if (newpos<0 || newpos >= d2ladder->len) return 0;
 	*/
-	oldpos=d2ladder_find_char(d2ladder,info);
+	oldpos=d2ladder_find_char_all(d2ladder,info);
 	return d2ladder_update_info_and_pos(d2ladder,info,oldpos,newpos);
 }
 
@@ -247,22 +246,6 @@ int d2ladder_find_char_all(t_d2ladder * d2ladder, t_d2ladder_info * info)
 	if (!ladderdata) return -1;
 	i=d2ladder->len;
 	while (i--) {
-		if (!strncmp(ladderdata[i].charname,info->charname,MAX_CHARNAME_LEN)) return i;
-	}
-	return -1;
-}
-
-int d2ladder_find_char(t_d2ladder * d2ladder, t_d2ladder_info * info)
-{
-	int		i;
-	t_d2ladder_info * ladderdata;
-
-	if (!d2ladder || !info) return -1;
-	ladderdata=d2ladder->info;
-	if (!ladderdata) return -1;
-	i=d2ladder->len;
-	while (i--) {
-		if (ladderdata[i].level > info->level) return -1;
 		if (!strncmp(ladderdata[i].charname,info->charname,MAX_CHARNAME_LEN)) return i;
 	}
 	return -1;
@@ -582,7 +565,7 @@ int d2ladderlist_destroy(void)
     	{
 		if (!(d2ladder=elem_get_data(elem))) continue;
 		free(d2ladder);
-		list_remove_elem(d2ladder_list,elem);
+		list_remove_elem(d2ladder_list,&elem);
     	}
     	list_destroy(d2ladder_list);
 	return 0;

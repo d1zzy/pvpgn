@@ -36,7 +36,7 @@
 #include "common/setup_after.h"
 
 
-static int nodata; /* if data points to this, then the element was actually deleted */
+static t_elem listhead;
 
 
 #ifdef USE_CHECK_ALLOC
@@ -73,7 +73,6 @@ extern int list_destroy(t_list * list)
         return -1;
     }
     
-    list_purge(list);
     if (list->head)
 	eventlog(eventlog_level_error,"list_destroy","got non-empty list");
     
@@ -83,56 +82,8 @@ extern int list_destroy(t_list * list)
 }
 
 
-extern int list_purge(t_list * list)
-{
-    t_elem *   curr;
-    t_elem *   head;
-    t_elem *   tail;
-    t_elem *   next;
-    t_elem * * change;
-    
-    if (!list)
-    {
-        eventlog(eventlog_level_error,"list_purge","got NULL list");
-        return -1;
-    }
-    
-#ifdef LIST_DEBUG
-    list_check(list);
-#endif
-    
-    head = NULL;
-    tail = NULL;
-    change = NULL;
-    for (curr=list->head; curr; curr=next)
-    {
-	next = curr->next;
-	if (curr->data==&nodata)
-	{
-	    if (change)
-		*change = next;
-	    free(curr);
-	}
-	else
-	{
-	    tail = curr;
-	    if (!head)
-		head = curr;
-	    change = &curr->next;
-	}
-    }
-    
-    list->head = head;
-    list->tail = tail;
-    
-    return 0;
-}
-
-
 extern int list_check(t_list const * list)
 {
-    unsigned int   emptycnt;
-    unsigned int   validcnt;
     t_elem const * tail;
     t_elem const * curr;
     int            ret=0;
@@ -143,7 +94,6 @@ extern int list_check(t_list const * list)
         return -1;
     }
     
-    emptycnt=validcnt = 0;
     tail = NULL;
     for (curr=list->head; curr; curr=curr->next)
     {
@@ -165,20 +115,9 @@ extern int list_check(t_list const * list)
 		return -1;
 	    }
 	}
-	if (curr->data==&nodata)
-	    emptycnt++;
-	else
-	    validcnt++;
 	tail = curr;
     }
     
-    if (emptycnt>10 && emptycnt>validcnt+5) /* arbitrary heuristic to detect missing list_purge() calls */
-	eventlog(eventlog_level_warn,"list_check","emptycnt=%u but validcnt=%u",emptycnt,validcnt);
-    if (list->len!=validcnt)
-    {
-	eventlog(eventlog_level_error,"list_check","list->len=%u but validcnt=%u",list->len,validcnt);
-	ret = -1;
-    }
     if (list->head && !list->tail)
     {
 	eventlog(eventlog_level_error,"list_check","list->head=%p but list->tail=%p (len=%u)",list->head,list->tail,list->len);
@@ -187,11 +126,6 @@ extern int list_check(t_list const * list)
     if (list->tail!=tail)
     {
 	eventlog(eventlog_level_error,"list_check","list->tail=%p but tail=%p",list->tail,tail);
-	ret = -1;
-    }
-    if (validcnt!=0 && !list->head)
-    {
-	eventlog(eventlog_level_error,"list_check","validcnt=%u but list->head=%p",validcnt,list->head);
 	ret = -1;
     }
     
@@ -236,7 +170,10 @@ extern int list_prepend_data(t_list * list, void * data)
     }
     elem->data = data;
     
+    if (list->head)
+       list->head->prev = elem;
     elem->next = list->head;
+    elem->prev = NULL;
     list->head = elem;
     if (!list->tail)
 	list->tail = elem;
@@ -273,9 +210,15 @@ extern int list_append_data(t_list * list, void * data)
     
     elem->next = NULL;
     if (!list->head)
-	list->head = elem;
+    	{
+	  list->head = elem;
+	  elem->prev = NULL;
+	}
     if (list->tail)
-	list->tail->next = elem;
+    	{
+	  elem->prev = list->tail;
+	  list->tail->next = elem;
+	}
     list->tail = elem;
     list->len++;
     
@@ -319,42 +262,64 @@ extern t_elem const * list_get_elem_by_data_const(t_list const * list, void cons
 }
 
 
-extern int list_remove_elem(t_list * list, t_elem * elem)
+extern int list_remove_elem(t_list * list, t_elem ** elem)
 {
+    t_elem * target;
+    
     if (!list)
     {
 	eventlog(eventlog_level_error,"list_remove_elem","got NULL list");
 	return -1;
     }
+
     if (!elem)
     {
-	eventlog(eventlog_level_error,"list_remove_elem","got NULL elem");
+	eventlog(eventlog_level_error,"list_remove_elem","got NULL *elem");
 	return -1;
     }
-    if (elem->data==&nodata)
+
+    target = *elem; 
+
+    if (target->prev)
     {
-	eventlog(eventlog_level_error,"list_remove_elem","got deleted elem");
-	return -1;
+      target->prev->next = target->next;
     }
+    if (target->next)
+    {
+      target->next->prev = target->prev;
+    }
+
+    if (target == list->tail)
+    {
+      list->tail = target->prev;
+    }
+    if (target == list->head)
+    {
+      list->head = target->next;
+      *elem = &listhead;
+    }
+    else
+      *elem = target->prev;
+
+    target->next = NULL;
+    target->prev = NULL;
+    free(target);
     
-    elem->data = &nodata;
     list->len--;
     
     return 0;
 }
 
 
-extern int list_remove_data(t_list * list, void const * data)
+extern int list_remove_data(t_list * list, void const * data, t_elem ** elem)
 {
-    t_elem * elem;
-    
     if (!list)
     {
 	eventlog(eventlog_level_error,"list_remove_data","got NULL list");
 	return -1;
     }
     
-    if (!(elem = list_get_elem_by_data(list,data)))
+    if (!(*elem = list_get_elem_by_data(list,data)))
 	return -1;
     
     return list_remove_elem(list,elem);
@@ -366,16 +331,6 @@ extern int elem_set_data(t_elem * elem, void * data)
     if (!elem)
     {
 	eventlog(eventlog_level_error,"elem_set_data","got NULL elem");
-	return -1;
-    }
-    if (elem->data==&nodata)
-    {
-	eventlog(eventlog_level_error,"elem_set_data","got deleted elem");
-	return -1;
-    }
-    if (data==&nodata)
-    {
-	eventlog(eventlog_level_error,"elem_set_data","got bad data");
 	return -1;
     }
     
@@ -390,11 +345,6 @@ extern void * elem_get_data(t_elem const * elem)
     if (!elem)
     {
 	eventlog(eventlog_level_error,"elem_get_data","got NULL elem");
-	return NULL;
-    }
-    if (elem->data==&nodata)
-    {
-	eventlog(eventlog_level_error,"elem_get_data","got deleted elem");
 	return NULL;
     }
     
@@ -423,8 +373,6 @@ extern t_elem * list_get_first_real(t_list const * list, char const * fn, unsign
 extern t_elem * list_get_first(t_list const * list)
 #endif
 {
-    t_elem * curr;
-    
     if (!list)
     {
 #ifdef LIST_DEBUG
@@ -435,11 +383,8 @@ extern t_elem * list_get_first(t_list const * list)
 	return NULL;
     }
     
-    for (curr=list->head; curr; curr=curr->next)
-	if (curr->data!=&nodata)
-	    return curr;
     
-    return curr;
+    return list->head;
 }
 
 
@@ -449,8 +394,6 @@ extern t_elem const * list_get_first_const_real(t_list const * list, char const 
 extern t_elem const * list_get_first_const(t_list const * list)
 #endif
 {
-    t_elem const * curr;
-    
     if (!list)
     {
 #ifdef LIST_DEBUG
@@ -461,45 +404,35 @@ extern t_elem const * list_get_first_const(t_list const * list)
 	return NULL;
     }
     
-    for (curr=list->head; curr; curr=curr->next)
-	if (curr->data!=&nodata)
-	    return curr;
-    
-    return curr;
+    return list->head;
 }
 
 
-extern t_elem * elem_get_next(t_elem const * elem)
+extern t_elem * elem_get_next_real(t_list const * list, t_elem const * elem, char const * fn, unsigned int ln)
 {
-    t_elem * curr;
-    
     if (!elem)
     {
-	eventlog(eventlog_level_error,"elem_get_next","got NULL elem");
+	eventlog(eventlog_level_error,"elem_get_next","got NULL elem from %s:%u",fn,ln);
 	return NULL;
     }
     
-    for (curr=elem->next; curr; curr=curr->next)
-	if (curr->data!=&nodata)
-	    return curr;
-    
-    return curr;
+    if (elem == &listhead)
+        return list->head;
+    else
+        return elem->next;
 }
 
 
-extern t_elem const * elem_get_next_const(t_elem const * elem)
+extern t_elem const * elem_get_next_const(t_list const * list, t_elem const * elem)
 {
-    t_elem const * curr;
-    
     if (!elem)
     {
 	eventlog(eventlog_level_error,"elem_get_next_const","got NULL elem");
 	return NULL;
     }
     
-    for (curr=elem->next; curr; curr=curr->next)
-	if (curr->data!=&nodata)
-	    return curr;
-    
-    return curr;
+    if (elem == &listhead)
+        return list->head;
+    else
+        return elem->next;
 }

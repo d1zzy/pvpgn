@@ -111,6 +111,7 @@ ${SRC_COMMONDIR}/fdwatch_epoll.o \
 ${SRC_COMMONDIR}/fdwatch_kqueue.o \
 ${SRC_COMMONDIR}/rlimit.o \
 ${SRC_COMMONDIR}/trans.o \
+${SRC_COMMONDIR}/tag.o \
 ${SRC_COMPATDIR}/inet_aton.o \
 ${SRC_COMPATDIR}/inet_ntoa.o \
 ${SRC_COMPATDIR}/strdup.o \
@@ -153,6 +154,7 @@ ${SRC_COMMONDIR}/fdwatch_poll.o \
 ${SRC_COMMONDIR}/fdwatch_epoll.o \
 ${SRC_COMMONDIR}/fdwatch_kqueue.o \
 ${SRC_COMMONDIR}/rlimit.o \
+${SRC_COMMONDIR}/tag.o \
 ${SRC_COMPATDIR}/psock.o \
 ${SRC_COMPATDIR}/strerror.o \
 ${SRC_COMPATDIR}/strsep.o
@@ -313,11 +315,11 @@ ${SRC_ACDIR}/ansi2knr.o: ${SRC_ACDIR}/ansi2knr.c
 	${MAKE} dep
 
 dep:
-        @${RMF} .dep
-        @for a in ${PARTS}; do \
-            echo Dependency check: $$a; \
-            ${COMPILE} -MM `ls $$a/*.c` | sed -e "s@\(.*\)\.o:\(.*\)@$$a\/\1\.o:\2@g" 1>>.dep; \
-        done
+	@${RMF} .dep
+	@for a in ${PARTS}; do \
+	    echo Dependency check: $$a; \
+	    ${COMPILE} -MM `ls $$a/*.c` | sed -e "s@\(.*\)\.o:\(.*\)@$$a\/\1\.o:\2@g" 1>>.dep; \
+	done
 
 ${d2cs_SBIN}: ${d2cs_OBJECTS}
 	@${INSTALL_DIRS} ${SRC_SBINDIR}

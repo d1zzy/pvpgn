@@ -94,7 +94,7 @@ extern t_connection * d2cs_connlist_find_connection_by_charname(char const * cha
 extern int conn_handle_socket(t_connection * c);
 extern t_connection * d2cs_conn_create(int sock, unsigned int local_addr, unsigned short local_port, 
 				unsigned int addr, unsigned short port);
-extern int d2cs_conn_destroy(t_connection * c);
+extern int d2cs_conn_destroy(t_connection * c, t_elem ** elem);
 extern int d2cs_conn_get_socket(t_connection const * c);
 extern unsigned int d2cs_conn_get_sessionnum(t_connection const * c);
 extern t_conn_class d2cs_conn_get_class(t_connection const * c);

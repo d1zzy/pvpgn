@@ -40,8 +40,6 @@ extern int psock_init(void)
     return 0;
 }
 
-/* EDITED BY CREEPLORD */
-
 extern int psock_deinit(void)
 {
    
@@ -52,8 +50,6 @@ extern int psock_deinit(void)
 
     return 0;
 }
-
-/* END OF EDIT */
 
 extern int psock_ctl(int sd, int mode)
 {

@@ -29,13 +29,7 @@
 typedef union
 {
     unsigned long n;
-
-/* EDITED BY CREEPLORD  */
-
     int           i;
-
-/* END OF EDIT */
-
     void *        p;
 } t_addr_data;
 

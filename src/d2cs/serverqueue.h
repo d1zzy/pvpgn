@@ -36,7 +36,7 @@ extern t_list * sqlist(void);
 extern int sqlist_create(void);
 extern int sqlist_destroy(void);
 
-extern int sq_destroy(t_sq * sq);
+extern int sq_destroy(t_sq * sq,t_elem ** curr);
 extern int sqlist_check_timeout(void);
 extern t_sq * sqlist_find_sq(unsigned int seqno);
 extern t_sq * sq_create(unsigned int clientid, t_packet * packet,unsigned int gameid);

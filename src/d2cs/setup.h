@@ -36,7 +36,7 @@
 {\
 	t_elem * curr_elem_;\
 	for (curr_elem_=list_get_first(list); curr_elem_ && (data=elem_get_data(curr_elem_)); \
-		curr_elem_=elem_get_next(curr_elem_))
+		curr_elem_=elem_get_next(list,curr_elem_))
 
 #define END_LIST_TRAVERSE_DATA() \
 }
@@ -45,7 +45,7 @@
 {\
 	t_elem const * curr_elem_;\
 	for (curr_elem_=list_get_first_const(list); curr_elem_ && (data=elem_get_data(curr_elem_)); \
-		curr_elem_=elem_get_next_const(curr_elem_))
+		curr_elem_=elem_get_next_const(list,curr_elem_))
 
 #define END_LIST_TRAVERSE_DATA_CONST() \
 }
@@ -114,6 +114,8 @@
 #define BNETD_SERVER_LIST	"192.168.0.1"
 #define MAX_D2GAME_NUMBER	30
 #define MAX_CHAR_PER_ACCT	8
+// MAX_MAX_CHAR_PER_ACCT is needed cause D2 client can only handle 21 character
+#define MAX_MAX_CHAR_PER_ACCT	21
 #define MAX_CLIENT_IDLETIME	30 * 60
 
 #define D2CS_CHARINFO_DIR	"/usr/local/var/charinfo"

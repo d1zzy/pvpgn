@@ -209,6 +209,7 @@ static int on_d2gs_creategamereply(t_connection * c, t_packet * packet)
 	int		result;
 	int		reply;
 	int		seqno;
+	t_elem		* curr;
 
 	seqno=bn_int_get(packet->u.d2cs_d2gs.h.seqno);
 	if (!(sq=sqlist_find_sq(seqno))) {
@@ -217,17 +218,17 @@ static int on_d2gs_creategamereply(t_connection * c, t_packet * packet)
 	}
 	if (!(client=d2cs_connlist_find_connection_by_sessionnum(sq_get_clientid(sq)))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"client %d not found",sq_get_clientid(sq));
-		sq_destroy(sq);
+		sq_destroy(sq,&curr);
 		return 0;
 	}
 	if (!(game=gamelist_find_game_by_id(sq_get_gameid(sq)))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"game %d not found",sq_get_gameid(sq));
-		sq_destroy(sq);
+		sq_destroy(sq,&curr);
 		return 0;
 	}
 	if (!(opacket=sq_get_packet(sq))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"previous packet not found (seqno: %d)",seqno);
-		sq_destroy(sq);
+		sq_destroy(sq,&curr);
 		return 0;
 	}
 
@@ -242,7 +243,7 @@ static int on_d2gs_creategamereply(t_connection * c, t_packet * packet)
 		reply=D2CS_CLIENT_JOINGAMEREPLY_GAME_FULL;
 	} else {
 		eventlog(eventlog_level_warn,__FUNCTION__,"failed to create game %s on gs %d",d2cs_game_get_name(game),conn_get_d2gs_id(c));
-		game_destroy(game);
+		game_destroy(game,&curr);
 		reply=D2CS_CLIENT_CREATEGAMEREPLY_FAILED;
 	}
 
@@ -257,7 +258,7 @@ static int on_d2gs_creategamereply(t_connection * c, t_packet * packet)
 		conn_push_outqueue(client,rpacket);
 		packet_del_ref(rpacket);
 	}
-	sq_destroy(sq);
+	sq_destroy(sq,&curr);
 	return 0;
 }
 
@@ -272,6 +273,7 @@ static int on_d2gs_joingamereply(t_connection * c, t_packet * packet)
 	int		reply;
 	int		seqno;
 	unsigned int	gsaddr;
+	t_elem		* curr;
 	unsigned short	gsport;
 			
 
@@ -282,22 +284,22 @@ static int on_d2gs_joingamereply(t_connection * c, t_packet * packet)
 	}
 	if (!(client=d2cs_connlist_find_connection_by_sessionnum(sq_get_clientid(sq)))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"client %d not found",sq_get_clientid(sq));
-		sq_destroy(sq);
+		sq_destroy(sq,&curr);
 		return 0;
 	}
 	if (!(game=gamelist_find_game_by_id(sq_get_gameid(sq)))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"game %d not found",sq_get_gameid(sq));
-		sq_destroy(sq);
+		sq_destroy(sq,&curr);
 		return 0;
 	}
 	if (!(gs=game_get_d2gs(game))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"try join game without game server set");
-		sq_destroy(sq);
+		sq_destroy(sq,&curr);
 		return 0;
 	}
 	if (!(opacket=sq_get_packet(sq))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"previous packet not found (seqno: %d)",seqno);
-		sq_destroy(sq);
+		sq_destroy(sq,&curr);
 		return 0;
 	}
 
@@ -343,7 +345,7 @@ static int on_d2gs_joingamereply(t_connection * c, t_packet * packet)
 		conn_push_outqueue(client,rpacket);
 		packet_del_ref(rpacket);
 	}
-	sq_destroy(sq);
+	sq_destroy(sq,&curr);
 	return 0;
 }
 
@@ -385,12 +387,13 @@ static int on_d2gs_updategameinfo(t_connection * c, t_packet * packet)
 static int on_d2gs_closegame(t_connection * c, t_packet * packet)
 {
 	t_game	* game;
+	t_elem  * curr;
 
 	if (!(game=gamelist_find_game_by_d2gs_and_id(conn_get_d2gs_id(c),
 		bn_int_get(packet->u.d2gs_d2cs_closegame.gameid)))) {
 		return 0;
 	}
-	game_destroy(game);
+	game_destroy(game, &curr);
 	return 0;
 }
 

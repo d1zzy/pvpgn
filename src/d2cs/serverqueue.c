@@ -63,7 +63,7 @@ extern int sqlist_destroy(void)
 
 	BEGIN_LIST_TRAVERSE_DATA_CONST(sqlist_head,sq)
 	{
-		sq_destroy(sq);
+		sq_destroy(sq,(t_elem **)curr_elem_);
 	}
 	END_LIST_TRAVERSE_DATA_CONST()
 
@@ -85,7 +85,7 @@ extern int sqlist_check_timeout(void)
 	{
 		if (now - sq->ctime > prefs_get_sq_timeout()) {
 			eventlog(eventlog_level_info,__FUNCTION__,"destroying expired server queue %d",sq->seqno);
-			sq_destroy(sq);
+			sq_destroy(sq,&curr_elem_);
 		}
 	}
 	END_LIST_TRAVERSE_DATA()
@@ -125,10 +125,10 @@ extern t_sq * sq_create(unsigned int clientid, t_packet * packet,unsigned int ga
 	return sq;
 }
 
-extern int sq_destroy(t_sq * sq)
+extern int sq_destroy(t_sq * sq,t_elem ** curr)
 {
 	ASSERT(sq,-1);
-	if (list_remove_data(sqlist_head,sq)<0) {
+	if (list_remove_data(sqlist_head,sq,curr)<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error remove server queue from list");
 		return -1;
 	}

@@ -124,14 +124,8 @@
 #define PSOCK_FD_ISSET FD_ISSET
 
 /* psock functions */
-
-/* EDITED BY CREEPLORD */
-
 extern int psock_init(void);               /* a real functions in */
 extern int psock_deinit(void);             /* compat/psock.c      */
-
-/* END OF EDIT */
-
 #define psock_errno()                      WSAGetLastError()
 #define psock_socket(pf, t, ps)            socket(pf, t, ps)
 #define psock_getsockopt(s, l, o, v, size) getsockopt(s, l, o, (void *)(v), size)
@@ -256,13 +250,7 @@ extern int psock_ctl(int sd, int mode);    /* a real function in compat/psock.c 
 
 /* psock functions */
 #define psock_init()                       (0)
-
-/* EDITED BY CREEPLORD */
-
 #define psock_deinit()                     (0)
-
-/* END OF EDIT */
-
 #define psock_errno()                      (errno)
 #define psock_socket(pf, t, ps)            socket(pf, t, ps)
 #define psock_getsockopt(s, l, o, v, size) getsockopt(s, l, o, (void *)(v), size)

@@ -739,7 +739,7 @@ static int dbs_verify_ipaddr(char const * addrlist,t_d2dbs_connection * c)
 			if (tempc !=c && tempc->ipaddr==c->ipaddr) {
 				eventlog(eventlog_level_info,__FUNCTION__,"destroying previous connection %d",tempc->serverid);
 				dbs_server_shutdown_connection(tempc);
-				list_remove_elem(dbs_server_connection_list,elem);
+				list_remove_elem(dbs_server_connection_list,&elem);
 			}
 		}
 		c->verified = 1;
@@ -765,7 +765,7 @@ int dbs_check_timeout(void)
 		if (now-tempc->last_active>timeout) {
 			eventlog(eventlog_level_debug,__FUNCTION__,"connection %d timed out",tempc->serverid);
 			dbs_server_shutdown_connection(tempc);
-			list_remove_elem(dbs_server_connection_list,elem);
+			list_remove_elem(dbs_server_connection_list,&elem);
 			continue;
 		}
 	}

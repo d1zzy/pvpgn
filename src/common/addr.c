@@ -678,7 +678,7 @@ extern int addrlist_destroy(t_addrlist * addrlist)
             eventlog(eventlog_level_error,"addrlist_destroy","found NULL addr in list");
         else
             addr_destroy(addr);
-        list_remove_elem(addrlist,curr);
+        list_remove_elem(addrlist,&curr);
     }
     
     return list_destroy(addrlist);
