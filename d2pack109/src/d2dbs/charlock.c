@@ -44,6 +44,7 @@
 
 #include "charlock.h"
 #include "common/introtate.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 /* FIXME: for simplification, no multiple realm support now */
@@ -66,13 +67,8 @@ int cl_init(unsigned int tbllen, unsigned int maxgs)
 	if (!tbllen || !maxgs) return -1;
 	cl_destroy();
 
-	clitbl = (t_charlockinfo**)malloc(tbllen*sizeof(t_charlockinfo**));
-	if (!clitbl) return -1;
-	gsqtbl = (t_charlockinfo**)malloc(maxgs*sizeof(t_charlockinfo**));
-	if (!gsqtbl) {
-		free(clitbl);
-		return -1;
-	}
+	clitbl = (t_charlockinfo**)xmalloc(tbllen*sizeof(t_charlockinfo**));
+	gsqtbl = (t_charlockinfo**)xmalloc(maxgs*sizeof(t_charlockinfo**));
 	memset(clitbl, 0, tbllen*sizeof(t_charlockinfo**));
 	memset(gsqtbl, 0, maxgs*sizeof(t_charlockinfo**));
 	clitbl_len = tbllen;
@@ -92,12 +88,12 @@ int cl_destroy(void)
 			while (ptl) {
 				ptmp=ptl;
 				ptl=ptl->next;
-				free(ptmp);
+				xfree(ptmp);
 			}
 		}
-		free(clitbl);
+		xfree(clitbl);
 	}
-	if (gsqtbl) free(gsqtbl);
+	if (gsqtbl) xfree(gsqtbl);
 	clitbl = gsqtbl = NULL;
 	clitbl_len = gsqtbl_len = 0;
 	return 0;
@@ -150,8 +146,7 @@ int cl_lock_char(unsigned char *charname,
 	}
 
 	/* not found, locked it */
-	pcl = (t_charlockinfo*)malloc(sizeof(t_charlockinfo));
-	if (!pcl) return -1;	/* no free memory available :( */
+	pcl = (t_charlockinfo*)xmalloc(sizeof(t_charlockinfo));
 	memset(pcl, 0, sizeof(t_charlockinfo));
 	strncpy(pcl->charname, charname, MAX_CHARNAME_LEN-1);
 	strncpy(pcl->realmname, realmname, MAX_REALMNAME_LEN-1);
@@ -185,7 +180,7 @@ int cl_unlock_char(unsigned char *charname, unsigned char *realmname)
 			cl_delete_from_gsq_list(pcl);
 			if (ptmp) ptmp->next = pcl->next;
 			else clitbl[hashval] = pcl->next;
-			free(pcl);
+			xfree(pcl);
 			return 0;
 		}
 		ptmp = pcl;

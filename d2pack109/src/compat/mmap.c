@@ -30,6 +30,7 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+#include "common/xalloc.h"
 #include "mmap.h"
 #ifdef WIN32
 # include <windows.h>
@@ -54,12 +55,12 @@ extern void * pmmap(void *addr, unsigned len, int prot, int flags, int fd, unsig
     unsigned pos;
     int res;
 
-	if ((mem = malloc(len)) == NULL) return MAP_FAILED;
+    mem = xmalloc(len);
     pos = 0;
     while(pos < len) {
 	res = read(fd, (char *)mem + pos, len - pos);
 	if (res < 0) {
-	    free(mem);
+	    xfree(mem);
 	    return MAP_FAILED;
 	}
 	pos += res;
@@ -74,7 +75,7 @@ extern int pmunmap(void *addr, unsigned len)
 #ifdef WIN32
     UnmapViewOfFile(addr);
 #else
-    free(addr);
+    xfree(addr);
 #endif
     return 0;
 }

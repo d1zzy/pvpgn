@@ -74,8 +74,9 @@
 #include "common/list.h"
 #include "common/eventlog.h"
 #include "compat/strncasecmp.h"
-#include "common/setup_after.h"
 #include "d2cs/d2charfile.h"
+#include "common/xalloc.h"
+#include "common/setup_after.h"
 
 char			* d2ladder_ladder_file = NULL;
 char			* d2ladder_backup_file = NULL;
@@ -344,9 +345,9 @@ extern int d2dbs_d2ladder_init(void)
 {
 	d2ladder_change_count=0;
 	d2ladder_maxtype=0;
-	d2ladder_ladder_file=malloc(strlen(d2dbs_prefs_get_ladder_dir())+1+\
+	d2ladder_ladder_file=xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+\
 			  strlen(LADDER_FILE_PREFIX)+1+strlen(CLIENTTAG_DIABLO2DV)+1+10);
-	d2ladder_backup_file=malloc(strlen(d2dbs_prefs_get_ladder_dir())+1+\
+	d2ladder_backup_file=xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+\
 			  strlen(LADDER_BACKUP_PREFIX)+1+strlen(CLIENTTAG_DIABLO2DV)+1+10);
 	if (!d2ladder_ladder_file) return -1;
 	if (!d2ladder_backup_file) return -1;
@@ -378,13 +379,10 @@ int d2ladderlist_init(void)
 
 
 	if (!d2ladder_ladder_file) return -1;
-	if (!(d2ladder_list=list_create())) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not create d2ladder_list");
-		return -1;
-	}
+	d2ladder_list=list_create();
 	d2ladder_maxtype=D2LADDER_MAXTYPE;
 	for (i=0;i<d2ladder_maxtype;i++) {
-		if (!(d2ladder=malloc(sizeof(t_d2ladder)))) {
+		if (!(d2ladder=xmalloc(sizeof(t_d2ladder)))) {
 			eventlog(eventlog_level_error,__FUNCTION__,"could not allocate d2ladder");
 			return -1;
 		}
@@ -452,7 +450,7 @@ int d2ladder_readladder(void)
 		return -1;
 	}
 
-	if (!(lhead=malloc(blocksize))) {
+	if (!(lhead=xmalloc(blocksize))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"could not allocate memory for lhead");
 		fclose(fdladder);
 		return -1;
@@ -460,7 +458,7 @@ int d2ladder_readladder(void)
 	readlen=fread(lhead,1,d2ladder_maxtype*sizeof(*lhead),fdladder);
 	if (readlen<=0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,strerror(errno));
-		free(lhead);
+		xfree(lhead);
 		fclose(fdladder);
 		return -1;
 	}
@@ -472,7 +470,7 @@ int d2ladder_readladder(void)
 	}
 	if (leftsize < blocksize ) {
 		eventlog(eventlog_level_error,__FUNCTION__,"file size error");
-		free(lhead);
+		xfree(lhead);
 		fclose(fdladder);
 		return -1;
 	}
@@ -485,13 +483,13 @@ int d2ladder_readladder(void)
 			eventlog(eventlog_level_error,__FUNCTION__,"could not find ladder type %d",laddertype);
 			continue;
 		}
-		if (!(ldata=malloc(number*sizeof(*ldata)))) {
+		if (!(ldata=xmalloc(number*sizeof(*ldata)))) {
 			eventlog(eventlog_level_error,__FUNCTION__,"error allocate memory for ldata");
 			continue;
 		}
-		if (!(info=malloc(number * sizeof(*info)))) {
+		if (!(info=xmalloc(number * sizeof(*info)))) {
 			eventlog(eventlog_level_error,__FUNCTION__,"error allocate memory for info");
-			free(ldata);
+			xfree(ldata);
 			continue;
 		}
 		memset(info,0,number * sizeof(*info));
@@ -499,8 +497,8 @@ int d2ladder_readladder(void)
 		readlen=fread(ldata,1,number*sizeof(*ldata),fdladder);
 		if (readlen<=0) {
 			eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,strerror(errno));
-			free(ldata);
-			free(info);
+			xfree(ldata);
+			xfree(info);
 			continue;
 		}
 		d2ladder->info=info;
@@ -518,11 +516,11 @@ int d2ladder_readladder(void)
 				d2ladder_change_count++;
 			}
 		}
-		free(ldata);
+		xfree(ldata);
 	}
 	leftsize-=blocksize;
 	
-	free(lhead);
+	xfree(lhead);
 	fclose(fdladder);
 	return 0;
 }
@@ -538,18 +536,18 @@ extern int d2dbs_d2ladder_destroy(void)
 		if(d2ladder)
 		{
 			if(d2ladder->info)
-				free(d2ladder->info);
+				xfree(d2ladder->info);
 			d2ladder->info=NULL;
 			d2ladder->len=0;
 		}
     	}
 	d2ladderlist_destroy();
 	if (d2ladder_ladder_file) {
-		free(d2ladder_ladder_file);
+		xfree(d2ladder_ladder_file);
 		d2ladder_ladder_file=NULL;
 	}
 	if (d2ladder_backup_file) {
-		free(d2ladder_backup_file);
+		xfree(d2ladder_backup_file);
 		d2ladder_backup_file=NULL;
 	}
 	return 0;
@@ -564,7 +562,7 @@ int d2ladderlist_destroy(void)
     	LIST_TRAVERSE(d2ladder_list,elem)
     	{
 		if (!(d2ladder=elem_get_data(elem))) continue;
-		free(d2ladder);
+		xfree(d2ladder);
 		list_remove_elem(d2ladder_list,&elem);
     	}
     	list_destroy(d2ladder_list);
@@ -733,7 +731,7 @@ extern int d2ladder_saveladder(void)
 	// aaron: add extra output for XML ladder here --->
 	if (d2dbs_prefs_get_XML_output_ladder())
 	{
-	  XMLfilename = malloc(strlen(d2dbs_prefs_get_ladder_dir())+1+strlen(XMLname)+1);
+	  XMLfilename = xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+strlen(XMLname)+1);
 	  if (!XMLfilename) 
 	  { 
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not alloc mem for XML ladder filename");
@@ -749,7 +747,7 @@ extern int d2ladder_saveladder(void)
 	    {
               d2ladder_print_XML(XMLfile);
 	      fclose(XMLfile);
-	      free(XMLfilename);
+	      xfree(XMLfilename);
 	    }
 	  }
 	}
@@ -764,7 +762,7 @@ extern int d2ladder_saveladder(void)
 		number=bn_int_get(lhead[i].number);
 		if(number<=0) continue;
 		d2ladder=d2ladderlist_find_type(i);
-		if (!(ldata=malloc(number * sizeof(*ldata)))) {
+		if (!(ldata=xmalloc(number * sizeof(*ldata)))) {
 			eventlog(eventlog_level_error,__FUNCTION__,"error allocate memory for ldata");
 			continue;
 		}
@@ -777,7 +775,7 @@ extern int d2ladder_saveladder(void)
 			strncpy(ldata[j].charname,d2ladder->info[j].charname,sizeof(ldata[j].charname));
 		}
 		fwrite(ldata,1,number*sizeof(*ldata),fdladder);
-		free(ldata);
+		xfree(ldata);
 	}
 	fclose(fdladder);
 	d2ladder_checksum_set();
@@ -892,7 +890,7 @@ int d2ladder_checksum_set(void)
 		fclose(fdladder);
 		return -1;
 	}
-	if (!(buffer=malloc(filesize))) {
+	if (!(buffer=xmalloc(filesize))) {
 		fclose(fdladder);
 		eventlog(eventlog_level_error,__FUNCTION__,"could not allocate memory for buffer");
 		return -1;
@@ -906,7 +904,7 @@ int d2ladder_checksum_set(void)
 		    len = filesize-curlen;
 		readlen=fread(buffer+curlen,1,len,fdladder);
 		if (readlen<=0) {
-			free(buffer);
+			xfree(buffer);
 			fclose(fdladder);
 			eventlog(eventlog_level_error,__FUNCTION__,"got bad save file or read error(read:%s)",strerror(errno));
 			return -1;
@@ -917,7 +915,7 @@ int d2ladder_checksum_set(void)
 	bn_int_set(&checksum,d2ladder_checksum(buffer,filesize,LADDERFILE_CHECKSUM_OFFSET));
 	fseek(fdladder,LADDERFILE_CHECKSUM_OFFSET,SEEK_SET);
 	fwrite(&checksum,1,sizeof(checksum),fdladder);
-	free(buffer);
+	xfree(buffer);
 	fclose(fdladder);
 	return 0;
 }
@@ -950,7 +948,7 @@ int d2ladder_checksum_check(void)
 		fclose(fdladder);
 		return -1;
 	}
-	if (!(buffer=malloc(filesize))) {
+	if (!(buffer=xmalloc(filesize))) {
 		fclose(fdladder);
 		eventlog(eventlog_level_error,__FUNCTION__,"could not allocate memory for buffer");
 		return -1;
@@ -964,7 +962,7 @@ int d2ladder_checksum_check(void)
 		    len = filesize-curlen;
 		readlen=fread(buffer+curlen,1,len,fdladder);
 		if (readlen<=0) {
-			free(buffer);
+			xfree(buffer);
 			fclose(fdladder);
 			eventlog(eventlog_level_error,__FUNCTION__,"got bad save file or read error(read:%s)",strerror(errno));
 			return -1;
@@ -975,7 +973,7 @@ int d2ladder_checksum_check(void)
 
 	oldchecksum=bn_int_get(header->checksum);
 	checksum=d2ladder_checksum(buffer,filesize,LADDERFILE_CHECKSUM_OFFSET);
-	free(buffer);
+	xfree(buffer);
 
 	if(oldchecksum==checksum) {
 		eventlog(eventlog_level_info,__FUNCTION__,"ladder file check pass (checksum=0x%X)",checksum);

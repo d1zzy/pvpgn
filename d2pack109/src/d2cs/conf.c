@@ -54,6 +54,7 @@
 #include "conf.h"
 #include "common/util.h"
 #include "common/eventlog.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 static int conf_set_default(t_conf_table * conf_table, void * param_data, int datalen);
@@ -85,26 +86,23 @@ static int conf_bool_set(void * data, int value)
 static int conf_str_set(void * data, char const * value)
 {
 	char * * p;
-	char	* tmp;
-	
+
 	p=(char * *)data;
-	tmp=NULL;
-	if (value && !(tmp=strdup(value))) return -1;
-	if (*p) free(*p);
-	*p=tmp;
+	if (*p) xfree(*p);
+	if (value) *p=xstrdup(value);
+	else *p=NULL;
+
 	return 0;
 }
 
 static int conf_hexstr_set(void * data, char const * value)
 {
 	char * * p;
-	char * tmp;
 
 	p=(char * *)data;
-	tmp=NULL;
-	if (value && !(tmp=hexstrdup(value))) return -1;
-	if (*p) free(*p);
-	*p=tmp;
+	if (*p) xfree(*p);
+	if (value) *p=hexstrdup(value);
+	else *p=NULL;
 	return 0;
 }
 
@@ -254,26 +252,26 @@ extern int conf_load_file(char const * filename, t_conf_table * conf_table, void
 	}
 	for (line=1; (buff=file_get_line(fp)); line++) {
 		if (buff[0]=='#') {
-			free(buff);
+			xfree(buff);
 			continue;
 		}
 		if (!(item=strtoargv(buff,&count))) {
-			free(buff);
+			xfree(buff);
 			continue;
 		}
-		free(buff);
+		xfree(buff);
 		if (!count) {
-			free(item);
+			xfree(item);
 			continue;
 		}
 		if (count!=3) {
 			eventlog(eventlog_level_error,__FUNCTION__,"bad item count %d in file %s line %d",count,filename,line);
-			free(item);
+			xfree(item);
 			continue;
 		}
 		if (strcmp(item[1],"=")) {
 			eventlog(eventlog_level_error,__FUNCTION__,"missing '=' in file %s line %d",filename,line);
-			free(item);
+			xfree(item);
 			continue;
 		}
 		match=0;
@@ -286,7 +284,7 @@ extern int conf_load_file(char const * filename, t_conf_table * conf_table, void
 		if (!match) {
 			eventlog(eventlog_level_warn,__FUNCTION__,"got unknown field \"%s\" in line %d,(ignored)",item[0],line);
 		}
-		free(item);
+		xfree(item);
 	}
 	fclose(fp);
 	return 0;

@@ -45,6 +45,7 @@
 #include "common/eventlog.h"
 #include "common/bn_type.h"
 #include "common/field_sizes.h"
+#include "common/xalloc.h"
 #include "common/packet.h"
 #include "common/setup_after.h"
 
@@ -66,13 +67,8 @@ extern t_packet * packet_create(t_packet_class class)
 	eventlog(eventlog_level_error,"packet_create","invalid packet class %d",(int)class);
         return NULL;
     }
-    
-    if (!(temp = malloc(sizeof(t_packet))))
-    {
-	eventlog(eventlog_level_error,"packet_create","unable to allocate memory for temp");
-	return NULL;
-    }
-    
+
+    temp = xmalloc(sizeof(t_packet));
     temp->ref   = 1;
     temp->class = class;
     temp->flags = 0;
@@ -90,7 +86,7 @@ extern void packet_destroy(t_packet const * packet)
 	return;
     }
     
-    free((void *)packet); /* avoid warning */
+    xfree((void *)packet); /* avoid warning */
 }
 
 

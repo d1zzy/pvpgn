@@ -89,6 +89,7 @@
 #include "common/hashtable.h"
 #include "common/queue.h"
 #include "common/eventlog.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 static t_hashtable 	* connlist_head=NULL;
@@ -427,10 +428,7 @@ extern t_connection * d2cs_conn_create(int sock, unsigned int local_addr, unsign
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad socket");
 		return NULL;
 	}
-	if (!(c=malloc(sizeof(t_connection)))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error allocate connection");
-		return NULL;
-	}
+	c=xmalloc(sizeof(t_connection));
 	c->charname=NULL;
 	c->account=NULL;
 	c->sock=sock;
@@ -455,7 +453,7 @@ extern t_connection * d2cs_conn_create(int sock, unsigned int local_addr, unsign
 	c->bnetd_sessionnum=0;
 	c->charname_hash=0;
 	if (hashtable_insert_data(connlist_head, c, c->sessionnum_hash)<0) {
-		free(c);
+		xfree(c);
 		eventlog(eventlog_level_error,__FUNCTION__,"error add connection to list");
 		return NULL;
 	}
@@ -484,8 +482,8 @@ extern int d2cs_conn_destroy(t_connection * c, t_elem ** curr)
 	if (c->gamequeue) {
 		gq_destroy(c->gamequeue,&elem);
 	}
-	if (c->account) free((void *)c->account);
-	if (c->charinfo) free((void *)c->charinfo);
+	if (c->account) xfree((void *)c->account);
+	if (c->charinfo) xfree((void *)c->charinfo);
 	if (c->charname) d2cs_conn_set_charname(c,NULL);
 	queue_clear(&c->inqueue);
 	queue_clear(&c->outqueue);
@@ -497,7 +495,7 @@ extern int d2cs_conn_destroy(t_connection * c, t_elem ** curr)
 
 	total_connection--;
 	eventlog(eventlog_level_info,__FUNCTION__,"[%d] closed connection %d (%d left)",c->sock,c->sessionnum,total_connection);
-	free(c);
+	xfree(c);
 	return 0;
 }
 
@@ -520,10 +518,8 @@ extern int d2cs_conn_set_state(t_connection * c, t_conn_state state)
 	ASSERT(c,-1);
 	/* special case for destroying connections, add them to connlist_dead list */
 	if (state == conn_state_destroy && c->state != conn_state_destroy) {
-	    if (!connlist_dead && !(connlist_dead = list_create())) {
-		eventlog(eventlog_level_error, __FUNCTION__, "could not initilize connlist_dead list");
-		return -1;
-	    }
+	    if (!connlist_dead)
+	        connlist_dead = list_create();
 	    list_append_data(connlist_dead, c);
 	} else if (state != conn_state_destroy && c->state == conn_state_destroy) {
 	    if (list_remove_data(connlist_dead, c, &curr)) {
@@ -701,19 +697,14 @@ extern int conn_process_packet(t_connection * c, t_packet * packet, t_packet_han
 
 extern int d2cs_conn_set_account(t_connection * c, char const * account)
 {
-	char const * temp;
-
 	ASSERT(c,-1);
 	if (!account) {
-		if (c->account) free((void *)c->account);
+		if (c->account) xfree((void *)c->account);
 		c->account=NULL;
 	}
-	if (!(temp=strdup(account))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error allocate temp for account");
-		return -1;
-	}
-	if (c->account) free((void *)c->account);
-	c->account=temp;
+	if (c->account) xfree((void *)c->account);
+	c->account=xstrdup(account);
+
 	return 0;
 }
 
@@ -729,25 +720,22 @@ extern int d2cs_conn_set_charname(t_connection * c, char const * charname)
 
 	ASSERT(c,-1);
 	temp=NULL;
-	if (charname && !(temp=strdup(charname))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error allocate temp for charname");
-		return -1;
-	}
+	if (charname) temp=xstrdup(charname);
 	if (c->charname) {
 		if (hashtable_remove_data(conn_charname_list_head,c,c->charname_hash) <0) {
 			eventlog(eventlog_level_error,__FUNCTION__,"error remove charname %s from list",charname);
-			if (temp) free((void *)temp);
+			if (temp) xfree((void *)temp);
 			return -1;
 		}
 		hashtable_purge(conn_charname_list_head);
-		free((void *)c->charname);
+		xfree((void *)c->charname);
 	}
 	if (charname) {
 		c->charname=temp;
 		c->charname_hash=conn_charname_hash(charname);
 		if (hashtable_insert_data(conn_charname_list_head,c,c->charname_hash) <0) {
 			eventlog(eventlog_level_error,__FUNCTION__,"error insert charname %s to list",charname);
-			free((void *)c->charname);
+			xfree((void *)c->charname);
 			c->charname=NULL;
 			return -1;
 		}
@@ -808,21 +796,15 @@ extern unsigned int conn_get_charinfo_class(t_connection const * c)
 
 extern int conn_set_charinfo(t_connection * c, t_d2charinfo_summary const * charinfo)
 {
-	t_d2charinfo_summary * temp;
-
 	ASSERT(c,-1);
 	if (!charinfo) {
-		if (c->charinfo) free((void *)c->charinfo);
+		if (c->charinfo) xfree((void *)c->charinfo);
 		c->charinfo=NULL;
 		return 0;
 	}
-	if (!(temp=malloc(sizeof(t_d2charinfo_summary)))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error allocate temp for charinfo");
-		return -1;
-	}
-	if (c->charinfo) free((void *)c->charinfo);
-	memcpy(temp,charinfo,sizeof(t_d2charinfo_summary));
-	c->charinfo=temp;
+	if (c->charinfo) xfree((void *)c->charinfo);
+	c->charinfo=xmalloc(sizeof(t_d2charinfo_summary));
+	memcpy((void*)c->charinfo,charinfo,sizeof(t_d2charinfo_summary));
 	return 0;
 }
 

@@ -23,10 +23,14 @@
 # define D2CS
 #endif
 
-#ifndef WIN32 //vc and bcc seem to provide those themselfes
-#define min(a,b) (((a)>(b))?(b):(a))
-#define max(a,b) (((a)>(b))?(a):(b))
+
+#ifndef min
+#  define min(a,b) (((a)>(b))?(b):(a))
 #endif
+#ifndef max
+# define max(a,b) (((a)>(b))?(a):(b))
+#endif
+
 #define tf(a)	 ((a)?1:0)
 
 #define strcmp_charname		strcasecmp

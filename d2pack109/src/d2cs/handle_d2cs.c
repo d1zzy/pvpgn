@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2000,2001	Onlyer	(onlyer@263.net)
+ * Copyright (C) 2004		Olaf Freyer (aaron@cs.tu-berlin.de)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -71,8 +72,10 @@
 #include "common/queue.h"
 #include "common/packet.h"
 #include "common/eventlog.h"
-#include "common/setup_after.h"
 #include "d2charlist.h"
+#include "common/elist.h"
+#include "common/xalloc.h"
+#include "common/setup_after.h"
 
 
 static int d2cs_send_client_ladder(t_connection * c, unsigned char type, unsigned short from);
@@ -194,16 +197,13 @@ static int on_client_createcharreq(t_connection * c, t_packet * packet)
 	class=bn_short_get(packet->u.client_d2cs_createcharreq.class);
 	status=bn_short_get(packet->u.client_d2cs_createcharreq.status);
 
-	if (!(path=malloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error allocate memory for path");
-		return 0;
-	}
+	path=xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
 	d2char_get_infodir_name(path,account);
 	if (!(dir=p_opendir(path))) {
 	        eventlog(eventlog_level_info,__FUNCTION__,"(*%s) charinfo directory do not exist, building it",account);
 		p_mkdir(path,S_IRWXU);
 	} else p_closedir(dir);
-	free(path);
+	xfree(path);
 
 	if (d2char_create(account,charname,class,status)<0) {
 		eventlog(eventlog_level_warn,__FUNCTION__,"error create character %s for account %s",charname,account);
@@ -254,7 +254,7 @@ static int on_client_creategamereq(t_connection * c, t_packet * packet)
 	unsigned int	pos;
 	t_elem		* elem;
 
-	pos=sizeof(t_client_creategamereq);
+	pos=sizeof(t_client_d2cs_creategamereq);
 	if (!(gamename=packet_get_str_const(packet,pos,MAX_GAMENAME_LEN))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad game name");
 		return -1;
@@ -798,10 +798,9 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 	char const		* account; 
 	char const		* charname; 
 	char			* path;
-	t_d2charinfo_file       charinfo;
+	t_d2charinfo_file       * charinfo;
 	unsigned int		n, maxchar;
-	t_d2charlist		* d2c;
-	t_d2charlist_internal	* d2ci;
+	t_elist			charlist_head;
 	char const		* charlist_sort_order;
 
 	if (!packet)
@@ -811,18 +810,17 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"missing account for connection");
 		return -1;
 	}
-	if (!(path=malloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error allocate memory for path");
-		return 0;
-	}
-	if (!(d2c=malloc(sizeof(t_d2charlist)))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"cannot allocate memory for charlist");
-		return -1;
-	}
-	d2charlist_init(d2c);
+	path=xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
 	charlist_sort_order = prefs_get_charlist_sort_order();
+
+	elist_init(&charlist_head);
+	
 	d2char_get_infodir_name(path,account);
-	maxchar=prefs_get_maxchar();
+	if (prefs_allow_newchar()) 
+		maxchar=prefs_get_maxchar();
+	else
+		maxchar=0;
+	
 	if ((rpacket=packet_create(packet_class_d2cs))) {
 		packet_set_size(rpacket,sizeof(t_d2cs_client_charlistreply));
 		packet_set_type(rpacket,D2CS_CLIENT_CHARLISTREPLY);
@@ -834,12 +832,14 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 		} else {
 			while ((charname=p_readdir(dir))) {
 				if (charname[0]=='.') continue;
-				if (d2charinfo_load(account,charname,&charinfo)<0) {
+				charinfo = xmalloc(sizeof(t_d2charinfo_file));
+				if (d2charinfo_load(account,charname,charinfo)<0) {
 					eventlog(eventlog_level_error,__FUNCTION__,"error loading charinfo for %s(*%s)",charname,account);
+					xfree((void *)charinfo);
 					continue;
 				}
 				eventlog(eventlog_level_debug,__FUNCTION__,"adding char %s (*%s)", charname, account);
-				d2charlist_add_char(d2c, charname, charinfo.header.last_time,charinfo.summary.charlevel,charinfo.summary.experience);
+				d2charlist_add_char(&charlist_head,charinfo,0);
 				n++;
 				if (n>=maxchar) break;
 			}
@@ -848,53 +848,48 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 			} else {
 				bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar,0);
 			}
-			if (prefs_allow_newchar() && (n<maxchar)) {
-				bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar,maxchar);
-			} else {
-				bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar,0);
-			}
+			if (n>=maxchar) 
+				maxchar = 0;
+			
 			p_closedir(dir);
 			if (!strcmp(charlist_sort_order, "ASC"))
 			{
-			    d2ci = d2c->first;
-			    while (d2ci != NULL)
+			    t_elist * curr, * safe;
+			    t_d2charlist * ccharlist;
+			
+			    elist_for_each_safe(curr,&charlist_head,safe)
 			    {
-				if (d2charinfo_load(account,d2ci->name,&charinfo)<0) {
-					eventlog(eventlog_level_error,__FUNCTION__,"error loading charinfo for %s(*%s)",d2ci->name,account);
-					continue;
-				}
-				packet_append_string(rpacket,charinfo.header.charname);
-				packet_append_string(rpacket,(char *)&charinfo.portrait);
-				eventlog(eventlog_level_debug,__FUNCTION__,"traversing char %s (*%s), mtime=%i, level=%i, exp=%i", d2ci->name, account, d2ci->mtime, d2ci->level, d2ci->exp);
-				d2ci = d2ci->next;
+				ccharlist = elist_entry(curr,t_d2charlist,list);
+				packet_append_string(rpacket,ccharlist->charinfo->header.charname);
+				packet_append_string(rpacket,(char *)&ccharlist->charinfo->portrait);
+				xfree((void *)ccharlist->charinfo);
+				xfree((void *)ccharlist);
 			    }
 			}
 			else
 			{
-			    d2ci = d2c->last;
-			    while (d2ci != NULL)
+			    t_elist * curr, * safe;
+			    t_d2charlist * ccharlist;
+			
+			    elist_for_each_safe_rev(curr,&charlist_head,safe)
 			    {
-				if (d2charinfo_load(account,d2ci->name,&charinfo)<0) {
-					eventlog(eventlog_level_error,__FUNCTION__,"error loading charinfo for %s(*%s)",d2ci->name,account);
-					continue;
-				}
-				packet_append_string(rpacket,charinfo.header.charname);
-				packet_append_string(rpacket,(char *)&charinfo.portrait);
-				eventlog(eventlog_level_debug,__FUNCTION__,"traversing char %s (*%s), mtime=%i, level=%i, exp=%i", d2ci->name, account, d2ci->mtime, d2ci->level, d2ci->exp);
-				d2ci = d2ci->prev;
+				ccharlist = elist_entry(curr,t_d2charlist,list);
+				packet_append_string(rpacket,ccharlist->charinfo->header.charname);
+				packet_append_string(rpacket,(char *)&ccharlist->charinfo->portrait);
+				xfree((void *)ccharlist->charinfo);
+				xfree((void *)ccharlist);
+
 			    }
 			}
 		}
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar,n);
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar2,n);
+		bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar,maxchar);
+
 		conn_push_outqueue(c,rpacket);
 		packet_del_ref(rpacket);
 	}
-	free(path);
-	d2charlist_destroy(d2c);
-	free((void *)d2c);
-	d2charlist_destroy(d2c);
-	free((void *)d2c);
+	xfree(path);
 	return 0;
 }
 

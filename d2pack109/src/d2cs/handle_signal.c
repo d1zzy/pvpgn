@@ -70,6 +70,7 @@
 #include "handle_signal.h"
 #include "common/trans.h"
 #include "common/eventlog.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 static void on_signal(int s);
@@ -134,12 +135,7 @@ extern int handle_signal(void)
         eventlog_clear_level();
         if ((levels = d2cs_prefs_get_loglevels()))
         {
-            if (!(temp = strdup(levels)))
-            {
-               eventlog(eventlog_level_fatal,__FUNCTION__,"could not allocate memory for temp (exiting)");
-               return -1;
-            }
-
+            temp = xstrdup(levels);
             tok = strtok(temp,","); /* strtok modifies the string it is passed */
 
             while (tok)
@@ -149,7 +145,7 @@ extern int handle_signal(void)
               tok = strtok(NULL,",");
             }
 
-            free(temp);
+            xfree(temp);
         }
 
 		if (!cmdline_get_logstderr()) eventlog_open(d2cs_prefs_get_logfile());

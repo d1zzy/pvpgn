@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1999  Ross Combs (rocombs@cs.nmsu.edu)
+ * Copyright (C) 2004 Dizzy (dizzy@roedu.net)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,43 +15,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#include "common/setup_before.h"
-#ifndef HAVE_STRDUP
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "strdup.h"
-#include "common/setup_after.h"
 
+#ifndef INCLUDED_FLAGS_H
+#define INCLUDED_FLAGS_H
 
-extern char * strdup(char const * str)
-{
-    char * out;
+#define FLAG_ZERO(var)	*(var) = 0
+#define FLAG_SET(var,flag) *(var) |= flag
+#define FLAG_CLEAR(var,flag) *(var) &= ~flag
+#define FLAG_ISSET(var,flag) (var & flag)
 
-    if (!(out = malloc(strlen(str)+1)))
-        return NULL;
-    strcpy(out,str);
-    return out;
-}
-
-#else
-typedef int filenotempty; /* make ISO standard happy */
-#endif
+#endif /* INCLUDED_FLAGS_H */

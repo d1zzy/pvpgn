@@ -52,6 +52,7 @@
 #include "game.h"
 #include "common/list.h"
 #include "common/eventlog.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 static t_list		* gamelist_head=NULL;
@@ -78,7 +79,7 @@ extern void gamelist_set_curr_elem(t_elem const * elem)
 
 extern int d2cs_gamelist_create(void)
 {
-	if (!(gamelist_head=list_create())) return -1;
+	gamelist_head=list_create();
 	return 0;
 }
 
@@ -187,32 +188,11 @@ extern t_game * d2cs_game_create(char const * gamename, char const * gamepass, c
 		eventlog(eventlog_level_error,__FUNCTION__,"game %s already exist",gamename);
 		return NULL;
 	}
-	if (!(game=malloc(sizeof(t_game)))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error allocate memory for game");
-		return NULL;
-	}
-	if (!(game->name=strdup(gamename))) {
-		free(game);
-		return NULL;
-	}
-	if (!(game->pass=strdup(gamepass))) {
-		free((void *)game->name);
-		free(game);
-		return NULL;
-	}
-	if (!(game->desc=strdup(gamedesc))) {
-		free((void *)game->name);
-		free((void *)game->pass);
-		free(game);
-		return NULL;
-	}
-	if (!(game->charlist=list_create())) {
-		free((void *)game->name);
-		free((void *)game->pass);
-		free((void *)game->desc);
-		free(game);
-		return NULL;
-	}
+	game=xmalloc(sizeof(t_game));
+	game->name=xstrdup(gamename);
+	game->pass=xstrdup(gamepass);
+	game->desc=xstrdup(gamedesc);
+	game->charlist=list_create();
 	now=time(NULL);
 	game_id++;
 	if (game_id==0) game_id=1;
@@ -227,15 +207,7 @@ extern t_game * d2cs_game_create(char const * gamename, char const * gamepass, c
 	game->d2gs=NULL;
 	game->maxchar=MAX_CHAR_PER_GAME;
 	game->currchar=0;
-	if (list_prepend_data(gamelist_head,game)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error prepend game to game list");
-		list_destroy(game->charlist);
-		free((void *)game->desc);
-		free((void *)game->pass);
-		free((void *)game->name);
-		free(game);
-		return NULL;
-	}
+	list_prepend_data(gamelist_head,game);
 	total_game++;
 	eventlog(eventlog_level_info,__FUNCTION__,"game %s pass=%s desc=%s gameflag=0x%08X created (%d total)",gamename,gamepass,
 		gamedesc,gameflag,total_game);
@@ -260,8 +232,8 @@ extern int game_destroy(t_game * game, t_elem ** elem)
 	LIST_TRAVERSE(game->charlist,curr)
 	{
 		if ((charinfo=elem_get_data(curr))) {
-			if (charinfo->charname) free((void *)charinfo->charname);
-			free(charinfo);
+			if (charinfo->charname) xfree((void *)charinfo->charname);
+			xfree(charinfo);
 		}
 		list_remove_elem(game->charlist,&curr);
 	}
@@ -273,10 +245,10 @@ extern int game_destroy(t_game * game, t_elem ** elem)
 			gqlist_check_creategame();
 		}
 	}
-	if (game->desc) free((void *)game->desc);
-	if (game->pass) free((void *)game->pass);
-	if (game->name) free((void *)game->name);
-	free(game);
+	if (game->desc) xfree((void *)game->desc);
+	if (game->pass) xfree((void *)game->pass);
+	if (game->name) xfree((void *)game->name);
+	xfree(game);
 	return 0;
 }
 
@@ -313,20 +285,11 @@ extern int game_add_character(t_game * game, char const * charname, unsigned cha
 		charinfo->level=level;
 		return 0;
 	}
-	if (!(charinfo=malloc(sizeof(t_game_charinfo)))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error allocate charinfo");
-		return -1;
-	}
-	if (!(charinfo->charname=strdup(charname))) {
-		return -1;
-	}
+	charinfo=xmalloc(sizeof(t_game_charinfo));
+	charinfo->charname=xstrdup(charname);
 	charinfo->class=class;
 	charinfo->level=level;
-	if (list_append_data(game->charlist,charinfo)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error add character %s to game %s",charname,game->name);
-		free(charinfo);
-		return -1;
-	}
+	list_append_data(game->charlist,charinfo);
 	game->currchar++;
 	game->lastaccess_time=time(NULL);
 	eventlog(eventlog_level_info,__FUNCTION__,"added character %s to game %s (%d total)",charname,game->name,game->currchar);
@@ -348,8 +311,8 @@ extern int game_del_character(t_game * game, char const * charname)
 		eventlog(eventlog_level_error,__FUNCTION__,"error remove character %s from game %s",charname,game->name);
 		return -1;
 	}
-	if (charinfo->charname) free((void *)charinfo->charname);
-	free(charinfo);
+	if (charinfo->charname) xfree((void *)charinfo->charname);
+	xfree(charinfo);
 	game->currchar--;
 	game->lastaccess_time=time(NULL);
 	eventlog(eventlog_level_info,__FUNCTION__,"removed character %s from game %s (%d left)",charname,game->name,game->currchar);

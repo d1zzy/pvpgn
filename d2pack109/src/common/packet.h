@@ -87,7 +87,6 @@ typedef struct
         t_file_generic   file;
         t_udp_generic    udp;
         t_d2game_generic d2game;
-	t_w3route_generic w3route;
         
 	t_client_initconn client_initconn;
 	
@@ -185,9 +184,7 @@ typedef struct
 	t_client_file_req          client_file_req;
 	t_server_file_reply        server_file_reply;
 
-	/* ADDED BY UNDYING SOULZZ 4/3/02 */
 	t_server_file_unknown1	   server_file_unknown1;
-	t_client_war3113_file_req  client_war3113_file_req;	
 
 	t_server_udptest           server_udptest;
 	t_client_udpping           client_udpping;

@@ -54,6 +54,7 @@
 #include "common/queue.h"
 #include "common/bn_type.h"
 #include "common/packet.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 DECLARE_PACKET_HANDLER(on_d2gs_authreply)
@@ -322,7 +323,7 @@ static int on_d2gs_joingamereply(t_connection * c, t_packet * packet)
 		bn_short_set(&rpacket->u.d2cs_client_joingamereply.gameid,game_get_d2gs_gameid(game));
 		bn_short_set(&rpacket->u.d2cs_client_joingamereply.u1,0);
 		bn_int_set(&rpacket->u.d2cs_client_joingamereply.reply,reply);
-		if (reply == SERVER_JOINGAMEREPLY2_REPLY_OK) {
+		if (reply == D2CS_CLIENT_JOINGAMEREPLY_SUCCEED) {
 			bn_int_set(&rpacket->u.d2cs_client_joingamereply.token,sq_get_gametoken(sq));
 
 			gsaddr = d2gs_get_ip(gs);

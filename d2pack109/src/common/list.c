@@ -31,7 +31,11 @@
 #  include <malloc.h>
 # endif
 #endif
+#ifdef HAVE_ASSERT_H
+# include <assert.h>
+#endif
 #include "common/eventlog.h"
+#include "common/xalloc.h"
 #include "common/list.h"
 #include "common/setup_after.h"
 
@@ -43,12 +47,7 @@ extern t_list * list_create(void)
 {
     t_list * new;
     
-    if (!(new = malloc(sizeof(t_list))))
-    {
-	eventlog(eventlog_level_error,"list_create","could not allocate memory for new");
-	return NULL;
-    }
-    
+    new = xmalloc(sizeof(t_list));
     new->head = NULL;
     new->tail = NULL;
     new->len = 0;
@@ -68,62 +67,10 @@ extern int list_destroy(t_list * list)
     if (list->head)
 	eventlog(eventlog_level_error,"list_destroy","got non-empty list");
     
-    free(list);
+    xfree(list);
     
     return 0;
 }
-
-
-extern int list_check(t_list const * list)
-{
-    t_elem const * tail;
-    t_elem const * curr;
-    int            ret=0;
-    
-    if (!list)
-    {
-        eventlog(eventlog_level_error,"list_check","got NULL list");
-        return -1;
-    }
-    
-    tail = NULL;
-    for (curr=list->head; curr; curr=curr->next)
-    {
-	if (tail)
-	{
-	    if (curr==tail) /* tail is currently the previous node */
-	    {
-		eventlog(eventlog_level_error,"list_check","list is circular (curr==prev==%p)",curr);
-		return -1;
-	    }
-	    if (curr->next==tail)
-	    {
-		eventlog(eventlog_level_error,"list_check","list is circular (curr->next==prev==%p)",curr);
-		return -1;
-	    }
-	    if (curr==list->head)
-	    {
-		eventlog(eventlog_level_error,"list_check","list is circular (curr==list->head==%p)",curr);
-		return -1;
-	    }
-	}
-	tail = curr;
-    }
-    
-    if (list->head && !list->tail)
-    {
-	eventlog(eventlog_level_error,"list_check","list->head=%p but list->tail=%p (len=%u)",list->head,list->tail,list->len);
-	ret = -1;
-    }
-    if (list->tail!=tail)
-    {
-	eventlog(eventlog_level_error,"list_check","list->tail=%p but tail=%p",list->tail,tail);
-	ret = -1;
-    }
-    
-    return ret;
-}
-
 
 extern unsigned int list_get_length(t_list const * list)
 {
@@ -141,19 +88,11 @@ extern int list_prepend_data(t_list * list, void * data)
 {
     t_elem * elem;
     
-    if (!list)
-    {
-	eventlog(eventlog_level_error,"list_prepend_data","got NULL list");
-	return -1;
-    }
-    
-    if (!(elem = malloc(sizeof(t_elem))))
-    {
-	eventlog(eventlog_level_error,"list_prepend_data","could not allocate memory for elem");
-	return -1;
-    }
+    assert(list != NULL);
+
+    elem = xmalloc(sizeof(t_elem));
     elem->data = data;
-    
+
     if (list->head)
        list->head->prev = elem;
     elem->next = list->head;
@@ -171,19 +110,11 @@ extern int list_append_data(t_list * list, void * data)
 {
     t_elem * elem;
     
-    if (!list)
-    {
-	eventlog(eventlog_level_error,"list_append_data","got NULL list");
-	return -1;
-    }
-    
-    if (!(elem = malloc(sizeof(t_elem))))
-    {
-	eventlog(eventlog_level_error,"list_append_data","could not allocate memory for elem");
-	return -1;
-    }
+    assert(list != NULL);
+
+    elem = xmalloc(sizeof(t_elem));
     elem->data = data;
-    
+
     elem->next = NULL;
     if (!list->head)
     	{
@@ -279,7 +210,7 @@ extern int list_remove_elem(t_list * list, t_elem ** elem)
 
     target->next = NULL;
     target->prev = NULL;
-    free(target);
+    xfree(target);
     
     list->len--;
     

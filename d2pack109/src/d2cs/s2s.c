@@ -72,6 +72,7 @@
 #include "common/fdwatch.h"
 #include "server.h"
 #include "common/eventlog.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 extern int s2s_check(void)
@@ -97,9 +98,7 @@ extern t_connection * s2s_create(char const * server, unsigned short def_port, t
 	char			* p, * tserver;
 
 	ASSERT(server,NULL);
-	if (!(tserver=strdup(server))) {
-		return NULL;
-	}
+	tserver=xstrdup(server);
 	p=strchr(tserver,':');
 	if (p) {
 		port=(unsigned short)strtoul(p+1,NULL,10);
@@ -109,14 +108,14 @@ extern t_connection * s2s_create(char const * server, unsigned short def_port, t
 	}
 	if ((sock=net_socket(PSOCK_SOCK_STREAM))<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error creating s2s socket");
-		free(tserver);
+		xfree(tserver);
 		return NULL;
 	}
 	memset(&addr,0,sizeof(addr));
 	addr.sin_family = PSOCK_AF_INET;
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr= net_inet_addr(tserver);
-	free(tserver);
+	xfree(tserver);
 	eventlog(eventlog_level_info,__FUNCTION__,"try make s2s connection to %s",server);
 	if (psock_connect(sock,(struct sockaddr *)&addr,sizeof(addr))<0) {
 		if (psock_errno()!=PSOCK_EWOULDBLOCK && psock_errno() != PSOCK_EINPROGRESS) {
