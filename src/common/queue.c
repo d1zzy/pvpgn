@@ -57,7 +57,7 @@ extern t_packet * queue_pull_packet(t_queue * * queue)
 //    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue %p", queue);
     if (!queue)
     {
-	eventlog(eventlog_level_error,"queue_pull_packet","got NULL queue pointer");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL queue pointer");
         return NULL;
     }
 
@@ -75,7 +75,7 @@ extern t_packet * queue_pull_packet(t_queue * * queue)
 
     if (!packet)
     {
-	eventlog(eventlog_level_error,"queue_pull_packet","NULL packet in queue");
+	eventlog(eventlog_level_error,__FUNCTION__,"NULL packet in queue");
         return NULL;
     }
     
@@ -90,7 +90,7 @@ extern t_packet * queue_peek_packet(t_queue const * const * queue)
 //    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue %p", queue);
     if (!queue)
     {
-	eventlog(eventlog_level_error,"queue_peek_packet","got NULL queue pointer");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL queue pointer");
         return NULL;
     }
     if (!*queue || !(*queue)->ulen)
@@ -100,7 +100,7 @@ extern t_packet * queue_peek_packet(t_queue const * const * queue)
     
     if (!packet)
     {
-        eventlog(eventlog_level_error,"queue_peek_packet","NULL packet in queue");
+        eventlog(eventlog_level_error,__FUNCTION__,"NULL packet in queue");
         return NULL;
     }
     
@@ -116,12 +116,12 @@ extern void queue_push_packet(t_queue * * queue, t_packet * packet)
 //    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue %p packet %p", queue, packet);
     if (!queue)
     {
-	eventlog(eventlog_level_error,"queue_push_packet","got NULL queue pointer");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL queue pointer");
         return;
     }
     if (!packet)
     {
-	eventlog(eventlog_level_error,"queue_push_packet","got NULL packet");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
         return;
     }
 
@@ -176,7 +176,7 @@ extern int queue_get_length(t_queue const * const * queue)
 //    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue %p", queue);
     if (!queue)
     {
-	eventlog(eventlog_level_error,"queue_get_length","got NULL queue pointer");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL queue pointer");
 	return 0;
     }
 
@@ -193,7 +193,7 @@ extern void queue_clear(t_queue * * queue)
 //    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue %p", queue);
     if (!queue)
     {
-	eventlog(eventlog_level_error,"queue_clear","got NULL queue pointer");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL queue pointer");
 	return;
     }
 

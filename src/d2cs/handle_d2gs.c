@@ -240,7 +240,7 @@ static int on_d2gs_creategamereply(t_connection * c, t_packet * packet)
 		eventlog(eventlog_level_info,__FUNCTION__,"game %s created on gs %d",d2cs_game_get_name(game),conn_get_d2gs_id(c));
 		reply=D2CS_CLIENT_CREATEGAMEREPLY_SUCCEED;
 	} else if (result==D2GS_D2CS_JOINGAME_GAME_FULL) {
-		eventlog(eventlog_level_info, "on_d2gs_joingamereply", "failed to add %s to game %s on gs %d (game full)",d2cs_conn_get_charname(client),d2cs_game_get_name(game),conn_get_d2gs_id(c));
+		eventlog(eventlog_level_info, __FUNCTION__, "failed to add %s to game %s on gs %d (game full)",d2cs_conn_get_charname(client),d2cs_game_get_name(game),conn_get_d2gs_id(c));
 		reply=D2CS_CLIENT_JOINGAMEREPLY_GAME_FULL;
 	} else {
 		eventlog(eventlog_level_warn,__FUNCTION__,"failed to create game %s on gs %d",d2cs_game_get_name(game),conn_get_d2gs_id(c));

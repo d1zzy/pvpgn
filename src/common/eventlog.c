@@ -99,13 +99,13 @@ extern int eventlog_open(char const * filename)
     
     if (!filename)
     {
-	eventlog(eventlog_level_error,"eventlog_open","got NULL filename");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
 	return -1;
     }
     
     if (!(temp = fopen(filename,"a")))
     {
-	eventlog(eventlog_level_error,"eventlog_open","could not open file \"%s\" for appending (fopen: %s)",filename,strerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for appending (fopen: %s)",filename,strerror(errno));
 	return -1;
     }
     
@@ -113,7 +113,7 @@ extern int eventlog_open(char const * filename)
 	if (fclose(eventstrm)<0)
 	{
 	    eventstrm = temp;
-	    eventlog(eventlog_level_error,"eventlog_open","could not close previous logfile after writing (fclose: %s)",strerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not close previous logfile after writing (fclose: %s)",strerror(errno));
 	    return 0;
 	}
     eventstrm = temp;
@@ -132,7 +132,7 @@ extern int eventlog_add_level(char const * levelname)
 {
     if (!levelname)
     {
-	eventlog(eventlog_level_error,"eventlog_add_level","got NULL levelname");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL levelname");
 	return -1;
     }
     
@@ -167,7 +167,7 @@ extern int eventlog_add_level(char const * levelname)
 	return 0;
     }
     
-    eventlog(eventlog_level_error,"eventlog_add_level","got bad levelname \"%s\"",levelname);
+    eventlog(eventlog_level_error,__FUNCTION__,"got bad levelname \"%s\"",levelname);
     return -1;
 }
 
@@ -176,7 +176,7 @@ extern int eventlog_del_level(char const * levelname)
 {
     if (!levelname)
     {
-	eventlog(eventlog_level_error,"eventlog_del_level","got NULL levelname");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL levelname");
 	return -1;
     }
     
@@ -212,7 +212,7 @@ extern int eventlog_del_level(char const * levelname)
     }
     
     
-    eventlog(eventlog_level_error,"eventlog_del_level","got bad levelname \"%s\"",levelname);
+    eventlog(eventlog_level_error,__FUNCTION__,"got bad levelname \"%s\"",levelname);
     return -1;
 }
 

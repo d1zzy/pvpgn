@@ -37,17 +37,17 @@ extern int bn_byte_tag_get(bn_byte const * src, char * dst, unsigned int len)
     
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_byte_tag_get","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
         return -1;
     }
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_byte_tag_get","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return -1;
     }
     if (len<1)
     {
-	eventlog(eventlog_level_error,"bn_byte_tag_get","got zero len");
+	eventlog(eventlog_level_error,__FUNCTION__,"got zero len");
         return -1;
     }
     
@@ -65,17 +65,17 @@ extern int bn_short_tag_get(bn_short const * src, char * dst, unsigned int len)
     
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_short_tag_get","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
         return -1;
     }
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_short_tag_get","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return -1;
     }
     if (len<1)
     {
-	eventlog(eventlog_level_error,"bn_short_tag_get","got zero len");
+	eventlog(eventlog_level_error,__FUNCTION__,"got zero len");
         return -1;
     }
     
@@ -93,17 +93,17 @@ extern int bn_int_tag_get(bn_int const * src, char * dst, unsigned int len)
     
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_int_tag_get","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
         return -1;
     }
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_int_tag_get","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return -1;
     }
     if (len<1)
     {
-	eventlog(eventlog_level_error,"bn_int_tag_get","got zero len");
+	eventlog(eventlog_level_error,__FUNCTION__,"got zero len");
         return -1;
     }
     
@@ -121,17 +121,17 @@ extern int bn_long_tag_get(bn_long const * src, char * dst, unsigned int len)
     
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_long_tag_get","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
         return -1;
     }
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_long_tag_get","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return -1;
     }
     if (len<1)
     {
-	eventlog(eventlog_level_error,"bn_long_tag_get","got zero len");
+	eventlog(eventlog_level_error,__FUNCTION__,"got zero len");
         return -1;
     }
     
@@ -150,12 +150,12 @@ extern int bn_byte_tag_set(bn_byte * dst, char const * tag)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_byte_tag_set","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
         return -1;
     }
     if (!tag)
     {
-	eventlog(eventlog_level_error,"bn_byte_tag_set","got NULL tag");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL tag");
         return -1;
     }
     
@@ -168,12 +168,12 @@ extern int bn_short_tag_set(bn_short * dst, char const * tag)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_short_tag_set","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
         return -1;
     }
     if (!tag)
     {
-	eventlog(eventlog_level_error,"bn_short_tag_set","got NULL tag");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL tag");
         return -1;
     }
     
@@ -187,12 +187,12 @@ extern int bn_int_tag_set(bn_int * dst, char const * tag)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_int_tag_set","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
         return -1;
     }
     if (!tag)
     {
-	eventlog(eventlog_level_error,"bn_int_tag_set","got NULL tag");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL tag");
         return -1;
     }
     
@@ -208,12 +208,12 @@ extern int bn_long_tag_set(bn_long * dst, char const * tag)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_long_tag_set","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
         return -1;
     }
     if (!tag)
     {
-	eventlog(eventlog_level_error,"bn_long_tag_set","got NULL tag");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL tag");
         return -1;
     }
     
@@ -238,7 +238,7 @@ extern t_uint8 bn_byte_get(bn_byte const src)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_byte_get","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return 0;
     }
     
@@ -253,7 +253,7 @@ extern t_uint16 bn_short_get(bn_short const src)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_short_get","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return 0;
     }
     
@@ -269,7 +269,7 @@ extern t_uint16 bn_short_nget(bn_short const src)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_short_nget","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return 0;
     }
     
@@ -285,7 +285,7 @@ extern t_uint32 bn_int_get(bn_int const src)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_int_get","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return 0;
     }
     
@@ -303,7 +303,7 @@ extern t_uint32 bn_int_nget(bn_int const src)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_int_nget","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return 0;
     }
     
@@ -322,7 +322,7 @@ extern t_uint64 bn_long_get(bn_long const src)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_long_get","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return 0;
     }
     
@@ -345,7 +345,7 @@ extern t_uint32 bn_long_get_a(bn_long const src)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_long_get_a","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return 0;
     }
     
@@ -363,7 +363,7 @@ extern t_uint32 bn_long_get_b(bn_long const src)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_long_get_b","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
         return 0;
     }
     
@@ -382,7 +382,7 @@ extern int bn_byte_set(bn_byte * dst, t_uint8 src)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_byte_set","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
 	return -1;
     }
     
@@ -395,7 +395,7 @@ extern int bn_short_set(bn_short * dst, t_uint16 src)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_short_set","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
 	return -1;
     }
     
@@ -409,7 +409,7 @@ extern int bn_short_nset(bn_short * dst, t_uint16 src)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_short_nset","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
 	return -1;
     }
     
@@ -423,7 +423,7 @@ extern int bn_int_set(bn_int * dst, t_uint32 src)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_int_set","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
 	return -1;
     }
     
@@ -439,7 +439,7 @@ extern int bn_int_nset(bn_int * dst, t_uint32 src)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_int_nset","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
 	return -1;
     }
     
@@ -456,7 +456,7 @@ extern int bn_long_set(bn_long * dst, t_uint64 src)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_long_set","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
 	return -1;
     }
     
@@ -476,7 +476,7 @@ extern int bn_long_nset(bn_long * dst, t_uint64 src)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_long_nset","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
 	return -1;
     }
     
@@ -497,7 +497,7 @@ extern int bn_long_set_a_b(bn_long * dst, t_uint32 srca, t_uint32 srcb)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_long_set_a_b","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
 	return -1;
     }
     
@@ -517,7 +517,7 @@ extern int bn_long_nset_a_b(bn_long * dst, t_uint32 srca, t_uint32 srcb)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_long_nset_a_b","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
 	return -1;
     }
     
@@ -540,12 +540,12 @@ extern int bn_raw_set(void * dst, void const * src, unsigned int len)
 {
     if (!dst)
     {
-	eventlog(eventlog_level_error,"bn_raw_set","got NULL dst");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL dst");
 	return -1;
     }
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_raw_set","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
 	return -1;
     }
     
@@ -563,12 +563,12 @@ extern int bn_byte_tag_eq(bn_byte const src, char const * tag)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_byte_tag_eq","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
 	return -1;
     }
     if (!tag)
     {
-	eventlog(eventlog_level_error,"bn_byte_tag_eq","got NULL tag");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL tag");
 	return -1;
     }
     
@@ -587,12 +587,12 @@ extern int bn_short_tag_eq(bn_short const src, char const * tag)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_short_tag_eq","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
 	return -1;
     }
     if (!tag)
     {
-	eventlog(eventlog_level_error,"bn_short_tag_eq","got NULL tag");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL tag");
 	return -1;
     }
     
@@ -611,12 +611,12 @@ extern int bn_int_tag_eq(bn_int const src, char const * tag)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_int_tag_eq","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
 	return -1;
     }
     if (!tag)
     {
-	eventlog(eventlog_level_error,"bn_int_tag_eq","got NULL tag");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL tag");
 	return -1;
     }
     
@@ -635,12 +635,12 @@ extern int bn_long_tag_eq(bn_long const src, char const * tag)
     
     if (!src)
     {
-	eventlog(eventlog_level_error,"bn_long_tag_eq","got NULL src");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL src");
 	return -1;
     }
     if (!tag)
     {
-	eventlog(eventlog_level_error,"bn_long_tag_eq","got NULL tag");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL tag");
 	return -1;
     }
     

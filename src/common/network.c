@@ -58,24 +58,24 @@ extern int net_recv_packet(int sock, t_packet * packet, unsigned int * currsize)
     
     if (!packet)
     {
-	eventlog(eventlog_level_error,"net_recv_packet","[%d] got NULL packet (closing connection)",sock);
+	eventlog(eventlog_level_error,__FUNCTION__,"[%d] got NULL packet (closing connection)",sock);
 	return -1;
     }
     if (!currsize)
     {
-	eventlog(eventlog_level_error,"net_recv_packet","[%d] got NULL currsize (closing connection)",sock);
+	eventlog(eventlog_level_error,__FUNCTION__,"[%d] got NULL currsize (closing connection)",sock);
 	return -1;
     }
     
     if ((header_size = packet_get_header_size(packet))>=MAX_PACKET_SIZE)
     {
-	eventlog(eventlog_level_error,"net_recv_packet","[%d] could not determine header size (closing connection)",sock);
+	eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not determine header size (closing connection)",sock);
 	return -1;
     }
     
     if (!(temp = packet_get_raw_data_build(packet,*currsize)))
     {
-	eventlog(eventlog_level_error,"net_recv_packet","[%d] could not obtain raw data pointer at offset %u (closing connection)",sock,*currsize);
+	eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not obtain raw data pointer at offset %u (closing connection)",sock,*currsize);
 	return -1;
     }
     
@@ -92,12 +92,12 @@ extern int net_recv_packet(int sock, t_packet * packet, unsigned int * currsize)
 	
 	if (total_size<header_size)
 	{
-	    eventlog(eventlog_level_warn,"net_recv_packet","[%d] corrupted packet received (total_size=%u currsize=%u) (closing connection)",sock,total_size,*currsize);
+	    eventlog(eventlog_level_warn,__FUNCTION__,"[%d] corrupted packet received (total_size=%u currsize=%u) (closing connection)",sock,total_size,*currsize);
 	    return -1;
 	}
 	if (*currsize>=total_size)
 	{
-	    eventlog(eventlog_level_warn,"net_recv_packet","[%d] more data requested for already complete packet (total_size=%u currsize=%u) (closing connection)",sock,total_size,*currsize);
+	    eventlog(eventlog_level_warn,__FUNCTION__,"[%d] more data requested for already complete packet (total_size=%u currsize=%u) (closing connection)",sock,total_size,*currsize);
 	    return -1;
 	}
 	
@@ -109,7 +109,7 @@ extern int net_recv_packet(int sock, t_packet * packet, unsigned int * currsize)
     
     if (addlen==0)
     {
-	eventlog(eventlog_level_debug,"net_recv_packet","[%d] remote host closed connection",sock);
+	eventlog(eventlog_level_debug,__FUNCTION__,"[%d] remote host closed connection",sock);
 	return -1;
     }
     if (addlen<0)
@@ -138,10 +138,10 @@ extern int net_recv_packet(int sock, t_packet * packet, unsigned int * currsize)
 #endif
 	    0)
 	{
-/*	    eventlog(eventlog_level_debug,"net_recv_packet","[%d] remote host closed connection (psock_recv: %s)",sock,strerror(psock_errno())); */
+/*	    eventlog(eventlog_level_debug,__FUNCTION__,"[%d] remote host closed connection (psock_recv: %s)",sock,strerror(psock_errno())); */
 	    return -1; /* common error: close connection, but no message */
 	}
-	eventlog(eventlog_level_error,"net_recv_packet","[%d] receive error (closing connection) (psock_recv: %s)",sock,strerror(psock_errno()));
+	eventlog(eventlog_level_error,__FUNCTION__,"[%d] receive error (closing connection) (psock_recv: %s)",sock,strerror(psock_errno()));
 	return -1;
     }
     
@@ -161,18 +161,18 @@ extern int net_send_packet(int sock, t_packet const * packet, unsigned int * cur
     
     if (!packet)
     {
-	eventlog(eventlog_level_error,"net_send_packet","[%d] got NULL packet (closing connection)",sock);
+	eventlog(eventlog_level_error,__FUNCTION__,"[%d] got NULL packet (closing connection)",sock);
 	return -1;
     }
     if (!currsize)
     {
-	eventlog(eventlog_level_error,"net_send_packet","[%d] got NULL currsize (closing connection)",sock);
+	eventlog(eventlog_level_error,__FUNCTION__,"[%d] got NULL currsize (closing connection)",sock);
 	return -1;
     }
     
     if ((size = packet_get_size(packet))<1)
     {
-	eventlog(eventlog_level_error,"net_send_packet","[%d] packet to send is empty (skipping it)",sock);
+	eventlog(eventlog_level_error,__FUNCTION__,"[%d] packet to send is empty (skipping it)",sock);
 	*currsize = 0;
 	return 1;
     }
@@ -210,13 +210,13 @@ extern int net_send_packet(int sock, t_packet const * packet, unsigned int * cur
 #ifdef PSOCK_ECONNRESET
 	    psock_errno()!=PSOCK_ECONNRESET &&
 #endif
-	    1) eventlog(eventlog_level_error,"net_send_packet","[%d] could not send data (closing connection) (psock_send: %s)",sock,strerror(psock_errno()));
+	    1) eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not send data (closing connection) (psock_send: %s)",sock,strerror(psock_errno()));
 	return -1;
     }
     
     if (addlen==0)
     {
-	eventlog(eventlog_level_error,"net_send_packet","[%d] no data sent (closing connection)",sock);
+	eventlog(eventlog_level_error,__FUNCTION__,"[%d] no data sent (closing connection)",sock);
 	return -1;
     }
     
