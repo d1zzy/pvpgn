@@ -1,0 +1,163 @@
+#
+# Copyright (C) 1999  Rob Crittenden (rcrit@greyoak.com)
+# Copyright (C) 1999,2000  Ross Combs (rocombs@cs.nmsu.edu)
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+
+# Process this file with autoconf to produce a configure script.
+AC_INIT(d2cs/handle_d2gs.c)
+AC_CONFIG_HEADER(config.h)
+
+AUTOCONF_CONFIG_DIR="autoconf"
+AC_CONFIG_AUX_DIR(${AUTOCONF_CONFIG_DIR})
+builtin(include,autoconf/ccstdc.m4)
+builtin(include,autoconf/mkdir.m4)
+
+AC_CANONICAL_SYSTEM
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_INSTALL
+
+# Checks compiler.
+AC_PROG_CPP
+
+# Checks for systems.
+AC_AIX
+AC_ISC_POSIX
+AC_MINIX
+
+# Custom checks.
+zwarnflags=""
+AC_ARG_WITH(warn, [  --with-warn             enable compiler warnings], [zwarnflags="-pedantic -Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wmissing-declarations -Wredundant-decls -Wnested-externs -Wunreachable-code -Winline -Wpacked -Wno-sign-compare"])
+
+
+extra_include=""
+AC_ARG_WITH(includes, [  --with-includes=DIR     search include DIR for header files], [
+case "x$withval" in
+x/*|x.*)
+  AC_MSG_RESULT([adding ${withval} to include search path])
+  if test ! -d ${withval}; then
+    AC_MSG_RESULT([Warning: directory ${withval} does not exist])
+  fi
+  extra_include="${extra_include} -I${withval}"
+  ;;
+*)
+  AC_MSG_RESULT([not adding any includes])
+  ;;
+esac])
+
+extra_lib_dir=""
+AC_ARG_WITH(libraries, [  --with-libraries=DIR    search library DIR for libraries], [
+case "x${withval}" in
+x/*|x.*)
+  AC_MSG_RESULT([adding ${withval} to library search path])
+  if test ! -d ${withval}; then
+    AC_MSG_RESULT([Warning: directory ${withval} does not exist])
+  fi
+  extra_lib_dir="${extra_lib_dir} -L${withval}"
+  ;;
+*)
+  AC_MSG_RESULT([not adding any libs])
+  ;;
+esac])
+
+extra_lib=""
+extra_define=""
+
+LDFLAGS="${LDFLAGS} ${extra_lib_dir}"
+LIBS="${LIBS} ${extra_lib}"
+CFLAGS="${CFLAGS} ${zwarnflags}"
+DEFINES="${DEFINES} ${extra_define}"
+CPPFLAGS="${CPPFLAGS} ${extra_include}"
+
+# This is our invention so we have to substitute it ourselves
+# autoconf uses DEFS
+AC_SUBST(DEFINES)
+
+# Checks for compiler quirks.
+AC_PROG_GCC_TRADITIONAL
+AM_PROG_CC_STDC
+AC_C_CONST
+#AC_EXEEXT
+
+# Checks for libraries.
+AC_CHECK_LIB(m, pow, [LIBS="$LIBS -lm"])
+AC_CHECK_LIB(nsl, gethostbyname, [LIBS="$LIBS -lnsl"])
+AC_CHECK_LIB(socket, socket, [LIBS="$LIBS -lsocket"])
+AC_CHECK_LIB(resolv, inet_aton, [LIBS="$LIBS -lresolv"])
+AC_CHECK_LIB(z, compress, [LIBS="$LIBS -lz"])
+dnl BeOS BONE...
+AC_CHECK_LIB(bind, __inet_aton, [LIBS="$LIBS -lbind"])
+case "$host" in
+        [*-beos*])
+                if test "$ac_cv_lib_bind___inet_aton" = "yes"; then
+                        dnl force things, AC_CHECK_FUNC will never get the mangled versions anyway.
+                        echo "Forcing inet_aton() and inet_ntoa() to be enabled"
+                        ac_cv_func_inet_aton='yes'
+                        ac_cv_func_inet_ntoa='yes'
+                fi
+                ;;
+esac
+
+# Checks for header files.
+AC_HEADER_DIRENT
+AC_HEADER_STDC
+AC_HEADER_TIME
+AC_HEADER_STAT
+AC_CHECK_HEADERS(fcntl.h sys/time.h sys/select.h string.h strings.h unistd.h stdarg.h varargs.h malloc.h sys/utsname.h sys/timeb.h sys/socket.h sys/param.h netinet/in.h arpa/inet.h netdb.h termios.h stddef.h memory.h sys/types.h sys/wait.h sys/ioctl.h stdint.h sys/file.h limits.h poll.h sys/poll.h stropts.h sys/stropts.h sys/stat.h pwd.h grp.h dir.h direct.h sys/mman.h sys/event.h sys/epoll.h sys/resource.h)
+
+# Checks for typedefs and structures
+AC_STRUCT_TM
+AC_TYPE_PID_T
+AC_TYPE_SIGNAL
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
+AC_CHECK_SIZEOF(unsigned char, 1)
+AC_CHECK_SIZEOF(unsigned short, 2)
+AC_CHECK_SIZEOF(unsigned int, 4)
+AC_CHECK_SIZEOF(unsigned long, 4)
+AC_CHECK_SIZEOF(unsigned long long, 0)
+
+# Checks for library functions.
+AC_FUNC_MMAP
+AC_FUNC_STRFTIME
+AC_FUNC_VPRINTF
+AC_FUNC_SETPGRP
+AC_FUNC_CLOSEDIR_VOID
+AC_FUNC_MKDIR_ARGS
+AC_CHECK_FUNCS(gethostname gettimeofday select socket strdup strtoul strerror inet_aton inet_ntoa uname recv send recvfrom sendto uname fork getpid sigaction sigprocmask sigaddset setpgid setpgrp ftime strcasecmp strncasecmp stricmp strnicmp chdir difftime strchr strrchr index rindex memcpy memset memmove bcopy wait waitpid pipe getenv ioctl setsid mktime poll gethostbyname getservbyname getlogin pow getpwnam getgrnam getuid getgid setuid setgid mkdir _mkdir strsep getopt kqueue setitimer epoll_create getrlimit)
+
+if test X"${am_cv_prog_cc_stdc}" = X"no"; then
+    COMPILEANSI1='${PREPROCESS} $< | sed '"'"'s/^# *\([0-9][0-9]*\)  *\([^ ]*[a-z][^ ]*\) *.*$$/#line \1 \2/'"'"' | ${SRC_ACDIR}/ansi2knr > ${SRC_SRCDIR}/.ansi2knr_tmp.c'
+    COMPILEANSI2='${COMPILE} ${SRC_SRCDIR}/.ansi2knr_tmp.c -o $@'
+    COMPILEANSI3='@${RMF} ${SRC_SRCDIR}/.ansi2knr_tmp.c'
+    ANSI2KNR_TMP='${SRC_SRCDIR}/.ansi2knr_tmp.c'
+    ANSI2KNR_DEP='${SRC_ACDIR}/ansi2knr'
+else
+    COMPILEANSI1='${COMPILE} $< -o $@'
+    COMPILEANSI2='@:'
+    COMPILEANSI3='@:'
+    ANSI2KNR_TMP=''
+    ANSI2KNR_DEP=''
+fi
+AC_SUBST(COMPILEANSI1)
+AC_SUBST(COMPILEANSI2)
+AC_SUBST(COMPILEANSI3)
+AC_SUBST(ANSI2KNR_TMP)
+AC_SUBST(ANSI2KNR_DEP)
+
+AC_OUTPUT(Makefile)
