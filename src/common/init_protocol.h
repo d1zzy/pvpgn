@@ -40,7 +40,7 @@
 typedef struct
 {
     bn_byte class;
-} t_client_initconn PACKED_ATTR();
+} PACKED_ATTR() t_client_initconn;
 /******************************************************/
 
 #endif

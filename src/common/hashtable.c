@@ -39,19 +39,10 @@
 static int nodata; /* if data points to this, then the entry was actually deleted */
  
 
-#ifdef USE_CHECK_ALLOC
-static t_entry * hashtable_entry_export_real(t_internentry * entry, t_hashtable const * hashtable, unsigned int row, char const * fn, unsigned int ln);
-#define hashtable_entry_export(E,H,R) hashtable_entry_export_real(E,H,R,__FILE__"{hashtable_entry_export}",__LINE__)
-#else
 static t_entry * hashtable_entry_export(t_internentry * entry, t_hashtable const * hashtable, unsigned int row);
-#endif
 
 
-#ifdef USE_CHECK_ALLOC
-static t_entry * hashtable_entry_export_real(t_internentry * entry, t_hashtable const * hashtable, unsigned int row, char const * fn, unsigned int ln)
-#else
 static t_entry * hashtable_entry_export(t_internentry * entry, t_hashtable const * hashtable, unsigned int row)
-#endif
 {
     t_entry * temp;
     
@@ -71,11 +62,7 @@ static t_entry * hashtable_entry_export(t_internentry * entry, t_hashtable const
 	return NULL;
     }
     
-#ifdef USE_CHECK_ALLOC
-    if (!(temp = check_malloc_real(sizeof(t_entry),fn,ln)))
-#else
     if (!(temp = malloc(sizeof(t_entry))))
-#endif
     {
 	eventlog(eventlog_level_error,"hashtable_entry_export","could not allocate memory for temp");
 	return NULL;
@@ -89,11 +76,7 @@ static t_entry * hashtable_entry_export(t_internentry * entry, t_hashtable const
 }
 
 
-#ifdef USE_CHECK_ALLOC
-extern t_hashtable * hashtable_create_real(unsigned int num_rows, char const * fn, unsigned int ln)
-#else
 extern t_hashtable * hashtable_create(unsigned int num_rows)
-#endif
 {
     t_hashtable * new;
     unsigned int  i;
@@ -104,21 +87,13 @@ extern t_hashtable * hashtable_create(unsigned int num_rows)
 	return NULL;
     }
     
-#ifdef USE_CHECK_ALLOC
-    if (!(new = check_malloc_real(sizeof(t_hashtable),fn,ln)))
-#else
     if (!(new = malloc(sizeof(t_hashtable))))
-#endif
     {
 	eventlog(eventlog_level_error,"hashtable_create","could not allocate memory for new");
 	return NULL;
     }
     
-#ifdef USE_CHECK_ALLOC
-    if (!(new->rows = check_malloc_real(sizeof(t_internentry *)*num_rows,fn,ln)))
-#else
     if (!(new->rows = malloc(sizeof(t_internentry *)*num_rows)))
-#endif
     {
 	eventlog(eventlog_level_error,"hashtable_create","could not allocate memory for new->rows");
 	free(new);
@@ -284,11 +259,7 @@ extern unsigned int hashtable_get_length(t_hashtable const * hashtable)
 }
 
 
-#ifdef USE_CHECK_ALLOC
-extern int hashtable_insert_data_real(t_hashtable * hashtable, void * data, unsigned int hash, char const * fn, unsigned int ln)
-#else
 extern int hashtable_insert_data(t_hashtable * hashtable, void * data, unsigned int hash)
-#endif
 {
     unsigned int    row;
     t_internentry * entry;
@@ -299,11 +270,7 @@ extern int hashtable_insert_data(t_hashtable * hashtable, void * data, unsigned 
 	return -1;
     }
     
-#ifdef USE_CHECK_ALLOC
-    if (!(entry = check_malloc_real(sizeof(t_entry),fn,ln)))
-#else
     if (!(entry = malloc(sizeof(t_internentry))))
-#endif
     {
 	eventlog(eventlog_level_error,"hashtable_insert_data","could not allocate memory for entry");
 	return -1;

@@ -29,7 +29,7 @@
 typedef struct
 {
     bn_int type;
-} t_udp_header PACKED_ATTR();
+} PACKED_ATTR() t_udp_header;
 /******************************************************/
 
 
@@ -37,7 +37,7 @@ typedef struct
 typedef struct
 {
     t_udp_header h;
-} t_udp_generic PACKED_ATTR();
+} PACKED_ATTR() t_udp_generic;
 /******************************************************/
 
 
@@ -51,7 +51,7 @@ typedef struct
 {
     t_udp_header h;
     bn_int       bnettag;  /* 74 65 6E 62 */
-} t_server_udptest PACKED_ATTR();
+} PACKED_ATTR() t_server_udptest;
 /******************************************************/
 
 
@@ -66,7 +66,7 @@ typedef struct
 {
     t_udp_header h;
     bn_int       unknown1;  /* time? */
-} t_client_udpping PACKED_ATTR();
+} PACKED_ATTR() t_client_udpping;
 /******************************************************/
 
 
@@ -80,7 +80,7 @@ typedef struct
 {
     t_udp_header h;
     bn_int       sessionkey;
-} t_client_sessionaddr1 PACKED_ATTR();
+} PACKED_ATTR() t_client_sessionaddr1;
 /******************************************************/
 
 
@@ -95,7 +95,7 @@ typedef struct
     t_udp_header h;
     bn_int       sessionkey;
     bn_int       sessionnum;
-} t_client_sessionaddr2 PACKED_ATTR();
+} PACKED_ATTR() t_client_sessionaddr2;
 /******************************************************/
 
 #endif

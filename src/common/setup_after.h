@@ -21,6 +21,4 @@
 #ifndef INCLUDED_SETUP_AFTER_H
 #define INCLUDED_SETUP_AFTER_H
 
-#include "common/check_alloc.h"
-
 #endif

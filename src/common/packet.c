@@ -49,11 +49,7 @@
 #include "common/setup_after.h"
 
 
-#ifdef USE_CHECK_ALLOC
-extern t_packet * packet_create_real(t_packet_class class, char const * fn, unsigned int ln)
-#else
 extern t_packet * packet_create(t_packet_class class)
-#endif
 {
     t_packet * temp;
     
@@ -71,11 +67,7 @@ extern t_packet * packet_create(t_packet_class class)
         return NULL;
     }
     
-#ifdef USE_CHECK_ALLOC
-    if (!(temp = check_malloc_real(sizeof(t_packet),fn,ln)))
-#else
     if (!(temp = malloc(sizeof(t_packet))))
-#endif
     {
 	eventlog(eventlog_level_error,"packet_create","unable to allocate memory for temp");
 	return NULL;

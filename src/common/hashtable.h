@@ -60,22 +60,12 @@ t_hashtable;
 #ifndef INCLUDED_HASHTABLE_PROTOS
 #define INCLUDED_HASHTABLE_PROTOS
 
-#ifdef USE_CHECK_ALLOC
-extern t_hashtable * hashtable_create_real(unsigned int num_rows, char const * fn, unsigned int ln) ;
-# define hashtable_create(N) hashtable_create_real(N, __FILE__"{hashtable_create}",__LINE__)
-#else
 extern t_hashtable * hashtable_create(unsigned int num_rows) ;
-#endif
 extern int hashtable_destroy(t_hashtable * hashtable);
 extern int hashtable_purge(t_hashtable * hashtable);
 extern int hashtable_check(t_hashtable const * hashtable);
 extern unsigned int hashtable_get_length(t_hashtable const * hashtable);
-#ifdef USE_CHECK_ALLOC
-extern int hashtable_insert_data_real(t_hashtable * hashtable, void * data, unsigned int hash, char const * fn, unsigned int ln);
-# define hashtable_insert_data(L,D,H) hashtable_insert_data_real(L,D,H,__FILE__"{hashtable_insert_data}",__LINE__)
-#else
 extern int hashtable_insert_data(t_hashtable * hashtable, void * data, unsigned int hash);
-#endif
 extern t_entry * hashtable_get_entry_by_data(t_hashtable const * hashtable, void const * data, unsigned int hash);
 extern t_entry const * hashtable_get_entry_by_data_const(t_hashtable const * hashtable, void const * data, unsigned int hash);
 extern int hashtable_remove_data(t_hashtable * hashtable, void const * data, unsigned int hash); /* delete matching item */

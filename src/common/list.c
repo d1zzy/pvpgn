@@ -39,19 +39,11 @@
 static t_elem listhead;
 
 
-#ifdef USE_CHECK_ALLOC
-extern t_list * list_create_real(char const * fn, unsigned int ln)
-#else
 extern t_list * list_create(void)
-#endif
 {
     t_list * new;
     
-#ifdef USE_CHECK_ALLOC
-    if (!(new = check_malloc_real(sizeof(t_list),fn,ln)))
-#else
     if (!(new = malloc(sizeof(t_list))))
-#endif
     {
 	eventlog(eventlog_level_error,"list_create","could not allocate memory for new");
 	return NULL;
@@ -145,11 +137,7 @@ extern unsigned int list_get_length(t_list const * list)
 }
 
 
-#ifdef USE_CHECK_ALLOC
-extern int list_prepend_data_real(t_list * list, void * data, char const * fn, unsigned int ln)
-#else
 extern int list_prepend_data(t_list * list, void * data)
-#endif
 {
     t_elem * elem;
     
@@ -159,11 +147,7 @@ extern int list_prepend_data(t_list * list, void * data)
 	return -1;
     }
     
-#ifdef USE_CHECK_ALLOC
-    if (!(elem = check_malloc_real(sizeof(t_elem),fn,ln)))
-#else
     if (!(elem = malloc(sizeof(t_elem))))
-#endif
     {
 	eventlog(eventlog_level_error,"list_prepend_data","could not allocate memory for elem");
 	return -1;
@@ -183,11 +167,7 @@ extern int list_prepend_data(t_list * list, void * data)
 }
 
 
-#ifdef USE_CHECK_ALLOC
-extern int list_append_data_real(t_list * list, void * data, char const * fn, unsigned int ln)
-#else
 extern int list_append_data(t_list * list, void * data)
-#endif
 {
     t_elem * elem;
     
@@ -197,11 +177,7 @@ extern int list_append_data(t_list * list, void * data)
 	return -1;
     }
     
-#ifdef USE_CHECK_ALLOC
-    if (!(elem = check_malloc_real(sizeof(t_elem),fn,ln)))
-#else
     if (!(elem = malloc(sizeof(t_elem))))
-#endif
     {
 	eventlog(eventlog_level_error,"list_append_data","could not allocate memory for elem");
 	return -1;

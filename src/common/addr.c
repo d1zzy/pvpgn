@@ -189,19 +189,11 @@ extern char const * host_lookup(char const * hoststr, unsigned int * ipaddr)
 }
 
 
-#ifdef USE_CHECK_ALLOC
-extern t_addr * addr_create_num_real(unsigned int ipaddr, unsigned short port, char const * fn, unsigned int ln)
-#else
 extern t_addr * addr_create_num(unsigned int ipaddr, unsigned short port)
-#endif
 {
     t_addr * temp;
     
-#ifdef USE_CHECK_ALLOC
-    if (!(temp = check_malloc_real(sizeof(t_addr),fn,ln)))
-#else
     if (!(temp = malloc(sizeof(t_addr))))
-#endif
     {
 	eventlog(eventlog_level_error,"addr_create_num","unable to allocate memory for addr");
 	return NULL;
@@ -222,11 +214,7 @@ extern t_addr * addr_create_num(unsigned int ipaddr, unsigned short port)
 }
 
 
-#ifdef USE_CHECK_ALLOC
-extern t_addr * addr_create_str_real(char const * str, unsigned int defipaddr, unsigned short defport, char const * fn, unsigned int ln)
-#else
 extern t_addr * addr_create_str(char const * str, unsigned int defipaddr, unsigned short defport)
-#endif
 {
     char *             tstr;
     t_addr *           temp;
@@ -303,11 +291,7 @@ extern t_addr * addr_create_str(char const * str, unsigned int defipaddr, unsign
 	return NULL;
     }
     
-#ifdef USE_CHECK_ALLOC
-    if (!(temp = check_malloc_real(sizeof(t_addr),fn,ln)))
-#else
     if (!(temp = malloc(sizeof(t_addr))))
-#endif
     {
 	eventlog(eventlog_level_error,"addr_create_str","unable to allocate memory for addr");
 	free(tstr);

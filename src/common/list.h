@@ -46,27 +46,12 @@ t_list;
 #ifndef INCLUDED_LIST_PROTOS
 #define INCLUDED_LIST_PROTOS
 
-#ifdef USE_CHECK_ALLOC
-extern t_list * list_create_real(char const * fn, unsigned int ln) ;
-# define list_create() list_create_real(__FILE__"{list_create}",__LINE__)
-#else
 extern t_list * list_create(void) ;
-#endif
 extern int list_destroy(t_list * list);
 extern int list_check(t_list const * list);
 extern unsigned int list_get_length(t_list const * list);
-#ifdef USE_CHECK_ALLOC
-extern int list_prepend_data_real(t_list * list, void * data, char const * fn, unsigned int ln);
-# define list_prepend_data(L,D) list_prepend_data_real(L,D,__FILE__"{list_prepend_data}",__LINE__)
-#else
 extern int list_prepend_data(t_list * list, void * data);
-#endif
-#ifdef USE_CHECK_ALLOC
-extern int list_append_data_real(t_list * list, void * data, char const * fn, unsigned int ln);
-# define list_append_data(L,D) list_append_data_real(L,D,__FILE__"{list_append_data}",__LINE__)
-#else
 extern int list_append_data(t_list * list, void * data);
-#endif
 extern t_elem * list_get_elem_by_data(t_list const * list, void const * data);
 extern t_elem const * list_get_elem_by_data_const(t_list const * list, void const * data);
 

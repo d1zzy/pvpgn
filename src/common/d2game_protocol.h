@@ -69,7 +69,7 @@ typedef struct
 {
     t_d2game_header h;
     bn_byte         unknown1; /* data request #? */
-} t_server_00_req PACKED_ATTR();
+} PACKED_ATTR() t_server_00_req;
 #define SERVER_00 0x00
 /******************************************************/
 
@@ -89,7 +89,7 @@ typedef struct /* game select? */
     bn_byte         unknown2[5];
     /* character name */
     /* 00 64 25 42 00 1C E9 50 00 unknown... string or numeric? */
-} t_client_01 PACKED_ATTR();
+} PACKED_ATTR() t_client_01;
 /******************************************************/
 
 
