@@ -141,7 +141,7 @@ extern int net_recv_packet(int sock, t_packet * packet, unsigned int * currsize)
 /*	    eventlog(eventlog_level_debug,__FUNCTION__,"[%d] remote host closed connection (psock_recv: %s)",sock,strerror(psock_errno())); */
 	    return -1; /* common error: close connection, but no message */
 	}
-	eventlog(eventlog_level_error,__FUNCTION__,"[%d] receive error (closing connection) (psock_recv: %s)",sock,strerror(psock_errno()));
+	eventlog(eventlog_level_debug,__FUNCTION__,"[%d] receive error (closing connection) (psock_recv: %s)",sock,strerror(psock_errno()));
 	return -1;
     }
     
@@ -210,13 +210,13 @@ extern int net_send_packet(int sock, t_packet const * packet, unsigned int * cur
 #ifdef PSOCK_ECONNRESET
 	    psock_errno()!=PSOCK_ECONNRESET &&
 #endif
-	    1) eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not send data (closing connection) (psock_send: %s)",sock,strerror(psock_errno()));
+	    1) eventlog(eventlog_level_debug,__FUNCTION__,"[%d] could not send data (closing connection) (psock_send: %s)",sock,strerror(psock_errno()));
 	return -1;
     }
     
     if (addlen==0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"[%d] no data sent (closing connection)",sock);
+	eventlog(eventlog_level_debug,__FUNCTION__,"[%d] no data sent (closing connection)",sock);
 	return -1;
     }
     

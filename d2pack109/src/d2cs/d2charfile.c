@@ -50,12 +50,8 @@
 #include "compat/strerror.h"
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
-#else
-# ifdef WIN32
-#  include <io.h>
-#  define F_OK 0
-# endif
 #endif
+#include "compat/access.h"
 #ifdef TIME_WITH_SYS_TIME
 # include <time.h>
 # include <sys/time.h>

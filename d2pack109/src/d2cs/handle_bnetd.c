@@ -33,6 +33,7 @@
 #include "d2cs_protocol.h"
 #include "version.h"
 #include "prefs.h"
+#include "game.h"
 #include "common/init_protocol.h"
 #include "common/packet.h"
 #include "common/eventlog.h"
@@ -42,6 +43,7 @@ DECLARE_PACKET_HANDLER(on_bnetd_accountloginreply)
 DECLARE_PACKET_HANDLER(on_bnetd_charloginreply)
 DECLARE_PACKET_HANDLER(on_bnetd_authreq)
 DECLARE_PACKET_HANDLER(on_bnetd_authreply)
+DECLARE_PACKET_HANDLER(on_bnetd_gameinforeq)
 
 static t_packet_handle_table bnetd_packet_handle_table[]={
 /* 0x00 */ { 0,                                      conn_state_none,      NULL                       },
@@ -61,7 +63,8 @@ static t_packet_handle_table bnetd_packet_handle_table[]={
 /* 0x03 */ { 0,                                      conn_state_none,      NULL                       },
 /* 0x0f */ { 0,                                      conn_state_none,      NULL                       },
 /* 0x10 */ { sizeof(t_bnetd_d2cs_accountloginreply), conn_state_authed,    on_bnetd_accountloginreply },
-/* 0x11 */ { sizeof(t_bnetd_d2cs_charloginreply),    conn_state_authed,    on_bnetd_charloginreply    }
+/* 0x11 */ { sizeof(t_bnetd_d2cs_charloginreply),    conn_state_authed,    on_bnetd_charloginreply    },
+/* 0x12 */ { sizeof(t_bnetd_d2cs_gameinforeq),       conn_state_authed,    on_bnetd_gameinforeq       }
 };
 
 extern int handle_bnetd_packet(t_connection * c, t_packet * packet)
@@ -252,3 +255,42 @@ static int on_bnetd_charloginreply(t_connection * c, t_packet * packet)
 	sq_destroy(sq,&elem);
 	return 0;
 }
+
+int on_bnetd_gameinforeq(t_connection * c, t_packet * packet)
+{
+	t_packet *    rpacket;
+	t_game *      game;
+
+	char const * gamename;
+
+	if (!(c)) {
+		eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
+		return -1;
+	}
+
+	if (!(gamename = packet_get_str_const(packet,sizeof(t_bnetd_d2cs_gameinforeq),GAME_NAME_LEN))) 
+	{
+		eventlog(eventlog_level_error,__FUNCTION__,"missing or too long gamename");
+		return -1;
+	}
+
+	if (!(game = d2cs_gamelist_find_game(gamename)))
+	{
+	       eventlog(eventlog_level_error,__FUNCTION__,"request for unknown game \"%s\"",gamename);
+               return -1;
+	}
+
+	if ((rpacket=packet_create(packet_class_d2cs_bnetd))) {
+		packet_set_size(rpacket, sizeof(t_d2cs_bnetd_gameinforeply));
+		packet_set_type(rpacket, D2CS_BNETD_GAMEINFOREPLY);
+		bn_int_set(&rpacket->u.d2cs_bnetd_gameinforeply.h.seqno,0);
+		packet_append_string(rpacket, gamename);
+		
+		bn_byte_set(&rpacket->u.d2cs_bnetd_gameinforeply.difficulty, game_get_gameflag_difficulty(game));
+		
+		conn_push_outqueue(c,rpacket);
+		packet_del_ref(rpacket);
+	}
+	return 0;	
+}
+

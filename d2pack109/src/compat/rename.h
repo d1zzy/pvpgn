@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 1999  Ross Combs (rocombs@cs.nmsu.edu)
+ * Copyright (C) 2004 CreepLord (creeplord@pvpgn.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,16 +15,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef INCLUDED_ACCESS_PROTOS
-#define INCLUDED_ACCESS_PROTOS
+#ifndef INCLUDED_RENAME_PROTOS
+#define INCLUDED_RENAME_PROTOS
 
-#ifdef WIN32
-# include <io.h>
-/* Values for the second argument to access. These may be OR'd together. */
-# define R_OK	4	/* Test for read permission.	*/
-# define W_OK	2	/* Test for write permission.	*/
-# define X_OK	1	/* Test for execute permission.	*/
-# define F_OK	0	/* Test for existence.		*/
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
 #endif
+#include "compat/access.h"
 
+static inline int p_rename(const char * old, const char * new)
+{
+#ifdef WIN32
+    if(access(new, F_OK) == 0)
+        if(remove(new) < 0)
+            return -1;
+#endif
+    return rename(old, new);
+}
+		
 #endif
