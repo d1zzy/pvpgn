@@ -84,6 +84,8 @@ typedef struct
         t_bnetd_d2cs_accountloginreply  bnetd_d2cs_accountloginreply;
         t_d2cs_bnetd_charloginreq       d2cs_bnetd_charloginreq;
         t_bnetd_d2cs_charloginreply     bnetd_d2cs_charloginreply;
+	t_bnetd_d2cs_gameinforeq	bnetd_d2cs_gameinforeq;
+	t_d2cs_bnetd_gameinforeply	d2cs_bnetd_gameinforeply;
 
         t_d2cs_d2gs_generic             d2cs_d2gs;
         t_d2cs_d2gs_authreq             d2cs_d2gs_authreq;

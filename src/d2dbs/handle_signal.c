@@ -107,11 +107,14 @@ extern int d2dbs_handle_signal(void)
 		} else {
 			signal_data.exit_time-=d2dbs_prefs_get_shutdown_decr();
 		}
+		eventlog(eventlog_level_info,__FUNCTION__,"the server is going to shutdown in %lu minutes",(signal_data.exit_time-now)/60);
+	}
+	if (signal_data.exit_time) {
+		now=time(NULL);
 		if (now >= (signed)signal_data.exit_time) {
 			eventlog(eventlog_level_info,__FUNCTION__,"shutdown server due to signal");
 			return -1;
 		}
-		eventlog(eventlog_level_info,__FUNCTION__,"the server is going to shutdown in %lu minutes",(signal_data.exit_time-now)/60);
 	}
 	if (signal_data.reload_config) {
 		signal_data.reload_config=0;

@@ -94,4 +94,19 @@ typedef struct
 #define BNETD_D2CS_CHARLOGINREPLY_SUCCEED		0x00
 #define BNETD_D2CS_CHARLOGINREPLY_FAILED		0x01
 
+#define BNETD_D2CS_GAMEINFOREQ				0x12
+typedef struct
+{
+	t_d2cs_bnetd_header	h;
+	/* gamename */
+} t_bnetd_d2cs_gameinforeq;
+
+#define D2CS_BNETD_GAMEINFOREPLY			0x12
+typedef struct
+{
+	t_d2cs_bnetd_header	h;
+	bn_byte			difficulty;
+	/* gamename */
+} t_d2cs_bnetd_gameinforeply;
+
 #endif
