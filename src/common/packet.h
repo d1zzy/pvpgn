@@ -23,7 +23,6 @@
 # include "common/field_sizes.h"
 # include "common/init_protocol.h"
 # include "common/bnet_protocol.h"
-# include "common/anongame_protocol.h"
 # include "common/file_protocol.h"
 # include "common/bot_protocol.h"
 # include "common/udp_protocol.h"
@@ -31,14 +30,11 @@
 # include "d2cs/d2cs_protocol.h"
 # include "d2cs/d2cs_d2gs_protocol.h"
 # include "d2cs/d2cs_bnetd_protocol.h"
-# include "common/auth_protocol.h"
-# include "common/w3xp_protocol.h"
 #else
 # define JUST_NEED_TYPES
 # include "common/field_sizes.h"
 # include "common/init_protocol.h"
 # include "common/bnet_protocol.h"
-# include "common/anongame_protocol.h"
 # include "common/file_protocol.h"
 # include "common/bot_protocol.h"
 # include "common/udp_protocol.h"
@@ -46,8 +42,6 @@
 # include "d2cs/d2cs_protocol.h"
 # include "d2cs/d2cs_d2gs_protocol.h"
 # include "d2cs/d2cs_bnetd_protocol.h"
-# include "common/auth_protocol.h"
-# include "common/w3xp_protocol.h"
 # undef JUST_NEED_TYPES
 #endif
 
@@ -62,9 +56,7 @@ typedef enum
     packet_class_d2game,
     packet_class_d2gs,
     packet_class_d2cs,
-    packet_class_d2cs_bnetd,
-    packet_class_auth,
-    packet_class_w3route
+    packet_class_d2cs_bnetd
 } t_packet_class;
 
 
@@ -95,7 +87,6 @@ typedef struct
         t_file_generic   file;
         t_udp_generic    udp;
         t_d2game_generic d2game;
-	t_auth_generic   auth;
 	t_w3route_generic w3route;
         
 	t_client_initconn client_initconn;
@@ -203,47 +194,13 @@ typedef struct
 	t_client_sessionaddr1      client_sessionaddr1;
 	t_client_sessionaddr2      client_sessionaddr2;
 	
-	t_client_authloginreq      client_authloginreq;
-	t_server_authloginreply    server_authloginreply;
-	t_client_createcharreq     client_createcharreq;
-	t_server_createcharreply   server_createcharreply;
-	t_client_creategamereq     client_creategamereq;
-	t_server_creategamereply   server_creategamereply;
-	t_client_joingamereq2      client_joingamereq2;
-	t_server_joingamereply2    server_joingamereply2;
-	t_server_creategame_wait   server_creategame_wait;
-	t_client_cancel_create     client_cancel_create;
-	t_client_d2gamelistreq     client_d2gamelistreq;
-	t_server_d2gamelistreply   server_d2gamelistreply;
-	t_client_gameinforeq       client_gameinforeq;
-	t_server_gameinforeply     server_gameinforeply;
-	t_client_charloginreq      client_charloginreq;
-	t_server_charloginreply    server_charloginreply;
-	t_client_deletecharreq     client_deletecharreq;
-	t_server_deletecharreply   server_deletecharreply;
 	t_client_motd_w3           client_motd_w3;
 	t_server_motd_w3           server_motd_w3;
 	t_client_logonproofreq     client_logonproofreq;
 	t_server_logonproofreply   server_logonproofreply;
 	t_client_createaccount_w3  client_createaccount_w3;
 	t_server_createaccount_w3  server_createaccount_w3;
-	t_client_findanongame      client_findanongame;
-	t_client_findanongame_at   client_findanongame_at;
-	t_client_findanongame_at_inv   client_findanongame_at_inv;
 
-
-	// 5/12/02 EDITED BY THEUNDYING for WC3 1.31+
-	t_server_findanongame_playgame_cancel		server_findanongame_playgame_cancel;
-	t_server_anongame_found		server_anongame_found;
-	//t_server_w3profile_reply      server_w3profile_reply;
-    t_client_ladderreq2        client_ladderreq2;
-	t_server_ladderreply2      server_ladderreply2;
-	t_client_authmotdreq       client_authmotdreq;
-	t_server_authmotdreply     server_authmotdreply;
-	t_client_charlistreq       client_charlistreq;
-	t_server_charlistreply     server_charlistreply;
-	t_client_convertcharreq    client_convertcharreq;
-	t_server_convertcharreply  server_convertcharreply;
         t_d2cs_bnetd_generic            d2cs_bnetd;
         t_bnetd_d2cs_authreq            bnetd_d2cs_authreq;
         t_d2cs_bnetd_authreply          d2cs_bnetd_authreply;
@@ -300,85 +257,10 @@ typedef struct
 		// 5/14/02 - THEUNDYING - USED FOR THE FRIENDS LIST
 		// [zap-zero] 20020516
 
-	t_client_friendslistreq		client_friendslistreq;
-	t_server_friendslistreply	server_friendslistreply;
-	t_client_friendinforeq		client_friendinforeq;
-	t_server_friendinforeply	server_friendinforeply;
-	t_server_friendadd_ack		server_friendadd_ack;
-	t_server_frienddel_ack		server_frienddel_ack;
-	t_server_friendmove_ack		server_friendmove_ack;
-
-	// 5/19/02 - THEUNDYING - used for arranged teams
-	t_client_arrangedteam_friendscreen		client_arrangedteam_friendscreen;
-	t_server_arrangedteam_friendscreen		server_arrangedteam_friendscreen;
-	t_client_arrangedteam_invite_friend		client_arrangedteam_invite_friend;
-	t_server_arrangedteam_invite_friend_ack		server_arrangedteam_invite_friend_ack;
-	t_server_arrangedteam_send_invite		server_arrangedteam_send_invite;
-	t_client_arrangedteam_accept_invite    client_arrangedteam_accept_invite;
-	t_client_arrangedteam_accept_decline_invite    client_arrangedteam_accept_decline_invite;
-	t_server_arrangedteam_member_decline    server_arrangedteam_member_decline;
-	// 5/24/02 - THEUNDYING - updates for ANONGAME PROFILE PACKET
-	t_client_findanongame_profile			client_findanongame_profile;
-
-	/* dizzy : war3 1.03 has changed format */
-	t_server_findanongame_profile2			server_findanongame_profile2;
-		
-	// [zap-zero] 20020529
-	t_client_w3route_req			client_w3route_req;
-	t_server_w3route_ack			server_w3route_ack;
-	t_server_w3route_playerinfo		server_w3route_playerinfo;
-	t_server_w3route_levelinfo		server_w3route_levelinfo;
-	t_server_w3route_startgame1		server_w3route_startgame1;
-	t_server_w3route_startgame2		server_w3route_startgame2;
-	t_client_w3route_loadingdone		client_w3route_loadingdone;
-	t_server_w3route_loadingack		server_w3route_loadingack;
-	t_client_w3route_connected		client_w3route_connected;
-	t_server_w3route_echoreq		server_w3route_echoreq;
-	t_client_w3route_abort			client_w3route_abort;
-	t_server_w3route_ready			server_w3route_host;
-	t_client_w3route_gameresult		client_w3route_gameresult;
-
-	t_client_findanongame_inforeq		client_findanongame_inforeq;
-	t_server_findanongame_inforeply		server_findanongame_inforeply;
-	
-	t_client_w3xp_clan_invitereq        client_w3xp_clan_invitereq;
-    t_server_w3xp_clan_invitereply      server_w3xp_clan_invitereply;
-	t_server_w3xp_clan_invitereq        server_w3xp_clan_invitereq;
-	t_client_w3xp_clan_invitereply      client_w3xp_clan_invitereply;
-	t_client_w3xp_clan_disbandreq       client_w3xp_clan_disbandreq;
-	t_server_w3xp_clan_disbandreply     server_w3xp_clan_disbandreply;
-	t_client_w3xp_clan_motdchg          client_w3xp_clan_motdchg;
-	t_client_w3xp_clan_motdreq          client_w3xp_clan_motdreq;
-	t_server_w3xp_clan_motdreply        server_w3xp_clan_motdreply;
-	t_client_w3xp_clan_memberreq        client_w3xp_clan_memberreq;
-	t_server_w3xp_clan_memberreply      server_w3xp_clan_memberreply;
-    t_client_w3xp_clan_createreq        client_w3xp_clan_createreq;
-	t_server_w3xp_clan_createreply      server_w3xp_clan_createreply;
-	t_client_w3xp_clan_createinvitereq  client_w3xp_clan_createinvitereq;
-    t_server_w3xp_clan_createinvitereply    server_w3xp_clan_createinvitereply;
-	t_server_w3xp_clan_createinvitereq  server_w3xp_clan_createinvitereq;
-    t_client_w3xp_clan_createinvitereply    client_w3xp_clan_createinvitereply;
-    t_server_w3xp_clan_clanack			    server_w3xp_clan_clanack;
-    t_server_w3xp_clan_memberchangeack      server_w3xp_clan_memberchangeack;
-    t_client_w3xp_clan_memberchangereq      client_w3xp_clan_memberchangereq;
-    t_server_w3xp_clan_memberchangereply    server_w3xp_clan_memberchangereply;
-    t_client_w3xp_clan_memberdelreq         client_w3xp_clan_memberdelreq;
-    t_server_w3xp_clan_memberdelreply       server_w3xp_clan_memberdelreply;
-    t_client_w3xp_clan_membernewchiefreq    client_w3xp_clan_membernewchiefreq;
-    t_server_w3xp_clan_membernewchiefreply  server_w3xp_clan_membernewchiefreply;
-    t_server_w3xp_clan_clanleaveack         server_w3xp_clan_clanleaveack;
-    t_server_w3xp_clan_memberleaveack       server_w3xp_clan_memberleaveack;
-
-	t_server_findanongame_iconreply		server_findanongame_iconreply;
 	t_client_changeclient			client_changeclient;
-	/* restructure anongame [Omega] */
-	t_client_anongame			client_anongame;
-	t_server_anongame_search_reply		server_anongame_search_reply;
-	t_client_anongame_tournament_request	client_anongame_tournament_request;
-	t_server_anongame_tournament_reply	server_anongame_tournament_reply;
 
-    /* new packets supporting D2 1.10 & War3 1.13 */
-    t_client_setemailreply	   client_setemailreq;
+	/* new packets supporting D2 1.10 & War3 1.13 */
+	t_client_setemailreply	   client_setemailreq;
 	t_server_setemailreq	   server_setemailreply;
 	t_client_getpasswordreq	   client_getpasswordreq;
 	t_client_changeemailreq	   client_changeemailreq;
