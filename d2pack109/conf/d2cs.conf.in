@@ -102,6 +102,7 @@ allow_newchar		=	1
 check_multilogin	=	0
 
 # Maxinum number of character per account
+# Max allowed value is 21 (enforced by server)
 maxchar			=	8
 
 # Character sorting. Options are: level, mtime, name, none. (none assumed if

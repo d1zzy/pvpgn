@@ -143,7 +143,7 @@ extern char const * prefs_get_d2gs_list(void)
 
 extern unsigned int prefs_get_maxchar(void)
 {
-	return prefs_conf.maxchar;
+	return (prefs_conf.maxchar>MAX_MAX_CHAR_PER_ACCT)?MAX_MAX_CHAR_PER_ACCT:prefs_conf.maxchar;
 }
 
 extern unsigned int prefs_get_list_purgeinterval(void)

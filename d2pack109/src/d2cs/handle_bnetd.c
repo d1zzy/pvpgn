@@ -126,6 +126,7 @@ static int on_bnetd_accountloginreply(t_connection * c, t_packet * packet)
 	t_connection	* client;
 	int		result, reply;
 	char const	* account;
+	t_elem		* elem;
 
 	if (!packet || !c)
 	    return -1;
@@ -137,12 +138,12 @@ static int on_bnetd_accountloginreply(t_connection * c, t_packet * packet)
 	}
 	if (!(client=d2cs_connlist_find_connection_by_sessionnum(sq_get_clientid(sq)))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"client %d not found",sq_get_clientid(sq));
-		sq_destroy(sq);
+		sq_destroy(sq,&elem);
 		return -1;
 	}
 	if (!(opacket=sq_get_packet(sq))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"previous packet missing (seqno: %d)",seqno);
-		sq_destroy(sq);
+		sq_destroy(sq,&elem);
 		return -1;
 	}
 	result=bn_int_get(packet->u.bnetd_d2cs_accountloginreply.reply);
@@ -163,7 +164,7 @@ static int on_bnetd_accountloginreply(t_connection * c, t_packet * packet)
 		conn_push_outqueue(client,rpacket);
 		packet_del_ref(rpacket);
 	}
-	sq_destroy(sq);
+	sq_destroy(sq,&elem);
 	return 0;
 }
 
@@ -175,6 +176,7 @@ static int on_bnetd_charloginreply(t_connection * c, t_packet * packet)
 	t_packet	* opacket, * rpacket;
 	int		result, reply, type;
 	char const	* charname;
+	t_elem		* elem;
 	
 	if (!packet || !c)
 	    return -1;
@@ -186,12 +188,12 @@ static int on_bnetd_charloginreply(t_connection * c, t_packet * packet)
 	}
 	if (!(client=d2cs_connlist_find_connection_by_sessionnum(sq_get_clientid(sq)))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"client %d not found",sq_get_clientid(sq));
-		sq_destroy(sq);
+		sq_destroy(sq,&elem);
 		return -1;
 	}
 	if (!(opacket=sq_get_packet(sq))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"previous packet missing (seqno: %d)",seqno);
-		sq_destroy(sq);
+		sq_destroy(sq,&elem);
 		return -1;
 	}
 	type=packet_get_type(opacket);
@@ -244,9 +246,9 @@ static int on_bnetd_charloginreply(t_connection * c, t_packet * packet)
 		}
 	} else {
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad packet type %d",type);
-		sq_destroy(sq);
+		sq_destroy(sq,&elem);
 		return -1;
 	}
-	sq_destroy(sq);
+	sq_destroy(sq,&elem);
 	return 0;
 }

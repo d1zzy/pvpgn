@@ -49,7 +49,7 @@ extern int d2gslist_create(void);
 extern int d2gslist_destroy(void);
 extern int d2gslist_reload(char const * gslist);
 extern t_d2gs * d2gs_create(char const * ip);
-extern int d2gs_destroy(t_d2gs * gs);
+extern int d2gs_destroy(t_d2gs * gs,t_elem ** curr);
 extern t_d2gs * d2gslist_get_server_by_id(unsigned int id);
 extern t_d2gs * d2gslist_choose_server(void);
 extern t_d2gs * d2gslist_find_gs(unsigned int id);

@@ -67,7 +67,7 @@ extern t_game * gamelist_find_game_by_d2gs_and_id(unsigned int d2gs_id, unsigned
 extern void d2cs_gamelist_check_voidgame(void);
 extern t_game * d2cs_game_create(char const * gamename, char const * gamepass, char const * gamedesc,
 				unsigned int gameflag);
-extern int game_destroy(t_game * game);
+extern int game_destroy(t_game * game, t_elem ** elem);
 extern int game_add_character(t_game * game, char const * charname, 
 				unsigned char class, unsigned char level);
 extern int game_del_character(t_game * game, char const * charname);

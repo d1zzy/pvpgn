@@ -65,7 +65,7 @@ extern int gqlist_destroy(void)
 
 	BEGIN_LIST_TRAVERSE_DATA(gqlist_head,gq)
 	{
-		gq_destroy(gq);
+		gq_destroy(gq,(t_elem **)curr_elem_);
 	}
 	END_LIST_TRAVERSE_DATA()
 
@@ -96,10 +96,10 @@ extern t_gq * gq_create(unsigned int clientid, t_packet * packet, char const * g
 	return gq;
 }
 
-extern int gq_destroy(t_gq * gq)
+extern int gq_destroy(t_gq * gq, t_elem ** elem)
 {
 	ASSERT(gq,-1);
-	if (list_remove_data(gqlist_head,gq)<0) {
+	if (list_remove_data(gqlist_head,gq,elem)<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error remove game queue from list");
 		return -1;
 	}
@@ -124,17 +124,17 @@ extern int gqlist_check_creategame(void)
 		c=d2cs_connlist_find_connection_by_sessionnum(gq->clientid);
 		if (!c) {
 			eventlog(eventlog_level_error,__FUNCTION__,"client %d not found (gamename: %s)",gq->clientid,gq->gamename);
-			gq_destroy(gq);
+                        gq_destroy(gq,&curr_elem_);
 			continue;
 		} else if (!conn_get_gamequeue(c)) {
 			eventlog(eventlog_level_error,__FUNCTION__,"got NULL game queue for client %s",d2cs_conn_get_account(c));
-			gq_destroy(gq);
+                        gq_destroy(gq,&curr_elem_);
 			continue;
 		} else {
 			eventlog(eventlog_level_info,__FUNCTION__,"try create game %s for account %s",gq->gamename,d2cs_conn_get_account(c));
 			d2cs_handle_client_creategame(c,gq->packet);
 			conn_set_gamequeue(c,NULL);
-			gq_destroy(gq);
+                        gq_destroy(gq,&curr_elem_);
 			break;
 		}
 	}
@@ -154,7 +154,7 @@ extern int gqlist_update_all_clients(void)
 		c=d2cs_connlist_find_connection_by_sessionnum(gq->clientid);
 		if (!c) {
 			eventlog(eventlog_level_error,__FUNCTION__,"client %d not found (gamename: %s)",gq->clientid,gq->gamename);
-			gq_destroy(gq);
+			gq_destroy(gq,&curr_elem_);
 			continue;
 		} else {
 			n++;

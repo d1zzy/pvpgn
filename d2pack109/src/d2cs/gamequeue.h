@@ -30,7 +30,7 @@ typedef struct
 } t_gq;
 
 extern unsigned int gq_get_clientid(t_gq const * gq);
-extern int gq_destroy(t_gq * gq);
+extern int gq_destroy(t_gq * gq, t_elem ** elem);
 extern t_gq * gq_create(unsigned int clientid, t_packet * packet, char const * gamename);
 extern int gqlist_destroy(void);
 extern int gqlist_create(void);

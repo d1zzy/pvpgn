@@ -171,6 +171,9 @@
 /* moved from account.h */
 #define MAX_FRIENDS 20
 
+/* maximum ammount of bytes sent in a single server.c/sd_tcpoutput call */
+#define BNETD_MAX_OUTBURST 16384
+
 /* default files relative to FILE_DIR */
 #define BNETD_TOS_FILE     "tos.txt"
 #define BNETD_ICON_FILE    "icons.bni"
@@ -349,23 +352,17 @@
 
 #define BNETD_MAX_SOCKETS 4096
 
-/* JEBs20020909
- * To get rid of the nerved compiler warning about the
- * redefined "FD_SETSIZE", and to be sure that optimum/right
- * parameters are used i tried to fix it.
- */
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-
 /*
  * select() hackery... works most places, need to add autoconf checks
  * because some systems may redefine FD_SETSIZE, have it as a variable,
  * or not have the concept of such a value.
+ * dizzy: this is a total hack. only WIN32 so far specifies this as beeing
+ * "legal"; in UNIX in general it should be NOT because the kernel interface 
+ * of select will never notice your userland changes to the fd_sets
  */
 /* Win32 defaults to 64, BSD and Linux default to 1024 */
 /* FIXME: how big can this be before things break? */
-#ifndef FD_SETSIZE
+#ifdef WIN32
 # define FD_SETSIZE BNETD_MAX_SOCKETS
 #endif
 

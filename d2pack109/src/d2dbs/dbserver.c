@@ -383,10 +383,8 @@ void dbs_server_loop(int lsocket)
 	const char* pcErrorType ;
 	struct timeval         tv;
 	int highest_fd;
-	int listpurgecount;
 	psock_t_socklen nAddrSize = sizeof(sinRemote);
 	
-	listpurgecount=0;
 	while (1) {
 #ifndef WIN32
 		if (d2dbs_handle_signal()<0) break;
@@ -466,20 +464,14 @@ void dbs_server_loop(int lsocket)
 					}
 				}
 				dbs_server_shutdown_connection(it);
-				list_remove_elem(dbs_server_connection_list,elem);
-				listpurgecount++;
+				list_remove_elem(dbs_server_connection_list,&elem);
 			} else {
 				if (dbs_packet_handle(it)==-1) {
 					eventlog(eventlog_level_error,__FUNCTION__,"dbs_packet_handle() failed");
 					dbs_server_shutdown_connection(it);
-					list_remove_elem(dbs_server_connection_list,elem);
-					listpurgecount++;
+					list_remove_elem(dbs_server_connection_list,&elem);
 				}
 			}
-		}
-		if (listpurgecount>100) {
-			list_purge(dbs_server_connection_list);
-			listpurgecount=0;
 		}
 	}
 }
@@ -497,7 +489,7 @@ static void dbs_on_exit(void)
 	{
 		if (!(it=elem_get_data(elem))) continue;
 		dbs_server_shutdown_connection(it);
-		list_remove_elem(dbs_server_connection_list,elem);
+		list_remove_elem(dbs_server_connection_list,&elem);
 	}
 	cl_destroy();
 	d2dbs_d2ladder_destroy();

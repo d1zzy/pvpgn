@@ -95,7 +95,6 @@
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
-static int server_purge_list(void);
 static int server_listen(void);
 static int server_accept(int sock);
 static int server_handle_timed_event(void);
@@ -184,16 +183,6 @@ static int server_accept(int sock)
 	return 0;
 }
 
-static int server_purge_list(void)
-{
-	hashtable_purge(d2cs_connlist());
-	list_purge(d2cs_gamelist());
-	list_purge(d2gslist());
-	list_purge(sqlist());
-	list_purge(gqlist());
-	return 0;
-}
-
 static int server_handle_timed_event(void)
 {
 	static  time_t	prev_list_purgetime=0;
@@ -207,7 +196,7 @@ static int server_handle_timed_event(void)
 
 	now=time(NULL);
 	if (now-prev_list_purgetime>(signed)prefs_get_list_purgeinterval()) {
-		server_purge_list();
+		hashtable_purge(d2cs_connlist());
 		d2cs_gamelist_check_voidgame();
 		prev_list_purgetime=now;
 	}
@@ -279,6 +268,7 @@ static int server_handle_socket(void)
 	}
 
 	fdwatch_handle();
+
 	return 0;
 }
 

@@ -144,6 +144,7 @@ extern int d2cs_connlist_create(void)
 extern int d2cs_connlist_destroy(void)
 {
 	t_connection 	* c;
+	t_elem		* curr;
 	
 	d2cs_connlist_reap();
 	if (list_destroy(connlist_dead))
@@ -152,7 +153,7 @@ extern int d2cs_connlist_destroy(void)
 
 	BEGIN_HASHTABLE_TRAVERSE_DATA(connlist_head, c)
 	{
-		d2cs_conn_destroy(c);
+		d2cs_conn_destroy(c,&curr);
 	}
 	END_HASHTABLE_TRAVERSE_DATA()
 
@@ -177,7 +178,7 @@ extern int d2cs_connlist_reap(void)
 	if (!connlist_dead) return 0;
 	BEGIN_LIST_TRAVERSE_DATA(connlist_dead, c)
 	{
-		d2cs_conn_destroy(c);
+		d2cs_conn_destroy(c,&curr_elem_);
 	}
 	END_LIST_TRAVERSE_DATA()
 
@@ -463,8 +464,9 @@ extern t_connection * d2cs_conn_create(int sock, unsigned int local_addr, unsign
 	return c;
 }
 
-extern int d2cs_conn_destroy(t_connection * c)
+extern int d2cs_conn_destroy(t_connection * c, t_elem ** curr)
 {
+	t_elem * elem;
 
 	ASSERT(c,-1);
 	if (c->state==conn_state_destroying) return 0;
@@ -480,7 +482,7 @@ extern int d2cs_conn_destroy(t_connection * c)
 		s2s_destroy(c);
 	}
 	if (c->gamequeue) {
-		gq_destroy(c->gamequeue);
+		gq_destroy(c->gamequeue,&elem);
 	}
 	if (c->account) free((void *)c->account);
 	if (c->charinfo) free((void *)c->charinfo);
@@ -488,7 +490,7 @@ extern int d2cs_conn_destroy(t_connection * c)
 	queue_clear(&c->inqueue);
 	queue_clear(&c->outqueue);
 
-	if (connlist_dead) list_remove_data(connlist_dead, c);
+	if (connlist_dead) list_remove_data(connlist_dead, c, curr);
 	fdwatch_del_fd(c->sock);
 	psock_shutdown(c->sock,PSOCK_SHUT_RDWR);
 	psock_close(c->sock);
@@ -513,6 +515,8 @@ extern t_conn_state d2cs_conn_get_state(t_connection const * c)
 
 extern int d2cs_conn_set_state(t_connection * c, t_conn_state state)
 {
+	t_elem * curr;
+
 	ASSERT(c,-1);
 	/* special case for destroying connections, add them to connlist_dead list */
 	if (state == conn_state_destroy && c->state != conn_state_destroy) {
@@ -522,7 +526,7 @@ extern int d2cs_conn_set_state(t_connection * c, t_conn_state state)
 	    }
 	    list_append_data(connlist_dead, c);
 	} else if (state != conn_state_destroy && c->state == conn_state_destroy) {
-	    if (list_remove_data(connlist_dead, c)) {
+	    if (list_remove_data(connlist_dead, c, &curr)) {
 		eventlog(eventlog_level_error, __FUNCTION__, "could not remove dead connection");
 		return -1;
 	    }
