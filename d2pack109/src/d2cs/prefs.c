@@ -50,6 +50,8 @@ static t_conf_table prefs_conf_table[]={
     { "bnetdaddr",              offsetof(t_prefs,bnetdaddr),         conf_type_str,    0,	BNETD_SERVER_LIST       },
     { "charsavedir",            offsetof(t_prefs,charsavedir),       conf_type_str,    0,	D2CS_CHARSAVE_DIR       },
     { "charinfodir",            offsetof(t_prefs,charinfodir),       conf_type_str,    0,	D2CS_CHARINFO_DIR       },
+    { "bak_charsavedir",        offsetof(t_prefs,bak_charsavedir),   conf_type_str,    0,       D2CS_BAK_CHARSAVE_DIR   },
+    { "bak_charinfodir",        offsetof(t_prefs,bak_charinfodir),   conf_type_str,    0,       D2CS_BAK_CHARINFO_DIR   },
     { "ladderdir",              offsetof(t_prefs,ladderdir),         conf_type_str,    0,	D2CS_LADDER_DIR         },
     { "ladder_refresh_interval",offsetof(t_prefs,ladder_refresh_interval),conf_type_int,3600,	NULL                    },
     { "newbiefile",             offsetof(t_prefs,newbiefile),        conf_type_str,    0,	D2CS_CHARSAVE_NEWBIE    },
@@ -85,6 +87,7 @@ static t_conf_table prefs_conf_table[]={
     { "d2gs_restart_delay",	offsetof(t_prefs,d2gs_restart_delay),conf_type_int,    DEFAULT_D2GS_RESTART_DELAY,	NULL   },
     { "charlist_sort",          offsetof(t_prefs,charlist_sort),          conf_type_str,    0,                             "none"                     },
     { "charlist_sort_order",    offsetof(t_prefs,charlist_sort_order),    conf_type_str,    0,                             "ASC"                      },
+    { "max_connections",        offsetof(t_prefs,max_connections),        conf_type_int,    BNETD_MAX_SOCKETS,             NULL                       },
     { NULL,                     0,                                   conf_type_none,   0,	NULL                            }
 };
 
@@ -124,6 +127,16 @@ extern char const * prefs_get_charsave_dir(void)
 extern char const * prefs_get_charinfo_dir(void)
 {
 	return prefs_conf.charinfodir;
+}
+
+extern char const * prefs_get_bak_charsave_dir(void)
+{
+	return prefs_conf.bak_charsavedir;
+}
+
+extern char const * prefs_get_bak_charinfo_dir(void)
+{
+	return prefs_conf.bak_charinfodir;
 }
 
 extern char const * prefs_get_charsave_newbie(void)
@@ -324,4 +337,9 @@ extern char const * prefs_get_charlist_sort(void)
 extern char const * prefs_get_charlist_sort_order(void)
 {
 	return prefs_conf.charlist_sort_order;
+}
+
+extern unsigned int prefs_get_max_connections(void)
+{
+	return prefs_conf.max_connections;
 }

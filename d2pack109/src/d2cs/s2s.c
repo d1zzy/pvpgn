@@ -106,16 +106,19 @@ extern t_connection * s2s_create(char const * server, unsigned short def_port, t
 	} else {
 		port=def_port;
 	}
+
 	if ((sock=net_socket(PSOCK_SOCK_STREAM))<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error creating s2s socket");
 		xfree(tserver);
 		return NULL;
 	}
+
 	memset(&addr,0,sizeof(addr));
 	addr.sin_family = PSOCK_AF_INET;
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr= net_inet_addr(tserver);
 	xfree(tserver);
+
 	eventlog(eventlog_level_info,__FUNCTION__,"try make s2s connection to %s",server);
 	if (psock_connect(sock,(struct sockaddr *)&addr,sizeof(addr))<0) {
 		if (psock_errno()!=PSOCK_EWOULDBLOCK && psock_errno() != PSOCK_EINPROGRESS) {
@@ -148,11 +151,19 @@ extern t_connection * s2s_create(char const * server, unsigned short def_port, t
 		return NULL;
 	}
 	if (connected) {
+		if (conn_add_fd(c,fdwatch_type_read, d2cs_server_handle_tcp)<0) {
+		    eventlog(eventlog_level_error, __FUNCTION__, "error adding socket %d to fdwatch pool (max sockets?)",sock);
+		    d2cs_conn_set_state(c,conn_state_destroy);
+		    return NULL;
+		}
 		d2cs_conn_set_state(c,conn_state_init);
-		fdwatch_add_fd(sock, fdwatch_type_read, d2cs_server_handle_tcp, c);
 	} else {
+		if (conn_add_fd(c, fdwatch_type_write, d2cs_server_handle_tcp)<0) {
+		    eventlog(eventlog_level_error, __FUNCTION__, "error adding socket %d to fdwatch pool (max sockets?)",sock);
+		    d2cs_conn_set_state(c,conn_state_destroy);
+		    return NULL;
+		}
 		d2cs_conn_set_state(c,conn_state_connecting);
-		fdwatch_add_fd(sock, fdwatch_type_write, d2cs_server_handle_tcp, c);
 	}
 	d2cs_conn_set_class(c,class);
 	return c;

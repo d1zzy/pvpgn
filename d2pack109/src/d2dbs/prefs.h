@@ -40,6 +40,7 @@ typedef struct
 	unsigned int	timeout_checkinterval;
 	unsigned int    XML_ladder_output;
 	unsigned int    ladderupdate_threshold;
+        unsigned int    difficulty_hack;
 } t_prefs;
 
 extern int d2dbs_prefs_load(char const * filename);
@@ -65,5 +66,6 @@ extern unsigned int prefs_get_keepalive_interval(void);
 extern unsigned int d2dbs_prefs_get_timeout_checkinterval(void);
 extern unsigned int d2dbs_prefs_get_XML_output_ladder(void);
 extern unsigned int prefs_get_ladderupdate_threshold(void);
+extern unsigned int prefs_get_difficulty_hack(void);
 
 #endif

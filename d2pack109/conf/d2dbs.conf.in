@@ -92,5 +92,13 @@ timeout_checkinterval	=	60
 # experience threshold, minimum experience needed to register on the ladder
 ladderupdate_threshold	=	0
 
+# This setting activates a workaround for the well known "Lvl 100" bug.
+# It should be activated for mods where the max level is greater than 99.
+# Activating this should work for mods with any max level
+# If level is greater than 255, it will be set to 255
+# 0 = deactivated
+# 1 = activated
+difficulty_hack         =       0
+
 #										#
 #################################################################################

@@ -4,7 +4,7 @@
   *
   * Code is based on the ideas found in thttpd project.
   *
-  * poll() based backend
+  * poll(2) based backend
   *
   * This program is free software; you can redistribute it and/or
   * modify it under the terms of the GNU General Public License
@@ -51,13 +51,14 @@
 #ifdef HAVE_POLL
 static int sr;
 static struct pollfd *fds = NULL; /* working set */
-static int *fdw_ridx = NULL;
+static int *_rridx = NULL;
+static int *_ridx = NULL;
 static unsigned nofds;
 
 static int fdw_poll_init(int nfds);
 static int fdw_poll_close(void);
-static int fdw_poll_add_fd(int fd, t_fdwatch_type rw);
-static int fdw_poll_del_fd(int fd);
+static int fdw_poll_add_fd(int idx, t_fdwatch_type rw);
+static int fdw_poll_del_fd(int idx);
 static int fdw_poll_watch(long timeout_msecs);
 static void fdw_poll_handle(void);
 
@@ -74,12 +75,14 @@ static int fdw_poll_init(int nfds)
 {
     int i;
 
-    fdw_ridx = xmalloc(sizeof(int) * nfds);
+    _ridx = xmalloc(sizeof(int) * nfds);
     fds = xmalloc(sizeof(struct pollfd) * nfds);
+    _rridx = xmalloc(sizeof(int) * nfds);
 
     memset(fds, 0, sizeof(struct pollfd) * nfds);
+    memset(_rridx, 0, sizeof(int) * nfds);
 /* I would use a memset with 255 but that is dirty and doesnt gain us anything */
-    for(i = 0; i < nfds; i++) fdw_ridx[i] = -1;
+    for(i = 0; i < nfds; i++) _ridx[i] = -1;
     nofds = sr = 0;
 
     eventlog(eventlog_level_info, __FUNCTION__, "fdwatch poll() based layer initialized (max %d sockets)", nfds);
@@ -89,27 +92,30 @@ static int fdw_poll_init(int nfds)
 static int fdw_poll_close(void)
 {
     if (fds) { xfree((void *)fds); fds = NULL; }
-    if (fdw_ridx) { xfree((void *)fdw_ridx); fdw_ridx = NULL; }
+    if (_ridx) { xfree((void *)_ridx); _ridx = NULL; }
+    if (_rridx) { xfree((void *)_rridx); _rridx = NULL; }
     nofds = sr = 0;
 
     return 0;
 }
 
-static int fdw_poll_add_fd(int fd, t_fdwatch_type rw)
+static int fdw_poll_add_fd(int idx, t_fdwatch_type rw)
 {
     static int ridx;
 
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d rw: %d", fd, rw);
-    if (fdw_ridx[fd] < 0) {
+    if (_ridx[idx] < 0) {
 	ridx = nofds++;
-	fds[ridx].fd = fd;
-	fdw_ridx[fd] = ridx;
+	fds[ridx].fd = fdw_fd(fdw_fds + idx);
+	_ridx[idx] = ridx;
+	_rridx[ridx] = idx;
 //	eventlog(eventlog_level_trace, __FUNCTION__, "adding new fd on %d", ridx);
     } else {
-	if (fds[fdw_ridx[fd]].fd != fd) {
+	if (fds[_ridx[idx]].fd != fdw_fd(fdw_fds + idx)) {
+	    eventlog(eventlog_level_error,__FUNCTION__,"BUG: found existent poll_fd entry for same idx with different fd");
 	    return -1;
 	}
-	ridx = fdw_ridx[fd];
+	ridx = _ridx[idx];
 //	eventlog(eventlog_level_trace, __FUNCTION__, "updating fd on %d", ridx);
     }
 
@@ -120,21 +126,22 @@ static int fdw_poll_add_fd(int fd, t_fdwatch_type rw)
     return 0;
 }
 
-static int fdw_poll_del_fd(int fd)
+static int fdw_poll_del_fd(int idx)
 {
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd);
-    if (fdw_ridx[fd] < 0 || !nofds) return -1;
+    if (_ridx[idx] < 0 || !nofds) return -1;
     if (sr > 0) 
 	eventlog(eventlog_level_error, __FUNCTION__, "BUG: called while still handling sockets");
 
     /* move the last entry to the deleted one and decrement nofds count */
     nofds--;
-    if (fdw_ridx[fd] < nofds) {
+    if (_ridx[idx] < nofds) {
 //	eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", tfds[nofds].fd);
-	fdw_ridx[fds[nofds].fd] = fdw_ridx[fd];
-	memcpy(fds + fdw_ridx[fd], fds + nofds, sizeof(struct pollfd));
+	_ridx[_rridx[nofds]] = _ridx[idx];
+	_rridx[_ridx[idx]] = _rridx[nofds];
+	memcpy(fds + _ridx[idx], fds + nofds, sizeof(struct pollfd));
     }
-    fdw_ridx[fd] = -1;
+    _ridx[idx] = -1;
 
     return 0;
 }
@@ -148,24 +155,26 @@ static void fdw_poll_handle(void)
 {
     register unsigned i;
     int changed;
+    t_fdwatch_fd *cfd;
 
     for(i = 0; i < nofds && sr; i++) {
 	changed = 0;
+	cfd = fdw_fds + _rridx[i];
 
-	if (fdw_rw[fds[i].fd] & fdwatch_type_read && 
+	if (fdw_rw(cfd) & fdwatch_type_read && 
 	    fds[i].revents & (POLLIN  | POLLERR | POLLHUP | POLLNVAL))
 	{
-	    if (fdw_hnd[fds[i].fd](fdw_data[fds[i].fd], fdwatch_type_read) == -2) {
+	    if (fdw_hnd(cfd)(fdw_data(cfd), fdwatch_type_read) == -2) {
 		sr--;
 		continue;
 	    }
 	    changed = 1;
 	}
 
-	if (fdw_rw[fds[i].fd] & fdwatch_type_write && 
+	if (fdw_rw(cfd) & fdwatch_type_write && 
 	    fds[i].revents & (POLLOUT  | POLLERR | POLLHUP | POLLNVAL))
 	{
-	    fdw_hnd[fds[i].fd](fdw_data[fds[i].fd], fdwatch_type_write);
+	    fdw_hnd(cfd)(fdw_data(cfd), fdwatch_type_write);
 	    changed = 1;
 	}
 

@@ -69,6 +69,8 @@ extern int d2char_convert(char const * account, char const * charname);
 extern int d2char_find(char const * account, char const * charname);
 extern int d2char_get_savefile_name(char * filename,char const * charname);
 extern int d2char_get_infofile_name(char * filename,char const * account, char const * charname);
+extern int d2char_get_bak_savefile_name(char * filename,char const * charname);
+extern int d2char_get_bak_infofile_name(char * filename,char const * account, char const * charname);
 extern int d2char_get_infodir_name(char * filename,char const * account);
 extern int d2char_check_acctname(char const * name);
 extern int d2char_check_charname(char const * name);

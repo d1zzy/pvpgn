@@ -71,6 +71,7 @@ LINK_LIBS	= @LIBS@
 PARTS           = common compat d2cs d2dbs
 
 d2cs_SBIN       = ${SRC_SBINDIR}/d2cs
+d2cs_CONFS	= d2cs.conf address_translation.conf
 d2cs_OBJECTS	= ${SRC_D2CSDIR}/main.o \
 ${SRC_D2CSDIR}/d2gs.o \
 ${SRC_D2CSDIR}/handle_d2gs.o \
@@ -131,6 +132,7 @@ ${SRC_COMPATDIR}/memcpy.o \
 ${SRC_COMPATDIR}/memmove.o
 
 d2dbs_SBIN      = ${SRC_SBINDIR}/d2dbs
+d2dbs_CONFS	= d2dbs.conf
 d2dbs_OBJECTS	= ${SRC_D2DBSDIR}/main.o \
 ${SRC_D2DBSDIR}/charlock.o \
 ${SRC_D2DBSDIR}/d2ladder.o \
@@ -162,7 +164,7 @@ ${SRC_COMPATDIR}/strsep.o
 OBJECTS		= ${d2cs_OBJECTS} ${d2dbs_OBJECTS}
 SBINS           = ${d2cs_SBIN} ${d2dbs_SBIN}
 
-CONFS		= d2cs.conf d2dbs.conf address_translation.conf
+CONFS		= ${d2cs_CONFS} ${d2dbs_CONFS}
 
 SHARES		= newbie.save
 
@@ -305,11 +307,17 @@ ${SRC_ACDIR}/ansi2knr.o: ${SRC_ACDIR}/ansi2knr.c
 	@${RMF} $@
 	${COMPILE} ${SRC_ACDIR}/ansi2knr.c -o $@
 
-.c.o:
+SHOWHEADER:
+	@echo
+	@echo "Using compile command: ${COMPILE}"
+	@echo
+
+.c.o: SHOWHEADER
 	@${RMF} $@
-	@COMPILEANSI1@
-	@COMPILEANSI2@
-	@COMPILEANSI3@
+	@echo "Compiling $*.c"
+	@@COMPILEANSI1@
+	@@COMPILEANSI2@
+	@@COMPILEANSI3@
 
 .dep:
 	${MAKE} dep
@@ -321,12 +329,12 @@ dep:
 	    ${COMPILE} -MM `ls $$a/*.c` | sed -e "s@\(.*\)\.o:\(.*\)@$$a\/\1\.o:\2@g" 1>>.dep; \
 	done
 
-${d2cs_SBIN}: ${d2cs_OBJECTS}
+${d2cs_SBIN}: SHOWHEADER ${d2cs_OBJECTS}
 	@${INSTALL_DIRS} ${SRC_SBINDIR}
 	@${RMF} $@
 	${LINK} ${d2cs_OBJECTS} ${LINK_LIBS} -o $@
 
-${d2dbs_SBIN}: ${d2dbs_OBJECTS}
+${d2dbs_SBIN}: SHOWHEADER ${d2dbs_OBJECTS}
 	@${INSTALL_DIRS} ${SRC_SBINDIR}
 	@${RMF} $@
 	${LINK} ${d2dbs_OBJECTS} ${LINK_LIBS} -o $@

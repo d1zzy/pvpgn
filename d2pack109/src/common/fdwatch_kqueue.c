@@ -4,7 +4,7 @@
   *
   * Code is based on the ideas found in thttpd project.
   *
-  * *BSD kqueue() based backend
+  * *BSD kqueue(2) based backend
   *
   * This program is free software; you can redistribute it and/or
   * modify it under the terms of the GNU General Public License
@@ -55,13 +55,14 @@ static int sr;
 static int kq;
 static struct kevent *kqchanges = NULL;		/* changes to make to kqueue */
 static struct kevent *kqevents = NULL;		/* events to investigate */
-static int *fdw_rridx, *fdw_wridx;
-static unsigned nofds;
+/* r/w indices from idx to the kqchanges index where the change is stored */
+static int *_rridx, *_wridx;
+static unsigned nochanges;
 
 static int fdw_kqueue_init(int nfds);
 static int fdw_kqueue_close(void);
-static int fdw_kqueue_add_fd(int fd, t_fdwatch_type rw);
-static int fdw_kqueue_del_fd(int fd);
+static int fdw_kqueue_add_fd(int idx, t_fdwatch_type rw);
+static int fdw_kqueue_del_fd(int idx);
 static int fdw_kqueue_watch(long timeout_msecs);
 static void fdw_kqueue_handle(void);
 
@@ -82,17 +83,17 @@ static int fdw_kqueue_init(int nfds)
 	return -1;
     kqevents = (struct kevent *) xmalloc(sizeof(struct kevent) * nfds);
     kqchanges = (struct kevent *) xmalloc(sizeof(struct kevent) * nfds * 2);
-    fdw_rridx = (int *) xmalloc(sizeof(int) * nfds);
-    fdw_wridx = (int *) xmalloc(sizeof(int) * nfds);
+    _rridx = (int *) xmalloc(sizeof(int) * nfds);
+    _wridx = (int *) xmalloc(sizeof(int) * nfds);
 
     memset(kqchanges, 0, sizeof(struct kevent) * nfds);
     for (i = 0; i < nfds; i++)
     {
-	fdw_rridx[i] = -1;
-	fdw_wridx[i] = -1;
+	_rridx[i] = -1;
+	_wridx[i] = -1;
     }
     sr = 0;
-    nofds = 0;
+    nochanges = 0;
 
     eventlog(eventlog_level_info, __FUNCTION__, "fdwatch kqueue() based layer initialized (max %d sockets)", nfds);
     return 0;
@@ -100,144 +101,149 @@ static int fdw_kqueue_init(int nfds)
 
 static int fdw_kqueue_close(void)
 {
-    if (fdw_rridx) { xfree((void *) fdw_rridx); fdw_rridx = NULL; }
-    if (fdw_wridx) { xfree((void *) fdw_wridx); fdw_wridx = NULL; }
+    if (_rridx) { xfree((void *) _rridx); _rridx = NULL; }
+    if (_wridx) { xfree((void *) _wridx); _wridx = NULL; }
     if (kqchanges) { xfree((void *) kqchanges); kqchanges = NULL; }
     if (kqevents) { xfree((void *) kqevents); kqevents = NULL; }
     sr = 0;
-    nofds = 0;
+    nochanges = 0;
 
     return 0;
 }
 
-static int fdw_kqueue_add_fd(int fd, t_fdwatch_type rw)
+static int fdw_kqueue_add_fd(int idx, t_fdwatch_type rw)
 {
     static int ridx;
+    t_fdwatch_fd *cfd;
 
 /*    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d rw: %d", fd, rw); */
 
+    cfd = fdw_fds + idx;
     /* adding read event filter */
-    if (!(fdw_rw[fd] & fdwatch_type_read) && rw & fdwatch_type_read)
+    if (!(fdw_rw(cfd) & fdwatch_type_read) && rw & fdwatch_type_read)
     {
-	if (fdw_rridx[fd] >= 0 && fdw_rridx[fd] < nofds && kqchanges[fdw_rridx[fd]].ident == fd)
+	if (_rridx[idx] >= 0 && _rridx[idx] < nochanges && kqchanges[_rridx[idx]].ident == fdw_fd(cfd))
 	{
-	    ridx = fdw_rridx[fd];
+	    ridx = _rridx[idx];
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (read) fd on %d", ridx); */
 	} else {
-	    ridx = nofds++;
-	    fdw_rridx[fd] = ridx;
+	    ridx = nochanges++;
+	    _rridx[idx] = ridx;
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (read) fd on %d", ridx); */
 	}
-	EV_SET(kqchanges + ridx, fd, EVFILT_READ, EV_ADD, 0, 0, 0);
+	EV_SET(kqchanges + ridx, fdw_fd(cfd), EVFILT_READ, EV_ADD, 0, 0, (void*)idx);
     } 
-    else if (fdw_rw[fd] & fdwatch_type_read && !( rw & fdwatch_type_read))
+    else if (fdw_rw(cfd) & fdwatch_type_read && !( rw & fdwatch_type_read))
     {
-	if (fdw_rridx[fd] >= 0 && fdw_rridx[fd] < nofds && kqchanges[fdw_rridx[fd]].ident == fd)
+	if (_rridx[idx] >= 0 && _rridx[idx] < nochanges && kqchanges[_rridx[idx]].ident == fdw_fd(cfd))
 	{
-	    ridx = fdw_rridx[fd];
+	    ridx = _rridx[idx];
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (read) fd on %d", ridx); */
 	} else {
-	    ridx = nofds++;
-	    fdw_rridx[fd] = ridx;
+	    ridx = nochanges++;
+	    _rridx[idx] = ridx;
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (read) fd on %d", ridx); */
 	}
-	EV_SET(kqchanges + ridx, fd, EVFILT_READ, EV_DELETE, 0, 0, 0);
+	EV_SET(kqchanges + ridx, fdw_fd(cfd), EVFILT_READ, EV_DELETE, 0, 0, (void*)idx);
     }
 
     /* adding write event filter */
-    if (!(fdw_rw[fd] & fdwatch_type_write) && rw & fdwatch_type_write)
+    if (!(fdw_rw(cfd) & fdwatch_type_write) && rw & fdwatch_type_write)
     {
-	if (fdw_wridx[fd] >= 0 && fdw_wridx[fd] < nofds && kqchanges[fdw_wridx[fd]].ident == fd)
+	if (_wridx[idx] >= 0 && _wridx[idx] < nochanges && kqchanges[_wridx[idx]].ident == fdw_fd(cfd))
 	{
-	    ridx = fdw_wridx[fd];
+	    ridx = _wridx[idx];
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (write) fd on %d", ridx); */
 	} else {
-	    ridx = nofds++;
-	    fdw_wridx[fd] = ridx;
+	    ridx = nochanges++;
+	    _wridx[idx] = ridx;
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (write) fd on %d", ridx); */
 	}
-	EV_SET(kqchanges + ridx, fd, EVFILT_WRITE, EV_ADD, 0, 0, 0);
+	EV_SET(kqchanges + ridx, fdw_fd(cfd), EVFILT_WRITE, EV_ADD, 0, 0, (void*)idx);
     }
-    else if (fdw_rw[fd] & fdwatch_type_write && !(rw & fdwatch_type_write))
+    else if (fdw_rw(cfd) & fdwatch_type_write && !(rw & fdwatch_type_write))
     {
-	if (fdw_wridx[fd] >= 0 && fdw_wridx[fd] < nofds && kqchanges[fdw_wridx[fd]].ident == fd)
+	if (_wridx[idx] >= 0 && _wridx[idx] < nochanges && kqchanges[_wridx[idx]].ident == fdw_fd(cfd))
 	{
-	    ridx = fdw_wridx[fd];
+	    ridx = _wridx[idx];
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (write) fd on %d", ridx); */
 	} else {
-	    ridx = nofds++;
-	    fdw_wridx[fd] = ridx;
+	    ridx = nochanges++;
+	    _wridx[idx] = ridx;
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (write) fd on %d", ridx); */
 	}
-	EV_SET(kqchanges + ridx, fd, EVFILT_WRITE, EV_DELETE, 0, 0, 0);
+	EV_SET(kqchanges + ridx, fdw_fd(cfd), EVFILT_WRITE, EV_DELETE, 0, 0, (void*)idx);
     }
 
     return 0;
 }
 
-static int fdw_kqueue_del_fd(int fd)
+static int fdw_kqueue_del_fd(int idx)
 {
+    t_fdwatch_fd *cfd;
+
 /*    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd); */
     if (sr > 0) 
 	eventlog(eventlog_level_error, __FUNCTION__, "BUG: called while still handling sockets");
 
+    cfd = fdw_fds + idx;
     /* the last event changes about this fd has not yet been sent to kernel */
-    if (fdw_rw[fd] & fdwatch_type_read &&
-        nofds && fdw_rridx[fd] >= 0 && fdw_rridx[fd] < nofds && 
-	kqchanges[fdw_rridx[fd]].ident == fd)
+    if (fdw_rw(cfd) & fdwatch_type_read &&
+        nochanges && _rridx[idx] >= 0 && _rridx[idx] < nochanges && 
+	kqchanges[_rridx[idx]].ident == fdw_fd(cfd))
     {
-	nofds--;
-	if (fdw_rridx[fd] < nofds)
+	nochanges--;
+	if (_rridx[idx] < nochanges)
 	{
-	    int tmp;
+	    int oidx;
 
-	    tmp = kqchanges[nofds].ident;
-	    if (kqchanges[nofds].filter == EVFILT_READ && 
-		fdw_rridx[tmp] == nofds)
+	    oidx = (int)(kqchanges[nochanges].udata);
+	    if (kqchanges[nochanges].filter == EVFILT_READ && 
+		_rridx[oidx] == nochanges)
 	    {
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", kqchanges[rnfds].ident); */
-		fdw_rridx[tmp] = fdw_rridx[fd];
-		memcpy(kqchanges + fdw_rridx[fd], kqchanges + nofds, sizeof(struct kevent));
+		_rridx[oidx] = _rridx[idx];
+		memcpy(kqchanges + _rridx[idx], kqchanges + nochanges, sizeof(struct kevent));
 	    }
 
-	    if (kqchanges[nofds].filter == EVFILT_WRITE &&
-		fdw_wridx[tmp] == nofds)
+	    if (kqchanges[nochanges].filter == EVFILT_WRITE &&
+		_wridx[oidx] == nochanges)
 	    {
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", kqchanges[rnfds].ident); */
-		fdw_wridx[tmp] = fdw_rridx[fd];
-		memcpy(kqchanges + fdw_rridx[fd], kqchanges + nofds, sizeof(struct kevent));
+		_wridx[oidx] = _rridx[idx];
+		memcpy(kqchanges + _rridx[idx], kqchanges + nochanges, sizeof(struct kevent));
 	    }
 	}
-	fdw_rridx[fd] = -1;
+	_rridx[idx] = -1;
     }
 
-    if (fdw_rw[fd] & fdwatch_type_write &&
-        nofds && fdw_wridx[fd] >= 0 && fdw_wridx[fd] < nofds && 
-	kqchanges[fdw_wridx[fd]].ident == fd)
+    if (fdw_rw(cfd) & fdwatch_type_write &&
+        nochanges && _wridx[idx] >= 0 && _wridx[idx] < nochanges && 
+	kqchanges[_wridx[idx]].ident == fdw_fd(cfd))
     {
-	nofds--;
-	if (fdw_wridx[fd] < nofds)
+	nochanges--;
+	if (_wridx[idx] < nochanges)
 	{
-	    int tmp;
+	    int oidx;
 
-	    tmp = kqchanges[nofds].ident;
-	    if (kqchanges[nofds].filter == EVFILT_READ && 
-		fdw_rridx[tmp] == nofds)
+	    oidx = (int)(kqchanges[nochanges].udata);
+	    if (kqchanges[nochanges].filter == EVFILT_READ && 
+		_rridx[oidx] == nochanges)
 	    {
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", kqchanges[rnfds].ident); */
-		fdw_rridx[tmp] = fdw_wridx[fd];
-		memcpy(kqchanges + fdw_wridx[fd], kqchanges + nofds, sizeof(struct kevent));
+		_rridx[oidx] = _wridx[idx];
+		memcpy(kqchanges + _wridx[idx], kqchanges + nochanges, sizeof(struct kevent));
 	    }
 
-	    if (kqchanges[nofds].filter == EVFILT_WRITE &&
-		fdw_wridx[tmp] == nofds)
+	    if (kqchanges[nochanges].filter == EVFILT_WRITE &&
+		_wridx[oidx] == nochanges)
 	    {
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", kqchanges[rnfds].ident); */
-		fdw_wridx[tmp] = fdw_wridx[fd];
-		memcpy(kqchanges + fdw_wridx[fd], kqchanges + nofds, sizeof(struct kevent));
+		_wridx[oidx] = _wridx[idx];
+		memcpy(kqchanges + _wridx[idx], kqchanges + nochanges, sizeof(struct kevent));
 	    }
 	}
-	fdw_wridx[fd] = -1;
+	_wridx[idx] = -1;
     }
 
 /* here we presume the calling code does close() on the socket and if so
@@ -252,27 +258,27 @@ static int fdw_kqueue_watch(long timeout_msec)
 
     ts.tv_sec = timeout_msec / 1000L;
     ts.tv_nsec = (timeout_msec % 1000L) * 1000000L;
-    sr = kevent(kq, nofds > 0 ? kqchanges : NULL, nofds, kqevents, fdw_maxfd, &ts);
-    nofds = 0;
+    sr = kevent(kq, nochanges > 0 ? kqchanges : NULL, nochanges, kqevents, fdw_maxcons, &ts);
+    nochanges = 0;
     return sr;
 }
 
 static void fdw_kqueue_handle(void)
 {
     register unsigned i;
+    t_fdwatch_fd *cfd;
 
 /*    eventlog(eventlog_level_trace, __FUNCTION__, "called"); */
     for (i = 0; i < sr; i++)
     {
 /*      eventlog(eventlog_level_trace, __FUNCTION__, "checking %d ident: %d read: %d write: %d", i, kqevents[i].ident, kqevents[i].filter & EVFILT_READ, kqevents[i].filter & EVFILT_WRITE); */
-
-	if (fdw_rw[kqevents[i].ident] & fdwatch_type_read && kqevents[i].filter == EVFILT_READ)
-	    if (fdw_hnd[kqevents[i].ident] (fdw_data[kqevents[i].ident], fdwatch_type_read) == -2)
+	cfd = fdw_fds + (int)kqevents[i].udata;
+	if (fdw_rw(cfd) & fdwatch_type_read && kqevents[i].filter == EVFILT_READ)
+	    if (fdw_hnd(cfd) (fdw_data(cfd), fdwatch_type_read) == -2)
 		continue;
 
-	if (fdw_rw[kqevents[i].ident] & fdwatch_type_write && kqevents[i].filter == EVFILT_WRITE)
-	    fdw_hnd[kqevents[i].ident] (fdw_data[kqevents[i].ident], fdwatch_type_write);
-
+	if (fdw_rw(cfd) & fdwatch_type_write && kqevents[i].filter == EVFILT_WRITE)
+	    fdw_hnd(cfd) (fdw_data(cfd), fdwatch_type_write);
     }
     sr = 0;
 }
