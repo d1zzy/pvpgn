@@ -52,9 +52,10 @@
 #include "cmdline_parse.h"
 #include "version.h"
 #include "common/eventlog.h"
-#include "common/setup_after.h"
 #include "handle_signal.h"
 #include "dbserver.h"
+#include "common/xalloc.h"
+#include "common/setup_after.h"
 
 static FILE * eventlog_fp;
 
@@ -138,12 +139,7 @@ static int config_init(int argc, char * * argv)
     eventlog_clear_level();
     if ((levels = d2dbs_prefs_get_loglevels()))
     {
-        if (!(temp = strdup(levels)))
-        {
-         eventlog(eventlog_level_fatal,__FUNCTION__,"could not allocate memory for temp (exiting)");
-         return -1;
-        }
-
+        temp = xstrdup(levels);
         tok = strtok(temp,","); /* strtok modifies the string it is passed */
 
         while (tok)
@@ -153,7 +149,7 @@ static int config_init(int argc, char * * argv)
         tok = strtok(NULL,",");
         }
 
-        free(temp);
+        xfree(temp);
     }
 
 

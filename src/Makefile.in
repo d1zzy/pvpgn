@@ -68,7 +68,7 @@ COMPILE		= @CC@ @CFLAGS@ ${CPPFLAGS} -fno-strict-aliasing -c
 LINK		= @CC@ @CFLAGS@ @LDFLAGS@
 LINK_LIBS	= @LIBS@
 
-PARTS           = bnetd common compat d2cs d2dbs
+PARTS           = common compat d2cs d2dbs
 
 d2cs_SBIN       = ${SRC_SBINDIR}/d2cs
 d2cs_OBJECTS	= ${SRC_D2CSDIR}/main.o \
@@ -111,6 +111,7 @@ ${SRC_COMMONDIR}/fdwatch_kqueue.o \
 ${SRC_COMMONDIR}/rlimit.o \
 ${SRC_COMMONDIR}/trans.o \
 ${SRC_COMMONDIR}/tag.o \
+${SRC_COMMONDIR}/xalloc.o \
 ${SRC_COMPATDIR}/inet_aton.o \
 ${SRC_COMPATDIR}/inet_ntoa.o \
 ${SRC_COMPATDIR}/strdup.o \
@@ -153,6 +154,7 @@ ${SRC_COMMONDIR}/fdwatch_epoll.o \
 ${SRC_COMMONDIR}/fdwatch_kqueue.o \
 ${SRC_COMMONDIR}/rlimit.o \
 ${SRC_COMMONDIR}/tag.o \
+${SRC_COMMONDIR}/xalloc.o \
 ${SRC_COMPATDIR}/psock.o \
 ${SRC_COMPATDIR}/strerror.o \
 ${SRC_COMPATDIR}/strsep.o

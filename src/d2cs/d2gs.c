@@ -70,6 +70,7 @@
 #include "common/addr.h"
 #include "common/list.h"
 #include "common/eventlog.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 static t_list		* d2gslist_head=NULL;
@@ -83,7 +84,7 @@ extern t_list *	d2gslist(void)
 
 extern int d2gslist_create(void)
 {
-	if (!(d2gslist_head=list_create())) return -1;
+	d2gslist_head=list_create();
 	return d2gslist_reload(prefs_get_d2gs_list());
 }
 
@@ -186,10 +187,7 @@ extern t_d2gs * d2gs_create(char const * ipaddr)
 		eventlog(eventlog_level_error,__FUNCTION__,"game server %s already in list",ipaddr);
 		return NULL;
 	}
-	if (!(gs=malloc(sizeof(t_d2gs)))) {;
-		eventlog(eventlog_level_error,__FUNCTION__,"error allocate memory");
-		return NULL;
-	}
+	gs=xmalloc(sizeof(t_d2gs));
 	gs->ip=ntohl(ip);
 	gs->id=++d2gs_id;
 	gs->active=0;
@@ -201,7 +199,7 @@ extern t_d2gs * d2gs_create(char const * ipaddr)
 
 	if (list_append_data(d2gslist_head,gs)<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error add gs to list");
-		free(gs);
+		xfree(gs);
 		return NULL;
 	}
 	eventlog(eventlog_level_info,__FUNCTION__,"added game server %s (id: %d) to list",ipaddr,gs->id);
@@ -220,7 +218,7 @@ extern int d2gs_destroy(t_d2gs * gs, t_elem ** curr)
 		d2gs_deactive(gs, gs->connection);
 	}
 	eventlog(eventlog_level_info,__FUNCTION__,"removed game server %s (id: %d) from list",addr_num_to_ip_str(gs->ip),gs->id);
-	free(gs);
+	xfree(gs);
 	return 0;
 }
 

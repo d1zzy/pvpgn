@@ -48,7 +48,6 @@ t_list;
 
 extern t_list * list_create(void) ;
 extern int list_destroy(t_list * list);
-extern int list_check(t_list const * list);
 extern unsigned int list_get_length(t_list const * list);
 extern int list_prepend_data(t_list * list, void * data);
 extern int list_append_data(t_list * list, void * data);

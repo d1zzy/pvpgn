@@ -33,6 +33,7 @@
 #endif
 #include "common/eventlog.h"
 #include "common/hashtable.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 
@@ -61,17 +62,12 @@ static t_entry * hashtable_entry_export(t_internentry * entry, t_hashtable const
 	eventlog(eventlog_level_error,"hashtable_entry_export","got bad row %u (max %u)",row,hashtable->num_rows-1);
 	return NULL;
     }
-    
-    if (!(temp = malloc(sizeof(t_entry))))
-    {
-	eventlog(eventlog_level_error,"hashtable_entry_export","could not allocate memory for temp");
-	return NULL;
-    }
-    
+
+    temp = xmalloc(sizeof(t_entry));
     temp->row = row;
     temp->real = entry;
     temp->hashtable = hashtable;
-    
+
     return temp;
 }
 
@@ -86,20 +82,9 @@ extern t_hashtable * hashtable_create(unsigned int num_rows)
 	eventlog(eventlog_level_error,"hashtable_create","num_rows must be at least 1");
 	return NULL;
     }
-    
-    if (!(new = malloc(sizeof(t_hashtable))))
-    {
-	eventlog(eventlog_level_error,"hashtable_create","could not allocate memory for new");
-	return NULL;
-    }
-    
-    if (!(new->rows = malloc(sizeof(t_internentry *)*num_rows)))
-    {
-	eventlog(eventlog_level_error,"hashtable_create","could not allocate memory for new->rows");
-	free(new);
-	return NULL;
-    }
-    
+
+    new = xmalloc(sizeof(t_hashtable));
+    new->rows = xmalloc(sizeof(t_internentry *)*num_rows);
     new->num_rows = num_rows;
     new->len = 0;
     for (i=0; i<num_rows; i++)
@@ -124,8 +109,8 @@ extern int hashtable_destroy(t_hashtable * hashtable)
 	if (hashtable->rows[i])
 	    eventlog(eventlog_level_error,"hashtable_destroy","got non-empty hashtable");
     
-    free(hashtable->rows);
-    free(hashtable);
+    xfree(hashtable->rows);
+    xfree(hashtable);
     
     return 0;
 }
@@ -160,7 +145,7 @@ extern int hashtable_purge(t_hashtable * hashtable)
 	    {
 		if (change)
 		    *change = next;
-		free(curr);
+		xfree(curr);
 	    }
 	    else
 	    {
@@ -269,12 +254,8 @@ extern int hashtable_insert_data(t_hashtable * hashtable, void * data, unsigned 
 	eventlog(eventlog_level_error,"hashtable_insert_data","got NULL hashtable");
 	return -1;
     }
-    
-    if (!(entry = malloc(sizeof(t_internentry))))
-    {
-	eventlog(eventlog_level_error,"hashtable_insert_data","could not allocate memory for entry");
-	return -1;
-    }
+
+    entry = xmalloc(sizeof(t_internentry));
     entry->data = data;
     
     row = hash%hashtable->num_rows;
@@ -573,7 +554,7 @@ extern int hashtable_entry_release(t_entry * entry)
 #ifdef HASHTABLE_DEBUG
     hashtable_check(entry->hashtable);
 #endif
-    free(entry);
+    xfree(entry);
     return 0;
 }
 

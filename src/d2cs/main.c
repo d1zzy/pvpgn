@@ -61,6 +61,7 @@
 #include "common/trans.h"
 #include "common/fdwatch.h"
 #include "common/eventlog.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 static int init(void);
@@ -161,12 +162,7 @@ static int config_init(int argc, char * * argv)
     eventlog_clear_level();
     if ((levels = d2cs_prefs_get_loglevels()))
     {
-        if (!(temp = strdup(levels)))
-        {
-         eventlog(eventlog_level_fatal,__FUNCTION__,"could not allocate memory for temp (exiting)");
-         return -1;
-        }
-
+        temp = xstrdup(levels);
         tok = strtok(temp,","); /* strtok modifies the string it is passed */
 
         while (tok)
@@ -176,7 +172,7 @@ static int config_init(int argc, char * * argv)
         tok = strtok(NULL,",");
         }
 
-        free(temp);
+        xfree(temp);
     }
 
 	if (cmdline_get_logstderr()) {
