@@ -55,7 +55,6 @@ extern t_packet * packet_create(t_packet_class class)
     t_packet * temp;
     
     if (class!=packet_class_init &&
-	class!=packet_class_bnet &&
 	class!=packet_class_raw &&
 	class!=packet_class_d2game &&
         class!=packet_class_d2cs &&
@@ -128,8 +127,6 @@ extern t_packet_class packet_get_class(t_packet const * packet)
     {
     case packet_class_init:
 	return packet_class_init;
-    case packet_class_bnet:
-        return packet_class_bnet;
     case packet_class_raw:
         return packet_class_raw;
     case packet_class_d2game:
@@ -161,8 +158,6 @@ extern char const * packet_get_class_str(t_packet const * packet)
     {
     case packet_class_init:
         return "init";
-    case packet_class_bnet:
-        return "bnet";
     case packet_class_raw:
         return "raw";
     case packet_class_d2game:
@@ -195,7 +190,6 @@ extern int packet_set_class(t_packet * packet, t_packet_class class)
 	return -1;
     }
     if (class!=packet_class_init &&
-	class!=packet_class_bnet &&
 	class!=packet_class_raw &&
 	class!=packet_class_d2game &&
         class!=packet_class_d2cs &&
@@ -223,14 +217,6 @@ extern unsigned int packet_get_type(t_packet const * packet)
     {
     case packet_class_init:
 	return CLIENT_INITCONN; /* all init packets are of this type */
-	
-    case packet_class_bnet:
-	if (packet_get_size(packet)<sizeof(t_bnet_header))
-	{
-	    eventlog(eventlog_level_error,"packet_get_type","bnet packet is shorter than header (len=%u)",packet_get_size(packet));
-	    return 0;
-	}
-	return (unsigned int)bn_short_get(packet->u.bnet.h.type);
 	
     case packet_class_raw:
 	return 0; /* raw packets don't have a type, but don't warn because the packet dump tries anyway */
@@ -287,139 +273,6 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	{
 	case packet_class_init:
 	    return "CLIENT_INITCONN";
-	case packet_class_bnet:
-	    if (packet_get_size(packet)<sizeof(t_bnet_header))
-	    {
-		eventlog(eventlog_level_error,"packet_get_type_str","packet is shorter than header (len=%u)",packet_get_size(packet));
-		return "unknown";
-	    }
-	    switch (bn_short_get(packet->u.bnet.h.type))
-	    {
-	    case CLIENT_COMPINFO1:
-		return "CLIENT_COMPINFO1";
-	    case CLIENT_COMPINFO2:
-		return "CLIENT_COMPINFO2";
-	    case CLIENT_COUNTRYINFO1:
-		return "CLIENT_COUNTRYINFO1";
-	    case CLIENT_COUNTRYINFO_109:
-		return "CLIENT_COUNTRYINFO_109";
-	    case CLIENT_CREATEACCTREQ1:
-		return "CLIENT_CREATEACCTREQ1";
-	    case CLIENT_UNKNOWN_2B:
-		return "CLIENT_UNKNOWN_2B";
-	    case CLIENT_PROGIDENT:
-		return "CLIENT_PROGIDENT";
-	    case CLIENT_AUTHREQ1:
-		return "CLIENT_AUTHREQ1";
-	    case CLIENT_AUTHREQ_109:
-		return "CLIENT_AUTHREQ_109";
-	    case CLIENT_REGSNOOPREPLY:
-		return "CLIENT_REGSNOOPREPLY";
-	    case CLIENT_ICONREQ:
-		return "CLIENT_ICONREQ";
-	    case CLIENT_LADDERSEARCHREQ:
-		return "CLIENT_LADDERSEARCHREQ";
-	    case CLIENT_CDKEY:
-		return "CLIENT_CDKEY";
-	    case CLIENT_CDKEY2:
-		return "CLIENT_CDKEY2";
-	    case CLIENT_CDKEY3:
-		return "CLIENT_CDKEY3";		
-	    case CLIENT_REALMLISTREQ:
-		return "CLIENT_REALMLISTREQ";
-	    case CLIENT_REALMJOINREQ:
-		return "CLIENT_REALMJOINREQ";
-	    case CLIENT_UNKNOWN_37:
-		return "CLIENT_UNKNOWN_37";
-	    case CLIENT_UNKNOWN_39:
-		return "CLIENT_UNKNOWN_39";
-	    case CLIENT_LOGINREQ2:
-		return "CLIENT_LOGINREQ2";
-	    case CLIENT_MOTD_W3:
-		return "CLIENT_MOTD_W3";
-	    case CLIENT_LOGINREQ_W3:
-                return "CLIENT_LOGINREQ_W3"; 
-	    case CLIENT_LOGONPROOFREQ:
-                return "CLIENT_LOGONPROOFREQ";
-	    case CLIENT_CREATEACCOUNT_W3:
-		return "CLIENT_CREATEACCOUNT_W3";
-	    case CLIENT_CHANGEGAMEPORT:
-                return "CLIENT_CHANGEGAMEPORT"; 
-            case CLIENT_CREATEACCTREQ2:
-		return "CLIENT_CREATEACCTREQ2";
-	    case CLIENT_STATSREQ:
-		return "CLIENT_STATSREQ";
-	    case CLIENT_LOGINREQ1:
-		return "CLIENT_LOGINREQ1";
-	    case CLIENT_CHANGEPASSREQ:
-		return "CLIENT_CHANGEPASSREQ";
-	    case CLIENT_PLAYERINFOREQ:
-		return "CLIENT_PLAYERINFOREQ";
-	    case CLIENT_PROGIDENT2:
-		return "CLIENT_PROGIDENT2";
-	    case CLIENT_JOINCHANNEL:
-		return "CLIENT_JOINCHANNEL";
-	    case CLIENT_MESSAGE:
-		return "CLIENT_MESSAGE";
-	    case CLIENT_GAMELISTREQ:
-		return "CLIENT_GAMELISTREQ";
-	    case CLIENT_STARTGAME1:
-		return "CLIENT_STARTGAME1";
-	    case CLIENT_UNKNOWN_1B:
-		return "CLIENT_UNKNOWN_1B";
-	    case CLIENT_STARTGAME3:
-		return "CLIENT_STARTGAME3";
-	    case CLIENT_STARTGAME4:
-		return "CLIENT_STARTGAME4";
-	    case CLIENT_CLOSEGAME:
-		return "CLIENT_CLOSEGAME";
-	    case CLIENT_CLOSEGAME2:
-		return "CLIENT_CLOSEGAME2";
-	    case CLIENT_LEAVECHANNEL:
-		return "CLIENT_LEAVECHANNEL";
-	    case CLIENT_MAPAUTHREQ1:
-		return "CLIENT_MAPAUTHREQ1";
-	    case CLIENT_MAPAUTHREQ2:
-		return "CLIENT_MAPAUTHREQ2";
-	    case CLIENT_ADREQ:
-		return "CLIENT_ADREQ";
-	    case CLIENT_ADACK:
-		return "CLIENT_ADACK";
-	    case CLIENT_ADCLICK:
-		return "CLIENT_ADCLICK";
-	    case CLIENT_ADCLICK2:
-		return "CLIENT_ADCLICK2";
-	    case CLIENT_UNKNOWN_17:
-		return "CLIENT_UNKNOWN_17";
-	    case CLIENT_UNKNOWN_24:
-		return "CLIENT_UNKNOWN_24";
-	    case CLIENT_LADDERREQ:
-		return "CLIENT_LADDERREQ";
-	    case CLIENT_ECHOREPLY:
-		return "CLIENT_ECHOREPLY";
-	    case CLIENT_PINGREQ:
-		return "CLIENT_PINGREQ";
-	    case CLIENT_GAME_REPORT:
-		return "CLIENT_GAME_REPORT";
-	    case CLIENT_JOIN_GAME:
-		return "CLIENT_JOIN_GAME";
-	    case CLIENT_STATSUPDATE:
-		return "CLIENT_STATSUPDATE";
-	    case CLIENT_REALMJOINREQ_109:
-		return "CLIENT_REALMJOINREQ_109";
-	    case CLIENT_CHANGECLIENT:
-		return "CLIENT_CHANGECLIENT";
-	    case CLIENT_SETEMAILREPLY:
-		return "CLIENT_SETEMAILREPLY";
-	    case CLIENT_GETPASSWORDREQ:
-		return "CLIENT_GETPASSWORDREQ";
-	    case CLIENT_CHANGEEMAILREQ:
-		return "CLIENT_CHANGEEMAILREQ";
-	    case CLIENT_CRASHDUMP:
-		return "CLIENT_CRASHDUMP";
-	    }
-	    return "unknown";
-	    
 	case packet_class_raw:
 	    return "CLIENT_RAW";
 	
@@ -455,103 +308,6 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	{
 	case packet_class_init:
 	    return "unknown";
-	case packet_class_bnet:
-	    if (packet_get_size(packet)<sizeof(t_bnet_header))
-	    {
-		eventlog(eventlog_level_error,"packet_get_type_str","packet is shorter than header (len=%u)",packet_get_size(packet));
-		return "unknown";
-	    }
-	    switch (bn_short_get(packet->u.bnet.h.type))
-	    {
-	    case SERVER_COMPREPLY:
-		return "SERVER_COMPREPLY";
-	    case SERVER_SESSIONKEY1:
-		return "SERVER_SESSIONKEY1";
-	    case SERVER_SESSIONKEY2:
-		return "SERVER_SESSIONKEY2";
-	    case SERVER_CREATEACCTREPLY1:
-		return "SERVER_CREATEACCTREPLY1";
-	    case SERVER_AUTHREQ1:
-		return "SERVER_AUTHREQ1";
-	    case SERVER_AUTHREQ_109:
-		return "SERVER_AUTHREQ_109";
-	    case SERVER_AUTHREPLY1:
-		return "SERVER_AUTHREPLY1";
-	    case SERVER_AUTHREPLY_109:
-		return "SERVER_AUTHREPLY_109";
-	    case SERVER_REGSNOOPREQ:
-		return "SERVER_REGSNOOPREQ";
-	    case SERVER_ICONREPLY:
-		return "SERVER_ICONREPLY";
-	    case SERVER_LADDERSEARCHREPLY:
-		return "SERVER_LADDERSEARCHREPLY";
-	    case SERVER_CDKEYREPLY:
-		return "SERVER_CDKEYREPLY";
-	    case SERVER_CDKEYREPLY2:
-		return "SERVER_CDKEYREPLY2";
-	    case SERVER_CDKEYREPLY3:
-		return "SERVER_CDKEYREPLY3";
-	    case SERVER_REALMLISTREPLY:
-		return "SERVER_REALMLISTREPLY";
-	    case SERVER_REALMJOINREPLY:
-		return "SERVER_REALMJOINREPLY";
-	    case SERVER_UNKNOWN_37:
-		return "SERVER_UNKNOWN_37";
-	    case SERVER_MOTD_W3:
-		return "SERVER_MOTD_W3";
-	    case SERVER_LOGINREPLY_W3:
-		return "SERVER_LOGINREPLY_W3";
-	    case SERVER_LOGONPROOFREPLY:
-		return "SERVER_LOGONPROOFREPLY";				
-	    case SERVER_CREATEACCOUNT_W3:
-		return "SERVER_CREATEACCTREPLY2";
-	    case SERVER_LOGINREPLY2:
-		return "SERVER_LOGINREPLY2";
-	    case SERVER_CREATEACCTREPLY2:
-		return "SERVER_CREATEACCOUNT_W3";		
-	    case SERVER_STATSREPLY:
-		return "SERVER_STATSREPLY";
-	    case SERVER_LOGINREPLY1:
-		return "SERVER_LOGINREPLY1";
-	    case SERVER_CHANGEPASSACK:
-		return "SERVER_CHANGEPASSACK";
-	    case SERVER_PLAYERINFOREPLY:
-		return "SERVER_PLAYERINFOREPLY";
-	    case SERVER_CHANNELLIST:
-		return "SERVER_CHANNELLIST";
-	    case SERVER_SERVERLIST:
-		return "SERVER_SERVERLIST";
-	    case SERVER_MESSAGE:
-		return "SERVER_MESSAGE";
-	    case SERVER_GAMELISTREPLY:
-		return "SERVER_GAMELISTREPLY";
-	    case SERVER_STARTGAME1_ACK:
-		return "SERVER_STARTGAME1_ACK";
-	    case SERVER_STARTGAME3_ACK:
-		return "SERVER_STARTGAME3_ACK";
-	    case SERVER_STARTGAME4_ACK:
-		return "SERVER_STARTGAME4_ACK";
-	    case SERVER_MAPAUTHREPLY1:
-		return "SERVER_MAPAUTHREPLY1";
-	    case SERVER_MAPAUTHREPLY2:
-		return "SERVER_MAPAUTHREPLY2";
-	    case SERVER_ADREPLY:
-		return "SERVER_ADREPLY";
-	    case SERVER_ADCLICKREPLY2:
-		return "SERVER_ADCLICKREPLY2";
-	    case SERVER_LADDERREPLY:
-		return "SERVER_LADDERREPLY";
-	    case SERVER_ECHOREQ:
-		return "SERVER_ECHOREQ";
-	    case SERVER_PINGREPLY:
-		return "SERVER_PINGREPLY";
-	    case SERVER_REALMJOINREPLY_109:
-		return "SERVER_REALMJOINREPLY_109";
-	    case SERVER_SETEMAILREQ:
-		return "SERVER_SETEMAILREQ";
-	    }
-	    return "unknown";
-	    
 	case packet_class_raw:
 	    return "SERVER_RAW";
 	    
@@ -604,20 +360,6 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	    eventlog(eventlog_level_error,"packet_set_type","init packet type 0x%08x is not valid",type);
 	    return -1;
 	}
-	return 0;
-	
-    case packet_class_bnet:
-	if (packet_get_size(packet)<sizeof(t_bnet_header))
-	{
-	    eventlog(eventlog_level_error,"packet_set_type","bnet packet is shorter than header (len=%u)",packet_get_size(packet));
-	    return -1;
-	}
-	if (type>MAX_NORMAL_TYPE)
-	{
-	    eventlog(eventlog_level_error,"packet_set_type","bnet packet type 0x%08x is too large",type);
-	    return -1;
-	}
-	bn_short_set(&packet->u.bnet.h.type,(unsigned short)type);
 	return 0;
 	
     case packet_class_d2game:
@@ -683,9 +425,6 @@ extern unsigned int packet_get_size(t_packet const * packet)
     case packet_class_init:
         size = sizeof(t_client_initconn);
 	break;
-    case packet_class_bnet:
-        size = (unsigned int)bn_short_get(packet->u.bnet.h.size);
-	break;
     case packet_class_raw:
 	size = packet->len;
 	break;
@@ -738,14 +477,6 @@ extern int packet_set_size(t_packet * packet, unsigned int size)
 	}
 	packet->len = size;
         return 0;
-    case packet_class_bnet:
-	if (size!=0 && size<sizeof(t_bnet_header))
-	{
-	    eventlog(eventlog_level_error,"packet_set_size","invalid size %u for bnet packet",size);
-	    return -1;
-	}
-        bn_short_set(&packet->u.bnet.h.size,size);
-        return 0;
     case packet_class_raw:
 	packet->len = size;
 	return 0;
@@ -780,8 +511,6 @@ extern unsigned int packet_get_header_size(t_packet const * packet)
     {
     case packet_class_init:
         return 0;
-    case packet_class_bnet:
-        return sizeof(t_bnet_header);
     case packet_class_raw:
         return 0;
     case packet_class_d2game:
