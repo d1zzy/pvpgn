@@ -74,7 +74,7 @@ extern t_pdir * p_opendir(const char * path) {
    t_pdir * pdir;
    
    if (path==NULL) {
-      eventlog(eventlog_level_error,"p_opendir","got NULL path");
+      eventlog(eventlog_level_error,__FUNCTION__,"got NULL path");
       return NULL;
    }
 /*   while(path[strlen(path)]=='/') path[strlen(path)]='\0'; */
@@ -83,7 +83,7 @@ extern t_pdir * p_opendir(const char * path) {
 
 #ifdef WIN32
    if (strlen(path)+1+3+1>_MAX_PATH) {
-      eventlog(eventlog_level_error,"p_opendir","WIN32: path too long");
+      eventlog(eventlog_level_error,__FUNCTION__,"WIN32: path too long");
       xfree(pdir);
       return NULL;
    }
@@ -95,7 +95,7 @@ extern t_pdir * p_opendir(const char * path) {
    memset(&pdir->fileinfo, 0, sizeof(pdir->fileinfo)); /* no need for compat because WIN32 always has memset() */
    pdir->lFindHandle = _findfirst(npath, &pdir->fileinfo);
    if (pdir->lFindHandle < 0) {
-      eventlog(eventlog_level_error,"p_opendir","WIN32: unable to open directory \"%s\" for reading (_findfirst: %s)",npath,strerror(errno));
+      eventlog(eventlog_level_error,__FUNCTION__,"WIN32: unable to open directory \"%s\" for reading (_findfirst: %s)",npath,strerror(errno));
       xfree((void *)pdir->path); /* avoid warning */
       xfree(pdir);
       return NULL;
@@ -105,7 +105,7 @@ extern t_pdir * p_opendir(const char * path) {
 
    pdir->path=xstrdup(path);
    if ((pdir->dir=opendir(path))==NULL) {
-      eventlog(eventlog_level_error,"p_opendir","POSIX: unable to open directory \"%s\" for reading (opendir: %s)",path,strerror(errno));
+      eventlog(eventlog_level_error,__FUNCTION__,"POSIX: unable to open directory \"%s\" for reading (opendir: %s)",path,strerror(errno));
       xfree((void *)pdir->path); /* avoid warning */
       xfree(pdir);
       return NULL;
@@ -113,18 +113,18 @@ extern t_pdir * p_opendir(const char * path) {
    
 #endif /* WIN32-POSIX */
    
-   eventlog(eventlog_level_debug,"p_opendir","successfully opened dir: %s",path);
+   eventlog(eventlog_level_debug,__FUNCTION__,"successfully opened dir: %s",path);
    return pdir;
 }
 
 
 extern int p_rewinddir(t_pdir * pdir) {
    if (pdir==NULL) {
-      eventlog(eventlog_level_error,"p_rewinddir","got NULL pdir");
+      eventlog(eventlog_level_error,__FUNCTION__,"got NULL pdir");
       return -1;
    }
    if (pdir->path==NULL) {
-      eventlog(eventlog_level_error,"p_rewinddir","got pdir with NULL path");
+      eventlog(eventlog_level_error,__FUNCTION__,"got pdir with NULL path");
       return -1;
    }
 #ifdef WIN32
@@ -133,7 +133,7 @@ extern int p_rewinddir(t_pdir * pdir) {
    if (pdir->status!=-1)
    {
        if (pdir->lFindHandle<0) {
-	   eventlog(eventlog_level_error,"p_rewinddir","WIN32: got negative lFindHandle");
+	   eventlog(eventlog_level_error,__FUNCTION__,"WIN32: got negative lFindHandle");
 	   return -1;
        }
        _findclose(pdir->lFindHandle);
@@ -142,13 +142,13 @@ extern int p_rewinddir(t_pdir * pdir) {
    memset(&pdir->fileinfo, 0, sizeof(pdir->fileinfo)); /* no need for compat because WIN32 always has memset() */
    pdir->lFindHandle = _findfirst(pdir->path, &pdir->fileinfo);
    if (pdir->lFindHandle < 0) {
-      eventlog(eventlog_level_error,"p_rewinddir","WIN32: unable to open directory \"%s\" for reading (_findfirst: %s)",pdir->path,strerror(errno));
+      eventlog(eventlog_level_error,__FUNCTION__,"WIN32: unable to open directory \"%s\" for reading (_findfirst: %s)",pdir->path,strerror(errno));
       pdir->status = -1;
       return -1;
    }
 #else /* POSIX */
    if (pdir->dir==NULL) {
-      eventlog(eventlog_level_error,"p_rewinddir","POSIX: got pdir with NULL dir");
+      eventlog(eventlog_level_error,__FUNCTION__,"POSIX: got pdir with NULL dir");
       return -1;
    }
    rewinddir(pdir->dir);
@@ -159,11 +159,11 @@ extern int p_rewinddir(t_pdir * pdir) {
 
 extern char const * p_readdir(t_pdir * pdir) {
    if (pdir==NULL) {
-      eventlog(eventlog_level_error,"p_readdir","got NULL pdir");
+      eventlog(eventlog_level_error,__FUNCTION__,"got NULL pdir");
       return NULL;
    }
    if (pdir->path==NULL) {
-      eventlog(eventlog_level_error,"p_readdir","got pdir with NULL path");
+      eventlog(eventlog_level_error,__FUNCTION__,"got pdir with NULL path");
       return NULL;
    }
 #ifdef WIN32
@@ -171,7 +171,7 @@ extern char const * p_readdir(t_pdir * pdir) {
    {
    default:
    case -1: /* couldn't rewind */
-       eventlog(eventlog_level_error,"p_readdir","got pdir with status -1");
+       eventlog(eventlog_level_error,__FUNCTION__,"got pdir with status -1");
        return NULL;
    case 0: /* freshly opened */
        pdir->status = 1;
@@ -193,7 +193,7 @@ extern char const * p_readdir(t_pdir * pdir) {
 	struct dirent * dentry;
 	
 	if (pdir->dir==NULL) {
-	    eventlog(eventlog_level_error,"p_readdir","POSIX: got pdir with NULL dir");
+	    eventlog(eventlog_level_error,__FUNCTION__,"POSIX: got pdir with NULL dir");
 	    return NULL;
 	}
 	if ((dentry=readdir(pdir->dir))==NULL)
@@ -208,11 +208,11 @@ extern int p_closedir(t_pdir * pdir) {
    int ret;
    
    if (pdir==NULL) {
-      eventlog(eventlog_level_error,"p_closedir","got NULL pdir");
+      eventlog(eventlog_level_error,__FUNCTION__,"got NULL pdir");
       return -1;
    }
    if (pdir->path==NULL) {
-      eventlog(eventlog_level_error,"p_closedir","got pdir with NULL path");
+      eventlog(eventlog_level_error,__FUNCTION__,"got pdir with NULL path");
       return -1;
    }
    
@@ -220,7 +220,7 @@ extern int p_closedir(t_pdir * pdir) {
    if (pdir->status!=-1)
    {
        if (pdir->lFindHandle<0) {
-	   eventlog(eventlog_level_info,"p_closedir","WIN32: got NULL findhandle");
+	   eventlog(eventlog_level_info,__FUNCTION__,"WIN32: got NULL findhandle");
 	   return -1;
        }
        _findclose(pdir->lFindHandle); /* FIXME: what does _findclose() return on error? */
@@ -228,7 +228,7 @@ extern int p_closedir(t_pdir * pdir) {
    ret = 0;
 #else /* POSIX */
    if (pdir->dir==NULL) {
-      eventlog(eventlog_level_info,"p_closedir","POSIX: got NULL dir");
+      eventlog(eventlog_level_info,__FUNCTION__,"POSIX: got NULL dir");
       return -1;
    }
 # ifdef CLOSEDIR_VOID

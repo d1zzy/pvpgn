@@ -49,17 +49,17 @@ static t_entry * hashtable_entry_export(t_internentry * entry, t_hashtable const
     
     if (!entry)
     {
-	eventlog(eventlog_level_error,"hashtable_entry_export","got NULL entry");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL entry");
 	return NULL;
     }
     if (!hashtable)
     {
-	eventlog(eventlog_level_error,"hashtable_entry_export","got NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
 	return NULL;
     }
     if (row>=hashtable->num_rows)
     {
-	eventlog(eventlog_level_error,"hashtable_entry_export","got bad row %u (max %u)",row,hashtable->num_rows-1);
+	eventlog(eventlog_level_error,__FUNCTION__,"got bad row %u (max %u)",row,hashtable->num_rows-1);
 	return NULL;
     }
 
@@ -79,7 +79,7 @@ extern t_hashtable * hashtable_create(unsigned int num_rows)
     
     if (num_rows<1)
     {
-	eventlog(eventlog_level_error,"hashtable_create","num_rows must be at least 1");
+	eventlog(eventlog_level_error,__FUNCTION__,"num_rows must be at least 1");
 	return NULL;
     }
 
@@ -100,14 +100,14 @@ extern int hashtable_destroy(t_hashtable * hashtable)
     
     if (!hashtable)
     {
-        eventlog(eventlog_level_error,"hashtable_destroy","got NULL hashtable");
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
         return -1;
     }
     
     hashtable_purge(hashtable);
     for (i=0; i<hashtable->num_rows; i++)
 	if (hashtable->rows[i])
-	    eventlog(eventlog_level_error,"hashtable_destroy","got non-empty hashtable");
+	    eventlog(eventlog_level_error,__FUNCTION__,"got non-empty hashtable");
     
     xfree(hashtable->rows);
     xfree(hashtable);
@@ -126,7 +126,7 @@ extern int hashtable_purge(t_hashtable * hashtable)
     
     if (!hashtable)
     {
-        eventlog(eventlog_level_error,"hashtable_purge","got NULL hashtable");
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
         return -1;
     }
     
@@ -172,17 +172,17 @@ extern int hashtable_check(t_hashtable const * hashtable)
     
     if (!hashtable)
     {
-	eventlog(eventlog_level_error,"hashtable_check","got NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
 	return -1;
     }
     if (hashtable->num_rows<1)
     {
-        eventlog(eventlog_level_error,"hashtable_check","num_rows=%u",hashtable->num_rows);
+        eventlog(eventlog_level_error,__FUNCTION__,"num_rows=%u",hashtable->num_rows);
 	return -1;
     }
     if (!hashtable->rows)
     {
-        eventlog(eventlog_level_error,"hashtable_check","hashtable->rows is NULL");
+        eventlog(eventlog_level_error,__FUNCTION__,"hashtable->rows is NULL");
 	return -1;
     }
     
@@ -196,18 +196,18 @@ extern int hashtable_check(t_hashtable const * hashtable)
 	    {
 		if (curr==tail) /* tail is currently the previous node */
 		{
-		    eventlog(eventlog_level_error,"list_check","row %u is circular (curr==prev==%p)",row,curr);
+		    eventlog(eventlog_level_error,__FUNCTION__,"row %u is circular (curr==prev==%p)",row,curr);
 		    return -1;
 		}
 		if (curr->next==tail)
 		{
-		    eventlog(eventlog_level_error,"list_check","row %u is circular (curr->next==prev==%p)",row,curr);
+		    eventlog(eventlog_level_error,__FUNCTION__,"row %u is circular (curr->next==prev==%p)",row,curr);
 		    return -1;
 		}
 		for (temp=0; temp<hashtable->num_rows; temp++)
 		    if (curr==hashtable->rows[temp])
 		    {
-			eventlog(eventlog_level_error,"list_check","row %u is circular (curr==rows[%u]==%p)",row,temp,curr);
+			eventlog(eventlog_level_error,__FUNCTION__,"row %u is circular (curr==rows[%u]==%p)",row,temp,curr);
 			return -1;
 		    }
 	    }
@@ -221,10 +221,10 @@ extern int hashtable_check(t_hashtable const * hashtable)
     
     if (emptycnt>10 && emptycnt>validcnt+5) /* arbitrary heuristic to detect missing list_purge() cal
 ls */
-	eventlog(eventlog_level_warn,"hashtable_check","emptycnt=%u but validcnt=%u",emptycnt,validcnt);
+	eventlog(eventlog_level_warn,__FUNCTION__,"emptycnt=%u but validcnt=%u",emptycnt,validcnt);
     if (hashtable->len!=validcnt)
     {
-	eventlog(eventlog_level_error,"hashtable_check","hashtable->len=%u but validcnt=%u",hashtable->len,validcnt);
+	eventlog(eventlog_level_error,__FUNCTION__,"hashtable->len=%u but validcnt=%u",hashtable->len,validcnt);
 	return -1;
     }
     
@@ -236,7 +236,7 @@ extern unsigned int hashtable_get_length(t_hashtable const * hashtable)
 {
     if (!hashtable)
     {
-	eventlog(eventlog_level_error,"hashtable_get_length","got NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
 	return 0;
     }
     
@@ -251,7 +251,7 @@ extern int hashtable_insert_data(t_hashtable * hashtable, void * data, unsigned 
     
     if (!hashtable)
     {
-	eventlog(eventlog_level_error,"hashtable_insert_data","got NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
 	return -1;
     }
 
@@ -274,7 +274,7 @@ extern t_entry * hashtable_get_entry_by_data(t_hashtable const * hashtable, void
     
     if (!hashtable)
     {
-	eventlog(eventlog_level_error,"hashtable_get_entry_by_data","got NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
 	return NULL;
     }
     
@@ -294,7 +294,7 @@ extern t_entry const * hashtable_get_entry_by_data_const(t_hashtable const * has
     
     if (!hashtable)
     {
-	eventlog(eventlog_level_error,"hashtable_get_entry_by_data_const","got NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
 	return NULL;
     }
     
@@ -311,22 +311,22 @@ extern int hashtable_remove_entry(t_hashtable * hashtable, t_entry * entry)
 {
     if (!hashtable)
     {
-	eventlog(eventlog_level_error,"hashtable_remove_entry","got NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
 	return -1;
     }
     if (!entry)
     {
-	eventlog(eventlog_level_error,"hashtable_remove_entry","got NULL entry");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL entry");
 	return -1;
     }
     if (!entry->real)
     {
-	eventlog(eventlog_level_error,"hashtable_remove_entry","entry has NULL real pointer");
+	eventlog(eventlog_level_error,__FUNCTION__,"entry has NULL real pointer");
 	return -1;
     }
     if (entry->real->data==&nodata)
     {
-	eventlog(eventlog_level_error,"hashtable_remove_entry","got deleted entry");
+	eventlog(eventlog_level_error,__FUNCTION__,"got deleted entry");
 	return -1;
     }
     
@@ -344,7 +344,7 @@ extern int hashtable_remove_data(t_hashtable * hashtable, void const * data, uns
     
     if (!hashtable)
     {
-	eventlog(eventlog_level_error,"hashtable_remove_data","got NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
 	return -1;
     }
     
@@ -363,17 +363,17 @@ extern void * entry_get_data(t_entry const * entry)
 {
     if (!entry)
     {
-	eventlog(eventlog_level_error,"entry_get_data","got NULL entry");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL entry");
 	return NULL;
     }
     if (!entry->real)
     {
-	eventlog(eventlog_level_error,"entry_get_data","entry has NULL real pointer");
+	eventlog(eventlog_level_error,__FUNCTION__,"entry has NULL real pointer");
 	return NULL;
     }
     if (entry->real->data==&nodata)
     {
-	eventlog(eventlog_level_error,"entry_get_data","got deleted entry");
+	eventlog(eventlog_level_error,__FUNCTION__,"got deleted entry");
 	return NULL;
     }
     
@@ -389,7 +389,7 @@ extern void * hashtable_get_data_by_pos(t_hashtable const * hashtable, unsigned 
     
     if (!hashtable)
     {
-	eventlog(eventlog_level_error,"hashtable_get_data_by_pos","got NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
 	return NULL;
     }
     
@@ -410,7 +410,7 @@ extern void * hashtable_get_data_by_pos(t_hashtable const * hashtable, unsigned 
 	curr = curr->next;
     }
     
-    eventlog(eventlog_level_error,"hashtable_get_data_by_pos","requested position %u but len=%u",pos,len);
+    eventlog(eventlog_level_error,__FUNCTION__,"requested position %u but len=%u",pos,len);
     return NULL;
 }
 
@@ -427,9 +427,9 @@ extern t_entry * hashtable_get_first(t_hashtable const * hashtable)
     if (!hashtable)
     {
 #ifdef HASHTABLE_DEBUG
-	eventlog(eventlog_level_error,"hashtable_get_first","got NULL hashtable from %s:%u",fn,ln);
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable from %s:%u",fn,ln);
 #else
-	eventlog(eventlog_level_error,"hashtable_get_first","got NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
 #endif
 	return NULL;
     }
@@ -451,7 +451,7 @@ extern t_entry * entry_get_next(t_entry * entry)
     
     if (!entry)
     {
-	eventlog(eventlog_level_error,"entry_get_next","got NULL entry");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL entry");
 	return NULL;
     }
     
@@ -490,9 +490,9 @@ extern t_entry * hashtable_get_first_matching(t_hashtable const * hashtable, uns
     if (!hashtable)
     {
 #ifdef HASHTABLE_DEBUG
-	eventlog(eventlog_level_error,"hashtable_get_first_matching","got NULL hashtable from %s:%u",fn,ln);
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable from %s:%u",fn,ln);
 #else
-	eventlog(eventlog_level_error,"hashtable_get_first_matching","got NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
 #endif
 	return NULL;
     }
@@ -512,7 +512,7 @@ extern t_entry * entry_get_next_matching(t_entry * entry)
     
     if (!entry)
     {
-	eventlog(eventlog_level_error,"entry_get_next_matching","got NULL entry");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL entry");
 	return NULL;
     }
     
@@ -532,22 +532,22 @@ extern int hashtable_entry_release(t_entry * entry)
 {
     if (!entry)
     {
-	eventlog(eventlog_level_error,"hashtable_entry_release","got NULL entry");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL entry");
 	return -1;
     }
     if (!entry->hashtable)
     {
-	eventlog(eventlog_level_error,"hashtable_entry_release","got entry with NULL hashtable");
+	eventlog(eventlog_level_error,__FUNCTION__,"got entry with NULL hashtable");
 	return -1;
     }
     if (!entry->real)
     {
-	eventlog(eventlog_level_error,"hashtable_entry_release","got entry with NULL real pointer");
+	eventlog(eventlog_level_error,__FUNCTION__,"got entry with NULL real pointer");
 	return -1;
     }
     if (entry->row>=entry->hashtable->num_rows)
     {
-	eventlog(eventlog_level_error,"hashtable_entry_release","entry has bad row %u (max %u)",entry->row,entry->hashtable->num_rows-1);
+	eventlog(eventlog_level_error,__FUNCTION__,"entry has bad row %u (max %u)",entry->row,entry->hashtable->num_rows-1);
 	return -1;
     }
     

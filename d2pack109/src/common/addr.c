@@ -150,12 +150,12 @@ extern char const * host_lookup(char const * hoststr, unsigned int * ipaddr)
     
     if (!hoststr)
     {
-	eventlog(eventlog_level_error,"host_lookup","got NULL hoststr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hoststr");
 	return NULL;
     }
     if (!ipaddr)
     {
-	eventlog(eventlog_level_error,"host_lookup","got NULL ipaddr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL ipaddr");
 	return NULL;
     }
     
@@ -179,7 +179,7 @@ extern char const * host_lookup(char const * hoststr, unsigned int * ipaddr)
 			       it when sending a dotted-quad to gethostbyname().  This is
 			       good enough when that fails. */
 	}
-	eventlog(eventlog_level_error,"host_lookup","could not lookup host \"%s\"",hoststr);
+	eventlog(eventlog_level_error,__FUNCTION__,"could not lookup host \"%s\"",hoststr);
 	return NULL;
     }
     
@@ -220,7 +220,7 @@ extern t_addr * addr_create_str(char const * str, unsigned int defipaddr, unsign
     
     if (!str)
     {
-	eventlog(eventlog_level_error,"addr_create_str","got NULL str");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL str");
 	return NULL;
     }
     
@@ -249,7 +249,7 @@ extern t_addr * addr_create_str(char const * str, unsigned int defipaddr, unsign
 		if (!(sp = getservbyname(portstr,protstr?protstr:"tcp")))
 #endif
 		{
-		    eventlog(eventlog_level_error,"addr_create_str","could not convert \"%s\" to a port number",portstr);
+		    eventlog(eventlog_level_error,__FUNCTION__,"could not convert \"%s\" to a port number",portstr);
 		    xfree(tstr);
 		    return NULL;
 		}
@@ -276,7 +276,7 @@ extern t_addr * addr_create_str(char const * str, unsigned int defipaddr, unsign
     
     if (!(hostname = host_lookup(hoststr,&ipaddr)))
     {
-	eventlog(eventlog_level_error,"addr_create_str","could not lookup host \"%s\"",hoststr);
+	eventlog(eventlog_level_error,__FUNCTION__,"could not lookup host \"%s\"",hoststr);
 	xfree(tstr);
 	return NULL;
     }
@@ -297,7 +297,7 @@ extern int addr_destroy(t_addr const * addr)
 {
     if (!addr)
     {
-	eventlog(eventlog_level_error,"addr_destroy","got NULL addr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	return -1;
     }
     
@@ -314,23 +314,23 @@ extern char * addr_get_host_str(t_addr const * addr, char * str, unsigned int le
 {
     if (!addr)
     {
-	eventlog(eventlog_level_error,"addr_get_host_str","got NULL addr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	return NULL;
     }
     if (!str)
     {
-	eventlog(eventlog_level_error,"addr_get_host_str","got NULL str");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL str");
 	return NULL;
     }
     if (len<2)
     {
-	eventlog(eventlog_level_error,"addr_get_host_str","str too short");
+	eventlog(eventlog_level_error,__FUNCTION__,"str too short");
 	return NULL;
     }
     
     if (!addr->str)
     {
-	eventlog(eventlog_level_error,"addr_get_host_str","addr has NULL str");
+	eventlog(eventlog_level_error,__FUNCTION__,"addr has NULL str");
 	return NULL;
     }
     
@@ -346,17 +346,17 @@ extern char * addr_get_addr_str(t_addr const * addr, char * str, unsigned int le
 {
     if (!addr)
     {
-	eventlog(eventlog_level_error,"addr_get_addr_str","got NULL addr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	return NULL;
     }
     if (!str)
     {
-	eventlog(eventlog_level_error,"addr_get_addr_str","got NULL str");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL str");
 	return NULL;
     }
     if (len<2)
     {
-	eventlog(eventlog_level_error,"addr_get_addr_str","str too short");
+	eventlog(eventlog_level_error,__FUNCTION__,"str too short");
 	return NULL;
     }
     
@@ -371,7 +371,7 @@ extern unsigned int addr_get_ip(t_addr const * addr)
 {
     if (!addr)
     {
-	eventlog(eventlog_level_error,"addr_get_ip","got NULL addr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	return 0;
     }
     
@@ -383,7 +383,7 @@ extern unsigned short addr_get_port(t_addr const * addr)
 {
     if (!addr)
     {
-	eventlog(eventlog_level_error,"addr_get_port","got NULL addr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	return 0;
     }
     
@@ -395,7 +395,7 @@ extern int addr_set_data(t_addr * addr, t_addr_data data)
 {
     if (!addr)
     {
-	eventlog(eventlog_level_error,"addr_set_data","got NULL addr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	return -1;
     }
     
@@ -410,7 +410,7 @@ extern t_addr_data addr_get_data(t_addr const * addr)
     
     if (!addr)
     {
-	eventlog(eventlog_level_error,"addr_get_data","got NULL addr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	tdata.p = NULL;
 	return tdata;
     }
@@ -430,7 +430,7 @@ extern t_netaddr * netaddr_create_str(char const * netstr)
     
     if (!netstr)
     {
-	eventlog(eventlog_level_error,"netaddr_create_str","unable to allocate memory for netaddr");
+	eventlog(eventlog_level_error,__FUNCTION__,"unable to allocate memory for netaddr");
 	return NULL;
     }
     
@@ -451,7 +451,7 @@ extern t_netaddr * netaddr_create_str(char const * netstr)
     /* FIXME: call getnetbyname() first, then host_lookup() */
     if (!host_lookup(netipstr,&netip))
     {
-	eventlog(eventlog_level_error,"netaddr_create_str","could not lookup net");
+	eventlog(eventlog_level_error,__FUNCTION__,"could not lookup net");
 	xfree(netaddr);
 	xfree(temp);
 	return NULL;
@@ -466,7 +466,7 @@ extern t_netaddr * netaddr_create_str(char const * netstr)
 	    netmask = ntohl(tsa.sin_addr.s_addr);
 	else
 	{
-	    eventlog(eventlog_level_error,"netaddr_create_str","could not convert mask");
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not convert mask");
 	    xfree(netaddr);
 	    xfree(temp);
 	    return NULL;
@@ -476,7 +476,7 @@ extern t_netaddr * netaddr_create_str(char const * netstr)
     {
 	if (netmask>32)
 	{
-	    eventlog(eventlog_level_error,"netaddr_create_str","network bits must be less than or equal to 32 (%u)",netmask);
+	    eventlog(eventlog_level_error,__FUNCTION__,"network bits must be less than or equal to 32 (%u)",netmask);
 	    xfree(netaddr);
 	    xfree(temp);
 	    return NULL;
@@ -497,7 +497,7 @@ extern int netaddr_destroy(t_netaddr const * netaddr)
 {
     if (!netaddr)
     {
-	eventlog(eventlog_level_error,"netaddr_destroy","got NULL netaddr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL netaddr");
 	return -1;
     }
     
@@ -511,17 +511,17 @@ extern char * netaddr_get_addr_str(t_netaddr const * netaddr, char * str, unsign
 {
     if (!netaddr)
     {
-	eventlog(eventlog_level_error,"netaddr_get_addr_str","got NULL netaddr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL netaddr");
 	return NULL;
     }
     if (!str)
     {
-	eventlog(eventlog_level_error,"netaddr_get_addr_str","got NULL str");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL str");
 	return NULL;
     }
     if (len<2)
     {
-	eventlog(eventlog_level_error,"netaddr_get_addr_str","str too short");
+	eventlog(eventlog_level_error,__FUNCTION__,"str too short");
 	return NULL;
     }
     
@@ -536,7 +536,7 @@ extern int netaddr_contains_addr_num(t_netaddr const * netaddr, unsigned int ipa
 {
     if (!netaddr)
     {
-	eventlog(eventlog_level_error,"netaddr_contains_addr_num","got NULL netaddr");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL netaddr");
 	return -1;
     }
     
@@ -581,14 +581,14 @@ extern t_addrlist * addrlist_create(char const * str, unsigned int defipaddr, un
 
     if (!str)
     {
-	eventlog(eventlog_level_error,"addrlist_create","got NULL str");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL str");
 	return NULL;
     }
     
     addrlist = list_create();
 
     if (addrlist_append(addrlist,str,defipaddr,defport)<0) {
-	eventlog(eventlog_level_error,"addrlist_create","could not append to newly created addrlist");
+	eventlog(eventlog_level_error,__FUNCTION__,"could not append to newly created addrlist");
 	list_destroy(addrlist);
 	return NULL;
     }
@@ -603,14 +603,14 @@ extern int addrlist_destroy(t_addrlist * addrlist)
     
     if (!addrlist)
     {
-	eventlog(eventlog_level_error,"addrlist_destroy","got NULL addrlist");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addrlist");
 	return -1;
     }
     
     LIST_TRAVERSE(addrlist,curr)
     {
         if (!(addr = elem_get_data(curr)))
-            eventlog(eventlog_level_error,"addrlist_destroy","found NULL addr in list");
+            eventlog(eventlog_level_error,__FUNCTION__,"found NULL addr in list");
         else
             addr_destroy(addr);
         list_remove_elem(addrlist,&curr);

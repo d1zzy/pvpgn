@@ -60,12 +60,12 @@ extern int list_destroy(t_list * list)
 {
     if (!list)
     {
-        eventlog(eventlog_level_error,"list_destroy","got NULL list");
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL list");
         return -1;
     }
     
     if (list->head)
-	eventlog(eventlog_level_error,"list_destroy","got non-empty list");
+	eventlog(eventlog_level_error,__FUNCTION__,"got non-empty list");
     
     xfree(list);
     
@@ -76,7 +76,7 @@ extern unsigned int list_get_length(t_list const * list)
 {
     if (!list)
     {
-	eventlog(eventlog_level_error,"list_get_length","got NULL list");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL list");
 	return 0;
     }
     
@@ -139,7 +139,7 @@ extern t_elem * list_get_elem_by_data(t_list const * list, void const * data)
     
     if (!list)
     {
-	eventlog(eventlog_level_error,"list_get_elem_by_data","got NULL list");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL list");
 	return NULL;
     }
     
@@ -157,7 +157,7 @@ extern t_elem const * list_get_elem_by_data_const(t_list const * list, void cons
     
     if (!list)
     {
-	eventlog(eventlog_level_error,"list_get_elem_by_data_const","got NULL list");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL list");
 	return NULL;
     }
     
@@ -175,13 +175,13 @@ extern int list_remove_elem(t_list * list, t_elem ** elem)
     
     if (!list)
     {
-	eventlog(eventlog_level_error,"list_remove_elem","got NULL list");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL list");
 	return -1;
     }
 
     if (!elem)
     {
-	eventlog(eventlog_level_error,"list_remove_elem","got NULL *elem");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL *elem");
 	return -1;
     }
 
@@ -222,7 +222,7 @@ extern int list_remove_data(t_list * list, void const * data, t_elem ** elem)
 {
     if (!list)
     {
-	eventlog(eventlog_level_error,"list_remove_data","got NULL list");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL list");
 	return -1;
     }
     
@@ -237,7 +237,7 @@ extern int elem_set_data(t_elem * elem, void * data)
 {
     if (!elem)
     {
-	eventlog(eventlog_level_error,"elem_set_data","got NULL elem");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem");
 	return -1;
     }
     
@@ -251,7 +251,7 @@ extern void * elem_get_data(t_elem const * elem)
 {
     if (!elem)
     {
-	eventlog(eventlog_level_error,"elem_get_data","got NULL elem");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem");
 	return NULL;
     }
     
@@ -269,7 +269,7 @@ extern void * list_get_data_by_pos(t_list const * list, unsigned int pos)
 	if (len++==pos)
 	    return curr->data;
     
-    eventlog(eventlog_level_error,"list_get_data_by_pos","requested position %u but len=%u",pos,len);
+    eventlog(eventlog_level_error,__FUNCTION__,"requested position %u but len=%u",pos,len);
     return NULL;
 }
 
@@ -283,9 +283,9 @@ extern t_elem * list_get_first(t_list const * list)
     if (!list)
     {
 #ifdef LIST_DEBUG
-	eventlog(eventlog_level_error,"list_get_first","got NULL list from %s:%u",fn,ln);
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL list from %s:%u",fn,ln);
 #else
-	eventlog(eventlog_level_error,"list_get_first","got NULL list");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL list");
 #endif
 	return NULL;
     }
@@ -304,9 +304,9 @@ extern t_elem const * list_get_first_const(t_list const * list)
     if (!list)
     {
 #ifdef LIST_DEBUG
-	eventlog(eventlog_level_error,"list_get_first_const","got NULL list from %s:%u",fn,ln);
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL list from %s:%u",fn,ln);
 #else
-	eventlog(eventlog_level_error,"list_get_first_const","got NULL list");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL list");
 #endif
 	return NULL;
     }
@@ -319,7 +319,7 @@ extern t_elem * elem_get_next_real(t_list const * list, t_elem const * elem, cha
 {
     if (!elem)
     {
-	eventlog(eventlog_level_error,"elem_get_next","got NULL elem from %s:%u",fn,ln);
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem from %s:%u",fn,ln);
 	return NULL;
     }
     
@@ -334,7 +334,7 @@ extern t_elem const * elem_get_next_const(t_list const * list, t_elem const * el
 {
     if (!elem)
     {
-	eventlog(eventlog_level_error,"elem_get_next_const","got NULL elem");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem");
 	return NULL;
     }
     
