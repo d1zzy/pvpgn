@@ -39,16 +39,7 @@ typedef struct
 {
     bn_short type;
     bn_short size;
-} t_bnet_header PACKED_ATTR();
-/******************************************************/
-
-// [zap-zero] 20020529 - added support for war3 anongame routing packets
-/******************************************************/
-typedef struct
-{
-    bn_short type;
-    bn_short size;
-} t_w3route_header PACKED_ATTR();
+} PACKED_ATTR() t_bnet_header;
 /******************************************************/
 
 
@@ -56,271 +47,13 @@ typedef struct
 typedef struct
 {
     t_bnet_header h;
-} t_bnet_generic PACKED_ATTR();
-/******************************************************/
-
-/******************************************************/
-typedef struct
-{
-    t_w3route_header h;
-} t_w3route_generic PACKED_ATTR();
+} PACKED_ATTR() t_bnet_generic;
 /******************************************************/
 
 /* for unhandled pmap packets */
 #define CLIENT_NULL 0xfeff
 
 
-/******************************************************/
-/*
-14: recv class=w3route[0x0c] type=unknown[0x00f7] length=53
-0000:   F7 1E 35 00 02 02 00 00   68 BF 0B 08 00 E0 17 01    ..5.....h.......
-0010:   00 00 00 42 6C 61 63 6B   72 61 74 00 08 81 3E 0C    ...Blackrat...>.
-0020:   00 20 00 00 00 02 00 17   E1 C0 A8 00 01 00 00 00    . ..............
-0030:   00 00 00 00 00                                       .....
-*/
-#define CLIENT_W3ROUTE_REQ 0x1ef7
-typedef struct
-{
-	t_w3route_header h;
-	bn_int unknown1;
-	bn_int id;			// unique id sent by server
-	bn_byte unknown2;
-	bn_short port;
-	bn_int handle;		// handle/descriptor for client <-> client communication
-	// player name, ...
-} t_client_w3route_req PACKED_ATTR();
-/******************************************************/
-
-
-
-/******************************************************/
-/*
-f7 23 04 00
-*/
-#define CLIENT_W3ROUTE_LOADINGDONE 0x23f7
-typedef struct
-{
-	t_w3route_header h;
-} t_client_w3route_loadingdone PACKED_ATTR();
-/******************************************************/
-
-
-/******************************************************/
-/*
-f7 14 05 00 00
-*/
-#define SERVER_W3ROUTE_READY 0x14f7
-typedef struct
-{
-	t_w3route_header h;
-	bn_byte unknown1;
-} t_server_w3route_ready PACKED_ATTR();
-/******************************************************/
-
-
-/******************************************************/
-/*
-f7 21 08 00 01 00 00 00 
-*/
-
-#define CLIENT_W3ROUTE_ABORT 0x21f7
-
-typedef struct
-{
-        t_w3route_header h;
-        bn_int unknown1;       // count?
-} t_client_w3route_abort PACKED_ATTR();
-		
-/******************************************************/
-/*
-f7 08 05 00 02
-*/
-#define SERVER_W3ROUTE_LOADINGACK 0x08f7
-typedef struct
-{
-	t_w3route_header h;
-	bn_byte playernum;
-} t_server_w3route_loadingack PACKED_ATTR();
-/******************************************************/
-
-
-/******************************************************/
-/*
-f7 3b 06 00 09 00
-*/
-#define CLIENT_W3ROUTE_CONNECTED 0x3bf7
-typedef struct
-{
-	t_w3route_header h;
-	bn_short unknown1;
-} t_client_w3route_connected PACKED_ATTR();
-/******************************************************/
-
-/******************************************************/
-/*
-f7 01 08 00 2e 85 2d 7b 
-*/
-#define SERVER_W3ROUTE_ECHOREQ 0x01f7
-typedef struct
-{
-	t_w3route_header h;
-	bn_int ticks;
-} t_server_w3route_echoreq PACKED_ATTR();
-/******************************************************/
-
-
-#define CLIENT_W3ROUTE_ECHOREPLY 0x46f7
-
-
-/******************************************************/
-/*
-13: recv class=w3route[0x0c] type=unknown[0x2ef7] length=107
-0000:   F7 2E 6B 00 01 01 03 00   00 00 20 00 00 00 5C 01    ..k....... ...\.
-0010:   00 00 00 05 00 00 00 00   00 00 00 00 00 00 00 1A    ................
-0020:   04 00 00 00 00 00 00 00   00 00 00 05 00 00 00 00    ................
-0030:   00 00 00 01 00 00 00 00   00 00 00 05 00 00 00 00    ................
-0040:   00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00    ................
-0050:   00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00    ................
-0060:   00 00 00 00 00 00 00 00   00 00 00                   ...........
-*/
-#define CLIENT_W3ROUTE_GAMERESULT 0x2ef7
-/*
-                           F7 3A-84 00 02 01 04 00 00 00  
-0x0040   20 00 00 00 83 09 00 00-00 00 00 00 02 03 00 00  
-0x0050   00 20 00 00 00 2C 01 00-00 00 00 00 00 5C 04 00 
-0x0060   00 00 03 00 00 00 00 00-00 00 01 00 00 00 CC 0B  
-0x0070   00 00 00 00 00 00 72 0B-00 00 0E 00 00 00 00 00   
-0x0080   00 00 04 00 00 00 01 00-00 00 15 00 00 00 00 00   
-0x0090   00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  
-0x00A0   00 00 46 0A 00 00 2C 01-00 00 00 00 00 00 00 00   
-0x00B0   00 00 00 00 00 00 00 00-00 00                     
-
-                           F7 3A-84 00 02 02 03 00 00 00 
-0x0040   20 00 00 00 2C 01 00 00-00 00 00 00 01 04 00 00 
-0x0050   00 20 00 00 00 83 09 00-00 00 00 00 00 5C 04 00  
-0x0060   00 00 01 00 00 00 01 00-00 00 00 00 00 00 39 03  
-0x0070   00 00 00 00 00 00 00 00-00 00 05 00 00 00 00 00  
-0x0080   00 00 01 00 00 00 00 00-00 00 05 00 00 00 00 00  
-0x0090   00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00 
-0x00A0   00 00 00 00 00 00 00 00-00 00 00 00 00 00 00 00  
-0x00B0   00 00 00 00 00 00 00 00-00 00                  
-*/
-
-#define CLIENT_W3ROUTE_GAMERESULT_W3XP 0x3af7
-typedef struct
-{
-	t_w3route_header h;
-	bn_byte unknown1;
-	bn_byte unknown2;
-	bn_int	result;
-	// rest unknown
-} t_client_w3route_gameresult PACKED_ATTR();
-/******************************************************/
-
-// [zap-zero] what value is DRAW?
-#define W3_GAMERESULT_LOSS	0x00000003
-#define W3_GAMERESULT_WIN	0x00000004
-
-
-
-/******************************************************/
-/*
-                        f7 04 1e 00 07 00 00 b2 72 76   ..............rv
-0040  ec cc cc 02 02 00 04 0b d9 e9 5f ac 00 00 00 00   .........._.....
-0050  00 00 00 00                                       ....
-*/
-#define SERVER_W3ROUTE_ACK 0x04f7
-typedef struct
-{
-	t_w3route_header h;
-	bn_byte unknown1;	// 07
-	bn_short unknown2;	// 00 00
-	bn_int unknown3;	// random stuff
-	bn_short unknown4;	// cc cc
-        bn_byte playernum;	// 1-4
-	bn_short unknown5;	// 0x0002
-	bn_short port;		// client port
-	bn_int ip;		// client ip
-	bn_int unknown7;	// 00 00 00 00
-	bn_int unknown8;	// 00 00 00 00
-} t_server_w3route_ack PACKED_ATTR();
-/******************************************************/
-
-#define SERVER_W3ROUTE_ACK_UNKNOWN3	0x484e2637
-
-/******************************************************/
-/*
-                        f7 06 3b 00 01 00 00 00 01 **   ........;......P
-0040  ** ** ** ** ** ** ** 00 08 2d 09 9d 04 08 00 00   layer00..-......
-0050  00 02 00 17 e0 [censored]  00 00 00 00 00 00 00   .......g........
-0060  00 02 00 17 e0 [censored]  00 00 00 00 00 00 00   .......g........
-0070  00 
-
-*/
-#define SERVER_W3ROUTE_PLAYERINFO 0x06f7
-typedef struct
-{
-	t_w3route_header h;
-	bn_int handle;
-	bn_byte playernum;
-	// then:
-	// opponent name
-	// playerinfo2
-	// playerinfo_addr (external addr)
-	// playerinfo_addr (local lan addr)
-} t_server_w3route_playerinfo PACKED_ATTR();
-
-typedef struct
-{
-	bn_byte unknown1;		// 8 (length?)
-	bn_int id;			// id from FINDANONGAME_SEARCH packet
-	bn_int race;			// see defines
-} t_server_w3route_playerinfo2 PACKED_ATTR();
-
-#define SERVER_W3ROUTE_LEVELINFO 0x47f7
-typedef struct
-{
-	t_w3route_header h;
-	bn_byte numplayers;
-	// then: levelinfo2 for each player	
-} t_server_w3route_levelinfo PACKED_ATTR();
-
-typedef struct
-{
-	bn_byte plnum;	
-	bn_byte unknown1;		// 3 (length?)
-	bn_byte level;
-	bn_short unknown2;
-} t_server_w3route_levelinfo2 PACKED_ATTR();
-
-
-typedef struct
-{
-	bn_short unknown1;		// 2 
-	bn_short port;
-	bn_int ip;
-	bn_int unknown2;		// 0
-	bn_int unknown3;		// 0
-} t_server_w3route_playerinfo_addr PACKED_ATTR();
-
-
-typedef struct
-{
-	t_w3route_header h;	// f7 0a 04 00
-} t_server_w3route_startgame1 PACKED_ATTR();
-#define SERVER_W3ROUTE_STARTGAME1 0x0af7
-
-typedef struct
-{
-	t_w3route_header h;	// f7 0b 04 00
-} t_server_w3route_startgame2 PACKED_ATTR();
-#define SERVER_W3ROUTE_STARTGAME2 0x0bf7
-
-/*******************************************************/
-/*
-    ALL ANONGAME PACKET INFO (0x44ff) MOVED TO anongame_protocol.h 
-    [Omega]
-*/
 /******************************************************/
 /*
 These two dumps are from the original unpatched Starcraft client:
@@ -353,7 +86,7 @@ typedef struct
     bn_int        client_token; /* 9A F7 69 AB */
     /* host */ /* optional */
     /* user */ /* optional */
-} t_client_compinfo1 PACKED_ATTR();
+} PACKED_ATTR() t_client_compinfo1;
 #define CLIENT_COMPINFO1_REG_VERSION  0x00000001
 #define CLIENT_COMPINFO1_REG_AUTH     0xaa8843d1
 #define CLIENT_COMPINFO1_CLIENT_ID    0x001b9dda
@@ -388,7 +121,7 @@ typedef struct
     bn_int        client_token; /* 31 8A f2 89 */ /* 9A F7 69 AB */
     /* host */
     /* user */
-} t_client_compinfo2 PACKED_ATTR();
+} PACKED_ATTR() t_client_compinfo2;
 #define CLIENT_COMPINFO2_UNKNOWN1     0x00000001
 #define CLIENT_COMPINFO2_REG_VERSION  0x00000001
 #define CLIENT_COMPINFO2_REG_AUTH     0xaa8843d1
@@ -422,7 +155,7 @@ typedef struct
     bn_int        reg_auth;     /* D1 43 88 AA */ /* looks like server ip */
     bn_int        client_id;    /* DA 9D 1B 00 */ /* 1C B9 48 00 */
     bn_int        client_token; /* 9A F7 69 AB */ /* 31 8A F2 89 */
-} t_server_compreply PACKED_ATTR();
+} PACKED_ATTR() t_server_compreply;
 #define SERVER_COMPREPLY_REG_VERSION  0x00000001
 #define SERVER_COMPREPLY_REG_AUTH     0xaa8843d1
 #define SERVER_COMPREPLY_CLIENT_ID    0x001b9dda
@@ -440,7 +173,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        sessionkey;
-} t_server_sessionkey1 PACKED_ATTR();
+} PACKED_ATTR() t_server_sessionkey1;
 /******************************************************/
 
 
@@ -464,7 +197,7 @@ typedef struct
     t_bnet_header h;
     bn_int        sessionnum;
     bn_int        sessionkey;
-} t_server_sessionkey2 PACKED_ATTR();
+} PACKED_ATTR() t_server_sessionkey2;
 #define SERVER_SESSIONKEY2_UNKNOWN1 0x00004df3
 /******************************************************/
 
@@ -523,7 +256,7 @@ typedef struct
     /* countrycode (long distance phone) */
     /* countryabbrev */
     /* countryname */
-} t_client_countryinfo1 PACKED_ATTR();
+} PACKED_ATTR() t_client_countryinfo1;
 /******************************************************/
 
 
@@ -556,7 +289,7 @@ typedef struct
     bn_int        langid;    /* Win32 LangID */
     /* langstr */
     /* countryname */
-} t_client_countryinfo_109 PACKED_ATTR();
+} PACKED_ATTR() t_client_countryinfo_109;
 /******************************************************/
 
 
@@ -571,7 +304,7 @@ typedef struct
     t_bnet_header h;
     bn_int        password_hash1[5]; /* hash of lowercase password w/o null */
     /* player name */
-} t_client_createacctreq1 PACKED_ATTR();
+} PACKED_ATTR() t_client_createacctreq1;
 /******************************************************/
 
 
@@ -588,7 +321,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        result;
-} t_server_createacctreply1 PACKED_ATTR();
+} PACKED_ATTR() t_server_createacctreply1;
 #define SERVER_CREATEACCTREPLY1_RESULT_OK 0x00000001
 #define SERVER_CREATEACCTREPLY1_RESULT_NO 0x00000000
 /******************************************************/
@@ -619,7 +352,7 @@ typedef struct
     bn_int        unknown5; /* 20 00 00 00 */ /* 40 00 00 00 */
     bn_int        unknown6; /* CE 01 00 00 */ /* A9 07 00 00 */
     bn_int        unknown7; /* DD 07 00 00 */ /* FF 07 00 00 */
-} t_client_unknown_2b PACKED_ATTR();
+} PACKED_ATTR() t_client_unknown_2b;
 #define CLIENT_UNKNOWN_2B_UNKNOWN1 0x00000001
 #define CLIENT_UNKNOWN_2B_UNKNOWN2 0x00000000
 #define CLIENT_UNKNOWN_2B_UNKNOWN3 0x0000004d
@@ -653,7 +386,7 @@ typedef struct
     bn_int        clienttag; /* see tag.h */
     bn_int        versionid; /* FIXME: how does the versionid work? */
     bn_int        unknown1;  /* FIXME: always zero? spawn flag? */
-} t_client_progident PACKED_ATTR();
+} PACKED_ATTR() t_client_progident;
 /******************************************************/
 
 
@@ -704,7 +437,7 @@ typedef struct
     bn_long       timestamp; /* FIXME: file modification time? */
     /* versioncheck filename */
     /* equation */
-} t_server_authreq1 PACKED_ATTR();
+} PACKED_ATTR() t_server_authreq1;
 /******************************************************/
 
 
@@ -737,7 +470,7 @@ typedef struct
     bn_long       timestamp;
     /* versioncheck filename */
     /* equation */
-} t_server_authreq_109 PACKED_ATTR();
+} PACKED_ATTR() t_server_authreq_109;
 #define SERVER_AUTHREQ_109_LOGONTYPE 0x0000000
 #define SERVER_AUTHREQ_109_LOGONTYPE_W3 0x00000001
 #define SERVER_AUTHREQ_109_LOGONTYPE_W3XP 0x00000002
@@ -796,7 +529,7 @@ typedef struct
     bn_int        gameversion;
     bn_int        checksum;
     /* executable info */
-} t_client_authreq1 PACKED_ATTR();
+} PACKED_ATTR() t_client_authreq1;
 /******************************************************/
 
 
@@ -814,7 +547,7 @@ typedef struct
     bn_int        message;
     /* filename */
     /* unknown */
-} t_server_authreply1 PACKED_ATTR();
+} PACKED_ATTR() t_server_authreply1;
 #define SERVER_AUTHREPLY1_MESSAGE_BADVERSION  0x00000000
 #define SERVER_AUTHREPLY1_MESSAGE_UPDATE      0x00000001 /* initiate auto-update */
 #define SERVER_AUTHREPLY1_MESSAGE_OK          0x00000002
@@ -842,7 +575,7 @@ typedef struct
     t_bnet_header h;
     bn_int        message;
     /* message string? */
-} t_server_authreply_109 PACKED_ATTR();
+} PACKED_ATTR() t_server_authreply_109;
 #define SERVER_AUTHREPLY_109_MESSAGE_OK         0x00000000
 #define SERVER_AUTHREPLY_109_MESSAGE_UPDATE     0x00000100
 #define SERVER_AUTHREPLY_109_MESSAGE_BADVERSION 0x00000101
@@ -873,7 +606,7 @@ typedef struct
     /* cdkey info(s) */
     /* executable info */
     /* cdkey owner */
-} t_client_authreq_109 PACKED_ATTR();
+} PACKED_ATTR() t_client_authreq_109;
 /* values are the same as in CLIENT_AUTHREQ1 */
 
 typedef struct
@@ -883,7 +616,7 @@ typedef struct
     bn_int checksum;
     bn_int u1;
     bn_int hash[5];
-} t_cdkey_info PACKED_ATTR();
+} PACKED_ATTR() t_cdkey_info;
 /******************************************************/
 
 
@@ -912,7 +645,7 @@ typedef struct
     bn_int        hkey;
     /* registry key */
     /* value name */
-} t_server_regsnoopreq PACKED_ATTR();
+} PACKED_ATTR() t_server_regsnoopreq;
 #define SERVER_REGSNOOPREQ_UNKNOWN1 0x00000000
 #define SERVER_REGSNOOPREQ_HKEY_CLASSES_ROOT        0x80000000
 #define SERVER_REGSNOOPREQ_HKEY_CURRENT_USER        0x80000001
@@ -941,7 +674,7 @@ typedef struct
     t_bnet_header h;
     bn_int        unknown1; /* 00 00 00 00 */ /* same as request? */
     /* registry value (string, dword, or binary */
-} t_client_regsnoopreply PACKED_ATTR();
+} PACKED_ATTR() t_client_regsnoopreply;
 /******************************************************/
 
 
@@ -953,7 +686,7 @@ FF 07 0A 00 02 00 00 00   00 00                      ..........
 typedef struct
 {
     t_bnet_header h;
-} t_client_iconreq PACKED_ATTR();
+} PACKED_ATTR() t_client_iconreq;
 /******************************************************/
 
 
@@ -971,7 +704,7 @@ typedef struct
     t_bnet_header h;
     bn_long       timestamp; /* file modification time? */
     /* filename */
-} t_server_iconreply PACKED_ATTR();
+} PACKED_ATTR() t_server_iconreply;
 /******************************************************/
 
 
@@ -984,7 +717,7 @@ typedef struct
     bn_int        id;   /* (AKA ladder type) 1==standard, 3==ironman */
     bn_int        type; /* (AKA ladder sort) */
     /* player name */
-} t_client_laddersearchreq PACKED_ATTR();
+} PACKED_ATTR() t_client_laddersearchreq;
 #define CLIENT_LADDERSEARCHREQ_ID_STANDARD       0x00000001
 #define CLIENT_LADDERSEARCHREQ_ID_IRONMAN        0x00000003
 #define CLIENT_LADDERSEARCHREQ_TYPE_HIGHESTRATED 0x00000000
@@ -1000,7 +733,7 @@ typedef struct /* FIXME: how does client know how many names?
 {
     t_bnet_header h;
     bn_int        rank; /* 0 means 1st, etc */
-} t_server_laddersearchreply PACKED_ATTR();
+} PACKED_ATTR() t_server_laddersearchreply;
 #define SERVER_LADDERSEARCHREPLY_RANK_NONE 0xffffffff
 /******************************************************/
 
@@ -1018,7 +751,7 @@ typedef struct
     bn_int        spawn; /* FIXME: not sure if this is correct, but cdkey2 does it this way */
     /* cd key */
     /* owner name */ /* Was this always here? */
-} t_client_cdkey PACKED_ATTR();
+} PACKED_ATTR() t_client_cdkey;
 #define CLIENT_CDKEY_UNKNOWN1 0x00000000
 /******************************************************/
 
@@ -1034,7 +767,7 @@ typedef struct
     t_bnet_header h;
     bn_int        message;
     /* owner name */
-} t_server_cdkeyreply PACKED_ATTR();
+} PACKED_ATTR() t_server_cdkeyreply;
 #define SERVER_CDKEYREPLY_MESSAGE_OK       0x00000001
 #define SERVER_CDKEYREPLY_MESSAGE_BAD      0x00000002
 #define SERVER_CDKEYREPLY_MESSAGE_WRONGAPP 0x00000003
@@ -1078,7 +811,7 @@ typedef struct
     bn_int        ticks;
     bn_int        key_hash[5];
     /* owner name */
-} t_client_cdkey2 PACKED_ATTR();
+} PACKED_ATTR() t_client_cdkey2;
 #define CLIENT_CDKEY2_SPAWN_TRUE  0x00000001
 #define CLIENT_CDKEY2_SPAWN_FALSE 0x00000000
 /******************************************************/
@@ -1118,7 +851,7 @@ typedef struct
     bn_int        unknown7; /* 00 00 00 00 */
     bn_int        key_hash[5];
     /* owner name */
-} t_client_cdkey3 PACKED_ATTR();
+} PACKED_ATTR() t_client_cdkey3;
 #define CLIENT_CDKEY3_UNKNOWN1  0xffffffff
 #define CLIENT_CDKEY3_UNKNOWN2  0x00000001
 #define CLIENT_CDKEY3_UNKNOWN3  0x00000000
@@ -1142,7 +875,7 @@ typedef struct
     t_bnet_header h;
     bn_int        message;
     /* owner name */ /* FIXME: or error message, or ... */
-} t_server_cdkeyreply3 PACKED_ATTR();
+} PACKED_ATTR() t_server_cdkeyreply3;
 #define SERVER_CDKEYREPLY3_MESSAGE_OK       0x00000000
 /******************************************************/
 
@@ -1157,7 +890,7 @@ typedef struct
     t_bnet_header h;
     bn_int        unknown1;
     bn_int        unknown2;
-} t_client_realmlistreq PACKED_ATTR();
+} PACKED_ATTR() t_client_realmlistreq;
 /******************************************************/
 
 
@@ -1198,7 +931,7 @@ typedef struct
     bn_int        unknown1;
     bn_int        count;
     /* realm entries */
-} t_server_realmlistreply PACKED_ATTR();
+} PACKED_ATTR() t_server_realmlistreply;
 #define SERVER_REALMLISTREPLY_UNKNOWN1 0x00000000
 
 typedef struct
@@ -1212,7 +945,7 @@ typedef struct
     bn_int unknown9;
     /* realm name */
     /* realm description */
-} t_server_realmlistreply_data PACKED_ATTR();
+} PACKED_ATTR() t_server_realmlistreply_data;
 #define SERVER_REALMLISTREPLY_DATA_UNKNOWN3 0xc0000000
 #define SERVER_REALMLISTREPLY_DATA_UNKNOWN4 0x00000000
 #define SERVER_REALMLISTREPLY_DATA_UNKNOWN5 0x00000000
@@ -1316,7 +1049,7 @@ typedef struct /* character list request, character list upload? */
                               /* unknown1 is always 0 in the beta, and the 0x00  */
                               /* of unknown2 acts as a EOF when client read the  */
                               /* t_d2char_info structures                        */
-} t_client_unknown_37 PACKED_ATTR();
+} PACKED_ATTR() t_client_unknown_37;
 /******************************************************/
 
 
@@ -1386,7 +1119,7 @@ typedef struct /* character list reply? */
                             /* t_char_info to follow in    */
                             /* packet                      */
     /* d2char_info blocks */
-} t_server_unknown_37 PACKED_ATTR();
+} PACKED_ATTR() t_server_unknown_37;
 #define SERVER_UNKNOWN_37_UNKNOWN1 0x00000000
 #define SERVER_UNKNOWN_37_UNKNOWN2 0x00000008
 
@@ -1475,7 +1208,7 @@ typedef struct
     
     bn_byte unknownb14;
     /* Guild Tag */ /* must not be longer than 3 chars */
-} t_d2char_info PACKED_ATTR();
+} PACKED_ATTR() t_d2char_info;
 #define D2CHAR_INFO_UNKNOWNB1 0x83
 #define D2CHAR_INFO_UNKNOWNB2 0x80
 #define D2CHAR_INFO_FILLER 0xff /* non-zero padding */
@@ -1507,7 +1240,7 @@ typedef struct
 {
     t_bnet_header h;
     /* character name */ /* what about open chars? */
-} t_client_unknown_39 PACKED_ATTR();
+} PACKED_ATTR() t_client_unknown_39;
 /******************************************************/
 
 
@@ -1529,7 +1262,7 @@ typedef struct
     bn_int        sessionkey;
     bn_int        password_hash2[5];
     /* player name */
-} t_client_loginreq2 PACKED_ATTR();
+} PACKED_ATTR() t_client_loginreq2;
 /******************************************************/
 
 
@@ -1543,7 +1276,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        last_news_time; // date of the last news item the client has
-} t_client_motd_w3 PACKED_ATTR();
+} PACKED_ATTR() t_client_motd_w3;
 /******************************************************/
 
 
@@ -1588,7 +1321,7 @@ typedef struct
 	bn_int         timestamp2; /* always equal with the timestamp except the
 				    last packet which shows in the right panel */
 	/* text */
-} t_server_motd_w3 PACKED_ATTR();
+} PACKED_ATTR() t_server_motd_w3;
 #define SERVER_MOTD_W3_MSGTYPE  0x01
 #define SERVER_MOTD_W3_WELCOME  0x00000000
 /******************************************************/
@@ -1607,7 +1340,7 @@ typedef struct
     t_bnet_header h;
     bn_byte        unknown[32];
     /* player name */
-} t_client_loginreq_w3 PACKED_ATTR();
+} PACKED_ATTR() t_client_loginreq_w3;
 /******************************************************/
 
 /******************************************************/
@@ -1628,7 +1361,7 @@ typedef struct
     bn_int       message;
     /* seems to be response to client-challenge */
     bn_int       unknown[16];
-} t_server_loginreply_w3 PACKED_ATTR();
+} PACKED_ATTR() t_server_loginreply_w3;
 #define SERVER_LOGINREPLY_W3_MESSAGE_SUCCESS 0x00000000
 #define SERVER_LOGINREPLY_W3_MESSAGE_ALREADY 0x00000001 /* Account already logged on */
 #define SERVER_LOGINREPLY_W3_MESSAGE_BADACCT 0x00000001 /* Accoutn does not exist */
@@ -1665,7 +1398,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        password_hash1[5];
-} t_client_logonproofreq PACKED_ATTR();
+} PACKED_ATTR() t_client_logonproofreq;
 
 #define SERVER_LOGONPROOFREPLY 0x54ff
 typedef struct
@@ -1678,7 +1411,7 @@ typedef struct
    bn_short port1;
    bn_int unknown3;
    bn_int unknown4;
-} t_server_logonproofreply PACKED_ATTR();
+} PACKED_ATTR() t_server_logonproofreply;
 #define SERVER_LOGONPROOFREPLY_RESPONSE_OK 0x00000000
 //#define SERVER_LOGONPROOFREPLY_RESPONSE_BADPASS 0x00000001
 #define SERVER_LOGONPROOFREPLY_RESPONSE_BADPASS 0x00000002 /* from the battle net dump... */
@@ -1705,7 +1438,7 @@ typedef struct
 	t_bnet_header h;
 	bn_byte       unknown[64];
 	/* player name */
-} t_client_createaccount_w3 PACKED_ATTR();
+} PACKED_ATTR() t_client_createaccount_w3;
 /******************************************************/
 
 
@@ -1722,7 +1455,7 @@ typedef struct
 {
         t_bnet_header	h;
 	bn_short	port;
-} t_client_changegameport PACKED_ATTR();
+} PACKED_ATTR() t_client_changegameport;
 
 
 
@@ -1736,7 +1469,7 @@ typedef struct
 {
     t_bnet_header h;
 	bn_int       result;
-} t_server_createaccount_w3 PACKED_ATTR();
+} PACKED_ATTR() t_server_createaccount_w3;
 #define SERVER_CREATEACCOUNT_W3_RESULT_OK    0x00000000
 #define SERVER_CREATEACCOUNT_W3_RESULT_EXIST 0x00000004
 #define SERVER_CREATEACCOUNT_W3_RESULT_EMPTY 0x00000007
@@ -1756,7 +1489,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        message;
-} t_server_loginreply2 PACKED_ATTR();
+} PACKED_ATTR() t_server_loginreply2;
 #define SERVER_LOGINREPLY2_MESSAGE_SUCCESS 0x00000000
 #define SERVER_LOGINREPLY2_MESSAGE_ALREADY 0x00000001 /* Account already exists */
 #define SERVER_LOGINREPLY2_MESSAGE_BADPASS 0x00000002 /* Bad password */
@@ -1784,7 +1517,7 @@ typedef struct
     t_bnet_header h;
     bn_int        password_hash1[5];
     /* username (charactername?) */
-} t_client_createacctreq2 PACKED_ATTR();
+} PACKED_ATTR() t_client_createacctreq2;
 /******************************************************/
 
 
@@ -1795,7 +1528,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        result;
-} t_server_createacctreply2 PACKED_ATTR();
+} PACKED_ATTR() t_server_createacctreply2;
 #define SERVER_CREATEACCTREPLY2_RESULT_OK    0x00000000
 #define SERVER_CREATEACCTREPLY2_RESULT_SHORT 0x00000001 /* Username must be a minimum of 2 characters */
 #define SERVER_CREATEACCTREPLY2_RESULT_INVALID 0x00000002
@@ -1820,7 +1553,7 @@ typedef struct
     t_bnet_header h;
     bn_int        message;
     /* owner name */
-} t_server_cdkeyreply2 PACKED_ATTR();
+} PACKED_ATTR() t_server_cdkeyreply2;
 #define SERVER_CDKEYREPLY2_MESSAGE_OK       0x00000001
 #define SERVER_CDKEYREPLY2_MESSAGE_BAD      0x00000002
 #define SERVER_CDKEYREPLY2_MESSAGE_WRONGAPP 0x00000003
@@ -1839,7 +1572,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        echo; /* echo of what the server sent, normally "tenb" */
-} t_client_udpok PACKED_ATTR();
+} PACKED_ATTR() t_client_udpok;
 /******************************************************/
 
 
@@ -1859,7 +1592,7 @@ typedef struct
     bn_int        type;     /* type of file (TOS,icons,etc.) */
     bn_int        unknown2; /* 00 00 00 00 */ /* always zero? */
     /* filename */          /* default/suggested filename? */
-} t_client_fileinforeq PACKED_ATTR();
+} PACKED_ATTR() t_client_fileinforeq;
 #define CLIENT_FILEINFOREQ_TYPE_TOS          0x0000001a /* tos_USA.txt */
 #define CLIENT_FILEINFOREQ_TYPE_GATEWAYS     0x0000001b /* STAR bnserver.ini */
 #define CLIENT_FILEINFOREQ_TYPE_GATEWAYS_D2  0x80000004 /* D2XP bnserver-D2DV.ini */
@@ -1888,7 +1621,7 @@ typedef struct
     bn_int        unknown2;  /* 00 00 00 00 */ /* same as in TOSREQ */
     bn_long       timestamp; /* file modification time */
     /* filename */
-} t_server_fileinforeply PACKED_ATTR();
+} PACKED_ATTR() t_server_fileinforeply;
 #define SERVER_FILEINFOREPLY_TYPE_TOSFILE      0x0000001a /* tos_USA.txt */
 #define SERVER_FILEINFOREPLY_TYPE_GATEWAYS     0x0000001b /* STAR bnserver.ini */
 #define SERVER_FILEINFOREPLY_TYPE_GATEWAYS_D2  0x80000004 /* D2XP bnserver-D2DV.ini */
@@ -1966,7 +1699,7 @@ typedef struct
     bn_int        requestid; /* 78 52 82 02 */
     /* player name */
     /* field key ... */
-} t_client_statsreq PACKED_ATTR();
+} PACKED_ATTR() t_client_statsreq;
 #define CLIENT_STATSREQ_UNKNOWN1 0x02825278
 /******************************************************/
 
@@ -2020,7 +1753,7 @@ typedef struct
     bn_int        key_count;
     bn_int        requestid; /* 78 52 82 02 */ /* EE E4 84 03 */ /* same as request */
     /* field values ... */
-} t_server_statsreply PACKED_ATTR();
+} PACKED_ATTR() t_server_statsreply;
 /******************************************************/
 
 
@@ -2038,7 +1771,7 @@ typedef struct
     bn_int        sessionkey;
     bn_int        password_hash2[5]; /* hash of ticks, key, and hash1 */
     /* player name */
-} t_client_loginreq1 PACKED_ATTR();
+} PACKED_ATTR() t_client_loginreq1;
 /******************************************************/
 
 
@@ -2048,7 +1781,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        message;
-} t_server_loginreply1 PACKED_ATTR();
+} PACKED_ATTR() t_server_loginreply1;
 #define SERVER_LOGINREPLY1_MESSAGE_FAIL    0x00000000
 #define SERVER_LOGINREPLY1_MESSAGE_SUCCESS 0x00000001
 /******************************************************/
@@ -2081,7 +1814,7 @@ typedef struct
     bn_int        oldpassword_hash2[5]; /* hash of ticks, key, hash1 */
     bn_int        newpassword_hash1[5]; /* hash of lowercase password w/o null */
     /* player name */
-} t_client_changepassreq PACKED_ATTR();
+} PACKED_ATTR() t_client_changepassreq;
 /******************************************************/
 
 
@@ -2096,7 +1829,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        message;
-} t_server_changepassack PACKED_ATTR();
+} PACKED_ATTR() t_server_changepassack;
 #define SERVER_CHANGEPASSACK_MESSAGE_FAIL    0x00000000
 #define SERVER_CHANGEPASSACK_MESSAGE_SUCCESS 0x00000001
 /******************************************************/
@@ -2122,7 +1855,7 @@ typedef struct
     t_bnet_header h;
     /* player name */
     /* player info */ /* used by Diablo and D2 (character,Realm) */
-} t_client_playerinforeq PACKED_ATTR();
+} PACKED_ATTR() t_client_playerinforeq;
 /******************************************************/
 
 
@@ -2175,7 +1908,7 @@ typedef struct
     /* player name */
     /* status */
     /* player name?! (maybe character name?) */
-} t_server_playerinforeply PACKED_ATTR();
+} PACKED_ATTR() t_server_playerinforeply;
 /*
  * status string:
  *
@@ -2222,7 +1955,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        clienttag;
-} t_client_progident2 PACKED_ATTR();
+} PACKED_ATTR() t_client_progident2;
 /******************************************************/
 
 
@@ -2232,7 +1965,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        channelflag;
-} t_client_joinchannel PACKED_ATTR();
+} PACKED_ATTR() t_client_joinchannel;
 #define CLIENT_JOINCHANNEL_NORMAL  0x00000000
 #define CLIENT_JOINCHANNEL_GENERIC 0x00000001
 #define CLIENT_JOINCHANNEL_CREATE  0x00000002
@@ -2245,7 +1978,7 @@ typedef struct
 {
     t_bnet_header h;
     /* channel names */
-} t_server_channellist PACKED_ATTR();
+} PACKED_ATTR() t_server_channellist;
 /******************************************************/
 
 
@@ -2270,7 +2003,7 @@ typedef struct
     t_bnet_header h;
     bn_int        unknown1; /* 00 00 00 00 */
     /* list */
-} t_server_serverlist PACKED_ATTR();
+} PACKED_ATTR() t_server_serverlist;
 #define SERVER_SERVERLIST_UNKNOWN1 0x00000000
 /******************************************************/
 
@@ -2358,7 +2091,7 @@ typedef struct
     bn_int        reg_auth;  /* server ip and/or reg auth? CD key and/or account number? */
     /* player name */
     /* text */
-} t_server_message PACKED_ATTR();
+} PACKED_ATTR() t_server_message;
 #define SERVER_MESSAGE_PLAYER_IP_DUMMY 0x00000000
 // nok
 #define SERVER_MESSAGE_REG_AUTH 0xBAADF00D /* 0D F0 AD BA */
@@ -2543,7 +2276,7 @@ typedef struct
 {
     t_bnet_header h;
     /* text */
-} t_client_message PACKED_ATTR();
+} PACKED_ATTR() t_client_message;
 /******************************************************/
 
 
@@ -2566,7 +2299,7 @@ typedef struct
     bn_int        unknown3;
     bn_int        maxgames;
     /* game name */
-} t_client_gamelistreq PACKED_ATTR();
+} PACKED_ATTR() t_client_gamelistreq;
 #define CLIENT_GAMELISTREQ_ALL       0x0000
 #define CLIENT_GAMELISTREQ_MELEE     0x0002
 #define CLIENT_GAMELISTREQ_FFA       0x0003
@@ -2660,7 +2393,7 @@ typedef struct
     bn_int        gamecount;
     bn_int  unknown; // dirty hack! -- in yak
     /* games */
-} t_server_gamelistreply PACKED_ATTR();
+} PACKED_ATTR() t_server_gamelistreply;
 
 typedef struct
 {
@@ -2679,7 +2412,7 @@ typedef struct
     /* game name */
     /* clear password */
     /* info */
-} t_server_gamelistreply_game PACKED_ATTR();
+} PACKED_ATTR() t_server_gamelistreply_game;
 #define SERVER_GAMELISTREPLY_GAME_UNKNOWN7       0x00000000 //0x00000409 // 0x0000000c 
 #define SERVER_GAMELISTREPLY_GAME_UNKNOWN1           0x0001 //0x0000 //0x0001 // 0x0000 
 #define SERVER_GAMELISTREPLY_GAME_UNKNOWN3           0x0002
@@ -2707,7 +2440,7 @@ typedef struct
     /* game name */
     /* game password */
     /* game info */
-} t_client_startgame1 PACKED_ATTR();
+} PACKED_ATTR() t_client_startgame1;
 /* I have also seen 1,5,7,f */
 #define CLIENT_STARTGAME1_STATUSMASK     0x0000000f
 #define CLIENT_STARTGAME1_STATUS_OPEN    0x00000004
@@ -2732,7 +2465,7 @@ typedef struct
     bn_int        ip;       /* big endian byte order */
     bn_int        unknown2;
     bn_int        unknown3;
-} t_client_unknown_1b PACKED_ATTR();
+} PACKED_ATTR() t_client_unknown_1b;
 #define CLIENT_UNKNOWN_1B_UNKNOWN1 0x0002
 #define CLIENT_UNKNOWN_1B_UNKNOWN2 0x00000000
 #define CLIENT_UNKNOWN_1B_UNKNOWN3 0x00000000
@@ -2761,7 +2494,7 @@ typedef struct
     /* game name */
     /* game password */
     /* game info */
-} t_client_startgame3 PACKED_ATTR();
+} PACKED_ATTR() t_client_startgame3;
 #define CLIENT_STARTGAME3_STATUSMASK      0x0000000f
 #define CLIENT_STARTGAME3_STATUS_OPEN1    0x00000001 /* used by Diablo */
 #define CLIENT_STARTGAME3_STATUS_OPEN     0x00000004
@@ -2826,7 +2559,7 @@ typedef struct
     /* game name */
     /* game password */
     /* game info */
-} t_client_startgame4 PACKED_ATTR();
+} PACKED_ATTR() t_client_startgame4;
 #define CLIENT_STARTGAME4_UNKNOWN2		    0x00000000
 #define CLIENT_STARTGAME4_STATUSMASK                0x0000000f
 #define CLIENT_STARTGAME4_STATUS_INIT               0x00000000
@@ -2922,7 +2655,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        reply;
-} t_server_startgame1_ack PACKED_ATTR();
+} PACKED_ATTR() t_server_startgame1_ack;
 #define SERVER_STARTGAME1_ACK_NO 0x00000000
 #define SERVER_STARTGAME1_ACK_OK 0x00000001
 /******************************************************/
@@ -2934,7 +2667,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        reply;
-} t_server_startgame3_ack PACKED_ATTR();
+} PACKED_ATTR() t_server_startgame3_ack;
 #define SERVER_STARTGAME3_ACK_NO 0x00000000
 #define SERVER_STARTGAME3_ACK_OK 0x00000001
 /******************************************************/
@@ -2946,7 +2679,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        reply;
-} t_server_startgame4_ack PACKED_ATTR();
+} PACKED_ATTR() t_server_startgame4_ack;
 #define SERVER_STARTGAME4_ACK_NO 0x00000001
 #define SERVER_STARTGAME4_ACK_OK 0x00000000
 /******************************************************/
@@ -2958,7 +2691,7 @@ typedef struct
 typedef struct
 {
     t_bnet_header h;
-} t_client_closegame PACKED_ATTR();
+} PACKED_ATTR() t_client_closegame;
 /******************************************************/
 
 
@@ -2967,7 +2700,7 @@ typedef struct
 typedef struct
 {
     t_bnet_header h;
-} t_client_leavechannel PACKED_ATTR();
+} PACKED_ATTR() t_client_leavechannel;
 
 /******************************************************/
 /*
@@ -2995,7 +2728,7 @@ typedef struct
     bn_int        unknown4;
     bn_int        unknown5;
     /* mapfile */
-} t_client_mapauthreq1 PACKED_ATTR();
+} PACKED_ATTR() t_client_mapauthreq1;
 /******************************************************/
 
 
@@ -3008,7 +2741,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        response;
-} t_server_mapauthreply1 PACKED_ATTR();
+} PACKED_ATTR() t_server_mapauthreply1;
 #define SERVER_MAPAUTHREPLY1_NO        0x00000000
 #define SERVER_MAPAUTHREPLY1_OK        0x00000001
 #define SERVER_MAPAUTHREPLY1_LADDER_OK 0x00000002
@@ -3034,7 +2767,7 @@ typedef struct
     bn_int        unknown5;
     bn_int        unknown6;
     /* mapfile */
-} t_client_mapauthreq2 PACKED_ATTR();
+} PACKED_ATTR() t_client_mapauthreq2;
 /******************************************************/
 
 
@@ -3047,7 +2780,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        response;
-} t_server_mapauthreply2 PACKED_ATTR();
+} PACKED_ATTR() t_server_mapauthreply2;
 #define SERVER_MAPAUTHREPLY2_NO        0x00000000 /* FIXME: these values are guesses */
 #define SERVER_MAPAUTHREPLY2_OK        0x00000001
 #define SERVER_MAPAUTHREPLY2_LADDER_OK 0x00000002
@@ -3067,7 +2800,7 @@ typedef struct
     bn_int        clienttag;
     bn_int        prev_adid; /* zero if first request */
     bn_int        ticks;     /* Unix-style time in seconds */
-} t_client_adreq PACKED_ATTR();
+} PACKED_ATTR() t_client_adreq;
 /******************************************************/
 
 
@@ -3100,7 +2833,7 @@ typedef struct
     bn_long       timestamp;    /* file modification time? */
     /* filename */
     /* link URL */
-} t_server_adreply PACKED_ATTR();
+} PACKED_ATTR() t_server_adreply;
 /******************************************************/
 
 
@@ -3127,7 +2860,7 @@ typedef struct
     bn_int        adid;
     /* adfile */
     /* adlink */
-} t_client_adack PACKED_ATTR();
+} PACKED_ATTR() t_client_adack;
 /******************************************************/
 
 
@@ -3141,7 +2874,7 @@ typedef struct
     t_bnet_header h;
     bn_int        adid;
     bn_int        unknown1;
-} t_client_adclick PACKED_ATTR();
+} PACKED_ATTR() t_client_adclick;
 /******************************************************/
 
 
@@ -3155,7 +2888,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        adid;
-} t_client_adclick2 PACKED_ATTR();
+} PACKED_ATTR() t_client_adclick2;
 /******************************************************/
 
 
@@ -3173,7 +2906,7 @@ typedef struct
     t_bnet_header h;
     bn_int        adid;
     /* link URL */
-} t_server_adclickreply2 PACKED_ATTR();
+} PACKED_ATTR() t_server_adclickreply2;
 /******************************************************/
 
 
@@ -3185,7 +2918,7 @@ typedef struct
     t_bnet_header h;
     /* FIXME: what is in here... is there a cooresponding
        server packet? */
-} t_client_unknown_17 PACKED_ATTR();
+} PACKED_ATTR() t_client_unknown_17;
 /******************************************************/
 
 
@@ -3197,7 +2930,7 @@ typedef struct
     t_bnet_header h;
     /* FIXME: what is in here... is there a cooresponding
        server packet? */
-} t_client_unknown_24 PACKED_ATTR();
+} PACKED_ATTR() t_client_unknown_24;
 /******************************************************/
 
 
@@ -3215,7 +2948,7 @@ typedef struct
     bn_int        type; /* (AKA ladder sort) */
     bn_int        startplace; /* start listing on this entries */
     bn_int        count; /* how many entries to list */
-} t_client_ladderreq PACKED_ATTR();
+} PACKED_ATTR() t_client_ladderreq;
 #define CLIENT_LADDERREQ_ID_STANDARD       0x00000001
 #define CLIENT_LADDERREQ_ID_IRONMAN        0x00000003
 #define CLIENT_LADDERREQ_TYPE_HIGHESTRATED 0x00000000
@@ -3299,7 +3032,7 @@ typedef struct
     bn_int        count; /* how many entries to list */
     /* ladder entry */
     /* player name */
-} t_server_ladderreply PACKED_ATTR();
+} PACKED_ATTR() t_server_ladderreply;
 #define CLIENT_LADDERREPLY_ID_STANDARD 0x00000001
 #define CLIENT_LADDERREPLY_ID_IRONMAN  0x00000003
 
@@ -3310,7 +3043,7 @@ typedef struct
     bn_int disconnect;
     bn_int rating;
     bn_int unknown;
-} t_ladder_data PACKED_ATTR();
+} PACKED_ATTR() t_ladder_data;
 
 typedef struct
 {
@@ -3319,7 +3052,7 @@ typedef struct
     bn_int        ttest[6]; /* 00 00 00 00  00 00 00 00  FF FF FF FF  74 06 00 00  00 00 00 00 00  00 00 00 */
     bn_long       lastgame_current; /* timestamp */
     bn_long       lastgame_active;  /* timestamp */
-} t_ladder_entry PACKED_ATTR();
+} PACKED_ATTR() t_ladder_entry;
 /******************************************************/
 
 
@@ -3332,7 +3065,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        ticks;
-} t_client_echoreply PACKED_ATTR();
+} PACKED_ATTR() t_client_echoreply;
 /******************************************************/
 
 
@@ -3342,7 +3075,7 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        ticks;
-} t_server_echoreq PACKED_ATTR();
+} PACKED_ATTR() t_server_echoreq;
 /******************************************************/
 
 
@@ -3374,7 +3107,7 @@ FF 00 04 00                                          ....
 typedef struct
 {
     t_bnet_header h;
-} t_client_pingreq PACKED_ATTR();
+} PACKED_ATTR() t_client_pingreq;
 /******************************************************/
 
 
@@ -3386,7 +3119,7 @@ FF 00 04 00                                          ....
 typedef struct
 {
     t_bnet_header h;
-} t_server_pingreply PACKED_ATTR();
+} PACKED_ATTR() t_server_pingreply;
 /******************************************************/
 
 
@@ -3420,12 +3153,12 @@ typedef struct
     /* names... */
     /* report header */
     /* report body */
-} t_client_game_report PACKED_ATTR();
+} PACKED_ATTR() t_client_game_report;
 
 typedef struct
 {
     bn_int result;
-} t_client_game_report_result PACKED_ATTR();
+} PACKED_ATTR() t_client_game_report_result;
 #define CLIENT_GAME_REPORT_RESULT_PLAYING    0x00000000
 #define CLIENT_GAME_REPORT_RESULT_WIN        0x00000001
 #define CLIENT_GAME_REPORT_RESULT_LOSS       0x00000002
@@ -3449,7 +3182,7 @@ typedef struct
     bn_int        versiontag;
     /* game name */
     /* game password */
-} t_client_join_game PACKED_ATTR();
+} PACKED_ATTR() t_client_join_game;
 /******************************************************/
 
 
@@ -3473,7 +3206,7 @@ typedef struct
     bn_int        key_count;
     /* names... */
     /* values... */
-} t_client_statsupdate PACKED_ATTR();
+} PACKED_ATTR() t_client_statsupdate;
 /******************************************************/
 
 /******************************************************/
@@ -3484,7 +3217,7 @@ typedef struct
     bn_int        seqno;
     bn_int        seqnohash[5];
     /* Realm Name */
-} t_client_realmjoinreq_109 PACKED_ATTR();
+} PACKED_ATTR() t_client_realmjoinreq_109;
 /******************************************************/
 
 /******************************************************/
@@ -3508,7 +3241,7 @@ typedef struct
     bn_int        u7;             /* zero */
     bn_int        secret_hash[5];
     /* account name */
-} t_server_realmjoinreply_109 PACKED_ATTR();
+} PACKED_ATTR() t_server_realmjoinreply_109;
 /******************************************************/
 
 #define CLIENT_SEARCH_LAN_GAMES 0x2ff7
@@ -3518,7 +3251,7 @@ typedef struct
   bn_byte game_tag[4]; // 3WAR
   bn_int unknown1;
   bn_int unknown2;
-} t_client_search_lan_games PACKED_ATTR();
+} PACKED_ATTR() t_client_search_lan_games;
 
 #define CLIENT_CHANGECLIENT	0x5cff
 typedef struct
@@ -3532,7 +3265,7 @@ typedef struct
 {
 	t_bnet_header	h;
 	/* email address */
-} t_client_setemailreply PACKED_ATTR();
+} PACKED_ATTR() t_client_setemailreply;
 
 #define SERVER_SETEMAILREQ		0x59ff
 /* send this packet to client before login ok packet will cause
@@ -3540,7 +3273,7 @@ client to enter input email screen */
 typedef struct
 {
 	t_bnet_header	h;
-} t_server_setemailreq PACKED_ATTR();
+} PACKED_ATTR() t_server_setemailreq;
 
 #define CLIENT_GETPASSWORDREQ		0x5aff
 typedef struct
@@ -3548,7 +3281,7 @@ typedef struct
 	t_bnet_header	h;
 	/* account name */
 	/* email address */
-} t_client_getpasswordreq PACKED_ATTR();
+} PACKED_ATTR() t_client_getpasswordreq;
 
 #define CLIENT_CHANGEEMAILREQ		0x5bff
 typedef struct
@@ -3557,14 +3290,14 @@ typedef struct
 	/* account name */
 	/* old email address */
 	/* new email address */
-} t_client_changeemailreq PACKED_ATTR();
+} PACKED_ATTR() t_client_changeemailreq;
 
 #define CLIENT_MOTDREQ			0x46ff
 typedef struct
 {
 	t_bnet_header h;
 	bn_int        last_news_time;	/* date of the last news item the client has */
-} t_client_motdreq PACKED_ATTR();
+} PACKED_ATTR() t_client_motdreq;
 /*
 this packet is sent right after cdkey and version auth reply success and crashdump exist
 0x0000: ff 5d 14 00 01 01 00 27   00 0a 01 05 00 00 c0 00    .].....'........
@@ -3577,7 +3310,7 @@ typedef struct
 	t_bnet_header	h;
 	/* crashdump file data */
 	/* contains data like client version, exception code, code address */
-} t_client_crashdump PACKED_ATTR();
+} PACKED_ATTR() t_client_crashdump;
 
 #endif
 

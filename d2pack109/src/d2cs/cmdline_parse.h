@@ -22,9 +22,6 @@ typedef struct
 {
 	char const	* prefs_file;
 	char const	* logfile;
-#ifdef USE_CHECK_ALLOC
-	char const	* memlog_file;
-#endif
 	unsigned int	foreground;
 	unsigned int	help;
 	unsigned int	version;
@@ -41,8 +38,5 @@ extern unsigned int cmdline_get_version(void);
 extern unsigned int cmdline_get_help(void);
 extern unsigned int cmdline_get_foreground(void);
 extern unsigned int cmdline_get_logstderr(void);
-#ifdef USE_CHECK_ALLOC
-extern char const * cmdline_get_memlog_file(void);
-#endif
 
 #endif

@@ -53,9 +53,6 @@
 #undef LIST_DEBUG
 #undef HASHTABLE_DEBUG
 
-/* do we want to track malloc() and free()? */
-#undef USE_CHECK_ALLOC
-
 /* this will use GCC evensions to verify that all module arguments to
    eventlog() are correct. */
 #undef DEBUGMODSTRINGS
@@ -343,8 +340,8 @@
 # define MODE_ATTR(M)
 #endif
 
-/* avoid using padding */
-#if defined(__GNUC__) /* FIXME: which gcc versions? */
+/* avoid using padding on GCC, for other compilers you need alternate solutions */
+#if defined(__GNUC__)
 # define PACKED_ATTR() __attribute__((__packed__))
 #else
 # define PACKED_ATTR()

@@ -93,7 +93,6 @@ ${SRC_D2CSDIR}/s2s.o \
 ${SRC_D2CSDIR}/net.o \
 ${SRC_D2CSDIR}/d2ladder.o \
 ${SRC_D2CSDIR}/handle_signal.o \
-${SRC_COMMONDIR}/check_alloc.o \
 ${SRC_COMMONDIR}/hashtable.o \
 ${SRC_COMMONDIR}/hexdump.o \
 ${SRC_COMMONDIR}/eventlog.o \
@@ -145,7 +144,6 @@ ${SRC_D2CSDIR}/xstring.o \
 ${SRC_COMMONDIR}/list.o \
 ${SRC_COMMONDIR}/eventlog.o \
 ${SRC_COMMONDIR}/bn_type.o \
-${SRC_COMMONDIR}/check_alloc.o \
 ${SRC_COMMONDIR}/util.o \
 ${SRC_COMMONDIR}/addr.o \
 ${SRC_COMMONDIR}/fdwatch.o \

@@ -114,12 +114,44 @@ case "$host" in
                 ;;
 esac
 
+mssql_include_path=""
+dnl Detecting mssql paths
+if test "$ac_with_mssql" = "yes" ; then
+	echo -n "checking for mssql/FreeTDS include path ... "
+	mssql_try_includes="/usr/include /usr/include/freetds /usr/local/include /usr/local/include/freetds /usr/local/freetds/include"
+	for i in `echo ${mssql_try_includes}`; do
+	    if test -f "${i}/sqlfront.h" ; then
+		echo ${i}
+		CPPFLAGS="${CPPFLAGS} -I${i}"
+		mssql_include_path=${i}
+		break
+	    fi
+	done
+fi
+
+mssql_lib_path=""
+if test "$ac_with_mssql" = "yes" ; then
+     AC_CHECK_LIB(sybdb, dbinit, [DEFINES="${DEFINES} -DWITH_SQL_MSSQL" ; LIBS="${LIBS} -lsybdb"], [
+	echo -n "checking for mssql/FreeTDS lib path ... "
+	mssql_try_libs="/usr/lib /usr/lib/freetds /usr/local/lib /usr/local/lib/freetds /usr/local/freetds/lib"
+	for i in `echo ${mssql_try_libs}`; do
+	    if test -f "${i}/libsybdb.so" -o -f "${i}/libsybdb.a" ; then
+		echo ${i}
+		save_ldflags="${LDFLAGS}"
+		LDFLAGS="${LDFLAGS} -L${i}"
+		AC_CHECK_LIB(sybdb, dbclose, [DEFINES="${DEFINES} -DWITH_SQL_MSSQL" ; LIBS="${LIBS} -lsybdb" ; mssql_lib_path="${i}"], [LDFLAGS="${save_ldflags}"])
+		break
+	    fi
+	done
+     ])
+fi
+
 # Checks for header files.
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_TIME
 AC_HEADER_STAT
-AC_CHECK_HEADERS(fcntl.h sys/time.h sys/select.h string.h strings.h unistd.h stdarg.h varargs.h malloc.h sys/utsname.h sys/timeb.h sys/socket.h sys/param.h netinet/in.h arpa/inet.h netdb.h termios.h stddef.h memory.h sys/types.h sys/wait.h sys/ioctl.h stdint.h sys/file.h limits.h poll.h sys/poll.h stropts.h sys/stropts.h sys/stat.h pwd.h grp.h dir.h direct.h sys/mman.h sys/event.h sys/epoll.h sys/resource.h)
+AC_CHECK_HEADERS(fcntl.h sys/time.h sys/select.h string.h strings.h unistd.h stdarg.h varargs.h malloc.h sys/utsname.h sys/timeb.h sys/socket.h sys/param.h netinet/in.h arpa/inet.h netdb.h termios.h stddef.h memory.h sys/types.h sys/wait.h sys/ioctl.h stdint.h sys/file.h limits.h poll.h sys/poll.h stropts.h sys/stropts.h sys/stat.h pwd.h grp.h dir.h direct.h sys/mman.h sys/event.h sys/epoll.h sys/resource.h assert.h)
 
 # Checks for typedefs and structures
 AC_STRUCT_TM

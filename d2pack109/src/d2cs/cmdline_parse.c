@@ -129,9 +129,3 @@ extern char const * cmdline_get_logfile(void)
 	return cmdline_param.logfile;
 }
 
-#ifdef USE_CHECK_ALLOC
-extern char const * cmdline_get_memlog_file(void)
-{
-	return cmdline_param.memlog_file;
-}
-#endif
