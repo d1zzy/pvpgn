@@ -56,8 +56,6 @@ extern t_packet * packet_create(t_packet_class class)
     
     if (class!=packet_class_init &&
 	class!=packet_class_bnet &&
-	class!=packet_class_file &&
-	class!=packet_class_udp &&
 	class!=packet_class_raw &&
 	class!=packet_class_d2game &&
         class!=packet_class_d2cs &&
@@ -132,10 +130,6 @@ extern t_packet_class packet_get_class(t_packet const * packet)
 	return packet_class_init;
     case packet_class_bnet:
         return packet_class_bnet;
-    case packet_class_file:
-        return packet_class_file;
-    case packet_class_udp:
-	return packet_class_udp;
     case packet_class_raw:
         return packet_class_raw;
     case packet_class_d2game:
@@ -169,10 +163,6 @@ extern char const * packet_get_class_str(t_packet const * packet)
         return "init";
     case packet_class_bnet:
         return "bnet";
-    case packet_class_file:
-        return "file";
-    case packet_class_udp:
-        return "udp";
     case packet_class_raw:
         return "raw";
     case packet_class_d2game:
@@ -206,8 +196,6 @@ extern int packet_set_class(t_packet * packet, t_packet_class class)
     }
     if (class!=packet_class_init &&
 	class!=packet_class_bnet &&
-	class!=packet_class_file &&
-	class!=packet_class_udp &&
 	class!=packet_class_raw &&
 	class!=packet_class_d2game &&
         class!=packet_class_d2cs &&
@@ -243,22 +231,6 @@ extern unsigned int packet_get_type(t_packet const * packet)
 	    return 0;
 	}
 	return (unsigned int)bn_short_get(packet->u.bnet.h.type);
-	
-    case packet_class_file:
-	if (packet_get_size(packet)<sizeof(t_file_header))
-	{
-	    eventlog(eventlog_level_error,"packet_get_type","file packet is shorter than header (len=%u)",packet_get_size(packet));
-	    return 0;
-	}
-	return (unsigned int)bn_short_get(packet->u.file.h.type);
-	
-    case packet_class_udp:
-	if (packet_get_size(packet)<sizeof(t_udp_header))
-	{
-	    eventlog(eventlog_level_error,"packet_get_type","udp packet is shorter than header (len=%u)",packet_get_size(packet));
-	    return 0;
-	}
-	return bn_int_get(packet->u.udp.h.type);
 	
     case packet_class_raw:
 	return 0; /* raw packets don't have a type, but don't warn because the packet dump tries anyway */
@@ -375,10 +347,6 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
                 return "CLIENT_CHANGEGAMEPORT"; 
             case CLIENT_CREATEACCTREQ2:
 		return "CLIENT_CREATEACCTREQ2";
-	    case CLIENT_UDPOK:
-		return "CLIENT_UDPOK";
-	    case CLIENT_FILEINFOREQ:
-		return "CLIENT_FILEINFOREQ";
 	    case CLIENT_STATSREQ:
 		return "CLIENT_STATSREQ";
 	    case CLIENT_LOGINREQ1:
@@ -452,38 +420,6 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    }
 	    return "unknown";
 	    
-	case packet_class_file:
-	    if (packet_get_size(packet)<sizeof(t_file_header))
-	    {
-		eventlog(eventlog_level_error,"packet_get_type_str","packet is shorter than header (len=%u)",packet_get_size(packet));
-		return "unknown";
-	    }
-	    switch (bn_short_get(packet->u.file.h.type))
-	    {
-	    case CLIENT_FILE_REQ:
-		return "CLIENT_FILE_REQ";
-	    }
-	    return "unknown";
-	    
-	case packet_class_udp:
-	    if (packet_get_size(packet)<sizeof(t_udp_header))
-	    {
-		eventlog(eventlog_level_error,"packet_get_type_str","packet is shorter than header (len=%u)",packet_get_size(packet));
-		return "unknown";
-	    }
-	    switch (bn_int_get(packet->u.udp.h.type))
-	    {
-	    case SERVER_UDPTEST: /* we get these if we send stuff to ourself */
-		return "SERVER_UDPTEST";
-	    case CLIENT_UDPPING:
-		return "CLIENT_UDPPING";
-	    case CLIENT_SESSIONADDR1:
-		return "CLIENT_SESSIONADDR1";
-	    case CLIENT_SESSIONADDR2:
-		return "CLIENT_SESSIONADDR2";
-	    }
-	    return "unknown";
-	
 	case packet_class_raw:
 	    return "CLIENT_RAW";
 	
@@ -573,8 +509,6 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 		return "SERVER_LOGINREPLY2";
 	    case SERVER_CREATEACCTREPLY2:
 		return "SERVER_CREATEACCOUNT_W3";		
-	    case SERVER_FILEINFOREPLY:
-		return "SERVER_FILEINFOREPLY";
 	    case SERVER_STATSREPLY:
 		return "SERVER_STATSREPLY";
 	    case SERVER_LOGINREPLY1:
@@ -618,32 +552,6 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    }
 	    return "unknown";
 	    
-	case packet_class_file:
-	    if (packet_get_size(packet)<sizeof(t_file_header))
-	    {
-		eventlog(eventlog_level_error,"packet_get_type_str","packet is shorter than header (len=%u)",packet_get_size(packet));
-		return "unknown";
-	    }
-	    switch (bn_short_get(packet->u.file.h.type))
-	    {
-	    case SERVER_FILE_REPLY:
-		return "SERVER_FILE_REPLY";
-	    }
-	    return "unknown";
-	    
-	case packet_class_udp:
-	    if (packet_get_size(packet)<sizeof(t_udp_header))
-	    {
-		eventlog(eventlog_level_error,"packet_get_type_str","packet is shorter than header (len=%u)",packet_get_size(packet));
-		return "unknown";
-	    }
-	    switch (bn_int_get(packet->u.udp.h.type))
-	    {
-	    case SERVER_UDPTEST:
-		return "SERVER_UDPTEST";
-	    }
-	    return "unknown";
-	
 	case packet_class_raw:
 	    return "SERVER_RAW";
 	    
@@ -712,29 +620,6 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	bn_short_set(&packet->u.bnet.h.type,(unsigned short)type);
 	return 0;
 	
-    case packet_class_file:
-	if (packet_get_size(packet)<sizeof(t_file_header))
-	{
-	    eventlog(eventlog_level_error,"packet_set_type","file packet is shorter than header (len=%u)",packet_get_size(packet));
-	    return -1;
-	}
-	if (type>MAX_FILE_TYPE)
-	{
-	    eventlog(eventlog_level_error,"packet_set_type","file packet type 0x%08x is too large",type);
-	    return -1;
-	}
-	bn_short_set(&packet->u.file.h.type,(unsigned short)type);
-	return 0;
-	
-    case packet_class_udp:
-	if (packet_get_size(packet)<sizeof(t_udp_header))
-	{
-	    eventlog(eventlog_level_error,"packet_set_type","udp packet is shorter than header (len=%u)",packet_get_size(packet));
-	    return -1;
-	}
-	bn_int_set(&packet->u.udp.h.type,type);
-	return 0;
-	
     case packet_class_d2game:
 	if (packet_get_size(packet)<sizeof(t_d2game_header))
 	{
@@ -801,12 +686,6 @@ extern unsigned int packet_get_size(t_packet const * packet)
     case packet_class_bnet:
         size = (unsigned int)bn_short_get(packet->u.bnet.h.size);
 	break;
-    case packet_class_file:
-        size = (unsigned int)bn_short_get(packet->u.file.h.size);
-	break;
-    case packet_class_udp:
-	size = packet->len;
-	break;
     case packet_class_raw:
 	size = packet->len;
 	break;
@@ -867,22 +746,6 @@ extern int packet_set_size(t_packet * packet, unsigned int size)
 	}
         bn_short_set(&packet->u.bnet.h.size,size);
         return 0;
-    case packet_class_file:
-	if (size!=0 && size<sizeof(t_file_header))
-	{
-	    eventlog(eventlog_level_error,"packet_set_size","invalid size %u for file packet",size);
-	    return -1;
-	}
-        bn_short_set(&packet->u.file.h.size,size);
-        return 0;
-    case packet_class_udp:
-	if (size!=0 && size<sizeof(t_udp_header))
-	{
-	    eventlog(eventlog_level_error,"packet_set_size","invalid size %u for udp packet",size);
-	    return -1;
-	}
-	packet->len = size;
-	return 0;
     case packet_class_raw:
 	packet->len = size;
 	return 0;
@@ -919,10 +782,6 @@ extern unsigned int packet_get_header_size(t_packet const * packet)
         return 0;
     case packet_class_bnet:
         return sizeof(t_bnet_header);
-    case packet_class_file:
-        return sizeof(t_file_header);
-    case packet_class_udp:
-        return sizeof(t_udp_header);
     case packet_class_raw:
         return 0;
     case packet_class_d2game:

@@ -23,9 +23,6 @@
 # include "common/field_sizes.h"
 # include "common/init_protocol.h"
 # include "common/bnet_protocol.h"
-# include "common/file_protocol.h"
-# include "common/bot_protocol.h"
-# include "common/udp_protocol.h"
 # include "common/d2game_protocol.h"
 # include "d2cs/d2cs_protocol.h"
 # include "d2cs/d2cs_d2gs_protocol.h"
@@ -35,9 +32,6 @@
 # include "common/field_sizes.h"
 # include "common/init_protocol.h"
 # include "common/bnet_protocol.h"
-# include "common/file_protocol.h"
-# include "common/bot_protocol.h"
-# include "common/udp_protocol.h"
 # include "common/d2game_protocol.h"
 # include "d2cs/d2cs_protocol.h"
 # include "d2cs/d2cs_d2gs_protocol.h"
@@ -50,9 +44,7 @@ typedef enum
     packet_class_none,
     packet_class_init,
     packet_class_bnet,
-    packet_class_file,
     packet_class_raw,
-    packet_class_udp,
     packet_class_d2game,
     packet_class_d2gs,
     packet_class_d2cs,
@@ -84,8 +76,6 @@ typedef struct
         char data[MAX_PACKET_SIZE];
         
         t_bnet_generic   bnet;
-        t_file_generic   file;
-        t_udp_generic    udp;
         t_d2game_generic d2game;
         
 	t_client_initconn client_initconn;
@@ -111,7 +101,6 @@ typedef struct
         t_client_message            client_message;
         t_client_gamelistreq        client_gamelistreq;
         t_server_gamelistreply      server_gamelistreply;
-        t_client_udpok              client_udpok;
         t_client_unknown_1b         client_unknown_1b;
         t_client_startgame1         client_startgame1;
         t_server_startgame1_ack     server_startgame1_ack;
@@ -144,8 +133,6 @@ typedef struct
         t_server_changepassack      server_changepassack;
         t_client_iconreq            client_iconreq;
         t_server_iconreply          server_iconreply;
-        t_client_fileinforeq        client_fileinforeq;
-        t_server_fileinforeply      server_fileinforeply;
         t_client_statsupdate        client_statsupdate;
         t_client_countryinfo1       client_countryinfo1;
         t_client_countryinfo_109    client_countryinfo_109;
@@ -181,16 +168,6 @@ typedef struct
 	t_client_createacctreq2     client_createacctreq2;
 	t_server_createacctreply2   server_createacctreply2;
 	t_client_changegameport	   client_changegameport;
-	t_client_file_req          client_file_req;
-	t_server_file_reply        server_file_reply;
-
-	t_server_file_unknown1	   server_file_unknown1;
-
-	t_server_udptest           server_udptest;
-	t_client_udpping           client_udpping;
-	t_client_sessionaddr1      client_sessionaddr1;
-	t_client_sessionaddr2      client_sessionaddr2;
-	
 	t_client_motd_w3           client_motd_w3;
 	t_server_motd_w3           server_motd_w3;
 	t_client_logonproofreq     client_logonproofreq;
