@@ -86,13 +86,14 @@
 #include "server.h"
 #include "prefs.h"
 #include "d2ladder.h"
-#ifndef WIN32
 #include "handle_signal.h"
-#endif
 #include "common/addr.h"
 #include "common/list.h"
 #include "common/hashtable.h"
 #include "common/eventlog.h"
+#ifdef WIN32
+# include <conio.h> /* for kbhit() and getch() */
+#endif
 #include "common/setup_after.h"
 
 static int server_listen(void);
@@ -103,6 +104,8 @@ static int server_loop(void);
 static int server_cleanup(void);
 
 t_addrlist		* server_listen_addrs;
+
+extern int g_ServiceStatus;
 
 static int server_listen(void)
 {
@@ -291,9 +294,16 @@ static int server_loop(void)
 
 	count=0;
 	while (1) {
-#ifndef WIN32
-		if (handle_signal()<0) break;
+#ifdef WIN32
+		if (g_ServiceStatus<0 && kbhit() && getch()=='q')
+			signal_quit_wrapper();
+		
+		if (g_ServiceStatus == 0) signal_quit_wrapper();
+		
+		while (g_ServiceStatus == 2) Sleep(1000);
 #endif
+
+		if (handle_signal()<0) break;
 		if (++count>=(1000/BNETD_POLL_INTERVAL)) {
 			server_handle_timed_event();
 			count=0;

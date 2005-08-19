@@ -112,6 +112,7 @@ extern int d2dbs_handle_signal(void)
 	if (signal_data.exit_time) {
 		now=time(NULL);
 		if (now >= (signed)signal_data.exit_time) {
+			signal_data.exit_time=0;
 			eventlog(eventlog_level_info,__FUNCTION__,"shutdown server due to signal");
 			return -1;
 		}
@@ -138,7 +139,7 @@ extern int d2dbs_handle_signal(void)
           xfree(temp);
         }
 
-		if (!d2dbs_cmdline_get_logstderr()) eventlog_open(d2dbs_prefs_get_logfile());
+		if (!d2dbs_cmdline_get_debugmode()) eventlog_open(d2dbs_prefs_get_logfile());
 	}
 	if (signal_data.save_ladder) {
 		signal_data.save_ladder=0;
@@ -148,6 +149,27 @@ extern int d2dbs_handle_signal(void)
 	return 0;
 }
 
+#ifdef WIN32
+extern void d2dbs_signal_quit_wrapper(void)
+{
+  signal_data.do_quit=1;
+}
+
+extern void d2dbs_signal_reload_config_wrapper(void)
+{
+    signal_data.reload_config = 1;
+}
+
+extern void d2dbs_signal_save_ladder_wrapper(void)
+{
+    signal_data.save_ladder = 1;
+}
+
+extern void d2dbs_signal_exit_wrapper(void)
+{
+    signal_data.exit_time = 1;
+}
+#else
 extern int d2dbs_handle_signal_init(void)
 {
 	signal(SIGINT,on_signal);
@@ -188,3 +210,4 @@ static void on_signal(int s)
 	}
 	signal(s,on_signal);
 }
+#endif

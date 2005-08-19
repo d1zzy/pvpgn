@@ -55,9 +55,21 @@
 #include "handle_signal.h"
 #include "dbserver.h"
 #include "common/xalloc.h"
+#ifdef WIN32
+# include "win32/service.h"
+#endif
+#ifdef WIN32_GUI
+# include "win32/winmain.h"
+#endif
 #include "common/setup_after.h"
 
 static FILE * eventlog_fp;
+
+char serviceLongName[] = "d2dbs109 service";
+char serviceName[] = "d2dbs109";
+char serviceDescription[] = "Diablo 2 (109) DataBase Server";
+
+int g_ServiceStatus = -1;
 
 static int init(void);
 static int cleanup(void);
@@ -77,7 +89,7 @@ static int setup_daemon(void)
 
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
-	if (!d2dbs_cmdline_get_logstderr()) {
+	if (!d2dbs_cmdline_get_debugmode()) {
 		close(STDERR_FILENO);
 	}
 
@@ -116,6 +128,12 @@ static int config_init(int argc, char * * argv)
 	if (d2dbs_cmdline_parse(argc, argv)<0) {
 		return -1;
 	}
+#ifdef WIN32
+        if (d2dbs_cmdline_get_run_as_service()) {
+                Win32_ServiceRun();
+                return 1;
+        }
+#endif
 	if (d2dbs_cmdline_get_version()) {
 		d2dbs_cmdline_show_version();
 		return -1;
@@ -129,6 +147,21 @@ static int config_init(int argc, char * * argv)
 	    	if (!((pid = setup_daemon()) == 0)) {
 		        return pid;
 		}
+	}
+#endif
+#ifdef WIN32
+	if (d2dbs_cmdline_get_make_service())
+	{
+                if (strcmp(d2dbs_cmdline_get_make_service(), "install") == 0) {
+                	fprintf(stderr, "Installing service\n");
+                	Win32_ServiceInstall();
+                        return 1;
+                }
+                if (strcmp(d2dbs_cmdline_get_make_service(), "uninstall") == 0) {
+                	fprintf(stderr, "Uninstalling service\n");
+                	Win32_ServiceUninstall();
+                        return 1;
+                }
 	}
 #endif
 	if (d2dbs_prefs_load(d2dbs_cmdline_get_prefs_file())<0) {
@@ -153,7 +186,7 @@ static int config_init(int argc, char * * argv)
     }
 
 
-	if (d2dbs_cmdline_get_logstderr()) {
+	if (d2dbs_cmdline_get_debugmode()) {
 		eventlog_set(stderr);
 	} else if (d2dbs_cmdline_get_logfile()) {
 		if (eventlog_open(d2dbs_cmdline_get_logfile())<0) {
@@ -178,8 +211,8 @@ static int config_cleanup(void)
 	return 0;
 }
 
-#ifdef D2CLOSED
-extern int d2dbs_main(int argc, char * * argv)
+#ifdef WIN32_GUI
+extern int server_main(int argc, char * * argv)
 #else
 extern int main(int argc, char * * argv)
 #endif

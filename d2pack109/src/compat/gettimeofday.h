@@ -43,7 +43,7 @@ struct timezone
 #define INCLUDED_GETTIMEOFDAY_PROTOS
 
 #ifndef HAVE_GETTIMEOFDAY
-extern gettimeofday(struct timeval * tv, struct timezone * tz);
+extern int gettimeofday(struct timeval * tv, struct timezone * tz);
 #endif
 
 #endif

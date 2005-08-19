@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000,2001	Onlyer	(onlyer@263.net)
+ * Copyright (C) 2001  Erik Latoshek [forester] (laterk@inbox.lv)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,18 +15,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef INCLUDED_HANDLE_SIGNAL_H
-#define INCLUDED_HANDLE_SIGNAL_H
+#ifndef __WINMAIN_H__
+#define __WINMAIN_H__
 
-#ifndef WIN32
-extern int d2dbs_handle_signal_init(void);
-#else
-extern void d2dbs_signal_quit_wrapper(void);
-extern void d2dbs_signal_reload_config_wrapper(void);
-extern void d2dbs_signal_save_ladder_wrapper(void);
-extern void d2dbs_signal_exit_wrapper(void);
-#endif
+#include <stdarg.h>
+#include "common/eventlog.h"
 
-extern int d2dbs_handle_signal(void);
+extern int gui_printf(const char *format, ...);
+extern void guiOnUpdateUserList(void);
+
+extern int gui_lvprintf(t_eventlog_level l, const char *format, va_list arglist);
+extern int gui_lprintf(t_eventlog_level l, const char *format, ...);
 
 #endif

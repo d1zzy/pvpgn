@@ -1,0 +1,5 @@
+To Install:
+run the install.bat in the main dir
+
+To Uninstall:
+run the uninstall.bat in the main dir

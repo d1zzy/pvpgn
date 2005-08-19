@@ -36,7 +36,7 @@
 #include "common/setup_after.h"
 
 
-extern gettimeofday(struct timeval * tv, struct timezone * tz)
+extern int gettimeofday(struct timeval * tv, struct timezone * tz)
 {
 #ifdef HAVE_FTIME
     struct timeb tb;

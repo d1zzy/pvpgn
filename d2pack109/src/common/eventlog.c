@@ -60,7 +60,7 @@
 #include "common/setup_after.h"
 
 #ifdef WIN32_GUI
-# include "../bnetd/winmain.h"
+# include "win32/winmain.h"
 #endif
 
 static FILE *           eventstrm=NULL;
