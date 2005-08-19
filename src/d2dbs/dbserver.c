@@ -96,6 +96,9 @@
 #include "common/eventlog.h"
 #include "common/addr.h"
 #include "common/xalloc.h"
+#ifdef WIN32
+# include <conio.h> /* for kbhit() and getch() */
+#endif
 #include "common/setup_after.h"
 
 
@@ -103,6 +106,8 @@ static int		dbs_packet_gs_id = 0;
 static t_preset_d2gsid	*preset_d2gsid_head = NULL;
 t_list * dbs_server_connection_list = NULL;
 int dbs_server_listen_socket=-1;
+
+extern int g_ServiceStatus;
 
 /* dbs_server_main
  * The module's driver function -- we just call other functions and
@@ -380,9 +385,15 @@ void dbs_server_loop(int lsocket)
 	psock_t_socklen nAddrSize = sizeof(sinRemote);
 	
 	while (1) {
-#ifndef WIN32
-		if (d2dbs_handle_signal()<0) break;
+#ifdef WIN32
+		if (g_ServiceStatus<0 && kbhit() && getch()=='q')
+			d2dbs_signal_quit_wrapper();
+		
+		if (g_ServiceStatus == 0) d2dbs_signal_quit_wrapper();
+		
+		while (g_ServiceStatus == 2) Sleep(1000);
 #endif
+		if (d2dbs_handle_signal()<0) break;
 		dbs_handle_timed_events();
 		highest_fd=dbs_server_setup_fdsets(&ReadFDs, &WriteFDs, &ExceptFDs, lsocket);
 

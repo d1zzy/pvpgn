@@ -115,6 +115,7 @@ extern int handle_signal(void)
 	if (signal_data.exit_time) {
 		now=time(NULL);
 		if (now >= (signed)signal_data.exit_time) {
+			signal_data.exit_time=0;
 			eventlog(eventlog_level_info,__FUNCTION__,"shutdown server due to signal");
 			return -1;
 		}
@@ -150,7 +151,7 @@ extern int handle_signal(void)
             xfree(temp);
         }
 
-		if (!cmdline_get_logstderr()) eventlog_open(d2cs_prefs_get_logfile());
+		if (!cmdline_get_debugmode()) eventlog_open(d2cs_prefs_get_logfile());
 	}
 	if (signal_data.reload_ladder) {
 		signal_data.reload_ladder=0;
@@ -167,6 +168,32 @@ extern int handle_signal(void)
 	return 0;
 }
 
+#ifdef WIN32
+extern void signal_quit_wrapper(void)
+{
+  signal_data.do_quit=1;
+}
+
+extern void signal_reload_config_wrapper(void)
+{
+    signal_data.reload_config = 1;
+}
+
+extern void signal_load_ladder_wrapper(void)
+{
+    signal_data.reload_ladder = 1;
+}
+
+extern void signal_exit_wrapper(void)
+{
+    signal_data.exit_time = 1;
+}
+
+extern void signal_restart_d2gs_wrapper(void)
+{
+    signal_data.restart_d2gs = 1;
+}
+#else
 extern int handle_signal_init(void)
 {
 	signal(SIGINT,on_signal);
@@ -212,3 +239,4 @@ static void on_signal(int s)
 	}
 	signal(s,on_signal);
 }
+#endif

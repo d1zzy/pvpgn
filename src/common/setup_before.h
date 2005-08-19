@@ -29,7 +29,7 @@
 
 #ifdef WIN32
 #ifndef __BORLANDC__ /* Borland uses config.h.win32borland instead */
-# include "configwin.h"
+# include "win32/configwin.h"
 #endif
 #endif
 

@@ -62,7 +62,19 @@
 #include "common/fdwatch.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+#ifdef WIN32
+# include "win32/service.h"
+#endif
+#ifdef WIN32_GUI
+# include "win32/winmain.h"
+#endif
 #include "common/setup_after.h"
+
+char serviceLongName[] = "d2cs109 service";
+char serviceName[] = "d2cs109";
+char serviceDescription[] = "Diablo 2 (109) Character Server";
+
+int g_ServiceStatus = -1;
 
 static int init(void);
 static int cleanup(void);
@@ -82,7 +94,7 @@ static int setup_daemon(void)
 	}
 	close(STDIN_FILENO);
 	close(STDOUT_FILENO);
-	if (!cmdline_get_logstderr()) {
+	if (!cmdline_get_debugmode()) {
 		close(STDERR_FILENO);
 	}
 	switch ((pid = fork())) {
@@ -139,6 +151,12 @@ static int config_init(int argc, char * * argv)
 	if (cmdline_parse(argc, argv)<0) {
 		return -1;
 	}
+#ifdef WIN32
+	if (cmdline_get_run_as_service()) {
+		Win32_ServiceRun();
+		return 1;
+	}
+#endif
 	if (cmdline_get_version()) {
 		cmdline_show_version();
 		return -1;
@@ -154,6 +172,21 @@ static int config_init(int argc, char * * argv)
 		}
 	}
 #endif
+#ifdef WIN32
+	if (cmdline_get_make_service()) {
+		if (strcmp(cmdline_get_make_service(), "install") == 0) {
+			fprintf(stderr, "Installing service\n");
+			Win32_ServiceInstall();
+			return 1;
+		}
+		if (strcmp(cmdline_get_make_service(), "uninstall") == 0) {
+			fprintf(stderr, "Uninstalling service\n");
+			Win32_ServiceUninstall();
+			return 1;
+		}
+	}
+#endif
+
 	if (d2cs_prefs_load(cmdline_get_prefs_file())<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error loading configuration file %s",cmdline_get_prefs_file());
 		return -1;
@@ -175,7 +208,7 @@ static int config_init(int argc, char * * argv)
         xfree(temp);
     }
 
-	if (cmdline_get_logstderr()) {
+	if (cmdline_get_debugmode()) {
 		eventlog_set(stderr);
 	} else if (cmdline_get_logfile()) {
 		if (eventlog_open(cmdline_get_logfile())<0) {
@@ -199,8 +232,8 @@ static int config_cleanup(void)
 	return 0;
 }
 
-#ifdef D2CLOSED
-extern int d2cs_main(int argc, char * * argv)
+#ifdef WIN32_GUI
+extern int server_main(int argc, char * * argv)
 #else
 extern int main(int argc, char * * argv)
 #endif

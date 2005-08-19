@@ -1,0 +1,25 @@
+D2Pack109 Win32 MinGW Compile Instructions
+This file explains how to compile D2Pack109 for Win32 using MinGW
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+1. Download and install 'MinGW-3.1.0-1.exe' to 'C:\MinGW'
+    http://prdownloads.sf.net/mingw/MinGW-3.1.0-1.exe
+
+2. Download and extract 'w32api-3.2.tar.gz' to 'C:\MinGW"
+    http://prdownloads.sf.net/mingw/w32api-3.2.tar.gz
+
+3. Download 'UnxUtils.zip' and extract the following files
+   (install.exe and rm.exe) to 'C:\MinGW\bin'
+    http://unxutils.sourceforge.net/UnxUtils.zip
+	Location of files in UnxUtils.zip
+        /usr/local/wbin/install.exe
+	/usr/local/wbin/rm.exe
+
+4. From a command line, change to the Win32-Projects directory
+   of the D2Pack109 source. Execute 'make_mingw.bat' for command
+   line options.
+
+5. Compile the desired package, and install.
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=

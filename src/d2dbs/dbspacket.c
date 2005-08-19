@@ -129,14 +129,14 @@ static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn, char 
 	char savefile[MAX_PATH];
 	char bakfile[MAX_PATH];
 	unsigned short curlen,readlen,leftlen,writelen;
-	int	fd;
+	FILE * fd;
 	
 	strtolower(AccountName);
 	strtolower(CharName);
 
 	sprintf(filename,"%s/.%s.tmp",d2dbs_prefs_get_charsave_dir(),CharName);
-	fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC,S_IREAD|S_IWRITE );
-	if (fd<=0) {
+	fd = fopen(filename, "wb");
+	if (!fd) {
 		eventlog(eventlog_level_error,__FUNCTION__,"open() failed : %s",filename);
 		return 0;
 	}
@@ -145,16 +145,16 @@ static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn, char 
 	while(curlen<datalen) {
 		if (leftlen>2000) writelen=2000;
 		else writelen=leftlen;
-		readlen=write(fd,data+curlen,writelen);
+		readlen=fwrite(data+curlen,1,writelen,fd);
 		if (readlen<=0) {
-			close(fd);
+			fclose(fd);
 			eventlog(eventlog_level_error,__FUNCTION__,"write() failed error : %s",strerror(errno));
 			return 0;
 		}
 		curlen+=readlen;
 		leftlen-=readlen;
 	}
-	close(fd);
+	fclose(fd);
 
 	sprintf(bakfile,"%s/%s",prefs_get_charsave_bak_dir(),CharName);
 	sprintf(savefile,"%s/%s",d2dbs_prefs_get_charsave_dir(),CharName);
@@ -175,7 +175,7 @@ static unsigned int dbs_packet_savedata_charinfo(t_d2dbs_connection* conn,char *
 	char bakfile[MAX_PATH];
 	char filepath[MAX_PATH];
 	char filename[MAX_PATH];
-	int  fd;
+	FILE * fd;
 	unsigned short curlen,readlen,leftlen,writelen;
 	struct stat statbuf;
 	
@@ -184,13 +184,13 @@ static unsigned int dbs_packet_savedata_charinfo(t_d2dbs_connection* conn,char *
 
 	sprintf(filepath,"%s/%s",prefs_get_charinfo_bak_dir(),AccountName);
 	if (stat(filepath,&statbuf)==-1) {
-		mkdir(filepath,S_IRWXU|S_IRWXG|S_IRWXO );
+		p_mkdir(filepath,S_IRWXU|S_IRWXG|S_IRWXO );
 		eventlog(eventlog_level_info,__FUNCTION__,"created charinfo directory: %s",filepath);
 	}
 
 	sprintf(filename,"%s/%s/.%s.tmp",d2dbs_prefs_get_charinfo_dir(),AccountName,CharName);
-	fd = open(filename, O_WRONLY|O_CREAT|O_TRUNC,S_IREAD|S_IWRITE );
-	if (fd<=0) {
+	fd = fopen(filename, "wb");
+	if (!fd) {
 		eventlog(eventlog_level_error,__FUNCTION__,"open() failed : %s",filename);
 		return 0;
 	}
@@ -200,16 +200,16 @@ static unsigned int dbs_packet_savedata_charinfo(t_d2dbs_connection* conn,char *
 	while(curlen<datalen) {
 		if (leftlen>2000) writelen=2000;
 		else writelen=leftlen;
-		readlen=write(fd,data+curlen,writelen);
+		readlen=fwrite(data+curlen,1,writelen,fd);
 		if (readlen<=0) {
-			close(fd);
+			fclose(fd);
 			eventlog(eventlog_level_error,__FUNCTION__,"write() failed error : %s",strerror(errno));
 			return 0;
 		}
 		curlen+=readlen;
 		leftlen-=readlen;
 	}
-	close(fd);
+	fclose(fd);
 
 	sprintf(bakfile,"%s/%s/%s",prefs_get_charinfo_bak_dir(),AccountName,CharName);
 	sprintf(savefile,"%s/%s/%s",d2dbs_prefs_get_charinfo_dir(),AccountName,CharName);
@@ -228,7 +228,7 @@ static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn,char * 
 {
 	char filename[MAX_PATH];
         char filename_d2closed[MAX_PATH];
-	int				fd;
+	FILE * fd;
 	unsigned short curlen,readlen,leftlen,writelen;
 	long filesize;
 	
@@ -241,20 +241,21 @@ static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn,char * 
         {
                 p_rename(filename_d2closed, filename);
         }
-	fd = open(filename, O_RDONLY);
-	if (fd<=0) {
+	fd = fopen(filename, "rb");
+	if (!fd) {
 		eventlog(eventlog_level_error,__FUNCTION__,"open() failed : %s",filename);
 		return 0;
 	}
-	filesize=lseek(fd,0,SEEK_END);
-	lseek(fd,0,SEEK_SET);
+	fseek(fd,0,SEEK_END);
+	filesize=ftell(fd);
+	rewind(fd);
 	if (filesize==-1) {
-		close(fd);
+		fclose(fd);
 		eventlog(eventlog_level_error,__FUNCTION__,"lseek() failed");
 		return 0;
 	}
 	if ((signed)bufsize < filesize) {
-		close(fd);
+		fclose(fd);
 		eventlog(eventlog_level_error,__FUNCTION__,"not enough buffer");
 		return 0;
 	}
@@ -264,16 +265,16 @@ static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn,char * 
 	while(curlen < filesize) {
 		if (leftlen>2000) writelen=2000;
 		else writelen=leftlen;
-		readlen=read(fd,data+curlen,writelen);
+		readlen=fread(data+curlen,1,writelen,fd);
 		if (readlen<=0) {
-			close(fd);
+			fclose(fd);
 			eventlog(eventlog_level_error,__FUNCTION__,"read() failed error : %s",strerror(errno));
 			return 0;
 		}
 		leftlen-=readlen;
 		curlen+=readlen;
 	}
-	close(fd);
+	fclose(fd);
 	eventlog(eventlog_level_info,__FUNCTION__,"loaded charsave %s(*%s) for gs %s(%d)", CharName, AccountName, conn->serverip, conn->serverid);
 	return filesize;
 }
@@ -281,7 +282,7 @@ static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn,char * 
 static unsigned int dbs_packet_getdata_charinfo(t_d2dbs_connection* conn,char * AccountName,char * CharName,char * data,unsigned int bufsize)
 {
 	char filename[MAX_PATH];
-	int  fd;
+	FILE * fd;
 	unsigned short curlen,readlen,leftlen,writelen;
 	long filesize;
 	
@@ -289,20 +290,21 @@ static unsigned int dbs_packet_getdata_charinfo(t_d2dbs_connection* conn,char * 
 	strtolower(CharName);
 
 	sprintf(filename,"%s/%s/%s",d2dbs_prefs_get_charinfo_dir(),AccountName,CharName);
-	fd = open(filename, O_RDONLY);
-	if (fd<=0) {
+	fd = fopen(filename, "rb");
+	if (!fd) {
 		eventlog(eventlog_level_error,__FUNCTION__,"open() failed : %s",filename);
 		return 0;
 	}
-	filesize=lseek(fd,0,SEEK_END);
-	lseek(fd,0,SEEK_SET);
+	fseek(fd,0,SEEK_END);
+	filesize=ftell(fd);
+	rewind(fd);
 	if (filesize==-1) {
-		close(fd);
+		fclose(fd);
 		eventlog(eventlog_level_error,__FUNCTION__,"lseek() failed");
 		return 0;
 	}
 	if ((signed)bufsize < filesize) {
-		close(fd);
+		fclose(fd);
 		eventlog(eventlog_level_error,__FUNCTION__,"not enough buffer");
 		return 0;
 	}
@@ -314,17 +316,17 @@ static unsigned int dbs_packet_getdata_charinfo(t_d2dbs_connection* conn,char * 
 			writelen=2000;
 		else
 			writelen=leftlen;
-		readlen=read(fd,data+curlen,writelen);
+		readlen=fread(data+curlen,1,writelen,fd);
 	    if (readlen<=0)
 		{
-			close(fd);
+			fclose(fd);
 			eventlog(eventlog_level_error,__FUNCTION__,"read() failed error : %s",strerror(errno));
 			return 0;
 		}
 		leftlen-=readlen;
 		curlen+=readlen;
 	}
-	close(fd);
+	fclose(fd);
 	eventlog(eventlog_level_info,__FUNCTION__,"loaded charinfo %s(*%s) for gs %s(%d)", CharName, AccountName, conn->serverip, conn->serverid);
 	return filesize;
 }

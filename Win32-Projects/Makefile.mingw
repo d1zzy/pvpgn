@@ -1,0 +1,493 @@
+# Project: d2pack109 Package
+# Makefile: MinGW (http://www.mingw.org)
+#
+# Copyright (C) 2005 CreepLord (creeplord@pvpgn.org)
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+#
+
+#####################################################################
+
+ifndef DEST
+DEST		= ./win32-builds
+endif
+
+VERSION	= 0.5
+RELEASE	= 3
+PACKAGE	= $(DEST)/D2Pack109-$(VERSION)-$(RELEASE)-Win32$(TYPE).zip
+
+ifndef prefix
+ prefix		= ./d2pack109
+ installdir	= $(prefix)-$(VERSION)
+else
+ installdir	= $(prefix)
+endif
+
+confdir		= $(installdir)/conf
+docsdir		= $(installdir)/docs
+filesdir	= $(installdir)/files
+sharedir	= $(installdir)/var
+bakdir		= $(sharedir)/bak
+bakcharsavedir	= $(sharedir)/bak/charsave
+bakcharinfodir	= $(sharedir)/bak/charinfo
+charsavedir	= $(sharedir)/charinfo
+charinfodir	= $(sharedir)/charsave
+laddersdir	= $(sharedir)/ladders
+reportsdir	= $(sharedir)/reports
+
+#####################################################################
+
+TOP_DIR		= ./..
+
+SRC_CONFDIR	= $(TOP_DIR)/conf
+SRC_DOCSDIR	= $(TOP_DIR)/docs
+SRC_FILESDIR	= $(TOP_DIR)/files
+SRC_SBINDIR	= $(TOP_DIR)/sbin
+SRC_SRCDIR	= $(TOP_DIR)/src
+SRC_COMMONDIR	= $(SRC_SRCDIR)/common
+SRC_COMPATDIR	= $(SRC_SRCDIR)/compat
+SRC_D2CSDIR     = $(SRC_SRCDIR)/d2cs
+SRC_D2DBSDIR    = $(SRC_SRCDIR)/d2dbs
+SRC_WIN32DIR	= $(SRC_SRCDIR)/win32
+
+#####################################################################
+
+CC		= gcc
+INSTALL		= install
+INSTALL_DIR	= install -d
+RMF		= rm -f
+STRIP		= strip
+WINDRES		= windres
+ZIP		= zip -rm9q
+ECHO		= echo
+
+ifdef CROSS_BUILD
+PCC		= /usr/bin/gcc
+ENV		=
+WFLAGS		= -W -Wall -Wno-unused
+#WFLAGS		=
+UNIX2DOS	= ./u2d
+else
+PCC		= $(CC)
+ENV		= -e
+WFLAGS		=
+UNIX2DOS	= u2d.exe
+endif
+
+#####################################################################
+
+CFLAGS		= $(WFLAGS) -I$(SRC_SRCDIR) -I$(SRC_SRCDIR)/include
+LDFLAGS		= -lws2_32 -L$(SRC_SRCDIR)/lib
+
+ifdef WITH_MYSQL
+CFLAGS		+= -DWITH_SQL_MYSQL
+LDFLAGS		+= -lmysql
+endif
+
+ifdef WITH_PGSQL
+CFLAGS		+= -DWITH_SQL_PGSQL
+LDFLAGS		+= -lpq
+endif
+
+ifdef WITH_SQLITE3
+CFLAGS		+= -DWITH_SQL_SQLITE3 -DHAVE_SQLITE3_H
+LDFLAGS		+= -lsqlite3
+endif
+
+ifdef WITH_ODBC
+CFLAGS		+= -DWITH_SQL_ODBC
+LDFLAGS		+= -lodbc32
+endif
+
+ifdef WITH_GUI
+CFLAGS		+= -DWIN32_GUI
+LDFLAGS		+= -mwindows
+endif
+
+#####################################################################
+# EXECUTABLES
+#####################################################################
+
+ifdef WITH_GUI
+ d2cs_SBIN	= $(SRC_SBINDIR)/d2cs109.exe
+ d2dbs_SBIN	= $(SRC_SBINDIR)/d2dbs109.exe
+else
+ d2cs_SBIN	= $(SRC_SBINDIR)/d2cs109Console.exe
+ d2dbs_SBIN	= $(SRC_SBINDIR)/d2dbs109Console.exe
+endif
+
+#####################################################################
+# RESOURCES
+#####################################################################
+
+ifdef WITH_GUI
+d2cs_RES	= $(SRC_WIN32DIR)/d2cs_resource.res
+d2dbs_RES	= $(SRC_WIN32DIR)/d2dbs_resource.res
+else
+d2cs_RES	= $(SRC_WIN32DIR)/console_resource.res
+d2dbs_RES	= $(SRC_WIN32DIR)/console_resource.res
+endif
+
+#####################################################################
+# SOURCE
+#####################################################################
+
+d2cs_SOURCE	= \
+	$(SRC_D2CSDIR)/main.c \
+	$(SRC_D2CSDIR)/d2gs.c \
+	$(SRC_D2CSDIR)/handle_d2gs.c \
+	$(SRC_D2CSDIR)/serverqueue.c \
+	$(SRC_D2CSDIR)/connection.c \
+	$(SRC_D2CSDIR)/game.c \
+	$(SRC_D2CSDIR)/server.c \
+	$(SRC_D2CSDIR)/handle_init.c \
+	$(SRC_D2CSDIR)/handle_d2cs.c \
+	$(SRC_D2CSDIR)/d2charfile.c \
+	$(SRC_D2CSDIR)/d2charlist.c \
+	$(SRC_D2CSDIR)/xstring.c \
+	$(SRC_D2CSDIR)/gamequeue.c \
+	$(SRC_D2CSDIR)/prefs.c \
+	$(SRC_D2CSDIR)/conf.c \
+	$(SRC_D2CSDIR)/cmdline_parse.c \
+	$(SRC_D2CSDIR)/bnetd.c \
+	$(SRC_D2CSDIR)/handle_bnetd.c \
+	$(SRC_D2CSDIR)/s2s.c \
+	$(SRC_D2CSDIR)/net.c \
+	$(SRC_D2CSDIR)/d2ladder.c \
+	$(SRC_D2CSDIR)/handle_signal.c \
+	$(SRC_COMMONDIR)/eventlog.c \
+	$(SRC_COMMONDIR)/hashtable.c \
+	$(SRC_COMMONDIR)/hexdump.c \
+	$(SRC_COMMONDIR)/list.c \
+	$(SRC_COMMONDIR)/packet.c \
+	$(SRC_COMMONDIR)/bn_type.c \
+	$(SRC_COMMONDIR)/addr.c \
+	$(SRC_COMMONDIR)/util.c \
+	$(SRC_COMMONDIR)/queue.c \
+	$(SRC_COMMONDIR)/network.c \
+	$(SRC_COMMONDIR)/fdwatch.c\
+	$(SRC_COMMONDIR)/fdwatch_select.c\
+	$(SRC_COMMONDIR)/fdwatch_poll.c\
+	$(SRC_COMMONDIR)/fdwatch_kqueue.c\
+	$(SRC_COMMONDIR)/fdwatch_epoll.c\
+	$(SRC_COMMONDIR)/trans.c \
+	$(SRC_COMMONDIR)/xalloc.c \
+	$(SRC_COMMONDIR)/rlimit.c \
+	$(SRC_COMMONDIR)/tag.c \
+	$(SRC_COMPATDIR)/inet_aton.c \
+	$(SRC_COMPATDIR)/inet_ntoa.c \
+	$(SRC_COMPATDIR)/strdup.c \
+	$(SRC_COMPATDIR)/strerror.c \
+	$(SRC_COMPATDIR)/strtoul.c \
+	$(SRC_COMPATDIR)/strftime.c \
+	$(SRC_COMPATDIR)/strcasecmp.c \
+	$(SRC_COMPATDIR)/strncasecmp.c \
+	$(SRC_COMPATDIR)/strsep.c \
+	$(SRC_COMPATDIR)/psock.c \
+	$(SRC_COMPATDIR)/uname.c \
+	$(SRC_COMPATDIR)/gettimeofday.c \
+	$(SRC_COMPATDIR)/difftime.c \
+	$(SRC_COMPATDIR)/pdir.c \
+	$(SRC_COMPATDIR)/memset.c \
+	$(SRC_COMPATDIR)/memcpy.c \
+	$(SRC_COMPATDIR)/memmove.c \
+	$(SRC_WIN32DIR)/service.c \
+	$(SRC_WIN32DIR)/d2cs_winmain.c
+
+d2dbs_SOURCE	= \
+	$(SRC_D2DBSDIR)/main.c \
+	$(SRC_D2DBSDIR)/charlock.c \
+	$(SRC_D2DBSDIR)/d2ladder.c \
+	$(SRC_D2DBSDIR)/dbserver.c \
+	$(SRC_D2DBSDIR)/dbspacket.c \
+	$(SRC_D2DBSDIR)/prefs.c \
+	$(SRC_D2DBSDIR)/handle_signal.c \
+	$(SRC_D2DBSDIR)/dbsdupecheck.c \
+	$(SRC_D2DBSDIR)/cmdline_parse.c \
+	$(SRC_D2CSDIR)/conf.c \
+	$(SRC_D2CSDIR)/xstring.c \
+	$(SRC_COMMONDIR)/eventlog.c \
+	$(SRC_COMMONDIR)/list.c \
+	$(SRC_COMMONDIR)/bn_type.c \
+	$(SRC_COMMONDIR)/util.c \
+	$(SRC_COMMONDIR)/addr.c \
+	$(SRC_COMMONDIR)/xalloc.c \
+	$(SRC_COMMONDIR)/fdwatch.c \
+	$(SRC_COMMONDIR)/fdwatch_select.c \
+	$(SRC_COMMONDIR)/fdwatch_poll.c \
+	$(SRC_COMMONDIR)/fdwatch_epoll.c \
+	$(SRC_COMMONDIR)/fdwatch_kqueue.c \
+	$(SRC_COMMONDIR)/tag.c \
+	$(SRC_COMMONDIR)/rlimit.c \
+	$(SRC_COMPATDIR)/inet_aton.c \
+	$(SRC_COMPATDIR)/psock.c \
+	$(SRC_COMPATDIR)/strerror.c \
+	$(SRC_COMPATDIR)/strsep.c \
+	$(SRC_WIN32DIR)/service.c \
+	$(SRC_WIN32DIR)/d2dbs_winmain.c
+
+#####################################################################
+# OBJECTS
+#####################################################################
+
+d2cs_OBJECTS		= $(d2cs_SOURCE:.c=.o)
+d2dbs_OBJECTS		= $(d2dbs_SOURCE:.c=.o)
+
+d2server_OBJECTS	= $(d2cs_OBJECTS) $(d2dbs_OBJECTS)
+
+#####################################################################
+# Targets
+#####################################################################
+
+.PHONY: all
+all:
+	@$(ECHO) ===============================================================================
+	@$(ECHO) =                                                                             =
+	@$(ECHO) = Targets:                                                                    =
+	@$(ECHO) =                                                                             =
+	@$(ECHO) =  make_mingw gui                 Build GUI Programs                          =
+#	@$(ECHO) =  make_mingw gui-mysql           Build GUI Programs with mySQL Support       =
+#	@$(ECHO) =  make_mingw gui-pgsql           Build GUI Programs with pgSQL Support       =
+#	@$(ECHO) =  make_mingw gui-sqlite3         Build GUI Programs with SQLite3 Support     =
+#	@$(ECHO) =  make_mingw gui-odbc            Build GUI Programs with ODBC Support        =
+#	@$(ECHO) =                                                                             =
+	@$(ECHO) =  make_mingw console             Build Console Programs                      =
+#	@$(ECHO) =  make_mingw console-mysql       Build Console Programs with mySQL Support   =
+#	@$(ECHO) =  make_mingw console-pgsql       Build Console Programs with pgSQL Support   =
+#	@$(ECHO) =  make_mingw console-sqlite3     Build Console Programs with SQLite3 Support =
+#	@$(ECHO) =  make_mingw console-odbc        Build Console Programs with ODBC Support    =
+	@$(ECHO) =                                                                             =
+	@$(ECHO) =  make_mingw clean               Remove All Objects, Resources, Executables  =
+	@$(ECHO) =                                                                             =
+	@$(ECHO) =  make_mingw install [InstallPath]  Installs the D2Pack109 Package               =
+	@$(ECHO) =                                                                             =
+	@$(ECHO) ===============================================================================
+	@pause
+
+#####################################################################
+# COMPILING TARGETS
+#####################################################################
+
+.PHONY: gui
+gui: clean
+	@$(MAKE) -s -fMakefile.mingw servers $(ENV) WITH_GUI=1
+
+.PHONY: gui-mysql
+gui-mysql: clean
+	@$(MAKE) -s -fMakefile.mingw servers $(ENV) WITH_GUI=1 $(ENV) WITH_MYSQL=1
+
+.PHONY: gui-pgsql
+gui-pgsql: clean
+	@$(MAKE) -s -fMakefile.mingw servers $(ENV) WITH_GUI=1 $(ENV) WITH_PGSQL=1
+
+.PHONY: gui-sqlite3
+gui-sqlite3: clean
+	@$(MAKE) -s -fMakefile.mingw servers $(ENV) WITH_GUI=1 $(ENV) WITH_SQLITE3=1
+
+.PHONY: gui-odbc
+gui-odbc: clean
+	@$(MAKE) -s -fMakefile.mingw servers $(ENV) WITH_GUI=1 $(ENV) WITH_ODBC=1
+
+.PHONY: console
+console: clean servers
+
+.PHONY: console-mysql
+console-mysql: clean
+	@$(MAKE) -s -fMakefile.mingw servers $(ENV) WITH_MYSQL=1
+
+.PHONY: console-pgsql
+console-pgsql: clean
+	@$(MAKE) -s -fMakefile.mingw servers $(ENV) WITH_PGSQL=1
+
+.PHONY: console-sqlite3
+console-sqlite3: clean
+	@$(MAKE) -s -fMakefile.mingw servers $(ENV) WITH_SQLITE3=1
+
+.PHONY: console-odbc
+console-odbc: clean
+	@$(MAKE) -s -fMakefile.mingw servers $(ENV) WITH_ODBC=1
+
+#####################################################################
+
+.PHONY: servers
+servers: $(d2cs_SBIN) $(d2dbs_SBIN)
+
+#####################################################################
+# CLEANING
+#####################################################################
+
+.PHONY: clean
+clean: clean-obj clean-res clean-exe
+
+.PHONY: clean-obj
+clean-obj:
+	@$(ECHO)  Removing Objects
+	@-$(RMF) $(SRC_COMMONDIR)/*.o
+	@-$(RMF) $(SRC_COMPATDIR)/*.o
+	@-$(RMF) $(SRC_D2CSDIR)/*.o
+	@-$(RMF) $(SRC_D2DBSDIR)/*.o
+	@-$(RMF) $(SRC_WIN32DIR)/*.o
+
+.PHONY: clean-res
+clean-res:
+	@$(ECHO)  Removing Resourses
+	@-$(RMF) $(SRC_WIN32DIR)/*.res
+
+.PHONY: clean-exe
+clean-exe:
+	@$(ECHO)  Removing Executables
+	@-$(RMF) $(SRC_SBINDIR)/*.exe
+
+#####################################################################
+# PACKAGING
+#####################################################################
+
+.PHONY: gui-package
+gui-package:
+	@$(MAKE) -s -fMakefile.mingw gui
+	@$(MAKE) -s -fMakefile.mingw package $(ENV) TYPE=-GUI $(ENV)
+
+.PHONY: console-package
+console-package:
+	@$(MAKE) -s -fMakefile.mingw console
+	@$(MAKE) -s -fMakefile.mingw package $(ENV) TYPE=-Console $(ENV) NAME_TYPE=Console
+
+.PHONY: releases
+releases: console-package gui-package
+
+.PHONY: package
+package: $(DEST) install
+	@$(ECHO)  Making PvPGN$(TYPE) Package
+	@$(ECHO) @echo off > $(installdir)/install.bat
+	@$(ECHO) d2cs109$(NAME_TYPE).exe -s install >> $(installdir)/install.bat
+	@$(ECHO) d2dbs109$(NAME_TYPE).exe -s install >> $(installdir)/install.bat
+	@$(ECHO) @echo off > $(installdir)/uninstall.bat
+	@$(ECHO) d2cs109$(NAME_TYPE).exe -s uninstall >> $(installdir)/uninstall.bat
+	@$(ECHO) d2dbs109$(NAME_TYPE).exe -s uninstall >> $(installdir)/uninstall.bat
+	@-$(RMF) $(PACKAGE)
+	@$(ZIP) $(PACKAGE) $(installdir)
+
+#####################################################################
+# INSTALLING
+#####################################################################
+
+.PHONY: install
+install: install-dirs install-confs install-docs install-files install-exes install-misc install-u2d
+
+.PHONY: install-dirs
+install-dirs:
+	@$(ECHO)  Creating Directorys
+	@-$(INSTALL_DIR) $(installdir)
+	@-$(INSTALL_DIR) $(confdir)
+	@-$(INSTALL_DIR) $(docsdir)
+	@-$(INSTALL_DIR) $(filesdir)
+	@-$(INSTALL_DIR) $(sharedir)
+	@-$(INSTALL_DIR) $(bakdir)
+	@-$(INSTALL_DIR) $(bakcharsavedir)
+	@-$(INSTALL_DIR) $(bakcharinfodir)
+	@-$(INSTALL_DIR) $(charsavedir)
+	@-$(INSTALL_DIR) $(charinfodir)
+	@-$(INSTALL_DIR) $(laddersdir)
+
+.PHONY: install-confs
+install-confs:	
+	@$(ECHO)  Installing Configuration Files
+	@-$(INSTALL) $(SRC_CONFDIR)/d2cs.conf.win32 $(confdir)/d2cs.conf
+	@-$(INSTALL) $(SRC_CONFDIR)/d2dbs.conf.win32 $(confdir)/d2dbs.conf
+	@-$(INSTALL) $(SRC_CONFDIR)/address_translation.conf $(confdir)
+
+.PHONY: install-docs
+install-docs:
+	@$(ECHO)  Installing Docs
+	@-$(INSTALL) $(SRC_DOCSDIR)/Service.Win32.txt $(docsdir)
+	@-$(INSTALL) $(SRC_DOCSDIR)/INSTALL.unix $(docsdir)/INSTALL.unix.txt
+
+.PHONY: install-files
+install-files:
+	@$(ECHO)  Installing Server Files
+	@-$(INSTALL) $(SRC_FILESDIR)/newbie.save $(filesdir)
+
+.PHONY: install-exes
+install-exes:
+	@$(ECHO)  Installing Executables
+	@-$(INSTALL) $(SRC_SBINDIR)/*.exe $(installdir)
+#	@-$(INSTALL) $(SRC_SBINDIR)/*.dll $(installdir)
+
+.PHONY: install-misc
+install-misc:
+	@$(ECHO)  Installing Misc Files
+	@-$(INSTALL) $(TOP_DIR)/COPYING $(installdir)/COPYING.txt
+	@-$(INSTALL) $(TOP_DIR)/CREDITS $(installdir)/CREDITS.txt
+	@-$(INSTALL) $(TOP_DIR)/README $(installdir)/README.txt
+
+.PHONY: install-u2d
+install-u2d:
+	@$(ECHO)  Converting Unix Style Text Files to Dos Format
+	@$(PCC) $(SRC_WIN32DIR)/u2d.c -o $(UNIX2DOS)
+	@-$(UNIX2DOS) $(confdir)/*.conf
+	@-$(UNIX2DOS) $(docsdir)/*.txt
+	@-$(UNIX2DOS) $(installdir)/*.txt
+	@-$(RMF) $(UNIX2DOS)
+
+#####################################################################
+# DIRECTORYS
+#####################################################################
+
+$(SRC_SBINDIR):
+	$(INSTALL_DIR) $(SRC_SBINDIR)
+
+$(DEST):
+	$(INSTALL_DIR) $(DEST)
+
+#####################################################################
+# HEADER
+#####################################################################
+
+.PHONY: SHOWHEADER
+SHOWHEADER:
+	@$(ECHO) ============================================================
+	@$(ECHO) CFLAGS..= $(CFLAGS)
+	@$(ECHO) LDFLAGS.= $(LDFLAGS)
+	@$(ECHO) ============================================================
+
+#####################################################################
+# SERVER BINS
+#####################################################################
+
+$(d2cs_SBIN): SHOWHEADER $(d2cs_OBJECTS) $(d2cs_RES) $(SRC_SBINDIR)
+	@$(ECHO)  Linking $@
+	@$(CC) $(d2cs_OBJECTS) $(d2cs_RES) $(LDFLAGS) -o $@
+	@$(STRIP) $@
+
+$(d2dbs_SBIN): SHOWHEADER $(d2dbs_OBJECTS) $(d2dbs_RES) $(SRC_SBINDIR)
+	@$(ECHO)  Linking $@
+	@$(CC) $(d2dbs_OBJECTS) $(d2dbs_RES) $(LDFLAGS) -o $@
+	@$(STRIP) $@
+
+#####################################################################
+# Object Files
+#####################################################################
+
+%.o: %.c
+	@$(ECHO)  Compiling $*.c
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+#####################################################################
+# Resource Files
+#####################################################################
+
+%.res: %.rc
+	@$(ECHO)  Compiling $*.rc
+	@$(WINDRES) -i $< -o $@ -O coff --include-dir $(SRC_SRCDIR)
