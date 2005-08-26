@@ -24,8 +24,8 @@ ifndef DEST
 DEST		= ./win32-builds
 endif
 
-VERSION	= 0.5
-RELEASE	= 3
+VERSION	= 0.7
+RELEASE	= CVS
 PACKAGE	= $(DEST)/D2Pack109-$(VERSION)-$(RELEASE)-Win32$(TYPE).zip
 
 ifndef prefix
