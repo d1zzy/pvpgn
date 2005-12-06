@@ -1,7 +1,3 @@
-#
-# Copyright (C) 1999  Rob Crittenden (rcrit@greyoak.com)
-# Copyright (C) 1999,2000  Ross Combs (rocombs@cs.nmsu.edu)
-#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
@@ -18,22 +14,33 @@
 #
 
 # Process this file with autoconf to produce a configure script.
-AC_INIT(bnetd/handle_bnet.c)
-AC_CONFIG_HEADER(config.h)
-
-AUTOCONF_CONFIG_DIR="autoconf"
-AC_CONFIG_AUX_DIR(${AUTOCONF_CONFIG_DIR})
-builtin(include,autoconf/ccstdc.m4)
-builtin(include,autoconf/mkdir.m4)
+AUTOCONF_CONFIG_DIR="src/autoconf"
+AC_INIT(src/bnetd/handle_bnet.c)
+AC_CONFIG_AUX_DIR(src/autoconf)
 
 AC_CANONICAL_SYSTEM
 
+AM_INIT_AUTOMAKE(pvpgn, 1.7.8-CVS)
+AC_CONFIG_HEADER(config.h)
+
+builtin(include,src/autoconf/ccstdc.m4)
+builtin(include,src/autoconf/mkdir.m4)
+
 # Checks for programs.
-AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_INSTALL
+AC_PROG_RANLIB
 
 # Checks compiler.
 AC_PROG_CPP
+
+AC_LANG(C++)
+
+# Check for sed
+AC_CHECK_PROG(SED, sed, sed)
+if test "$SED" != "sed"; then
+	AC_MSG_ERROR([sed not found, please install sed])
+fi
 
 # Checks for systems.
 AC_AIX
@@ -167,14 +174,14 @@ LDFLAGS="${LDFLAGS} ${extra_lib_dir}"
 LIBS="${LIBS} ${extra_lib}"
 CFLAGS="${CFLAGS} ${zlangflags} ${zwarnflags}"
 DEFINES="${DEFINES} ${extra_define}"
-CPPFLAGS="${CPPFLAGS} ${extra_include}"
+CPPFLAGS="${CPPFLAGS} ${extra_include} -fno-strict-aliasing"
 
 # This is our invention so we have to substitute it ourselves
 # autoconf uses DEFS
 AC_SUBST(DEFINES)
-AC_SUBST(enable_bnetd)
-AC_SUBST(enable_d2cs)
-AC_SUBST(enable_d2dbs)
+AM_CONDITIONAL([COND_BNETD], [test -z "$enable_bnetd" -o x"$enable_bnetd" = xyes])
+AM_CONDITIONAL([COND_D2CS], [test -z "$enable_d2cs" -o x"$enable_d2cs" = xyes])
+AM_CONDITIONAL([COND_D2DBS], [test -z "$enable_d2dbs" -o x"$enable_d2dbs" = xyes])
 
 # Checks for compiler quirks.
 AC_PROG_GCC_TRADITIONAL
@@ -404,6 +411,8 @@ case "$host" in
 		fi
 		;;
 esac
+AC_CHECK_LIB(pcap, pcap_open_offline)
+AM_CONDITIONAL([COND_BNPCAP], [test "$ac_cv_lib_pcap_pcap_open_offline" = "yes"])
 
 # Checks for header files.
 AC_HEADER_DIRENT
@@ -452,6 +461,7 @@ AC_CHECK_HEADERS([\
     sys/resource.h \
     assert.h \
     sqlite3.h \
+    pcap.h \
 ])
 
 # Checks for typedefs and structures
@@ -480,23 +490,9 @@ AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_MKDIR_ARGS
 AC_CHECK_FUNCS(gethostname gettimeofday select socket strdup strtoul strerror inet_aton inet_ntoa uname recv send recvfrom sendto uname fork getpid sigaction sigprocmask sigaddset setpgid setpgrp ftime strcasecmp strncasecmp stricmp strnicmp chdir difftime strchr strrchr index rindex memcpy memset memmove bcopy wait waitpid pipe getenv ioctl setsid mktime poll gethostbyname getservbyname getlogin pow getpwnam getgrnam getuid getgid setuid setgid mkdir _mkdir strsep getopt kqueue setitimer epoll_create getrlimit vsnprintf _vsnprintf snprintf _snprintf)
 
-if test X"${am_cv_prog_cc_stdc}" = X"no"; then
-    COMPILEANSI1='${PREPROCESS} $< | sed '"'"'s/^# *\([0-9][0-9]*\)  *\([^ ]*[a-z][^ ]*\) *.*$$/#line \1 \2/'"'"' | ${SRC_ACDIR}/ansi2knr > ${SRC_SRCDIR}/.ansi2knr_tmp.c'
-    COMPILEANSI2='${COMPILE} ${SRC_SRCDIR}/.ansi2knr_tmp.c -o $@'
-    COMPILEANSI3='@${RMF} ${SRC_SRCDIR}/.ansi2knr_tmp.c'
-    ANSI2KNR_TMP='${SRC_SRCDIR}/.ansi2knr_tmp.c'
-    ANSI2KNR_DEP='${SRC_ACDIR}/ansi2knr'
-else
-    COMPILEANSI1='${COMPILE} $< -o $@'
-    COMPILEANSI2='@:'
-    COMPILEANSI3='@:'
-    ANSI2KNR_TMP=''
-    ANSI2KNR_DEP=''
-fi
-AC_SUBST(COMPILEANSI1)
-AC_SUBST(COMPILEANSI2)
-AC_SUBST(COMPILEANSI3)
-AC_SUBST(ANSI2KNR_TMP)
-AC_SUBST(ANSI2KNR_DEP)
-
-AC_OUTPUT(Makefile)
+AC_OUTPUT([Makefile src/Makefile src/compat/Makefile src/common/Makefile \
+src/tinycdb/Makefile src/zlib/Makefile src/bnetd/Makefile src/d2cs/Makefile \
+src/d2dbs/Makefile src/bntrackd/Makefile src/client/Makefile \
+src/bnpass/Makefile src/bniutils/Makefile src/bnpcap/Makefile man/Makefile \
+conf/Makefile docs/Makefile Win32-Projects/Makefile files/Makefile \
+src/autoconf/Makefile])
