@@ -1,13 +1,13 @@
 /*
  * Copyright (C) 2005 Olaf Freyer (aaron@cs.tu-berlin.de)
- * 
+ *
  * Based upon lib/vsnprintf.c from the linux kernel sources
- * 
+ *
  *  Copyright (C) 1991, 1992  Linus Torvalds
  * vsprintf.c -- Lars Wirzenius & Linus Torvalds. *
  *
  * Wirzenius wrote this portably, Torvalds fucked it up :-)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -218,7 +218,7 @@ int vasnprintf(char *buf, size_t size, t_fmtentry *entries, unsigned entlen, con
 		/* get the precision */
 		precision = -1;
 		if (*fmt == '.') {
-			++fmt;	
+			++fmt;
 			if (isdigit(*fmt))
 				precision = skip_atoi(&fmt);
 			else if (*fmt == '*') {
@@ -276,7 +276,7 @@ int vasnprintf(char *buf, size_t size, t_fmtentry *entries, unsigned entlen, con
 					s = "<NULL>";
 
 				len = strlen(s);
-				if (len>precision) 
+				if (len>precision)
 					len=precision;
 
 				if (!(flags & LEFT)) {
@@ -377,9 +377,10 @@ int vasnprintf(char *buf, size_t size, t_fmtentry *entries, unsigned entlen, con
 				fmtent->translen = str - fmtent->trans;
 				continue;
 		}
+/*
 		if (qualifier == 'L')
 			num = va_arg(args, long long);
-		else if (qualifier == 'l') {
+		else*/ if (qualifier == 'l') {
 			num = va_arg(args, unsigned long);
 			if (flags & SIGN)
 				num = (signed long) num;

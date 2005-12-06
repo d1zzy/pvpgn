@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004  Dizzy 
+ * Copyright (C) 2004  Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,7 +43,7 @@ typedef struct hlist_struct {
 #define __elist_init(elist,val) { (elist)->next = (elist)->prev = (val); }
 #define elist_init(elist) __elist_init(elist,elist)
 #define DECLARE_ELIST_INIT(var) \
-    t_elist var = { &var, &var };
+    t_elist var = { &var, &var }
 
 /* link an new node just after "where" */
 static inline void elist_add(t_elist *where, t_elist *what)
@@ -70,8 +70,8 @@ static inline void elist_del(t_elist *what)
     what->prev->next = what->next;
 }
 
-/* finds out the container address by computing it from the list node 
- * address substracting the offset inside the container of the list node 
+/* finds out the container address by computing it from the list node
+ * address substracting the offset inside the container of the list node
  * member */
 #define elist_entry(ptr,type,member) ((type*)(((char*)ptr)-offsetof(type,member)))
 
@@ -126,8 +126,8 @@ static inline void hlist_promote(t_hlist *what, t_hlist *prev, t_hlist *prev2)
     }
 }
 
-/* finds out the container address by computing it from the list node 
- * address substracting the offset inside the container of the list node 
+/* finds out the container address by computing it from the list node
+ * address substracting the offset inside the container of the list node
  * member */
 #define hlist_entry(ptr,type,member) elist_entry(ptr,type,member)
 

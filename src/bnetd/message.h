@@ -67,7 +67,7 @@ typedef enum
 
 typedef enum {
     message_class_normal,
-    message_class_charjoin,	/* use char*account (if account isnt d2 char is "") */
+    message_class_charjoin	/* use char*account (if account isnt d2 char is "") */
 } t_message_class;
 
 typedef struct message
@@ -105,7 +105,7 @@ extern int message_destroy(t_message * message);
 extern int message_send(t_message * message, t_connection * dst);
 extern int message_send_all(t_message * message);
 extern int message_send_admins(t_connection * src, t_message_type type, char const * text);
-  
+
 /* the following are "shortcuts" to avoid calling message_create(), message_send(), message_destroy() */
 extern int message_send_text(t_connection * dst, t_message_type type, t_connection * src, char const * text);
 extern int message_send_formatted(t_connection * dst, char const * text);
