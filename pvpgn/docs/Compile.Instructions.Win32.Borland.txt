@@ -1,0 +1,85 @@
+PvPGN Win32 Borland Compile Instructions
+
+This file explains how to compile PvPGN for Win32 using Borland C++ Compiler 5.5
+
+
+
+1) Download Borland C++ Compiler 5.5 (BCC32) from one of the folling sites:
+
+ftp://ftpd.borland.com/download/bcppbuilder/freecommandLinetools.exe
+
+http://altd.borland.com/download/bcppbuilder/freecommandLinetools.exe
+
+
+
+2) Install the tools to a directory, e.g. c:\program files\borlandc\ (this will be used as an example in the following)
+
+
+
+3) Go to the /bin subdirectory, e.g. c:\program files\borlandc\bin
+
+
+
+4) Create a file named bcc32.cfg and insert the following two lines:
+
+-I"c:\program files\borlandc\Include"
+
+-L"c:\program files\borlandc\Lib;c:\program files\borlandc\Lib\PSDK"
+
+(replace c:\program files\borlandc\ with your own borland path of course)
+
+
+
+5) Create a file named ilink32.cfg and insert the following line:
+
+-L"c:\program files\borlandc\Lib;c:\program files\borlandc\Lib\PSDK"
+
+(replace c:\program files\borlandc\ with your own borland path of course)
+
+
+
+Those two files are required by the compiler to find the Lib and Include directory...
+
+
+
+6) Now you're ready to compile the server. 
+
+Open a command prompt, go to the Win32-Projects directory.
+
+To build all apps as console apps (recommended for running as a service): make_borland
+
+To build GUI versions of bnetd, d2cs and d2dbs: make_borland -DWITH_GUI
+
+
+
+The resulting exe file will be in the sbin directory and you can use it with the other files from the latest PvPGN release.
+
+
+
+Notes about CDB Support:
+
+------------------------
+
+To add support for CDB file storage add -DWITH_CDB to the command line options
+
+
+
+Notes about MYSQL Support:
+
+--------------------------
+
+First of all u need to add a subfolder src/mysql/ where u add the header files from your favorite mySQL release.
+
+If you wish to compile with MYSQL support, run "make_borland -DWITH_SQL_MYSQL" in src directory.
+
+Note that libmySQL.lib does not work with borland compilers, so we converted it using the borland tool 
+
+COFF2OMF libmySQL.lib libmySQL_bc.lib
+
+You might want to do the same if you want to have a current lib file, alternatively you can create the lib from the dll:
+
+IMPLIB libmysql_bc.lib libmysql.dll
+
+
+
+Note that we're working with VS.NET mostly so there might still be borland-related bugs.
