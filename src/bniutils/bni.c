@@ -34,7 +34,7 @@ extern t_bnifile * load_bni(FILE *f) {
 	unsigned int i;
 
 	if (f == NULL) return NULL;
-	b = malloc(sizeof(t_bnifile));	
+	b = (t_bnifile*)malloc(sizeof(t_bnifile));	
 	file_rpush(f);
 	b->unknown1 = file_readd_le();
 	if (b->unknown1 != 0x00000010)
@@ -52,7 +52,7 @@ extern t_bnifile * load_bni(FILE *f) {
 		fprintf(stderr,"load_bni: strange, no icons present in BNI file\n");
 		b->icons = NULL;
 	} else {
-		b->icons = malloc(b->numicons*sizeof(t_bniicon));
+		b->icons = (struct bni_iconlist_struct*)malloc(b->numicons*sizeof(t_bniicon));
 	}
 	for (i = 0; i < b->numicons; i++) {
 		b->icons->icon[i].id = file_readd_le();

@@ -75,7 +75,7 @@ t_topic * get_topic(char const * channel_name)
   {
     LIST_TRAVERSE(topiclist_head,curr)
     {
-      if (!(topic = elem_get_data(curr)))
+      if (!(topic = (t_topic*)elem_get_data(curr)))
       {
         eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
         continue;
@@ -113,7 +113,7 @@ int topiclist_save(char const * topic_file)
 
     LIST_TRAVERSE(topiclist_head,curr)
     {
-      if (!(topic = elem_get_data(curr)))
+      if (!(topic = (t_topic*)elem_get_data(curr)))
       {
         eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
         continue;
@@ -132,7 +132,7 @@ int topiclist_add_topic(char const * channel_name, char const * topic_text, int 
 {
   t_topic * topic;
   
-  topic = xmalloc(sizeof(t_topic));
+  topic = (t_topic*)xmalloc(sizeof(t_topic));
   topic->channel_name = xstrdup(channel_name);
   topic->topic = xstrdup(topic_text);
   list_prepend_data(topiclist_head,topic);
@@ -218,7 +218,7 @@ int topiclist_unload(void)
   {
     LIST_TRAVERSE(topiclist_head,curr)
     {
-      if (!(topic = elem_get_data(curr)))
+      if (!(topic = (t_topic*)elem_get_data(curr)))
       {
         eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
         continue;

@@ -59,11 +59,11 @@
 #endif
 
 static FILE *           eventstrm=NULL;
-static t_eventlog_level currlevel=eventlog_level_debug|
-                                  eventlog_level_info|
-                                  eventlog_level_warn|
-                                  eventlog_level_error|
-                                  eventlog_level_fatal;
+static unsigned currlevel=eventlog_level_debug|
+                          eventlog_level_info|
+                          eventlog_level_warn|
+                          eventlog_level_error|
+                          eventlog_level_fatal;
 /* FIXME: maybe this should be default for win32 */
 static int eventlog_debugmode=0;
 
@@ -243,7 +243,7 @@ extern void eventlog_hexdump_data(void const * data, unsigned int len)
 	return;
     }
 
-    for (i = 0, datac = (char*)data; i < len; i += 16, datac += 16)
+    for (i = 0, datac = (unsigned char*)data; i < len; i += 16, datac += 16)
     {
 	hexdump_string(datac, (len - i < 16) ? (len - i) : 16, dst, i);
 	fprintf(eventstrm,"%s\n",dst);

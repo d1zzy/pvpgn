@@ -64,7 +64,7 @@ extern int gqlist_destroy(void)
 {
 	t_gq	* gq;
 
-	BEGIN_LIST_TRAVERSE_DATA(gqlist_head,gq)
+	BEGIN_LIST_TRAVERSE_DATA(gqlist_head,gq,t_gq)
 	{
 		gq_destroy(gq,(t_elem **)curr_elem_);
 	}
@@ -82,7 +82,7 @@ extern t_gq * gq_create(unsigned int clientid, t_packet * packet, char const * g
 {
 	t_gq	* gq;
 
-	gq=xmalloc(sizeof(t_gq));
+	gq=(t_gq*)xmalloc(sizeof(t_gq));
 	gq->seqno=++gqlist_seqno;
 	gq->clientid=clientid;
 	gq->packet=packet;
@@ -118,7 +118,7 @@ extern int gqlist_check_creategame(int number)
 
 	if (number <= 0) return -1;
 
-	BEGIN_LIST_TRAVERSE_DATA(gqlist_head,gq)
+	BEGIN_LIST_TRAVERSE_DATA(gqlist_head,gq,t_gq)
 	{
 		c=d2cs_connlist_find_connection_by_sessionnum(gq->clientid);
 		if (!c) {
@@ -149,7 +149,7 @@ extern int gqlist_update_all_clients(void)
 	unsigned int	n;
 
 	n=0;
-	BEGIN_LIST_TRAVERSE_DATA(gqlist_head,gq)
+	BEGIN_LIST_TRAVERSE_DATA(gqlist_head,gq,t_gq)
 	{
 		c=d2cs_connlist_find_connection_by_sessionnum(gq->clientid);
 		if (!c) {
@@ -173,7 +173,7 @@ extern unsigned int gqlist_get_gq_position(t_gq * gq)
 	unsigned int	pos;
 
 	pos=0;
-	BEGIN_LIST_TRAVERSE_DATA(gqlist_head,tmp)
+	BEGIN_LIST_TRAVERSE_DATA(gqlist_head,tmp,t_gq)
 	{
 		pos++;
 		if (tmp==gq) return pos;
@@ -191,7 +191,7 @@ extern t_gq * gqlist_find_game(char const * gamename)
 {
 	t_gq		* gq;
 
-	BEGIN_LIST_TRAVERSE_DATA(gqlist_head,gq)
+	BEGIN_LIST_TRAVERSE_DATA(gqlist_head,gq,t_gq)
 	{
 		if (!strcasecmp(gq->gamename,gamename)) return gq;
 	}

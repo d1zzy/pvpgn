@@ -99,7 +99,7 @@ extern int friendlist_unload(t_list * flist)
         return -1;
     LIST_TRAVERSE(flist,curr)
     {
-        if (!(fr = elem_get_data(curr)))
+        if (!(fr = (t_friend*)elem_get_data(curr)))
         {
             eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
             continue;
@@ -118,7 +118,7 @@ extern int friendlist_close(t_list * flist)
         return -1;
     LIST_TRAVERSE(flist,curr)
     {
-        if (!(fr = elem_get_data(curr)))
+        if (!(fr = (t_friend*)elem_get_data(curr)))
         {
             eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
             continue;
@@ -141,7 +141,7 @@ extern int friendlist_purge(t_list * flist)
         return -1;
     LIST_TRAVERSE(flist,curr)
     {
-        if (!(fr = elem_get_data(curr)))
+        if (!(fr = (t_friend*)elem_get_data(curr)))
         {
             eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
             continue;
@@ -162,7 +162,7 @@ extern int friendlist_add_account(t_list * flist, t_account * acc, int mutual)
     if(flist==NULL)
         return -1;
 
-    fr = xmalloc(sizeof(t_friend));
+    fr = (t_friend*)xmalloc(sizeof(t_friend));
     fr->friendacc = acc;
     fr->mutual = mutual;
     list_append_data(flist, fr);
@@ -246,7 +246,7 @@ extern t_friend * friendlist_find_account(t_list * flist, t_account * acc)
 
     LIST_TRAVERSE(flist,curr)
     {
-        if (!(fr = elem_get_data(curr)))
+        if (!(fr = (t_friend*)elem_get_data(curr)))
         {
             eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
             continue;
@@ -267,7 +267,7 @@ extern t_friend * friendlist_find_username(t_list * flist, const char * accname)
 
     LIST_TRAVERSE(flist,curr)
     {
-        if (!(fr = elem_get_data(curr)))
+        if (!(fr = (t_friend*)elem_get_data(curr)))
         {
             eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
             continue;
@@ -287,7 +287,7 @@ extern t_friend * friendlist_find_uid(t_list * flist, int uid)
 
     LIST_TRAVERSE(flist,curr)
     {
-        if (!(fr = elem_get_data(curr)))
+        if (!(fr = (t_friend*)elem_get_data(curr)))
         {
             eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
             continue;

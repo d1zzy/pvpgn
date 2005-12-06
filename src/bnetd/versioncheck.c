@@ -92,7 +92,7 @@ extern t_versioncheck * versioncheck_create(t_tag archtag, t_tag clienttag)
     
     LIST_TRAVERSE_CONST(versioninfo_head,curr)
     {
-        if (!(vi = elem_get_data(curr))) /* should not happen */
+        if (!(vi = (t_versioninfo*)elem_get_data(curr))) /* should not happen */
         {
             eventlog(eventlog_level_error,__FUNCTION__,"version list contains NULL item");
             continue;
@@ -108,7 +108,7 @@ extern t_versioncheck * versioncheck_create(t_tag archtag, t_tag clienttag)
 	    continue;
 	
 	/* FIXME: randomize the selection if more than one match */
-	vc = xmalloc(sizeof(t_versioncheck));
+	vc = (t_versioncheck*)xmalloc(sizeof(t_versioncheck));
 	vc->eqn = xstrdup(vi->eqn);
 	vc->mpqfile = xstrdup(vi->mpqfile);
 	vc->versiontag = xstrdup(tag_uint_to_str(clienttag_str,clienttag));
@@ -203,7 +203,7 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
 	return NULL;
     }
 
-    parsed_exeinfo = xmalloc(sizeof(t_parsed_exeinfo));
+    parsed_exeinfo = (t_parsed_exeinfo*)xmalloc(sizeof(t_parsed_exeinfo));
     parsed_exeinfo->exe = xstrdup(exeinfo);
     parsed_exeinfo->time = 0;
     parsed_exeinfo->size = 0;
@@ -381,7 +381,7 @@ extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clien
     parsed_exeinfo = parse_exeinfo(exeinfo);
     LIST_TRAVERSE_CONST(versioninfo_head,curr)
     {
-        if (!(vi = elem_get_data(curr))) /* should not happen */
+        if (!(vi = (t_versioninfo*)elem_get_data(curr))) /* should not happen */
         {
 	    eventlog(eventlog_level_error,__FUNCTION__,"version list contains NULL item");
 	    continue;
@@ -569,7 +569,7 @@ extern int versioncheck_load(char const * filename)
 	    versiontag = NULL;
 	}
 
-	vi = xmalloc(sizeof(t_versioninfo));
+	vi = (t_versioninfo*)xmalloc(sizeof(t_versioninfo));
 	vi->eqn = xstrdup(eqn);
 	vi->mpqfile = xstrdup(mpqfile);
 	if (strlen(archtag)!=4)
@@ -656,7 +656,7 @@ extern int versioncheck_unload(void)
     {
 	LIST_TRAVERSE(versioninfo_head,curr)
 	{
-	    if (!(vi = elem_get_data(curr))) /* should not happen */
+	    if (!(vi = (t_versioninfo*)elem_get_data(curr))) /* should not happen */
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"version list contains NULL item");
 		continue;

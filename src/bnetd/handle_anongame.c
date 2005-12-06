@@ -346,7 +346,7 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 		
 	  LIST_TRAVERSE(teamlist,curr)
 	  {
-	    if (!(team = elem_get_data(curr)))
+	    if (!(team = (t_team*)elem_get_data(curr)))
 	    {
 	      eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 	      continue;

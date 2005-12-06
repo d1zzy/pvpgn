@@ -66,7 +66,7 @@ typedef struct {
 typedef struct {
    t_bnpcap_addr client;
    t_bnpcap_addr server;
-   t_packet_class class;
+   t_packet_class cclass;
    t_tcp_state tcpstate;
    int incomplete;
    int clientoff;
@@ -195,7 +195,7 @@ typedef struct {
 static t_bnpcap_conn * bnpcap_conn_new(t_bnpcap_addr const *s, t_bnpcap_addr const *d)
 {
    t_bnpcap_conn * c;
-   
+
    c = (t_bnpcap_conn *) malloc(sizeof(t_bnpcap_conn)); /* avoid warning */
    if (!c) {
       eventlog(eventlog_level_error,__FUNCTION__,"malloc failed: %s",pstrerror(errno));
@@ -208,7 +208,7 @@ static t_bnpcap_conn * bnpcap_conn_new(t_bnpcap_addr const *s, t_bnpcap_addr con
       memcpy(&c->client,d,sizeof(t_bnpcap_addr));
       memcpy(&c->server,s,sizeof(t_bnpcap_addr));
    }
-   c->class = packet_class_init;
+   c->cclass = packet_class_init;
    c->packets = list_create();
    c->incomplete = 0;
    c->tcpstate = tcp_state_none;
@@ -219,14 +219,14 @@ static t_bnpcap_conn * bnpcap_conn_new(t_bnpcap_addr const *s, t_bnpcap_addr con
    return c;
 }
 
-static void bnpcap_conn_set_class(t_bnpcap_conn *c, t_packet_class class)
+static void bnpcap_conn_set_class(t_bnpcap_conn *c, t_packet_class cclass)
 {
-   c->class = class;
+   c->cclass = cclass;
 }
 
 static t_packet_class bnpcap_conn_get_class(t_bnpcap_conn *c)
 {
-   return c->class;
+   return c->cclass;
 }
 
 static t_bnpcap_conn * bnpcap_conn_find(t_bnpcap_addr const *s, t_bnpcap_addr const *d)
@@ -235,8 +235,8 @@ static t_bnpcap_conn * bnpcap_conn_find(t_bnpcap_addr const *s, t_bnpcap_addr co
 
    LIST_TRAVERSE(conns,curr) {
       t_bnpcap_conn *c;
-      
-      c = elem_get_data(curr);
+
+      c = (t_bnpcap_conn*)elem_get_data(curr);
       if (((c->client.ip==s->ip)&&(c->client.port==s->port))&&
 	  ((c->server.ip==d->ip)&&(c->server.port==d->port))) {
 	 return c;
@@ -270,12 +270,12 @@ static int bnpcap_conn_packet(unsigned int sip, unsigned short sport, unsigned i
    t_bnpcap_addr d;
    t_bnpcap_conn *c;
    t_bnpcap_packet *bp;
-   
+
    s.ip = sip;
    s.port = sport;
    d.ip = dip;
    d.port = dport;
-  
+
    if ((c = bnpcap_conn_find(&s,&d))) {
       eventlog(eventlog_level_debug,__FUNCTION__,"adding packet to existing connection");
       if (c->tcpstate==tcp_state_ack) {
@@ -289,13 +289,13 @@ static int bnpcap_conn_packet(unsigned int sip, unsigned short sport, unsigned i
       c = bnpcap_conn_new(&s,&d);
       bnpcap_conn_set_class(c,packet_class_raw); /* we don't know the init sequence */
       c->incomplete = 1;
-      c->tcpstate = tcp_state_ok; 
+      c->tcpstate = tcp_state_ok;
       list_append_data(conns,c);
    }
    if (c->tcpstate!=tcp_state_ok) {
       eventlog(eventlog_level_warn,__FUNCTION__,"connection got packet in wrong state!");
    }
-   if (bnpcap_conn_get_class(c) == packet_class_init) { 
+   if (bnpcap_conn_get_class(c) == packet_class_init) {
       if (len>1) {
 	 eventlog(eventlog_level_warn,__FUNCTION__,"init packet larger than 1 byte");
       }
@@ -319,7 +319,7 @@ static int bnpcap_conn_packet(unsigned int sip, unsigned short sport, unsigned i
       unsigned char const *datap = data;
       int always_complete = 0;
 
-      
+
       if (bnpcap_conn_get_class(c) == packet_class_raw)
 	always_complete = 1; /* There is no size field */
       if (bnpcap_conn_get_class(c) == packet_class_file)
@@ -374,7 +374,7 @@ static int bnpcap_conn_packet(unsigned int sip, unsigned short sport, unsigned i
 	       if ((len-(datap-data)) < l)
 		 l = (len-(datap-data));
 	       eventlog(eventlog_level_debug,__FUNCTION__,"filling up header (adding %d to %d to get %d)",l,off,packet_get_header_size(p));
-	       memcpy(packet_get_raw_data(p,off),datap,l); 
+	       memcpy(packet_get_raw_data(p,off),datap,l);
 	       datap = datap + l;
 	       off = off + l;
 	    } else {
@@ -382,11 +382,11 @@ static int bnpcap_conn_packet(unsigned int sip, unsigned short sport, unsigned i
 	       if ((len-(datap-data)) < l)
 		 l = (len-(datap-data));
 	       eventlog(eventlog_level_debug,__FUNCTION__,"filling up packet (0x%04x:%s) (adding %d to %d to get %d)",packet_get_type(p),packet_get_type_str(p,bnpcap_conn_get_dir(c,&s,&d)),l,off,packet_get_size(p));
-	       memcpy(packet_get_raw_data(p,off),datap,l); 
+	       memcpy(packet_get_raw_data(p,off),datap,l);
 	       datap = datap + l;
-	       off = off + l;	    
+	       off = off + l;
 	    }
-	    if ((off>=packet_get_header_size(p))&&(off>=packet_get_size(p))) { 
+	    if ((off>=packet_get_header_size(p))&&(off>=packet_get_size(p))) {
 	       /* packet is complete */
 	       eventlog(eventlog_level_debug,__FUNCTION__,"packet is complete");
 	       bp = (t_bnpcap_packet *) malloc(sizeof(t_bnpcap_packet)); /* avoid warning */
@@ -451,7 +451,7 @@ static int bnpcap_process_tcp(t_ip_header const * ip, unsigned char const *data,
 {
    t_tcp_header_raw const *raw;
    t_tcp_header h;
-   
+
    raw = (t_tcp_header_raw const *) data; /* avoid warning */
    bnpcap_tcp2tcp(&h,raw);
    if (h.doffset < 5) {
@@ -459,7 +459,7 @@ static int bnpcap_process_tcp(t_ip_header const * ip, unsigned char const *data,
       return 1;
    } else {
       char fstr[32] = "";
-      
+
       if (h.flags & TCP_URG)
 	strcat(fstr,"U");
       if (h.flags & TCP_ACK)
@@ -473,12 +473,12 @@ static int bnpcap_process_tcp(t_ip_header const * ip, unsigned char const *data,
       if (h.flags & TCP_FIN)
 	strcat(fstr,"F");
       eventlog(eventlog_level_debug,__FUNCTION__,"tcp: sport=%u dport=%u seqno=0x%08x ackno=0x%08x window=0x%08x len=%d (%s)",h.sport,h.dport,h.seqno,h.ackno,h.window,((signed)len-(h.doffset*4)),fstr);
-      if (((signed)len-(h.doffset*4))<=0) { 
+      if (((signed)len-(h.doffset*4))<=0) {
 	 eventlog(eventlog_level_info,__FUNCTION__,"empty packet (%d)",((signed)len-(h.doffset*4)));
 	 /* handle sync packets */
 	 if (h.flags & TCP_SYN)  {
 	    t_bnpcap_addr s,d;
-	    
+
 	    s.ip=ip->src; s.port=h.sport;
 	    d.ip=ip->dst; d.port=h.dport;
 	    if (h.flags & TCP_ACK) {
@@ -491,7 +491,7 @@ static int bnpcap_process_tcp(t_ip_header const * ip, unsigned char const *data,
 	    } else {
 	       if (!bnpcap_conn_find(&s,&d)) {
 		  t_bnpcap_conn *c;
-		  
+
 		  c = bnpcap_conn_new(&s,&d);
 		  c->tcpstate = tcp_state_syn;
 		  list_append_data(conns,c);
@@ -530,7 +530,7 @@ static int bnpcap_process_udp(unsigned char const *data, unsigned int len)
 
    raw = (t_ip_udp_header_raw const *) data; /* avoid warning */
    bnpcap_udp2udp(&h,raw);
-   
+
    bp = (t_bnpcap_packet *) malloc(sizeof(t_bnpcap_packet)); /* avoid warning */
    if (!bp) {
       eventlog(eventlog_level_error,__FUNCTION__,"malloc failed: %s",pstrerror(errno));
@@ -598,7 +598,7 @@ static int bnpcap_process_ip(unsigned char const *data, unsigned int len)
       return 1;
    } else {
       char fstr[32] = "";
-      
+
       if (h.flags & IP_DF)
 	strcat(fstr,"D");
       if (h.flags & IP_MF)
@@ -620,7 +620,7 @@ static int bnpcap_process_ip(unsigned char const *data, unsigned int len)
 static int bnpcap_process_ether(unsigned char const *data, unsigned int len)
 { /* Well, first parse the ethernet header (I hope you use Ethernet_II :) ... */
    t_ether_raw const *raw;
-   
+
    raw = (t_ether_raw const *) data; /* avoid warning */
    if (ntohs(raw->type)==0x0800) {
       /* This is IP */
@@ -635,12 +635,12 @@ static int bnpcap_process_ether(unsigned char const *data, unsigned int len)
 
 /**************************** PACKET/PCAP *********************************/
 
-static void bnpcap_process_packet(u_char * private, const struct pcap_pkthdr * p, u_char const * data)
+static void bnpcap_process_packet(u_char * private_, const struct pcap_pkthdr * p, u_char const * data)
 {
    unsigned int pl = p->len;
-   
-   if(private) private = NULL; // hack to eliminate compiler warning
-   
+
+   if(private_) private_ = NULL; // hack to eliminate compiler warning
+
    memcpy(&packettime,&p->ts,sizeof(struct timeval));
    eventlog(eventlog_level_debug,__FUNCTION__,"packet: len=%d caplen=%d",p->len,p->caplen);
    /* FIXME: check if it's ethernet */
@@ -665,7 +665,7 @@ int main (int argc, char **argv) {
    t_elem * currconn;
    t_elem * currudp;
    int c;
-   
+
    while ((c=getopt(argc,argv,"dvp:"))!=-1) {
       switch (c) {
        case 'p':
@@ -684,14 +684,14 @@ int main (int argc, char **argv) {
 	 printf("getopt returned \'%c\'\n",c);
       }
    }
-   
+
    if (optind < argc) {
       filename = argv[optind];
    } else {
       bnpcap_usage();
       return 1;
    }
-   
+
    pc = pcap_open_offline(filename,ebuf);
    if (!pc) {
       fprintf(stderr,"pcap_open_offline: %s\n",ebuf);
@@ -711,22 +711,22 @@ int main (int argc, char **argv) {
    conns = list_create();
    udppackets = list_create();
    pcap_dispatch(pc,0,bnpcap_process_packet,NULL);
-   
+
    printf("### This packet dump was created by bnpcap.\n");
    LIST_TRAVERSE(conns,currconn) {
       t_bnpcap_conn *c;
       char cstr[64];
       char sstr[64];
       t_elem * currpacket;
-      
-      c = elem_get_data(currconn);
+
+      c = (t_bnpcap_conn*)elem_get_data(currconn);
       snprintf(cstr,64,"%u.%u.%u.%u:%u",((c->client.ip & 0xFF000000)>>24),((c->client.ip & 0x00FF0000)>>16),((c->client.ip & 0x0000FF00)>>8),((c->client.ip & 0x000000FF)),c->client.port);
       snprintf(sstr,64,"%u.%u.%u.%u:%u",((c->server.ip & 0xFF000000)>>24),((c->server.ip & 0x00FF0000)>>16),((c->server.ip & 0x0000FF00)>>8),((c->server.ip & 0x000000FF)),c->server.port);
       printf("## %s connection: client=%s server=%s\n",(c->incomplete?"incomplete":"complete"),cstr,sstr);
       LIST_TRAVERSE(c->packets,currpacket) {
 	 t_bnpcap_packet * bp;
-	 
-	 bp = elem_get_data(currpacket);
+
+	 bp = (t_bnpcap_packet*)elem_get_data(currpacket);
 	 printf("# %u packet from %s: type=0x%04x(%s) length=%d class=%s\n",bp->id/*bp->tv.tv_sec*/,(bp->dir==packet_dir_from_client?"client":"server"),packet_get_type(bp->p),packet_get_type_str(bp->p,bp->dir),packet_get_size(bp->p),packet_get_class_str(bp->p));
 	 hexdump(stdout,packet_get_raw_data(bp->p,0),packet_get_size(bp->p));
 	 printf("\n");
@@ -736,9 +736,9 @@ int main (int argc, char **argv) {
    LIST_TRAVERSE(udppackets,currudp) {
       t_bnpcap_packet *bp;
 
-      bp = elem_get_data(currudp);
+      bp = (t_bnpcap_packet*)elem_get_data(currudp);
       printf("# %u packet from %s: type=0x%04x(%s) length=%d class=%s\n",bp->id/*bp->tv.tv_sec*/,(bp->dir==packet_dir_from_client?"client":"server"),packet_get_type(bp->p),packet_get_type_str(bp->p,bp->dir),packet_get_size(bp->p),packet_get_class_str(bp->p));
-      hexdump(stdout,packet_get_raw_data(bp->p,0),packet_get_size(bp->p));      
+      hexdump(stdout,packet_get_raw_data(bp->p,0),packet_get_size(bp->p));
       printf("\n");
    }
    pcap_close(pc);

@@ -75,15 +75,15 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
-static int d2charsave_init(void * buffer,char const * charname,unsigned char class,unsigned short status);
+static int d2charsave_init(void * buffer,char const * charname,unsigned char chclass,unsigned short status);
 static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, char const * charname,
-				unsigned char class, unsigned short status);
+				unsigned char chclass, unsigned short status);
 
-static int d2charsave_init(void * buffer,char const * charname,unsigned char class,unsigned short status)
+static int d2charsave_init(void * buffer,char const * charname,unsigned char chclass,unsigned short status)
 {
 	ASSERT(buffer,-1);
 	ASSERT(charname,-1);
-	bn_byte_set((bn_byte *)((char *)buffer+D2CHARSAVE_CLASS_OFFSET), class);
+	bn_byte_set((bn_byte *)((char *)buffer+D2CHARSAVE_CLASS_OFFSET), chclass);
 	bn_short_set((bn_short *)((char *)buffer+D2CHARSAVE_STATUS_OFFSET),status);
 	strncpy((char *)buffer+D2CHARSAVE_CHARNAME_OFFSET,charname,MAX_CHARNAME_LEN);
 	return 0;
@@ -91,7 +91,7 @@ static int d2charsave_init(void * buffer,char const * charname,unsigned char cla
 
 
 static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, char const * charname,
-			   unsigned char class, unsigned short status)
+			   unsigned char chclass, unsigned short status)
 {
 	unsigned int		i;
 	time_t		now;
@@ -104,18 +104,18 @@ static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, c
 	bn_int_set(&chardata->header.total_play_time,0);
 
 	memset(chardata->header.charname, 0,MAX_CHARNAME_LEN);
-	strncpy(chardata->header.charname,charname,MAX_CHARNAME_LEN);
+	strncpy((char*)chardata->header.charname,charname,MAX_CHARNAME_LEN);
 	memset(chardata->header.account, 0,MAX_ACCTNAME_LEN);
-	strncpy(chardata->header.account,account,MAX_ACCTNAME_LEN);
+	strncpy((char*)chardata->header.account,account,MAX_ACCTNAME_LEN);
 	memset(chardata->header.realmname, 0,MAX_REALMNAME_LEN);
-	strncpy(chardata->header.realmname,prefs_get_realmname(),MAX_REALMNAME_LEN);
+	strncpy((char*)chardata->header.realmname,prefs_get_realmname(),MAX_REALMNAME_LEN);
 	bn_int_set(&chardata->header.checksum,0);
 	for (i=0; i<NELEMS(chardata->header.reserved); i++) {
 		bn_int_set(&chardata->header.reserved[i],0);
 	}
 	bn_int_set(&chardata->summary.charlevel,1);
 	bn_int_set(&chardata->summary.experience,0);
-	bn_int_set(&chardata->summary.charclass,class);
+	bn_int_set(&chardata->summary.charclass,chclass);
 	bn_int_set(&chardata->summary.charstatus,status);
 
 	memset(chardata->portrait.gfx,D2CHARINFO_PORTRAIT_PADBYTE,sizeof(chardata->portrait.gfx));
@@ -126,7 +126,7 @@ static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, c
 
 	bn_short_set(&chardata->portrait.header,D2CHARINFO_PORTRAIT_HEADER);
 	bn_byte_set(&chardata->portrait.status,status|D2CHARINFO_PORTRAIT_MASK);
-	bn_byte_set(&chardata->portrait.class,class+1);
+	bn_byte_set(&chardata->portrait.chclass,chclass+1);
 	bn_byte_set(&chardata->portrait.level,1);
 	if (charstatus_get_ladder(status))
 		bn_byte_set(&chardata->portrait.ladder, 1);
@@ -140,7 +140,7 @@ static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, c
 }
 
 
-extern int d2char_create(char const * account, char const * charname, unsigned char class, unsigned short status)
+extern int d2char_create(char const * account, char const * charname, unsigned char chclass, unsigned short status)
 {
 	t_d2charinfo_file	chardata;
 	char			* savefile, * infofile;
@@ -152,7 +152,7 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 
 	ASSERT(account,-1);
 	ASSERT(charname,-1);
-	if (class>D2CHAR_MAX_CLASS) class=0;
+	if (chclass>D2CHAR_MAX_CLASS) chclass=0;
 	status &= D2CHARINFO_STATUS_FLAG_INIT_MASK;
 	charstatus_set_init(status,1);
 	
@@ -196,7 +196,7 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 		return -1;
 	}
 
-	savefile=xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
+	savefile=(char*)xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
 	d2char_get_savefile_name(savefile,charname);
 	if ((fp=fopen(savefile,"rb"))) {
 		eventlog(eventlog_level_warn,__FUNCTION__,"character save file \"%s\" for \"%s\" already exist",savefile,charname);
@@ -205,7 +205,7 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 		return -1;
 	}
 	
-	infofile=xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	infofile=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
 	d2char_get_infofile_name(infofile,account,charname);
 
 	now = time(NULL);
@@ -213,8 +213,8 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 	if ((ladder_time > 0) && (now < ladder_time))
 		charstatus_set_ladder(status, 0);
 	
-	d2charsave_init(buffer,charname,class,status);
-	d2charinfo_init(&chardata,account,charname,class,status);
+	d2charsave_init(buffer,charname,chclass,status);
+	d2charinfo_init(&chardata,account,charname,chclass,status);
 
 	if (file_write(infofile,&chardata,sizeof(chardata))<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error writing info file \"%s\"",infofile);
@@ -234,7 +234,7 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 	}
 	xfree(savefile);
 	xfree(infofile);
-	eventlog(eventlog_level_info,__FUNCTION__,"character %s(*%s) class %d status 0x%X created",charname,account,class,status);
+	eventlog(eventlog_level_info,__FUNCTION__,"character %s(*%s) class %d status 0x%X created",charname,account,chclass,status);
 	return 0;
 }
 
@@ -246,7 +246,7 @@ extern int d2char_find(char const * account, char const * charname)
 
 	ASSERT(account,-1);
 	ASSERT(charname,-1);
-	file=xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	file=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
 	d2char_get_infofile_name(file,account,charname);
 	fp=fopen(file,"rb");
 	xfree(file);
@@ -297,7 +297,7 @@ extern int d2char_convert(char const * account, char const * charname)
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad account name \"%s\"",account);
 		return -1;
 	}
-	file=xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	file=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
 	d2char_get_infofile_name(file,account,charname);
 	if (!(fp=fopen(file,"rb+"))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"unable to open charinfo file \"%s\" for reading and writing (fopen: %s)",file,pstrerror(errno));
@@ -329,7 +329,7 @@ extern int d2char_convert(char const * account, char const * charname)
 		return -1;
 	}
 	
-	file=xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
+	file=(char*)xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
 	d2char_get_savefile_name(file,charname);
 	if (!(fp=fopen(file,"rb+"))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"could not open charsave file \"%s\" for reading and writing (fopen: %s)",file,pstrerror(errno));
@@ -387,7 +387,7 @@ extern int d2char_delete(char const * account, char const * charname)
 	}
 	
 	/* charsave file */
-	file=xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	file=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
 	d2char_get_infofile_name(file,account,charname);
 	if (remove(file)<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete charinfo file \"%s\" (remove: %s)",file,pstrerror(errno));
@@ -397,7 +397,7 @@ extern int d2char_delete(char const * account, char const * charname)
 	xfree(file);
 	
 	/* charinfo file */
-	file=xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
+	file=(char*)xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
 	d2char_get_savefile_name(file,charname);
 	if (remove(file)<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete charsave file \"%s\" (remove: %s)",file,pstrerror(errno));
@@ -405,7 +405,7 @@ extern int d2char_delete(char const * account, char const * charname)
 	xfree(file);
 	
 	/* bak charsave file */
-	file=xmalloc(strlen(prefs_get_bak_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	file=(char*)xmalloc(strlen(prefs_get_bak_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
 	d2char_get_bak_infofile_name(file,account,charname);
 	if (access(file, F_OK) == 0) {
 	    if (remove(file)<0) {
@@ -415,7 +415,7 @@ extern int d2char_delete(char const * account, char const * charname)
 	xfree(file);
 	
 	/* bak charinfo file */
-	file=xmalloc(strlen(prefs_get_bak_charsave_dir())+1+strlen(charname)+1);
+	file=(char*)xmalloc(strlen(prefs_get_bak_charsave_dir())+1+strlen(charname)+1);
 	d2char_get_bak_savefile_name(file,charname);
 	if (access(file, F_OK) == 0) {
 	    if (remove(file)<0) {
@@ -461,10 +461,10 @@ extern int d2charinfo_load(char const * account, char const * charname, t_d2char
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad account name \"%s\"",account);
 		return -1;
 	}
-	file=xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	file=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
 	d2char_get_infofile_name(file,account,charname);
 	size=sizeof(t_d2charinfo_file);
-	if (file_read(file,data,&size)<0) {
+	if (file_read(file,data,(unsigned int*)&size)<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error loading character file %s",file);
 		xfree(file);
 		return -1;
@@ -518,7 +518,7 @@ extern int d2charinfo_load(char const * account, char const * charname, t_d2char
 }
 		fclose(fp);
 
-		file=xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
+		file=(char*)xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
 		d2char_get_savefile_name(file,charname);
 
 		if (!(fp=fopen(file,"rb+"))) {
@@ -533,18 +533,18 @@ extern int d2charinfo_load(char const * account, char const * charname, t_d2char
 			fclose(fp);
 			return 0;
 		}
-		version=bn_int_get(buffer+D2CHARSAVE_VERSION_OFFSET);
+		version=bn_int_get((bn_basic*)(buffer+D2CHARSAVE_VERSION_OFFSET));
 		if (version>=0x5C) {
 			status_offset=D2CHARSAVE_STATUS_OFFSET_109;
 		} else {
 			status_offset=D2CHARSAVE_STATUS_OFFSET;
 		}
-		status=bn_byte_get(buffer+status_offset);
+		status=bn_byte_get((bn_basic*)(buffer+status_offset));
 		charstatus_set_ladder(status,0);
 		/* FIXME: shouldn't abuse bn_*_set()... what's the best way to do this? */
 		bn_byte_set((bn_byte *)(buffer+status_offset),status);
 		if (version>=0x5C) {
-			checksum=d2charsave_checksum(buffer,size,D2CHARSAVE_CHECKSUM_OFFSET);
+			checksum=d2charsave_checksum((unsigned char*)buffer,size,D2CHARSAVE_CHECKSUM_OFFSET);
 			bn_int_set((bn_int *)(buffer+D2CHARSAVE_CHECKSUM_OFFSET),checksum);
 		}
 		fseek(fp,0,SEEK_SET);

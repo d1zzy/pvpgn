@@ -45,14 +45,14 @@ static t_elem listhead;
 
 extern t_list * list_create(void)
 {
-    t_list * new;
+    t_list * newl;
     
-    new = xmalloc(sizeof(t_list));
-    new->head = NULL;
-    new->tail = NULL;
-    new->len = 0;
+    newl = (t_list*)xmalloc(sizeof(t_list));
+    newl->head = NULL;
+    newl->tail = NULL;
+    newl->len = 0;
     
-    return new;
+    return newl;
 }
 
 
@@ -90,7 +90,7 @@ extern int list_prepend_data(t_list * list, void * data)
     
     assert(list != NULL);
 
-    elem = xmalloc(sizeof(t_elem));
+    elem = (t_elem*)xmalloc(sizeof(t_elem));
     elem->data = data;
 
     if (list->head)
@@ -112,7 +112,7 @@ extern int list_append_data(t_list * list, void * data)
     
     assert(list != NULL);
 
-    elem = xmalloc(sizeof(t_elem));
+    elem = (t_elem*)xmalloc(sizeof(t_elem));
     elem->data = data;
 
     elem->next = NULL;

@@ -23,14 +23,14 @@
 #endif
 #include "compat/access.h"
 
-static inline int p_rename(const char * old, const char * new)
+static inline int p_rename(const char * oldpath, const char * newpath)
 {
 #ifdef WIN32
-    if(access(new, F_OK) == 0)
-        if(remove(new) < 0)
+    if(access(newpath, F_OK) == 0)
+        if(remove(newpath) < 0)
             return -1;
 #endif
-    return rename(old, new);
+    return rename(oldpath, newpath);
 }
 		
 #endif

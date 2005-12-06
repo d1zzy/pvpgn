@@ -34,7 +34,7 @@ static inline t_attr *attr_create(const char *key, const char *val)
 {
     t_attr *attr;
 
-    attr = xmalloc(sizeof(t_attr));
+    attr = (t_attr*)xmalloc(sizeof(t_attr));
     attr->dirty = 0;
     hlist_init(&attr->link);
     attr->key = key ? xstrdup(key) : NULL;

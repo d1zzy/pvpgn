@@ -67,7 +67,7 @@ static t_psock_fd_set *rfds = NULL, *wfds = NULL, /* working sets (updated often
 
 static int fdw_select_init(int nfds);
 static int fdw_select_close(void);
-static int fdw_select_add_fd(int idx, t_fdwatch_type rw);
+static int fdw_select_add_fd(int idx, unsigned rw);
 static int fdw_select_del_fd(int idx);
 static int fdw_select_watch(long timeout_msecs);
 static void fdw_select_handle(void);
@@ -85,10 +85,10 @@ static int fdw_select_init(int nfds)
 {
     if (nfds > FD_SETSIZE) return -1; /* this should not happen */
 
-    rfds = xmalloc(sizeof(t_psock_fd_set));
-    wfds = xmalloc(sizeof(t_psock_fd_set));
-    trfds = xmalloc(sizeof(t_psock_fd_set));
-    twfds = xmalloc(sizeof(t_psock_fd_set));
+    rfds = (t_psock_fd_set*)xmalloc(sizeof(t_psock_fd_set));
+    wfds = (t_psock_fd_set*)xmalloc(sizeof(t_psock_fd_set));
+    trfds = (t_psock_fd_set*)xmalloc(sizeof(t_psock_fd_set));
+    twfds = (t_psock_fd_set*)xmalloc(sizeof(t_psock_fd_set));
 
     PSOCK_FD_ZERO(trfds); PSOCK_FD_ZERO(twfds);
     smaxfd = sr = 0;
@@ -108,7 +108,7 @@ static int fdw_select_close(void)
     return 0;
 }
 
-static int fdw_select_add_fd(int idx, t_fdwatch_type rw)
+static int fdw_select_add_fd(int idx, unsigned rw)
 {
     int fd;
 

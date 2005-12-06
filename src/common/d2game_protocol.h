@@ -139,8 +139,8 @@ typedef struct
 					/* servertype=3, client all newbie,seems to be wrong */
 					/* data is saved in server machine */
 					/* client is loaded from server machine */
- bn_byte	    class;
- bn_byte	    template;		/* character template */
+ bn_byte	    chclass;
+ bn_byte	    chtemplate;		/* character template */
 					/* affect the reply in 0x01 */
 					/* should less than the lines of excel/CharTemplate.txt */
  bn_byte	    difficulty;
@@ -251,7 +251,7 @@ typedef struct
     t_d2game_header  h;
     bn_byte	     difficulty;
     bn_short	     gameflag;
-    bn_byte	     template;
+    bn_byte	     chtemplate;
     bn_short	     unknown1;
     bn_short	     unknown2;
 } t_d2game_server_joinok;

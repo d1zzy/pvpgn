@@ -287,7 +287,7 @@ extern int client_connect(char const * progname, char const * servname, unsigned
 	fprintf(stderr,"%s: could not create packet\n",progname);
 	goto error_lsock;
     }
-    bn_byte_set(&packet->u.client_initconn.class,CLIENT_INITCONN_CLASS_BNET);
+    bn_byte_set(&packet->u.client_initconn.cclass,CLIENT_INITCONN_CLASS_BNET);
     client_blocksend_packet(sd,packet);
     packet_del_ref(packet);
     

@@ -55,7 +55,7 @@ extern int d2charlist_add_char(t_elist * list_head, t_d2charinfo_file * charinfo
     t_elist * curr;
     
     d2char_sort = prefs_get_charlist_sort();
-    charlist = xmalloc(sizeof(t_d2charlist));
+    charlist = (t_d2charlist*)xmalloc(sizeof(t_d2charlist));
     charlist->charinfo = charinfo;
     charlist->expiration_time = expiration_time;
 
@@ -68,7 +68,7 @@ extern int d2charlist_add_char(t_elist * list_head, t_d2charinfo_file * charinfo
 	    elist_for_each(curr,list_head)
 	    {
 	       ccharlist = elist_entry(curr,t_d2charlist,list);
-               if (strncasecmp(charinfo->header.charname,ccharlist->charinfo->header.charname,strlen(charinfo->header.charname))<0)
+               if (strncasecmp((char*)charinfo->header.charname,(char*)ccharlist->charinfo->header.charname,strlen((char*)charinfo->header.charname))<0)
 	           break;
 	    }
             elist_add_tail(curr,&charlist->list);

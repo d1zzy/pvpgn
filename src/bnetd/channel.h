@@ -78,7 +78,7 @@ typedef struct channel
     char const *      shortname;  /* short "alias" for permanent channels, NULL if none */
     char const *      country;
     char const *      realmname;
-    t_channel_flags   flags;
+    unsigned int      flags;
     int		      maxmembers;
     int		      currmembers;
     char const *      clienttag;
@@ -124,8 +124,8 @@ extern int channel_destroy(t_channel * channel, t_elem ** elem);
 extern char const * channel_get_name(t_channel const * channel);
 extern char const * channel_get_shortname(t_channel const * channel);
 extern char const * channel_get_clienttag(t_channel const * channel);
-extern t_channel_flags channel_get_flags(t_channel const * channel);
-extern int channel_set_flags(t_channel * channel, t_channel_flags flags);
+extern unsigned channel_get_flags(t_channel const * channel);
+extern int channel_set_flags(t_channel * channel, unsigned flags);
 extern int channel_get_permanent(t_channel const * channel);
 extern unsigned int channel_get_channelid(t_channel const * channel);
 extern int channel_set_channelid(t_channel * channel, unsigned int channelid);

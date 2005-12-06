@@ -1474,7 +1474,7 @@ typedef struct
     bn_byte unknownb9;
     bn_byte unknownb10;
     bn_byte unknownb11;
-    bn_byte class;     /* 0x01=Amazon, 0x02=Sor, 0x03=Nec, 0x04=Pal, 0x05=Bar */
+    bn_byte chclass;     /* 0x01=Amazon, 0x02=Sor, 0x03=Nec, 0x04=Pal, 0x05=Bar */
     
     bn_int  unknown1;
     bn_int  unknown2;

@@ -679,7 +679,8 @@ void ladder_destroy(t_ladder *ladder)
 extern int war3_ladder_add(t_ladder *ladder, int uid, int xp, int level, t_account *account, unsigned int teamcount,t_clienttag clienttag)
 {
    t_ladder_internal *ladder_entry;
-   ladder_entry = xmalloc(sizeof(t_ladder_internal));
+
+   ladder_entry = (t_ladder_internal*)xmalloc(sizeof(t_ladder_internal));
 
    ladder_entry->uid       = uid;
    ladder_entry->xp        = xp;
@@ -1052,8 +1053,6 @@ extern int ladder_update_accounts(t_ladder *ladder, t_set_fct set_fct, t_get_fct
 	    // so set rank to 0 and remove account from ladder
         if (ladder->ladder_id == ladder_id_none) //war3/w3xp AT ladder
 		{
-	          if ((*get_fct1)(account,pointer->teamcount,clienttag)!=0) 
-		    (*set_fct)(account,pointer->teamcount,clienttag,0);
 		}
 		else
 		{ 
@@ -1704,7 +1703,7 @@ extern char * create_filename(const char * path, const char * filename, const ch
 {
   char * result;
 
-  result = xmalloc(strlen(path)+1+strlen(filename)+strlen(ending)+1);
+  result = (char*)xmalloc(strlen(path)+1+strlen(filename)+strlen(ending)+1);
   sprintf(result,"%s/%s%s",path,filename,ending);
 
   return result;
@@ -1986,13 +1985,13 @@ extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
    }
 
    /* then lets allocate mem for all the arrays */
-   xpcalc = xmalloc(sizeof(t_xpcalc_entry) * W3_XPCALC_MAXLEVEL); //presume the maximal leveldiff is level number
+   xpcalc = (t_xpcalc_entry*)xmalloc(sizeof(t_xpcalc_entry) * W3_XPCALC_MAXLEVEL); //presume the maximal leveldiff is level number
 
    w3_xpcalc_maxleveldiff = -1;
    memset(xpcalc, 0, sizeof(t_xpcalc_entry) * W3_XPCALC_MAXLEVEL);
-   xplevels = xmalloc(sizeof(t_xplevel_entry) * W3_XPCALC_MAXLEVEL);
+   xplevels = (t_xplevel_entry*)xmalloc(sizeof(t_xplevel_entry) * W3_XPCALC_MAXLEVEL);
    memset(xplevels, 0, sizeof(t_xplevel_entry) * W3_XPCALC_MAXLEVEL);
-   
+
    /* finally, lets read from the files */
    
    while(fgets(buffer, 256, fd1)) {
@@ -2015,7 +2014,7 @@ extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
       level--; /* the index in a C array starts from 0 */
       xplevels[level].startxp = startxp;
       xplevels[level].neededxp = neededxp;
-      xplevels[level].lossfactor = lossfactor * 100; /* we store the loss factor as % */
+      xplevels[level].lossfactor = (int)(lossfactor * 100); /* we store the loss factor as % */
       xplevels[level].mingames = mingames;
       eventlog(eventlog_level_trace, "ladder_createxptable", "inserting level XP info (level: %d, startxp: %d neededxp: %d lossfactor: %d mingames: %d)", level+1, xplevels[level].startxp, xplevels[level].neededxp, xplevels[level].lossfactor, xplevels[level].mingames);
    }
@@ -2054,7 +2053,7 @@ extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
    }
    fclose(fd2);
 
-   newxpcalc = xrealloc(xpcalc, sizeof(t_xpcalc_entry) * (w3_xpcalc_maxleveldiff+1));
+   newxpcalc = (t_xpcalc_entry*)xrealloc(xpcalc, sizeof(t_xpcalc_entry) * (w3_xpcalc_maxleveldiff+1));
    xpcalc=newxpcalc;
    
    /* OK, now we need to test couse if the user forgot to put some values

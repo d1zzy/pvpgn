@@ -87,7 +87,7 @@ extern int s2s_init(void)
 	return 0;
 }
 
-extern t_connection * s2s_create(char const * server, unsigned short def_port, t_conn_class class)
+extern t_connection * s2s_create(char const * server, unsigned short def_port, t_conn_class cclass)
 {
 	struct sockaddr_in	addr, laddr;
 	psock_t_socklen		laddr_len;
@@ -165,7 +165,7 @@ extern t_connection * s2s_create(char const * server, unsigned short def_port, t
 		}
 		d2cs_conn_set_state(c,conn_state_connecting);
 	}
-	d2cs_conn_set_class(c,class);
+	d2cs_conn_set_class(c,cclass);
 	return c;
 }
 

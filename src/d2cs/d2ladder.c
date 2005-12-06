@@ -85,7 +85,7 @@ static int d2ladder_readladder(void)
 	t_d2ladderfile_header		header;
 	unsigned int			i, n, temp, count, type, number;
 
-	ladderfile=xmalloc(strlen(prefs_get_ladder_dir())+1+strlen(LADDER_FILE_PREFIX)+1+
+	ladderfile=(char*)xmalloc(strlen(prefs_get_ladder_dir())+1+strlen(LADDER_FILE_PREFIX)+1+
 			strlen(CLIENTTAG_DIABLO2DV)+1);
 	sprintf(ladderfile,"%s/%s.%s",prefs_get_ladder_dir(),LADDER_FILE_PREFIX,CLIENTTAG_DIABLO2DV);
 	if (!(fp=fopen(ladderfile,"rb"))) {
@@ -106,7 +106,7 @@ static int d2ladder_readladder(void)
 		return -1;
 	}
 	temp= max_ladder_type * sizeof(*ladderheader);
-	ladderheader=xmalloc(temp);
+	ladderheader=(t_d2ladderfile_ladderindex*)xmalloc(temp);
 	if (fread(ladderheader,1,temp,fp)!=temp) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error read ladder file");
 		xfree(ladderheader);
@@ -122,7 +122,7 @@ static int d2ladder_readladder(void)
 		}
 		fseek(fp,bn_int_get(ladderheader[i].offset),SEEK_SET);
 		temp=number * sizeof(*ladderinfo);
-		ladderinfo=xmalloc(temp);
+		ladderinfo=(t_d2ladderfile_ladderinfo*)xmalloc(temp);
 		if (fread(ladderinfo,1,temp,fp)!=temp) {
 			eventlog(eventlog_level_error,__FUNCTION__,"error read ladder file");
 			xfree(ladderinfo);
@@ -142,7 +142,7 @@ static int d2ladder_readladder(void)
 
 static int d2ladderlist_create(unsigned int maxtype)
 {
-	ladder_data=xmalloc(maxtype * sizeof(*ladder_data));
+	ladder_data=(t_d2ladder*)xmalloc(maxtype * sizeof(*ladder_data));
 	memset(ladder_data,0, maxtype * sizeof(*ladder_data));
 	return 0;
 }
@@ -159,7 +159,7 @@ static int d2ladder_create(unsigned int type, unsigned int len)
 		eventlog(eventlog_level_error,__FUNCTION__,"ladder type %d exceed max ladder type %d",type,max_ladder_type);
 		return -1;
 	}
-	ladder_data[type].info=xmalloc(sizeof(t_d2cs_client_ladderinfo) * len);
+	ladder_data[type].info=(t_d2cs_client_ladderinfo*)xmalloc(sizeof(t_d2cs_client_ladderinfo) * len);
 	ladder_data[type].len=len;
 	ladder_data[type].type=type;
 	ladder_data[type].curr_len=0;
@@ -171,7 +171,7 @@ static int d2ladder_append_ladder(unsigned int type, t_d2ladderfile_ladderinfo *
 	t_d2cs_client_ladderinfo	* ladderinfo;
 	unsigned short			ladderstatus;
 	unsigned short			status;
-	unsigned char			class;
+	unsigned char			chclass;
 
 	if (!info) {
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL info");
@@ -190,7 +190,7 @@ static int d2ladder_append_ladder(unsigned int type, t_d2ladderfile_ladderinfo *
 		return -1;
 	}
 	status = bn_short_get(info->status);
-	class = bn_byte_get(info->class);
+	chclass = bn_byte_get(info->chclass);
 	ladderstatus = (status & LADDERSTATUS_FLAG_DIFFICULTY);
 	if (charstatus_get_hardcore(status)) {
 		ladderstatus |= LADDERSTATUS_FLAG_HARDCORE;
@@ -200,9 +200,9 @@ static int d2ladder_append_ladder(unsigned int type, t_d2ladderfile_ladderinfo *
 	}
 	if (charstatus_get_expansion(status)) {
 		ladderstatus |= LADDERSTATUS_FLAG_EXPANSION;
-		ladderstatus |= min(class,D2CHAR_EXP_CLASS_MAX);
+		ladderstatus |= min(chclass,D2CHAR_EXP_CLASS_MAX);
 	} else {
-		ladderstatus |= min(class,D2CHAR_CLASS_MAX);
+		ladderstatus |= min(chclass,D2CHAR_CLASS_MAX);
 	}
 	ladderinfo=ladder_data[type].info+ladder_data[type].curr_len;
 	bn_int_set(&ladderinfo->explow, bn_int_get(info->experience));

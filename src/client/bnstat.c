@@ -108,13 +108,13 @@
 # define dprintf if (0) printf
 #endif
 
-static char const * bnclass_get_str(unsigned int class); /* FIXME: this is also in command.c */
+static char const * bnclass_get_str(unsigned int cclass); /* FIXME: this is also in command.c */
 static void usage(char const * progname);
 
 
-static char const * bnclass_get_str(unsigned int class)
+static char const * bnclass_get_str(unsigned int cclass)
 {
-    switch (class)
+    switch (cclass)
     {
     case PLAYERINFO_DRTL_CLASS_WARRIOR:
 	return "warrior";
@@ -1168,7 +1168,7 @@ extern int main(int argc, char * argv[])
 		    strcmp(clienttag,"DRTL")==0)
 		{
 		    unsigned int level;
-		    unsigned int class;
+		    unsigned int chclass;
 		    unsigned int diablo_kills;
 		    unsigned int strength;
 		    unsigned int magic;
@@ -1195,10 +1195,10 @@ extern int main(int argc, char * argv[])
 			else
 			    temp = "";
 			j++;
-			if (str_to_uint(temp,&class)<0)
-			    class = 99;
-			printf("                           Class: %s\n",bnclass_get_str(class));
-			
+			if (str_to_uint(temp,&chclass)<0)
+			    chclass = 99;
+			printf("                           Class: %s\n",bnclass_get_str(chclass));
+
 			if (j<keys && (temp = packet_get_str_const(rpacket,strpos,256)))
 			    strpos += strlen(temp)+1;
 			else

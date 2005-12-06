@@ -63,9 +63,9 @@
 static t_list * characterlist_head=NULL;
 
 
-static t_character_class bncharacter_class_to_character_class(t_uint8 class)
+static t_character_class bncharacter_class_to_character_class(t_uint8 cclass)
 {
-    switch (class)
+    switch (cclass)
     {
     case D2CHAR_INFO_CLASS_AMAZON:
 	return character_class_amazon;
@@ -114,9 +114,9 @@ static t_uint8 character_class_to_bncharacter_class(t_character_class class)
 }
 */
 
-static const char * character_class_to_classname (t_character_class class)
+static const char * character_class_to_classname (t_character_class chclass)
 {
-    switch (class)
+    switch (chclass)
     {
     case character_class_amazon:
         return "Amazon";
@@ -201,14 +201,14 @@ barb_Qlex.log:
 }
 
 
-static int load_initial_data (t_character * character, t_character_class class, t_character_expansion expansion)
+static int load_initial_data (t_character * character, t_character_class chclass, t_character_expansion expansion)
 {
     char const * data_in_hex;
 
     eventlog(eventlog_level_debug,__FUNCTION__,"Initial Data for %s, %s %s",
 	     character->name,
 	     character_expansion_to_expansionname(expansion),
-	     character_class_to_classname(class));
+	     character_class_to_classname(chclass));
 
     /* Ideally, this would be loaded from bnetd_default_user, but I don't want to hack account.c just now */
 
@@ -218,7 +218,7 @@ static int load_initial_data (t_character * character, t_character_class class, 
     switch (expansion)
     {
     case character_expansion_classic:
-        switch (class)
+        switch (chclass)
 	{
 	case character_class_amazon:
 	    data_in_hex = "84 80 FF FF FF FF FF FF FF FF FF FF FF 01 FF FF FF FF FF FF FF FF FF FF FF 01 81 80 80 80 FF FF FF";
@@ -239,7 +239,7 @@ static int load_initial_data (t_character * character, t_character_class class, 
 	}
 	break;
     case character_expansion_lod:
-        switch (class)
+        switch (chclass)
 	{
 	case character_class_amazon:
 	    data_in_hex = "84 80 FF FF FF FF FF FF FF FF FF FF FF 01 FF FF FF FF FF FF FF FF FF FF FF 01 A1 80 80 80 FF FF FF";
@@ -267,7 +267,7 @@ static int load_initial_data (t_character * character, t_character_class class, 
     default: break; // well... like I said 2 times before....
     }
 
-    character->datalen = hex_to_str(data_in_hex, character->data, 33);
+    character->datalen = hex_to_str(data_in_hex, (char*)character->data, 33);
 
     decode_character_data(character);
 
@@ -275,7 +275,7 @@ static int load_initial_data (t_character * character, t_character_class class, 
 }
 
 
-extern int character_create(t_account * account, t_clienttag clienttag, char const * realmname, char const * name, t_character_class class, t_character_expansion expansion)
+extern int character_create(t_account * account, t_clienttag clienttag, char const * realmname, char const * name, t_character_class chclass, t_character_expansion expansion)
 {
     t_character * ch;
     
@@ -300,7 +300,7 @@ extern int character_create(t_account * account, t_clienttag clienttag, char con
 	return -1;
     }
 
-    ch = xmalloc(sizeof(t_character));
+    ch = (t_character*)xmalloc(sizeof(t_character));
     ch->name = xstrdup(name);
     ch->realmname = xstrdup(realmname);
     ch->guildname = xstrdup(""); /* FIXME: how does this work on Battle.net? */
@@ -314,7 +314,7 @@ extern int character_create(t_account * account, t_clienttag clienttag, char con
 	return -1;
     }
 
-    load_initial_data (ch, class, expansion);
+    load_initial_data (ch, chclass, expansion);
 
     account_add_closed_character(account, clienttag, ch);
     
@@ -351,7 +351,7 @@ extern t_character_class character_get_class(t_character const * ch)
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL character");
         return character_class_none;
     }
-    return bncharacter_class_to_character_class(ch->class);
+    return bncharacter_class_to_character_class(ch->chclass);
 }
 
 
@@ -395,7 +395,7 @@ extern char const * character_get_playerinfo(t_character const * ch)
     bn_byte_set(&d2char_info.unknownb9,ch->unknownb9);
     bn_byte_set(&d2char_info.unknownb10,ch->unknownb10);
     bn_byte_set(&d2char_info.unknownb11,ch->unknownb11);
-    bn_byte_set(&d2char_info.class,ch->class);
+    bn_byte_set(&d2char_info.chclass,ch->chclass);
     bn_int_set(&d2char_info.unknown1,ch->unknown1);
     bn_int_set(&d2char_info.unknown2,ch->unknown2);
     bn_int_set(&d2char_info.unknown3,ch->unknown3);
@@ -487,7 +487,7 @@ extern int characterlist_destroy(void)
     {
         LIST_TRAVERSE(characterlist_head,curr)
         {
-            ch = elem_get_data(curr);
+            ch = (t_character*)elem_get_data(curr);
             if (!ch) /* should not happen */
             {
                 eventlog(eventlog_level_error,__FUNCTION__,"characterlist contains NULL item");
@@ -526,7 +526,7 @@ extern t_character * characterlist_find_character(char const * realmname, char c
 
     LIST_TRAVERSE(characterlist_head,curr)
     {
-        ch = elem_get_data(curr);
+        ch = (t_character*)elem_get_data(curr);
         if (strcasecmp(ch->name,charname)==0 && strcasecmp(ch->realmname,realmname)==0)
             return ch;
     }

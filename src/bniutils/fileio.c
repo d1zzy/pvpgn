@@ -40,7 +40,7 @@ static t_file *w_file = NULL;
 /* ----------------------------------------------------------------- */
 
 extern void file_rpush(FILE *f) {
-	t_file *tf = malloc(sizeof(t_file));
+	t_file *tf = (t_file*)malloc(sizeof(t_file));
 	tf->next = r_file;
 	tf->f = f;
 	r_file = tf;
@@ -58,7 +58,7 @@ extern void file_rpop(void) {
 /* ----------------------------------------------------------------- */
 
 extern void file_wpush(FILE *f) {
-	t_file *tf = malloc(sizeof(t_file));
+	t_file *tf = (t_file*)malloc(sizeof(t_file));
 	tf->next = w_file;
 	tf->f = f;
 	w_file = tf;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 CreepLord (creeplord@pvpgn.org) 
+ * Copyright (C) 2004 CreepLord (creeplord@pvpgn.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -544,7 +544,7 @@ static int _anongame_queue(t_connection * c, int queue, t_uint32 map_prefs)
     if (!matchlists[queue][level])
 	matchlists[queue][level] = list_create();
 
-    md = xmalloc(sizeof(t_matchdata));
+    md = (t_matchdata*)xmalloc(sizeof(t_matchdata));
     md->c = c;
     md->map_prefs = map_prefs;
     md->versiontag = _conn_get_versiontag(c);
@@ -839,7 +839,7 @@ static int _anongame_match(t_connection * c, int queue)
 	    eventlog(eventlog_level_trace, __FUNCTION__, "Traversing level %d players", level + delta);
 
 	    LIST_TRAVERSE(matchlists[queue][level + delta], curr) {
-		md = elem_get_data(curr);
+		md = (t_matchdata*)elem_get_data(curr);
 		if (md->versiontag && _conn_get_versiontag(c) && !strcmp(md->versiontag, _conn_get_versiontag(c)) && (cur_prefs & md->map_prefs)) {
 		    /* set maxlevel and minlevel to keep all players within 6 levels */
 		    maxlevel = (level + delta + diff < maxlevel) ? level + delta + diff : maxlevel;
@@ -948,7 +948,7 @@ static int _anongame_search_found(int queue)
     }
 
     /* create data to be appended to end of packet */
-    pt2 = xmalloc(sizeof(t_saf_pt2));
+    pt2 = (t_saf_pt2*)xmalloc(sizeof(t_saf_pt2));
     bn_int_set(&pt2->unknown1, 0xFFFFFFFF);
     bn_int_set(&pt2->anongame_string, _anongame_get_gametype_tab(queue));
     bn_byte_set(&pt2->totalplayers, _anongame_totalplayers(queue));
@@ -989,8 +989,8 @@ static int _anongame_search_found(int queue)
 
 	    trans_net(conn_get_addr(player[queue][i]), &w3ip, &w3port);
 
-	    /* if ip to send is 0.0.0.0 (which will not work anyway) try 
-	     * to guess the reachable IP of pvpgn by using the local 
+	    /* if ip to send is 0.0.0.0 (which will not work anyway) try
+	     * to guess the reachable IP of pvpgn by using the local
 	     * endpoing address of the bnet class connection */
 	    if (!w3ip)
 		w3ip = conn_get_real_local_addr(player[queue][i]);
@@ -1082,7 +1082,7 @@ extern int anongame_unqueue(t_connection * c, int queue)
 	    continue;
 
 	LIST_TRAVERSE(matchlists[queue][i], curr) {
-	    md = elem_get_data(curr);
+	    md = (t_matchdata*)elem_get_data(curr);
 	    if (md->c == c) {
 		eventlog(eventlog_level_trace, __FUNCTION__, "unqueued player [%d] level %d", conn_get_socket(c), i);
 		list_remove_elem(matchlists[queue][i], &curr);
@@ -1347,7 +1347,7 @@ extern t_anongameinfo *anongameinfo_create(int totalplayers)
     t_anongameinfo *temp;
     int i;
 
-    temp = xmalloc(sizeof(t_anongameinfo));
+    temp = (t_anongameinfo*)xmalloc(sizeof(t_anongameinfo));
 
     temp->totalplayers = temp->currentplayers = totalplayers;
     for (i = 0; i < ANONGAME_MAX_GAMECOUNT; i++) {
@@ -1605,13 +1605,13 @@ extern void anongame_set_joined(t_anongame * a, char joined)
 /* move to own .c/.h file for handling w3route connections */
 extern int handle_w3route_packet(t_connection * c, t_packet const *const packet)
 {
-/* [smith] 20030427 fixed Big-Endian/Little-Endian conversion (Solaris bug) then 
- * use  packet_append_data for append platform dependent data types - like 
- * "int", cos this code was broken for BE platforms. it's rewriten in platform 
- * independent style whis usege bn_int and other bn_* like datatypes and 
- * fuctions for wor with datatypes - bn_int_set(), what provide right 
+/* [smith] 20030427 fixed Big-Endian/Little-Endian conversion (Solaris bug) then
+ * use  packet_append_data for append platform dependent data types - like
+ * "int", cos this code was broken for BE platforms. it's rewriten in platform
+ * independent style whis usege bn_int and other bn_* like datatypes and
+ * fuctions for wor with datatypes - bn_int_set(), what provide right
  * byteorder, not depended on LE/BE
- * fixed broken htonl() conversion for BE platforms - change it to  
+ * fixed broken htonl() conversion for BE platforms - change it to
  * bn_int_nset(). i hope it's worked on intel too %) */
 
     t_packet *rpacket;

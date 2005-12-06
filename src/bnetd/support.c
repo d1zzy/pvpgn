@@ -83,7 +83,7 @@ extern int support_check_files(char const * supportfile)
       continue;
     }
     
-    namebuff = xmalloc(filedirlen + 1 + strlen(buff) + 1);
+    namebuff = (char*)xmalloc(filedirlen + 1 + strlen(buff) + 1);
     sprintf(namebuff,"%s/%s",prefs_get_filedir(),buff);
 
     if (access(namebuff, F_OK) < 0)

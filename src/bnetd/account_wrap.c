@@ -1243,7 +1243,7 @@ extern unsigned int account_get_normal_class(t_account * account, t_clienttag cl
 }
 
 
-extern int account_set_normal_class(t_account * account, t_clienttag clienttag, unsigned int class)
+extern int account_set_normal_class(t_account * account, t_clienttag clienttag, unsigned int chclass)
 {
     char key[256];
     char clienttag_str[5];
@@ -1254,7 +1254,7 @@ extern int account_set_normal_class(t_account * account, t_clienttag clienttag, 
 	return -1;
     }
     sprintf(key,"Record\\%s\\0\\class",tag_uint_to_str(clienttag_str,clienttag));
-    return account_set_numattr(account,key,class);
+    return account_set_numattr(account,key,chclass);
 }
 
 
@@ -1580,7 +1580,7 @@ extern int account_add_closed_character(t_account * account, t_clienttag clientt
     account_set_strattr(account, key, chars_in_realm);
 
     sprintf(key,"BNET\\Characters\\%s\\%s\\%s\\0",tag_uint_to_str(clienttag_str,clienttag),ch->realmname,ch->name);
-    str_to_hex(hex_buffer, ch->data, ch->datalen);
+    str_to_hex(hex_buffer, (char*)ch->data, ch->datalen);
     account_set_strattr(account,key,hex_buffer);
 
     /*
@@ -1719,7 +1719,7 @@ extern int account_remove_friend( t_account * account, int friendnum )
     return 0;
 }
 
-extern int account_remove_friend2( t_account * account, const char * friend)
+extern int account_remove_friend2( t_account * account, const char * frienduid)
 {
     t_list *flist;
     t_friend *fr;
@@ -1731,7 +1731,7 @@ extern int account_remove_friend2( t_account * account, const char * friend)
 	return -1;
     }
 
-    if (friend == NULL) {
+    if (frienduid == NULL) {
 	eventlog(eventlog_level_error, __FUNCTION__, "got NULL friend username");
 	return -1;
     }
@@ -1739,7 +1739,7 @@ extern int account_remove_friend2( t_account * account, const char * friend)
     if ((flist = account_get_friends(account)) == NULL)
 	return -1;
 
-    if ((fr = friendlist_find_username(flist, friend)) == NULL) return -2;
+    if ((fr = friendlist_find_username(flist, frienduid)) == NULL) return -2;
 
     n = account_get_friendcount(account);
     uid = account_get_uid(friend_get_account(fr));
@@ -2157,7 +2157,7 @@ extern int account_get_highestladderlevel(t_account * account,t_clienttag client
 	{
 		LIST_TRAVERSE(account_get_teams(account),curr)
 		{
-			if (!(team = elem_get_data(curr)))
+			if (!(team = (t_team*)elem_get_data(curr)))
 			{
 				eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 				continue;

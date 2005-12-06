@@ -69,7 +69,7 @@ static int read_list(char const * progname, t_bnifile * bnifile, char const * na
 	bnifile->unknown2 = 0x00000001;
 	bnifile->numicons = 0; 
 	bnifile->dataoffset = 16; /* size of header */
-	bnifile->icons = malloc(1); /* some realloc()s are broken */
+	bnifile->icons = (struct bni_iconlist_struct*)malloc(1); /* some realloc()s are broken */
 	while (fgets(line,sizeof(line),f)) {
 		char cmd[BUFSIZE];
 		sscanf(line,"%s",cmd);
@@ -89,7 +89,7 @@ static int read_list(char const * progname, t_bnifile * bnifile, char const * na
 				sscanf(line,"icon !%c%c%c%c %u %u %08x",&tg[0],&tg[1],&tg[2],&tg[3],&x,&y,&unknown);
 				tag = tg[3] + (tg[2] << 8) + (tg[1] << 16) + (tg[0] << 24);
 				fprintf(stderr,"Icon[%d]: id=0x%x x=%u y=%u unknown=0x%x tag=\"%c%c%c%c\"\n",bnifile->numicons,0,x,y,unknown,((tag >> 24) & 0xff),((tag >> 16) & 0xff),((tag >> 8) & 0xff),((tag >> 0) & 0xff));
-				bnifile->icons = realloc(bnifile->icons,((bnifile->numicons+1)*sizeof(t_bniicon)));
+				bnifile->icons = (struct bni_iconlist_struct*)realloc(bnifile->icons,((bnifile->numicons+1)*sizeof(t_bniicon)));
 				bnifile->icons->icon[bnifile->numicons].id = 0;
 				bnifile->icons->icon[bnifile->numicons].x = x;
 				bnifile->icons->icon[bnifile->numicons].y = y;
@@ -102,7 +102,7 @@ static int read_list(char const * progname, t_bnifile * bnifile, char const * na
 				unsigned int id,x,y,unknown;
 				sscanf(line,"icon #%08x %u %u %08x",&id,&x,&y,&unknown);
 				fprintf(stderr,"Icon[%d]: id=0x%x x=%u y=%u unknown=0x%x tag=0x00000000\n",bnifile->numicons,id,x,y,unknown);
-				bnifile->icons = realloc(bnifile->icons,((bnifile->numicons+1)*sizeof(t_bniicon)));
+				bnifile->icons = (struct bni_iconlist_struct*)realloc(bnifile->icons,((bnifile->numicons+1)*sizeof(t_bniicon)));
 				bnifile->icons->icon[bnifile->numicons].id=id;
 				bnifile->icons->icon[bnifile->numicons].x = x;
 				bnifile->icons->icon[bnifile->numicons].y = y;
@@ -128,10 +128,10 @@ static char * geticonfilename(t_bnifile *bnifile, char const * indir, int i) {
 
 	if (bnifile->icons->icon[i].id == 0) {
 		unsigned int tag = bnifile->icons->icon[i].tag;
-		name = malloc(strlen(indir)+10);
+		name = (char*)malloc(strlen(indir)+10);
 		sprintf(name,"%s/%c%c%c%c.tga",indir,((tag >> 24) & 0xff),((tag >> 16) & 0xff),((tag >> 8) & 0xff),((tag >> 0) & 0xff));
 	} else {
-		name = malloc(strlen(indir)+16);
+		name = (char*)malloc(strlen(indir)+16);
 		sprintf(name,"%s/%08x.tga",indir,bnifile->icons->icon[i].id);
 	}
 	return name;
@@ -262,7 +262,7 @@ extern int main(int argc, char * argv[])
 	t_bnifile    bni;
 	char *       listfilename;
 	
-	listfilename = malloc(strlen(indir)+14);
+	listfilename = (char*)malloc(strlen(indir)+14);
 	sprintf(listfilename,"%s/bniindex.lst",indir);
 	fprintf(stderr,"Info: Reading index from file \"%s\"...\n",listfilename);
 	if (read_list(argv[0],&bni,listfilename)<0)
@@ -278,7 +278,7 @@ extern int main(int argc, char * argv[])
 		img->height += bni.icons->icon[i].y;
 	}
 	fprintf(stderr,"Info: Creating TGA with %ux%ux%ubpp.\n",img->width,img->height,img->bpp);
-	img->data = malloc(img->width*img->height*getpixelsize(img));
+	img->data = (t_uint8*)malloc(img->width*img->height*getpixelsize(img));
 	yline = 0;
 	for (i = 0; i < bni.numicons; i++) {
 		t_tgaimg *icon;

@@ -62,13 +62,13 @@ extern int strstart(char const * full, char const * part)
 {
     size_t strlen_part;
     int compare_result;
-    
+
     if (!full || !part)
 	return 1;
-    
+
     strlen_part = strlen(part);
     compare_result = strncasecmp(full,part,strlen_part);
-    
+
     /* If there is more than the command, make sure it is separated */
     if (compare_result!=0)
 	    return compare_result;
@@ -87,7 +87,7 @@ extern char * file_get_line(FILE * fp)
     static unsigned int	len = 0;
     unsigned int 	pos = 0;
     int          	prev_char,curr_char;
-    
+
     // use file_get_line with NULL argument to clear the buffer
     if (!(fp))
     {
@@ -97,13 +97,13 @@ extern char * file_get_line(FILE * fp)
 	line = NULL;
 	return NULL;
     }
-    
+
     if (!(line))
     {
-        line = xmalloc(DEF_LEN);
+        line = (char*)xmalloc(DEF_LEN);
 	len = DEF_LEN;
     }
-    
+
     prev_char = '\0';
     while ((curr_char = fgetc(fp))!=EOF)
     {
@@ -118,22 +118,22 @@ extern char * file_get_line(FILE * fp)
 	    continue;
 	}
 	prev_char = curr_char;
-	
+
 	line[pos++] = (char)curr_char;
 	if ((pos+1)>=len)
 	{
 	    len += INC_LEN;
-	    line = xrealloc(line,len);
+	    line = (char*)xrealloc(line,len);
 	}
     }
-    
+
     if (curr_char==EOF && pos<1) /* not even an empty line */
     {
 	return NULL;
     }
 
     line[pos] = '\0';
-    
+
     return line;
 }
 
@@ -143,10 +143,10 @@ extern char * strreverse(char * str)
     unsigned int len;
     char         temp;
     char *start, *end;
-    
+
     if (!str)
 	return NULL;
-    
+
     len = strlen(str);
 
     for (start=str,end=str+len-1;start<end;start++,end--)
@@ -155,7 +155,7 @@ extern char * strreverse(char * str)
 	    *end   = *start;
 	    *start = temp;
     }
-    
+
     return str;
 }
 
@@ -165,13 +165,13 @@ extern int str_to_uint(char const * str, unsigned int * num)
     unsigned int val;
     unsigned int pval;
     char * pos;
-    
+
     if (!str || !num)
         return -1;
     for (pos=(char *)str; *pos==' ' || *pos=='\t'; pos++);
     if (*pos=='+')
         pos++;
-    
+
     val = 0;
     for (; *pos!='\0'; pos++)
     {
@@ -179,17 +179,17 @@ extern int str_to_uint(char const * str, unsigned int * num)
         val *= 10;
 	if (val/10!=pval) /* check for overflow */
 	    return -1;
-	
+
 	pval = val;
 	if (isdigit(*pos))
 		val += *pos - '0';
 	else
 		return -1;
-	
+
 	if (val<pval) /* check for overflow */
 	    return -1;
     }
-    
+
     *num = val;
     return 0;
 }
@@ -200,13 +200,13 @@ extern int str_to_ushort(char const * str, unsigned short * num)
     unsigned short val;
     unsigned short pval;
     char * pos;
-    
+
     if (!str || !num)
         return -1;
     for (pos=(char *)str; *pos==' ' || *pos=='\t'; pos++);
     if (*pos=='+')
         pos++;
-    
+
     val = 0;
     for (; *pos!='\0'; pos++)
     {
@@ -214,7 +214,7 @@ extern int str_to_ushort(char const * str, unsigned short * num)
         val *= 10;
 	if (val/10!=pval) /* check for overflow */
 	    return -1;
-	
+
 	pval = val;
 
 	if (isdigit(*pos))
@@ -225,7 +225,7 @@ extern int str_to_ushort(char const * str, unsigned short * num)
 	if (val<pval) /* check for overflow */
 	    return -1;
     }
-    
+
     *num = val;
     return 0;
 }
@@ -237,12 +237,12 @@ extern int str_to_ushort(char const * str, unsigned short * num)
 int str_print_term(FILE * fp, char const * str, unsigned int len, int allow_nl)
 {
     unsigned int i;
-    
+
     if (!fp)
 	return -1;
     if (!str)
 	return -1;
-    
+
     if (len==0)
 	len = strlen(str);
     for (i=0; i<len; i++)
@@ -251,7 +251,7 @@ int str_print_term(FILE * fp, char const * str, unsigned int len, int allow_nl)
 	    fprintf(fp,"^%c",str[i]+64);
 	else
 	    fputc((int)str[i],fp);
-    
+
     return 0;
 }
 
@@ -260,19 +260,19 @@ extern int str_get_bool(char const * str)
 {
     if (!str)
 	return -1;
-    
+
     if (strcasecmp(str,"true")==0 ||
 	strcasecmp(str,"yes")==0 ||
 	strcasecmp(str,"on")==0 ||
 	strcmp(str,"1")==0)
 	return 1;
-    
+
     if (strcasecmp(str,"false")==0 ||
 	strcasecmp(str,"no")==0 ||
 	strcasecmp(str,"off")==0 ||
 	strcmp(str,"0")==0)
 	return 0;
-    
+
     return -1;
 }
 
@@ -284,12 +284,12 @@ extern char const * seconds_to_timestr(unsigned int totsecs)
     int         hours;
     int         minutes;
     int         seconds;
-    
+
     days    = totsecs/(24*60*60);
     hours   = totsecs/(60*60) - days*24;
     minutes = totsecs/60 - days*24*60 - hours*60;
     seconds = totsecs - days*24*60*60 - hours*60*60 - minutes*60;
-    
+
     if (days>0)
 	sprintf(temp,"%d day%s %d hour%s %d minute%s %d second%s",
                 days,days==1 ? "" : "s",
@@ -308,7 +308,7 @@ extern char const * seconds_to_timestr(unsigned int totsecs)
     else
 	sprintf(temp,"%d second%s.",
                 seconds,seconds==1 ? "" : "s");
-    
+
     return temp;
 }
 
@@ -317,12 +317,12 @@ extern int clockstr_to_seconds(char const * clockstr, unsigned int * totsecs)
 {
     unsigned int i,j;
     unsigned int temp;
-    
+
     if (!clockstr)
 	return -1;
     if (!totsecs)
 	return -1;
-    
+
     for (i=j=temp=0; j<strlen(clockstr); j++)
     {
 	switch (clockstr[j])
@@ -352,7 +352,7 @@ extern int clockstr_to_seconds(char const * clockstr, unsigned int * totsecs)
 	temp *= 60;
 	temp += strtoul(&clockstr[i],NULL,10);
     }
-    
+
     *totsecs = temp;
     return 0;
 }
@@ -363,10 +363,10 @@ extern char * escape_fs_chars(char const * in, unsigned int len)
     char *       out;
     unsigned int inpos;
     unsigned int outpos;
-    
+
     if (!in)
 	return NULL;
-    out = xmalloc(len*3+1); /* if all turn into %XX */
+    out = (char*)xmalloc(len*3+1); /* if all turn into %XX */
 
     for (inpos=0,outpos=0; inpos<len; inpos++)
     {
@@ -383,7 +383,7 @@ extern char * escape_fs_chars(char const * in, unsigned int len)
     }
 /*  if outpos >= len*3+1 then the buffer was overflowed */
     out[outpos] = '\0';
-    
+
     return out;
 }
 
@@ -393,10 +393,10 @@ extern char * escape_chars(char const * in, unsigned int len)
     char *       out;
     unsigned int inpos;
     unsigned int outpos;
-    
+
     if (!in)
 	return NULL;
-    out = xmalloc(len*4+1); /* if all turn into \xxx */
+    out = (char*)xmalloc(len*4+1); /* if all turn into \xxx */
 
     for (inpos=0,outpos=0; inpos<len; inpos++)
     {
@@ -457,7 +457,7 @@ extern char * escape_chars(char const * in, unsigned int len)
     }
 /*  if outpos >= len*4+1 then the buffer was overflowed */
     out[outpos] = '\0';
-    
+
     return out;
 }
 
@@ -468,12 +468,12 @@ extern char * unescape_chars(char const * in)
     unsigned int inpos;
     unsigned int outpos;
     unsigned int inlen;
-    
+
     if (!in)
 	return NULL;
 
     inlen = strlen(in);
-    out = xmalloc(inlen+1);
+    out = (char*)xmalloc(inlen+1);
 
     for (inpos=0,outpos=0; inpos<inlen; inpos++)
     {
@@ -514,7 +514,7 @@ extern char * unescape_chars(char const * in)
 		char         temp[4];
 		unsigned int i;
 		unsigned int num;
-		
+
 		for (i=0; i<3; i++)
 		{
 		    if (in[inpos]!='0' &&
@@ -530,7 +530,7 @@ extern char * unescape_chars(char const * in)
 		}
 		temp[i] = '\0';
 		inpos--;
-		
+
 		num = strtoul(temp,NULL,8);
 		if (i<3 || num<1 || num>255) /* bad escape (including \000), leave it as-is */
 		{
@@ -544,7 +544,7 @@ extern char * unescape_chars(char const * in)
 	}
     }
     out[outpos] = '\0';
-    
+
     return out;
 }
 
@@ -574,11 +574,11 @@ extern int hex_to_str(char const * source, char * data, int datalen)
     char byte;
     char c;
     int  i;
-  
+
     for (i = 0; i < datalen; i++)
     {
 	byte  = 0;
-    
+
 	/* fprintf(stderr, "hex_to_str %d | '%02x'", i, byte); */
 
 	c = source [i*3 + 0];
@@ -595,9 +595,9 @@ extern int hex_to_str(char const * source, char * data, int datalen)
 
 	data[i] = byte;
     }
-    
+
     /* fprintf(stderr, "finished, returning %d from '%s'\n", i, source);  */
-    
+
     return i;
 }
 
@@ -609,18 +609,6 @@ extern char * buildpath(char const *root, const char *suffix)
 
     strcpy(result,root); strcat(result,"/"); strcat(result,suffix);
     return result;
-}
-
-extern char * str_skip_space(char *str)
-{
-    for(;*str == ' ' || *str == '\t';str++);
-    return str;
-}
-
-extern char * str_skip_word(char *str)
-{
-    for(;*str != ' ' && *str != '\t' && *str;str++);
-    return str;
 }
 
 /* convert a time string to time_t

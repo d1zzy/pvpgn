@@ -77,7 +77,7 @@ typedef enum
 typedef struct
 {
     unsigned int   ref;   /* reference count */
-    t_packet_class class;
+    t_packet_class pclass;
     unsigned int   flags; /* user-defined flags (used to mark UDP in bnproxy) */
     unsigned int   len;   /* raw packets have no header, so we use this */
     
@@ -365,13 +365,13 @@ typedef struct
 
 #include "common/lstr.h"
 
-extern t_packet * packet_create(t_packet_class class) ;
+extern t_packet * packet_create(t_packet_class pclass) ;
 extern void packet_destroy(t_packet const * packet);
 extern t_packet * packet_add_ref(t_packet * packet);
 extern void packet_del_ref(t_packet * packet);
 extern t_packet_class packet_get_class(t_packet const * packet);
 extern char const * packet_get_class_str(t_packet const * packet);
-extern int packet_set_class(t_packet * packet, t_packet_class class);
+extern int packet_set_class(t_packet * packet, t_packet_class pclass);
 extern unsigned int packet_get_type(t_packet const * packet);
 extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir dir);
 extern int packet_set_type(t_packet * packet, unsigned int type);

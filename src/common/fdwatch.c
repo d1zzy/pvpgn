@@ -72,7 +72,7 @@ extern int fdwatch_init(int maxcons)
     }
     fdw_maxcons = maxcons;
 
-    fdw_fds = xmalloc(sizeof(t_fdwatch_fd) * fdw_maxcons);
+    fdw_fds = (t_fdwatch_fd*)xmalloc(sizeof(t_fdwatch_fd) * fdw_maxcons);
     memset(fdw_fds, 0, sizeof(t_fdwatch_fd) * fdw_maxcons);
     /* add all slots to the freelist */
     for(i = 0; i < fdw_maxcons; i++)
@@ -115,7 +115,7 @@ extern int fdwatch_close(void)
     return 0;
 }
 
-extern int fdwatch_add_fd(int fd, t_fdwatch_type rw, fdwatch_handler h, void *data)
+extern int fdwatch_add_fd(int fd, unsigned rw, fdwatch_handler h, void *data)
 {
     t_fdwatch_fd *cfd;
 
@@ -137,7 +137,7 @@ extern int fdwatch_add_fd(int fd, t_fdwatch_type rw, fdwatch_handler h, void *da
     return fdw_idx(cfd);
 }
 
-extern int fdwatch_update_fd(int idx, t_fdwatch_type rw)
+extern int fdwatch_update_fd(int idx, unsigned rw)
 {
     if (idx<0 || idx>=fdw_maxcons) {
 	eventlog(eventlog_level_error,__FUNCTION__,"out of bounds idx [%d] (max: %d)",idx, fdw_maxcons);

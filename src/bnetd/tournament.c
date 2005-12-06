@@ -77,7 +77,7 @@ static int gamelist_destroy(void)
     if (tournament_head) {
 	LIST_TRAVERSE(tournament_head,curr)
 	{
-	    if (!(user = elem_get_data(curr))) {
+	    if (!(user = (t_tournament_user*)elem_get_data(curr))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"tournament list contains NULL item");
 		continue;
 	    }
@@ -122,7 +122,7 @@ extern int tournament_signup_user(t_account * account)
 	return 0;
     }
     
-    user = xmalloc(sizeof(t_tournament_user));
+    user = (t_tournament_user*)xmalloc(sizeof(t_tournament_user));
     user->name		= xstrdup(account_get_name(account));
     user->wins		= 0;
     user->losses	= 0;
@@ -144,7 +144,7 @@ static t_tournament_user * tournament_get_user(t_account * account)
     if (tournament_head)
 	LIST_TRAVERSE(tournament_head,curr)
 	{
-	    user = elem_get_data(curr);
+	    user = (t_tournament_user*)elem_get_data(curr);
 	    if (strcmp(user->name, account_get_name(account)) == 0)
 		return user;
 	}
@@ -251,7 +251,7 @@ extern int tournament_get_game_in_progress(void)
     if (tournament_head)
 	LIST_TRAVERSE_CONST(tournament_head,curr)
 	{
-	    user = elem_get_data(curr);
+	    user = (t_tournament_user*)elem_get_data(curr);
 	    if (user->in_game == 1)
 		return 1;
 	}
@@ -313,11 +313,11 @@ extern int tournament_init(char const * filename)
     char *sponsor = NULL;
     char *have_sponsor = NULL;
     char *have_icon = NULL;
-    struct tm * timestamp = xmalloc(sizeof(struct tm));
+    struct tm * timestamp = (struct tm*)xmalloc(sizeof(struct tm));
     
     sprintf(format,"%%02u/%%02u/%%04u %%02u:%%02u:%%02u");
 
-    tournament_info = xmalloc(sizeof(t_tournament_info));
+    tournament_info = (t_tournament_info*)xmalloc(sizeof(t_tournament_info));
     tournament_info->start_preliminary	= 0;
     tournament_info->end_signup		= 0;
     tournament_info->end_preliminary	= 0;
@@ -651,7 +651,7 @@ extern int tournament_init(char const * filename)
 	        eventlog(eventlog_level_error,__FUNCTION__,"bad option \"%s\" in \"%s\"",variable,filename);
 	    
 	    if (have_sponsor && have_icon) {
-	        sponsor = xmalloc(strlen(have_sponsor)+6);
+	        sponsor = (char*)xmalloc(strlen(have_sponsor)+6);
 		
 		if (strlen(have_icon) == 4)
 		    sprintf(sponsor, "%c%c%c%c,%s",have_icon[3],have_icon[2],have_icon[1],have_icon[0],have_sponsor);

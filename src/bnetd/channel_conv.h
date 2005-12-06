@@ -28,7 +28,7 @@
 #include "channel.h"
 #undef JUST_NEED_TYPES
 
-extern unsigned int cflags_to_bncflags(t_channel_flags flags);
+extern unsigned int cflags_to_bncflags(unsigned flags);
 
 #endif
 #endif

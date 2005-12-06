@@ -252,7 +252,7 @@ extern int main(int argc, char * argv[])
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
 	return STATUS_FAILURE;
     }
-    bn_byte_set(&packet->u.client_initconn.class,CLIENT_INITCONN_CLASS_BOT);
+    bn_byte_set(&packet->u.client_initconn.cclass,CLIENT_INITCONN_CLASS_BOT);
     client_blocksend_packet(sd,packet);
     packet_del_ref(packet);
     
@@ -311,7 +311,7 @@ extern int main(int argc, char * argv[])
 		
 		if (currsize>0)
 		{
-		    char * str=packet_get_raw_data(rpacket,0);
+		    char * str=(char*)packet_get_raw_data(rpacket,0);
 		    
 		    str[currsize] = '\0';
 		    printf("%s",str);

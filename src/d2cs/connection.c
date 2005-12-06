@@ -158,7 +158,7 @@ extern int d2cs_connlist_destroy(void)
                 connlist_dead = NULL;
         }
 
-	BEGIN_HASHTABLE_TRAVERSE_DATA(connlist_head, c)
+	BEGIN_HASHTABLE_TRAVERSE_DATA(connlist_head, c, t_connection)
 	{
 		d2cs_conn_destroy(c,&curr);
 	}
@@ -183,7 +183,7 @@ extern int d2cs_connlist_reap(void)
 	t_connection 	* c;
 	
 	if (!connlist_dead) return 0;
-	BEGIN_LIST_TRAVERSE_DATA(connlist_dead, c)
+	BEGIN_LIST_TRAVERSE_DATA(connlist_dead, c, t_connection)
 	{
 		d2cs_conn_destroy(c,&curr_elem_);
 	}
@@ -217,7 +217,7 @@ extern t_connection * d2cs_connlist_find_connection_by_sessionnum(unsigned int s
 	hash=conn_sessionnum_hash(sessionnum);
 	HASHTABLE_TRAVERSE_MATCHING(connlist_head,curr,hash)
 	{
-		if (!(c=entry_get_data(curr))) {
+		if (!(c=(t_connection*)entry_get_data(curr))) {
 			eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection in list");
 		} else if (c->sessionnum==sessionnum) {
 			hashtable_entry_release(curr);
@@ -236,7 +236,7 @@ extern t_connection * d2cs_connlist_find_connection_by_charname(char const * cha
 	hash=conn_charname_hash(charname);
 	HASHTABLE_TRAVERSE_MATCHING(connlist_head,curr,hash)
 	{
-		if (!(c=entry_get_data(curr))) {
+		if (!(c=(t_connection*)entry_get_data(curr))) {
 			eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection in list");
 		} else {
 			if (!c->charname) continue;
@@ -253,13 +253,13 @@ static t_packet * conn_create_packet(t_connection * c)
 {
 	t_packet	* packet;
 
-	switch (c->class) {
+	switch (c->cclass) {
 		CASE(conn_class_init, packet=packet_create(packet_class_init));
 		CASE(conn_class_d2cs, packet=packet_create(packet_class_d2cs));
 		CASE(conn_class_d2gs, packet=packet_create(packet_class_d2gs));
 		CASE(conn_class_bnetd, packet=packet_create(packet_class_d2cs_bnetd));
 		default:
-			eventlog(eventlog_level_error,__FUNCTION__,"got bad connection class %d",c->class);
+			eventlog(eventlog_level_error,__FUNCTION__,"got bad connection class %d",c->cclass);
 			return NULL;
 	}
 	if (!packet) {
@@ -285,12 +285,12 @@ static int conn_handle_connecting(t_connection * c)
 	 * kqueue fds, considering that it also doesnt brake anything else should do
 	 * for the moment 
 	fdwatch_update_fd(c->sock, fdwatch_type_read); */
-	switch (c->class) {
+	switch (c->cclass) {
 		case conn_class_bnetd:
 			retval=handle_bnetd_init(c);
 			break;
 		default:
-			eventlog(eventlog_level_error,__FUNCTION__,"got bad connection class %d",c->class);
+			eventlog(eventlog_level_error,__FUNCTION__,"got bad connection class %d",c->cclass);
 			return -1;
 	}
 	return retval;
@@ -300,13 +300,13 @@ static int conn_handle_packet(t_connection * c, t_packet * packet)
 {
 	int	retval;
 
-	switch (c->class) {
+	switch (c->cclass) {
 		CASE (conn_class_init, retval=d2cs_handle_init_packet(c,packet));
 		CASE (conn_class_d2cs, retval=d2cs_handle_d2cs_packet(c,packet));
 		CASE (conn_class_d2gs, retval=handle_d2gs_packet(c,packet));
 		CASE (conn_class_bnetd, retval=handle_bnetd_packet(c,packet));
 		default:
-			eventlog(eventlog_level_error,__FUNCTION__,"got bad connection class %d (close connection)",c->class);
+			eventlog(eventlog_level_error,__FUNCTION__,"got bad connection class %d (close connection)",c->cclass);
 			retval=-1;
 			break;
 	}
@@ -399,9 +399,9 @@ extern int connlist_check_timeout(void)
 	time_t		now;
 
 	now=time(NULL);
-	BEGIN_HASHTABLE_TRAVERSE_DATA(connlist_head, c)
+	BEGIN_HASHTABLE_TRAVERSE_DATA(connlist_head, c, t_connection)
 	{
-		switch (c->class) {
+		switch (c->cclass) {
 			case conn_class_d2cs:
 				if (prefs_get_idletime() && (now - c->last_active > prefs_get_idletime())) {
 					eventlog(eventlog_level_info,__FUNCTION__,"client %d idled too long time, destroy it",c->sessionnum);
@@ -434,7 +434,7 @@ extern t_connection * d2cs_conn_create(int sock, unsigned int local_addr, unsign
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad socket");
 		return NULL;
 	}
-	c=xmalloc(sizeof(t_connection));
+	c=(t_connection*)xmalloc(sizeof(t_connection));
 	c->charname=NULL;
 	c->account=NULL;
 	c->sock=sock;
@@ -444,7 +444,7 @@ extern t_connection * d2cs_conn_create(int sock, unsigned int local_addr, unsign
 	c->local_port=local_port;
 	c->addr=addr;
 	c->port=port;
-	c->class=conn_class_init;
+	c->cclass=conn_class_init;
 	c->state=conn_state_init;
 	c->sessionnum=sessionnum++;
 	c->outqueue=NULL;
@@ -480,10 +480,10 @@ extern int d2cs_conn_destroy(t_connection * c, t_elem ** curr)
 		return -1;
 	}
 	c->state=conn_state_destroying;
-	if (c->d2gs_id && c->class==conn_class_d2gs) {
+	if (c->d2gs_id && c->cclass==conn_class_d2gs) {
 		d2gs_deactive(d2gslist_find_gs(c->d2gs_id),c);
 	}
-	if (c->class==conn_class_bnetd) {
+	if (c->cclass==conn_class_bnetd) {
 		s2s_destroy(c);
 	}
 	if (c->gamequeue) {
@@ -541,13 +541,13 @@ extern int d2cs_conn_set_state(t_connection * c, t_conn_state state)
 extern t_conn_class d2cs_conn_get_class(t_connection const * c)
 {
 	ASSERT(c,conn_class_none);
-	return c->class;
+	return c->cclass;
 }
 
-extern int d2cs_conn_set_class(t_connection * c, t_conn_class class)
+extern int d2cs_conn_set_class(t_connection * c, t_conn_class cclass)
 {
 	ASSERT(c,-1);
-	c->class=class;
+	c->cclass=cclass;
 	return 0;
 }
 
@@ -781,7 +781,7 @@ extern int conn_set_charinfo(t_connection * c, t_d2charinfo_summary const * char
 		return 0;
 	}
 	if (c->charinfo) xfree((void *)c->charinfo);
-	c->charinfo=xmalloc(sizeof(t_d2charinfo_summary));
+	c->charinfo=(t_d2charinfo_summary*)xmalloc(sizeof(t_d2charinfo_summary));
 	memcpy((void*)c->charinfo,charinfo,sizeof(t_d2charinfo_summary));
 	return 0;
 }

@@ -54,7 +54,7 @@ static struct epoll_event tmpev;
 
 static int fdw_epoll_init(int nfds);
 static int fdw_epoll_close(void);
-static int fdw_epoll_add_fd(int idx, t_fdwatch_type rw);
+static int fdw_epoll_add_fd(int idx, unsigned rw);
 static int fdw_epoll_del_fd(int idx);
 static int fdw_epoll_watch(long timeout_msecs);
 static void fdw_epoll_handle(void);
@@ -90,7 +90,7 @@ static int fdw_epoll_close(void)
     return 0;
 }
 
-static int fdw_epoll_add_fd(int idx, t_fdwatch_type rw)
+static int fdw_epoll_add_fd(int idx, unsigned rw)
 {
     int op;
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d rw: %d", fd, rw);

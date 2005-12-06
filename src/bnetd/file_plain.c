@@ -189,8 +189,8 @@ static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *dat
 	}
 
 	len = strlen(buff)-5+1; /* - ""="" + NUL */
-	esckey = xmalloc(len);
-	escval = xmalloc(len);
+	esckey = (char*)xmalloc(len);
+	escval = (char*)xmalloc(len);
 
 	if (sscanf(buff,"\"%[^\"]\" = \"%[^\"]\"",esckey,escval)!=2) {
 	    if (sscanf(buff,"\"%[^\"]\" = \"\"",esckey)!=1) /* hack for an empty value field */ {

@@ -63,7 +63,7 @@ static int anongame_infos_URL_init(t_anongame_infos * anongame_infos)
 	return -1;
     }
 
-    anongame_infos_URL = xmalloc(sizeof(char*)*anongame_infos_URL_count);
+    anongame_infos_URL = (char**)xmalloc(sizeof(char*)*anongame_infos_URL_count);
 
     for (i=0; i<anongame_infos_URL_count; i++)
         anongame_infos_URL[i] = NULL;
@@ -102,10 +102,10 @@ static t_anongame_infos_DESC *anongame_infos_DESC_init(void)
     char ** descs;
     t_anongame_infos_DESC *anongame_infos_DESC;
 
-    anongame_infos_DESC = xmalloc(sizeof(t_anongame_infos_DESC));
+    anongame_infos_DESC = (t_anongame_infos_DESC*)xmalloc(sizeof(t_anongame_infos_DESC));
 
     anongame_infos_DESC->langID = NULL;
-    descs = xmalloc(sizeof(char *)*anongame_infos_DESC_count);
+    descs = (char**)xmalloc(sizeof(char *)*anongame_infos_DESC_count);
 
     for (i=0; i<anongame_infos_DESC_count; i++)
         descs[i] = NULL;
@@ -198,7 +198,7 @@ static t_anongame_infos_data_lang *anongame_infos_data_lang_init(char *langID)
 {
     t_anongame_infos_data_lang *anongame_infos_data_lang;
 
-    anongame_infos_data_lang = xmalloc(sizeof(t_anongame_infos_data_lang));
+    anongame_infos_data_lang = (t_anongame_infos_data_lang*)xmalloc(sizeof(t_anongame_infos_data_lang));
 
     anongame_infos_data_lang->langID = xstrdup(langID);
 
@@ -254,7 +254,7 @@ static int anongame_infos_data_init(t_anongame_infos * anongame_infos)
 	return -1;
     }
 
-    anongame_infos_data = xmalloc(sizeof(t_anongame_infos_data));
+    anongame_infos_data = (t_anongame_infos_data*)xmalloc(sizeof(t_anongame_infos_data));
 
     anongame_infos_data_lang = list_create();
 
@@ -275,7 +275,7 @@ static int anongame_infos_data_init(t_anongame_infos * anongame_infos)
     anongame_infos->anongame_infos_data_war3 = anongame_infos_data;
     anongame_infos->anongame_infos_data_lang_war3 = anongame_infos_data_lang;
 
-    anongame_infos_data = xmalloc(sizeof(t_anongame_infos_data));
+    anongame_infos_data = (t_anongame_infos_data*)xmalloc(sizeof(t_anongame_infos_data));
 
     anongame_infos_data_lang = list_create();
 
@@ -323,7 +323,7 @@ static int anongame_infos_data_destroy(t_anongame_infos_data * anongame_infos_da
     {
 	LIST_TRAVERSE(anongame_infos_data_lang, curr)
 	{
-	    if (!(entry = elem_get_data(curr)))
+	    if (!(entry = (t_anongame_infos_data_lang*)elem_get_data(curr)))
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 	    else
 	    {
@@ -340,7 +340,7 @@ t_anongame_infos *anongame_infos_init(void)
 {
     t_anongame_infos *anongame_infos;
 
-    anongame_infos = xmalloc(sizeof(t_anongame_infos));
+    anongame_infos = (t_anongame_infos*)xmalloc(sizeof(t_anongame_infos));
 
     if (anongame_infos_URL_init(anongame_infos) != 0)
     {
@@ -391,7 +391,7 @@ static int anongame_infos_destroy(t_anongame_infos * anongame_infos)
     {
 	LIST_TRAVERSE(anongame_infos->anongame_infos_DESC_list, curr)
 	{
-	    if (!(entry = elem_get_data(curr)))
+	    if (!(entry = (t_anongame_infos_DESC*)elem_get_data(curr)))
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 	    else
 	    {
@@ -886,7 +886,7 @@ extern char *anongame_infos_data_get_desc(char const *langID, t_clienttag client
 	{
 	    LIST_TRAVERSE(anongame_infos->anongame_infos_data_lang_war3, curr)
 	    {
-		if ((entry = elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
+		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
 		{
 		    (*len) = entry->desc_comp_len;
 		    return entry->desc_comp_data;
@@ -901,7 +901,7 @@ extern char *anongame_infos_data_get_desc(char const *langID, t_clienttag client
 	{
 	    LIST_TRAVERSE(anongame_infos->anongame_infos_data_lang_w3xp, curr)
 	    {
-		if ((entry = elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
+		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
 		{
 		    (*len) = entry->desc_comp_len;
 		    return entry->desc_comp_data;
@@ -923,7 +923,7 @@ extern char *anongame_infos_data_get_ladr(char const *langID, t_clienttag client
 	{
 	    LIST_TRAVERSE(anongame_infos->anongame_infos_data_lang_war3, curr)
 	    {
-		if ((entry = elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
+		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
 		{
 		    (*len) = entry->ladr_comp_len;
 		    return entry->ladr_comp_data;
@@ -938,7 +938,7 @@ extern char *anongame_infos_data_get_ladr(char const *langID, t_clienttag client
 	{
 	    LIST_TRAVERSE(anongame_infos->anongame_infos_data_lang_w3xp, curr)
 	    {
-		if ((entry = elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
+		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
 		{
 		    (*len) = entry->ladr_comp_len;
 		    return entry->ladr_comp_data;
@@ -1844,7 +1844,7 @@ static int anongame_infos_data_load(void)
 	    
 	LIST_TRAVERSE(anongame_infos->anongame_infos_DESC_list, curr)
 	{
-	    anongame_infos_DESC = elem_get_data(curr);
+	    anongame_infos_DESC = (t_anongame_infos_DESC*)elem_get_data(curr);
 	    langID = anongame_infos_DESC->langID;
 	    anongame_infos_data_lang_war3 = anongame_infos_data_lang_init(langID);
 	    anongame_infos_data_lang_w3xp = anongame_infos_data_lang_init(langID);
@@ -1969,12 +1969,12 @@ static int zlib_compress(void const *src, int srclen, char **dest, int *destlen)
     lorigdone = 0;
     *dest = NULL;
 
-    tmpdata = (unsigned char *) xmalloc(srclen + (srclen / 0x10) + 0x200 + 0x8000);
+    tmpdata = (char *) xmalloc(srclen + (srclen / 0x10) + 0x200 + 0x8000);
 
     memset(&zcpr, 0, sizeof(z_stream));
     pvpgn_deflateInit(&zcpr, 9);
-    zcpr.next_in = (void *) src;
-    zcpr.next_out = tmpdata;
+    zcpr.next_in = (Bytef*) src;
+    zcpr.next_out = (Bytef*)tmpdata;
     do
     {
 	all_read_before = zcpr.total_in;
@@ -1989,7 +1989,7 @@ static int zlib_compress(void const *src, int srclen, char **dest, int *destlen)
     (*destlen) = zcpr.total_out;
     if ((*destlen) > 0)
     {
-	(*dest) = xmalloc((*destlen) + 4);
+	(*dest) = (char*)xmalloc((*destlen) + 4);
 	bn_short_set((bn_short *) (*dest), lorigdone);
 	bn_short_set((bn_short *) (*dest + 2), *destlen);
 	memcpy((*dest) + 4, tmpdata, (*destlen));

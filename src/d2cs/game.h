@@ -24,7 +24,7 @@
 
 typedef struct
 {
-	unsigned char		class;
+	unsigned char		chclass;
 	unsigned char		level;
 	char const		* charname;
 } t_game_charinfo;
@@ -84,7 +84,7 @@ extern t_game * d2cs_game_create(char const * gamename, char const * gamepass, c
 				unsigned int gameflag);
 extern int game_destroy(t_game * game, t_elem ** elem);
 extern int game_add_character(t_game * game, char const * charname, 
-				unsigned char class, unsigned char level);
+				unsigned char chclass, unsigned char level);
 extern int game_del_character(t_game * game, char const * charname);
 
 extern t_d2gs * game_get_d2gs(t_game const * game);

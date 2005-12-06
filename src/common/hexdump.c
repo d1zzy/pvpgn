@@ -48,7 +48,7 @@ extern void hexdump(FILE * stream, void const * data, unsigned int len)
 	return;
     }
 
-    for (i = 0, datac = (char*)data ; i < len; i += 16, datac += 16)
+    for (i = 0, datac = (unsigned char*)data ; i < len; i += 16, datac += 16)
     {
 	hexdump_string(datac, (len - i < 16) ? (len - i) : 16, dst, i);
 	fprintf(stream, "%s\n", dst);

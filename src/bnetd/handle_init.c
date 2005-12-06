@@ -58,7 +58,7 @@ extern int handle_init_packet(t_connection * c, t_packet const * const packet)
     switch (packet_get_type(packet))
     {
     case CLIENT_INITCONN:
-	switch (bn_byte_get(packet->u.client_initconn.class))
+	switch (bn_byte_get(packet->u.client_initconn.cclass))
 	{
 	case CLIENT_INITCONN_CLASS_BNET:
 	    eventlog(eventlog_level_info,__FUNCTION__,"[%d] client initiated bnet connection",conn_get_socket(c));
@@ -113,7 +113,7 @@ extern int handle_init_packet(t_connection * c, t_packet const * const packet)
 	    return -1;
 
 	default:
-	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] client requested unknown class 0x%02x (length %d) (closing connection)",conn_get_socket(c),(unsigned int)bn_byte_get(packet->u.client_initconn.class),packet_get_size(packet));
+	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] client requested unknown class 0x%02x (length %d) (closing connection)",conn_get_socket(c),(unsigned int)bn_byte_get(packet->u.client_initconn.cclass),packet_get_size(packet));
 	    return -1;
 	}
 	break;

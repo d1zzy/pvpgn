@@ -115,10 +115,10 @@ static unsigned int dbs_packet_savedata_charinfo(t_d2dbs_connection* conn,char *
 static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn,char * AccountName,char * CharName,char * data,unsigned int bufsize);
 static unsigned int dbs_packet_getdata_charinfo(t_d2dbs_connection* conn,char * AccountName,char * CharName,char * data,unsigned int bufsize);
 static unsigned int dbs_packet_echoreply(t_d2dbs_connection* conn);
-static unsigned int dbs_packet_getdata(t_d2dbs_connection* conn);
-static unsigned int dbs_packet_savedata(t_d2dbs_connection* conn);
-static unsigned int dbs_packet_charlock(t_d2dbs_connection* conn);
-static unsigned int dbs_packet_updateladder(t_d2dbs_connection* conn);
+static int dbs_packet_getdata(t_d2dbs_connection* conn);
+static int dbs_packet_savedata(t_d2dbs_connection* conn);
+static int dbs_packet_charlock(t_d2dbs_connection* conn);
+static int dbs_packet_updateladder(t_d2dbs_connection* conn);
 static int dbs_verify_ipaddr(char const * addrlist,t_d2dbs_connection * c);
 
 static int dbs_packet_fix_charinfo(t_d2dbs_connection * conn,char * AccountName,char * CharName,char * charsave);
@@ -138,8 +138,8 @@ static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn, char 
 	strtolower(CharName);
 
 	//check if checksum is ok
-	checksum_header = bn_int_get(&data[D2CHARSAVE_CHECKSUM_OFFSET]);
-	checksum_calc   = d2charsave_checksum(data,datalen,D2CHARSAVE_CHECKSUM_OFFSET);
+	checksum_header = bn_int_get((bn_basic*)&data[D2CHARSAVE_CHECKSUM_OFFSET]);
+	checksum_calc   = d2charsave_checksum((unsigned char *)data,datalen,D2CHARSAVE_CHECKSUM_OFFSET);
 
 	if (checksum_header != checksum_calc)
 	{
@@ -345,7 +345,7 @@ static unsigned int dbs_packet_getdata_charinfo(t_d2dbs_connection* conn,char * 
 	return filesize;
 }
 
-static unsigned int dbs_packet_savedata(t_d2dbs_connection * conn)
+static int dbs_packet_savedata(t_d2dbs_connection * conn)
 {
 	unsigned short writelen;
 	unsigned short      datatype;
@@ -415,7 +415,7 @@ static unsigned int dbs_packet_savedata(t_d2dbs_connection * conn)
 	}
 	writelen=sizeof(*saveret)+strlen(CharName)+1;
 	if (writelen > kBufferSize-conn->nCharsInWriteBuffer) return 0;
-	writepos=conn->WriteBuf+conn->nCharsInWriteBuffer;
+	writepos=(unsigned char*)(conn->WriteBuf+conn->nCharsInWriteBuffer);
 	saveret=(t_d2dbs_d2gs_save_data_reply *)writepos;
 	bn_short_set(&saveret->h.type, D2DBS_D2GS_SAVE_DATA_REPLY);
 	bn_short_set(&saveret->h.size,writelen);
@@ -423,7 +423,7 @@ static unsigned int dbs_packet_savedata(t_d2dbs_connection * conn)
 	bn_short_set(&saveret->datatype,bn_short_get(savecom->datatype));
 	bn_int_set(&saveret->result,result);
 	writepos+=sizeof(*saveret);
-	strncpy(writepos,CharName,MAX_CHARNAME_LEN);
+	strncpy((char*)writepos,CharName,MAX_CHARNAME_LEN);
 	conn->nCharsInWriteBuffer += writelen;
 	return 1;
 }
@@ -434,7 +434,7 @@ static unsigned int dbs_packet_echoreply(t_d2dbs_connection * conn)
 	return 1;
 }
 
-static unsigned int dbs_packet_getdata(t_d2dbs_connection * conn)
+static int dbs_packet_getdata(t_d2dbs_connection * conn)
 {
 	unsigned short	writelen;
 	unsigned short	datatype;
@@ -487,10 +487,10 @@ static unsigned int dbs_packet_getdata(t_d2dbs_connection * conn)
 	getret=(t_d2dbs_d2gs_get_data_reply *)writepos;
 	datalen=0;
 	if (datatype==D2GS_DATA_CHARSAVE) {
-		if (cl_query_charlock_status(CharName,RealmName,&gsid)!=0) {
+		if (cl_query_charlock_status((unsigned char*)CharName,(unsigned char*)RealmName,&gsid)!=0) {
 			eventlog(eventlog_level_warn,__FUNCTION__,"char %s(*%s)@%s is already locked on gs %u",CharName,AccountName,RealmName,gsid);
 			result=D2DBS_GET_DATA_CHARLOCKED;
-		} else if (cl_lock_char(CharName,RealmName,conn->serverid) != 0) {
+		} else if (cl_lock_char((unsigned char*)CharName,(unsigned char*)RealmName,conn->serverid) != 0) {
 			eventlog(eventlog_level_error,__FUNCTION__,"failed to lock char %s(*%s)@%s for gs %s(%d)",CharName,AccountName,RealmName,conn->serverip,conn->serverid);
 			result=D2DBS_GET_DATA_CHARLOCKED;
 		} else {
@@ -503,7 +503,7 @@ static unsigned int dbs_packet_getdata(t_d2dbs_connection * conn)
 					result=D2DBS_GET_DATA_SUCCESS;
 				} else {
 					result=D2DBS_GET_DATA_FAILED;
-					if (cl_unlock_char(CharName,RealmName,gsid)!=0) {
+					if (cl_unlock_char((unsigned char*)CharName,(unsigned char*)RealmName,gsid)!=0) {
 						eventlog(eventlog_level_error,__FUNCTION__,"failed to unlock char %s(*%s)@%s for gs %s(%d)",CharName,\
 							AccountName,RealmName,conn->serverip,conn->serverid);
 					} else {
@@ -514,7 +514,7 @@ static unsigned int dbs_packet_getdata(t_d2dbs_connection * conn)
 			} else {
 				datalen=0;
 				result=D2DBS_GET_DATA_FAILED;
-				if (cl_unlock_char(CharName,RealmName,gsid)!=0) {
+				if (cl_unlock_char((unsigned char*)CharName,(unsigned char*)RealmName,gsid)!=0) {
 					eventlog(eventlog_level_error,__FUNCTION__,"faled to unlock char %s(*%s)@%s for gs %s(%d)",CharName,\
 						AccountName,RealmName,conn->serverip,conn->serverid);
 				} else {
@@ -563,7 +563,7 @@ static unsigned int dbs_packet_getdata(t_d2dbs_connection * conn)
 	return 1;
 }
 
-static unsigned int dbs_packet_updateladder(t_d2dbs_connection * conn)
+static int dbs_packet_updateladder(t_d2dbs_connection * conn)
 {
 	char CharName[MAX_CHARNAME_LEN];
 	char RealmName[MAX_REALMNAME_LEN];
@@ -598,13 +598,13 @@ static unsigned int dbs_packet_updateladder(t_d2dbs_connection * conn)
 	charladderinfo.experience=bn_int_get(updateladder->charexplow);
 	charladderinfo.level=bn_int_get(updateladder->charlevel);
 	charladderinfo.status=bn_short_get(updateladder->charstatus);
-	charladderinfo.class=bn_short_get(updateladder->charclass);
+	charladderinfo.chclass=bn_short_get(updateladder->charclass);
 	eventlog(eventlog_level_info,__FUNCTION__,"update ladder for %s@%s for gs %s(%d)",CharName,RealmName,conn->serverip,conn->serverid);
 	d2ladder_update(&charladderinfo);
 	return 1;
 }
 
-static unsigned int dbs_packet_charlock(t_d2dbs_connection * conn)
+static int dbs_packet_charlock(t_d2dbs_connection * conn)
 {
 	char CharName[MAX_CHARNAME_LEN];
 	char AccountName[MAX_ACCTNAME_LEN];
@@ -644,13 +644,13 @@ static unsigned int dbs_packet_charlock(t_d2dbs_connection * conn)
 	}
 
 	if (bn_int_get(charlock->lockstatus)) {
-		if (cl_lock_char(CharName,RealmName,conn->serverid)!=0) {
+		if (cl_lock_char((unsigned char*)CharName,(unsigned char*)RealmName,conn->serverid)!=0) {
 			eventlog(eventlog_level_error,__FUNCTION__,"failed to lock character %s(*%s)@%s for gs %s(%d)",CharName,AccountName,RealmName,conn->serverip,conn->serverid);
 		} else {
 			eventlog(eventlog_level_info,__FUNCTION__,"lock character %s(*%s)@%s for gs %s(%d)",CharName,AccountName,RealmName,conn->serverip,conn->serverid);
 		}
 	} else {
-		if (cl_unlock_char(CharName,RealmName,conn->serverid) != 0) {
+		if (cl_unlock_char((unsigned char*)CharName,(unsigned char*)RealmName,conn->serverid) != 0) {
 			eventlog(eventlog_level_error,__FUNCTION__,"failed to unlock character %s(*%s)@%s for gs %s(%d)",CharName,AccountName,RealmName,conn->serverip,conn->serverid);
 		} else {
 			eventlog(eventlog_level_info,__FUNCTION__,"unlock character %s(*%s)@%s for gs %s(%d)",CharName,AccountName,RealmName,conn->serverip,conn->serverid);
@@ -669,7 +669,7 @@ extern int dbs_packet_handle(t_d2dbs_connection* conn)
 {
 	unsigned short		readlen,writelen;
 	t_d2dbs_d2gs_header	* readhead;
-	unsigned short		retval; 
+	int		retval; 
 
 	if (conn->stats==0) {
 		if (conn->nCharsInReadBuffer<(signed)sizeof(t_d2gs_d2dbs_connect)) {
@@ -766,7 +766,7 @@ static int dbs_verify_ipaddr(char const * addrlist,t_d2dbs_connection * c)
 		eventlog(eventlog_level_info,__FUNCTION__,"ip address %s is valid",ipaddr);
 		LIST_TRAVERSE(dbs_server_connection_list,elem)
 		{
-			if (!(tempc=elem_get_data(elem))) continue;
+			if (!(tempc=(t_d2dbs_connection*)elem_get_data(elem))) continue;
 			if (tempc !=c && tempc->ipaddr==c->ipaddr) {
 				eventlog(eventlog_level_info,__FUNCTION__,"destroying previous connection %d",tempc->serverid);
 				dbs_server_shutdown_connection(tempc);
@@ -792,7 +792,7 @@ int dbs_check_timeout(void)
 	timeout=d2dbs_prefs_get_idletime();
 	LIST_TRAVERSE(dbs_server_connection_list,elem)
 	{
-		if (!(tempc=elem_get_data(elem))) continue;
+		if (!(tempc=(t_d2dbs_connection*)elem_get_data(elem))) continue;
 		if (now-tempc->last_active>timeout) {
 			eventlog(eventlog_level_debug,__FUNCTION__,"connection %d timed out",tempc->serverid);
 			dbs_server_shutdown_connection(tempc);
@@ -816,9 +816,9 @@ int dbs_keepalive(void)
 	now=time(NULL);
 	LIST_TRAVERSE(dbs_server_connection_list,elem)
 	{
-		if (!(tempc=elem_get_data(elem))) continue;
+		if (!(tempc=(t_d2dbs_connection*)elem_get_data(elem))) continue;
 		if (writelen > kBufferSize - tempc->nCharsInWriteBuffer) continue;
-		writepos = tempc->WriteBuf + tempc->nCharsInWriteBuffer;
+		writepos = (unsigned char*)(tempc->WriteBuf + tempc->nCharsInWriteBuffer);
 		echoreq  = (t_d2dbs_d2gs_echorequest*)writepos;
 		bn_short_set(&echoreq->h.type, D2DBS_D2GS_ECHOREQUEST);
 		bn_short_set(&echoreq->h.size, writelen);
@@ -849,8 +849,8 @@ int dbs_keepalive(void)
 static void dbs_packet_set_charinfo_level(char * CharName,char * charinfo)
 {
     if (prefs_get_difficulty_hack()) { /* difficulty hack enabled */
-	unsigned int	level = bn_int_get(&charinfo[CHARINFO_SUMMARY_LEVEL_OFFSET]);
-	unsigned int	plevel = bn_byte_get(&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET]);
+	unsigned int	level = bn_int_get((bn_basic*)&charinfo[CHARINFO_SUMMARY_LEVEL_OFFSET]);
+	unsigned int	plevel = bn_byte_get((bn_basic*)&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET]);
 	
 	/* levels 257 thru 355 */
 	if (level != plevel) {
@@ -865,8 +865,8 @@ static int dbs_packet_fix_charinfo(t_d2dbs_connection * conn,char * AccountName,
 {
     if (prefs_get_difficulty_hack()) {
 	unsigned char	charinfo[CHARINFO_SIZE];
-	unsigned int	level = bn_byte_get(&charsave[CHARSAVE_LEVEL_OFFSET]);
-	unsigned short	status = bn_short_get(&charsave[CHARSAVE_STATUS_OFFSET]);
+	unsigned int	level = bn_byte_get((bn_basic*)&charsave[CHARSAVE_LEVEL_OFFSET]);
+	unsigned short	status = bn_short_get((bn_basic*)&charsave[CHARSAVE_STATUS_OFFSET]);
 	unsigned short	pstatus = charstatus_to_portstatus(status);
 	int		i;
 	
@@ -886,7 +886,7 @@ static int dbs_packet_fix_charinfo(t_d2dbs_connection * conn,char * AccountName,
 	
 	eventlog(eventlog_level_info,__FUNCTION__,"level %u > 99 for %s",level,CharName);
 	
-	if(!(dbs_packet_getdata_charinfo(conn,AccountName,CharName,charinfo,CHARINFO_SIZE))) {
+	if(!(dbs_packet_getdata_charinfo(conn,AccountName,CharName,(char*)charinfo,CHARINFO_SIZE))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"unable to get charinfo for %s",CharName);
 	    return 0;
 	}
@@ -907,11 +907,11 @@ static int dbs_packet_fix_charinfo(t_d2dbs_connection * conn,char * AccountName,
 	bn_int_set((bn_int *)&charinfo[CHARINFO_SUMMARY_STATUS_OFFSET],status);
 	
 	for (i=0;i<11;i++) {
-	    bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_GFX_OFFSET+i],bn_byte_get(&charsave[CHARSAVE_GFX_OFFSET+i]));
-	    bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_COLOR_OFFSET+i],bn_byte_get(&charsave[CHARSAVE_GFX_OFFSET+i]));
+	    bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_GFX_OFFSET+i],bn_byte_get((bn_basic*)&charsave[CHARSAVE_GFX_OFFSET+i]));
+	    bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_COLOR_OFFSET+i],bn_byte_get((bn_basic*)&charsave[CHARSAVE_GFX_OFFSET+i]));
 	}
 	
-	if (!(dbs_packet_savedata_charinfo(conn,AccountName,CharName,charinfo,CHARINFO_SIZE))) {
+	if (!(dbs_packet_savedata_charinfo(conn,AccountName,CharName,(char*)charinfo,CHARINFO_SIZE))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"unable to save charinfo for %s",CharName);
 	    return 0;
 	}

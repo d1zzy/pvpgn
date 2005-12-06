@@ -88,7 +88,7 @@ extern int d2cs_gamelist_destroy(void)
 {
 	t_game * game;
 
-	BEGIN_LIST_TRAVERSE_DATA(gamelist_head, game)
+	BEGIN_LIST_TRAVERSE_DATA(gamelist_head, game, t_game)
 	{
 		game_destroy(game,&curr_elem_);
 	}
@@ -107,7 +107,7 @@ extern t_game * d2cs_gamelist_find_game(char const * gamename)
 	t_game * game;
 
 	ASSERT(gamename,NULL);
-	BEGIN_LIST_TRAVERSE_DATA(gamelist_head,game)
+	BEGIN_LIST_TRAVERSE_DATA(gamelist_head,game,t_game)
 	{
 		if (!strcasecmp(game->name,gamename)) return game;
 	}
@@ -119,7 +119,7 @@ extern t_game * gamelist_find_game_by_id(unsigned int id)
 {
 	t_game * game;
 
-	BEGIN_LIST_TRAVERSE_DATA(gamelist_head,game)
+	BEGIN_LIST_TRAVERSE_DATA(gamelist_head,game,t_game)
 	{
 		if (game->id==id) return game;
 	}
@@ -131,7 +131,7 @@ extern t_game * gamelist_find_game_by_d2gs_and_id(unsigned int d2gs_id, unsigned
 {
 	t_game * game;
 
-	BEGIN_LIST_TRAVERSE_DATA(gamelist_head,game)
+	BEGIN_LIST_TRAVERSE_DATA(gamelist_head,game,t_game)
 	{
 		if (!game->created) continue;
 		if (game->d2gs_gameid!=d2gs_gameid) continue;
@@ -147,7 +147,7 @@ extern t_game * gamelist_find_character(char const * charname)
 	t_game	* game;
 
 	ASSERT(charname,NULL);
-	BEGIN_LIST_TRAVERSE_DATA(gamelist_head, game)
+	BEGIN_LIST_TRAVERSE_DATA(gamelist_head, game,t_game)
 	{
 		if (game_find_character(game,charname)) return game;
 	}
@@ -164,7 +164,7 @@ extern void d2cs_gamelist_check_voidgame(void)
 	timeout=prefs_get_max_game_idletime();
 	if (!timeout) return;
 	now=time(NULL);
-	BEGIN_LIST_TRAVERSE_DATA(gamelist_head, game)
+	BEGIN_LIST_TRAVERSE_DATA(gamelist_head, game, t_game)
 	{
 		if (!game->currchar) {
 			if ((now-game->lastaccess_time)>timeout) {
@@ -189,7 +189,7 @@ extern t_game * d2cs_game_create(char const * gamename, char const * gamepass, c
 		eventlog(eventlog_level_error,__FUNCTION__,"game %s already exist",gamename);
 		return NULL;
 	}
-	game=xmalloc(sizeof(t_game));
+	game=(t_game*)xmalloc(sizeof(t_game));
 	game->name=xstrdup(gamename);
 	game->pass=xstrdup(gamepass);
 	game->desc=xstrdup(gamedesc);
@@ -232,7 +232,7 @@ extern int game_destroy(t_game * game, t_elem ** elem)
 	eventlog(eventlog_level_info,__FUNCTION__,"game %s removed from game list (%d left)",game->name,total_game);
 	LIST_TRAVERSE(game->charlist,curr)
 	{
-		if ((charinfo=elem_get_data(curr))) {
+		if ((charinfo=(t_game_charinfo*)elem_get_data(curr))) {
 			if (charinfo->charname) xfree((void *)charinfo->charname);
 			xfree(charinfo);
 		}
@@ -261,7 +261,7 @@ static t_game_charinfo * game_find_character(t_game * game, char const * charnam
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL character list in game %s",game->name);
 		return NULL;
 	}
-	BEGIN_LIST_TRAVERSE_DATA(game->charlist,charinfo)
+	BEGIN_LIST_TRAVERSE_DATA(game->charlist,charinfo,t_game_charinfo)
 	{
 		if (!charinfo->charname) continue;
 		if (!strcmp_charname(charinfo->charname,charname)) return charinfo;
@@ -270,7 +270,7 @@ static t_game_charinfo * game_find_character(t_game * game, char const * charnam
 	return NULL;
 }
 
-extern int game_add_character(t_game * game, char const * charname, unsigned char class,
+extern int game_add_character(t_game * game, char const * charname, unsigned char chclass,
 				unsigned char level)
 {
 	t_game_charinfo	* charinfo;
@@ -280,13 +280,13 @@ extern int game_add_character(t_game * game, char const * charname, unsigned cha
 	charinfo=game_find_character(game,charname);
 	if (charinfo) {
 		eventlog(eventlog_level_info,__FUNCTION__,"updating character %s (game %s) status", charname,game->name);
-		charinfo->class=class;
+		charinfo->chclass=chclass;
 		charinfo->level=level;
 		return 0;
 	}
-	charinfo=xmalloc(sizeof(t_game_charinfo));
+	charinfo=(t_game_charinfo*)xmalloc(sizeof(t_game_charinfo));
 	charinfo->charname=xstrdup(charname);
-	charinfo->class=class;
+	charinfo->chclass=chclass;
 	charinfo->level=level;
 	list_append_data(game->charlist,charinfo);
 	game->currchar++;

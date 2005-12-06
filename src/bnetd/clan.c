@@ -89,7 +89,7 @@ int max_clanid = 0;
 
 static int _cb_load_clans(void *clan)
 {
-    if (clanlist_add_clan(clan) < 0)
+    if (clanlist_add_clan((t_clan*)clan) < 0)
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "failed to add clan to clanlist");
 	return -1;
@@ -126,7 +126,7 @@ extern int clan_send_packet_to_online_members(t_clan * clan, t_packet * packet)
 	t_clienttag	clienttag;
 	t_connection *	conn;
 	
-	if (!(member = elem_get_data(curr)))
+	if (!(member = (t_clanmember*)elem_get_data(curr)))
 	{
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
 		continue;
@@ -182,7 +182,7 @@ extern int clan_send_status_window_on_create(t_clan * clan)
 	    t_clienttag 	clienttag;
 	    t_connection *	conn;
 	    
-	    if (!(member = elem_get_data(curr)))
+	    if (!(member = (t_clanmember*)elem_get_data(curr)))
 	    {
 	    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
 		continue;
@@ -235,7 +235,7 @@ extern int clan_close_status_window_on_disband(t_clan * clan)
 	    t_clienttag 	clienttag;
 	    t_connection *	conn;
 	    
-	    if (!(member = elem_get_data(curr)))
+	    if (!(member = (t_clanmember*)elem_get_data(curr)))
 	    {
 	    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
 		continue;
@@ -363,13 +363,13 @@ extern int clan_send_memberlist(t_connection * c, t_packet const *const packet)
 	           bn_int_get(packet->u.client_w3xp_clanmemberlist_req.count));
 	LIST_TRAVERSE(clan->members, curr)
 	{
-	    if (!(member = elem_get_data(curr)))
+	    if (!(member = (t_clanmember*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "got NULL element in list");
 		continue;
 	    }
 
-	    if (!(memberacc = member->memberacc))
+	    if (!(memberacc = (t_account*)member->memberacc))
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"member has NULL account");
 		continue;
@@ -497,7 +497,7 @@ extern int clan_get_possible_member(t_connection * c, t_packet const *const pack
 
 	LIST_TRAVERSE_CONST(flist, curr)
 	{
-	    if ((fr = elem_get_data(curr)) != NULL)
+	    if ((fr = (t_friend*)elem_get_data(curr)) != NULL)
 	    {
 		t_account *fr_acc = friend_get_account(fr);
 		t_clienttag clienttag;
@@ -553,7 +553,7 @@ extern int clanmember_on_change_status(t_clanmember * member)
 	const char *append_str;
 	packet_set_size(rpacket, sizeof(t_server_w3xp_clanmemberupdate));
 	packet_set_type(rpacket, SERVER_W3XP_CLANMEMBERUPDATE);
-	packet_append_string(rpacket, account_get_name(member->memberacc));
+	packet_append_string(rpacket, account_get_name((t_account*)member->memberacc));
 	tmpstr[0] = member->status;
 	append_str = clanmember_get_online_status(member, &tmpstr[1]);
 	packet_append_data(rpacket, tmpstr, 2);
@@ -612,7 +612,7 @@ extern int clan_unload_members(t_clan * clan)
     {
 	LIST_TRAVERSE(clan->members, curr)
 	{
-	    if (!(member = elem_get_data(curr)))
+	    if (!(member = (t_clanmember*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;
@@ -639,13 +639,13 @@ extern int clan_remove_all_members(t_clan * clan)
     {
 	LIST_TRAVERSE(clan->members, curr)
 	{
-	    if (!(member = elem_get_data(curr)))
+	    if (!(member = (t_clanmember*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;
 	    }
 	    if (member->memberacc != NULL)
-		account_set_clanmember(member->memberacc, NULL);
+		account_set_clanmember((t_account*)member->memberacc, NULL);
 	    list_remove_elem(clan->members, &curr);
 	    xfree((void *) member);
 	}
@@ -742,7 +742,7 @@ extern int clanlist_save(void)
     {
 	LIST_TRAVERSE(clanlist_head, curr)
 	{
-	    if (!(clan = elem_get_data(curr)))
+	    if (!(clan = (t_clan*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;
@@ -765,7 +765,7 @@ extern int clanlist_unload(void)
     {
 	LIST_TRAVERSE(clanlist_head, curr)
 	{
-	    if (!(clan = elem_get_data(curr)))
+	    if (!(clan = (t_clan*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;
@@ -797,7 +797,7 @@ extern t_clan *clanlist_find_clan_by_clanid(int cid)
     {
 	LIST_TRAVERSE(clanlist_head, curr)
 	{
-	    if (!(clan = elem_get_data(curr)))
+	    if (!(clan = (t_clan*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;
@@ -823,7 +823,7 @@ extern t_clan *clanlist_find_clan_by_clantag(int clantag)
     {
 	LIST_TRAVERSE(clanlist_head, curr)
 	{
-	    if (!(clan = elem_get_data(curr)))
+	    if (!(clan = (t_clan*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;
@@ -853,7 +853,7 @@ extern t_clanmember *clan_find_member(t_clan * clan, t_account * memberacc)
     }
     LIST_TRAVERSE(clan->members, curr)
     {
-	if (!(member = elem_get_data(curr)))
+	if (!(member = (t_clanmember*)elem_get_data(curr)))
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "got NULL element in list");
 	    return NULL;
@@ -881,12 +881,12 @@ extern t_clanmember *clan_find_member_by_name(t_clan * clan, char const *membern
     }
     LIST_TRAVERSE(clan->members, curr)
     {
-	if (!(member = elem_get_data(curr)))
+	if (!(member = (t_clanmember*)elem_get_data(curr)))
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "got NULL element in list");
 	    return NULL;
 	}
-	if (strcasecmp(account_get_name(member->memberacc), membername) == 0)
+	if (strcasecmp(account_get_name((t_account*)member->memberacc), membername) == 0)
 	    return member;
     }
 
@@ -909,12 +909,12 @@ extern t_clanmember *clan_find_member_by_uid(t_clan * clan, unsigned int memberu
     }
     LIST_TRAVERSE(clan->members, curr)
     {
-	if (!(member = elem_get_data(curr)))
+	if (!(member = (t_clanmember*)elem_get_data(curr)))
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "got NULL element in list");
 	    return NULL;
 	}
-	if (account_get_uid(member->memberacc) == memberuid)
+	if (account_get_uid((t_account*)member->memberacc) == memberuid)
 	    return member;
     }
 
@@ -954,7 +954,7 @@ extern t_connection *clanmember_get_conn(t_clanmember * member)
 	return NULL;
     }
 
-    if (!(account = member->memberacc))
+    if (!(account = (t_account*)member->memberacc))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"member as NULL account");
 	return NULL;
@@ -1245,7 +1245,7 @@ extern int clan_set_creation_time(t_clan * clan, time_t c_time)
     if (!(clan))
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "got NULL clan");
-	return -1;
+	return 0;
     }
 
     clan->creation_time = c_time;
@@ -1280,7 +1280,7 @@ extern t_clanmember *clan_add_member(t_clan * clan, t_account * memberacc, char 
 	return NULL;
     }
 
-    member = xmalloc(sizeof(t_clanmember));
+    member = (t_clanmember*)xmalloc(sizeof(t_clanmember));
     member->memberacc = memberacc;
     member->status = status;
     member->join_time = now;
@@ -1311,8 +1311,8 @@ extern int clan_remove_member(t_clan * clan, t_clanmember * member)
     }
     if (member->memberacc != NULL)
     {
-	account_set_clanmember(member->memberacc, NULL);
-	storage->remove_clanmember(account_get_uid(member->memberacc));
+	account_set_clanmember((t_account*)member->memberacc, NULL);
+	storage->remove_clanmember(account_get_uid((t_account*)member->memberacc));
     }
     xfree((void *) member);
     clan->modified = 1;
@@ -1324,8 +1324,8 @@ extern t_clan *clan_create(t_account * chieftain_acc, int clantag, const char *c
     t_clan *clan;
     t_clanmember *member;
 
-    clan = xmalloc(sizeof(t_clan));
-    member = xmalloc(sizeof(t_clanmember));
+    clan = (t_clan*)xmalloc(sizeof(t_clan));
+    member = (t_clanmember*)xmalloc(sizeof(t_clanmember));
 
     if (!(clanname))
     {

@@ -307,7 +307,7 @@ static int server_process(int sockfd)
 	    
 	    LIST_TRAVERSE(serverlist_head,curr)
 	    {
-		server = elem_get_data(curr);
+		server = (t_server*)elem_get_data(curr);
 		
 		if (server->updated+(signed)prefs.expire<last)
 		{
@@ -421,7 +421,7 @@ static int server_process(int sockfd)
 		    /* Find this server's slot */
 		    LIST_TRAVERSE(serverlist_head,curr)
 		    {
-			server = elem_get_data(curr);
+			server = (t_server*)elem_get_data(curr);
 			
 			if (!memcmp(&server->address,&cliaddr.sin_addr,sizeof(struct in_addr)))
 			{
@@ -443,7 +443,7 @@ static int server_process(int sockfd)
 		    /* Not found? Make a new slot */
 		    if (!(ntohl(packet.flags)&TF_SHUTDOWN) && !curr)
 		    {
-			server = xmalloc(sizeof(t_server));
+			server = (t_server*)xmalloc(sizeof(t_server));
 			server->address = cliaddr.sin_addr;
 			server->info = packet;
 			server->updated = time(NULL);

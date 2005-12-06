@@ -486,7 +486,7 @@ extern int main(int argc, char * argv[])
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
 	return STATUS_FAILURE;
     }
-    bn_byte_set(&packet->u.client_initconn.class,CLIENT_INITCONN_CLASS_FILE);
+    bn_byte_set(&packet->u.client_initconn.cclass,CLIENT_INITCONN_CLASS_FILE);
     if (hexstrm)
     {
 	fprintf(hexstrm,"%d: send class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
@@ -615,7 +615,7 @@ extern int main(int argc, char * argv[])
 		unsigned int bnr;
 		int          renamed=0;
 		
-		bakfile = xmalloc(strlen(reqfile)+1+2+1); /* assuming we go up to bnr 99 we need reqfile+'.'+'99'+'\0' */
+		bakfile = (char*)xmalloc(strlen(reqfile)+1+2+1); /* assuming we go up to bnr 99 we need reqfile+'.'+'99'+'\0' */
 		for (bnr=0; bnr<100; bnr++)
 		{
 		    sprintf(bakfile,"%s.%d",reqfile,bnr);

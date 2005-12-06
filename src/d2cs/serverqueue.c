@@ -62,7 +62,7 @@ extern int sqlist_destroy(void)
 {
 	t_sq	 * sq;
 
-	BEGIN_LIST_TRAVERSE_DATA_CONST(sqlist_head,sq)
+	BEGIN_LIST_TRAVERSE_DATA_CONST(sqlist_head,sq,t_sq)
 	{
 		sq_destroy(sq,(t_elem **)curr_elem_);
 	}
@@ -82,7 +82,7 @@ extern int sqlist_check_timeout(void)
 	time_t	now;
 
 	now=time(NULL);
-	BEGIN_LIST_TRAVERSE_DATA(sqlist_head, sq)
+	BEGIN_LIST_TRAVERSE_DATA(sqlist_head, sq, t_sq)
 	{
 		if (now - sq->ctime > prefs_get_sq_timeout()) {
 			eventlog(eventlog_level_info,__FUNCTION__,"destroying expired server queue %d",sq->seqno);
@@ -97,7 +97,7 @@ extern t_sq * sqlist_find_sq(unsigned int seqno)
 {
 	t_sq	* sq;
 
-	BEGIN_LIST_TRAVERSE_DATA_CONST(sqlist_head,sq)
+	BEGIN_LIST_TRAVERSE_DATA_CONST(sqlist_head,sq,t_sq)
 	{
 		if (sq->seqno==seqno) return sq;
 	}
@@ -109,7 +109,7 @@ extern t_sq * sq_create(unsigned int clientid, t_packet * packet,unsigned int ga
 {
 	t_sq	* sq;
 	
-	sq=xmalloc(sizeof(t_sq));
+	sq=(t_sq*)xmalloc(sizeof(t_sq));
 	sq->seqno=++sqlist_seqno;
 	sq->ctime=time(NULL);
 	sq->clientid=clientid;

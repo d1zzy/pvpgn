@@ -108,13 +108,13 @@ int cl_query_charlock_status(unsigned char *charname,
 
 	if (!charname || !realmname) return -1;
 	if (!clitbl_len || !gsqtbl) return -1;
-	if (strlen(charname)>=MAX_CHARNAME_LEN) return -1;
+	if (strlen((char*)charname)>=MAX_CHARNAME_LEN) return -1;
 
-	hashval = string_hash(charname) % clitbl_len;
+	hashval = string_hash((char*)charname) % clitbl_len;
 	pcl = clitbl[hashval];
 	while(pcl)
 	{
-		if (strcasecmp(pcl->charname, charname) == 0) {
+		if (strcasecmp((char*)pcl->charname, (char*)charname) == 0) {
 			*gsid = pcl->gsid;
 			return 1;	/* found the char, it is locked */
 		}
@@ -132,14 +132,14 @@ int cl_lock_char(unsigned char *charname,
 
 	if (!charname || !realmname) return -1;
 	if (!clitbl_len || !gsqtbl) return -1;
-	if (strlen(charname)>=MAX_CHARNAME_LEN) return -1;
+	if (strlen((char*)charname)>=MAX_CHARNAME_LEN) return -1;
 
-	hashval = string_hash(charname) % clitbl_len;
+	hashval = string_hash((char*)charname) % clitbl_len;
 	pcl = clitbl[hashval];
 	ptmp = NULL;
 	while(pcl)
 	{
-		if (strcasecmp(pcl->charname, charname) == 0)
+		if (strcasecmp((char*)pcl->charname, (char*)charname) == 0)
 			return 0;	/* found the char is already locked */
 		ptmp = pcl;
 		pcl = pcl->next;
@@ -148,8 +148,8 @@ int cl_lock_char(unsigned char *charname,
 	/* not found, locked it */
 	pcl = (t_charlockinfo*)xmalloc(sizeof(t_charlockinfo));
 	memset(pcl, 0, sizeof(t_charlockinfo));
-	strncpy(pcl->charname, charname, MAX_CHARNAME_LEN-1);
-	strncpy(pcl->realmname, realmname, MAX_REALMNAME_LEN-1);
+	strncpy((char*)pcl->charname, (char*)charname, MAX_CHARNAME_LEN-1);
+	strncpy((char*)pcl->realmname, (char*)realmname, MAX_REALMNAME_LEN-1);
 	pcl->gsid = gsid;
 
 	/* add to hash table link list */
@@ -169,14 +169,14 @@ int cl_unlock_char(unsigned char *charname, unsigned char *realmname, unsigned i
 
 	if (!charname || !realmname) return -1;
 	if (!clitbl_len || !gsqtbl) return 0;
-	if (strlen(charname)>=MAX_CHARNAME_LEN) return -1;
+	if (strlen((char*)charname)>=MAX_CHARNAME_LEN) return -1;
 
-	hashval = string_hash(charname) % clitbl_len;
+	hashval = string_hash((char*)charname) % clitbl_len;
 	pcl = clitbl[hashval];
 	ptmp = NULL;
 	while(pcl)
 	{
-		if ((strcasecmp(pcl->charname, charname) == 0) && (pcl->gsid==gsid)) {
+		if ((strcasecmp((char*)pcl->charname, (char*)charname) == 0) && (pcl->gsid==gsid)) {
 			cl_delete_from_gsq_list(pcl);
 			if (ptmp) ptmp->next = pcl->next;
 			else clitbl[hashval] = pcl->next;

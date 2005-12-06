@@ -31,7 +31,7 @@ typedef struct {
 } t_d2dbs_d2gs_header; 
   
 typedef struct { 
-  bn_byte   class; 
+  bn_byte   cclass; 
 } t_d2gs_d2dbs_connect; 
 #define CONNECT_CLASS_D2GS_TO_D2DBS    0x65 
  

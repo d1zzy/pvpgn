@@ -100,7 +100,7 @@ extern int ipbanlist_destroy(void)
     {
 	LIST_TRAVERSE(ipbanlist_head,curr)
 	{
-	    entry = elem_get_data(curr);
+	    entry = (t_ipban_entry*)elem_get_data(curr);
 	    if (!entry) /* should not happen */
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"ipbanlist contains NULL item");
@@ -218,7 +218,7 @@ extern int ipbanlist_save(char const * filename)
     
     LIST_TRAVERSE_CONST(ipbanlist_head,curr)
     {
-	entry = elem_get_data(curr);
+	entry = (t_ipban_entry*)elem_get_data(curr);
 	if (!entry)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"ipbanlist contains NULL element");
@@ -292,7 +292,7 @@ extern int ipbanlist_check(char const * ipaddr)
     counter = 0;
     LIST_TRAVERSE_CONST(ipbanlist_head,curr)
     {
-	entry = elem_get_data(curr);
+	entry = (t_ipban_entry*)elem_get_data(curr);
 	if (!entry)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"ipbanlist contains NULL item");
@@ -457,7 +457,7 @@ extern int ipbanlist_unload_expired(void)
     removed = 0;
     LIST_TRAVERSE(ipbanlist_head,curr)
     {
-	entry = elem_get_data(curr);
+	entry = (t_ipban_entry*)elem_get_data(curr);
 	if (!entry)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"ipbanlist_contains NULL element");
@@ -601,7 +601,7 @@ static int ipban_func_del(t_connection * c, char const * cp)
 	}
 	LIST_TRAVERSE(ipbanlist_head,curr)
 	{
-	    entry = elem_get_data(curr);
+	    entry = (t_ipban_entry*)elem_get_data(curr);
 	    if (!entry)
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"ipbanlist contains NULL item");
@@ -644,7 +644,7 @@ static int ipban_func_del(t_connection * c, char const * cp)
     {
 	if (to_delete_nmbr == ++counter)
 	{
-	    entry = elem_get_data(curr);
+	    entry = (t_ipban_entry*)elem_get_data(curr);
 	    if (!entry)
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"ipbanlist contains NULL item");
@@ -684,7 +684,7 @@ static int ipban_func_list(t_connection * c)
     message_send_text(c,message_type_info,c,"Banned IPs:");
     LIST_TRAVERSE_CONST(ipbanlist_head,curr)
     {
-	entry = elem_get_data(curr);
+	entry = (t_ipban_entry*)elem_get_data(curr);
 	if (!entry)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"ipbanlist contains NULL item");
@@ -806,7 +806,7 @@ static t_ipban_entry * ipban_str_to_ipban_entry(char const * ipstr)
     char *          cp;
     t_ipban_entry * entry;
     
-    entry = xmalloc(sizeof(t_ipban_entry));
+    entry = (t_ipban_entry*)xmalloc(sizeof(t_ipban_entry));
     if (!ipstr)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL IP");

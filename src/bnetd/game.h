@@ -229,7 +229,7 @@ typedef struct game
     time_t            start_time;
     time_t            lastaccess_time;
     int               bad; /* if 1, then the results will be ignored */
-    t_game_difficulty difficulty;
+    unsigned          difficulty;
     char const *      description;
     t_game_flag       flag;
     t_elist	      glist_link;
@@ -277,7 +277,7 @@ extern char const * game_option_get_str(t_game_option option) ;
 extern char const * game_maptype_get_str(t_game_maptype maptype) ;
 extern char const * game_tileset_get_str(t_game_tileset tileset) ;
 extern char const * game_speed_get_str(t_game_speed speed) ;
-extern char const * game_difficulty_get_str(t_game_difficulty difficulty) ;
+extern char const * game_difficulty_get_str(unsigned difficulty) ;
 extern t_game * game_create(char const * name, char const * pass, char const * info, t_game_type type, int startver, t_clienttag clienttag,unsigned long gameversion) ;
 extern unsigned int game_get_id(t_game const * game);
 extern char const * game_get_name(t_game const * game);

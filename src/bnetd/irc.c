@@ -611,7 +611,7 @@ static char ** irc_split_elems(char * list, int separator, int ignoreblank)
     }
     count++; /* count separators -> we have one more element ... */
     /* we also need a terminating element */
-    out = xmalloc((count+1)*sizeof(char *));
+    out = (char**)xmalloc((count+1)*sizeof(char *));
 
     out[0] = list;
     if (count>1) {
@@ -683,7 +683,7 @@ static char * irc_message_preformat(t_irc_message_from const * from, char const 
 	    eventlog(eventlog_level_error,__FUNCTION__,"got malformed from");
 	    return NULL;
 	}
-	myfrom = xmalloc(strlen(from->nick)+1+strlen(from->user)+1+strlen(from->host)+1); /* nick + "!" + user + "@" + host + "\0" */
+	myfrom = (char*)xmalloc(strlen(from->nick)+1+strlen(from->user)+1+strlen(from->host)+1); /* nick + "!" + user + "@" + host + "\0" */
 	sprintf(myfrom,"%s!%s@%s",from->nick,from->user,from->host);
     } else
     	myfrom = xstrdup(server_get_hostname());
@@ -698,7 +698,7 @@ static char * irc_message_preformat(t_irc_message_from const * from, char const 
     	  1+strlen(mytext)+1;
 
 
-    msg = xmalloc(len);
+    msg = (char*)xmalloc(len);
     sprintf(msg,":%s\n%s\n%s\n%s",myfrom,command,mydest,mytext);
     xfree(myfrom);
     return msg;
@@ -725,7 +725,7 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
 	return -1;
     }
 
-    e1 = packet_get_raw_data(packet,0);
+    e1 = (char*)packet_get_raw_data(packet,0);
     e2 = strchr(e1,'\n');
     if (!e2) {
 	eventlog(eventlog_level_warn,__FUNCTION__,"malformed message (e2 missing)");

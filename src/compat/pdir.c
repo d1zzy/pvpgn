@@ -79,7 +79,7 @@ extern t_pdir * p_opendir(const char * path) {
    }
 /*   while(path[strlen(path)]=='/') path[strlen(path)]='\0'; */
    /* win32 can use slash in addition to backslash  */
-   pdir=xmalloc(sizeof(t_pdir));
+   pdir=(t_pdir*)xmalloc(sizeof(t_pdir));
 
 #ifdef WIN32
    if (strlen(path)+1+3+1>_MAX_PATH) {

@@ -63,7 +63,7 @@ static t_entry * hashtable_entry_export(t_internentry * entry, t_hashtable const
 	return NULL;
     }
 
-    temp = xmalloc(sizeof(t_entry));
+    temp = (t_entry*)xmalloc(sizeof(t_entry));
     temp->row = row;
     temp->real = entry;
     temp->hashtable = hashtable;
@@ -74,7 +74,7 @@ static t_entry * hashtable_entry_export(t_internentry * entry, t_hashtable const
 
 extern t_hashtable * hashtable_create(unsigned int num_rows)
 {
-    t_hashtable * new;
+    t_hashtable * newh;
     unsigned int  i;
     
     if (num_rows<1)
@@ -83,14 +83,14 @@ extern t_hashtable * hashtable_create(unsigned int num_rows)
 	return NULL;
     }
 
-    new = xmalloc(sizeof(t_hashtable));
-    new->rows = xmalloc(sizeof(t_internentry *)*num_rows);
-    new->num_rows = num_rows;
-    new->len = 0;
+    newh = (t_hashtable*)xmalloc(sizeof(t_hashtable));
+    newh->rows = (t_internentry**)xmalloc(sizeof(t_internentry *)*num_rows);
+    newh->num_rows = num_rows;
+    newh->len = 0;
     for (i=0; i<num_rows; i++)
-	new->rows[i] = NULL;
+	newh->rows[i] = NULL;
     
-    return new;
+    return newh;
 }
 
 
@@ -255,7 +255,7 @@ extern int hashtable_insert_data(t_hashtable * hashtable, void * data, unsigned 
 	return -1;
     }
 
-    entry = xmalloc(sizeof(t_internentry));
+    entry = (t_internentry*)xmalloc(sizeof(t_internentry));
     entry->data = data;
     
     row = hash%hashtable->num_rows;

@@ -237,8 +237,8 @@ int dbs_server_setup_fdsets(t_psock_fd_set * pReadFDs, t_psock_fd_set * pWriteFD
 	highest_fd=lsocket;
 
 	LIST_TRAVERSE_CONST(dbs_server_connection_list,elem)
-	{		
-		if (!(it=elem_get_data(elem))) continue;
+	{
+		if (!(it=(t_d2dbs_connection*)elem_get_data(elem))) continue;
 		if (it->nCharsInReadBuffer < (kBufferSize-kMaxPacketLength)) {
 			/* There's space in the read buffer, so pay attention to incoming data. */
 			PSOCK_FD_SET(it->sd, pReadFDs);
@@ -295,7 +295,7 @@ int dbs_server_list_add_socket(int sd, unsigned int ipaddr)
 	t_d2dbs_connection	*it;
 	struct in_addr		in;
 
-	it=xmalloc(sizeof(t_d2dbs_connection));
+	it=(t_d2dbs_connection*)xmalloc(sizeof(t_d2dbs_connection));
 	memset(it, 0, sizeof(t_d2dbs_connection));
 	it->sd=sd;
 	it->ipaddr=ipaddr;
@@ -310,7 +310,7 @@ int dbs_server_list_add_socket(int sd, unsigned int ipaddr)
 	it->nCharsInWriteBuffer=0;
 	list_append_data(dbs_server_connection_list,it);
 	in.s_addr = htonl(ipaddr);
-	strncpy(it->serverip, inet_ntoa(in), sizeof(it->serverip)-1);
+	strncpy((char*)it->serverip, inet_ntoa(in), sizeof(it->serverip)-1);
 
 	return 1;
 }
@@ -406,7 +406,7 @@ void dbs_server_loop(int lsocket)
 			bOK = TRUE;
 			pcErrorType = 0;
 			
-			if (!(it=elem_get_data(elem))) continue;
+			if (!(it=(t_d2dbs_connection*)elem_get_data(elem))) continue;
 			if (PSOCK_FD_ISSET(it->sd, &ExceptFDs)) {
 				bOK = FALSE;
 				pcErrorType = "General socket error"; /* FIXME: no no no no no */
@@ -464,7 +464,7 @@ static void dbs_on_exit(void)
 
 	LIST_TRAVERSE(dbs_server_connection_list,elem)
 	{
-		if (!(it=elem_get_data(elem))) continue;
+		if (!(it=(t_d2dbs_connection*)elem_get_data(elem))) continue;
 		dbs_server_shutdown_connection(it);
 		list_remove_elem(dbs_server_connection_list,&elem);
 	}
@@ -527,7 +527,7 @@ static unsigned int get_preset_d2gsid(unsigned int ipaddr)
 		pgsid = pgsid->next;
 	}
 	/* not found, build a new item */
-	pgsid = xmalloc(sizeof(t_preset_d2gsid));
+	pgsid = (t_preset_d2gsid*)xmalloc(sizeof(t_preset_d2gsid));
 	pgsid->ipaddr = ipaddr;
 	pgsid->d2gsid = ++dbs_packet_gs_id;
 	/* add to list */

@@ -628,7 +628,7 @@ static int sd_tcpinput(t_connection * c)
 	    if (currsize<MAX_PACKET_SIZE) /* if we overflow, we can't wait for the end of the line.
 					     handle_*_packet() should take care of it */
 	    {
-		char const * const temp=packet_get_raw_data_const(packet,0);
+		char const * const temp=(char const * const)packet_get_raw_data_const(packet,0);
 
 		if ((temp[currsize-1]=='\003')||(temp[currsize-1]=='\004')) {
 		    /* we have to ignore these special characters, since 
@@ -663,7 +663,7 @@ static int sd_tcpinput(t_connection * c)
 	    if (conn_get_class(c)==conn_class_bot ||
 		conn_get_class(c)==conn_class_telnet) /* NUL terminate the line to make life easier */
 	    {
-		char * const temp=packet_get_raw_data(packet,0);
+		char * const temp=(char*)packet_get_raw_data(packet,0);
 		
 		if (temp[currsize-1]=='\r' || temp[currsize-1]=='\n')
 		    temp[currsize-1] = '\0'; /* have to do it here instead of above so everything
@@ -876,7 +876,7 @@ extern void server_clear_hostname(void)
 
 static int handle_accept(void *data, t_fdwatch_type rw)
 {
-    t_laddr_info *laddr_info = addr_get_data((t_addr *)data).p;
+    t_laddr_info *laddr_info = (t_laddr_info*)addr_get_data((t_addr *)data).p;
 
     return sd_accept((t_addr *)data, laddr_info, laddr_info->ssocket, laddr_info->usocket);
 }
@@ -884,7 +884,7 @@ static int handle_accept(void *data, t_fdwatch_type rw)
 
 static int handle_udp(void *data, t_fdwatch_type rw)
 {
-    t_laddr_info *laddr_info = addr_get_data((t_addr *)data).p;
+    t_laddr_info *laddr_info = (t_laddr_info*)addr_get_data((t_addr *)data).p;
 
     return sd_udpinput((t_addr *)data, laddr_info, laddr_info->ssocket, laddr_info->usocket);
 }
@@ -916,10 +916,10 @@ static int _setup_add_addrs(t_addrlist **pladdrs, const char *str, unsigned int 
     /* Mark all these laddrs for being classic Battle.net service */
     LIST_TRAVERSE_CONST(*pladdrs,acurr)
     {
-	curr_laddr = elem_get_data(acurr);
+	curr_laddr = (t_addr*)elem_get_data(acurr);
 	if (addr_get_data(curr_laddr).p)
 	    continue;
-	laddr_info = xmalloc(sizeof(t_laddr_info));
+	laddr_info = (t_laddr_info*)xmalloc(sizeof(t_laddr_info));
         laddr_info->usocket = -1;
         laddr_info->ssocket = -1;
         laddr_info->type = type;
@@ -972,8 +972,8 @@ static int _setup_listensock(t_addrlist *laddrs)
 
     LIST_TRAVERSE_CONST(laddrs,acurr)
     {
-	curr_laddr = elem_get_data(acurr);
-	if (!(laddr_info = addr_get_data(curr_laddr).p))
+	curr_laddr = (t_addr*)elem_get_data(acurr);
+	if (!(laddr_info = (t_laddr_info*)addr_get_data(curr_laddr).p))
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "NULL address info");
 	    goto err;
@@ -1465,8 +1465,8 @@ static void _shutdown_addrs(t_addrlist *laddrs)
 
     LIST_TRAVERSE_CONST(laddrs,acurr)
     {
-	curr_laddr = elem_get_data(acurr);
-	if ((laddr_info = addr_get_data(curr_laddr).p))
+	curr_laddr = (t_addr*)elem_get_data(acurr);
+	if ((laddr_info = (t_laddr_info*)addr_get_data(curr_laddr).p))
 	{
 	    if (laddr_info->usocket!=-1)
 		psock_close(laddr_info->usocket);

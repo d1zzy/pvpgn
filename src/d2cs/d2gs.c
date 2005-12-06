@@ -105,7 +105,7 @@ extern int d2gslist_reload(char const * gslist)
 
 	if (!d2gslist_head) return -1;
 
-	BEGIN_LIST_TRAVERSE_DATA(d2gslist_head,gs)
+	BEGIN_LIST_TRAVERSE_DATA(d2gslist_head,gs,t_d2gs)
 	{
 		BIT_CLR_FLAG(gs->flag, D2GS_FLAG_VALID);
 	}
@@ -130,7 +130,7 @@ extern int d2gslist_reload(char const * gslist)
 	    addrlist_destroy(gsaddrs);
 	}
 
-	BEGIN_LIST_TRAVERSE_DATA(d2gslist_head,gs)
+	BEGIN_LIST_TRAVERSE_DATA(d2gslist_head,gs,t_d2gs)
 	{
 		if (!BIT_TST_FLAG(gs->flag, D2GS_FLAG_VALID)) {
 			d2gs_destroy(gs,&curr_elem_);
@@ -144,7 +144,7 @@ extern int d2gslist_destroy(void)
 {
 	t_d2gs	* gs;
 
-	BEGIN_LIST_TRAVERSE_DATA_CONST(d2gslist_head,gs)
+	BEGIN_LIST_TRAVERSE_DATA_CONST(d2gslist_head,gs,t_d2gs)
 	{
 		d2gs_destroy(gs,(t_elem **)&curr_elem_);
 	}
@@ -163,7 +163,7 @@ extern t_d2gs * d2gslist_find_gs_by_ip(unsigned int ip)
 {
 	t_d2gs	* gs;
 
-	BEGIN_LIST_TRAVERSE_DATA_CONST(d2gslist_head,gs)
+	BEGIN_LIST_TRAVERSE_DATA_CONST(d2gslist_head,gs,t_d2gs)
 	{
 		if (gs->ip==ip) return gs;
 	}
@@ -175,7 +175,7 @@ extern t_d2gs * d2gslist_find_gs(unsigned int id)
 {
 	t_d2gs	* gs;
 
-	BEGIN_LIST_TRAVERSE_DATA_CONST(d2gslist_head,gs)
+	BEGIN_LIST_TRAVERSE_DATA_CONST(d2gslist_head,gs,t_d2gs)
 	{
 		if (gs->id==id) return gs;
 	}
@@ -197,7 +197,7 @@ extern t_d2gs * d2gs_create(char const * ipaddr)
 		eventlog(eventlog_level_error,__FUNCTION__,"game server %s already in list",ipaddr);
 		return NULL;
 	}
-	gs=xmalloc(sizeof(t_d2gs));
+	gs=(t_d2gs*)xmalloc(sizeof(t_d2gs));
 	gs->ip=ntohl(ip);
 	gs->id=++d2gs_id;
 	gs->active=0;
@@ -236,7 +236,7 @@ extern t_d2gs * d2gslist_get_server_by_id(unsigned int id)
 {
 	t_d2gs	* gs;
 
-	BEGIN_LIST_TRAVERSE_DATA_CONST(d2gslist_head,gs)
+	BEGIN_LIST_TRAVERSE_DATA_CONST(d2gslist_head,gs,t_d2gs)
 	{
 		if (gs->id==id) return gs;
 	}
@@ -252,7 +252,7 @@ extern t_d2gs * d2gslist_choose_server(void)
 	unsigned int		min_percent=100;
 
 	ogs=NULL;
-	BEGIN_LIST_TRAVERSE_DATA_CONST(d2gslist_head,gs)
+	BEGIN_LIST_TRAVERSE_DATA_CONST(d2gslist_head,gs,t_d2gs)
 	{
 		if (!gs->active) continue;
 		if (!gs->connection) continue;
@@ -377,7 +377,7 @@ extern int d2gs_deactive(t_d2gs * gs, t_connection * c)
 	gs->active=0;
 	gs->maxgame=0;
 	eventlog(eventlog_level_info,__FUNCTION__,"destroying all games on game server %d",gs->id);
-	BEGIN_LIST_TRAVERSE_DATA(d2cs_gamelist(),game)
+	BEGIN_LIST_TRAVERSE_DATA(d2cs_gamelist(),game,t_game)
 	{
 		if (game_get_d2gs(game)==gs) game_destroy(game,&curr_elem_);
 	}
@@ -433,7 +433,7 @@ extern int d2gs_keepalive(void)
 	packet_set_type(packet,D2CS_D2GS_ECHOREQ);
         /* FIXME: sequence number not set */
         bn_int_set(&packet->u.d2cs_d2gs.h.seqno,0);       	
-	BEGIN_LIST_TRAVERSE_DATA(d2gslist_head,gs)
+	BEGIN_LIST_TRAVERSE_DATA(d2gslist_head,gs,t_d2gs)
 	{
 		if (gs->active && gs->connection) {
 			conn_push_outqueue(gs->connection,packet);
@@ -460,7 +460,7 @@ extern int d2gs_restart_all_gs(void)
         bn_int_set(&packet->u.d2cs_d2gs_control.cmd, D2CS_D2GS_CONTROL_CMD_RESTART);
         bn_int_set(&packet->u.d2cs_d2gs_control.value, prefs_get_d2gs_restart_delay());
 	
-        BEGIN_LIST_TRAVERSE_DATA(d2gslist_head,gs)
+        BEGIN_LIST_TRAVERSE_DATA(d2gslist_head,gs,t_d2gs)
         {
     		if (gs->connection) {
             	    conn_push_outqueue(gs->connection,packet);

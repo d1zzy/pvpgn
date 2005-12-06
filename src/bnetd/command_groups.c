@@ -101,7 +101,7 @@ extern int command_groups_load(char const * filename)
 	    continue;
 	} 
 	while ((command = strtok(NULL," \t"))) {
-	    entry = xmalloc(sizeof(t_command_groups));
+	    entry = (t_command_groups*)xmalloc(sizeof(t_command_groups));
 	    entry->group = 1 << (group-1);
 	    entry->command = xstrdup(command);
 	    list_append_data(command_groups_head,entry);
@@ -122,7 +122,7 @@ extern int command_groups_unload(void)
     
     if (command_groups_head) {
 	LIST_TRAVERSE(command_groups_head,curr) {
-	    if (!(entry = elem_get_data(curr)))
+	    if (!(entry = (t_command_groups*)elem_get_data(curr)))
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 	    else {
 		xfree(entry->command);
@@ -143,7 +143,7 @@ extern unsigned int command_get_group(char const * command)
 
     if (command_groups_head) {
 	LIST_TRAVERSE(command_groups_head,curr) {
-	    if (!(entry = elem_get_data(curr)))
+	    if (!(entry = (t_command_groups*)elem_get_data(curr)))
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 	    else if (!(strcmp(entry->command,command)))
 		return entry->group;

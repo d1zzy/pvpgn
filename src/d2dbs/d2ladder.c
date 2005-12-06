@@ -108,11 +108,11 @@ extern int d2ladder_update(t_d2ladder_info * pcharladderinfo)
 {
 	t_d2ladder * d2ladder;
 	unsigned short hardcore,expansion,status;
-	unsigned char class;
+	unsigned char chclass;
 	unsigned int ladder_overall_type,ladder_class_type;
 
 	if (!pcharladderinfo->charname[0]) return 0;
-	class=pcharladderinfo->class;
+	chclass=pcharladderinfo->chclass;
 	status=pcharladderinfo->status;
 
 	if (prefs_get_ladder_chars_only() && (!charstatus_get_ladder(status)))
@@ -121,8 +121,8 @@ extern int d2ladder_update(t_d2ladder_info * pcharladderinfo)
 	hardcore=charstatus_get_hardcore(status); 
 	expansion=charstatus_get_expansion(status); 
 	ladder_overall_type=0;
-	if (!expansion && class> D2CHAR_CLASS_MAX ) return -1; 
-	if (expansion && class> D2CHAR_EXP_CLASS_MAX ) return -1; 
+	if (!expansion && chclass> D2CHAR_CLASS_MAX ) return -1; 
+	if (expansion && chclass> D2CHAR_EXP_CLASS_MAX ) return -1; 
 	if (hardcore && expansion) { 
 		ladder_overall_type=D2LADDER_EXP_HC_OVERALL; 
 	} else if (!hardcore && expansion) { 
@@ -133,7 +133,7 @@ extern int d2ladder_update(t_d2ladder_info * pcharladderinfo)
 		ladder_overall_type=D2LADDER_STD_OVERALL; 
 	} 
 
-	ladder_class_type=ladder_overall_type + class+1; 
+	ladder_class_type=ladder_overall_type + chclass+1; 
 
 	d2ladder=d2ladderlist_find_type(ladder_overall_type);
 	if(d2ladder_insert(d2ladder,pcharladderinfo)==1) {
@@ -326,7 +326,7 @@ t_d2ladder * d2ladderlist_find_type(unsigned int type)
 
 	LIST_TRAVERSE_CONST(d2ladder_list,elem)
 	{
-		if (!(d2ladder=elem_get_data(elem))) continue;
+		if (!(d2ladder=(t_d2ladder*)elem_get_data(elem))) continue;
 		if (d2ladder->type==type) return d2ladder;
 	}
 	eventlog(eventlog_level_error,__FUNCTION__,"could not find type %d in d2ladder_list",type);
@@ -337,9 +337,9 @@ extern int d2dbs_d2ladder_init(void)
 {
 	d2ladder_change_count=0;
 	d2ladder_maxtype=0;
-	d2ladder_ladder_file=xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+
+	d2ladder_ladder_file=(char*)xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+
 			  strlen(LADDER_FILE_PREFIX)+1+strlen(CLIENTTAG_DIABLO2DV)+1+10);
-	d2ladder_backup_file=xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+
+	d2ladder_backup_file=(char*)xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+
 			  strlen(LADDER_BACKUP_PREFIX)+1+strlen(CLIENTTAG_DIABLO2DV)+1+10);
 	sprintf(d2ladder_ladder_file,"%s/%s.%s",d2dbs_prefs_get_ladder_dir(),\
 		LADDER_FILE_PREFIX,CLIENTTAG_DIABLO2DV);
@@ -372,7 +372,7 @@ int d2ladderlist_init(void)
 	d2ladder_list=list_create();
 	d2ladder_maxtype=D2LADDER_MAXTYPE;
 	for (i=0;i<d2ladder_maxtype;i++) {
-		d2ladder=xmalloc(sizeof(t_d2ladder));
+		d2ladder=(t_d2ladder*)xmalloc(sizeof(t_d2ladder));
 		d2ladder->type=i;
 		d2ladder->info=NULL;
 		d2ladder->len=0;
@@ -437,7 +437,7 @@ int d2ladder_readladder(void)
 		return -1;
 	}
 
-	lhead=xmalloc(blocksize);
+	lhead=(t_d2ladderfile_ladderindex*)xmalloc(blocksize);
 	readlen=fread(lhead,1,d2ladder_maxtype*sizeof(*lhead),fdladder);
 	if (readlen<=0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,pstrerror(errno));
@@ -466,8 +466,8 @@ int d2ladder_readladder(void)
 			eventlog(eventlog_level_error,__FUNCTION__,"could not find ladder type %d",laddertype);
 			continue;
 		}
-		ldata=xmalloc(number*sizeof(*ldata));
-		info=xmalloc(number * sizeof(*info));
+		ldata=(t_d2ladderfile_ladderinfo*)xmalloc(number*sizeof(*ldata));
+		info=(t_d2ladder_info*)xmalloc(number * sizeof(*info));
 		memset(info,0,number * sizeof(*info));
 		fseek(fdladder,bn_int_get(lhead[laddertype].offset),SEEK_SET);
 		readlen=fread(ldata,1,number*sizeof(*ldata),fdladder);
@@ -484,7 +484,7 @@ int d2ladder_readladder(void)
 			temp.experience=bn_int_get(ldata[i].experience);
 			temp.status=bn_short_get(ldata[i].status);
 			temp.level=bn_byte_get(ldata[i].level);
-			temp.class=bn_byte_get(ldata[i].class);
+			temp.chclass=bn_byte_get(ldata[i].chclass);
 			strncpy(temp.charname,ldata[i].charname,sizeof(info[i].charname));
 			if (d2ladder_update_info_and_pos(d2ladder,&temp,
 				d2ladder_find_char_all(d2ladder,&temp),
@@ -537,7 +537,7 @@ int d2ladderlist_destroy(void)
 	if (!d2ladder_list) return -1;
     	LIST_TRAVERSE(d2ladder_list,elem)
     	{
-		if (!(d2ladder=elem_get_data(elem))) continue;
+		if (!(d2ladder=(t_d2ladder*)elem_get_data(elem))) continue;
 		xfree(d2ladder);
 		list_remove_elem(d2ladder_list,&elem);
     	}
@@ -559,7 +559,7 @@ int d2ladder_empty(void)
 	return 0;
 }
 
-const char * get_prefix(int type, int status, int class)
+const char * get_prefix(int type, int status, int chclass)
 {
   int  difficulty;
   static char prefix [4][4][2][16] =
@@ -579,7 +579,7 @@ const char * get_prefix(int type, int status, int class)
   difficulty = ((status >> 0x08) & 0x0f) / 5;
 
 			           
-  return prefix[difficulty][type][sex[class]];
+  return prefix[difficulty][type][sex[chclass]];
 }
 
 int d2ladder_print_XML(FILE *ladderstrm)
@@ -635,9 +635,9 @@ int d2ladder_print_XML(FILE *ladderstrm)
 	  fprintf(ladderstrm,"\t<char>\n\t\t<rank>%2d</rank>\n\t\t<name>%s</name>\n\t\t<level>%2d</level>\n",
 		             i+1,ldata[i].charname,ldata[i].level);
 	  fprintf(ladderstrm,"\t\t<experience>%u</experience>\n\t\t<class>%s</class>\n",
-		             ldata[i].experience,charclass[ldata[i].class+1]);
+		             ldata[i].experience,charclass[ldata[i].chclass+1]);
 	  fprintf(ladderstrm,"\t\t<prefix>%s</prefix>\n",
-		             get_prefix(overalltype,ldata[i].status,ldata[i].class+1));
+		             get_prefix(overalltype,ldata[i].status,ldata[i].chclass+1));
           if (((ldata[i].status) & (D2CHARINFO_STATUS_FLAG_DEAD | D2CHARINFO_STATUS_FLAG_HARDCORE)) == 
 				   (D2CHARINFO_STATUS_FLAG_DEAD | D2CHARINFO_STATUS_FLAG_HARDCORE))
 	    fprintf(ladderstrm,"\t\t<status>dead</status>\n\t</char>\n");
@@ -699,7 +699,7 @@ extern int d2ladder_saveladder(void)
 	// aaron: add extra output for XML ladder here --->
 	if (d2dbs_prefs_get_XML_output_ladder())
 	{
-	  XMLfilename = xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+strlen(XMLname)+1);
+	  XMLfilename = (char*)xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+strlen(XMLname)+1);
 	  sprintf(XMLfilename,"%s/%s",d2dbs_prefs_get_ladder_dir(),XMLname);
 	  if (!(XMLfile = fopen(XMLfilename,"w")))
 	  {
@@ -723,13 +723,13 @@ extern int d2ladder_saveladder(void)
 		number=bn_int_get(lhead[i].number);
 		if(number<=0) continue;
 		d2ladder=d2ladderlist_find_type(i);
-		ldata=xmalloc(number * sizeof(*ldata));
+		ldata=(t_d2ladderfile_ladderinfo*)xmalloc(number * sizeof(*ldata));
 		memset(ldata,0,number * sizeof(*ldata));
 		for (j=0; j< number; j++) {
 			bn_int_set(&ldata[j].experience,d2ladder->info[j].experience);
 			bn_short_set(&ldata[j].status, d2ladder->info[j].status);
 			bn_byte_set(&ldata[j].level, d2ladder->info[j].level);
-			bn_byte_set(&ldata[j].class, d2ladder->info[j].class);
+			bn_byte_set(&ldata[j].chclass, d2ladder->info[j].chclass);
 			strncpy(ldata[j].charname,d2ladder->info[j].charname,sizeof(ldata[j].charname));
 		}
 		fwrite(ldata,1,number*sizeof(*ldata),fdladder);
@@ -796,7 +796,7 @@ int d2ladder_print(FILE *ladderstrm)
 				ldata[i].experience,
 				ldata[i].status,
 				1,
-				charclass[ldata[i].class+1]);
+				charclass[ldata[i].chclass+1]);
 		}
 		fprintf(ladderstrm,"************************************************************************\n");
 		fflush(ladderstrm);
@@ -848,7 +848,7 @@ int d2ladder_checksum_set(void)
 		fclose(fdladder);
 		return -1;
 	}
-	buffer=xmalloc(filesize);
+	buffer=(unsigned char*)xmalloc(filesize);
 
 	curlen=0;
 	while(curlen<filesize) {
@@ -902,7 +902,7 @@ int d2ladder_checksum_check(void)
 		fclose(fdladder);
 		return -1;
 	}
-	buffer=xmalloc(filesize);
+	buffer=(unsigned char*)xmalloc(filesize);
 	header=(t_d2ladderfile_header *)buffer;
 	curlen=0;
 	while(curlen<filesize) {

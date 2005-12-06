@@ -49,7 +49,7 @@ typedef int (*t_fdw_cb)(t_fdwatch_fd *cfd, void *data);
 typedef struct {
     int (*init)(int nfds);
     int (*close)(void);
-    int (*add_fd)(int idx, t_fdwatch_type rw);
+    int (*add_fd)(int idx, unsigned rw);
     int (*del_fd)(int idx);
     int (*watch)(long timeout_msecs);
     void (*handle)(void);
@@ -65,8 +65,8 @@ extern t_fdwatch_fd *fdw_fds;
 #define fdw_hnd(ptr) ((ptr)->hnd)
 extern int fdwatch_init(int maxcons);
 extern int fdwatch_close(void);
-extern int fdwatch_add_fd(int fd, t_fdwatch_type rw, fdwatch_handler h, void *data);
-extern int fdwatch_update_fd(int idx, t_fdwatch_type rw);
+extern int fdwatch_add_fd(int fd, unsigned rw, fdwatch_handler h, void *data);
+extern int fdwatch_update_fd(int idx, unsigned rw);
 extern int fdwatch_del_fd(int idx);
 extern int fdwatch(long timeout_msecs);
 extern void fdwatch_handle(void);
