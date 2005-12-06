@@ -545,8 +545,8 @@ extern int ladder_calc_info(t_clienttag clienttag, t_ladder_id id, unsigned int 
 	return -1;
     }
 
-    rating = xmalloc(sizeof(unsigned int)*count);
-    sorted = xmalloc(sizeof(unsigned int)*count);
+    rating = (unsigned int*)xmalloc(sizeof(unsigned int)*count);
+    sorted = (unsigned int*)xmalloc(sizeof(unsigned int)*count);
 
     for (curr=0; curr<count; curr++)
         rating[curr] = account_get_ladder_rating(players[curr],clienttag,id);

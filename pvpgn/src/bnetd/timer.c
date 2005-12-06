@@ -47,7 +47,7 @@ extern int timerlist_add_timer(t_connection * owner, time_t when, t_timer_cb cb,
 	return -1;
     }
     
-    timer = xmalloc(sizeof(t_timer));
+    timer = (t_timer*)xmalloc(sizeof(t_timer));
     timer->owner = owner;
     timer->when  = when;
     timer->cb    = cb;

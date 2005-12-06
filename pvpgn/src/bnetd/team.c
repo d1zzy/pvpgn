@@ -80,7 +80,7 @@ int teamlist_add_team(t_team * team);
 
 static int _cb_load_teams(void *team)
 {
-    if (teamlist_add_team(team) < 0)
+    if (teamlist_add_team((t_team*)team) < 0)
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "failed to add team to teamlist");
 	return -1;
@@ -147,7 +147,7 @@ int teamlist_unload(void)
     {
 	LIST_TRAVERSE(teamlist_head, curr)
 	{
-	    if (!(team = elem_get_data(curr)))
+	    if (!(team = (t_team*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;
@@ -174,7 +174,7 @@ int teams_destroy(t_list * teams)
     {
 	LIST_TRAVERSE(teams,curr)
 	{
-	    if (!(team = elem_get_data(curr)))
+	    if (!(team = (t_team*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;
@@ -196,7 +196,7 @@ t_team* create_team(t_account **accounts, t_clienttag clienttag)
     int i;
     unsigned char size;
 
-    team = xmalloc(sizeof(t_team));
+    team = (t_team*)xmalloc(sizeof(t_team));
     memset(team,0,sizeof(t_team));
     size = 0;
 
@@ -246,7 +246,7 @@ t_team * _list_find_team_by_accounts(t_account **accounts, t_clienttag clienttag
     {
 	LIST_TRAVERSE(teamlist,curr)
 	{
-	    if (!(cteam = elem_get_data(curr)))
+	    if (!(cteam = (t_team*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;
@@ -299,7 +299,7 @@ t_team * _list_find_team_by_uids(unsigned int * uids, t_clienttag clienttag, t_l
     {
 	LIST_TRAVERSE(teamlist,curr)
 	{
-	    if (!(cteam = elem_get_data(curr)))
+	    if (!(cteam = (t_team*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;
@@ -347,7 +347,7 @@ t_team* _list_find_team_by_teamid(unsigned int teamid, t_list * teamlist)
     {
 	LIST_TRAVERSE(teamlist,curr)
 	{
-	    if (!(cteam = elem_get_data(curr)))
+	    if (!(cteam = (t_team*)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;

@@ -22,7 +22,7 @@
 #include "common/setup_after.h"
 
 
-extern unsigned int cflags_to_bncflags(t_channel_flags flags)
+extern unsigned int cflags_to_bncflags(unsigned flags)
 {
     unsigned int res;
 

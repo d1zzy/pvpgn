@@ -94,7 +94,7 @@ static t_attrgroup * attrgroup_create(void)
 {
     t_attrgroup *attrgroup;
 
-    attrgroup = xmalloc(sizeof(t_attrgroup));
+    attrgroup = (t_attrgroup*)xmalloc(sizeof(t_attrgroup));
 
     hlist_init(&attrgroup->list);
     attrgroup->storage = NULL;

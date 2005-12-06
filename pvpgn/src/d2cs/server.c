@@ -116,7 +116,7 @@ static int server_listen(void)
 		eventlog(eventlog_level_error,__FUNCTION__,"error create listening address list");
 		return -1;
 	}
-	BEGIN_LIST_TRAVERSE_DATA(server_listen_addrs,curr_laddr)
+	BEGIN_LIST_TRAVERSE_DATA(server_listen_addrs,curr_laddr,t_addr)
 	{
 		sock=net_listen(addr_get_ip(curr_laddr),addr_get_port(curr_laddr),PSOCK_SOCK_STREAM);
 		if (sock<0) {
@@ -318,7 +318,7 @@ static int server_cleanup(void)
 	t_addr		* curr_laddr;
 	int		sock;
 
-	BEGIN_LIST_TRAVERSE_DATA(server_listen_addrs,curr_laddr)
+	BEGIN_LIST_TRAVERSE_DATA(server_listen_addrs,curr_laddr,t_addr)
 	{
 		sock=addr_get_data(curr_laddr).i;
 		psock_close(sock);

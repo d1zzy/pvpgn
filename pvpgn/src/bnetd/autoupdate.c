@@ -131,7 +131,7 @@ extern int autoupdate_load(char const * filename)
 	    continue;
 	}
 
-	entry = xmalloc(sizeof(t_autoupdate));
+	entry = (t_autoupdate*)xmalloc(sizeof(t_autoupdate));
 	
 	if (!tag_check_arch((entry->archtag = tag_str_to_uint(archtag)))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"got unknown archtag");
@@ -166,7 +166,7 @@ extern int autoupdate_unload(void)
 	t_autoupdate * entry;
 	LIST_TRAVERSE(autoupdate_head,curr)
 	{
-	    if (!(entry = elem_get_data(curr)))
+	    if (!(entry = (t_autoupdate*)elem_get_data(curr)))
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 	    else {
 		xfree((void *)entry->versiontag);	/* avoid warning */
@@ -197,7 +197,7 @@ extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, c
 	
 	LIST_TRAVERSE_CONST(autoupdate_head,curr)
 	{
-	    if (!(entry = elem_get_data(curr))) {
+	    if (!(entry = (t_autoupdate*)elem_get_data(curr))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 		continue;
 	    }
@@ -219,7 +219,7 @@ extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, c
 		tag_uint_to_str(gltag,gamelang);
 		tempmpq = xstrdup(entry->mpqfile);
 		
-		temp = xmalloc(strlen(tempmpq)+6);
+		temp = (char*)xmalloc(strlen(tempmpq)+6);
 		
 		extention = strrchr(tempmpq,'.');
 		*extention = '\0';

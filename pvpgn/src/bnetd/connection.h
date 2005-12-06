@@ -134,7 +134,7 @@ typedef struct connection
 	int			fdw_idx;
     } socket; /* IP and socket specific data */
     struct {
-	t_conn_class		class;
+	t_conn_class		cclass;
 	t_conn_state		state;
 	unsigned int		sessionkey;
 	unsigned int		sessionnum;
@@ -219,7 +219,7 @@ typedef struct connection
 	/* Pass fail count for bruteforce protection */
 	unsigned int		passfail_count;
 	/* connection flag substituting some other values */
-	t_conn_flags		cflags;
+	unsigned int		cflags;
    } protocol;
 }
 #endif
@@ -260,14 +260,14 @@ extern t_anongame * conn_get_anongame(t_connection *c);
 
 extern void conn_shutdown(t_connection * c, time_t now, t_timer_data foo);
 extern void conn_test_latency(t_connection * c, time_t now, t_timer_data delta);
-extern char const * conn_class_get_str(t_conn_class class) ;
+extern char const * conn_class_get_str(t_conn_class cclass) ;
 extern char const * conn_state_get_str(t_conn_state state) ;
 
 extern t_connection * conn_create(int tsock, int usock, unsigned int real_local_addr, unsigned short real_local_port, unsigned int local_addr, unsigned short local_port, unsigned int addr, unsigned short port) ;
 extern void conn_destroy(t_connection * c, t_elem ** elem, int conn_or_dead_list);
 extern int conn_match(t_connection const * c, char const * user);
 extern t_conn_class conn_get_class(t_connection const * c) ;
-extern void conn_set_class(t_connection * c, t_conn_class class);
+extern void conn_set_class(t_connection * c, t_conn_class cclass);
 extern t_conn_state conn_get_state(t_connection const * c) ;
 extern void conn_set_state(t_connection * c, t_conn_state state);
 extern unsigned int conn_get_sessionkey(t_connection const * c) ;

@@ -33,7 +33,7 @@ typedef struct
 	bn_int		experience;
 	bn_short	status;
 	bn_byte		level;
-	bn_byte		class;
+	bn_byte		chclass;
 	char		charname[MAX_CHARNAME_LEN];
 } t_d2ladderfile_ladderinfo;
 

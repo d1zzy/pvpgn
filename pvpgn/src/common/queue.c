@@ -130,7 +130,7 @@ extern void queue_push_packet(t_queue * * queue, t_packet * packet)
     if (!temp)
     {
 //	eventlog(eventlog_level_debug, __FUNCTION__, "queue is NULL , initilizing");
-        temp = xmalloc(sizeof(t_queue));
+        temp = (t_queue*)xmalloc(sizeof(t_queue));
 	temp->alen = temp->ulen = 0;
 	temp->ring = NULL;
 	temp->head = temp->tail = 0;

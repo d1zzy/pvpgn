@@ -54,7 +54,7 @@ static int rotate_updown(t_tgaimg *img) {
 	if (img->data == NULL) return -1;
 	pixelsize = getpixelsize(img);
 	if (pixelsize == 0) return -1;
-	ndata = malloc(img->width*img->height*pixelsize);
+	ndata = (unsigned char *)malloc(img->width*img->height*pixelsize);
 	for (y = 0; y < img->height; y++) {
 		memcpy(ndata + (y*img->width*pixelsize),
 		       img->data + ((img->width*img->height*pixelsize)-((y+1)*img->width*pixelsize)),
@@ -74,7 +74,7 @@ static int rotate_leftright(t_tgaimg *img) {
         if (img->data == NULL) return -1;
         pixelsize = getpixelsize(img);
         if (pixelsize == 0) return -1;
-        ndata = malloc(img->width*img->height*pixelsize);
+        ndata = (unsigned char *)malloc(img->width*img->height*pixelsize);
 	datap = img->data;
         for (y = 0; y < img->height; y++) {
 		unsigned char *linep = (ndata + (((y+1)*img->width*pixelsize)-pixelsize));
@@ -111,7 +111,7 @@ extern int getpixelsize(t_tgaimg const *img) {
 extern t_tgaimg * new_tgaimg(unsigned int width, unsigned int height, unsigned int bpp, t_tgaimgtype imgtype) {
 	t_tgaimg *img;
 	
-	img = malloc(sizeof(t_tgaimg));
+	img = (t_tgaimg*)malloc(sizeof(t_tgaimg));
         img->idlen = 0;
         img->cmaptype = tgacmap_none;
         img->imgtype = imgtype;
@@ -134,7 +134,7 @@ extern t_tgaimg * new_tgaimg(unsigned int width, unsigned int height, unsigned i
 extern t_tgaimg * load_tgaheader(void) {
 	t_tgaimg *img;
 	
-	img = malloc(sizeof(t_tgaimg));
+	img = (t_tgaimg*)malloc(sizeof(t_tgaimg));
         img->idlen = file_readb();
         img->cmaptype = file_readb();
         img->imgtype = file_readb();
@@ -186,7 +186,7 @@ extern t_tgaimg * load_tga(FILE *f) {
 	}
 	
 	/* Now, we can alloc img->data */
-	img->data = malloc(img->width*img->height*pixelsize);
+	img->data = (t_uint8*)malloc(img->width*img->height*pixelsize);
 	if (img->imgtype == tgaimgtype_uncompressed_truecolor) {
 		if (fread(img->data,pixelsize,img->width*img->height,f)<(unsigned)(img->width*img->height)) {
 			fprintf(stderr,"load_tga: error while reading data!\n");
@@ -285,7 +285,7 @@ static int RLE_decompress(FILE *f, void *buf, int bufsize, int pixelsize) {
 	int count;
 	
 	file_rpush(f);
-	bufp = buf;
+	bufp = (unsigned char*)buf;
 	for (bufi=0; bufi<bufsize; ) {
 		pt = file_readb();
 		if (feof(f)) {
@@ -383,7 +383,7 @@ static int RLE_compress(FILE *f, t_tgaimg const *img) {
 	if (pixelsize == 0) return -1;
 	
 	datap = img->data;
-	pktdata = malloc(img->width*img->height*pixelsize);
+	pktdata = (unsigned char*)malloc(img->width*img->height*pixelsize);
 	pktlen = 0;
 	
 	for (i=0; i<img->width*img->height; ) {

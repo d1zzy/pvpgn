@@ -51,10 +51,20 @@ extern char * unescape_chars(char const * in) ;
 extern void str_to_hex(char * target, char * data, int datalen);
 extern int hex_to_str(char const * source, char * data, int datalen);
 extern char * buildpath(char const *root, const char *suffix);
-extern char *str_skip_space(char *str);
-extern char *str_skip_word(char *str);
 extern int timestr_to_time(char const * timestr, time_t* ptime);
 extern void strlower(char* str);
+
+static inline char * str_skip_space(char *str)
+{
+    for(;*str == ' ' || *str == '\t';str++);
+    return str;
+}
+
+static inline char * str_skip_word(char *str)
+{
+    for(;*str != ' ' && *str != '\t' && *str;str++);
+    return str;
+}
 
 #endif
 #endif

@@ -64,7 +64,7 @@ typedef struct character
     t_uint8      lhandgfx;
     t_uint8      rhandweapon;
     t_uint8      rhandgfx;
-    t_uint8      class;
+    t_uint8      chclass;
     t_uint8      level;
     t_uint8      status;
     t_uint8      title;
@@ -111,7 +111,7 @@ t_character;
 #include "account.h"
 #undef JUST_NEED_TYPES
 
-extern int character_create(t_account * account, t_clienttag clienttag, char const * realmname, char const * name, t_character_class class, t_character_expansion expansion);
+extern int character_create(t_account * account, t_clienttag clienttag, char const * realmname, char const * name, t_character_class chclass, t_character_expansion expansion);
 extern char const * character_get_name(t_character const * ch);
 extern char const * character_get_realmname(t_character const * ch);
 extern char const * character_get_playerinfo(t_character const * ch);

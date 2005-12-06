@@ -59,7 +59,7 @@ typedef struct
 {
         bn_short        header;	/* 0x84 0x80 */
         bn_byte         gfx[11];
-        bn_byte         class;
+        bn_byte         chclass;
         bn_byte         color[11];
         bn_byte         level;
         bn_byte         status;

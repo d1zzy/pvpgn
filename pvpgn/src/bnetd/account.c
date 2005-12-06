@@ -135,7 +135,7 @@ static t_account * account_create(char const * username, char const * passhash1)
 	return NULL;
     }
 
-    account = xmalloc(sizeof(t_account));
+    account = (t_account*)xmalloc(sizeof(t_account));
 
     account->name     = NULL;
     account->clanmember = NULL;
@@ -303,7 +303,7 @@ extern int account_set_strattr(t_account * account, char const * key, char const
 {
     if (!account) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL account");
-	return -1;
+	return 0;
     }
 
     if (!key) {
@@ -451,7 +451,7 @@ extern int accountlist_destroy(void)
 
     HASHTABLE_TRAVERSE(accountlist_head,curr)
     {
-	if (!(account = entry_get_data(curr)))
+	if (!(account = (t_account*)entry_get_data(curr)))
 	    eventlog(eventlog_level_error,__FUNCTION__,"found NULL account in list");
 	else
 	{
@@ -539,7 +539,7 @@ extern t_account * accountlist_find_account(char const * username)
 	namehash = account_hash(username);
 	HASHTABLE_TRAVERSE_MATCHING(accountlist_head,curr,namehash)
 	{
-	    account = entry_get_data(curr);
+	    account = (t_account*)entry_get_data(curr);
             if ((tname = account_get_name(account)))
 	    {
 		if (strcasecmp(tname,username)==0)
@@ -563,7 +563,7 @@ extern t_account * accountlist_find_account_by_uid(unsigned int uid)
     if (uid) {
 	HASHTABLE_TRAVERSE_MATCHING(accountlist_uid_head,curr,uid)
 	{
-	    account = entry_get_data(curr);
+	    account = (t_account*)entry_get_data(curr);
 	    if (account->uid==uid) {
 		hashtable_entry_release(curr);
 		return account;
@@ -633,7 +633,7 @@ static t_account * accountlist_add_account(t_account * account)
 	if(uid <= maxuserid)
 	HASHTABLE_TRAVERSE_MATCHING(accountlist_uid_head,curr,uid)
 	{
-	    curraccount = entry_get_data(curr);
+	    curraccount = (t_account*)entry_get_data(curr);
 	    if (curraccount->uid==uid)
 	    {
 		eventlog(eventlog_level_debug,__FUNCTION__,"BUG: user \"%s\":"UID_FORMAT" already has an account (\"%s\":"UID_FORMAT")",username,uid,account_get_name(curraccount),curraccount->uid);
@@ -644,7 +644,7 @@ static t_account * accountlist_add_account(t_account * account)
 
 	HASHTABLE_TRAVERSE_MATCHING(accountlist_head,curr,account->namehash)
 	{
-	    curraccount = entry_get_data(curr);
+	    curraccount = (t_account*)entry_get_data(curr);
 	    if ((tname = account_get_name(curraccount)))
 	    {
 		    if (strcasecmp(tname,username)==0)
@@ -771,16 +771,16 @@ extern int account_check_mutual( t_account * account, int myuserid)
     {
 	int i;
 	int n = account_get_friendcount(account);
-	int friend;
+	int frienduid;
 	for(i=0; i<n; i++) 
 	{
-	    friend = account_get_friend(account,i);
-	    if(!friend)  {
+	    frienduid = account_get_friend(account,i);
+	    if(!frienduid)  {
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL friend");
 		continue;
 	    }
 
-	    if(myuserid==friend)
+	    if(myuserid==frienduid)
 		return 0;
 	}
     }
@@ -811,7 +811,7 @@ static int account_load_friends(t_account * account)
 {
     int i;
     int n;
-    int friend;
+    int frienduid;
     t_account * acc;
     t_friend * fr;
 
@@ -834,15 +834,15 @@ static int account_load_friends(t_account * account)
     n = account_get_friendcount(account);
     for(i=0; i<n; i++)
     {
-	friend = account_get_friend(account,i);
-        if(!friend)  {
+	frienduid = account_get_friend(account,i);
+        if(!frienduid)  {
             account_remove_friend(account, i);
             continue;
         }
         fr=NULL;
-        if(newlist || (fr=friendlist_find_uid(account->friends, friend))==NULL)
+        if(newlist || (fr=friendlist_find_uid(account->friends, frienduid))==NULL)
         {
-            if((acc = accountlist_find_account_by_uid(friend))==NULL)
+            if((acc = accountlist_find_account_by_uid(frienduid))==NULL)
             {
                 if(account_remove_friend(account, i) == 0)
 		{

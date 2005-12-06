@@ -57,7 +57,7 @@ static unsigned nofds;
 
 static int fdw_poll_init(int nfds);
 static int fdw_poll_close(void);
-static int fdw_poll_add_fd(int idx, t_fdwatch_type rw);
+static int fdw_poll_add_fd(int idx, unsigned rw);
 static int fdw_poll_del_fd(int idx);
 static int fdw_poll_watch(long timeout_msecs);
 static void fdw_poll_handle(void);
@@ -75,9 +75,9 @@ static int fdw_poll_init(int nfds)
 {
     int i;
 
-    _ridx = xmalloc(sizeof(int) * nfds);
-    fds = xmalloc(sizeof(struct pollfd) * nfds);
-    _rridx = xmalloc(sizeof(int) * nfds);
+    _ridx = (int*)xmalloc(sizeof(int) * nfds);
+    fds = (struct pollfd*)xmalloc(sizeof(struct pollfd) * nfds);
+    _rridx = (int*)xmalloc(sizeof(int) * nfds);
 
     memset(fds, 0, sizeof(struct pollfd) * nfds);
     memset(_rridx, 0, sizeof(int) * nfds);
@@ -99,7 +99,7 @@ static int fdw_poll_close(void)
     return 0;
 }
 
-static int fdw_poll_add_fd(int idx, t_fdwatch_type rw)
+static int fdw_poll_add_fd(int idx, unsigned rw)
 {
     static int ridx;
 

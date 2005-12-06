@@ -167,7 +167,7 @@ extern int bnet_hash(t_hash * hashout, unsigned int size, void const * datain)
     
     hash_init(hashout);
     
-    data = datain;
+    data = (const unsigned char*)datain;
     while (size>0)
     {
 	if (size>64)

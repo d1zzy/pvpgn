@@ -146,7 +146,7 @@ extern int trans_load(char const * filename, int program)
 		npos++;
 		continue;
 	    }
-	    entry = xmalloc(sizeof(t_trans));
+	    entry = (t_trans*)xmalloc(sizeof(t_trans));
 	    if (!(entry->input = addr_create_str(input,0,0))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"could not allocate memory for input address");
 		xfree(entry);
@@ -204,7 +204,7 @@ extern int trans_load(char const * filename, int program)
 		npos++;
 		continue;
 	    }
-	    entry = xmalloc(sizeof(t_trans));
+	    entry = (t_trans*)xmalloc(sizeof(t_trans));
 	    if (!(entry->input = addr_create_str(input,0,0))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"could not allocate memory for input address");
 		xfree(entry);
@@ -263,7 +263,7 @@ extern int trans_unload(void)
     if (trans_head) {
 	LIST_TRAVERSE(trans_head,curr)
 	{
-	    if (!(entry = elem_get_data(curr))) {
+	    if (!(entry = (t_trans*)elem_get_data(curr))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 	    } else {
 		netaddr_destroy(entry->network);
@@ -304,7 +304,7 @@ extern int trans_net(unsigned int clientaddr, unsigned int *addr, unsigned short
     if (trans_head) {
 	LIST_TRAVERSE_CONST(trans_head,curr)
 	{
-	    if (!(entry = elem_get_data(curr))) {
+	    if (!(entry = (t_trans*)elem_get_data(curr))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 		continue;
 	    }

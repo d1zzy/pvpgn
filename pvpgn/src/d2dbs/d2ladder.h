@@ -34,7 +34,7 @@ typedef struct
 	unsigned int	experience;
 	unsigned short	status;
 	unsigned char	level;
-	unsigned char	class;
+	unsigned char	chclass;
 	char		charname[MAX_CHARNAME_LEN];
 } t_d2ladder_info;
 

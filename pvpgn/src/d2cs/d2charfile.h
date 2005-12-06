@@ -69,7 +69,7 @@
 #ifndef JUST_NEED_TYPES
 #include "d2cs_d2gs_character.h"
 
-extern int d2char_create(char const * account, char const * charname, unsigned char class, 
+extern int d2char_create(char const * account, char const * charname, unsigned char chclass, 
 			unsigned short status);
 extern int d2char_delete(char const * account, char const * charname);
 extern int d2char_get_summary(char const * account, char const * charname,t_d2charinfo_summary * charinfo);

@@ -44,13 +44,13 @@ static int on_d2cs_initconn(t_connection * c);
 
 extern int d2cs_handle_init_packet(t_connection * c, t_packet * packet)
 {
-	int	class;
+	int	cclass;
 	int	retval;
 
 	ASSERT(c,-1);
 	ASSERT(packet,-1);
-	class=bn_byte_get(packet->u.client_initconn.class);
-	switch (class) {
+	cclass=bn_byte_get(packet->u.client_initconn.cclass);
+	switch (cclass) {
 		case CLIENT_INITCONN_CLASS_D2CS:
 			retval=on_d2cs_initconn(c);
 			break;
@@ -58,7 +58,7 @@ extern int d2cs_handle_init_packet(t_connection * c, t_packet * packet)
 			retval=on_d2gs_initconn(c);
 			break;
 		default:
-			eventlog(eventlog_level_error,__FUNCTION__,"got bad connection class %d",class);
+			eventlog(eventlog_level_error,__FUNCTION__,"got bad connection class %d",cclass);
 			retval=-1;
 			break;
 	}

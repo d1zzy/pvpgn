@@ -63,7 +63,7 @@ typedef struct
 typedef struct
 {
 	t_d2cs_client_header	h;
-	bn_short		class;		/* character class */
+	bn_short		chclass;	/* character class */
 	bn_short		u1;		/* always zero */
 	bn_short		status;		/* same as in .d2s file */
 	/* character name */
@@ -185,7 +185,7 @@ typedef struct
 	bn_byte			leveldiff;
 	bn_byte			maxchar;
 	bn_byte			currchar;
-	bn_byte			class[16];		/* 16 character class */
+	bn_byte			chclass[16];		/* 16 character class */
 	bn_byte			level[16];		/* 16 character level */
 	/* game description */
 	/* currchar number of character names */

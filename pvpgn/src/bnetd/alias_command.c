@@ -75,14 +75,14 @@ static int list_aliases(t_connection * c)
     message_send_text(c,message_type_info,c,"Alias list:");
     LIST_TRAVERSE_CONST(aliaslist_head,elem1)
     {
-	if (!(alias = elem_get_data(elem1)))
+	if (!(alias = (t_alias*)elem_get_data(elem1)))
 	    continue;
 	
 	sprintf(temp,"@%.128s",alias->alias);
 	message_send_text(c,message_type_info,c,temp);
 	LIST_TRAVERSE_CONST(alias->output,elem2)
 	{
-	    if (!(output = elem_get_data(elem2)))
+	    if (!(output = (t_output*)elem_get_data(elem2)))
 		continue;
 	    
 	    /*
@@ -215,7 +215,7 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
         {
             char * newout;
 	    
-            newout = xmalloc(size+(off2-off1)+1); /* curr + new + nul */
+            newout = (char*)xmalloc(size+(off2-off1)+1); /* curr + new + nul */
 	    size = size+(off2-off1)+1;
 	    memmove(newout,out,outpos);
 	    xfree(out);
@@ -276,12 +276,12 @@ static int do_alias(t_connection * c, char const * cmd, char const * text)
     int match = -1;
     
     numargs = count_args(text)-1; 
-    offsets=xmalloc(sizeof(unsigned int)*(numargs+1));
+    offsets=(unsigned int*)xmalloc(sizeof(unsigned int)*(numargs+1));
     get_offsets(text,offsets);
     
     LIST_TRAVERSE_CONST(aliaslist_head,elem1)
     {
-	if (!(alias = elem_get_data(elem1)))
+	if (!(alias = (t_alias*)elem_get_data(elem1)))
 	    continue;
 	
 	if (strstr(alias->alias,cmd)==NULL)
@@ -289,7 +289,7 @@ static int do_alias(t_connection * c, char const * cmd, char const * text)
 	
 	LIST_TRAVERSE_CONST(alias->output,elem2)
 	{
-	    if (!(output = elem_get_data(elem2)))
+	    if (!(output = (t_output*)elem_get_data(elem2)))
 		continue;
 	    
 	    if (!output->line)
@@ -313,7 +313,7 @@ static int do_alias(t_connection * c, char const * cmd, char const * text)
 		  {
 		    if ((msgtmp[0]=='/')&&(msgtmp[1]!='/')) // to make sure we don't get endless aliasing loop
 		    {
-		      tmp2 = xmalloc(strlen(msgtmp)+3);
+		      tmp2 = (char*)xmalloc(strlen(msgtmp)+3);
 		      sprintf(tmp2,"%s%s",cmd,msgtmp);
 		      xfree((void *)msgtmp);
 		      msgtmp=tmp2;
@@ -399,7 +399,7 @@ extern int aliasfile_load(char const * filename)
 		if (buff[pos]=='\0') break;
 		    
 		inalias = 2;
-		alias = xmalloc(sizeof(t_alias));
+		alias = (t_alias*)xmalloc(sizeof(t_alias));
 		alias->output=0;
 		alias->alias=xstrdup(&buff[pos]);
 	    }
@@ -446,7 +446,7 @@ extern int aliasfile_load(char const * filename)
 
 	      if (out!=NULL)
 	      {
-		output = xmalloc(sizeof(t_output));
+		output = (t_output*)xmalloc(sizeof(t_output));
 		output->min=min;
 		output->max=max;
 		output->line = out;
@@ -501,7 +501,7 @@ extern int aliasfile_load(char const * filename)
 
 		if (out!=NULL)
 		  {
-		    output = xmalloc(sizeof(t_output));
+		    output = (t_output*)xmalloc(sizeof(t_output));
 		    output->min=min;
 		    output->max=max;
 		    output->line = out;
@@ -535,7 +535,7 @@ extern int aliasfile_unload(void)
     {
 	LIST_TRAVERSE(aliaslist_head,elem1)
 	{
-	    if (!(alias = elem_get_data(elem1))) /* should not happen */
+	    if (!(alias = (t_alias*)elem_get_data(elem1))) /* should not happen */
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"alias list contains NULL item");
 		continue;
@@ -550,7 +550,7 @@ extern int aliasfile_unload(void)
 	    {
 		LIST_TRAVERSE(alias->output,elem2)
 		{
-		    if (!(output = elem_get_data(elem2)))
+		    if (!(output = (t_output*)elem_get_data(elem2)))
 		    {
 			eventlog(eventlog_level_error,__FUNCTION__,"output list contains NULL item");
 			continue;

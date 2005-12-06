@@ -316,7 +316,7 @@ static int print_file(struct sockaddr_in * saddr, char const * filename, char co
 	fprintf(stderr,"%s: could not create packet\n",progname);
 	return -1;
     }
-    bn_byte_set(&ipacket->u.client_initconn.class,CLIENT_INITCONN_CLASS_FILE);
+    bn_byte_set(&ipacket->u.client_initconn.cclass,CLIENT_INITCONN_CLASS_FILE);
     client_blocksend_packet(sd,ipacket);
     packet_del_ref(ipacket);
     
@@ -371,7 +371,7 @@ static int print_file(struct sockaddr_in * saddr, char const * filename, char co
 	    packet_del_ref(fpacket);
 	    return -1;
 	}
-	str_print_term(stdout,packet_get_raw_data_const(fpacket,0),MAX_PACKET_SIZE,1);
+	str_print_term(stdout,(const char*)packet_get_raw_data_const(fpacket,0),MAX_PACKET_SIZE,1);
     }
     filelen -= currsize;
     if (filelen)
@@ -383,7 +383,7 @@ static int print_file(struct sockaddr_in * saddr, char const * filename, char co
 	    packet_del_ref(fpacket);
 	    return -1;
 	}
-	str_print_term(stdout,packet_get_raw_data_const(fpacket,0),filelen,1);
+	str_print_term(stdout,(const char*)packet_get_raw_data_const(fpacket,0),filelen,1);
     }
     fflush(stdout);
     
@@ -1344,14 +1344,14 @@ extern int main(int argc, char * argv[])
 	unsigned int chann_off;
 	char const * chann;
 	
-	channellist = xmalloc(sizeof(char const *)*1);
+	channellist = (const char**)xmalloc(sizeof(char*)*1);
 	for (i=0,chann_off=sizeof(t_server_channellist);
 	     (chann = packet_get_str_const(rpacket,chann_off,128));
 	     i++,chann_off+=strlen(chann)+1)
         {
 	    if (chann[0] == '\0') break;  /* channel list ends with a "" */
 
-	    channellist = xrealloc(channellist,sizeof(char const *)*(i+2));
+	    channellist = (const char**)xrealloc(channellist,sizeof(char*)*(i+2));
 	    channellist[i] = xstrdup(chann);
 	}
 	channellist[i] = NULL;

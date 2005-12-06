@@ -85,9 +85,9 @@ extern t_anongame_gameresult * anongame_gameresult_parse(t_packet const * const 
 	return NULL;
   }
 
-  gameresult = xmalloc(sizeof(t_anongame_gameresult));
+  gameresult = (t_anongame_gameresult*)xmalloc(sizeof(t_anongame_gameresult));
 
-  gameresult->players = xmalloc(sizeof(t_anongame_player)*result_count);
+  gameresult->players = (t_anongame_player*)xmalloc(sizeof(t_anongame_player)*result_count);
 
   gameresult->number_of_results = result_count;
 
@@ -121,7 +121,7 @@ extern t_anongame_gameresult * anongame_gameresult_parse(t_packet const * const 
 
   if ((heroes_count))
   {
-    gameresult->heroes = xmalloc(sizeof(t_anongame_hero)*heroes_count);
+    gameresult->heroes = (t_anongame_hero*)xmalloc(sizeof(t_anongame_hero)*heroes_count);
 
     if (packet_get_size(packet) < expectedsize + sizeof(t_client_w3route_gameresult_hero)*heroes_count)
     {

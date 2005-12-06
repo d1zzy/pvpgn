@@ -119,7 +119,7 @@ int output_standard_writer(FILE * fp)
 
 	LIST_TRAVERSE_CONST(connlist(),curr)
 	{
-	    conn = elem_get_data(curr);
+	    conn = (t_connection*)elem_get_data(curr);
 	    if (conn_get_account(conn))
 		fprintf(fp,"\t\t<user><name>%s</name><clienttag>%s</clienttag><version>%s</version></user>\n",conn_get_username(conn),tag_uint_to_str(clienttag_str,conn_get_clienttag(conn)),conn_get_clientver(conn));
         }
@@ -136,7 +136,7 @@ int output_standard_writer(FILE * fp)
 
 	LIST_TRAVERSE_CONST(channellist(),curr)
 	{
-    	    channel = elem_get_data(curr);
+    	    channel = (t_channel*)elem_get_data(curr);
 	    channel_name = channel_get_name(channel);
 	    fprintf(fp,"\t\t<channel>%s</channel>\n",channel_name);
 	}
@@ -152,7 +152,7 @@ int output_standard_writer(FILE * fp)
 	number=1;
 	LIST_TRAVERSE_CONST(channellist(),curr)
 	{
-    	    channel = elem_get_data(curr);
+    	    channel = (t_channel*)elem_get_data(curr);
 	    channel_name = channel_get_name(channel);
 	    fprintf(fp,"channel%d=%s\n",number,channel_name);
 	    number++;
@@ -166,7 +166,7 @@ int output_standard_writer(FILE * fp)
 	number=1;
 	LIST_TRAVERSE_CONST(connlist(),curr)
 	{
-    	    conn = elem_get_data(curr);
+    	    conn = (t_connection*)elem_get_data(curr);
     	    if (conn_get_account(conn))
 	    {
 		fprintf(fp,"user%d=%s,%s\n",number,tag_uint_to_str(clienttag_str,conn_get_clienttag(conn)),conn_get_username(conn));

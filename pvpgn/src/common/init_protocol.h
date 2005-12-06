@@ -39,7 +39,7 @@
 #define CLIENT_INITCONN 0x1
 typedef struct
 {
-    bn_byte class;
+    bn_byte cclass;
 } PACKED_ATTR() t_client_initconn;
 /******************************************************/
 

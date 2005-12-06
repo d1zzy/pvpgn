@@ -197,7 +197,7 @@ extern t_addr * addr_create_num(unsigned int ipaddr, unsigned short port)
 {
     t_addr * temp;
     
-    temp = xmalloc(sizeof(t_addr));
+    temp = (t_addr*)xmalloc(sizeof(t_addr));
     temp->str = xstrdup(addr_num_to_addr_str(ipaddr,port));
     temp->str    = NULL;
     temp->ip     = ipaddr;
@@ -281,7 +281,7 @@ extern t_addr * addr_create_str(char const * str, unsigned int defipaddr, unsign
 	return NULL;
     }
     
-    temp = xmalloc(sizeof(t_addr));
+    temp = (t_addr*)xmalloc(sizeof(t_addr));
     temp->str = xstrdup(hostname);
     xfree(tstr);
 
@@ -446,7 +446,7 @@ extern t_netaddr * netaddr_create_str(char const * netstr)
 	return NULL;
     }
     
-    netaddr = xmalloc(sizeof(t_netaddr));
+    netaddr = (t_netaddr*)xmalloc(sizeof(t_netaddr));
 
     /* FIXME: call getnetbyname() first, then host_lookup() */
     if (!host_lookup(netipstr,&netip))
@@ -609,7 +609,7 @@ extern int addrlist_destroy(t_addrlist * addrlist)
     
     LIST_TRAVERSE(addrlist,curr)
     {
-        if (!(addr = elem_get_data(curr)))
+        if (!(addr = (t_addr*)elem_get_data(curr)))
             eventlog(eventlog_level_error,__FUNCTION__,"found NULL addr in list");
         else
             addr_destroy(addr);

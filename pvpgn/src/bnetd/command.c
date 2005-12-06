@@ -108,7 +108,7 @@
 #include "common/setup_after.h"
 
 
-static char const * bnclass_get_str(unsigned int class);
+static char const * bnclass_get_str(unsigned int cclass);
 static void do_whisper(t_connection * user_c, char const * dest, char const * text);
 static void do_whois(t_connection * c, char const * dest);
 static void user_timer_cb(t_connection * c, time_t now, t_timer_data str);
@@ -116,9 +116,9 @@ static void user_timer_cb(t_connection * c, time_t now, t_timer_data str);
 char msgtemp[MAX_MESSAGE_LEN];
 char msgtemp2[MAX_MESSAGE_LEN];
 
-static char const * bnclass_get_str(unsigned int class)
+static char const * bnclass_get_str(unsigned int cclass)
 {
-    switch (class)
+    switch (cclass)
     {
     case PLAYERINFO_DRTL_CLASS_WARRIOR:
 	return "warrior";
@@ -280,7 +280,7 @@ static void user_timer_cb(t_connection * c, time_t now, t_timer_data str)
     }
 
     if (now!=(time_t)0) /* zero means user logged out before expiration */
-	message_send_text(c,message_type_info,c,str.p);
+	message_send_text(c,message_type_info,c,(char*)str.p);
     xfree(str.p);
 }
 
@@ -1370,7 +1370,7 @@ static int _handle_friends_command(t_connection * c, char const * text)
 
 	LIST_TRAVERSE(flist,curr)
 	{
-    	    if (!(fr = elem_get_data(curr))) {
+    	    if (!(fr = (t_friend*)elem_get_data(curr))) {
         	eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
         	continue;
     	    }
@@ -1523,7 +1523,7 @@ static int _handle_friends_command(t_connection * c, char const * text)
     }
 
     if (strstart(text,"list")==0 || strstart(text,"l")==0) {
-	char const * friend;
+	char const * frienduid;
 	char status[128];
 	char software[64];
 	char msgtemp[MAX_MESSAGE_LEN];
@@ -1577,9 +1577,9 @@ static int _handle_friends_command(t_connection * c, char const * text)
 	    	    }
 		}
 
-		friend=account_get_name(friend_acc);
-    		if (software[0]) sprintf(msgtemp, "%d: %s%.16s%.128s, %.64s", i+1, friend_get_mutual(fr)?"*":" ", friend, status,software);
-		else sprintf(msgtemp, "%d: %.16s%.128s", i+1, friend, status);
+		frienduid=account_get_name(friend_acc);
+    		if (software[0]) sprintf(msgtemp, "%d: %s%.16s%.128s, %.64s", i+1, friend_get_mutual(fr)?"*":" ", frienduid, status,software);
+		else sprintf(msgtemp, "%d: %.16s%.128s", i+1, frienduid, status);
 		message_send_text(c,message_type_info,c,msgtemp);
 	    }
 	}
@@ -2032,7 +2032,7 @@ static int _handle_stats_command(t_connection * c, char const *text)
 
 		LIST_TRAVERSE(list,curr)
 		{
-	    	  if (!(team = elem_get_data(curr)))
+	    	  if (!(team = (t_team*)elem_get_data(curr)))
 	    	  {
 	      	    eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 	      	    continue;
@@ -2545,7 +2545,7 @@ static int _handle_realmann_command(t_connection * c, char const *text)
     {
       LIST_TRAVERSE_CONST(connlist(),curr)
 	{
-	  tc = elem_get_data(curr);
+	  tc = (t_connection*)elem_get_data(curr);
 	  if (!tc)
 	    continue;
 	  if ((trealm = conn_get_realm(tc)) && (trealm==realm))
@@ -2693,7 +2693,7 @@ static int _handle_lusers_command(t_connection * c, char const *text)
   i = strlen(msgtemp);
   LIST_TRAVERSE_CONST(channel_get_banlist(channel),curr)
     {
-      banned = elem_get_data(curr);
+      banned = (char*)elem_get_data(curr);
       if (i+strlen(banned)+2>sizeof(msgtemp)) /* " ", name, '\0' */
 	{
 	  message_send_text(c,message_type_info,c,msgtemp);
@@ -2876,7 +2876,7 @@ static int _handle_channels_command(t_connection * c, char const *text)
   message_send_text(c,message_type_info,c,msgtemp);
   LIST_TRAVERSE_CONST(channellist(),curr)
     {
-      channel = elem_get_data(curr);
+      channel = (t_channel*)elem_get_data(curr);
       if ((!(channel_get_flags(channel) & channel_flags_clan)) && (!tag || !prefs_get_hide_temp_channels() || channel_get_permanent(channel)) &&
 	  (!tag || !channel_get_clienttag(channel) ||
 	   strcasecmp(channel_get_clienttag(channel),tag)==0) &&
@@ -3112,7 +3112,7 @@ static int _handle_connections_command(t_connection *c, char const *text)
 
   LIST_TRAVERSE_CONST(connlist(),curr)
   {
-      conn = elem_get_data(curr);
+      conn = (t_connection*)elem_get_data(curr);
       if (conn_get_account(conn))
 	  sprintf(name,"\"%.16s\"",conn_get_username(conn));
       else
@@ -3338,7 +3338,7 @@ static int _handle_admins_command(t_connection * c, char const *text)
   i = strlen(msgtemp);
   LIST_TRAVERSE_CONST(connlist(),curr)
     {
-      tc = elem_get_data(curr);
+      tc = (t_connection*)elem_get_data(curr);
       if (!tc)
 	continue;
       if (!conn_get_account(tc))
@@ -4556,7 +4556,7 @@ static int _handle_topic_command(t_connection * c, char const * text)
 
 static int _handle_moderate_command(t_connection * c, char const * text)
 {
-  t_channel_flags oldflags;
+  unsigned oldflags;
   t_channel * channel;
 
   if (!(channel = conn_get_channel(c))) {

@@ -1922,7 +1922,7 @@ static int _client_friendslistreq(t_connection * c, t_packet const *const packet
 	return -1;
     }
     {
-	int friend;
+	int frienduid;
 	t_list *flist;
 	t_friend *fr;
 	t_account *account = conn_get_account(c);
@@ -1948,14 +1948,14 @@ static int _client_friendslistreq(t_connection * c, t_packet const *const packet
 	    return -1;
 
 	for (i = 0; i < n; i++) {
-	    friend = account_get_friend(account, i);
-	    if ((fr = friendlist_find_uid(flist, friend)) == NULL)
+	    frienduid = account_get_friend(account, i);
+	    if ((fr = friendlist_find_uid(flist, frienduid)) == NULL)
 		continue;
 	    packet_append_string(rpacket, account_get_name(friend_get_account(fr)));
 	    game = NULL;
 	    channel = NULL;
 
-	    if (!(dest_c = connlist_find_connection_by_uid(friend))) {
+	    if (!(dest_c = connlist_find_connection_by_uid(frienduid))) {
 		bn_byte_set(&status.location, FRIENDSTATUS_OFFLINE);
 		bn_byte_set(&status.status, 0);
 		bn_int_set(&status.clienttag, 0);
@@ -2016,7 +2016,7 @@ static int _client_friendinforeq(t_connection * c, t_packet const *const packet)
 	t_game const *game;
 	t_channel const *channel;
 	t_account *account = conn_get_account(c);
-	int friend;
+	int frienduid;
 	t_friend *fr;
 	t_list *flist;
 	int n = account_get_friendcount(account);
@@ -2033,8 +2033,8 @@ static int _client_friendinforeq(t_connection * c, t_packet const *const packet)
 	packet_set_size(rpacket, sizeof(t_server_friendinforeply));
 	packet_set_type(rpacket, SERVER_FRIENDINFOREPLY);
 
-	friend = account_get_friend(account, bn_byte_get(packet->u.client_friendinforeq.friendnum));
-	if (friend < 0) {
+	frienduid = account_get_friend(account, bn_byte_get(packet->u.client_friendinforeq.friendnum));
+	if (frienduid < 0) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] friend number %d not found", conn_get_socket(c), (int) bn_byte_get(packet->u.client_friendinforeq.friendnum));
 	    return -1;
 	}
@@ -2042,7 +2042,7 @@ static int _client_friendinforeq(t_connection * c, t_packet const *const packet)
 	bn_byte_set(&rpacket->u.server_friendinforeply.friendnum, bn_byte_get(packet->u.client_friendinforeq.friendnum));
 
 	flist = account_get_friends(account);
-	fr = friendlist_find_uid(flist, friend);
+	fr = friendlist_find_uid(flist, frienduid);
 
 	if (fr == NULL || (dest_c = connlist_find_connection_by_account(friend_get_account(fr))) == NULL) {
 	    bn_byte_set(&rpacket->u.server_friendinforeply.type, FRIEND_TYPE_NON_MUTUAL);
@@ -2123,7 +2123,7 @@ static int _client_atfriendscreen(t_connection * c, t_packet const *const packet
     vt = versioncheck_get_versiontag(conn_get_versioncheck(c));
     flist = account_get_friends(conn_get_account(c));
     LIST_TRAVERSE(flist, curr) {
-	if (!(fr = elem_get_data(curr))) {
+	if (!(fr = (t_friend*)elem_get_data(curr))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 	    continue;
 	}
@@ -2490,7 +2490,7 @@ static int _client_realmlistreq(t_connection * c, t_packet const *const packet)
 	bn_int_set(&rpacket->u.server_realmlistreply.unknown1, SERVER_REALMLISTREPLY_UNKNOWN1);
 	count = 0;
 	LIST_TRAVERSE_CONST(realmlist(), curr) {
-	    realm = elem_get_data(curr);
+	    realm = (t_realm*)elem_get_data(curr);
 	    if (!realm_get_active(realm))
 		continue;
 	    bn_int_set(&realmdata.unknown3, SERVER_REALMLISTREPLY_DATA_UNKNOWN3);
@@ -2533,7 +2533,7 @@ static int _client_realmlistreq110(t_connection * c, t_packet const *const packe
 	bn_int_set(&rpacket->u.server_realmlistreply_110.unknown1, SERVER_REALMLISTREPLY_110_UNKNOWN1);
 	count = 0;
 	LIST_TRAVERSE_CONST(realmlist(), curr) {
-	    realm = elem_get_data(curr);
+	    realm = (t_realm*)elem_get_data(curr);
 	    if (!realm_get_active(realm))
 		continue;
 	    bn_int_set(&realmdata.unknown1, SERVER_REALMLISTREPLY_110_DATA_UNKNOWN1);
@@ -3097,7 +3097,7 @@ static int _client_progident2(t_connection * c, t_packet const *const packet)
 	    t_elem const *curr;
 
 	    LIST_TRAVERSE_CONST(channellist(), curr) {
-		ch = elem_get_data(curr);
+		ch = (t_channel*)elem_get_data(curr);
 		if ((!(channel_get_flags(ch) & channel_flags_clan)) && (!prefs_get_hide_temp_channels() || channel_get_permanent(ch)) && (!channel_get_clienttag(ch) || strcmp(channel_get_clienttag(ch), clienttag_uint_to_str(conn_get_clienttag(c))) == 0) && (!(channel_get_flags(ch) & channel_flags_thevoid)) &&	// don't display theVoid in channel list
 		    ((channel_get_max(ch) != 0) || ((channel_get_max(ch) == 0) && (account_is_operator_or_admin(conn_get_account(c), channel_get_name(ch)) == 1))))	// don't display restricted channel for no admins/ops
 		    packet_append_string(rpacket, channel_get_name(ch));
@@ -3797,13 +3797,13 @@ static int _client_gamereport(t_connection * c, t_packet const *const packet)
 	eventlog(eventlog_level_info, __FUNCTION__, "[%d] CLIENT_GAME_REPORT: %s (%u players)", conn_get_socket(c), conn_get_username(c), player_count);
 	my_account = conn_get_account(c);
 
-	results = xmalloc(sizeof(t_game_result) * game_get_count(game));
+	results = (t_game_result*)xmalloc(sizeof(t_game_result) * game_get_count(game));
 
 	for (i = 0; i < game_get_count(game); i++)
 	    results[i] = game_result_none;
 
 	for (i = 0, result_off = sizeof(t_client_game_report), player_off = sizeof(t_client_game_report) + player_count * sizeof(t_client_game_report_result); i < player_count; i++, result_off += sizeof(t_client_game_report_result), player_off += strlen(player) + 1) {
-	    if (!(result_data = packet_get_data_const(packet, result_off, sizeof(t_client_game_report_result)))) {
+	    if (!(result_data = (const t_client_game_report_result*)packet_get_data_const(packet, result_off, sizeof(t_client_game_report_result)))) {
 		eventlog(eventlog_level_error, __FUNCTION__, "[%d] got corrupt GAME_REPORT packet (missing results %u-%u)", conn_get_socket(c), i + 1, player_count);
 		break;
 	    }
@@ -4701,8 +4701,8 @@ static int _client_setemailreply(t_connection * c, t_packet const *const packet)
 
 static int _client_changeemailreq(t_connection * c, t_packet const *const packet)
 {
-    char const *old;
-    char const *new;
+    char const *oldaddr;
+    char const *newaddr;
     char const *username;
     char const *email;
     t_account *account;
@@ -4714,12 +4714,12 @@ static int _client_changeemailreq(t_connection * c, t_packet const *const packet
 	return -1;
     }
     pos += (strlen(username) + 1);
-    if (!(old = packet_get_str_const(packet, pos, MAX_EMAIL_STR))) {
+    if (!(oldaddr = packet_get_str_const(packet, pos, MAX_EMAIL_STR))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad old email in CHANGEEMAILREQ packet", conn_get_socket(c));
 	return -1;
     }
-    pos += (strlen(old) + 1);
-    if (!(new = packet_get_str_const(packet, pos, MAX_EMAIL_STR))) {
+    pos += (strlen(oldaddr) + 1);
+    if (!(newaddr = packet_get_str_const(packet, pos, MAX_EMAIL_STR))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad new email in CHANGEEMAILREQ packet", conn_get_socket(c));
 	return -1;
     }
@@ -4731,15 +4731,15 @@ static int _client_changeemailreq(t_connection * c, t_packet const *const packet
 	eventlog(eventlog_level_info, __FUNCTION__, "[%d] account \"%s\" do not have email set, ignore changing", conn_get_socket(c), account_get_name(account));
 	return 0;
     }
-    if (strcasecmp(email, old)) {
+    if (strcasecmp(email, oldaddr)) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] account \"%s\" email mismatch, ignore changing", conn_get_socket(c), account_get_name(account));
 	return 0;
     }
-    if (account_set_email(account, new) < 0) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] failed to change account \"%s\" email to \"%s\"", conn_get_socket(c), account_get_name(account), new);
+    if (account_set_email(account, newaddr) < 0) {
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] failed to change account \"%s\" email to \"%s\"", conn_get_socket(c), account_get_name(account), newaddr);
 	return 0;
     } else
-	eventlog(eventlog_level_info, __FUNCTION__, "[%d] change account \"%s\" email to \"%s\"", conn_get_socket(c), account_get_name(account), new);
+	eventlog(eventlog_level_info, __FUNCTION__, "[%d] change account \"%s\" email to \"%s\"", conn_get_socket(c), account_get_name(account), newaddr);
     return 0;
 }
 

@@ -278,12 +278,12 @@ static t_storage_info *file_create_account(const char *username)
 	    eventlog(eventlog_level_error, __FUNCTION__, "could not escape username");
 	    return NULL;
 	}
-	temp = xmalloc(strlen(accountsdir) + 1 + strlen(safename) + 1);	/* dir + / + name + NUL */
+	temp = (char*)xmalloc(strlen(accountsdir) + 1 + strlen(safename) + 1);	/* dir + / + name + NUL */
 	sprintf(temp, "%s/%s", accountsdir, safename);
 	xfree((void *) safename);	/* avoid warning */
     } else
     {
-	temp = xmalloc(strlen(accountsdir) + 1 + 8 + 1);	/* dir + / + uid + NUL */
+	temp = (char*)xmalloc(strlen(accountsdir) + 1 + 8 + 1);	/* dir + / + uid + NUL */
 	sprintf(temp, "%s/%06u", accountsdir, maxuserid + 1);	/* FIXME: hmm, maybe up the %06 to %08... */
     }
 
@@ -312,7 +312,7 @@ static int file_write_attrs(t_storage_info * info, const t_hlist *attributes)
 	return -1;
     }
 
-    tempname = xmalloc(strlen(accountsdir) + 1 + strlen(BNETD_ACCOUNT_TMP) + 1);
+    tempname = (char*)xmalloc(strlen(accountsdir) + 1 + strlen(BNETD_ACCOUNT_TMP) + 1);
     sprintf(tempname, "%s/%s", accountsdir, BNETD_ACCOUNT_TMP);
 
     if (file->write_attrs(tempname, attributes))
@@ -439,7 +439,7 @@ static int file_read_accounts(int flag,t_read_accounts_func cb, void *data)
 	if (dentry[0] == '.')
 	    continue;
 
-	pathname = xmalloc(strlen(accountsdir) + 1 + strlen(dentry) + 1);	/* dir + / + file + NUL */
+	pathname = (char*)xmalloc(strlen(accountsdir) + 1 + strlen(dentry) + 1);	/* dir + / + file + NUL */
 	sprintf(pathname, "%s/%s", accountsdir, dentry);
 
 	cb(pathname, data);
@@ -465,7 +465,7 @@ static t_storage_info *file_read_account(const char *accname, unsigned uid)
      * PS: yes its kind of a hack, we will make a proper index file
      */
     if (accname && prefs_get_savebyname()) {
-	pathname = xmalloc(strlen(accountsdir) + 1 + strlen(accname) + 1);	/* dir + / + file + NUL */
+	pathname = (char*)xmalloc(strlen(accountsdir) + 1 + strlen(accname) + 1);	/* dir + / + file + NUL */
 	sprintf(pathname, "%s/%s", accountsdir, accname);
 	if (access(pathname, F_OK))	/* if it doesn't exist */
 	{
@@ -516,7 +516,7 @@ static int file_load_clans(t_load_clans_func cb)
     }
     eventlog(eventlog_level_trace, __FUNCTION__, "start reading clans");
 
-    pathname = xmalloc(strlen(clansdir) + 1 + 4 + 1);
+    pathname = (char*)xmalloc(strlen(clansdir) + 1 + 4 + 1);
     while ((dentry = p_readdir(clandir)) != NULL)
     {
 	if (dentry[0] == '.')
@@ -538,7 +538,7 @@ static int file_load_clans(t_load_clans_func cb)
 	    continue;
 	}
 
-	clan = xmalloc(sizeof(t_clan));
+	clan = (t_clan*)xmalloc(sizeof(t_clan));
 	clan->clantag = clantag;
 
 	if (!fgets(line, 1024, fp))
@@ -615,7 +615,7 @@ static int file_load_clans(t_load_clans_func cb)
 
 	while (fscanf(fp, "%i,%c,%i\n", &member_uid, &member_status, &member_join_time) == 3)
 	{
-	    member = xmalloc(sizeof(t_clanmember));
+	    member = (t_clanmember*)xmalloc(sizeof(t_clanmember));
 	    if (!(member->memberacc = accountlist_find_account_by_uid(member_uid)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "cannot find uid %u", member_uid);
@@ -634,7 +634,7 @@ static int file_load_clans(t_load_clans_func cb)
 
 	    list_append_data(clan->members, member);
 
-	    account_set_clanmember(member->memberacc, member);
+	    account_set_clanmember((t_account*)member->memberacc, member);
 	    eventlog(eventlog_level_trace, __FUNCTION__, "added member: uid: %i status: %c join_time: %i", member_uid, member_status + '0', member_join_time);
 	}
 
@@ -663,7 +663,7 @@ static int file_write_clan(void *data)
     char *clanfile;
     t_clan *clan = (t_clan *) data;
 
-    clanfile = xmalloc(strlen(clansdir) + 1 + 4 + 1);
+    clanfile = (char*)xmalloc(strlen(clansdir) + 1 + 4 + 1);
     sprintf(clanfile, "%s/%c%c%c%c", clansdir, clan->clantag >> 24, (clan->clantag >> 16) & 0xff, (clan->clantag >> 8) & 0xff, clan->clantag & 0xff);
 
     if ((fp = fopen(clanfile, "w")) == NULL)
@@ -677,14 +677,14 @@ static int file_write_clan(void *data)
 
     LIST_TRAVERSE(clan->members, curr)
     {
-	if (!(member = elem_get_data(curr)))
+	if (!(member = (t_clanmember*)elem_get_data(curr)))
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "got NULL elem in list");
 	    continue;
 	}
 	if ((member->status == CLAN_NEW) && (time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
 	    member->status = CLAN_PEON;
-	fprintf(fp, "%i,%c,%u\n", account_get_uid(member->memberacc), member->status + '0', (unsigned) member->join_time);
+	fprintf(fp, "%i,%c,%u\n", account_get_uid((t_account*)member->memberacc), member->status + '0', (unsigned) member->join_time);
     }
 
     fclose(fp);
@@ -696,7 +696,7 @@ static int file_remove_clan(int clantag)
 {
     char *tempname;
 
-    tempname = xmalloc(strlen(clansdir) + 1 + 4 + 1);
+    tempname = (char*)xmalloc(strlen(clansdir) + 1 + 4 + 1);
     sprintf(tempname, "%s/%c%c%c%c", clansdir, clantag >> 24, (clantag >> 16) & 0xff, (clantag >> 8) & 0xff, clantag & 0xff);
     if (remove((const char *) tempname) < 0)
     {
@@ -740,7 +740,7 @@ static int file_load_teams(t_load_teams_func cb)
     }
     eventlog(eventlog_level_trace, __FUNCTION__, "start reading teams");
 
-    pathname = xmalloc(strlen(teamsdir) + 1 + 8 + 1);
+    pathname = (char*)xmalloc(strlen(teamsdir) + 1 + 8 + 1);
     while ((dentry = p_readdir(teamdir)) != NULL)
     {
 	if (dentry[0] == '.')
@@ -762,7 +762,7 @@ static int file_load_teams(t_load_teams_func cb)
 	    continue;
 	}
 
-	team = xmalloc(sizeof(t_team));
+	team = (t_team*)xmalloc(sizeof(t_team));
 	team->teamid = teamid;
 
 	if (!(line = file_get_line(fp)))
@@ -877,7 +877,7 @@ static int file_write_team(void *data)
     char *teamfile;
     t_team *team = (t_team *) data;
 
-    teamfile = xmalloc(strlen(teamsdir) + 1 + 8 + 1);
+    teamfile = (char*)xmalloc(strlen(teamsdir) + 1 + 8 + 1);
     sprintf(teamfile, "%s/%08x", teamsdir, team->teamid);
 
     if ((fp = fopen(teamfile, "w")) == NULL)
@@ -902,7 +902,7 @@ static int file_remove_team(unsigned int teamid)
 
     char *tempname;
 
-    tempname = xmalloc(strlen(clansdir) + 1 + 8 + 1);
+    tempname = (char*)xmalloc(strlen(clansdir) + 1 + 8 + 1);
     sprintf(tempname, "%s/%08x", clansdir, teamid);
     if (remove((const char *) tempname) < 0)
     {

@@ -289,7 +289,7 @@ static int on_d2cs_charloginreq(t_connection * c, t_packet const * packet)
 		char revtag[8];
 
 		realmname = realm_get_name(realm);
-		temp=xmalloc(strlen(clienttag)+strlen(realmname)+1+strlen(charname)+1+
+		temp=(char*)xmalloc(strlen(clienttag)+strlen(realmname)+1+strlen(charname)+1+
 			strlen(portrait)+1);
 		reply = BNETD_D2CS_CHARLOGINREPLY_SUCCEED;
 		strcpy(revtag,clienttag);

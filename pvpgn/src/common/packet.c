@@ -51,28 +51,28 @@
 #include "common/setup_after.h"
 
 
-extern t_packet * packet_create(t_packet_class class)
+extern t_packet * packet_create(t_packet_class pclass)
 {
     t_packet * temp;
     
-    if (class!=packet_class_init &&
-	class!=packet_class_bnet &&
-	class!=packet_class_file &&
-	class!=packet_class_udp &&
-	class!=packet_class_raw &&
-	class!=packet_class_d2game &&
-        class!=packet_class_d2cs &&
-        class!=packet_class_d2gs &&
-	class!=packet_class_d2cs_bnetd &&
-	class!=packet_class_w3route)
+    if (pclass!=packet_class_init &&
+	pclass!=packet_class_bnet &&
+	pclass!=packet_class_file &&
+	pclass!=packet_class_udp &&
+	pclass!=packet_class_raw &&
+	pclass!=packet_class_d2game &&
+        pclass!=packet_class_d2cs &&
+        pclass!=packet_class_d2gs &&
+	pclass!=packet_class_d2cs_bnetd &&
+	pclass!=packet_class_w3route)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"invalid packet class %d",(int)class);
+	eventlog(eventlog_level_error,__FUNCTION__,"invalid packet class %d",(int)pclass);
         return NULL;
     }
 
-    temp = xmalloc(sizeof(t_packet));
+    temp = (t_packet*)xmalloc(sizeof(t_packet));
     temp->ref   = 1;
-    temp->class = class;
+    temp->pclass = pclass;
     temp->flags = 0;
     packet_set_size(temp,0);
     
@@ -128,7 +128,7 @@ extern t_packet_class packet_get_class(t_packet const * packet)
 	return packet_class_none;
     }
     
-    switch (packet->class)
+    switch (packet->pclass)
     {
     case packet_class_init:
 	return packet_class_init;
@@ -153,7 +153,7 @@ extern t_packet_class packet_get_class(t_packet const * packet)
     case packet_class_none:
 	return packet_class_none;
     default:
-	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->class);
+	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return packet_class_none;
     }
 }
@@ -167,7 +167,7 @@ extern char const * packet_get_class_str(t_packet const * packet)
 	return "unknown";
     }
     
-    switch (packet->class)
+    switch (packet->pclass)
     {
     case packet_class_init:
         return "init";
@@ -192,40 +192,40 @@ extern char const * packet_get_class_str(t_packet const * packet)
     case packet_class_none:
 	return "none";
     default:
-	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->class);
+	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return "unknown";
     }
 }
 
 
-extern int packet_set_class(t_packet * packet, t_packet_class class)
+extern int packet_set_class(t_packet * packet, t_packet_class pclass)
 {
     if (!packet)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return -1;
     }
-    if (packet->class!=packet_class_raw)
+    if (packet->pclass!=packet_class_raw)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got non-raw packet");
 	return -1;
     }
-    if (class!=packet_class_init &&
-	class!=packet_class_bnet &&
-	class!=packet_class_file &&
-	class!=packet_class_udp &&
-	class!=packet_class_raw &&
-	class!=packet_class_d2game &&
-        class!=packet_class_d2cs &&
-        class!=packet_class_d2gs &&
-        class!=packet_class_d2cs_bnetd &&
-	class!=packet_class_w3route)
+    if (pclass!=packet_class_init &&
+	pclass!=packet_class_bnet &&
+	pclass!=packet_class_file &&
+	pclass!=packet_class_udp &&
+	pclass!=packet_class_raw &&
+	pclass!=packet_class_d2game &&
+        pclass!=packet_class_d2cs &&
+        pclass!=packet_class_d2gs &&
+        pclass!=packet_class_d2cs_bnetd &&
+	pclass!=packet_class_w3route)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"invalid packet class %d",(int)class);
+	eventlog(eventlog_level_error,__FUNCTION__,"invalid packet class %d",(int)pclass);
         return -1;
     }
     
-    packet->class = class;
+    packet->pclass = pclass;
     return 0;
 }
 
@@ -238,7 +238,7 @@ extern unsigned int packet_get_type(t_packet const * packet)
 	return 0;
     }
     
-    switch (packet->class)
+    switch (packet->pclass)
     {
     case packet_class_init:
 	return CLIENT_INITCONN; /* all init packets are of this type */
@@ -310,7 +310,7 @@ extern unsigned int packet_get_type(t_packet const * packet)
 
 	
     default:
-	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->class);
+	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return 0;
     }
 }
@@ -327,7 +327,7 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
     switch (dir)
     {
     case packet_dir_from_client:
-	switch (packet->class)
+	switch (packet->pclass)
 	{
 	case packet_class_init:
 	    return "CLIENT_INITCONN";
@@ -568,11 +568,11 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    return "unknown";
 	}
 	
-	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->class);
+	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return "unknown";
 	
     case packet_dir_from_server:
-	switch (packet->class)
+	switch (packet->pclass)
 	{
 	case packet_class_init:
 	    return "unknown";
@@ -778,7 +778,7 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    return "unknown";
 	}
 	
-	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->class);
+	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return "unknown";
     }
     
@@ -795,7 +795,7 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	return -1;
     }
     
-    switch (packet->class)
+    switch (packet->pclass)
     {
     case packet_class_init:
 	if (type!=CLIENT_INITCONN)
@@ -893,7 +893,7 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	return 0;
 	
     default:
-	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->class);
+	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return -1;
     }
 }
@@ -910,7 +910,7 @@ extern unsigned int packet_get_size(t_packet const * packet)
 	return 0;
     }
     
-    switch (packet->class)
+    switch (packet->pclass)
     {
     case packet_class_init:
         size = sizeof(t_client_initconn);
@@ -943,7 +943,7 @@ extern unsigned int packet_get_size(t_packet const * packet)
 	size = (unsigned int)bn_short_get(packet->u.w3route.h.size);
 	break;
     default:
-	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->class);
+	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return 0;
     }
     
@@ -969,7 +969,7 @@ extern int packet_set_size(t_packet * packet, unsigned int size)
 	return -1;
     }
     
-    switch (packet->class)
+    switch (packet->pclass)
     {
     case packet_class_init:
 	if (size!=0 && size!=sizeof(t_client_initconn))
@@ -1027,7 +1027,7 @@ extern int packet_set_size(t_packet * packet, unsigned int size)
         bn_short_set(&packet->u.w3route.h.size,size);
         return 0;
     default:
-	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->class);
+	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return -1;
     }
 }

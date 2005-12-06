@@ -198,7 +198,7 @@ static int on_client_createcharreq(t_connection * c, t_packet * packet)
 	t_pdir          * dir;
 	t_sq		* sq;
 	unsigned int	reply;
-	unsigned short	status, class;
+	unsigned short	status, chclass;
 	t_d2charinfo_file	data;
 
 	if (!(charname=packet_get_str_const(packet,sizeof(t_client_d2cs_createcharreq),MAX_CHARNAME_LEN))) {
@@ -209,10 +209,10 @@ static int on_client_createcharreq(t_connection * c, t_packet * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"missing account for character %s",charname);
 		return -1;
 	}
-	class=bn_short_get(packet->u.client_d2cs_createcharreq.class);
+	chclass=bn_short_get(packet->u.client_d2cs_createcharreq.chclass);
 	status=bn_short_get(packet->u.client_d2cs_createcharreq.status);
 
-	path=xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
+	path=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
 	d2char_get_infodir_name(path,account);
 	if (!(dir=p_opendir(path))) {
 	        eventlog(eventlog_level_info,__FUNCTION__,"(*%s) charinfo directory do not exist, building it",account);
@@ -222,7 +222,7 @@ static int on_client_createcharreq(t_connection * c, t_packet * packet)
 	  p_closedir(dir);
 	xfree(path);
 
-	if (d2char_create(account,charname,class,status)<0) {
+	if (d2char_create(account,charname,chclass,status)<0) {
 		eventlog(eventlog_level_warn,__FUNCTION__,"error create character %s for account %s",charname,account);
 		reply=D2CS_CLIENT_CREATECHARREPLY_ALREADY_EXIST;
 	} else if (d2charinfo_load(account,charname,&data)<0) {
@@ -498,7 +498,7 @@ static int on_client_gamelistreq(t_connection * c, t_packet * packet)
 			elem=list_get_first_const(d2cs_gamelist());
 			if (elem == start_elem) break;
 		}
-		if (!(game=elem_get_data(elem))) {
+		if (!(game=(t_game*)elem_get_data(elem))) {
 			eventlog(eventlog_level_error,__FUNCTION__,"got NULL game");
 			break;
 		}
@@ -571,14 +571,14 @@ static int on_client_gameinforeq(t_connection * c, t_packet * packet)
 		packet_append_string(rpacket, game_get_desc(game) ? game_get_desc(game) : NULL);
 
 		n=0;
-		BEGIN_LIST_TRAVERSE_DATA_CONST(game_get_charlist(game),info)
+		BEGIN_LIST_TRAVERSE_DATA_CONST(game_get_charlist(game),info,t_game_charinfo)
 		{
 			if (!info->charname) {
 				eventlog(eventlog_level_error,__FUNCTION__,"got NULL charname in game %s char list",gamename);
 				continue;
 			}
 			packet_append_string(rpacket,info->charname);
-			bn_byte_set(&rpacket->u.d2cs_client_gameinforeply.class[n],info->class);
+			bn_byte_set(&rpacket->u.d2cs_client_gameinforeply.chclass[n],info->chclass);
 			bn_byte_set(&rpacket->u.d2cs_client_gameinforeply.level[n],info->level);
 			n++;
 		}
@@ -867,7 +867,7 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"missing account for connection");
 		return -1;
 	}
-	path=xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
+	path=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
 	charlist_sort_order = prefs_get_charlist_sort_order();
 
 	elist_init(&charlist_head);
@@ -885,7 +885,7 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 		} else {
 			while ((charname=p_readdir(dir))) {
 				if (charname[0]=='.') continue;
-				charinfo = xmalloc(sizeof(t_d2charinfo_file));
+				charinfo = (t_d2charinfo_file*)xmalloc(sizeof(t_d2charinfo_file));
 				if (d2charinfo_load(account,charname,charinfo)<0) {
 					eventlog(eventlog_level_error,__FUNCTION__,"error loading charinfo for %s(*%s)",charname,account);
 					xfree((void *)charinfo);
@@ -910,7 +910,7 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 			    elist_for_each_safe(curr,&charlist_head,safe)
 			    {
 				ccharlist = elist_entry(curr,t_d2charlist,list);
-				packet_append_string(rpacket,ccharlist->charinfo->header.charname);
+				packet_append_string(rpacket,(char*)ccharlist->charinfo->header.charname);
 				packet_append_string(rpacket,(char *)&ccharlist->charinfo->portrait);
 				xfree((void *)ccharlist->charinfo);
 				xfree((void *)ccharlist);
@@ -924,7 +924,7 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 			    elist_for_each_safe_rev(curr,&charlist_head,safe)
 			    {
 				ccharlist = elist_entry(curr,t_d2charlist,list);
-				packet_append_string(rpacket,ccharlist->charinfo->header.charname);
+				packet_append_string(rpacket,(char*)ccharlist->charinfo->header.charname);
 				packet_append_string(rpacket,(char *)&ccharlist->charinfo->portrait);
 				xfree((void *)ccharlist->charinfo);
 				xfree((void *)ccharlist);
@@ -964,7 +964,7 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"missing account for connection");
 		return -1;
 	}
-	path=xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
+	path=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
 	charlist_sort_order = prefs_get_charlist_sort_order();
 	
 	elist_init(&charlist_head);
@@ -987,7 +987,7 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 			exp_time = prefs_get_char_expire_time();
 			while ((charname=p_readdir(dir))) {
 				if (charname[0]=='.') continue;
-				charinfo = xmalloc(sizeof(t_d2charinfo_file));
+				charinfo = (t_d2charinfo_file*)xmalloc(sizeof(t_d2charinfo_file));
 				if (d2charinfo_load(account,charname,charinfo)<0) {
 					eventlog(eventlog_level_error,__FUNCTION__,"error loading charinfo for %s(*%s)",charname,account);
 					xfree(charinfo);
@@ -1019,7 +1019,7 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 				ccharlist = elist_entry(curr,t_d2charlist,list);
 				bn_int_set(&bn_exp_time,ccharlist->expiration_time);
 				packet_append_data(rpacket,bn_exp_time,sizeof(bn_exp_time));
-				packet_append_string(rpacket,ccharlist->charinfo->header.charname);
+				packet_append_string(rpacket,(char*)ccharlist->charinfo->header.charname);
 				packet_append_string(rpacket,(char *)&ccharlist->charinfo->portrait);
 				xfree((void *)ccharlist->charinfo);
 				xfree((void *)ccharlist);
@@ -1037,7 +1037,7 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 				ccharlist = elist_entry(curr,t_d2charlist,list);
 				bn_int_set(&bn_exp_time,ccharlist->expiration_time);
 				packet_append_data(rpacket,bn_exp_time,sizeof(bn_exp_time));
-				packet_append_string(rpacket,ccharlist->charinfo->header.charname);
+				packet_append_string(rpacket,(char*)ccharlist->charinfo->header.charname);
 				packet_append_string(rpacket,(char *)&ccharlist->charinfo->portrait);
 				xfree((void *)ccharlist->charinfo);
 				xfree((void *)ccharlist);

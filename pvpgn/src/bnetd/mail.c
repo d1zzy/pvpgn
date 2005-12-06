@@ -112,13 +112,13 @@ static t_mailbox * mailbox_open(t_account * user, t_mbox_mode mode) {
    char * path;
    char const * maildir;
 
-   rez=xmalloc(sizeof(t_mailbox));
+   rez=(t_mailbox*)xmalloc(sizeof(t_mailbox));
 
    maildir=prefs_get_maildir();
    if (mode & mbox_mode_write)
       p_mkdir(maildir,S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
-   path=xmalloc(strlen(maildir)+1+8+1);
+   path=(char*)xmalloc(strlen(maildir)+1+8+1);
    if (maildir[0]!='\0' && maildir[strlen(maildir)-1]=='/')
       sprintf(path,"%s%06u",maildir,account_get_uid(user));
    else
@@ -172,7 +172,7 @@ static int mailbox_deliver(t_mailbox * mailbox, const char * sender, const char 
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL path");
       return -1;
    }
-   filename=xmalloc(strlen(mailbox->path)+1+15+1);
+   filename=(char*)xmalloc(strlen(mailbox->path)+1+15+1);
    sprintf(filename,"%s/%015lu",mailbox->path,(unsigned long)time(NULL));
    if ((fd=fopen(filename,"wb"))==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL file descriptor. check permissions");
@@ -201,7 +201,7 @@ static t_mail * mailbox_read(t_mailbox * mailbox, unsigned int idx) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL maildir");
       return NULL;
    }
-   rez=xmalloc(sizeof(t_mail));
+   rez=(t_mail*)xmalloc(sizeof(t_mail));
    p_rewinddir(mailbox->maildir);
    dentry = NULL; /* if idx < 1 we should not crash :) */
    for(i=0;i<idx && (dentry=p_readdir(mailbox->maildir))!=NULL;i++)
@@ -212,7 +212,7 @@ static t_mail * mailbox_read(t_mailbox * mailbox, unsigned int idx) {
       return NULL;
    }
    rez->timestamp=atoi(dentry);
-   filename=xmalloc(strlen(dentry)+1+strlen(mailbox->path)+1);
+   filename=(char*)xmalloc(strlen(dentry)+1+strlen(mailbox->path)+1);
    sprintf(filename,"%s/%s",mailbox->path,dentry);
    if ((fd=fopen(filename,"rb"))==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"error while opening message");
@@ -221,10 +221,10 @@ static t_mail * mailbox_read(t_mailbox * mailbox, unsigned int idx) {
       return NULL;
    }
    xfree(filename);
-   rez->sender=xmalloc(256);
+   rez->sender=(char*)xmalloc(256);
    fgets(rez->sender,256,fd); /* maybe 256 isnt the right value to bound a line but right now its all i have :) */
    clean_str(rez->sender);
-   rez->message=xmalloc(256);
+   rez->message=(char*)xmalloc(256);
    fgets(rez->message,256,fd);
    clean_str(rez->message);
    fclose(fd);
@@ -260,11 +260,11 @@ static struct maillist_struct * mailbox_get_list(t_mailbox *mailbox) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL maildir");
       return NULL;
    }
-   filename=xmalloc(strlen(mailbox->path)+1+15+1);
+   filename=(char*)xmalloc(strlen(mailbox->path)+1+15+1);
    p_rewinddir(mailbox->maildir);
    for(;(dentry=p_readdir(mailbox->maildir))!=NULL;)
      if (dentry[0]!='.') {
-	q=xmalloc(sizeof(struct maillist_struct));
+	q=(struct maillist_struct*)xmalloc(sizeof(struct maillist_struct));
 	sprintf(filename,"%s/%s",mailbox->path,dentry);
 	if ((fd=fopen(filename,"rb"))==NULL) {
 	   eventlog(eventlog_level_error,__FUNCTION__,"error while opening message file");
@@ -272,7 +272,7 @@ static struct maillist_struct * mailbox_get_list(t_mailbox *mailbox) {
 	   xfree(q);
 	   return rez;
 	}
-	sender=xmalloc(256);
+	sender=(char*)xmalloc(256);
 	fgets(sender,256,fd);
 	clean_str(sender);
 	fclose(fd);
@@ -319,7 +319,7 @@ static int mailbox_delete(t_mailbox * mailbox, unsigned int idx) {
       eventlog(eventlog_level_error,__FUNCTION__,"index out of range");
       return -1;
    }
-   filename=xmalloc(strlen(dentry)+1+strlen(mailbox->path)+1);
+   filename=(char*)xmalloc(strlen(dentry)+1+strlen(mailbox->path)+1);
    sprintf(filename,"%s/%s",mailbox->path,dentry);
    rez=remove(filename);
    if (rez<0) {
@@ -342,7 +342,7 @@ static int mailbox_delete_all(t_mailbox * mailbox) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL maildir");
       return -1;
    }
-   filename=xmalloc(strlen(mailbox->path)+1+15+1);
+   filename=(char*)xmalloc(strlen(mailbox->path)+1+15+1);
    p_rewinddir(mailbox->maildir);
    count = 0;
    while ((dentry=p_readdir(mailbox->maildir))!=NULL)
@@ -472,7 +472,7 @@ static void mail_func_send(t_connection * c, const char * str) {
       message_send_text(c,message_type_error,c,"Syntax: /mail send <receiver> <message>");
       return;
    }
-   dest=xmalloc(i+1);
+   dest=(char*)xmalloc(i+1);
    memmove(dest,p,i); dest[i]='\0'; /* copy receiver in his separate string */
    if ((recv=accountlist_find_account(dest))==NULL) { /* is dest a valid account on this server ? */
       message_send_text(c,message_type_error,c,"Receiver UNKNOWN!");

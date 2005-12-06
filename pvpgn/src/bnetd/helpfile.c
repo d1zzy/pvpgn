@@ -139,7 +139,7 @@ static int list_commands(t_connection * c)
 	    
             /* ok. now we must see if there are any aliases */
             length=MAX_COMMAND_LEN+1; position=0;
-            buffer=xmalloc(length+1); /* initial memory allocation = pretty fair */
+            buffer=(char*)xmalloc(length+1); /* initial memory allocation = pretty fair */
             p=line+i;
             do
 	    {
@@ -153,7 +153,7 @@ static int list_commands(t_connection * c)
                 if (length<strlen(p)+position+1)
                 /* if we don't have enough space in the buffer then get some */
                 length=strlen(p)+position+1; /* the new length */
-                buffer=xrealloc(buffer,length+1);
+                buffer=(char*)xrealloc(buffer,length+1);
                 buffer[position++]=' '; /* put a space before each alias */
                 /* add the alias to the output string */
                 strcpy(buffer+position,p); position+=strlen(p);

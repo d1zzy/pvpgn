@@ -53,7 +53,7 @@ static t_list * watchlist_head=NULL;
 
 
 /* who == NULL means anybody */
-extern int watchlist_add_events(t_connection * owner, t_account * who, t_clienttag clienttag, t_watch_event events)
+extern int watchlist_add_events(t_connection * owner, t_account * who, t_clienttag clienttag, unsigned events)
 {
     t_elem const * curr;
     t_watch_pair * pair;
@@ -66,7 +66,7 @@ extern int watchlist_add_events(t_connection * owner, t_account * who, t_clientt
 
     LIST_TRAVERSE_CONST(watchlist_head,curr)
     {
-	pair = elem_get_data(curr);
+	pair = (t_watch_pair*)elem_get_data(curr);
 	if (!pair) /* should not happen */
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"watchlist contains NULL item");
@@ -79,7 +79,7 @@ extern int watchlist_add_events(t_connection * owner, t_account * who, t_clientt
 	}
     }
 
-    pair = xmalloc(sizeof(t_watch_pair));
+    pair = (t_watch_pair*)xmalloc(sizeof(t_watch_pair));
     pair->owner = owner;
     pair->who   = who;
     pair->what  = events;
@@ -92,7 +92,7 @@ extern int watchlist_add_events(t_connection * owner, t_account * who, t_clientt
 
 
 /* who == NULL means anybody */
-extern int watchlist_del_events(t_connection * owner, t_account * who, t_clienttag clienttag, t_watch_event events)
+extern int watchlist_del_events(t_connection * owner, t_account * who, t_clienttag clienttag, unsigned events)
 {
     t_elem *       curr;
     t_watch_pair * pair;
@@ -105,7 +105,7 @@ extern int watchlist_del_events(t_connection * owner, t_account * who, t_clientt
     
     LIST_TRAVERSE(watchlist_head,curr)
     {
-	pair = elem_get_data(curr);
+	pair = (t_watch_pair*)elem_get_data(curr);
 	if (!pair) /* should not happen */
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"watchlist contains NULL item");
@@ -147,7 +147,7 @@ extern int watchlist_del_all_events(t_connection * owner)
     
     LIST_TRAVERSE(watchlist_head,curr)
     {
-	pair = elem_get_data(curr);
+	pair = (t_watch_pair*)elem_get_data(curr);
 	if (!pair) /* should not happen */
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"watchlist contains NULL item");
@@ -182,7 +182,7 @@ extern int watchlist_del_by_account(t_account * who)
     
     LIST_TRAVERSE(watchlist_head,curr)
     {
-	pair = elem_get_data(curr);
+	pair = (t_watch_pair*)elem_get_data(curr);
 	if (!pair) /* should not happen */
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"watchlist contains NULL item");
@@ -203,7 +203,7 @@ extern int watchlist_del_by_account(t_account * who)
     return 0;
 }
 
-static int handle_event_whisper(t_account *account, char const *gamename, t_clienttag clienttag, t_watch_event event)
+static int handle_event_whisper(t_account *account, char const *gamename, t_clienttag clienttag, unsigned event)
 {
     t_elem const * curr;
     t_watch_pair * pair;
@@ -246,7 +246,7 @@ static int handle_event_whisper(t_account *account, char const *gamename, t_clie
         if (event == watch_event_logout)   sprintf(msg,"Your friend %s has left %s.",myusername,prefs_get_servername());
         LIST_TRAVERSE(flist,curr)
         { 
-            if (!(fr = elem_get_data(curr)))
+            if (!(fr = (t_friend*)elem_get_data(curr)))
             {
                 eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
                 continue;
@@ -281,7 +281,7 @@ static int handle_event_whisper(t_account *account, char const *gamename, t_clie
 
     LIST_TRAVERSE_CONST(watchlist_head,curr)
     {
-      pair = elem_get_data(curr);
+      pair = (t_watch_pair*)elem_get_data(curr);
       if (!pair) /* should not happen */
 	{
 	  eventlog(eventlog_level_error,__FUNCTION__,"watchlist contains NULL item");
@@ -331,7 +331,7 @@ extern int watchlist_destroy(void)
     {
 	LIST_TRAVERSE(watchlist_head,curr)
 	{
-	    pair = elem_get_data(curr);
+	    pair = (t_watch_pair*)elem_get_data(curr);
 	    if (!pair) /* should not happen */
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"watchlist contains NULL item");

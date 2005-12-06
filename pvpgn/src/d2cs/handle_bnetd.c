@@ -79,7 +79,7 @@ extern int handle_bnetd_init(t_connection * c)
 	
 	packet=packet_create(packet_class_init);
 	packet_set_size(packet,sizeof(t_client_initconn));
-	bn_byte_set(&packet->u.client_initconn.class, CLIENT_INITCONN_CLASS_D2CS_BNETD);
+	bn_byte_set(&packet->u.client_initconn.cclass, CLIENT_INITCONN_CLASS_D2CS_BNETD);
 	conn_push_outqueue(c,packet);
 	packet_del_ref(packet);
 	d2cs_conn_set_state(c,conn_state_connected);

@@ -93,7 +93,7 @@ static t_adbanner * adbanner_create(unsigned int id, unsigned int next_id, unsig
 	return NULL;
     }
     
-    ad = xmalloc(sizeof(t_adbanner));
+    ad = (t_adbanner*)xmalloc(sizeof(t_adbanner));
     
     ad->id           = id;
     ad->extensiontag = bn_int_get(tag);
@@ -271,7 +271,7 @@ static t_adbanner * adbannerlist_find_adbanner_by_id(t_list const * head, unsign
     
     LIST_TRAVERSE_CONST(head,curr)
     {
-        if (!(temp = elem_get_data(curr)))
+        if (!(temp = (t_adbanner*)elem_get_data(curr)))
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"found NULL adbanner in list");
 	    continue;
@@ -299,7 +299,7 @@ static t_adbanner * adbannerlist_get_random(t_list const * head, t_clienttag cli
     ocount = 0; ccount = 0;
     LIST_TRAVERSE_CONST(head,curr)
     {
-        if (!(temp = elem_get_data(curr)))
+        if (!(temp = (t_adbanner*)elem_get_data(curr)))
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"found NULL adbanner in list");
 	    continue;
@@ -314,7 +314,7 @@ static t_adbanner * adbannerlist_get_random(t_list const * head, t_clienttag cli
 	ccount = 0;
 	LIST_TRAVERSE_CONST(head,curr)
 	{
-    	    if (!(temp = elem_get_data(curr))) continue;
+    	    if (!(temp = (t_adbanner*)elem_get_data(curr))) continue;
 	    if ((adbanner_get_client(temp) == client))
 		if (ccount++ == pos) return temp;
 	}
@@ -324,7 +324,7 @@ static t_adbanner * adbannerlist_get_random(t_list const * head, t_clienttag cli
 	ocount = 0;
 	LIST_TRAVERSE_CONST(head,curr)
 	{
-    	    if (!(temp = elem_get_data(curr))) continue;
+    	    if (!(temp = (t_adbanner*)elem_get_data(curr))) continue;
 	    if ((adbanner_get_client(temp) == 0))
 		if (ocount++ == pos) return temp; 
 	}
@@ -353,8 +353,8 @@ static int adbannerlist_insert(t_list * head, unsigned int * count, char const *
 	return -1;
     }
     
-    ext = xmalloc(strlen(filename));
-    
+    ext = (char*)xmalloc(strlen(filename));
+
     if (sscanf(filename,"%*c%*c%x.%s",&id,ext)!=2)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got bad ad filename \"%s\"",filename);
@@ -443,10 +443,10 @@ extern int adbannerlist_create(char const * filename)
         }
         len = strlen(buff)+1;
 
-        name = xmalloc(len);
-        when = xmalloc(len);
-        link = xmalloc(len);
-        client = xmalloc(len);
+        name = (char*)xmalloc(len);
+        when = (char*)xmalloc(len);
+        link = (char*)xmalloc(len);
+        client =(char*) xmalloc(len);
 	
 	if (sscanf(buff," \"%[^\"]\" %[a-z] %u \"%[^\"]\" %x \"%[^\"]\"",name,when,&delay,link,&next_id,client)!=6)
 	    {
@@ -489,7 +489,7 @@ extern int adbannerlist_destroy(void)
     {
 	LIST_TRAVERSE(adbannerlist_init_head,curr)
 	{
-	    if (!(ad = elem_get_data(curr)))
+	    if (!(ad = (t_adbanner*)elem_get_data(curr)))
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL adbanner in init list");
 	    else
 		adbanner_destroy(ad);
@@ -504,7 +504,7 @@ extern int adbannerlist_destroy(void)
     {
 	LIST_TRAVERSE(adbannerlist_start_head,curr)
 	{
-	    if (!(ad = elem_get_data(curr)))
+	    if (!(ad = (t_adbanner*)elem_get_data(curr)))
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL adbanner in start list");
 	    else
 		adbanner_destroy(ad);
@@ -519,7 +519,7 @@ extern int adbannerlist_destroy(void)
     {
 	LIST_TRAVERSE(adbannerlist_norm_head,curr)
 	{
-	    if (!(ad = elem_get_data(curr)))
+	    if (!(ad = (t_adbanner*)elem_get_data(curr)))
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL adbanner in norm list");
 	    else
 		adbanner_destroy(ad);

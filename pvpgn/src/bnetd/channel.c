@@ -134,7 +134,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 	}
     }
 
-    channel = xmalloc(sizeof(t_channel));
+    channel = (t_channel*)xmalloc(sizeof(t_channel));
     
     if (permflag)
     {
@@ -224,7 +224,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 		    tmnow->tm_min,
 		    tmnow->tm_sec);
 
-	channel->logname = xmalloc(strlen(prefs_get_chanlogdir())+9+strlen(dstr)+1+6+1); /* dir + "/chanlog-" + dstr + "-" + id + NUL */
+	channel->logname = (char*)xmalloc(strlen(prefs_get_chanlogdir())+9+strlen(dstr)+1+6+1); /* dir + "/chanlog-" + dstr + "-" + id + NUL */
 	sprintf(channel->logname,"%s/chanlog-%s-%06u",prefs_get_chanlogdir(),dstr,channel->id);
 	
 	if (!(channel->log = fopen(channel->logname,"w")))
@@ -302,7 +302,7 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
     {
 	char const * banned;
 	
-	if (!(banned = elem_get_data(ban)))
+	if (!(banned = (char*)elem_get_data(ban)))
 	    eventlog(eventlog_level_error,__FUNCTION__,"found NULL name in banlist");
 	else
 	    xfree((void *)banned); /* avoid warning */
@@ -375,7 +375,7 @@ extern char const * channel_get_clienttag(t_channel const * channel)
 }
 
 
-extern t_channel_flags channel_get_flags(t_channel const * channel)
+extern unsigned channel_get_flags(t_channel const * channel)
 {
     if (!channel)
     {
@@ -386,7 +386,7 @@ extern t_channel_flags channel_get_flags(t_channel const * channel)
     return channel->flags;
 }
 
-extern int channel_set_flags(t_channel * channel, t_channel_flags flags)
+extern int channel_set_flags(t_channel * channel, unsigned flags)
 {
     if (!channel)
     {
@@ -475,7 +475,7 @@ extern int channel_add_connection(t_channel * channel, t_connection * connection
 	return -1;
     }
 
-    member = xmalloc(sizeof(t_channelmember));
+    member = (t_channelmember*)xmalloc(sizeof(t_channelmember));
     member->connection = connection;
     member->next = channel->memberlist;
     channel->memberlist = member;
@@ -752,7 +752,7 @@ extern int channel_ban_user(t_channel * channel, char const * user)
         return -1;
     
     LIST_TRAVERSE_CONST(channel->banlist,curr)
-        if (strcasecmp(elem_get_data(curr),user)==0)
+        if (strcasecmp((char*)elem_get_data(curr),user)==0)
             return 0;
     
     temp = xstrdup(user);
@@ -781,7 +781,7 @@ extern int channel_unban_user(t_channel * channel, char const * user)
     {
 	char const * banned;
 	
-	if (!(banned = elem_get_data(curr)))
+	if (!(banned = (char*)elem_get_data(curr)))
 	{
             eventlog(eventlog_level_error,__FUNCTION__,"found NULL name in banlist");
 	    continue;
@@ -821,7 +821,7 @@ extern int channel_check_banning(t_channel const * channel, t_connection const *
 	return 1;
     
     LIST_TRAVERSE_CONST(channel->banlist,curr)
-        if (conn_match(user,elem_get_data(curr))==1)
+        if (conn_match(user,(char*)elem_get_data(curr))==1)
             return 1;
     
     return 0;
@@ -1094,7 +1094,7 @@ static char * channel_format_name(char const * sname, char const * country, char
     	len = len + strlen(realmname) + 1;
     len = len + 32 + 1;
 
-    fullname=xmalloc(len);
+    fullname=(char*)xmalloc(len);
     sprintf(fullname,"%s%s%s%s%s-%d",
             realmname?realmname:"",
             realmname?" ":"",
@@ -1120,7 +1120,7 @@ extern int channellist_reload(void)
       /* First pass - get members */
       LIST_TRAVERSE(channellist_head,curr)
       {
-	if (!(channel = elem_get_data(curr)))
+	if (!(channel = (t_channel*)elem_get_data(curr)))
 	{
 	  eventlog(eventlog_level_error,__FUNCTION__,"channel list contains NULL item");
 	  continue;
@@ -1139,7 +1139,7 @@ extern int channellist_reload(void)
 	  /* First pass */
 	  while (member)
 	  {
-	    old_member = xmalloc(sizeof(t_channelmember));
+	    old_member = (t_channelmember*)xmalloc(sizeof(t_channelmember));
 	    old_member->connection = member->connection;
 	    
 	    if (old_channel->memberlist)
@@ -1182,7 +1182,7 @@ extern int channellist_reload(void)
       
       LIST_TRAVERSE(channellist_old,curr)
       {
-	if (!(channel = elem_get_data(curr)))
+	if (!(channel = (t_channel*)elem_get_data(curr)))
 	{
 	  eventlog(eventlog_level_error,__FUNCTION__,"old channel list contains NULL item");
 	  continue;
@@ -1202,7 +1202,7 @@ extern int channellist_reload(void)
  
       LIST_TRAVERSE(channellist_old,curr)
       {
-	if (!(channel = elem_get_data(curr)))
+	if (!(channel = (t_channel*)elem_get_data(curr)))
 	{
 	  eventlog(eventlog_level_error,__FUNCTION__,"old channel list contains NULL item");
 	  continue;
@@ -1249,7 +1249,7 @@ extern int channellist_destroy(void)
     {
 	LIST_TRAVERSE(channellist_head,curr)
 	{
-	    if (!(channel = elem_get_data(curr))) /* should not happen */
+	    if (!(channel = (t_channel*)elem_get_data(curr))) /* should not happen */
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"channel list contains NULL item");
 		continue;
@@ -1352,7 +1352,7 @@ static t_channel * channellist_find_channel_by_fullname(char const * name)
     {
 	LIST_TRAVERSE(channellist_head,curr)
 	{
-	    channel = elem_get_data(curr);
+	    channel = (t_channel*)elem_get_data(curr);
 	    if (!channel->name)
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"found channel with NULL name");
@@ -1402,7 +1402,7 @@ extern t_channel * channellist_find_channel_by_name(char const * name, char cons
     {
 	LIST_TRAVERSE(channellist_head,curr)
 	{
-	    channel = elem_get_data(curr);
+	    channel = (t_channel*)elem_get_data(curr);
 	    if (!channel->name)
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"found channel with NULL name");
@@ -1513,7 +1513,7 @@ extern t_channel * channellist_find_channel_bychannelid(unsigned int channelid)
     {
 	LIST_TRAVERSE(channellist_head,curr)
 	{
-	    channel = elem_get_data(curr);
+	    channel = (t_channel*)elem_get_data(curr);
 	    if (!channel->name)
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"found channel with NULL name");

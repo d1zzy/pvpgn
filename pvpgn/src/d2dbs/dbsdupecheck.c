@@ -86,13 +86,13 @@ extern int dbsdupecheck(char * data, unsigned int datalen)
 
    do
    {
-     pointer = find_delimiter(datap,restlen);
+     pointer = (char*)find_delimiter(datap,restlen);
      restlen -= (pointer-datap);
      datap = pointer;
    }
    while ((is_delimit(datap)!=1) || (is_delimit(datap+4)!=1)); // now we should have found "JMxxJM"
    
-   itemcount = bn_short_get(&datap[2]);
+   itemcount = bn_short_get((bn_basic*)&datap[2]);
 
    datap+=4;
    restlen-=4;
@@ -108,9 +108,9 @@ extern int dbsdupecheck(char * data, unsigned int datalen)
       else
       {
 	eventlog(eventlog_level_info,__FUNCTION__,"extended item");
-	uid = bn_int_get(&datap[14]);
+	uid = bn_int_get((bn_basic*)&datap[14]);
 	eventlog(eventlog_level_info,__FUNCTION__,"unique ID: %lu",uid);
-	pointer = find_delimiter(datap,restlen);
+	pointer = (char*)find_delimiter(datap,restlen);
 	restlen-= (pointer-datap);
 	datap = pointer;
       }

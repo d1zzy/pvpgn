@@ -390,7 +390,7 @@ extern char const * game_speed_get_str(t_game_speed speed)
 }
 
 
-extern char const * game_difficulty_get_str(t_game_difficulty difficulty)
+extern char const * game_difficulty_get_str(unsigned difficulty)
 {
     switch (difficulty)
     {
@@ -438,7 +438,7 @@ extern t_game * game_create(char const * name, char const * pass, char const * i
 	return NULL; /* already have a game by that name */
     }
     
-    game = xmalloc(sizeof(t_game));
+    game = (t_game*)xmalloc(sizeof(t_game));
     game->name = xstrdup(name);
     game->pass = xstrdup(pass);
     game->info = xstrdup(info);
@@ -823,7 +823,7 @@ static int game_report(t_game * game)
 		account_set_ladder_last_time(game->players[i],game->clienttag,id,bnettime());
 	    }
 
-	    ladder_info = xmalloc(sizeof(t_ladder_info)*realcount);
+	    ladder_info = (t_ladder_info*)xmalloc(sizeof(t_ladder_info)*realcount);
 	    if (ladder_update(game->clienttag,id,
 		realcount,game->players,game->results,ladder_info,
 		discisloss?ladder_option_disconnectisloss:ladder_option_none)<0)
@@ -908,9 +908,9 @@ static int game_report(t_game * game)
 		    tmval->tm_min,
 		    tmval->tm_sec);
 
-	tempname = xmalloc(strlen(prefs_get_reportdir())+1+1+5+1+2+1+strlen(dstr)+1+6+1);
+	tempname = (char*)xmalloc(strlen(prefs_get_reportdir())+1+1+5+1+2+1+strlen(dstr)+1+6+1);
 	sprintf(tempname,"%s/_bnetd-gr_%s_%06u",prefs_get_reportdir(),dstr,game->id);
-	realname = xmalloc(strlen(prefs_get_reportdir())+1+2+1+strlen(dstr)+1+6+1);
+	realname = (char*)xmalloc(strlen(prefs_get_reportdir())+1+2+1+strlen(dstr)+1+6+1);
 	sprintf(realname,"%s/gr_%s_%06u",prefs_get_reportdir(),dstr,game->id);
     }
     
@@ -1107,7 +1107,7 @@ extern t_game_type game_get_type(t_game const * game)
     if (!game)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL game");
-        return 0;
+        return game_type_none;
     }
     return game->type;
 }
@@ -1403,7 +1403,7 @@ extern t_game_status game_get_status(t_game const * game)
     if (!game)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL game");
-        return 0;
+        return game_status_started;
     }
     return game->status;
 }
@@ -1573,38 +1573,38 @@ extern int game_add_player(t_game * game, char const * pass, int startver, t_con
     {
 
         if (!game->connections) /* some realloc()s are broken */
-	    tempc = xmalloc((game->count+1)*sizeof(t_connection *));
+	    tempc = (t_connection**)xmalloc((game->count+1)*sizeof(t_connection *));
         else
-	    tempc = xrealloc(game->connections,(game->count+1)*sizeof(t_connection *));
+	    tempc = (t_connection**)xrealloc(game->connections,(game->count+1)*sizeof(t_connection *));
         game->connections = tempc;
         if (!game->players) /* some realloc()s are broken */
-	    tempp = xmalloc((game->count+1)*sizeof(t_account *));
+	    tempp = (t_account**)xmalloc((game->count+1)*sizeof(t_account *));
         else
-	    tempp = xrealloc(game->players,(game->count+1)*sizeof(t_account *));
+	    tempp = (t_account**)xrealloc(game->players,(game->count+1)*sizeof(t_account *));
         game->players = tempp;
 
         if (!game->results) /* some realloc()s are broken */
-	    tempr = xmalloc((game->count+1)*sizeof(t_game_result));
+	    tempr = (t_game_result*)xmalloc((game->count+1)*sizeof(t_game_result));
         else
-	    tempr = xrealloc(game->results,(game->count+1)*sizeof(t_game_result));
+	    tempr = (t_game_result*)xrealloc(game->results,(game->count+1)*sizeof(t_game_result));
         game->results = tempr;
 
         if (!game->reported_results)
-            temprr = xmalloc((game->count+1)*sizeof(t_game_result *));
+            temprr = (t_game_result**)xmalloc((game->count+1)*sizeof(t_game_result *));
         else
-	    temprr = xrealloc(game->reported_results,(game->count+1)*sizeof(t_game_result *));
+	    temprr = (t_game_result**)xrealloc(game->reported_results,(game->count+1)*sizeof(t_game_result *));
         game->reported_results = temprr;
     
         if (!game->report_heads) /* some xrealloc()s are broken */
-	    temprh = xmalloc((game->count+1)*sizeof(char const *));
+	    temprh = (const char**)xmalloc((game->count+1)*sizeof(char const *));
         else
-	    temprh = xrealloc((void *)game->report_heads,(game->count+1)*sizeof(char const *)); /* avoid compiler warning */
+	    temprh = (const char**)xrealloc((void *)game->report_heads,(game->count+1)*sizeof(char const *)); /* avoid compiler warning */
         game->report_heads = temprh;
     
         if (!game->report_bodies) /* some xrealloc()s are broken */
-	    temprb = xmalloc((game->count+1)*sizeof(char const *));
+	    temprb = (const char**)xmalloc((game->count+1)*sizeof(char const *));
         else
-	    temprb = xrealloc((void *)game->report_bodies,(game->count+1)*sizeof(char const *)); /* avoid compiler warning */
+	    temprb = (const char**)xrealloc((void *)game->report_bodies,(game->count+1)*sizeof(char const *)); /* avoid compiler warning */
         game->report_bodies = temprb;
 
         game->connections[game->count]   = c;
@@ -1869,7 +1869,7 @@ extern int game_set_self_report(t_game * game, t_account * account, t_game_resul
 	return -1;
     }
     
-    results = xmalloc(sizeof(t_game_result)*game->count);
+    results = (t_game_result*)xmalloc(sizeof(t_game_result)*game->count);
 
     for (i=0;i<game->count;i++) 
     {
@@ -2186,7 +2186,7 @@ extern t_game_flag game_get_flag(t_game const * game)
     if (!game)
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "got NULL game");
-        return 0;
+        return game_flag_none;
     }
     return game->flag;
 }

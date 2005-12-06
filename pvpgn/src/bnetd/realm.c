@@ -78,7 +78,7 @@ static t_realm * realm_create(char const * name, char const * description, unsig
 	return NULL;
     }
 
-    realm = xmalloc(sizeof(t_realm));
+    realm = (t_realm*)xmalloc(sizeof(t_realm));
     realm->name = NULL;
     realm->description = NULL;
 
@@ -463,7 +463,7 @@ extern int realmlist_reload(char const * filename)
 
     LIST_TRAVERSE(oldlist,old_curr)
     {
-    	if (!(old_realm = elem_get_data(old_curr)))
+    	if (!(old_realm = (t_realm*)elem_get_data(old_curr)))
 	{
 	  eventlog(eventlog_level_error,__FUNCTION__,"found NULL elem in list");
 	  continue;
@@ -473,7 +473,7 @@ extern int realmlist_reload(char const * filename)
 
 	LIST_TRAVERSE(newlist,new_curr)
 	{
-    	    if (!(new_realm = elem_get_data(new_curr)))
+    	    if (!(new_realm = (t_realm*)elem_get_data(new_curr)))
 	    {
 	      eventlog(eventlog_level_error,__FUNCTION__,"found NULL elem in list");
 	      continue;
@@ -520,7 +520,7 @@ extern int realmlist_unload(t_list * list_head)
     {
 	LIST_TRAVERSE(list_head,curr)
 	{
-	    if (!(realm = elem_get_data(curr)))
+	    if (!(realm = (t_realm*)elem_get_data(curr)))
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL realm in list");
 	    else
 	        realm_destroy(realm);
@@ -562,7 +562,7 @@ extern t_realm * realmlist_find_realm(char const * realmname)
 
     LIST_TRAVERSE_CONST(realmlist_head,curr)
     {
-	realm = elem_get_data(curr);
+	realm = (t_realm*)elem_get_data(curr);
 	if (strcasecmp(realm->name,realmname)==0)
 	    return realm;
     }
@@ -577,7 +577,7 @@ extern t_realm * realmlist_find_realm_by_ip(unsigned long ip)
 
     LIST_TRAVERSE_CONST(realmlist_head,curr)
     {
-        realm = elem_get_data(curr);
+        realm = (t_realm*)elem_get_data(curr);
         if (realm->ip==ip)
             return realm;
     }

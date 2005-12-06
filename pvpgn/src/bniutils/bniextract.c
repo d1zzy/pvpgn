@@ -82,7 +82,7 @@ static t_tgaimg * area2img(t_tgaimg *src, int x, int y, int width, int height, t
 	if (pixelsize == 0) return NULL;
 	
 	dst = new_tgaimg(width,height,src->bpp,type);
-	dst->data = malloc(width*height*pixelsize);
+	dst->data = (t_uint8*)malloc(width*height*pixelsize);
 	
 	datap = src->data;
 	datap += y*src->width*pixelsize;
@@ -231,7 +231,7 @@ extern int main(int argc, char * argv[])
 	if (iconimg == NULL) return STATUS_FAILURE;
 	
 	fprintf(stderr,"Info: Extracting icons ...\n");
-	indexfilename = malloc(strlen(outdir)+14);
+	indexfilename = (char*)malloc(strlen(outdir)+14);
 	sprintf(indexfilename,"%s/bniindex.lst",outdir);
 	fprintf(stderr,"Info: Writing Index to \"%s\" ... \n",indexfilename);
 	indexfile = fopen(indexfilename , "w");
@@ -255,10 +255,10 @@ extern int main(int argc, char * argv[])
 		}
 		if (bni->icons->icon[i].id == 0) {
 			int tag = bni->icons->icon[i].tag;
-			name = malloc(strlen(outdir)+10);
+			name = (char*)malloc(strlen(outdir)+10);
 			sprintf(name,"%s/%c%c%c%c.tga",outdir,((tag >> 24) & 0xff),((tag >> 16) & 0xff),((tag >> 8) & 0xff),((tag >> 0) & 0xff));
 		} else {
-			name = malloc(strlen(outdir)+16);
+			name = (char*)malloc(strlen(outdir)+16);
 			sprintf(name,"%s/%08x.tga",outdir,bni->icons->icon[i].id);
 		}
 		fprintf(stderr,"Info: Writing icon %u(%ux%u) to file \"%s\" ... \n",i+1,icn->width,icn->height,name);

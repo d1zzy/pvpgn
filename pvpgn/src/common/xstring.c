@@ -109,7 +109,7 @@ extern char * hexstrdup(unsigned char const * src)
 	int	len;
 
 	if (!src) return NULL;
-	dest=xstrdup(src);
+	dest=xstrdup((const char*)src);
 	len=hexstrtoraw(src,dest,strlen(dest)+1);
 	dest[len]='\0';
 	return dest;
@@ -180,9 +180,9 @@ extern char * * strtoargv(char const * str, unsigned int * count)
 	char		* result;
 
 	if (!str || !count) return NULL;
-	temp=xmalloc(strlen(str)+1);
+	temp=(char*)xmalloc(strlen(str)+1);
 	n = SPLIT_STRING_INIT_COUNT;
-	pindex=xmalloc(n * sizeof (int));
+	pindex=(int*)xmalloc(n * sizeof (int));
 
 	i=j=0;
 	*count=0;
@@ -220,10 +220,10 @@ extern char * * strtoargv(char const * str, unsigned int * count)
 		xfree(pindex);
 		return NULL;
 	}
-	result=xmalloc(j+index_size);
+	result=(char*)xmalloc(j+index_size);
 	memcpy(result+index_size,temp,j);
 
-	ptrindex=xmalloc(*count * sizeof (char*));
+	ptrindex=(void**)xmalloc(*count * sizeof (char*));
 	for (i=0; i< *count; i++) {
 		ptrindex[i] = result + index_size + pindex[i];
 	}
@@ -246,7 +246,7 @@ extern char * arraytostr(char * * array, char const * delim, int count)
 	if (!delim || !array) return NULL;
 
 	n=COMBINE_STRING_INIT_LEN;
-	result=xmalloc(n);
+	result=(char*)xmalloc(n);
 	result[0]='\0';
 
 	need_delim=0;
@@ -254,7 +254,7 @@ extern char * arraytostr(char * * array, char const * delim, int count)
 		if (!array[i]) continue;	
 		if (strlen(result)+strlen(array[i])+strlen(delim)>=n) {
 			n+=COMBINE_STRING_INCREASEMENT;
-			result=xrealloc(result,n);
+			result=(char*)xrealloc(result,n);
 		}
 		if (need_delim) {
 			strcat(result,delim);
@@ -262,7 +262,7 @@ extern char * arraytostr(char * * array, char const * delim, int count)
 		strcat(result,array[i]);
 		need_delim=1;
 	}
-	result=xrealloc(result,strlen(result)+1);
+	result=(char*)xrealloc(result,strlen(result)+1);
 	return result;
 }
 

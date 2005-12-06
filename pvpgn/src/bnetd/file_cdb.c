@@ -199,7 +199,7 @@ static const char * fcpy(FILE *fd, cdbi_t len, cdbi_t *posp, cdbi_t limit, unsig
     if (strl < len + 1) {
 	char *tmp;
 
-	tmp = xmalloc(len + 1);
+	tmp = (char*)xmalloc(len + 1);
 	if (str) xfree((void*)str);
 	str = tmp;
 	strl = len + 1;

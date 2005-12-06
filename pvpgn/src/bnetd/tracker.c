@@ -108,7 +108,7 @@ extern int tracker_set_servers(char const * servers)
     
     LIST_TRAVERSE_CONST(track_servers,curr)
     {
-	addr = elem_get_data(curr);
+	addr = (t_addr*)elem_get_data(curr);
 	if (!addr_get_addr_str(addr,temp,sizeof(temp)))
 	    strcpy(temp,"x.x.x.x:x");
 	eventlog(eventlog_level_info,__FUNCTION__,"tracking packets will be sent to %s",temp);
@@ -184,9 +184,9 @@ extern int tracker_send_report(t_addrlist const * laddrs)
 	
 	LIST_TRAVERSE_CONST(laddrs,currl)
 	{
-	    addrl = elem_get_data(currl);
+	    addrl = (t_addr*)elem_get_data(currl);
 	    
-	    if (!(laddr_info = addr_get_data(addrl).p))
+	    if (!(laddr_info = (t_laddr_info*)addr_get_data(addrl).p))
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"address data is NULL");
 		continue;
@@ -198,7 +198,7 @@ extern int tracker_send_report(t_addrlist const * laddrs)
 	    
 	    LIST_TRAVERSE_CONST(track_servers,currt)
 	    {
-		addrt = elem_get_data(currt);
+		addrt = (t_addr*)elem_get_data(currt);
 		
 		memset(&tempaddr,0,sizeof(tempaddr));
 		tempaddr.sin_family = PSOCK_AF_INET; 
