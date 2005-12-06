@@ -58,7 +58,7 @@ _cdb_make_find(struct cdb_make *cdbmp,
         cdbmp->cdb_bpos = cdbmp->cdb_buf;
       }
       seeked = 1;
-      r = match(cdbmp->cdb_fd, rl->rec[i].rpos, key, klen);
+      r = match(cdbmp->cdb_fd, rl->rec[i].rpos, (char*)key, klen);
       if (!r)
 	continue;
       if (r < 0)
