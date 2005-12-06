@@ -125,19 +125,19 @@ static int
 fcpy(FILE *fi, FILE *fo, unsigned len, unsigned *posp, unsigned limit)
 {
   while(len > blen) {
-    fget(fi, buf, blen, posp, limit);
+    fget(fi, (unsigned char*)buf, blen, posp, limit);
     if (fo && fwrite(buf, 1, blen, fo) != blen) return -1;
     len -= blen;
   }
   if (len) {
-    fget(fi, buf, len, posp, limit);
+    fget(fi, (unsigned char*)buf, len, posp, limit);
     if (fo && fwrite(buf, 1, len, fo) != len) return -1;
   }
   return 0;
 }
 
 static int
-dmode(char *dbname, char mode, int flags)
+dmode(const char *dbname, char mode, int flags)
 {
   unsigned eod, klen, vlen;
   unsigned pos = 0;
@@ -147,12 +147,12 @@ dmode(char *dbname, char mode, int flags)
   else if ((f = fopen(dbname, "rb")) == NULL)
     error(errno, "open %s", dbname);
   allocbuf(2048);
-  fget(f, buf, 2048, &pos, 2048);
-  eod = cdb_unpack(buf);
+  fget(f, (unsigned char*)buf, 2048, &pos, 2048);
+  eod = cdb_unpack((unsigned char*)buf);
   while(pos < eod) {
-    fget(f, buf, 8, &pos, eod);
-    klen = cdb_unpack(buf);
-    vlen = cdb_unpack(buf + 4);
+    fget(f, (unsigned char*)buf, 8, &pos, eod);
+    klen = cdb_unpack((unsigned char*)buf);
+    vlen = cdb_unpack((unsigned char*)(buf + 4));
     if (!(flags & F_MAP))
       if (printf(mode == 'd' ? "+%u,%u:" : "+%u:", klen, vlen) < 0) return -1;
     if (fcpy(f, stdout, klen, &pos, eod) != 0) return -1;
@@ -172,7 +172,7 @@ dmode(char *dbname, char mode, int flags)
   return 0;
 }
 
-static int smode(char *dbname) {
+static int smode(const char *dbname) {
   FILE *f;
   unsigned pos, eod;
   unsigned cnt = 0;
@@ -197,9 +197,9 @@ static int smode(char *dbname) {
   eod = cdb_unpack(toc);
   while(pos < eod) {
     unsigned klen, vlen;
-    fget(f, buf, 8, &pos, eod);
-    klen = cdb_unpack(buf);
-    vlen = cdb_unpack(buf + 4);
+    fget(f, (unsigned char*)buf, 8, &pos, eod);
+    klen = cdb_unpack((unsigned char*)buf);
+    vlen = cdb_unpack((unsigned char*)(buf + 4));
     fcpy(f, NULL, klen, &pos, eod);
     fcpy(f, NULL, vlen, &pos, eod);
     ++cnt;
@@ -222,9 +222,9 @@ static int smode(char *dbname) {
     if (!hlen) continue;
     for (i = 0; i < hlen; ++i) {
       unsigned h;
-      fget(f, buf, 8, &pos, 0xffffffff);
-      if (!cdb_unpack(buf + 4)) continue;
-      h = (cdb_unpack(buf) >> 8) % hlen;
+      fget(f, (unsigned char*)buf, 8, &pos, 0xffffffff);
+      if (!cdb_unpack((unsigned char*)(buf + 4))) continue;
+      h = (cdb_unpack((unsigned char*)buf) >> 8) % hlen;
       if (h == i) h = 0;
       else {
         if (h < i) h = i - h;
@@ -303,9 +303,9 @@ dofile_cdb(struct cdb_make *cdbmp, FILE *f, const char *fn, int flags)
         0xffffffff - klen < vlen)
       badinput(fn);
     allocbuf(klen + vlen);
-    fget(f, buf, klen, NULL, 0);
+    fget(f, (unsigned char*)buf, klen, NULL, 0);
     if (getc(f) != '-' || getc(f) != '>') badinput(fn);
-    fget(f, buf + klen, vlen, NULL, 0);
+    fget(f, (unsigned char*)(buf + klen), vlen, NULL, 0);
     switch (getc(f))
 	{
 	    case '\n': break;

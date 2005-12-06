@@ -76,9 +76,9 @@ cdb_make_put(struct cdb_make *cdbmp,
   }
   cdb_pack(klen, rlen);
   cdb_pack(vlen, rlen + 4);
-  if (_cdb_make_write(cdbmp, rlen, 8) < 0 ||
-      _cdb_make_write(cdbmp, key, klen) < 0 ||
-      _cdb_make_write(cdbmp, val, vlen) < 0)
+  if (_cdb_make_write(cdbmp, (char*)rlen, 8) < 0 ||
+      _cdb_make_write(cdbmp, (char*)key, klen) < 0 ||
+      _cdb_make_write(cdbmp, (char*)val, vlen) < 0)
     return -1;
   return r;
 }

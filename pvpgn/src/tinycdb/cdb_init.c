@@ -29,7 +29,7 @@ cdb_init(struct cdb *cdbp, FILE *fd)
     return errno = EPROTO, -1;
 
   /* memory-map file */
-  if ((mem = pmmap(NULL, fsize, PROT_READ, MAP_SHARED, fileno(fd), 0)) ==
+  if ((mem = (unsigned char*)pmmap(NULL, fsize, PROT_READ, MAP_SHARED, fileno(fd), 0)) ==
       (unsigned char *)-1)
     return -1;
 

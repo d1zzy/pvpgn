@@ -144,7 +144,7 @@ cdb_make_finish_internal(struct cdb_make *cdbmp)
       cdb_pack(htab[i].hval, p + (i << 3));
       cdb_pack(htab[i].rpos, p + (i << 3) + 4);
     }
-    if (_cdb_make_write(cdbmp, p, len << 3) < 0) {
+    if (_cdb_make_write(cdbmp, (char*)p, len << 3) < 0) {
       xfree(p);
       return -1;
     }
@@ -154,13 +154,13 @@ cdb_make_finish_internal(struct cdb_make *cdbmp)
       ewrite(cdbmp->cdb_fd, cdbmp->cdb_buf,
 	     cdbmp->cdb_bpos - cdbmp->cdb_buf) != 0)
       return -1;
-  p = cdbmp->cdb_buf;
+  p = (unsigned char*)cdbmp->cdb_buf;
   for (t = 0; t < 256; ++t) {
     cdb_pack(hpos[t], p + (t << 3));
     cdb_pack(hcnt[t], p + (t << 3) + 4);
   }
   rewind(cdbmp->cdb_fd);
-  if (ewrite(cdbmp->cdb_fd, p, 2048) != 0)
+  if (ewrite(cdbmp->cdb_fd, (char*)p, 2048) != 0)
     return -1;
 
   return 0;
