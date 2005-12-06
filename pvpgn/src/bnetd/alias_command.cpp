@@ -71,20 +71,20 @@ static int list_aliases(t_connection * c)
     t_alias const * alias;
     t_output *      output;
     char            temp[MAX_MESSAGE_LEN];
-    
+
     message_send_text(c,message_type_info,c,"Alias list:");
     LIST_TRAVERSE_CONST(aliaslist_head,elem1)
     {
 	if (!(alias = (t_alias*)elem_get_data(elem1)))
 	    continue;
-	
+
 	sprintf(temp,"@%.128s",alias->alias);
 	message_send_text(c,message_type_info,c,temp);
 	LIST_TRAVERSE_CONST(alias->output,elem2)
 	{
 	    if (!(output = (t_output*)elem_get_data(elem2)))
 		continue;
-	    
+
 	    /*
 	     * FIXME: need a more user-friendly way to express this... maybe
              * add a help line to the file format?
@@ -95,7 +95,7 @@ static int list_aliases(t_connection * c)
 		    sprintf(temp,"[%d+]%.128s",output->min,output->line);
 	    else if (output->min == output->max)
 		    sprintf(temp,"[%d]%.128s",output->min,output->line);
-	    else		  
+	    else
 		    sprintf(temp,"[%d-%d]%.128s",output->min,output->max,output->line);
 	    message_send_text(c,message_type_info,c,temp);
 	}
@@ -117,7 +117,7 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
 
     out = xstrdup(in);
     size = strlen(out);
-    
+
     for (inpos=outpos=0; inpos<strlen(in); inpos++)
     {
 	if (in[inpos]!='$')
@@ -126,9 +126,9 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
             outpos++;
 	    continue;
         }
-	
+
 	inpos++;
-	
+
 	if (in[inpos]=='*')
 	{
 	    off1 = offsets[0];
@@ -138,8 +138,8 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
 	{
 	    int arg1, arg2;
 	    char symbol;
-	    
-	    if (sscanf(&in[inpos],"{%u-%u}",&arg1,&arg2)!=2)
+
+	    if (sscanf(&in[inpos],"{%d-%d}",&arg1,&arg2)!=2)
 	    {
 		if (sscanf(&in[inpos],"{%d%c",&arg2,&symbol)!=2)
 		{
@@ -171,10 +171,10 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
 		    while (in[inpos]!='\0' && in[inpos]!='}') inpos++;
 		    continue;
 		  }
-		  
+
 		}
 	    }
-	    
+
 	    if (arg2>=numargs)
 		arg2 = numargs-1;
 	    if (arg1>arg2)
@@ -188,14 +188,14 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
 		off2 = strlen(text);
 	    else
 		off2 = offsets[arg2+1]-1;
-	    
+
 	    while (in[inpos]!='\0' && in[inpos]!='}')
 		inpos++;
 	}
 	else if (isdigit((int)in[inpos]))
 	{
 	    int arg;
-	    
+
 	    if (in[inpos]=='0') arg = 0;
 	    else if (in[inpos]=='1') arg = 1;
 	    else if (in[inpos]=='2') arg = 2;
@@ -206,27 +206,27 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
 	    else if (in[inpos]=='7') arg = 7;
 	    else if (in[inpos]=='8') arg = 8;
 	    else arg = 9;
-	    
+
 	    if (arg>=numargs)
 		continue;
 	    for (off1=off2=offsets[arg]; text[off2]!='\0' && text[off2]!=' ' && text[off2]!='\t'; off2++);
 	}
-	
+
         {
             char * newout;
-	    
+
             newout = (char*)xmalloc(size+(off2-off1)+1); /* curr + new + nul */
 	    size = size+(off2-off1)+1;
 	    memmove(newout,out,outpos);
 	    xfree(out);
             out = newout;
-	    
+
 	    while (off1<off2)
 		out[outpos++] = text[off1++];
         }
     }
     out[outpos] = '\0';
-    
+
     return out;
 }
 
@@ -241,8 +241,8 @@ int count_args(char const * text)
     if ((not_ws) && (*pointer==' ')) not_ws = 0;
     if ((not_ws == 0) && (*pointer!=' ')) { not_ws = 1; args++; }
   }
-  
-  return args;	
+
+  return args;
 }
 
 void get_offsets(char const * text, unsigned int * offsets)
@@ -255,11 +255,11 @@ void get_offsets(char const * text, unsigned int * offsets)
   for (;*pointer!='\0';pointer++)
   {
     if ((not_ws) && (*pointer==' ')) not_ws = 0;
-    if ((not_ws == 0) && (*pointer!=' ')) 
-    	{ 
-	  not_ws = 1; 
-	  offsets[counter]=(unsigned int)(pointer-text); 
-	  counter++; 
+    if ((not_ws == 0) && (*pointer!=' '))
+    	{
+	  not_ws = 1;
+	  offsets[counter]=(unsigned int)(pointer-text);
+	  counter++;
 	}
   }
 
@@ -274,39 +274,39 @@ static int do_alias(t_connection * c, char const * cmd, char const * text)
     unsigned int *  offsets;
     int    numargs;
     int match = -1;
-    
-    numargs = count_args(text)-1; 
+
+    numargs = count_args(text)-1;
     offsets=(unsigned int*)xmalloc(sizeof(unsigned int)*(numargs+1));
     get_offsets(text,offsets);
-    
+
     LIST_TRAVERSE_CONST(aliaslist_head,elem1)
     {
 	if (!(alias = (t_alias*)elem_get_data(elem1)))
 	    continue;
-	
+
 	if (strstr(alias->alias,cmd)==NULL)
 	    continue;
-	
+
 	LIST_TRAVERSE_CONST(alias->output,elem2)
 	{
 	    if (!(output = (t_output*)elem_get_data(elem2)))
 		continue;
-	    
+
 	    if (!output->line)
 		continue;
 
-	    if ((output->min==-1) || 
-	       ((output->min<=numargs) && (output->max==-1)) || 
+	    if ((output->min==-1) ||
+	       ((output->min<=numargs) && (output->max==-1)) ||
 	       ((output->min<=numargs) && (output->max>=numargs)))
-	    
+
 	    //TODO: initialize offsets
-	    
+
             {
 		char * msgtmp;
 		char * tmp2;
 		char * cmd = "%C";
 		match = 1;
-		
+
 		if ((msgtmp = replace_args(output->line,offsets,numargs+1,text)))
 		{
 	          if (msgtmp[0]!='\0')
@@ -319,7 +319,7 @@ static int do_alias(t_connection * c, char const * cmd, char const * text)
 		      msgtmp=tmp2;
 
 		    }
-		    if (strlen(msgtmp)>MAX_MESSAGE_LEN) 
+		    if (strlen(msgtmp)>MAX_MESSAGE_LEN)
 		    {
 		      msgtmp[MAX_MESSAGE_LEN]='\0';
 		      eventlog(eventlog_level_info,__FUNCTION__,"message line after alias expansion was too long, truncating it");
@@ -333,7 +333,7 @@ static int do_alias(t_connection * c, char const * cmd, char const * text)
 	    }
 	}
     }
-    xfree(offsets);    
+    xfree(offsets);
     return match;
 }
 
@@ -348,7 +348,7 @@ extern int aliasfile_load(char const * filename)
     int          inalias;
     t_alias *    alias = NULL;
 
-    
+
     if (!filename)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
@@ -361,7 +361,7 @@ extern int aliasfile_load(char const * filename)
     }
 
     aliaslist_head = list_create();
-    
+
     inalias = 0;
     for (line=1; (buff = file_get_line(afp)); line++)
     {
@@ -376,13 +376,13 @@ extern int aliasfile_load(char const * filename)
 	{
 	    unsigned int len;
 	    unsigned int endpos;
-	    
+
 	    *temp = '\0';
 	    len = strlen(buff)+1;
 	    for (endpos=len-1;  buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
 	    buff[endpos+1] = '\0';
 	}
-	
+
 	switch (inalias)
 	{
 	case 0:
@@ -393,18 +393,18 @@ extern int aliasfile_load(char const * filename)
 	    }
 	    inalias = 1;
 	    break;
-	
+
 	case 1:
 	    {
 		if (buff[pos]=='\0') break;
-		    
+
 		inalias = 2;
 		alias = (t_alias*)xmalloc(sizeof(t_alias));
 		alias->output=0;
 		alias->alias=xstrdup(&buff[pos]);
 	    }
 	    break;
-	
+
 	case 2:
 	    {
 	      char * dummy;
@@ -505,18 +505,18 @@ extern int aliasfile_load(char const * filename)
 		    output->min=min;
 		    output->max=max;
 		    output->line = out;
-		    
+
 		    list_append_data(alias->output,output);
 		  }
 	      }
-	    else		    
+	    else
 	      eventlog(eventlog_level_error,__FUNCTION__,"expected output entry or next alias stanza on line %u of file \"%s\"i but found \"%s\"",line,filename,&buff[pos]);
 	    break;
 	  }
 	}
     }
     if (alias!=NULL) list_append_data(aliaslist_head,alias);
-    
+
     file_get_line(NULL); // clear file_get_line buffer
     fclose(afp);
     eventlog(eventlog_level_info,__FUNCTION__,"done loading aliases");
@@ -530,7 +530,7 @@ extern int aliasfile_unload(void)
     t_elem       *  elem2;
     t_alias const * alias;
     t_output *      output;
-    
+
     if (aliaslist_head)
     {
 	LIST_TRAVERSE(aliaslist_head,elem1)
@@ -540,7 +540,7 @@ extern int aliasfile_unload(void)
 		eventlog(eventlog_level_error,__FUNCTION__,"alias list contains NULL item");
 		continue;
 	    }
-	    
+
 	    if (list_remove_elem(aliaslist_head,&elem1)<0)
 	    {
 	        eventlog(eventlog_level_error,__FUNCTION__,"could not remove alias");
@@ -555,7 +555,7 @@ extern int aliasfile_unload(void)
 			eventlog(eventlog_level_error,__FUNCTION__,"output list contains NULL item");
 			continue;
 		    }
-		    
+
 		    if (list_remove_elem(alias->output,&elem2)<0)
 		    {
 		        eventlog(eventlog_level_error,__FUNCTION__,"could not remove output");
@@ -569,12 +569,12 @@ extern int aliasfile_unload(void)
 	    if (alias->alias) xfree((void *)alias->alias);
 	    xfree((void *)alias);
 	}
-	
+
 	if (list_destroy(aliaslist_head)<0)
 	    return -1;
 	aliaslist_head = NULL;
     }
-    
+
     return 0;
 }
 
@@ -583,14 +583,14 @@ extern int handle_alias_command(t_connection * c, char const * text)
 {
     unsigned int i,j;
     char         cmd[MAX_COMMAND_LEN];
-    
+
     for (i=j=0; text[i]!=' ' && text[i]!='\0'; i++) /* get command */
         if (j<sizeof(cmd)-1) cmd[j++] = text[i];
     cmd[j] = '\0';
-    
+
     if (cmd[2]=='\0')
 	return list_aliases(c);
-    
+
     if (do_alias(c,cmd,text)<0)
     {
 	message_send_text(c,message_type_info,c,"No such alias.  Use // to show the list.");
