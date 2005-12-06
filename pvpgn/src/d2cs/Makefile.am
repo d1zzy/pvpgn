@@ -1,11 +1,11 @@
-AM_CPPFLAGS=-I$(top_srcdir)/src -DD2CS_DEFAULT_CONF_FILE=\"$(sysconfdir)/d2cs.conf\"
+AM_CPPFLAGS=-I$(top_srcdir)/src -DD2CS_DEFAULT_CONF_FILE=\"$(sysconfdir)/d2cs.cpponf\"
 
 sbin_PROGRAMS = d2cs
 
-d2cs_SOURCES = bnetd.c cmdline.c connection.c d2charfile.c d2charlist.c \
-	d2gs.c d2ladder.c game.c gamequeue.c handle_bnetd.c handle_d2cs.c \
-	handle_d2gs.c handle_init.c handle_signal.c main.c net.c prefs.c \
-	s2s.c server.c serverqueue.c
+d2cs_SOURCES = bnetd.cpp cmdline.cpp connection.cpp d2charfile.cpp d2charlist.cpp \
+	d2gs.cpp d2ladder.cpp game.cpp gamequeue.cpp handle_bnetd.cpp handle_d2cs.cpp \
+	handle_d2gs.cpp handle_init.cpp handle_signal.cpp main.cpp net.cpp prefs.cpp \
+	s2s.cpp server.cpp serverqueue.cpp
 d2cs_LDADD = $(top_builddir)/src/common/libcommon.a \
 	$(top_builddir)/src/compat/libcompat.a
 

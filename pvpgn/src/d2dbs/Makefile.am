@@ -1,9 +1,9 @@
-AM_CPPFLAGS=-I$(top_srcdir)/src -DD2DBS_DEFAULT_CONF_FILE=\"$(sysconfdir)/d2dbs.conf\"
+AM_CPPFLAGS=-I$(top_srcdir)/src -DD2DBS_DEFAULT_CONF_FILE=\"$(sysconfdir)/d2dbs.cpponf\"
 
 sbin_PROGRAMS = d2dbs
 
-d2dbs_SOURCES = charlock.c d2ladder.c dbserver.c dbspacket.c cmdline.c \
-	prefs.c handle_signal.c dbsdupecheck.c main.c
+d2dbs_SOURCES = charlock.cpp d2ladder.cpp dbserver.cpp dbspacket.cpp cmdline.cpp \
+	prefs.cpp handle_signal.cpp dbsdupecheck.cpp main.cpp
 d2dbs_LDADD = $(top_builddir)/src/common/libcommon.a \
 	$(top_builddir)/src/compat/libcompat.a
 
