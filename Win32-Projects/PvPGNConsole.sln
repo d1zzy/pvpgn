@@ -1,0 +1,61 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PvPGNConsole", "PvPGNConsole.vcproj", "{300F80E0-1A0E-4639-AEB9-18A692FF35F3}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "d2csConsole", "d2csConsole.vcproj", "{300F80E0-1A0E-4639-AEB9-18A692FF35F1}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "d2dbsConsole", "d2dbsConsole.vcproj", "{300F80E0-1A0E-4639-AEB9-18A692FF35F2}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bncdb", "bncdb.vcproj", "{300F80E0-1A0E-4639-AEB9-18A692FF35F0}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bnchat", "bnchat.vcproj", "{300F80E0-1A0E-4639-AEB9-18A692FF35F4}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bnftp", "bnftp.vcproj", "{300F80E0-1A0E-4639-AEB9-18A692FF35F5}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F3}.Debug.ActiveCfg = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F3}.Debug.Build.0 = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F3}.Release.ActiveCfg = Release|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F3}.Release.Build.0 = Release|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F1}.Debug.ActiveCfg = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F1}.Debug.Build.0 = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F1}.Release.ActiveCfg = Release|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F1}.Release.Build.0 = Release|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F2}.Debug.ActiveCfg = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F2}.Debug.Build.0 = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F2}.Release.ActiveCfg = Release|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F2}.Release.Build.0 = Release|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F0}.Debug.ActiveCfg = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F0}.Debug.Build.0 = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F0}.Release.ActiveCfg = Release|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F0}.Release.Build.0 = Release|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F4}.Debug.ActiveCfg = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F4}.Debug.Build.0 = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F4}.Release.ActiveCfg = Release|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F4}.Release.Build.0 = Release|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F5}.Debug.ActiveCfg = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F5}.Debug.Build.0 = Debug|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F5}.Release.ActiveCfg = Release|Win32
+		{300F80E0-1A0E-4639-AEB9-18A692FF35F5}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

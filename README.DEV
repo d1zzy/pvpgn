@@ -1,0 +1,372 @@
+
+		    PVPGN (wannabe) DEVELOPERS GUIDE
+
+           Please read this file before asking any questions !
+
+0. About this document
+=======================
+
+This document is intended to be read by all of you out there wanting to do
+development or testing for/on PvPGN.
+
+ChangeLog:
+29-07-2003: dizzy : Initial version
+28-08-2004: dizzy : Run-time debugging : Appendix A
+30-08-2004: dizzy : Updated (fdwatch, xalloc, goto, gdb)
+
+1. Why ?
+=========
+
+You want to start coding for PvPGN ? Why ? What do you expect to get from it ?
+Answer yourself this questions and then go to the next paragraph.
+
+2. History
+===========
+
+PvPGN has started as a game server emulation project, taking the excelent's
+bnetd project source and working on it. While initially it has started as
+a War3 emulation patch over bnetd it become a lot more than that (lots of
+new features, lots of code changes organizing). Because of the code roots
+you will notice a lot of things still carrying the "bnetd" word (most notable
+examples are the main servers program file called "bnetd" or the main server
+configuration file called bnetd.conf). We considered that as a sign of respect
+from us to the bnetd coders we keep their names on the code they written (but
+on the new code of course we may name them different).
+
+3. Objective
+=============
+
+PvPGN's main objective is to support all Battle.Net clients (games) but are
+considering in the near future to extend it to support other game protocols
+as well.
+
+4. Layout of files
+===================
+
+Note: Starting here on you may find lots of terms and wors which may sound
+"strange" to you and for this reason we have included a glossary of terms
+in the end of this file.
+
+The PvPGN project consists of a main server (called "bnetd") and various
+other programs and (little) servers (ex. bnchat, d2cs, d2dbs etc...).
+
+PvPGN follows the bnetd's layout of files:
+./bin			-> used to store binaries (after compilation)
+./conf			-> configuration files (many of them templates)
+./files			-> various files needed for clients connecting
+./man			-> outdated man pages :(
+./sbin			-> same as ./bin
+./scripts		-> various scripts for testing/managing pvpgn
+./src			-> the source main directory
+./src/bnetd		-> source files used only by the main server
+./src/common		-> source files used in common by different programs
+./src/compat		-> source files concerning portability of code
+...
+
+The build process takes place in the "src" dir.
+
+5. Coding Style
+================
+
+a. General
+
+PvPGN is mainly developed on and for UNIX/Linux. The reasons are because we
+as coders work on this systems and because our users (at least the big ones)
+use UNIX/Linux more than ex. Windows. But, even so we try to code in a portable
+fashion and any release PvPGN had we made sure it compiles on win32 too (we
+even release win32 binaries). We will never refuse a good win32 coder but we
+prefer UNIX ones ;)
+
+One thing which is overlooked by newbie coders is the "esthetical" side of the
+code. It may not be so important to many people (which code on the idea "if it
+works then its good") but for us, coding on PvPGN is VERY important. When you
+are coding for PvPGN PLEASE try to make your code look similar to already 
+written code (this includes identing, identificator names, etc...). Keeping
+the code look "the same" makes its reading a lot more easier so, finding
+bugs easier so coding better.
+
+One way to make sure your code sticks with the PvPGN coding style is to use 
+"indent" code indenting formating tool (http://www.gnu.org/software/indent/). 
+To use indent to get your code acording to PvPGN coding style use something 
+like this (it will format properly the file clan.c and save the new file to 
+clan.c.new):
+$ indent -kr -bl -bli0 -l0 -br -ce -cli4 clan.c -o clan.c.new
+
+Other overlooked aspect for newbie coders is code replication. Please DONT
+copy and paste code arround !!! If you need to copy common functionality from
+some place, think about making some API of that functionalilty, put it in
+some functions and use it from both places. I repeat, DONT replicate code.
+
+When allocating memory inside a function always free it in the same function
+before its exit (exceptions: the function returns the allocated memory in
+which case the calling function should take care of the allocated memory;
+or the allocated memory is cached/stored somewhere to be used later, in which
+case you must make sure it will be free()d when not needed anymore).
+
+In the startup code of any "external" function (function which may be called
+from other modules then the one containing it) please check ALL the input
+parameters (you will notice how PvPGN already does that in such functions).
+Traditionally this has been done with contructs like:
+if (var==NULL) { eventlog(error); return <error-code>; }
+We have recently changed our policy because of increasing code size and lots 
+of redundant checks, we now usually prefer using assert() for this type of 
+checks (check the manual page for assert). 
+
+A new addition is the xalloc memory allocation wrappers (for malloc, 
+calloc, realloc, strdup and free). We now do NOT allow memory allocation to 
+take place without this wrappers. They make the code smaller and easier to 
+read because they never fail so they eliminate the need for failure checks 
+and eventlogs in such cases.
+
+Another thing recently adopted in the team is the usage of "goto" keyword. 
+Many people have argued (and continue to) that goto are inherently _evil_ and 
+they produce "spaghetti code". But that is true for pointers and lots of other 
+powerfull C features. We consider the programmer to be the cause of bad 
+written codes and not some keywords. So we are moving into using "goto" 
+mainly in the "error exit paths" cases. Let's say you have a function which 
+needs to allocate some stuff (in 3 variables), checks for each allocation, 
+exits with error for each specific failure (also free()ing the already 
+allocated space). You can do it the PvPGN traditional way like:
+
+------- CODE ----------
+a = malloc(X);
+if (!a) {
+    eventlog(bla);
+    return -1;
+}
+
+b = malloc(Y);
+if (!b) {
+    eventlog(bla);
+    free(a);
+    return -1;
+}
+
+c = malloc(Z);
+if (!c) {
+    eventlog(bla);
+    free(b);
+    free(a);
+    return -1;
+}
+<do stuff>
+
+return 0;
+------ CODE -----------
+
+Or you can do it the new, "goto" way:
+--------- CODE --------------
+a = malloc(X);
+if (!a) {
+    eventlog(bla);
+    goto err_a;
+}
+
+b = malloc(Y);
+if (!b) {
+    eventlog(bla);
+    goto err_b;
+}
+
+c = malloc(Z);
+if (!c) {
+    eventlog(bla);
+    goto err_c;
+}
+<do stuff>
+return 0;
+
+err_c:
+    free(c);
+err_b:
+    free(b);
+err_a:
+    return -1;
+-------- CODE ------------
+
+The last version is a lot easier to read/debug. Because the reader is usually 
+interested by the main (non-error) code path not about the error code path. 
+Also the traditional way replicates codes (those replicated free()) which is 
+error prone (more badly, its prone to memory leaks, and believe me, I did 
+fixed a lot of this forgotten free() in error exit paths).
+NOTE: however, with the xalloc wrappers that never fail the above examples 
+are obsolete, still there are many other similar situations where you need 
+a complex error exit path and goto comes in handy.
+
+When developing code you should compile always with "all warnings" enabled 
+and try to fix them (some warnings uncover real bugs), like for gcc use 
+"-Wall". When running/testing the codes you should use a memory debugger like 
+valgrind and/or bounds checking compiler patches like bounds-checking-gcc. 
+For more details about how to run pvpgn check Appendix B.
+
+b. Code Organizing
+
+PvPGN (inhireted from bnetd) trys to group functions based on their data on
+which they work on. Thus it somewhat resembles the principle of data
+encapsulation used in OOP. For example connection.h defines structs necesarry
+to work with connections (the main one beeing t_connection) and functions
+which work with this structs and which do actions related to this connections.
+Also notice that all this functions are named like conn_<name>(). In general
+if you have a set of functions working on a set of structs, you define the
+structs and the functions in a <module>.h file (thus defining the API) then
+write the function implementations in <module>.c file. And the function names
+should be something like <module>_<name>(). Separating and grouping functions
+in their own modules, working on their own data structures helps isolating
+functionality in the server and thus hunting bugs a lot easier.
+
+c. Code Flow
+
+Note: this chapter is more or less correct. Is intended to give a general
+ideea about the code flow, it may contain flows and things which are not
+in sync with the actual code, for a better understanding I recommend reading
+the actual code
+
+The server starts in main() found in bnetd/main.c file. There it parses
+command line arguments then tries to initilize the modules by calling their
+initilizing function (many of them called like <module>_init()). Some of this
+modules depend on the initilizing of others so the order there may be important.
+Also some of the modules if fail on initilizing may represent a general fail
+thus PvPGN bails out. But should print out a explaining message (or write it
+to the log configured file).
+
+From there the server calls the main server loop function found in server.c.
+Here the loop may be simplified to something like:
+1. fdwatch() on the set of opened sockets
+2. call fdwatch_handle() which reads (if any) network data and "handle" them 
+(by calling the handle function coresponding to the class of the connection 
+receiving the data)
+3. write (if any) to the network from the output queue
+4. do any periodic or time based events
+5. go to 1
+
+As seen on step 2. above we call the handling functions coresponding to the
+class of the connection. The handle functions usualy are a big switch/case or
+a for/if (which is equivalent) and they check for the packet type received, then
+they act acordingly to the data received (many of them responing with packets
+by adding them to the output packet queue of the connection).
+
+Appendix A. Glossary of terms
+===============================
+
+* autoupdate: the feature of Battle.Net servers to send a (MPQ, see MPQ) file
+to the client which after downloading it, it is used to update the client
+
+* connection class: when a connection is established to a bnet listening
+address the client sends an initial byte which tells the server of what class
+of connection the following packets will be; classes of connections determine
+what packets can go through that connection.
+
+* MPQ: a format archive which is used by Blizzard clients and Battle.Net 
+servers. This files are used for containing verious files (sound/graphics in
+clients, AI scripts, update patches etc...)
+
+* versioncheck: also know as vcheck and sometimes just vc ; a client 
+verification system used by Battle.Net servers to identify client version and 
+"purity". Based on this the server may accept/refuse connection or ask for 
+upgrade (see autoupdate).
+
+Appendix B. How to run PvPGN for debugging
+===========================================
+
+It is very helpfull in finding out memory coruption bugs as soon as possible 
+so while developing codes or just when running a server it is good that you 
+use some memory coruption run-time debuggers. I dont know about Win32 users 
+but on Unix/Linux there are some good options.
+
+1. valgrind (http://valgrind.kde.org)
+
+Valgrind is not very portable (only x86, Linux and very recently FreeBSD), 
+also it slows down the debugged codes (it acts like a CPU emulator so it 
+has to do that) but I have yet to find out a better debugging tool for what 
+he does. Valgrind is so cool that recently many OSS projects use it for 
+finding out bugs in their codes. For more information you can check out their 
+web page. I will focus on valgrind with PvPGN.
+
+After you have compiled and installed valgrind (it's easy, ./configure, make, 
+make install) you will use it by running PvPGN like this:
+
+$ valgrind --tool=memcheck --num-callers=10 /path/to/bnetd -f 2> valg.out
+
+"num-callers" makes valgrind record backtraces with 10 entries and is usually 
+needed with PvPGN which has not very small backtrace path :)
+
+Another option you might want to use is "--leak-check=yes" and probably 
+"--leak-resolution=high". This options make valgrind even slower but they 
+will give memory leak information when PvPGN exits.
+
+I encourage EVERYONE to use it if available (that is if you run PvPGN on 
+a supported platform). Only very big servers won't be able to do it because 
+there is no hardware powerfull enough to run a big server with valgrind (but 
+big means over 500 users online). You should test it with your server and if 
+it does not make your bnetd go over 90% CPU then you should be fine. If you 
+cannot run valgrind for any reason or if you are hunting for some bugs 
+valgrind cannot find (yes, valgrind is superb but there is a class of bugs, 
+especially overflows which valgrind can't help you with) you should then try 
+the next debugging tool.
+
+2. bounds-checking GCC (http://sourceforge.net/projects/boundschecking/)
+
+This has the drawback of beeing just for GCC (as far as I know of) but has 
+the advantage over valgrind that is : more portable (virtually it should be 
+possible to use it anywhere you can use a recent GCC), a lot faster and can 
+detect bugs that valgrind cannot find. However it has the disadvantage that 
+it's error reports do not contain backtraces so they might be lesser usefull.
+
+To use it basically it cuts down to:
+- download a recent compiler (ex GCC 3.4.1)
+- download the coresponding patch from the project's sf.net page
+- apply the patch while beeing in the gcc source dir you unpacked with a 
+command like bunzip2  -c /path/to/patch.bz2 | patch -p1
+- compile gcc and install gcc
+- to make pvpgn compile with your new gcc do something like:
+$ CC=/path/to/new/gcc CFLAGS="-O0 -Wall -fbounds-checking -g" ./configure
+- then the usual make, make install
+- to run PvPGN you will probably need to redirect stderr like:
+$ /path/to/bnetd -f 2> debug.out
+
+You will probably encounter some problems when configuring, building gcc, so 
+you should read the text in the beginning of the bounds-checking patch file. 
+Also the gcc install docs are usefull.
+
+When starting up your new bounds checking enabled binary you will see some 
+usefull messages. By default the patch makes the debugged program exit on the 
+first error it encounters. For a production server this is not very nice so 
+you will want to set GCC_BOUNDS_OPTS shell variable to "-never-fatal" like:
+$ GCC_BOUNDS_OPTS="-never-fatal" /path/to/bnetd -f 2> debug.out
+
+Appendix C. How to generate and use "core" files
+=================================================
+
+This appendix is for Unix users. I dont know if other platforms have similar 
+features, that when the program crashes unexpectedly the OS would dump the 
+contents of the memory of the crashing process into a disk file for later 
+inspection.
+
+First make sure that PvPGN has been compiled with debugging ("-g" parameter 
+to gcc) and with no optimizations ("-O0" parameter to gcc). PvPGN default 
+build process puts "-g -O2" so you need to edit Makefile file before compile 
+and change it to "-g -O0". Then something like "make clean; make".
+
+On Unix/Linux to be able to get core dumps you first need to make sure your 
+core file size limit is set acordingly. Use "ulimit -c" for querying and 
+setting this limit (I recommend setting it to "unlimited"). After that when 
+you start PvPGN make sure you are in a directory where you have write access 
+(so the OS when it wants to do the core dump it will be allowed to do so). 
+The last thing to do is when starting PvPGN make sure it starts in FOREGROUND, 
+example : /path/to/bnetd -f . If you did all this then when PvPGN will crash 
+you will get a core dump. On linux this is a file called "core", on *BSD it's 
+called <processname>.core (for bnetd that means it's called bnetd.core). 
+
+Now that you got a core file it is time to use it to identify what happened 
+wrong in the crashing process. We use gdb (the GNU debugger, should be 
+available on all Unices) to do this. Run gdb like this:
+$ gdb /path/to/bnetd /path/to/corefile
+
+Then gdb should startup, print out a lot of messages and stop after printing 
+a file and line number and quoting some C code where the crash has happened. 
+You can find out a lot more information than this. Run gdb's command "bt full" 
+and it will display a full backtrace of the moment of the crash. The backtrace 
+will contain how the functions were called along the way (their parameters), 
+and also any local variables. If you do not know what to do next from here 
+contact a PvPGN developer and give him exactly that backtrace dump, he should 
+know more.
