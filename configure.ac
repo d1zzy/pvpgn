@@ -15,7 +15,7 @@
 
 # Process this file with autoconf to produce a configure script.
 AUTOCONF_CONFIG_DIR="src/autoconf"
-AC_INIT(src/bnetd/handle_bnet.c)
+AC_INIT(src/bnetd/handle_bnet.cpp)
 AC_CONFIG_AUX_DIR(src/autoconf)
 
 AC_CANONICAL_SYSTEM
@@ -27,6 +27,7 @@ builtin(include,src/autoconf/ccstdc.m4)
 builtin(include,src/autoconf/mkdir.m4)
 
 # Checks for programs.
+AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_RANLIB

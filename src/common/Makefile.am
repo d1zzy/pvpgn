@@ -2,12 +2,12 @@ AM_CPPFLAGS=-I$(top_srcdir)/src
 
 noinst_LIBRARIES = libcommon.a
 
-libcommon_a_SOURCES = conf.c list.c eventlog.c hexdump.c bn_type.c util.c \
-	addr.c d2char_checksum.c xalloc.c network.c packet.c xstring.c \
-	asnprintf.c bnethash.c bnethashconv.c bnettime.c bn_type.c \
-	fdwatch.c fdwatch_epoll.c fdwatch_kqueue.c fdwatch_poll.c \
-	fdwatch_select.c give_up_root_privileges.c hashtable.c \
-	proginfo.c queue.c rcm.c rlimit.c tag.c token.c trans.c
+libcommon_a_SOURCES = conf.cpp list.cpp eventlog.cpp hexdump.cpp bn_type.cpp util.cpp \
+	addr.cpp d2char_checksum.cpp xalloc.cpp network.cpp packet.cpp xstring.cpp \
+	asnprintf.cpp bnethash.cpp bnethashconv.cpp bnettime.cpp bn_type.cpp \
+	fdwatch.cpp fdwatch_epoll.cpp fdwatch_kqueue.cpp fdwatch_poll.cpp \
+	fdwatch_select.cpp give_up_root_privileges.cpp hashtable.cpp \
+	proginfo.cpp queue.cpp rcm.cpp rlimit.cpp tag.cpp token.cpp trans.cpp
 
 noinst_HEADERS = addr.h anongame_protocol.h asnprintf.h bnethashconv.h \
 	bnethash.h bnet_protocol.h bnettime.h bn_type.h bot_protocol.h \

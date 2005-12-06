@@ -1,12 +1,12 @@
 AM_CPPFLAGS=-I$(top_srcdir)/src
 
 noinst_LIBRARIES = libtinycdb.a
-libtinycdb_a_SOURCES = cdb_find.c cdb_findnext.c cdb_hash.c cdb_init.c \
-	cdb_make_add.c cdb_make.c cdb_make_find.c cdb_make_put.c cdb_seek.c \
-	cdb_seq.c cdb_unpack.c
+libtinycdb_a_SOURCES = cdb_find.cpp cdb_findnext.cpp cdb_hash.cpp cdb_init.cpp \
+	cdb_make_add.cpp cdb_make.cpp cdb_make_find.cpp cdb_make_put.cpp cdb_seek.cpp \
+	cdb_seq.cpp cdb_unpack.cpp
 
 bin_PROGRAMS = bncdb
-bncdb_SOURCES = cdb.c
+bncdb_SOURCES = cdb.cpp
 bncdb_LDADD = libtinycdb.a $(top_builddir)/src/common/libcommon.a \
 	$(top_builddir)/src/compat/libcompat.a
 
