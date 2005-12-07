@@ -1368,7 +1368,7 @@ static t_packet * message_cache_lookup(t_message * message, t_connection *dst, u
 	message->mclasses = temp_mclasses;
     }
 
-    switch (mclass)
+    switch (cclass)
     {
     case conn_class_telnet:
 	if (!(packet = packet_create(packet_class_raw)))
