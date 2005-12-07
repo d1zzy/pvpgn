@@ -6,9 +6,9 @@ If you got the source follow instructions bellow, if you got a binary package
 jump to step 4. If you get the source you will also need to fetch the support 
 files package.
 
-2. Unpack the source tarball, change current directory to the source directory 
-(ex. pvpgn-<version>/src) and run configure. You will need to provide configure 
-with your custom options, ex.
+2. Unpack the source tarball, change current directory (ex. pvpgn-<version>) 
+and run configure. You will need to provide configure with your custom options, 
+ex:
 
 ./configure --prefix=<path>
 
