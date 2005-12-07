@@ -1,4 +1,4 @@
-AM_CPPFLAGS=-I$(top_srcdir)/src -DD2CS_DEFAULT_CONF_FILE=\"$(sysconfdir)/d2cs.cpponf\"
+AM_CPPFLAGS=-I$(top_srcdir)/src -DD2CS_DEFAULT_CONF_FILE=\"$(sysconfdir)/d2cs.conf\"
 
 sbin_PROGRAMS = d2cs
 
