@@ -1,4 +1,4 @@
-/* 
+/*
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -124,7 +124,7 @@ extern int friendlist_close(t_list * flist)
             continue;
         }
 
-	if (list_remove_elem(flist, &curr) < 0) 
+	if (list_remove_elem(flist, &curr) < 0)
 	    eventlog(eventlog_level_error, __FUNCTION__, "could not remove elem from flist");
         xfree((void *) fr);
     }
@@ -172,7 +172,7 @@ extern int friendlist_add_account(t_list * flist, t_account * acc, int mutual)
 extern int friendlist_remove_friend(t_list * flist, t_friend * fr)
 {
     t_elem * elem;
-    
+
     if(flist==NULL)
         return -1;
 
@@ -277,7 +277,7 @@ extern t_friend * friendlist_find_username(t_list * flist, const char * accname)
     return NULL;
 }
 
-extern t_friend * friendlist_find_uid(t_list * flist, int uid)
+extern t_friend * friendlist_find_uid(t_list * flist, unsigned uid)
 {
     t_elem  * curr;
     t_friend * fr;

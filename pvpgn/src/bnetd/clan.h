@@ -97,7 +97,7 @@ extern int clanlist_save(void);
 extern int clanlist_unload(void);
 extern int clanlist_remove_clan(t_clan * clan);
 extern int clanlist_add_clan(t_clan * clan);
-extern t_clan *clanlist_find_clan_by_clanid(int cid);
+extern t_clan *clanlist_find_clan_by_clanid(unsigned cid);
 extern t_clan *clanlist_find_clan_by_clantag(int clantag);
 
 
@@ -138,7 +138,7 @@ extern int clan_set_motd(t_clan * clan, const char *motd);
 extern unsigned int clan_get_clanid(t_clan * clan);
 extern int clan_set_creation_time(t_clan * clan, time_t c_time);
 extern time_t clan_get_creation_time(t_clan * clan);
-extern int clan_get_member_count(t_clan * clan);
+extern unsigned clan_get_member_count(t_clan * clan);
 
 extern t_clanmember *clan_add_member(t_clan * clan, t_account * memberacc, char status);
 extern int clan_remove_member(t_clan * clan, t_clanmember * member);

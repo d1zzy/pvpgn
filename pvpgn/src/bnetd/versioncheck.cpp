@@ -89,7 +89,7 @@ extern t_versioncheck * versioncheck_create(t_tag archtag, t_tag clienttag)
     t_versioncheck * vc;
     char             archtag_str[5];
     char             clienttag_str[5];
-    
+
     LIST_TRAVERSE_CONST(versioninfo_head,curr)
     {
         if (!(vi = (t_versioninfo*)elem_get_data(curr))) /* should not happen */
@@ -97,16 +97,16 @@ extern t_versioncheck * versioncheck_create(t_tag archtag, t_tag clienttag)
             eventlog(eventlog_level_error,__FUNCTION__,"version list contains NULL item");
             continue;
         }
-	
+
 	eventlog(eventlog_level_debug,__FUNCTION__,"version check entry archtag=%s, clienttag=%s",
 	    tag_uint_to_str(archtag_str,vi->archtag),
 	    tag_uint_to_str(clienttag_str,vi->clienttag));
-	
+
 	if (vi->archtag != archtag)
 	    continue;
 	if (vi->clienttag != clienttag)
 	    continue;
-	
+
 	/* FIXME: randomize the selection if more than one match */
 	vc = (t_versioncheck*)xmalloc(sizeof(t_versioncheck));
 	vc->eqn = xstrdup(vi->eqn);
@@ -115,7 +115,7 @@ extern t_versioncheck * versioncheck_create(t_tag archtag, t_tag clienttag)
 
 	return vc;
     }
-    
+
     /*
      * No entries in the file that match, return the dummy because we have to send
      * some equation and auth mpq to the client.  The client is not going to pass the
@@ -132,15 +132,15 @@ extern int versioncheck_destroy(t_versioncheck * vc)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL vc");
 	return -1;
     }
-    
+
     if (vc==&dummyvc)
 	return 0;
-    
+
     xfree((void *)vc->versiontag);
     xfree((void *)vc->mpqfile);
     xfree((void *)vc->eqn);
     xfree(vc);
-    
+
     return 0;
 }
 
@@ -154,7 +154,7 @@ extern int versioncheck_set_versiontag(t_versioncheck * vc, char const * version
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL versiontag");
 	return -1;
     }
-    
+
     if (vc->versiontag!=NULL) xfree((void *)vc->versiontag);
     vc->versiontag = xstrdup(versiontag);
     return 0;
@@ -167,7 +167,7 @@ extern char const * versioncheck_get_versiontag(t_versioncheck const * vc)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL vc");
 	return NULL;
     }
-    
+
     return vc->versiontag;
 }
 
@@ -179,7 +179,7 @@ extern char const * versioncheck_get_mpqfile(t_versioncheck const * vc)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL vc");
 	return NULL;
     }
-    
+
     return vc->mpqfile;
 }
 
@@ -191,7 +191,7 @@ extern char const * versioncheck_get_eqn(t_versioncheck const * vc)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL vc");
 	return NULL;
     }
-    
+
     return vc->eqn;
 }
 
@@ -207,15 +207,15 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
     parsed_exeinfo->exe = xstrdup(exeinfo);
     parsed_exeinfo->time = 0;
     parsed_exeinfo->size = 0;
-    
-    if (strcmp(prefs_get_version_exeinfo_match(),"parse")==0) 
+
+    if (strcmp(prefs_get_version_exeinfo_match(),"parse")==0)
     {
 #ifdef HAVE_MKTIME
 	struct tm t1;
 	char *exe;
 	char mask[MAX_EXEINFO_STR+1];
 	char * marker;
-	int size;
+	unsigned size;
         char time_invalid = 0;
 
 	if ((exeinfo[0]=='\0') ||	   //happens when using war3-noCD and having deleted war3.org
@@ -237,14 +237,14 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
 	  xfree((void *)parsed_exeinfo);
 	  return NULL;
         }
-	for (; marker[0]==' ';marker++); 
+	for (; marker[0]==' ';marker++);
 
         if (!(marker     = strchr(marker,' ')))
         {
 	  xfree((void *)parsed_exeinfo->exe);
 	  xfree((void *)parsed_exeinfo);
 	  return NULL;
-	} 
+	}
 	for (; marker[0]==' ';marker++);
 
         if (!(marker     = strchr(marker,' ')))
@@ -256,8 +256,8 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
         for (; marker[0]==' ';marker++);
         marker--;
         marker[0]  = '\0';
-        marker++; 
-        
+        marker++;
+
         exe = xstrdup(marker);
         xfree((void *)parsed_exeinfo->exe);
         parsed_exeinfo->exe = strreverse((char *)exe);
@@ -278,16 +278,16 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
             time_invalid=1;
 	}
 
-       /* Now we have a Y2K problem :)  Thanks for using a 2 digit decimal years, Blizzard. */ 
-       /* 00-79 -> 2000-2079 
-	*             * 80-99 -> 1980-1999 
-	*             * 100+ unchanged */ 
-       if (t1.tm_year<80) 
-	 t1.tm_year = t1.tm_year + 100; 
+       /* Now we have a Y2K problem :)  Thanks for using a 2 digit decimal years, Blizzard. */
+       /* 00-79 -> 2000-2079
+	*             * 80-99 -> 1980-1999
+	*             * 100+ unchanged */
+       if (t1.tm_year<80)
+	 t1.tm_year = t1.tm_year + 100;
 
        if (time_invalid)
          parsed_exeinfo->time = -1;
-       else 
+       else
          parsed_exeinfo->time = mktime(&t1);
        parsed_exeinfo->size = size;
 
@@ -317,21 +317,21 @@ static int versioncheck_compare_exeinfo(t_parsed_exeinfo * pattern, t_parsed_exe
 
     if (strlen(pattern->exe)!=strlen(match->exe))
     	return 1; /* neq */
-    
+
     if (strcmp(prefs_get_version_exeinfo_match(),"exact")==0) {
 	return strcasecmp(pattern->exe,match->exe);
     } else if (strcmp(prefs_get_version_exeinfo_match(),"exactcase")==0) {
 	return strcmp(pattern->exe,match->exe);
     } else if (strcmp(prefs_get_version_exeinfo_match(),"wildcard")==0) {
     	unsigned int i;
-    	
+
     	for (i=0;i<strlen(pattern->exe);i++)
     	    if ((pattern->exe[i]!='?')&& /* out "don't care" sign */
     	    	(safe_toupper(pattern->exe[i])!=safe_toupper(match->exe[i])))
     	    	return 1; /* neq */
     	return 0; /* ok */
     } else if (strcmp(prefs_get_version_exeinfo_match(),"parse")==0) {
-       
+
        if (strcasecmp(pattern->exe,match->exe)!=0)
             {
             eventlog(eventlog_level_trace,__FUNCTION__,"filename differs");
@@ -358,7 +358,7 @@ void free_parsed_exeinfo(t_parsed_exeinfo * parsed_exeinfo)
 {
   if (parsed_exeinfo)
   {
-    if (parsed_exeinfo->exe) 
+    if (parsed_exeinfo->exe)
       xfree((void *)parsed_exeinfo->exe);
     xfree((void *)parsed_exeinfo);
   }
@@ -370,13 +370,13 @@ extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clien
     t_versioninfo    * vi;
     int                badexe,badcs;
     t_parsed_exeinfo * parsed_exeinfo;
-    
+
     if (!vc)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL vc");
 	return -1;
     }
-    
+
     badexe=badcs = 0;
     parsed_exeinfo = parse_exeinfo(exeinfo);
     LIST_TRAVERSE_CONST(versioninfo_head,curr)
@@ -386,7 +386,7 @@ extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clien
 	    eventlog(eventlog_level_error,__FUNCTION__,"version list contains NULL item");
 	    continue;
         }
-	
+
 	if (vi->archtag != archtag)
 	    continue;
 	if (vi->clienttag != clienttag)
@@ -395,10 +395,10 @@ extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clien
 	    continue;
 	if (strcmp(vi->mpqfile,vc->mpqfile)!=0)
 	    continue;
-	
+
 	if (vi->versionid && vi->versionid != versionid)
 	    continue;
-	
+
 	if (vi->gameversion && vi->gameversion != gameversion)
 	    continue;
 
@@ -414,7 +414,7 @@ extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clien
 	}
 	else
 	    badexe = 0;
-	
+
 	if (vi->checksum && vi->checksum != checksum)
 	{
 	    /*
@@ -426,21 +426,21 @@ extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clien
 	}
 	else
 	    badcs = 0;
-	
+
 	if (vc->versiontag)
 	    xfree((void *)vc->versiontag);
 	vc->versiontag = xstrdup(vi->versiontag);
-	
+
 	if (badexe || badcs)
 	    continue;
-	
+
 	/* Ok, version and checksum matches or exeinfo/checksum are disabled
 	 * anyway we have found a complete match */
 	eventlog(eventlog_level_info,__FUNCTION__,"got a matching entry: %s",vc->versiontag);
         free_parsed_exeinfo(parsed_exeinfo);
 	return 1;
     }
-    
+
     if (badcs) /* A match was found but the checksum was different */
     {
 	eventlog(eventlog_level_info,__FUNCTION__,"bad checksum, closest match is: %s",vc->versiontag);
@@ -453,7 +453,7 @@ extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clien
         free_parsed_exeinfo(parsed_exeinfo);
 	return -1;
     }
-    
+
     /* No match in list */
     eventlog(eventlog_level_info,__FUNCTION__,"no match in list, setting to: %s",vc->versiontag);
     free_parsed_exeinfo(parsed_exeinfo);
@@ -477,13 +477,13 @@ extern int versioncheck_load(char const * filename)
     char const *    checksum;
     char const *    versiontag;
     t_versioninfo * vi;
-    
+
     if (!filename)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
 	return -1;
     }
-    
+
     if (!(versioninfo_head = list_create()))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could create list");
@@ -509,7 +509,7 @@ extern int versioncheck_load(char const * filename)
 	{
 	    unsigned int len;
 	    unsigned int endpos;
-	    
+
 	    *temp = '\0';
 	    len = strlen(buff)+1;
 	    for (endpos=len-1;  buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
@@ -634,15 +634,15 @@ extern int versioncheck_load(char const * filename)
 	    vi->versiontag = xstrdup(versiontag);
 	else
 	    vi->versiontag = NULL;
-	
-	
+
+
 	list_append_data(versioninfo_head,vi);
     }
-    
+
     file_get_line(NULL); // clear file_get_line buffer
     if (fclose(fp)<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not close versioncheck file \"%s\" after reading (fclose: %s)",filename,pstrerror(errno));
-    
+
     return 0;
 }
 
@@ -651,7 +651,7 @@ extern int versioncheck_unload(void)
 {
     t_elem *	    curr;
     t_versioninfo * vi;
-    
+
     if (versioninfo_head)
     {
 	LIST_TRAVERSE(versioninfo_head,curr)
@@ -661,7 +661,7 @@ extern int versioncheck_unload(void)
 		eventlog(eventlog_level_error,__FUNCTION__,"version list contains NULL item");
 		continue;
 	    }
-	    
+
 	    if (list_remove_elem(versioninfo_head,&curr)<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
 
@@ -677,11 +677,11 @@ extern int versioncheck_unload(void)
 		xfree((void *)vi->versiontag); /* avoid warning */
 	    xfree(vi);
 	}
-	
+
 	if (list_destroy(versioninfo_head)<0)
 	    return -1;
 	versioninfo_head = NULL;
     }
-    
+
     return 0;
 }

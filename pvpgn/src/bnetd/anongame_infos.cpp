@@ -76,7 +76,7 @@ static int anongame_infos_URL_init(t_anongame_infos * anongame_infos)
 static int anongame_infos_URL_destroy(char ** anongame_infos_URL)
 {
     int i;
-    
+
     if (!(anongame_infos_URL))
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "got NULL anongame_infos_URL");
@@ -119,7 +119,7 @@ static int anongame_infos_DESC_destroy(t_anongame_infos_DESC * anongame_infos_DE
 {
     int i;
     char ** descs;
-    
+
     if (!(anongame_infos_DESC))
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "got NULL anongame_infos_DESC");
@@ -434,7 +434,7 @@ static int anongame_infos_set_str(char **dst, char *src, char *errstr)
 static int anongame_infos_URL_set_URL(int member, char *URL)
 {
     char **anongame_infos_URLs;
-    
+
     if (!(anongame_infos_URLs = anongame_infos->anongame_infos_URL))
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "detected NULL anongame_infos_URL");
@@ -447,7 +447,7 @@ static int anongame_infos_URL_set_URL(int member, char *URL)
 extern char *anongame_infos_URL_get_URL(int member)
 {
     char **anongame_infos_URLs;
-    
+
     if (!(anongame_infos_URLs = anongame_infos->anongame_infos_URL))
         return NULL;
     else return anongame_infos_URLs[member];
@@ -457,7 +457,7 @@ extern char *anongame_infos_URL_get_URL(int member)
 static int anongame_infos_DESC_set_DESC(t_anongame_infos_DESC * anongame_infos_DESC, int member, char *DESC)
 {
     char ** descs;
-    
+
     if (!(anongame_infos_DESC))
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "got NULL anongame_infos_DESC");
@@ -515,7 +515,7 @@ extern char *anongame_infos_DESC_get_DESC(char *langID, int member)
     if ((DESC = anongame_infos_get_anongame_infos_DESC_by_langID(anongame_infos, langID)))
       if ((DESC->descs) && (result = DESC->descs[member]))
 	return result;
-	
+
     if ((DESC = anongame_infos->anongame_infos_DESC))
       if ((DESC->descs) && (result = DESC->descs[member]))
 	return result;
@@ -528,7 +528,7 @@ extern char *anongame_infos_DESC_get_DESC(char *langID, int member)
 extern char *anongame_infos_get_short_desc(char *langID, int queue)
 {
     int member = 0;
-    
+
     switch (queue)
     {
     case ANONGAME_TYPE_1V1:
@@ -594,7 +594,7 @@ extern char *anongame_infos_get_short_desc(char *langID, int queue)
 extern char *anongame_infos_get_long_desc(char *langID, int queue)
 {
     int member = 0;
-    
+
     switch (queue)
     {
     case ANONGAME_TYPE_1V1:
@@ -742,7 +742,7 @@ extern char anongame_infos_get_thumbsdown(int queue)
 static int anongame_infos_ICON_REQ_set_REQ(t_anongame_infos * anongame_infos, int member, int value)
 {
     int * anongame_infos_ICON_REQ;
-    
+
     if (!anongame_infos)
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "got NULL anongame_infos");
@@ -957,7 +957,7 @@ static void anongame_infos_set_defaults(t_anongame_infos * anongame_infos)
     char ** anongame_infos_URL;
     t_anongame_infos_DESC *anongame_infos_DESC;
     char ** anongame_infos_DESCs;
-    
+
 
     if (!(anongame_infos))
     {
@@ -1454,7 +1454,7 @@ extern int anongame_infos_load(char const *filename)
 			if (strcmp(THUMBSDOWN_table_row->anongame_infos_THUMBSDOWN_string, variable) == 0)
 			{
 			    if (THUMBSDOWN_table_row->member != -1)
-				anongame_infos_THUMBSDOWN_set_THUMBSDOWN(anongame_infos->anongame_infos_THUMBSDOWN, 
+				anongame_infos_THUMBSDOWN_set_THUMBSDOWN(anongame_infos->anongame_infos_THUMBSDOWN,
 				                                         THUMBSDOWN_table_row->member,char_value);
 			}
 		    break;
@@ -1551,7 +1551,7 @@ extern int anongame_infos_load(char const *filename)
 
     file_get_line(NULL); // clear file_get_line buffer
     fclose(fp);
-    
+
 anongame_infos_loading_failure:
     anongame_infos_set_defaults(anongame_infos);
     anongame_infos_data_load();
@@ -1834,14 +1834,14 @@ static int anongame_infos_data_load(void)
 
 	packet_destroy(raw);
     }
-    
+
     if ((raw = packet_create(packet_class_raw)) != NULL)
     {
 	t_anongame_infos_DESC *anongame_infos_DESC;
 	t_anongame_infos_data_lang *anongame_infos_data_lang_war3;
 	t_anongame_infos_data_lang *anongame_infos_data_lang_w3xp;
 	char * langID;
-	    
+
 	LIST_TRAVERSE(anongame_infos->anongame_infos_DESC_list, curr)
 	{
 	    anongame_infos_DESC = (t_anongame_infos_DESC*)elem_get_data(curr);
@@ -1960,7 +1960,7 @@ static int zlib_compress(void const *src, int srclen, char **dest, int *destlen)
     char *tmpdata;
     z_stream zcpr;
     int ret;
-    int lorigtodo;
+    unsigned lorigtodo;
     int lorigdone;
     int all_read_before;
 

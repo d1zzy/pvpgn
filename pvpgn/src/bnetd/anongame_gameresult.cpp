@@ -70,11 +70,11 @@ extern t_anongame_gameresult * anongame_gameresult_parse(t_packet const * const 
   t_client_w3route_gameresult_part3		* part3;
 
   int counter, heroes_count;
-  int expectedsize;  //still without hero infos 
+  unsigned expectedsize;  //still without hero infos
   unsigned int offset = 0;
 
   int result_count = bn_byte_get(packet->u.client_w3route_gameresult.number_of_results);
-  expectedsize =  sizeof(t_client_w3route_gameresult) + 
+  expectedsize =  sizeof(t_client_w3route_gameresult) +
   		  sizeof(t_client_w3route_gameresult_player) * result_count +
 		  sizeof(t_client_w3route_gameresult_part2) +
 		  sizeof(t_client_w3route_gameresult_part3);
@@ -142,7 +142,7 @@ extern t_anongame_gameresult * anongame_gameresult_parse(t_packet const * const 
   }
   else
     gameresult->heroes = NULL;
-    
+
   part3 = (t_client_w3route_gameresult_part3 *)packet_get_raw_data_const(packet,offset);
 
   gameresult->heroes_killed = bn_int_get(part3->heroes_killed);
@@ -155,7 +155,7 @@ extern t_anongame_gameresult * anongame_gameresult_parse(t_packet const * const 
   gameresult->resources_traded_taken = bn_int_get(part3->resources_traded_taken);
   gameresult->tech_percentage = bn_int_get(part3->tech_percentage);
   gameresult->gold_lost_to_upkeep = bn_int_get(part3->gold_lost_to_upkeep);
-  
+
   return gameresult;
 }
 
