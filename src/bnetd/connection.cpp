@@ -3721,7 +3721,7 @@ extern char const * conn_get_tmpVOICE_channel(t_connection * c)
 
 static int connarray_create(void)
 {
-    int i;
+    unsigned i;
     t_conn_entry *curr;
 
     if (connarray) connarray_destroy();

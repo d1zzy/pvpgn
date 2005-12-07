@@ -83,7 +83,7 @@
 #include "common/setup_after.h"
 
 static t_list *clanlist_head = NULL;
-int max_clanid = 0;
+unsigned max_clanid = 0;
 
 /* callback function for storage use */
 
@@ -125,7 +125,7 @@ extern int clan_send_packet_to_online_members(t_clan * clan, t_packet * packet)
 	t_clanmember *	member;
 	t_clienttag	clienttag;
 	t_connection *	conn;
-	
+
 	if (!(member = (t_clanmember*)elem_get_data(curr)))
 	{
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
@@ -133,7 +133,7 @@ extern int clan_send_packet_to_online_members(t_clan * clan, t_packet * packet)
 	}
 	if (!(conn = clanmember_get_conn(member)))
 		continue;				// not online
-		
+
 	if (!(clienttag = conn_get_clienttag(conn)))
 	{
 		eventlog(eventlog_level_error,__FUNCTION__,"conn has NULL clienttag");
@@ -142,7 +142,7 @@ extern int clan_send_packet_to_online_members(t_clan * clan, t_packet * packet)
 
 	if ((clienttag !=  CLIENTTAG_WARCRAFT3_UINT ) && (clienttag != CLIENTTAG_WAR3XP_UINT))
 		continue;				// online but wrong client
-		
+
 	conn_push_outqueue(conn, packet);
     }
 
@@ -170,18 +170,18 @@ extern int clan_send_status_window_on_create(t_clan * clan)
 	    sprintf(channelname, "Clans");
 	    eventlog(eventlog_level_error,__FUNCTION__,"clan has NULL clantag");
 	}
-	    
+
 	packet_set_size(rpacket, sizeof(t_server_w3xp_clan_clanack));
 	packet_set_type(rpacket, SERVER_W3XP_CLAN_CLANACK);
 	bn_byte_set(&rpacket->u.server_w3xp_clan_clanack.unknow1, 0);
 	bn_int_set(&rpacket->u.server_w3xp_clan_clanack.clantag, clan->clantag);
-	
+
 	LIST_TRAVERSE(clan->members, curr)
 	{
 	    t_clanmember *	member;
 	    t_clienttag 	clienttag;
 	    t_connection *	conn;
-	    
+
 	    if (!(member = (t_clanmember*)elem_get_data(curr)))
 	    {
 	    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
@@ -189,7 +189,7 @@ extern int clan_send_status_window_on_create(t_clan * clan)
 	    }
 	    if (!(conn = clanmember_get_conn(member)))
 	    	continue;			// not online;
-		
+
 	    if (!(clienttag = conn_get_clienttag(conn)))
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"conn has NULL clienttag");
@@ -197,7 +197,7 @@ extern int clan_send_status_window_on_create(t_clan * clan)
 	    }
 	    if ((clienttag != CLIENTTAG_WARCRAFT3_UINT) && (clienttag != CLIENTTAG_WAR3XP_UINT))
 	    	continue;			// online but wrong client
-		
+
 	    if (conn_get_channel(conn))
 	    {
 	        conn_update_w3_playerinfo(conn);
@@ -234,7 +234,7 @@ extern int clan_close_status_window_on_disband(t_clan * clan)
 	    t_clanmember *	member;
 	    t_clienttag 	clienttag;
 	    t_connection *	conn;
-	    
+
 	    if (!(member = (t_clanmember*)elem_get_data(curr)))
 	    {
 	    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
@@ -242,7 +242,7 @@ extern int clan_close_status_window_on_disband(t_clan * clan)
 	    }
 	    if (!(conn = clanmember_get_conn(member)))
 	    	continue;			// not online;
-		
+
 	    if (!(clienttag = conn_get_clienttag(conn)))
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"conn has NULL clienttag");
@@ -251,7 +251,7 @@ extern int clan_close_status_window_on_disband(t_clan * clan)
 
 	    if ((clienttag != CLIENTTAG_WARCRAFT3_UINT) && (clienttag != CLIENTTAG_WAR3XP_UINT))
 	    	continue;			// online but wrong client
-		
+
 	    conn_push_outqueue(conn, rpacket);
 	    conn_update_w3_playerinfo(conn);
 	}
@@ -287,16 +287,16 @@ extern int clan_send_status_window(t_connection * c)
 	eventlog(eventlog_level_error,__FUNCTION__,"clan has NULL clantag");
 	return -1;
     }
-    
+
     if (!(clienttag = conn_get_clienttag(c)))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"conn has NULL clienttag");
 	return -1;
     }
-    
+
     if ((clienttag != CLIENTTAG_WARCRAFT3_UINT) && (clienttag != CLIENTTAG_WAR3XP_UINT))
     	return 0;
-	
+
     if ((rpacket = packet_create(packet_class_bnet)))
     {
 	    packet_set_size(rpacket, sizeof(t_server_w3xp_clan_clanack));
@@ -320,10 +320,10 @@ extern int clan_close_status_window(t_connection * c)
     	eventlog(eventlog_level_error,__FUNCTION__,"conn has NULL clienttag");
 	return -1;
     }
-    
+
     if ((clienttag != CLIENTTAG_WARCRAFT3_UINT) && (clienttag != CLIENTTAG_WAR3XP_UINT))
     	return 0;
-	
+
     if ((rpacket = packet_create(packet_class_bnet)))
     {
 	packet_set_size(rpacket, sizeof(t_server_w3xp_clanquitnotify));
@@ -356,10 +356,10 @@ extern int clan_send_memberlist(t_connection * c, t_packet const *const packet)
     if ((rpacket = packet_create(packet_class_bnet)))
     {
     	t_account * memberacc;
-	
+
 	packet_set_size(rpacket, sizeof(t_server_w3xp_clanmemberlist_reply));
 	packet_set_type(rpacket, SERVER_W3XP_CLANMEMBERLIST_REPLY);
-	bn_int_set(&rpacket->u.server_w3xp_clanmemberlist_reply.count, 
+	bn_int_set(&rpacket->u.server_w3xp_clanmemberlist_reply.count,
 	           bn_int_get(packet->u.client_w3xp_clanmemberlist_req.count));
 	LIST_TRAVERSE(clan->members, curr)
 	{
@@ -501,13 +501,13 @@ extern int clan_get_possible_member(t_connection * c, t_packet const *const pack
 	    {
 		t_account *fr_acc = friend_get_account(fr);
 		t_clienttag clienttag;
-		if (fr->mutual 
-		    && ((conn = connlist_find_connection_by_account(fr_acc)) != NULL) 
-		    && (conn_get_channel(conn) == channel) 
-		    && (!account_get_clan(fr_acc)) 
-		    && (!account_get_creating_clan(fr_acc)) 
-		    && (clienttag = conn_get_clienttag(conn)) 
-		    && ((clienttag == CLIENTTAG_WAR3XP_UINT) || (clienttag ==  CLIENTTAG_WARCRAFT3_UINT)) 
+		if (fr->mutual
+		    && ((conn = connlist_find_connection_by_account(fr_acc)) != NULL)
+		    && (conn_get_channel(conn) == channel)
+		    && (!account_get_clan(fr_acc))
+		    && (!account_get_creating_clan(fr_acc))
+		    && (clienttag = conn_get_clienttag(conn))
+		    && ((clienttag == CLIENTTAG_WAR3XP_UINT) || (clienttag ==  CLIENTTAG_WARCRAFT3_UINT))
 		    && (username = account_get_name(fr_acc)))
 		{
 		    friend_count++;
@@ -788,7 +788,7 @@ extern int clanlist_unload(void)
     return 0;
 }
 
-extern t_clan *clanlist_find_clan_by_clanid(int cid)
+extern t_clan *clanlist_find_clan_by_clanid(unsigned cid)
 {
     t_elem *curr;
     t_clan *clan;
@@ -947,7 +947,7 @@ extern int clanmember_set_account(t_clanmember * member, t_account * memberacc)
 extern t_connection *clanmember_get_conn(t_clanmember * member)
 {
     t_account * account;
-    
+
     if (!(member))
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "got NULL clanmember");
@@ -1301,7 +1301,7 @@ extern t_clanmember *clan_add_member(t_clan * clan, t_account * memberacc, char 
 extern int clan_remove_member(t_clan * clan, t_clanmember * member)
 {
     t_elem * elem;
-    
+
     if (!member)
 	return -1;
     if (list_remove_data(clan->members, member, &elem) < 0)
@@ -1379,10 +1379,10 @@ extern int clan_destroy(t_clan * clan)
     return 0;
 }
 
-extern int clan_get_member_count(t_clan * clan)
+extern unsigned clan_get_member_count(t_clan * clan)
 {
     t_elem *curr;
-    int count = 0;
+    unsigned count = 0;
     LIST_TRAVERSE(clan->members, curr)
     {
 	if ((elem_get_data(curr)) != NULL)

@@ -73,7 +73,7 @@
 #include "common/setup_after.h"
 
 static t_list *teamlist_head = NULL;
-int max_teamid = 0;
+unsigned max_teamid = 0;
 int teamlist_add_team(t_team * team);
 
 /* callback function for storage use */
@@ -95,7 +95,7 @@ static int _cb_load_teams(void *team)
 int teamlist_add_team(t_team * team)
 {
     int i;
-    
+
     if (!(team))
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "got NULL team");
@@ -111,10 +111,10 @@ int teamlist_add_team(t_team * team)
 	    return team->teamid; //we return teamid even though we have an error, we don't want unintentional overwriting
 	}
     }
-    
+
     for (i=0; i<team->size; i++)
       account_add_team(team->members[i],team);
-    
+
     if (!(team->teamid))
 	team->teamid = ++max_teamid;
 
@@ -169,7 +169,7 @@ int teams_destroy(t_list * teams)
 {
     t_elem *curr;
     t_team *team;
-    
+
     if ((teams))
     {
 	LIST_TRAVERSE(teams,curr)
@@ -181,7 +181,7 @@ int teams_destroy(t_list * teams)
 	    }
 	    list_remove_elem(teams, &curr);
 	}
-	
+
 	if (list_destroy(teams) < 0)
 	    return -1;
     }
@@ -239,9 +239,9 @@ t_team * _list_find_team_by_accounts(t_account **accounts, t_clienttag clienttag
     unsigned char size;
 
     assert(accounts);
-    
+
     found = 0;
-    
+
     if ((teamlist))
     {
 	LIST_TRAVERSE(teamlist,curr)
@@ -257,8 +257,8 @@ t_team * _list_find_team_by_accounts(t_account **accounts, t_clienttag clienttag
 	    {
 	      if (!(accounts[i]))
 	        break;
-		
-	      size++;	
+
+	      size++;
 	      found = 0;
 	      for (j=0; j<MAX_TEAMSIZE;j++)
 	      {
@@ -273,7 +273,7 @@ t_team * _list_find_team_by_accounts(t_account **accounts, t_clienttag clienttag
 	    if ((found) && (clienttag==cteam->clienttag) && (size==cteam->size))
 	      return cteam;
 	}
-	
+
     }
 
     return NULL;
@@ -292,9 +292,9 @@ t_team * _list_find_team_by_uids(unsigned int * uids, t_clienttag clienttag, t_l
     unsigned char size;
 
     assert(uids);
-    
+
     found = 0;
-    
+
     if ((teamlist))
     {
 	LIST_TRAVERSE(teamlist,curr)
@@ -310,7 +310,7 @@ t_team * _list_find_team_by_uids(unsigned int * uids, t_clienttag clienttag, t_l
 	    {
 	      if (!(uids[i]))
 	        break;
-		
+
 	      found = 0;
 	      for (j=0; j<MAX_TEAMSIZE;j++)
 	      {
@@ -325,7 +325,7 @@ t_team * _list_find_team_by_uids(unsigned int * uids, t_clienttag clienttag, t_l
 	    if ((found) && (clienttag==cteam->clienttag) && (size==cteam->size))
 	      return cteam;
 	}
-	
+
     }
 
     return NULL;
@@ -342,7 +342,7 @@ t_team* _list_find_team_by_teamid(unsigned int teamid, t_list * teamlist)
     t_team * cteam;
 
     assert(teamid);
-    
+
     if ((teamlist))
     {
 	LIST_TRAVERSE(teamlist,curr)
@@ -467,29 +467,29 @@ int team_update_lastgame(t_team * team)
 }
 
 extern int team_update_xp(t_team * team, int gameresult, unsigned int opponlevel, int * xp_diff)
-{ 
+{
   int xp;
   int mylevel;
   int xpdiff = 0, placeholder;
-  
+
   xp = team->xp; //get current xp
   if (xp < 0) {
     eventlog(eventlog_level_error, __FUNCTION__, "got negative XP");
     return -1;
   }
-   
+
   mylevel = team->level; //get teams level
   if (mylevel > W3_XPCALC_MAXLEVEL) {
     eventlog(eventlog_level_error, __FUNCTION__, "got invalid level: %d", mylevel);
     return -1;
   }
-  
+
   if(mylevel<=0) //if level is 0 then set it to 1
     mylevel=1;
-  
+
   if (opponlevel < 1) opponlevel = 1;
-  
-  switch (gameresult) 
+
+  switch (gameresult)
     {
     case W3_GAMERESULT_WIN:
       ladder_war3_xpdiff(mylevel, opponlevel, &xpdiff, &placeholder); break;
@@ -503,27 +503,27 @@ extern int team_update_xp(t_team * team, int gameresult, unsigned int opponlevel
   *xp_diff = xpdiff;
   xp += xpdiff;
   if (xp < 0) xp = 0;
-  
+
   team->xp = xp;
 
   return 0;
 }
 
 int team_update_level(t_team * team)
-{ 
+{
   int xp, mylevel;
-  
+
   xp = team->xp;
   if (xp < 0) xp = 0;
-   
+
   mylevel = team->level;
   if (mylevel < 1) mylevel = 1;
-   
+
   if (mylevel > W3_XPCALC_MAXLEVEL) {
     eventlog(eventlog_level_error, "account_set_sololevel", "got invalid level: %d", mylevel);
     return -1;
   }
-   
+
   mylevel = ladder_war3_updatelevel(mylevel, xp);
 
   team->level = mylevel;
@@ -537,17 +537,17 @@ int team_set_saveladderstats(t_team * team, unsigned int gametype, int result, u
   int xpdiff,level;
   int i;
   t_account * account;
-	
-  if(!team) 
+
+  if(!team)
     {
       eventlog(eventlog_level_error,__FUNCTION__, "got NULL team");
       return -1;
     }
-  
+
     //added for better tracking down of problems with gameresults
     eventlog(eventlog_level_trace,__FUNCTION__,"parsing game result for team: %u result: %s",team_get_teamid(team),(result==W3_GAMERESULT_WIN)?"WIN":"LOSS");
 
-  
+
   if(result == W3_GAMERESULT_WIN)
     {
       team_inc_wins(team);
@@ -584,7 +584,7 @@ int team_set_saveladderstats(t_team * team, unsigned int gametype, int result, u
       account_set_currentatteam(account,0);
     }
   }
-  
+
   return 0;
 }
 

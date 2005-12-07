@@ -1,6 +1,6 @@
 /*
   * Abstraction API/layer for the various ways PvPGN can inspect sockets state
-  * 2003 (C) 
+  * 2003 (C)
   *
   * Code is based on the ideas found in thttpd project.
   *
@@ -55,7 +55,7 @@ typedef struct {
     void (*handle)(void);
 } t_fdw_backend;
 
-extern int fdw_maxcons;
+extern unsigned fdw_maxcons;
 extern t_fdwatch_fd *fdw_fds;
 
 #define fdw_idx(ptr) ((ptr) - fdw_fds)

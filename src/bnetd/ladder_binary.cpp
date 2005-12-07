@@ -100,14 +100,15 @@ extern int binary_ladder_save(t_binary_ladder_types type, unsigned int paracount
   int rank = 1;
   const char * ladder_name;
   const char * filename;
-  int checksum, count;
+  int checksum;
+  unsigned count;
   FILE * fp;
 
-  if ((!(ladder_name = binary_ladder_type_to_filename(type))) || 
+  if ((!(ladder_name = binary_ladder_type_to_filename(type))) ||
       (!(filename = create_filename(prefs_get_ladderdir(),ladder_name,"_LADDER"))))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"NULL filename -  aborting");
-    return -1;  
+    return -1;
   }
 
   if (!(fp = fopen(filename,"wb")))
@@ -143,20 +144,21 @@ extern t_binary_ladder_load_result binary_ladder_load(t_binary_ladder_types type
 { int values[10];
   const char * ladder_name;
   const char * filename;
-  int checksum, count;
+  int checksum;
+  unsigned count;
   FILE * fp;
 
   //TODO: load from file and if this fails return binary_ladder_load_failed
   //      then make sure ladder gets loaded somehow else (form accounts)
-  //      compare checksum - and if it differs return load_invalid 
+  //      compare checksum - and if it differs return load_invalid
   //      then make sure ladder gets flushed and then loaded from accounts
   //      on success don't load from accounts
 
-  if ((!(ladder_name = binary_ladder_type_to_filename(type))) || 
+  if ((!(ladder_name = binary_ladder_type_to_filename(type))) ||
       (!(filename = create_filename(prefs_get_ladderdir(),ladder_name,"_LADDER"))))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"NULL filename -  aborting");
-    return load_failed;  
+    return load_failed;
   }
 
   if (!(fp = fopen(filename,"rb")))
@@ -182,7 +184,7 @@ extern t_binary_ladder_load_result binary_ladder_load(t_binary_ladder_types type
     for (count=0;count<paracount;count++) checksum+=values[count];
   }
 
-  fread(values,sizeof(int),1,fp); 
+  fread(values,sizeof(int),1,fp);
   if (feof(fp)==0)
   {
     eventlog(eventlog_level_error,__FUNCTION__,"got data past end.. fall back to old loading mode");

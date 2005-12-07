@@ -1,6 +1,6 @@
 /*
   * Abstraction API/layer for the various ways PvPGN can inspect sockets state
-  * 2003 (C) 
+  * 2003 (C)
   *
   * Code is based on the ideas found in thttpd project.
   *
@@ -53,7 +53,7 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
-int fdw_maxcons;
+unsigned fdw_maxcons;
 t_fdwatch_fd *fdw_fds = NULL;
 
 static t_fdw_backend * fdw = NULL;
@@ -62,7 +62,8 @@ static DECLARE_ELIST_INIT(uselist);
 
 extern int fdwatch_init(int maxcons)
 {
-    int i, maxsys;
+    unsigned i;
+    int maxsys;
 
     maxsys = get_socket_limit();
     if (maxsys > 0) maxcons = (maxcons < maxsys) ? maxcons : maxsys;
@@ -143,7 +144,7 @@ extern int fdwatch_update_fd(int idx, unsigned rw)
 	eventlog(eventlog_level_error,__FUNCTION__,"out of bounds idx [%d] (max: %d)",idx, fdw_maxcons);
 	return -1;
     }
-    /* do not allow completly reset the access because then backend codes 
+    /* do not allow completly reset the access because then backend codes
      * can get confused */
     if (!rw) {
 	eventlog(eventlog_level_error,__FUNCTION__,"tried to reset rw, not allowed");

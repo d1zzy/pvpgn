@@ -3,7 +3,7 @@
  * Copyright (C) 1998,1999,2000,2001  Ross Combs (rocombs@cs.nmsu.edu)
  * Copyright (C) 1999,2000  Rob Crittenden (rcrit@greyoak.com)
  * Copyright (C) 2000,2001  Marco Ziech (mmz@gmx.net)
- * Copyright (C) 2003 Dizzy 
+ * Copyright (C) 2003 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -377,7 +377,7 @@ static int _check_allowed_client(t_clienttag ctag)
     if (!prefs_get_allowed_clients())
 	return 0;
 
-    /* this shortcut check should make server as fast as before if 
+    /* this shortcut check should make server as fast as before if
      * the configuration is left in default mode */
     if (!strcasecmp(prefs_get_allowed_clients(), "all"))
 	return 0;
@@ -1418,9 +1418,9 @@ static int _client_fileinforeq(t_connection * c, t_packet const *const packet)
 	    bn_int_set(&rpacket->u.server_fileinforeply.unknown2, bn_int_get(packet->u.client_fileinforeq.unknown2));
 	    /* Note from Sherpya:
 	     * timestamp -> 0x852b7d00 - 0x01c0e863 b.net send this (bn_int),
-	     * I suppose is not a long 
-	     * if bnserver-D2DV is bad diablo 2 crashes 
-	     * timestamp doesn't work correctly and starcraft 
+	     * I suppose is not a long
+	     * if bnserver-D2DV is bad diablo 2 crashes
+	     * timestamp doesn't work correctly and starcraft
 	     * needs name in client locale or displays hostname
 	     */
 	    file_to_mod_time(tosfile, &rpacket->u.server_fileinforeply.timestamp);
@@ -2295,7 +2295,7 @@ static int _client_atinvitefriend(t_connection * c, t_packet const *const packet
 	    account_set_currentatteam(conn_get_account(dest_c), teamid);
 	}
 
-	//now send a ACK to the inviter 
+	//now send a ACK to the inviter
 	if (!(rpacket = packet_create(packet_class_bnet)))
 	    return -1;
 	packet_set_size(rpacket, sizeof(t_server_arrangedteam_invite_friend_ack));
@@ -3247,10 +3247,10 @@ static int _glist_cb(t_game * game, void *data)
 	eventlog(eventlog_level_debug, __FUNCTION__, "[%d] not listing because game is wrong type", conn_get_socket(cbdata->c));
 	return 0;
     }
-    if (conn_get_versioncheck(cbdata->c) && 
-	conn_get_versioncheck(game_get_owner(game)) && 
-	versioncheck_get_versiontag(conn_get_versioncheck(cbdata->c)) && 
-	versioncheck_get_versiontag(conn_get_versioncheck(game_get_owner(game))) && 
+    if (conn_get_versioncheck(cbdata->c) &&
+	conn_get_versioncheck(game_get_owner(game)) &&
+	versioncheck_get_versiontag(conn_get_versioncheck(cbdata->c)) &&
+	versioncheck_get_versiontag(conn_get_versioncheck(game_get_owner(game))) &&
 	strcmp(versioncheck_get_versiontag(conn_get_versioncheck(cbdata->c)), versioncheck_get_versiontag(conn_get_versioncheck(game_get_owner(game)))) != 0) {
 	eventlog(eventlog_level_debug, __FUNCTION__, "[%d] not listing because game is wrong versiontag", conn_get_socket(cbdata->c));
 	return 0;
@@ -4041,25 +4041,25 @@ static int _client_laddersearchreq(t_connection * c, t_packet const *const packe
 	else {
 	    switch (bn_int_get(packet->u.client_laddersearchreq.type)) {
 		case CLIENT_LADDERSEARCHREQ_TYPE_HIGHESTRATED:
-		    if (!(rank=ladder_get_rank_by_account(account, ladder_sort_highestrated, ladder_time_active, ctag, id))) 
+		    if (!(rank=ladder_get_rank_by_account(account, ladder_sort_highestrated, ladder_time_active, ctag, id)))
 		    {
-			if (!(rank = ladder_get_rank_by_account(account, ladder_sort_highestrated, 
+			if (!(rank = ladder_get_rank_by_account(account, ladder_sort_highestrated,
 			                                        ladder_time_current, ctag, id)) ||
 			   (ladder_get_account_by_rank(rank, ladder_sort_highestrated, ladder_time_active, ctag, id)))
 			    rank = 0;
 		    }
 		    break;
 		case CLIENT_LADDERSEARCHREQ_TYPE_MOSTWINS:
-		    if (!(rank=ladder_get_rank_by_account(account, ladder_sort_mostwins, ladder_time_active, ctag, id))) 
+		    if (!(rank=ladder_get_rank_by_account(account, ladder_sort_mostwins, ladder_time_active, ctag, id)))
 		    {
-			if (!(rank = ladder_get_rank_by_account(account, ladder_sort_mostwins, 
+			if (!(rank = ladder_get_rank_by_account(account, ladder_sort_mostwins,
 			                                        ladder_time_current, ctag, id)) ||
 			   (ladder_get_account_by_rank(rank, ladder_sort_mostwins, ladder_time_active, ctag, id)))
 			    rank = 0;
 		    }
 		    break;
 		case CLIENT_LADDERSEARCHREQ_TYPE_MOSTGAMES:
-		    if (!(rank=ladder_get_rank_by_account(account, ladder_sort_mostgames, ladder_time_active, ctag, id))) 
+		    if (!(rank=ladder_get_rank_by_account(account, ladder_sort_mostgames, ladder_time_active, ctag, id)))
 		    {
 			if (!(rank = ladder_get_rank_by_account(account, ladder_sort_mostgames,
 			                                        ladder_time_current, ctag, id)) ||
@@ -4326,7 +4326,7 @@ static int _client_w3xp_clan_createreq(t_connection * c, t_packet const *const p
 static int _client_w3xp_clan_createinvitereq(t_connection * c, t_packet const *const packet)
 {
     t_packet *rpacket;
-    int size;
+    unsigned size;
 
     if ((size = packet_get_size(packet)) < sizeof(t_client_w3xp_clan_createinvitereq)) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLAN_CREATEINVITEREQ packet (expected %u bytes, got %u)", conn_get_socket(c), sizeof(t_client_w3xp_clan_createinvitereq), packet_get_size(packet));
@@ -4337,7 +4337,7 @@ static int _client_w3xp_clan_createinvitereq(t_connection * c, t_packet const *c
 	const char *clanname;
 	const char *username;
 	int clantag;
-	int offset = sizeof(t_client_w3xp_clan_createinvitereq);
+	unsigned offset = sizeof(t_client_w3xp_clan_createinvitereq);
 	t_clan *clan;
 	clanname = packet_get_str_const(packet, offset, CLAN_NAME_MAX);
 	offset += (strlen(clanname) + 1);
@@ -4456,7 +4456,7 @@ static int _client_w3xp_clanmember_rankupdatereq(t_connection * c, t_packet cons
 
 	packet_set_size(rpacket, sizeof(t_server_w3xp_clanmember_rankupdate_reply));
 	packet_set_type(rpacket, SERVER_W3XP_CLANMEMBER_RANKUPDATE_REPLY);
-	bn_int_set(&rpacket->u.server_w3xp_clanmember_rankupdate_reply.count, 
+	bn_int_set(&rpacket->u.server_w3xp_clanmember_rankupdate_reply.count,
 	           bn_int_get(packet->u.client_w3xp_clanmember_rankupdate_req.count));
 	username = packet_get_str_const(packet, offset, USER_NAME_MAX);
 	offset += (strlen(username) + 1);
@@ -4464,15 +4464,15 @@ static int _client_w3xp_clanmember_rankupdatereq(t_connection * c, t_packet cons
 
 	clan = account_get_clan(conn_get_account(c));
 	dest_member = clan_find_member_by_name(clan, username);
-	if (clanmember_set_status(dest_member, status) == 0) 
+	if (clanmember_set_status(dest_member, status) == 0)
 	{
-	    bn_byte_set(&rpacket->u.server_w3xp_clanmember_rankupdate_reply.result, 
+	    bn_byte_set(&rpacket->u.server_w3xp_clanmember_rankupdate_reply.result,
 	                SERVER_W3XP_CLANMEMBER_RANKUPDATE_SUCCESS);
 	    clanmember_on_change_status(dest_member);
-	} 
-	else 
+	}
+	else
 	{
-	    bn_byte_set(&rpacket->u.server_w3xp_clanmember_rankupdate_reply.result, 
+	    bn_byte_set(&rpacket->u.server_w3xp_clanmember_rankupdate_reply.result,
 	                SERVER_W3XP_CLANMEMBER_RANKUPDATE_FAILED);
 	}
 	conn_push_outqueue(c, rpacket);
@@ -4499,12 +4499,12 @@ static int _client_w3xp_clanmember_removereq(t_connection * c, t_packet const *c
 	t_connection *dest_conn;
 	packet_set_size(rpacket, sizeof(t_server_w3xp_clanmember_remove_reply));
 	packet_set_type(rpacket, SERVER_W3XP_CLANMEMBER_REMOVE_REPLY);
-	bn_int_set(&rpacket->u.server_w3xp_clanmember_remove_reply.count, 
+	bn_int_set(&rpacket->u.server_w3xp_clanmember_remove_reply.count,
 	           bn_int_get(packet->u.client_w3xp_clanmember_remove_req.count));
 	username = packet_get_str_const(packet, sizeof(t_client_w3xp_clanmember_remove_req), USER_NAME_MAX);
-	bn_byte_set(&rpacket->u.server_w3xp_clanmember_remove_reply.result, 
+	bn_byte_set(&rpacket->u.server_w3xp_clanmember_remove_reply.result,
 	            SERVER_W3XP_CLANMEMBER_REMOVE_FAILED); // initially presume it failed
-	
+
 	if ((acc = conn_get_account(c)) && (clan = account_get_clan(acc)) && (member = clan_find_member_by_name(clan, username))) {
 	    dest_conn = clanmember_get_conn(member);
 	    if (clan_remove_member(clan, member) == 0) {
@@ -4521,7 +4521,7 @@ static int _client_w3xp_clanmember_removereq(t_connection * c, t_packet const *c
 		    clan_send_packet_to_online_members(clan, rpacket2);
 		    packet_del_ref(rpacket2);
 		}
-		bn_byte_set(&rpacket->u.server_w3xp_clanmember_remove_reply.result, 
+		bn_byte_set(&rpacket->u.server_w3xp_clanmember_remove_reply.result,
 		            SERVER_W3XP_CLANMEMBER_REMOVE_SUCCESS);
 	    }
 	}
