@@ -1,4 +1,4 @@
-AM_CPPFLAGS=-I$(top_srcdir)/src -DD2DBS_DEFAULT_CONF_FILE=\"$(sysconfdir)/d2dbs.cpponf\"
+AM_CPPFLAGS=-I$(top_srcdir)/src -DD2DBS_DEFAULT_CONF_FILE=\"$(sysconfdir)/d2dbs.conf\"
 
 sbin_PROGRAMS = d2dbs
 
