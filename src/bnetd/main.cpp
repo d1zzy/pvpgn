@@ -17,6 +17,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
+
+#include <exception>
+#include <iostream>
+
 #include <stdio.h>
 #ifdef HAVE_STDDEF_H
 # include <stddef.h>
@@ -121,7 +125,7 @@ static int bnetd_oom_handler(void)
 
 static int oom_setup(void)
 {
-    /* use calloc so it initilizez the memory so it will make some lazy 
+    /* use calloc so it initilizez the memory so it will make some lazy
      * allocators really alocate it (ex. the linux kernel)
      */
     oom_buffer = calloc(1, OOM_SAFE_MEM);
@@ -143,7 +147,7 @@ char serviceLongName[] = "PvPGN service";
 char serviceName[] = "pvpgn";
 char serviceDescription[] = "Player vs. Player Gaming Network - Server";
 
-/* 
+/*
  * by quetzal. indicates service status
  * -1 - not in service mode
  *  0 - stopped
@@ -175,7 +179,7 @@ int eventlog_startup(void)
     char const * levels;
     char *       temp;
     char const * tok;
-    
+
     eventlog_clear_level();
     if ((levels = prefs_get_loglevels())) {
 	temp = xstrdup(levels);
@@ -202,14 +206,14 @@ int eventlog_startup(void)
 int fork_bnetd(int foreground)
 {
     int		pid;
-    
+
 #ifdef DO_DAEMONIZE
     if (!foreground) {
 	if (chdir("/")<0) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not change working directory to / (chdir: %s)",pstrerror(errno));
 	    return -1;
 	}
-	
+
 	switch ((pid = fork())) {
 	    case -1:
 		eventlog(eventlog_level_error,__FUNCTION__,"could not fork (fork: %s)",pstrerror(errno));
@@ -219,7 +223,7 @@ int fork_bnetd(int foreground)
 	    default: /* parent */
 		return pid;
 	}
-#ifndef WITH_D2	
+#ifndef WITH_D2
 	close(STDINFD);
 	close(STDOUTFD);
 	close(STDERRFD);
@@ -262,7 +266,7 @@ return 0;
 char * write_to_pidfile(void)
 {
     char *pidfile = xstrdup(prefs_get_pidfile());
-    
+
     if (pidfile[0]=='\0') {
 	xfree((void *)pidfile); /* avoid warning */
 	return NULL;
@@ -270,7 +274,7 @@ char * write_to_pidfile(void)
     if (pidfile) {
 #ifdef HAVE_GETPID
     FILE * fp;
-	
+
     if (!(fp = fopen(pidfile,"w"))) {
 	eventlog(eventlog_level_error,__FUNCTION__,"unable to open pid file \"%s\" for writing (fopen: %s)",pidfile,pstrerror(errno));
 	xfree((void *)pidfile); /* avoid warning */
@@ -427,7 +431,7 @@ void post_server_shutdown(int status)
 	    eventlog(eventlog_level_error,__FUNCTION__,"got bad status \"%d\" during shutdown",status);
     }
     return;
-}    
+}
 
 void pvpgn_greeting(void)
 {
@@ -436,7 +440,7 @@ void pvpgn_greeting(void)
 #else
     eventlog(eventlog_level_info,__FUNCTION__,PVPGN_SOFTWARE" version "PVPGN_VERSION);
 #endif
-    
+
     printf("You are currently Running "PVPGN_SOFTWARE" "PVPGN_VERSION"\n");
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     printf("If you need support:\n");
@@ -447,7 +451,7 @@ void pvpgn_greeting(void)
     printf(" * visit us on IRC on irc.pvpgn.org channel #pvpgn\n");
     printf("\nServer is now running.\n");
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-    
+
     return;
 }
 
@@ -457,6 +461,7 @@ extern int server_main(int argc, char * * argv)
 extern int main(int argc, char * * argv)
 #endif
 {
+try {
     int a;
     char *pidfile;
 
@@ -500,15 +505,15 @@ extern int main(int argc, char * * argv)
 
     /* Run the pre server stuff */
     a = pre_server_startup();
-    
+
     /* now process connections and network traffic */
     if (a == 0) {
-	if (server_process() < 0) 
+	if (server_process() < 0)
 	    eventlog(eventlog_level_fatal,__FUNCTION__,"failed to initialize network (exiting)");
     }
-    
+
 // run post server stuff and exit
-    post_server_shutdown(a);    
+    post_server_shutdown(a);
 
 // Close hexfile
     if (hexstrm) {
@@ -529,9 +534,15 @@ extern int main(int argc, char * * argv)
     prefs_unload();
     eventlog_close();
     cmdline_unload();
-    
+
     if (a == 0)
 	return 0;
 
+    return -1;
+} catch (const std::exception& ex) {
+	std::cerr << "FATAL ERROR: " << ex.what() << std::endl;
+} catch (...) {
+	std::cerr << "UNKNOWN EXCEPTION TYPE" << std::endl;
+}
     return -1;
 }
