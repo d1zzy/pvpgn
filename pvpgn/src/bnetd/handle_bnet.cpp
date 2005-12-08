@@ -2874,20 +2874,19 @@ static int _client_adreq(t_connection * c, t_packet const *const packet)
     }
 
     {
-	t_adbanner *ad;
-
-	if (!(ad = adbanner_pick(c, bn_int_get(packet->u.client_adreq.prev_adid))))
-	    return 0;
+	const pvpgn::AdBanner *ad = pvpgn::adbannerlist_pick(conn_get_clienttag(c), bn_int_get(packet->u.client_adreq.prev_adid));
+	if (!ad)
+		return 0;
 
 	/*                  eventlog(eventlog_level_debug,__FUNCTION__,"[%d] picking ad file=\"%s\" id=0x%06x tag=%u",conn_get_socket(c),adbanner_get_filename(ad),adbanner_get_id(ad),adbanner_get_extensiontag(ad)); */
 	if ((rpacket = packet_create(packet_class_bnet))) {
 	    packet_set_size(rpacket, sizeof(t_server_adreply));
 	    packet_set_type(rpacket, SERVER_ADREPLY);
-	    bn_int_set(&rpacket->u.server_adreply.adid, adbanner_get_id(ad));
-	    bn_int_set(&rpacket->u.server_adreply.extensiontag, adbanner_get_extensiontag(ad));
-	    file_to_mod_time(adbanner_get_filename(ad), &rpacket->u.server_adreply.timestamp);
-	    packet_append_string(rpacket, adbanner_get_filename(ad));
-	    packet_append_string(rpacket, adbanner_get_link(ad));
+	    bn_int_set(&rpacket->u.server_adreply.adid, ad->getId());
+	    bn_int_set(&rpacket->u.server_adreply.extensiontag, ad->getExtensionTag());
+	    file_to_mod_time(ad->getFilename(), &rpacket->u.server_adreply.timestamp);
+	    packet_append_string(rpacket, ad->getFilename());
+	    packet_append_string(rpacket, ad->getLink());
 	    conn_push_outqueue(c, rpacket);
 	    packet_del_ref(rpacket);
 	}
@@ -2938,16 +2937,15 @@ static int _client_adclick2(t_connection * c, t_packet const *const packet)
     eventlog(eventlog_level_info, __FUNCTION__, "[%d] ad click2 for adid 0x%04hx from \"%s\"", conn_get_socket(c), bn_int_get(packet->u.client_adclick2.adid), conn_get_username(c));
 
     {
-	t_adbanner *ad;
-
-	if (!(ad = adbanner_get(c, bn_int_get(packet->u.client_adclick2.adid))))
-	    return -1;
+	const pvpgn::AdBanner *ad = pvpgn::adbannerlist_find(conn_get_clienttag(c), bn_int_get(packet->u.client_adclick2.adid));
+	if (!ad)
+		return -1;
 
 	if ((rpacket = packet_create(packet_class_bnet))) {
 	    packet_set_size(rpacket, sizeof(t_server_adclickreply2));
 	    packet_set_type(rpacket, SERVER_ADCLICKREPLY2);
-	    bn_int_set(&rpacket->u.server_adclickreply2.adid, adbanner_get_id(ad));
-	    packet_append_string(rpacket, adbanner_get_link(ad));
+	    bn_int_set(&rpacket->u.server_adclickreply2.adid, ad->getId());
+	    packet_append_string(rpacket, ad->getLink());
 	    conn_push_outqueue(c, rpacket);
 	    packet_del_ref(rpacket);
 	}

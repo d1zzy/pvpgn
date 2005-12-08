@@ -283,7 +283,7 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 
     if (!addr_get_addr_str(curr_laddr,tempa,sizeof(tempa)))
 	strcpy(tempa,"x.x.x.x:x");
-    
+
     /* accept the connection */
     memset(&caddr,0,sizeof(caddr)); /* not sure if this is needed... modern systems are ok anyway */
     caddr_len = sizeof(caddr);
@@ -326,29 +326,29 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 	return -1;
     }
 
-    if ((prefs_get_max_conns_per_IP()!=0) && 
+    if ((prefs_get_max_conns_per_IP()!=0) &&
 	(connlist_count_connections(ntohl(caddr.sin_addr.s_addr)) > prefs_get_max_conns_per_IP()))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"[%d] too many connections from address %s (closing connection)",csocket,inet_ntoa(caddr.sin_addr));
 	psock_close(csocket);
 	return -1;
     }
-    
+
     eventlog(eventlog_level_info,__FUNCTION__,"[%d] accepted connection from %s on %s",csocket,addr_num_to_addr_str(ntohl(caddr.sin_addr.s_addr),ntohs(caddr.sin_port)),tempa);
-    
+
     if (prefs_get_use_keepalive())
     {
 	int val=1;
-	
+
 	if (psock_setsockopt(csocket,PSOCK_SOL_SOCKET,PSOCK_SO_KEEPALIVE,&val,(psock_t_socklen)sizeof(val))<0)
 	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not set socket option SO_KEEPALIVE (psock_setsockopt: %s)",csocket,pstrerror(psock_errno()));
 	/* not a fatal error */
     }
-    
+
     {
 	struct sockaddr_in rsaddr;
 	psock_t_socklen    rlen;
-	
+
 	memset(&rsaddr,0,sizeof(rsaddr)); /* not sure if this is needed... modern systems are ok anyway */
 	rlen = sizeof(rsaddr);
 	if (psock_getsockname(csocket,(struct sockaddr *)&rsaddr,&rlen)<0)
@@ -374,24 +374,24 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 	    }
 	}
     }
-    
+
     if (psock_ctl(csocket,PSOCK_NONBLOCK)<0)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not set TCP socket to non-blocking mode (closing connection) (psock_ctl: %s)",csocket,pstrerror(psock_errno()));
 	psock_close(csocket);
 	return -1;
     }
-    
+
     {
 	t_connection * c;
-	
+
 	if (!(c = conn_create(csocket,usocket,raddr,rport,addr_get_ip(curr_laddr),addr_get_port(curr_laddr),ntohl(caddr.sin_addr.s_addr),ntohs(caddr.sin_port))))
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] unable to create new connection (closing connection)",csocket);
 	    psock_close(csocket);
 	    return -1;
 	}
-	
+
 	if (conn_add_fdwatch(c, handle_tcp) < 0) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] unable to add socket to fdwatch pool (max connections?)",csocket);
 	    conn_set_state(c,conn_state_destroy);
@@ -417,7 +417,7 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 	    conn_set_class(c,conn_class_telnet);
 	    conn_set_state(c,conn_state_connected);
 	    break;
-	case laddr_type_bnet: 
+	case laddr_type_bnet:
 	    {	/* add a timer to close stale connections */
 		int delay;
 		t_timer_data data;
@@ -443,7 +443,7 @@ static int sd_udpinput(t_addr * const curr_laddr, t_laddr_info const * laddr_inf
     int             err;
     psock_t_socklen errlen;
     t_packet *      upacket;
-    
+
     err = 0;
     errlen = sizeof(err);
     if (psock_getsockopt(usocket,PSOCK_SOL_SOCKET,PSOCK_SO_ERROR,&err,&errlen)<0)
@@ -461,12 +461,12 @@ static int sd_udpinput(t_addr * const curr_laddr, t_laddr_info const * laddr_inf
 	eventlog(eventlog_level_error,__FUNCTION__,"could not allocate raw packet for input");
 	return -1;
     }
-    
+
     {
 	struct sockaddr_in fromaddr;
 	psock_t_socklen    fromlen;
 	int                len;
-	
+
 	fromlen = sizeof(fromaddr);
 	if ((len = psock_recvfrom(usocket,packet_get_raw_data_build(upacket,0),MAX_PACKET_SIZE,0,(struct sockaddr *)&fromaddr,&fromlen))<0)
 	{
@@ -491,20 +491,20 @@ static int sd_udpinput(t_addr * const curr_laddr, t_laddr_info const * laddr_inf
 	    packet_del_ref(upacket);
 	    return -1;
 	}
-	
+
 	if (fromaddr.sin_family!=PSOCK_AF_INET)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"got UDP datagram with bad address family %d",(int)fromaddr.sin_family);
 	    packet_del_ref(upacket);
 	    return -1;
 	}
-	
+
 	packet_set_size(upacket,len);
-	
+
 	if (hexstrm)
 	{
 	    char tempa[32];
-	    
+
 	    if (!addr_get_addr_str(curr_laddr,tempa,sizeof(tempa)))
 		strcpy(tempa,"x.x.x.x:x");
 	    fprintf(hexstrm,"%d: recv class=%s[0x%02x] type=%s[0x%04x] from=%s to=%s length=%u\n",
@@ -516,11 +516,11 @@ static int sd_udpinput(t_addr * const curr_laddr, t_laddr_info const * laddr_inf
 		    packet_get_size(upacket));
 	    hexdump(hexstrm,packet_get_raw_data(upacket,0),packet_get_size(upacket));
 	}
-	
+
 	handle_udp_packet(usocket,ntohl(fromaddr.sin_addr.s_addr),ntohs(fromaddr.sin_port),upacket);
 	packet_del_ref(upacket);
     }
-    
+
     return 0;
 }
 
@@ -530,7 +530,7 @@ static int sd_tcpinput(t_connection * c)
     unsigned int currsize;
     t_packet *   packet;
     int		 csocket = conn_get_socket(c);
-    
+
     currsize = conn_get_in_size(c);
 
     if (!conn_get_in_queue(c))
@@ -595,7 +595,7 @@ static int sd_tcpinput(t_connection * c)
 		return -1;
 	    }
 	    break;
-	
+
 	default:
 	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] connection has bad class (closing connection)",conn_get_socket(c));
 	    /* marking connection as "destroyed", memory will be freed later */
@@ -605,7 +605,7 @@ static int sd_tcpinput(t_connection * c)
 	conn_put_in_queue(c,packet);
 	currsize = 0;
     }
-    
+
     packet = conn_get_in_queue(c);
     switch (net_recv_packet(csocket,packet,&currsize))
     {
@@ -614,12 +614,12 @@ static int sd_tcpinput(t_connection * c)
 	/* marking connection as "destroyed", memory will be freed later */
 	conn_set_state(c, conn_state_destroy);
 	return -2;
-	
+
     case 0: /* still working on it */
 	/* eventlog(eventlog_level_debug,__FUNCTION__,"[%d] still reading \"%s\" packet (%u of %u bytes so far)",conn_get_socket(c),packet_get_class_str(packet),conn_get_in_size(c),packet_get_size(packet)); */
 	conn_set_in_size(c,currsize);
 	break;
-	
+
     case 1: /* done reading */
 	switch (conn_get_class(c))
 	{
@@ -631,11 +631,11 @@ static int sd_tcpinput(t_connection * c)
 		char const * const temp=(char const * const)packet_get_raw_data_const(packet,0);
 
 		if ((temp[currsize-1]=='\003')||(temp[currsize-1]=='\004')) {
-		    /* we have to ignore these special characters, since 
+		    /* we have to ignore these special characters, since
 		     * some bots even send them after login (eg. UltimateBot)
 		     */
 		    currsize--;
-		    break;	 
+		    break;
 		}
 
 		if (temp[currsize-1]!='\r' && temp[currsize-1]!='\n')
@@ -646,7 +646,7 @@ static int sd_tcpinput(t_connection * c)
 		}
 	    }
 	    /* got a complete line or overflow... fall through */
-	
+
 	default:
 	    conn_put_in_queue(c,NULL);
 
@@ -659,20 +659,20 @@ static int sd_tcpinput(t_connection * c)
 			packet_get_size(packet));
 		hexdump(hexstrm,packet_get_raw_data_const(packet,0),packet_get_size(packet));
 	    }
-	    
+
 	    if (conn_get_class(c)==conn_class_bot ||
 		conn_get_class(c)==conn_class_telnet) /* NUL terminate the line to make life easier */
 	    {
 		char * const temp=(char*)packet_get_raw_data(packet,0);
-		
+
 		if (temp[currsize-1]=='\r' || temp[currsize-1]=='\n')
 		    temp[currsize-1] = '\0'; /* have to do it here instead of above so everything
 						is intact for the hexdump */
 	    }
-	    
+
 	    {
 		int ret;
-		
+
 		switch (conn_get_class(c))
 		{
 		case conn_class_init:
@@ -712,7 +712,7 @@ static int sd_tcpinput(t_connection * c)
 		    return -2;
 		}
 	    }
-	    
+
 	    conn_set_in_size(c,0);
 	}
     }
@@ -727,7 +727,7 @@ static int sd_tcpoutput(t_connection * c)
     unsigned int totsize;
     t_packet *   packet;
     int		 csocket = conn_get_socket(c);
-    
+
     totsize = 0;
     for (;;)
     {
@@ -742,11 +742,11 @@ static int sd_tcpoutput(t_connection * c)
 		/* marking connection as "destroyed", memory will be freed later */
 	    conn_set_state(c, conn_state_destroy);
 	    return -2;
-	    
+
 	case 0: /* still working on it */
 	    conn_set_out_size(c,currsize);
 	    return 0; /* bail out */
-	    
+
 	case 1: /* done sending */
 	    if (hexstrm)
 	    {
@@ -769,7 +769,7 @@ static int sd_tcpoutput(t_connection * c)
 	    break;
 	}
     }
-    
+
     /* not reached */
 }
 
@@ -786,7 +786,7 @@ void server_check_and_fix_hostname(char const * sname)
     }
     tn++;
     sn++;
-    
+
     for (;*sn!='\0';sn++)
     {
 	if (isalnum((int)*sn) || *sn=='-' || *sn=='.')
@@ -815,7 +815,7 @@ extern void server_set_hostname(void)
 	xfree((void *)server_hostname); /* avoid warning */
 	server_hostname = NULL;
     }
-    
+
     hn = prefs_get_hostname();
     if ((!hn)||(hn[0]=='\0')) {
     	if (gethostname(temp,sizeof(temp))<0) {
@@ -954,7 +954,7 @@ static int _set_reuseaddr(int sock)
 static int _bind_socket(int sock, unsigned addr, short port)
 {
     struct sockaddr_in saddr;
-	    
+
     memset(&saddr,0,sizeof(saddr));
     saddr.sin_family = PSOCK_AF_INET;
     saddr.sin_port = htons(port);
@@ -978,7 +978,7 @@ static int _setup_listensock(t_addrlist *laddrs)
 	    eventlog(eventlog_level_error, __FUNCTION__, "NULL address info");
 	    goto err;
 	}
-	
+
 	if (!addr_get_addr_str(curr_laddr,tempa,sizeof(tempa)))
 	    strcpy(tempa,"x.x.x.x:x");
 
@@ -1108,7 +1108,7 @@ static int _setup_posixsig(void)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not add signal to set (sigemptyset: %s)",pstrerror(errno));
 	return -1;
     }
-    
+
     {
 	struct sigaction quit_action;
 	struct sigaction restart_action;
@@ -1147,7 +1147,7 @@ static int _setup_posixsig(void)
 	forced_quit_action.sa_handler = forced_quit_sig_handle;
 	if (sigemptyset(&forced_quit_action.sa_mask)<0)
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize signal set (sigemptyset: %s)",pstrerror(errno));
-	forced_quit_action.sa_flags = SA_RESTART;	
+	forced_quit_action.sa_flags = SA_RESTART;
 
 	if (sigaction(SIGINT,&quit_action,NULL)<0) /* control-c */
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGINT signal handler (sigaction: %s)",pstrerror(errno));
@@ -1205,7 +1205,7 @@ static void _server_mainloop(t_addrlist *laddrs)
     savestep = flushstep = 0;
 
     count = 0;
-    
+
     for (;;)
     {
 #ifdef WIN32
@@ -1217,7 +1217,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 
 	while (g_ServiceStatus == 2) Sleep(1000);
 #endif
-	
+
 #ifdef DO_POSIXSIG
 	if (sigprocmask(SIG_SETMASK,&save_set,NULL)<0)
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not unblock signals");
@@ -1230,7 +1230,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 	    got_epipe = 0;
 	    eventlog(eventlog_level_info,__FUNCTION__,"handled SIGPIPE");
 	}
-	
+
 #if !defined(DO_POSIXSIG) || !defined(HAVE_SETITIMER)
 /* if no DO_POSIXSIG or no HAVE_SETITIMER so we must read timestamp each loop */
 	time(&now);
@@ -1249,11 +1249,11 @@ static void _server_mainloop(t_addrlist *laddrs)
 	{
 	    t_message *  message;
 	    char const * tstr;
-	    
+
 	    if (curr_exittime!=0)
 	    {
 		char text[29+256+2+32+24+1]; /* "The ... in " + time + " (" num + " connection ...)." + NUL */
-	        
+
 		tstr = seconds_to_timestr(curr_exittime-now);
 		sprintf(text,"The server will shut down in %s (%d connections remaining).",tstr,connlist_get_length());
         	if ((message = message_create(message_type_error,NULL,NULL,text)))
@@ -1316,7 +1316,7 @@ static void _server_mainloop(t_addrlist *laddrs)
            output_updatetime = now;
 	   output_write_to_file();
 	}
-	
+
 
 	if (do_save)
 	{
@@ -1329,7 +1329,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 
 	    do_save = 0;
 	}
-	
+
 	if (do_restart)
 	{
 	    eventlog(eventlog_level_info,__FUNCTION__,"reading configuration files");
@@ -1341,7 +1341,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 	    else
 		if (prefs_load(BNETD_DEFAULT_CONF_FILE)<0)
 		    eventlog(eventlog_level_error,__FUNCTION__,"using default configuration");
-	    
+
 	    if (eventlog_open(prefs_get_logfile())<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not use the file \"%s\" for the eventlog",prefs_get_logfile());
 
@@ -1368,24 +1368,24 @@ static void _server_mainloop(t_addrlist *laddrs)
 	    versioncheck_unload();
 	    if (versioncheck_load(prefs_get_versioncheck_file())<0)
 	      eventlog(eventlog_level_error,__FUNCTION__,"could not load versioncheck list");
-	    	    
+
 	    if (ipbanlist_destroy()<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not unload old IP ban list");
             ipbanlist_create();
 	    if (ipbanlist_load(prefs_get_ipbanfile())<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not load new IP ban list");
-	    
+
 	    helpfile_unload();
 	    if (helpfile_init(prefs_get_helpfile())<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not load the helpfile");
-	    
-	    if (adbannerlist_destroy()<0)
+
+	    if (pvpgn::adbannerlist_destroy()<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not unload old adbanner list");
-	    if (adbannerlist_create(prefs_get_adfile())<0)
+	    if (pvpgn::adbannerlist_create(prefs_get_adfile())<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not load new adbanner list");
-	    
+
 	    ladder_reload_conf();
-	    
+
 	    if (prefs_get_track())
 		tracker_set_servers(prefs_get_trackserv_addrs());
 	    if (command_groups_reload(prefs_get_command_groups_file())<0)
@@ -1393,7 +1393,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 
 	    aliasfile_unload();
 	    aliasfile_load(prefs_get_aliasfile());
-	    
+
 	    if(trans_reload(prefs_get_transfile(),TRANS_BNETD)<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not reload trans list");
 
@@ -1405,12 +1405,12 @@ static void _server_mainloop(t_addrlist *laddrs)
 	    topiclist_unload();
 	    if (topiclist_load(prefs_get_topicfile())<0)
 	    	eventlog(eventlog_level_error,__FUNCTION__,"could not load new topic list");
-	    
+
 	    eventlog(eventlog_level_info,__FUNCTION__,"done reconfiguring");
-	    
+
 	    do_restart = 0;
 	}
-	
+
 	count += BNETD_POLL_INTERVAL;
 	if (count>=1000) /* only check timers once a second */
 	{
@@ -1418,7 +1418,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 	    count = 0;
 	}
 
-/* no need to populate the fdwatch structures as they are populated on the fly 
+/* no need to populate the fdwatch structures as they are populated on the fly
  * by sd_accept, conn_push_outqueue, conn_pull_outqueue, conn_destory */
 
 	/* find which sockets need servicing */
@@ -1434,7 +1434,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 	case 0: /* timeout... no sockets need checking */
 	    continue;
 	}
-	
+
 	/* cycle through the ready sockets and handle them */
 	fdwatch_handle();
 
@@ -1489,7 +1489,7 @@ extern int server_process(void)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create %s server address list from \"%s\"",laddr_type_get_str(laddr_type_bnet),prefs_get_bnetdserv_addrs());
 	return -1;
     }
-    
+
     /* Append list of addresses to listen for IRC connections */
     if (_setup_add_addrs(&laddrs, prefs_get_irc_addrs(),INADDR_ANY,BNETD_IRC_PORT, laddr_type_irc))
     {
@@ -1539,5 +1539,5 @@ extern int server_process(void)
     _shutdown_conns();
     _shutdown_addrs(laddrs);
 
-    return 0;    
+    return 0;
 }
