@@ -15,24 +15,40 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include "common/tag.h"
+
 #ifndef INCLUDED_ADBANNER_TYPES
 #define INCLUDED_ADBANNER_TYPES
 
-#include "common/tag.h"
+#include <string>
 
-typedef struct adbanner
-#ifdef ADBANNER_INTERNAL_ACCESS
+namespace pvpgn
 {
-    unsigned int id;
-    unsigned int extensiontag;
-    unsigned int delay; /* in seconds */
-    unsigned int next; /* adid or 0 */
-    char const * filename;
-    char const * link;
-    t_clienttag	 client;
+
+class AdBanner
+{
+public:
+	AdBanner(unsigned id_, bn_int extag, unsigned delay_, unsigned next_, const std::string& fname, const std::string& link_, const char* clientstr);
+	~AdBanner() throw();
+
+	unsigned getId() const;
+	unsigned getNextId() const;
+	unsigned getExtensionTag() const;
+	char const * getFilename() const;
+	char const * getLink() const;
+	t_clienttag getClient() const;
+
+private:
+	unsigned id;
+	unsigned extensiontag;
+	unsigned delay; /* in seconds */
+	unsigned next; /* adid or 0 */
+	const std::string filename;
+	const std::string link;
+	t_clienttag client;
+};
+
 }
-#endif
-t_adbanner;
 
 #endif
 
@@ -46,16 +62,14 @@ t_adbanner;
 #include "connection.h"
 #undef JUST_NEED_TYPES
 
-extern t_adbanner * adbanner_pick(t_connection const * c, unsigned int prev_id);
-extern t_adbanner * adbanner_get(t_connection const * c, unsigned int id);
-extern unsigned int adbanner_get_id(t_adbanner const * ad);
-extern unsigned int adbanner_get_extensiontag(t_adbanner const * ad);
-extern char const * adbanner_get_filename(t_adbanner const * ad);
-extern char const * adbanner_get_link(t_adbanner const * ad);
-extern t_clienttag  adbanner_get_client(t_adbanner const * ad);
+namespace pvpgn
+{
 
 extern int adbannerlist_create(char const * filename);
 extern int adbannerlist_destroy(void);
+extern const AdBanner* adbannerlist_pick(t_clienttag ctag, unsigned int prev_id);
+extern const AdBanner* adbannerlist_find(t_clienttag ctag, unsigned int id);
 
+}
 #endif
 #endif

@@ -335,7 +335,7 @@ int pre_server_startup(void)
     ipbanlist_create();
     if (ipbanlist_load(prefs_get_ipbanfile())<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load IP ban list");
-    if (adbannerlist_create(prefs_get_adfile())<0)
+    if (pvpgn::adbannerlist_create(prefs_get_adfile())<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load adbanner list");
     if (autoupdate_load(prefs_get_mpqfile())<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load autoupdate list");
@@ -402,7 +402,7 @@ void post_server_shutdown(int status)
 	    news_unload();
     	    versioncheck_unload();
     	    autoupdate_unload();
-    	    adbannerlist_destroy();
+    	    pvpgn::adbannerlist_destroy();
     	    ipbanlist_save(prefs_get_ipbanfile());
     	    ipbanlist_destroy();
     	    helpfile_unload();
