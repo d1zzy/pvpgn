@@ -321,6 +321,7 @@ extern t_connection * game_get_player_conn(t_game const * game, unsigned int i);
 extern t_clienttag game_get_clienttag(t_game const * game);
 extern int game_add_player(t_game * game, char const * pass, int startver, t_connection * c);
 extern int game_del_player(t_game * game, t_connection * c);
+extern t_account * game_get_player(t_game * game, unsigned int i);
 extern int game_set_report(t_game * game, t_account * account, char const * head, char const * body);
 extern int game_set_reported_results(t_game * game, t_account * account, t_game_result * results);
 extern int game_set_self_report(t_game * game, t_account * account, t_game_result result);

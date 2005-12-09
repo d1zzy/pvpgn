@@ -1698,6 +1698,22 @@ extern int game_del_player(t_game * game, t_connection * c)
     return -1;
 }
 
+extern t_account * game_get_player(t_game * game, unsigned int i)
+{
+    if (!game)
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL game");
+	return NULL;
+    }
+
+    if (!(i<game->count))
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"requested illegal player id %u",i);
+	return NULL;
+    }
+    
+    return game->players[i];
+}
 
 extern int game_set_report(t_game * game, t_account * account, char const * rephead, char const * repbody)
 {

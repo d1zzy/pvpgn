@@ -3780,7 +3780,7 @@ static int _client_gamereport(t_connection * c, t_packet const *const packet)
 	t_account *other_account;
 	t_game *game;
 	unsigned int player_count;
-	unsigned int i;
+	unsigned int i,s;
 	t_client_game_report_result const *result_data;
 	unsigned int result_off;
 	t_game_result result;
@@ -3821,15 +3821,29 @@ static int _client_gamereport(t_connection * c, t_packet const *const packet)
 		break;
 	    }
 
-	    result = bngresult_to_gresult(bn_int_get(result_data->result));
-	    results[i] = result;
-
-	    eventlog(eventlog_level_debug, __FUNCTION__, "[%d] got player %d (\"%s\") result %s", conn_get_socket(c), i, player, game_result_get_str(result));
-
 	    if (!(other_account = accountlist_find_account(player))) {
 		eventlog(eventlog_level_error, __FUNCTION__, "[%d] got GAME_REPORT with unknown player \"%s\"", conn_get_socket(c), player);
 		break;
 	    }
+
+	    // as player position in game structure and in game report might differ, 
+	    // search for right position
+	    for (s=0; s<game_get_count(game); s++)
+	    {
+	        if (game_get_player(game,s)==other_account) break;
+	    }
+	    
+	    if (s<game_get_count(game))
+	    {
+	      result = bngresult_to_gresult(bn_int_get(result_data->result));
+	      results[s] = result;
+	      eventlog(eventlog_level_debug, __FUNCTION__, "[%d] got player %d (\"%s\") result %s", conn_get_socket(c), i, player, game_result_get_str(result));
+	    }
+	    else
+	    {
+              eventlog(eventlog_level_error,__FUNCTION__,"[%d] got GAME_REPORT for non-participating player \"%s\"",conn_get_socket(c),player);
+	    }
+
 
 	}
 
