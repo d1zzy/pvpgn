@@ -14,10 +14,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifndef __OUTPUT_H_INCLUDED__
+#define __OUTPUT_H_INCLUDED__
+
 #ifndef NULL
 # define NULL ((void *)0)
 #endif
 
+namespace pvpgn
+{
+
 extern void output_init(void);
 extern void output_dispose_filename(void);
 extern int output_write_to_file(void);
+
+}
+
+#endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Dizzy 
+ * Copyright (C) 2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,9 @@
 #define FS_FORCE	1	/* force save/flush no matter of time */
 #define FS_ALL		2	/* save/flush all, not in steps */
 
+namespace pvpgn
+{
+
 extern int attrlayer_init(void);
 extern int attrlayer_cleanup(void);
 extern int attrlayer_load_default(void);
@@ -37,5 +40,7 @@ extern void attrlayer_add_loadedlist(t_elist *what);
 extern void attrlayer_del_loadedlist(t_elist *what);
 extern void attrlayer_add_dirtylist(t_elist *what);
 extern void attrlayer_del_dirtylist(t_elist *what);
+
+}
 
 #endif /* __ATTRLAYER_H_INCLUDED__ */

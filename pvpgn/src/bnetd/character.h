@@ -30,6 +30,9 @@
 
 #endif
 
+namespace pvpgn
+{
+
 typedef enum
 {
     character_class_none,
@@ -55,7 +58,7 @@ typedef struct character
     char const * name; /* max 15 chars */
     char const * realmname;
     char const * guildname; /* max 3 chars */
-    
+
     /* stored in Battle.net format for now */
     t_uint8      helmgfx;
     t_uint8      bodygfx;
@@ -98,6 +101,8 @@ typedef struct character
 #endif
 t_character;
 
+}
+
 #endif
 
 
@@ -111,6 +116,9 @@ t_character;
 #include "account.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern int character_create(t_account * account, t_clienttag clienttag, char const * realmname, char const * name, t_character_class chclass, t_character_expansion expansion);
 extern char const * character_get_name(t_character const * ch);
 extern char const * character_get_realmname(t_character const * ch);
@@ -122,6 +130,8 @@ extern int character_verify_charlist(t_character const * ch, char const * charli
 extern int characterlist_create(char const * dirname);
 extern int characterlist_destroy(void);
 extern t_character * characterlist_find_character(char const * realmname, char const * charname);
+
+}
 
 #endif
 #endif

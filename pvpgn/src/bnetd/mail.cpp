@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001  Dizzy 
+ * Copyright (C) 2001  Dizzy
  * Copyright (C) 2004  Donny Redmond (dredmond@linuxmail.org)
  *
  * This program is free software; you can redistribute it and/or
@@ -84,6 +84,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 static int identify_mail_function(const char *);
 static void mail_usage(t_connection*);
 static void mail_func_send(t_connection*,const char *);
@@ -128,7 +131,7 @@ static t_mailbox * mailbox_open(t_account * user, t_mbox_mode mode) {
       p_mkdir(path,S_IRWXU | S_IXGRP | S_IRGRP | S_IROTH | S_IXOTH);
 
    if ((rez->maildir=p_opendir(path))==NULL) {
-      if (mode & mbox_mode_write) 
+      if (mode & mbox_mode_write)
          eventlog(eventlog_level_error,__FUNCTION__,"error opening maildir");
       xfree(path);
       xfree(rez);
@@ -192,7 +195,7 @@ static t_mail * mailbox_read(t_mailbox * mailbox, unsigned int idx) {
    t_mail *     rez;
    FILE *       fd;
    char *       filename;
-   
+
    if (mailbox==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL mailbox");
       return NULL;
@@ -251,7 +254,7 @@ static struct maillist_struct * mailbox_get_list(t_mailbox *mailbox) {
    FILE * fd;
    struct maillist_struct *rez=NULL, *p=NULL,*q;
    char *sender,*filename;
-   
+
    if (mailbox==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL mailbox");
       return NULL;
@@ -289,7 +292,7 @@ static struct maillist_struct * mailbox_get_list(t_mailbox *mailbox) {
 
 static void mailbox_unget_list(struct maillist_struct * maill) {
    struct maillist_struct *p, *q;
-   
+
    for(p=maill;p!=NULL;p=q) {
       if (p->sender!=NULL) xfree(p->sender);
       q=p->next;
@@ -302,7 +305,7 @@ static int mailbox_delete(t_mailbox * mailbox, unsigned int idx) {
    char const * dentry;
    unsigned int i;
    int          rez;
-   
+
    if (mailbox==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL mailbox");
       return -1;
@@ -333,7 +336,7 @@ static int mailbox_delete_all(t_mailbox * mailbox) {
    char *       filename;
    char const * dentry;
    int          count;
-   
+
    if (mailbox==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL mailbox");
       return -1;
@@ -367,7 +370,7 @@ static void mailbox_close(t_mailbox *mailbox) {
 
 static char * clean_str(char * str) {
    char *p;
-   
+
    for(p=str;*p!='\0';p++)
      if (*p=='\n' || *p=='\r') {
 	*p='\0'; break;
@@ -379,19 +382,19 @@ extern int handle_mail_command(t_connection * c, char const * text)
 {
    unsigned int i,j;
    char         comm[MAX_FUNC_LEN];
-   
-   if (!prefs_get_mail_support()) { 
+
+   if (!prefs_get_mail_support()) {
       message_send_text(c,message_type_error,c,"This server has NO mail support.");
       return -1;
    }
-   
+
    for (i=0; text[i]!=' ' && text[i]!='\0'; i++); /* skip /mail command */
    for (; text[i]==' '; i++); /* skip any spaces after it */
-   
+
    for (j=0; text[i]!=' ' && text[i]!='\0' && j<sizeof(comm)-1; i++) /* get function */
      if (j<sizeof(comm)-1) comm[j++] = text[i];
    comm[j] = '\0';
-   
+
    switch (identify_mail_function(comm)) {
     case MAIL_FUNC_SEND:
       mail_func_send(c,text+i);
@@ -447,10 +450,10 @@ static int get_mail_quota(t_account * user) {
 static void mail_func_send(t_connection * c, const char * str) {
    int i;
    char *dest;
-   char const *p,*myname;   
+   char const *p,*myname;
    t_account * recv;
    t_mailbox * mailbox;
-   
+
    if (c==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
       return;
@@ -492,7 +495,7 @@ static void mail_func_send(t_connection * c, const char * str) {
    myname=conn_get_username(c); /* who am i ? */
    if (mailbox_deliver(mailbox,myname,p+i+1)<0)
      message_send_text(c,message_type_error,c,"There was an error completing your request!");
-   else 
+   else
      message_send_text(c,message_type_info,c,"Your mail has been sent successfully.");
    mailbox_close(mailbox);
 }
@@ -503,7 +506,7 @@ static void mail_func_read(t_connection * c, const char * str) {
    const char *p;
    char tmp[256];
    int i;
-   
+
    if (c==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
       return;
@@ -523,7 +526,7 @@ static void mail_func_read(t_connection * c, const char * str) {
    if (*p=='\0') { /* user wants to see the mail summary */
       struct maillist_struct *maill, *mp;
       unsigned int idx;
-      
+
       if (!mailbox_count(mailbox)) {
 	 message_send_text(c,message_type_info,c,"You have no mail.");
 	 mailbox_close(mailbox);
@@ -549,7 +552,7 @@ static void mail_func_read(t_connection * c, const char * str) {
    else { /* user wants to read a message */
       int idx;
       t_mail * mail;
-      
+
       for(i=0;p[i]>='0' && p[i]<='9' && p[i]!='\0';i++);
       if (p[i]!='\0' && p[i]!=' ') {
 	 message_send_text(c,message_type_error,c,"Invalid index. Please use /mail read <index> where <index> is a number.");
@@ -581,7 +584,7 @@ static void mail_func_delete(t_connection * c, const char * str) {
    const char * p;
    char tmp[256]; /* that should be enough */
    int i;
-   
+
    if (c==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
       return;
@@ -606,7 +609,7 @@ static void mail_func_delete(t_connection * c, const char * str) {
    }
    if (strcmp(p,"all")==0) {
       int rez;
-      
+
       if ((rez=mailbox_delete_all(mailbox))<0) {
 	 message_send_text(c,message_type_error,c,"There was an error completing your request.");
 	 mailbox_close(mailbox);
@@ -617,7 +620,7 @@ static void mail_func_delete(t_connection * c, const char * str) {
    }
    else {
       int idx;
-      
+
       for(i=0;p[i]>='0' && p[i]<='9' && p[i]!='\0';i++);
       if (p[i]!='\0' && p[i]!=' ') {
 	 message_send_text(c,message_type_error,c,"Invalid index. Please use /mail delete {<index>|all} where <index> is a number.");
@@ -677,7 +680,7 @@ extern char const * check_mail(t_connection const * c) {
    count = mailbox_count(mailbox);
    mailbox_close(mailbox);
 
-   if (count == 0) 
+   if (count == 0)
    {
       return "You have no mail.";
    }
@@ -686,4 +689,6 @@ extern char const * check_mail(t_connection const * c) {
       sprintf(tmp,"You have %d message(s) in your mailbox.",count);
       return tmp;
    }
+}
+
 }

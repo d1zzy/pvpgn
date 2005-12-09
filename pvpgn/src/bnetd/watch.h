@@ -33,6 +33,9 @@
 
 #endif
 
+namespace pvpgn
+{
+
 typedef enum
 {
     watch_event_login=1,
@@ -51,6 +54,8 @@ typedef struct
 } t_watch_pair;
 #endif
 
+}
+
 #endif
 
 #ifndef JUST_NEED_TYPES
@@ -62,6 +67,9 @@ typedef struct
 #include "connection.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern int watchlist_create(void);
 extern int watchlist_destroy(void);
 extern int watchlist_add_events(t_connection * owner, t_account * who, t_clienttag clienttag, unsigned events);
@@ -69,6 +77,8 @@ extern int watchlist_del_events(t_connection * owner, t_account * who, t_clientt
 extern int watchlist_del_all_events(t_connection * owner);
 extern int watchlist_del_by_account(t_account * account);
 extern int watchlist_notify_event(t_account * who, char const * gamename, t_clienttag clienttag, t_watch_event event);
+
+}
 
 #endif
 #endif

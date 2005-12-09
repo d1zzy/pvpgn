@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001            Dizzy 
+ * Copyright (C) 2001            Dizzy
  * Copyright (C) 2004            Donny Redmond (dredmond@linuxmail.org)
  *
  * This program is free software; you can redistribute it and/or
@@ -68,6 +68,9 @@
 # undef JUST_NEED_TYPES
 #endif
 
+namespace pvpgn
+{
+
 typedef enum {
     mbox_mode_read = 0x01,
     mbox_mode_write = 0x02
@@ -92,6 +95,8 @@ typedef struct maillist_struct {
    struct maillist_struct * next;
 } t_maillist;
 
+}
+
 #endif
 
 #endif
@@ -104,8 +109,13 @@ typedef struct maillist_struct {
 #include "connection.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern int handle_mail_command(t_connection *, char const *);
 extern char const * check_mail(t_connection const * c);
+
+}
 
 #endif
 #endif

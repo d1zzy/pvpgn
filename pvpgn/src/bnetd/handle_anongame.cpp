@@ -54,9 +54,12 @@
 #include "clan.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 /* option - handling function */
 
-/* 0x00 */ /* PG style search - handle_anongame_search() in anongame.c */ 
+/* 0x00 */ /* PG style search - handle_anongame_search() in anongame.c */
 /* 0x01 */ /* server side packet sent from handle_anongame_search() in anongame.c */
 /* 0x02 */ static int _client_anongame_infos(t_connection * c, t_packet const * const packet);
 /* 0x03 */ static int _client_anongame_cancel(t_connection * c);
@@ -127,14 +130,14 @@ static int _client_anongame_profile_clan(t_connection * c, t_packet const * cons
 		bn_int	losses
 	    */
 	}
-	
+
 	bn_byte_set(&rpacket->u.server_findanongame_profile_clan.rescount,rescount);
 
 
 	conn_push_outqueue(c,rpacket);
-	packet_del_ref(rpacket);	
+	packet_del_ref(rpacket);
     }
-   
+
    return 0;
 }
 
@@ -144,7 +147,7 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
     char const * username;
     int Count, i;
     int temp;
-    t_account * account; 
+    t_account * account;
     t_connection * dest_c;
     t_clienttag ctag;
     char clienttag_str[5];
@@ -155,23 +158,23 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
     t_team * team;
     t_bnettime bn_time;
     bn_long ltime;
-    
-    
+
+
     Count = bn_int_get(packet->u.client_findanongame.count);
     eventlog(eventlog_level_info,__FUNCTION__,"[%d] got a FINDANONGAME PROFILE packet",conn_get_socket(c));
-    
+
     if (!(username = packet_get_str_const(packet,sizeof(t_client_findanongame_profile),USER_NAME_MAX)))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad FINDANONGAME_PROFILE (missing or too long username)",conn_get_socket(c));
 	return -1;
     }
-    
+
     //If no account is found then break
     if (!(account = accountlist_find_account(username)))
-    {				
+    {
 	eventlog(eventlog_level_error, __FUNCTION__, "Could not get account - PROFILE");
 	return -1;
-    }										
+    }
 
     if (!(dest_c = connlist_find_connection_by_accountname(username))) {
 	eventlog(eventlog_level_debug, __FUNCTION__, "account is offline -  try ll_clienttag");
@@ -182,9 +185,9 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 
     eventlog(eventlog_level_info,__FUNCTION__,"Looking up %s's %s Stats.",username,tag_uint_to_str(clienttag_str,ctag));
 
-    if (account_get_ladder_level(account,ctag,ladder_id_solo)<=0 && 
-        account_get_ladder_level(account,ctag,ladder_id_team)<=0 && 
-        account_get_ladder_level(account,ctag,ladder_id_ffa)<=0 && 
+    if (account_get_ladder_level(account,ctag,ladder_id_solo)<=0 &&
+        account_get_ladder_level(account,ctag,ladder_id_team)<=0 &&
+        account_get_ladder_level(account,ctag,ladder_id_ffa)<=0 &&
 	account_get_teams(account)==NULL)
     {
 	eventlog(eventlog_level_info,__FUNCTION__,"%s does not have WAR3 Stats.",username);
@@ -197,13 +200,13 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 	bn_int_set(&rpacket->u.server_findanongame_profile2.icon,account_icon_to_profile_icon(account_get_user_icon(account,ctag),account,ctag));
 	bn_byte_set(&rpacket->u.server_findanongame_profile2.rescount,0);
 	temp=0;
-	packet_append_data(rpacket,&temp,2); 
+	packet_append_data(rpacket,&temp,2);
 	conn_push_outqueue(c,rpacket);
 	packet_del_ref(rpacket);
     }
     else // If they do have a profile then:
     {
-	int solowins=account_get_ladder_wins(account,ctag,ladder_id_solo); 
+	int solowins=account_get_ladder_wins(account,ctag,ladder_id_solo);
 	int sololoss=account_get_ladder_losses(account,ctag,ladder_id_solo);
 	int soloxp=account_get_ladder_xp(account,ctag,ladder_id_solo);
 	int sololevel=account_get_ladder_level(account,ctag,ladder_id_solo);
@@ -264,7 +267,7 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 
 	if (teamlevel > 0) {
 	    //below is for team records. Add this after 2v2,3v3,4v4 are done
-	    bn_int_set((bn_int*)&temp,0x5445414D); 
+	    bn_int_set((bn_int*)&temp,0x5445414D);
 	    packet_append_data(rpacket,&temp,4);
 	    bn_int_set((bn_int*)&temp,teamwins);
 	    packet_append_data(rpacket,&temp,2);
@@ -273,7 +276,7 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 	    bn_int_set((bn_int*)&temp,teamlevel);
 	    packet_append_data(rpacket,&temp,1);
 	    bn_int_set((bn_int*)&temp,account_get_profile_calcs(account,teamxp,teamlevel));
-	    
+
 	    packet_append_data(rpacket,&temp,1);
 	    bn_int_set((bn_int*)&temp,teamxp);
 	    packet_append_data(rpacket,&temp,2);
@@ -332,9 +335,9 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 
 	/* 1 byte team count place holder, set later */
 	packet_append_data(rpacket, &temp, 1);
-	
+
 	/* we need to store the AT team count but we dont know yet the no
-	 * of stored teams so we cache the pointer for later use 
+	 * of stored teams so we cache the pointer for later use
 	 */
 	atcountp = (unsigned char *)packet_get_raw_data(rpacket, packet_get_size(rpacket) - 1);
 
@@ -343,7 +346,7 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 	if (teamlist)
 	{
 	  int teamtype[] = {0, 0x32565332, 0x33565333, 0x34565334, 0x35565335, 0x36565336};
-		
+
 	  LIST_TRAVERSE(teamlist,curr)
 	  {
 	    if (!(team = (t_team*)elem_get_data(curr)))
@@ -354,7 +357,7 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 
 	    if (team_get_clienttag(team) != ctag)
 	      continue;
-	      
+
 	    bn_int_set((bn_int*)&temp,teamtype[team_get_size(team)-1]);
 	    packet_append_data(rpacket,&temp,4);
 
@@ -362,7 +365,7 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 	    packet_append_data(rpacket,&temp,2);
 	    bn_int_set((bn_int*)&temp,team_get_losses(team)); //at team losses
 	    packet_append_data(rpacket,&temp,2);
-	    bn_int_set((bn_int*)&temp,team_get_level(team)); 
+	    bn_int_set((bn_int*)&temp,team_get_level(team));
 	    packet_append_data(rpacket,&temp,1);
 	    bn_int_set((bn_int*)&temp,account_get_profile_calcs(account,team_get_xp(team),team_get_level(team))); // xp bar calc
 	    packet_append_data(rpacket,&temp,1);
@@ -374,7 +377,7 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 	    bn_time = time_to_bnettime(temp,team_get_lastgame(team));
 	    bnettime_to_bn_long(bn_time,&ltime);
 	    packet_append_data(rpacket,&ltime,8);
-	  
+
 	    bn_int_set((bn_int*)&temp,team_get_size(team)-1);
 	    packet_append_data(rpacket,&temp,1);
 
@@ -395,45 +398,45 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 	*atcountp = (unsigned char)teamcount;
 
 	conn_push_outqueue(c,rpacket);
-	packet_del_ref(rpacket);				
-	
+	packet_del_ref(rpacket);
+
 	eventlog(eventlog_level_info,__FUNCTION__,"Sent %s's WAR3 Stats (including %d teams) to requestor.",username,teamcount);
     }
     return 0;
-}    
+}
 
 static int _client_anongame_cancel(t_connection * c)
 {
     t_packet * rpacket;
     t_connection * tc[ANONGAME_MAX_GAMECOUNT/2];
-    
+
     // [quetzal] 20020809 - added a_count, so we dont refer to already destroyed anongame
     t_anongame *a = conn_get_anongame(c);
     int a_count, i;
-    
+
     eventlog(eventlog_level_info,__FUNCTION__,"[%d] got FINDANONGAME CANCEL packet", conn_get_socket(c));
-    
+
     if(!a)
 	return -1;
-    
+
     a_count = anongame_get_count(a);
-    
-    // anongame_unqueue(c, anongame_get_queue(a)); 
+
+    // anongame_unqueue(c, anongame_get_queue(a));
     // -- already doing unqueue in conn_destroy_anongame
     for (i=0; i < ANONGAME_MAX_GAMECOUNT/2; i++)
 	tc[i] = anongame_get_tc(a, i);
-	
+
     for (i=0; i < ANONGAME_MAX_GAMECOUNT/2; i++) {
 	if (tc[i] == NULL)
 	    continue;
-	    
+
 	conn_set_routeconn(tc[i], NULL);
 	conn_destroy_anongame(tc[i]);
     }
-    
+
     if (!(rpacket = packet_create(packet_class_bnet)))
 	return -1;
-    
+
     packet_set_size(rpacket,sizeof(t_server_findanongame_playgame_cancel));
     packet_set_type(rpacket,SERVER_FINDANONGAME_PLAYGAME_CANCEL);
     bn_byte_set(&rpacket->u.server_findanongame_playgame_cancel.cancel,SERVER_FINDANONGAME_CANCEL);
@@ -446,7 +449,7 @@ static int _client_anongame_cancel(t_connection * c)
 static int _client_anongame_get_icon(t_connection * c, t_packet const * const packet)
 {
     t_packet * rpacket;
-    
+
     //BlacKDicK 04/20/2003 Need some huge re-work on this.
     {
 	struct
@@ -457,7 +460,7 @@ static int _client_anongame_get_icon(t_connection * c, t_packet const * const pa
 	    bn_short	 required_wins;
 	    char	 client_enabled;
         } tempicon;
-        
+
 	//FIXME: Add those to the prefs and also merge them on accoun_wrap;
 	// FIXED BY DJP 07/16/2003 FOR 110 CHANGE ( TOURNEY & RACE WINS ) + Table_witdh
 	short icon_req_race_wins;
@@ -472,7 +475,7 @@ static int _client_anongame_get_icon(t_connection * c, t_packet const * const pa
         unsigned int rlvl,rwins;
 	t_clienttag clienttag;
 	t_account * acc;
-        
+
         char user_icon[5];
         char const * uicon;
 
@@ -483,9 +486,9 @@ static int _client_anongame_get_icon(t_connection * c, t_packet const * const pa
     	    table_width = 5;
 	    table_height= 4;
 	}
-	
+
         eventlog(eventlog_level_info,__FUNCTION__,"[%d] got FINDANONGAME Get Icons packet",conn_get_socket(c));
-	
+
 	if ((rpacket = packet_create(packet_class_bnet)) == NULL) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "could not create new packet");
 	    return -1;
@@ -499,13 +502,13 @@ static int _client_anongame_get_icon(t_connection * c, t_packet const * const pa
         {
 	    memcpy(&rpacket->u.server_findanongame_iconreply.curricon, uicon,4);
         }
-        else 
+        else
         {
 	    account_get_raceicon(acc,&rico,&rlvl,&rwins,clienttag);
 	    sprintf(user_icon,"%1d%c3W",rlvl,rico);
             memcpy(&rpacket->u.server_findanongame_iconreply.curricon,user_icon,4);
         }
-	
+
 	bn_byte_set(&rpacket->u.server_findanongame_iconreply.table_width, table_width);
         bn_byte_set(&rpacket->u.server_findanongame_iconreply.table_size, table_width*table_height);
         for (j=0;j<table_height;j++){
@@ -549,7 +552,7 @@ static int _client_anongame_set_icon(t_connection * c, t_packet const * const pa
     //BlacKDicK 04/20/2003
     unsigned int desired_icon;
     char user_icon[5];
-    
+
     /*FIXME: In this case we do not get a 'count' but insted of it we get the icon
     that the client wants to set.'W3H2' for an example. For now it is ok, since they share
     the same position	on the packet*/
@@ -562,13 +565,13 @@ static int _client_anongame_set_icon(t_connection * c, t_packet const * const pa
 	memcpy(user_icon,&desired_icon,4);
 	eventlog(eventlog_level_info,__FUNCTION__,"[%d] Set icon packet to ICON [%s]",conn_get_socket(c),user_icon);
     }
-    
+
     account_set_user_icon(conn_get_account(c),conn_get_clienttag(c),user_icon);
-    //FIXME: Still need a way to 'refresh the user/channel' 
-    //_handle_rejoin_command(conn_get_account(c),""); 
+    //FIXME: Still need a way to 'refresh the user/channel'
+    //_handle_rejoin_command(conn_get_account(c),"");
     /* ??? channel_update_userflags() */
 	conn_update_w3_playerinfo(c);
-    
+
     channel_rejoin(c);
     return 0;
 }
@@ -576,23 +579,23 @@ static int _client_anongame_set_icon(t_connection * c, t_packet const * const pa
 static int _client_anongame_infos(t_connection * c, t_packet const * const packet)
 {
     t_packet * rpacket;
-    
+
     if (bn_int_get(packet->u.client_findanongame_inforeq.count) > 1) {
 	/* reply with 0 entries found */
 	int	temp = 0;
-	
+
 	if ((rpacket = packet_create(packet_class_bnet)) == NULL) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "could not create new packet");
 	    return -1;
 	}
-	
+
 	packet_set_size(rpacket, sizeof(t_server_findanongame_inforeply));
 	packet_set_type(rpacket, SERVER_FINDANONGAME_INFOREPLY);
 	bn_byte_set(&rpacket->u.server_findanongame_inforeply.option, CLIENT_FINDANONGAME_INFOS);
 	bn_int_set(&rpacket->u.server_findanongame_inforeply.count, bn_int_get(packet->u.client_findanongame_inforeq.count));
 	bn_byte_set(&rpacket->u.server_findanongame_inforeply.noitems, 0);
 	packet_append_data(rpacket, &temp, 1);
-	
+
 	conn_push_outqueue(c,rpacket);
 	packet_del_ref(rpacket);
     } else {
@@ -611,24 +614,24 @@ static int _client_anongame_infos(t_connection * c, t_packet const * const packe
 	char langstr[5];
 	t_gamelang gamelang = conn_get_gamelang(c);
 	bn_int_tag_get((bn_int const *)&gamelang, langstr, 5);
-	
+
 	/* Send seperate packet for each item requested
 	 * sending all at once overloaded w3xp
 	 * [Omega] */
 	for (i=0;i<bn_byte_get(packet->u.client_findanongame_inforeq.noitems);i++){
 	    noitems = 0;
-	    
+
 	    if ((rpacket = packet_create(packet_class_bnet)) == NULL) {
 		eventlog(eventlog_level_error, __FUNCTION__, "could not create new packet");
 		return -1;
 	    }
-	    
+
 	    /* Starting the packet stuff */
 	    packet_set_size(rpacket, sizeof(t_server_findanongame_inforeply));
 	    packet_set_type(rpacket, SERVER_FINDANONGAME_INFOREPLY);
 	    bn_byte_set(&rpacket->u.server_findanongame_inforeply.option, CLIENT_FINDANONGAME_INFOS);
 	    bn_int_set(&rpacket->u.server_findanongame_inforeply.count, 1);
-	    
+
 	    memcpy(&temp,(packet_get_data_const(packet,10+(i*8),4)),sizeof(int));
 	    client_tag=bn_int_get(temp);
 	    memcpy(&temp,packet_get_data_const(packet,14+(i*8),4),sizeof(int));
@@ -688,14 +691,14 @@ static int _client_anongame_infos(t_connection * c, t_packet const * const packe
 		    break;
 		default:
 		     eventlog(eventlog_level_debug,__FUNCTION__,"unrec client_tag request tagid=(0x%01x) tag=(0x%04x)",i,client_tag);
-		
+
 	    }
 	    //Adding a last padding null-byte
 	    if (server_tag_count == bn_byte_get(packet->u.client_findanongame_inforeq.noitems))
 		packet_append_data(rpacket, &last_packet, 1); /* only last packet in group gets 0x00 */
 	    else
 		packet_append_data(rpacket, &other_packet, 1); /* the rest get 0x01 */
-		
+
 	    //Go,go,go
 	    bn_byte_set(&rpacket->u.server_findanongame_inforeply.noitems, noitems);
 	    conn_push_outqueue(c,rpacket);
@@ -709,26 +712,26 @@ static int _client_anongame_infos(t_connection * c, t_packet const * const packe
 static int _client_anongame_tournament(t_connection * c, t_packet const * const packet)
 {
     t_packet * rpacket;
-    
+
     t_account * account = conn_get_account(c);
     t_clienttag clienttag = conn_get_clienttag(c);
-    
+
     unsigned int start_prelim	= tournament_get_start_preliminary();
     unsigned int end_signup	= tournament_get_end_signup();
     unsigned int end_prelim	= tournament_get_end_preliminary();
     unsigned int start_r1	= tournament_get_start_round_1();
-    
+
     if ((rpacket = packet_create(packet_class_bnet)) == NULL) {
 	eventlog(eventlog_level_error, __FUNCTION__, "could not create new packet");
 	return -1;
     }
-    
+
     packet_set_size(rpacket, sizeof(t_server_anongame_tournament_reply));
     packet_set_type(rpacket, SERVER_FINDANONGAME_TOURNAMENT_REPLY);
     bn_byte_set(&rpacket->u.server_anongame_tournament_reply.option, 7);
     bn_int_set(&rpacket->u.server_anongame_tournament_reply.count,
     bn_int_get(packet->u.client_anongame_tournament_request.count));
-    
+
     if ( !start_prelim || (end_signup <= now && tournament_user_signed_up(account) < 0) ||
 	    tournament_check_client(clienttag) < 0) { /* No Tournament Notice */
 	bn_byte_set(	&rpacket->u.server_anongame_tournament_reply.type,		0);
@@ -835,7 +838,7 @@ static int _client_anongame_tournament(t_connection * c, t_packet const * const 
      *
      * not sure if there is overall winner packet sent at end of last final round
      */
-    
+
     else if ( (0) ) { /* User in finals - Shows user stats and start of next round*/
 	bn_byte_set(	&rpacket->u.server_anongame_tournament_reply.type,		6);
 	bn_byte_set(	&rpacket->u.server_anongame_tournament_reply.unknown,		0);
@@ -868,7 +871,7 @@ static int _client_anongame_tournament(t_connection * c, t_packet const * const 
 	bn_byte_set(	&rpacket->u.server_anongame_tournament_reply.descnum,		0);
 	bn_byte_set(	&rpacket->u.server_anongame_tournament_reply.nulltag,		0);
     }
-    
+
     conn_push_outqueue(c,rpacket);
     packet_del_ref(rpacket);
     return 0;
@@ -878,7 +881,7 @@ static unsigned int _tournament_time_convert(unsigned int time)
 {
     /* it works, don't ask me how */ /* some time drift reportd by testers */
     unsigned int tmp1, tmp2, tmp3;
-    
+
     tmp1 = time-1059179400;	/* 0x3F21CB88  */
     tmp2 = tmp1*0.59604645;
     tmp3 = tmp2+3276999960U;
@@ -896,7 +899,7 @@ extern int handle_anongame_packet(t_connection * c, t_packet const * const packe
 
 	case CLIENT_FINDANONGAME_CANCEL:
 	  return _client_anongame_cancel(c);
-	
+
 	case CLIENT_FINDANONGAME_SEARCH:
 	case CLIENT_FINDANONGAME_AT_INVITER_SEARCH:
 	case CLIENT_FINDANONGAME_AT_SEARCH:
@@ -904,13 +907,13 @@ extern int handle_anongame_packet(t_connection * c, t_packet const * const packe
 
 	case CLIENT_FINDANONGAME_GET_ICON:
 	  return _client_anongame_get_icon(c, packet);
-    
+
 	case CLIENT_FINDANONGAME_SET_ICON:
 	  return _client_anongame_set_icon(c, packet);
 
 	case CLIENT_FINDANONGAME_INFOS:
 	  return _client_anongame_infos(c, packet);
-    
+
 	case CLIENT_ANONGAME_TOURNAMENT:
 	  return _client_anongame_tournament(c, packet);
 
@@ -921,4 +924,6 @@ extern int handle_anongame_packet(t_connection * c, t_packet const * const packe
           eventlog(eventlog_level_error,__FUNCTION__,"got unhandled option %d",bn_byte_get(packet->u.client_findanongame.option));
 	  return -1;
     }
+}
+
 }

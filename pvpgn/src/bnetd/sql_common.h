@@ -19,6 +19,9 @@
 #ifndef INCLUDED_SQL_COMMON_TYPES
 #define INCLUDED_SQL_COMMON_TYPES
 
+namespace pvpgn
+{
+
 typedef unsigned int t_sql_info;
 
 /* used as a pointer to it */
@@ -43,6 +46,8 @@ typedef struct {
     void (*escape_string)(char *, const char *, int);
 } t_sql_engine;
 
+}
+
 #endif /* INCLUDED_SQL_COMMON_TYPES */
 
 #ifndef JUST_NEED_TYPES
@@ -50,6 +55,9 @@ typedef struct {
 #define INCLUDED_SQL_COMMON_PROTOS
 
 #include "storage.h"
+
+namespace pvpgn
+{
 
 extern t_storage storage_sql;
 
@@ -91,6 +99,8 @@ extern int sql_write_team(void *data);
 extern int sql_remove_team(unsigned int teamid);
 
 #endif /* SQL_INTERNAL */
+
+}
 
 #endif /* INCLUDED_SQL_COMMON_PROTOS */
 #endif /* JUST_NEED_TYPES */

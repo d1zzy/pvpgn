@@ -60,10 +60,13 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 {
     t_packet * rpacket;
-    
+
     if (!c)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"[%d] got NULL connection",conn_get_socket(c));
@@ -79,10 +82,10 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
         eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad packet (class %d)",conn_get_socket(c),(int)packet_get_class(packet));
         return -1;
     }
-    
+
     {
 	char const * const linestr=packet_get_str_const(packet,0,MAX_MESSAGE_LEN);
-	
+
 	if (packet_get_size(packet)<2) /* empty line */
 	    return 0;
 	if (!linestr)
@@ -90,33 +93,33 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 	    eventlog(eventlog_level_warn,__FUNCTION__,"[%d] line too long",conn_get_socket(c));
 	    return 0;
 	}
-	
+
 	switch (conn_get_state(c))
 	{
 	case conn_state_connected:
 	    conn_add_flags(c,MF_PLUG);
 	    conn_set_clienttag(c,CLIENTTAG_BNCHATBOT_UINT);
-	    
+
 	    {
 		char const * temp=linestr;
-		
+
 		if (temp[0]=='\004') /* FIXME: no echo, ignore for now (we always do no echo) */
 		    temp = &temp[1];
-		
+
 		if (temp[0]=='\0') /* empty line */
 		{
 		    conn_set_state(c,conn_state_bot_username); /* don't look for ^D or reset tag and flags */
 		    break;
 		}
-		
+
 		conn_set_state(c,conn_state_bot_password);
-		
+
 		if (conn_set_loggeduser(c,temp)<0)
 		    eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not set username to \"%s\"",conn_get_socket(c),temp);
-		
+
 		{
 		    char const * const msg="\r\nPassword: ";
-		    
+
 		    if (!(rpacket = packet_create(packet_class_raw)))
 		    {
 			eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not create rpacket",conn_get_socket(c));
@@ -131,16 +134,16 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		}
 	    }
 	    break;
-	    
+
 	case conn_state_bot_username:
 	    conn_set_state(c,conn_state_bot_password);
-	    
+
 	    if (conn_set_loggeduser(c,linestr)<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not set username to \"%s\"",conn_get_socket(c),linestr);
-	    
+
 	    {
 		char const * const temp="\r\nPassword: ";
-	    	
+
 		if (!(rpacket = packet_create(packet_class_raw)))
 		{
 		    eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not create rpacket",conn_get_socket(c));
@@ -154,7 +157,7 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		packet_del_ref(rpacket);
 	    }
 	    break;
-	    
+
 	case conn_state_bot_password:
 	    {
 		char const * const tempa="\r\nLogin failed.\r\n\r\nUsername: ";
@@ -165,18 +168,18 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		t_hash             trypasshash1;
 		t_hash             oldpasshash1;
 		char *             testpass;
-		
+
 		if (!loggeduser) /* error earlier in login */
 		{
 		    /* no log message... */
 		    conn_set_state(c,conn_state_bot_username);
-		    
+
 		    if (!(rpacket = packet_create(packet_class_raw)))
 		    {
 			eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not create rpacket",conn_get_socket(c));
 			break;
 		    }
-		    
+
 		    packet_append_ntstring(rpacket,tempa);
 		    conn_push_outqueue(c,rpacket);
 		    packet_del_ref(rpacket);
@@ -186,13 +189,13 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		{
 		    eventlog(eventlog_level_info,__FUNCTION__,"[%d] bot login for \"%s\" refused (already logged in)",conn_get_socket(c),loggeduser);
 		    conn_set_state(c,conn_state_bot_username);
-		    
+
 		    if (!(rpacket = packet_create(packet_class_raw)))
 		    {
 			eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not create rpacket",conn_get_socket(c));
 			break;
 		    }
-		    
+
 		    packet_append_ntstring(rpacket,tempa);
 		    conn_push_outqueue(c,rpacket);
 		    packet_del_ref(rpacket);
@@ -202,13 +205,13 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		{
 			eventlog(eventlog_level_info,__FUNCTION__,"[%d] bot login for \"%s\" refused (bad account)",conn_get_socket(c),loggeduser);
 			conn_set_state(c,conn_state_bot_username);
-			
+
 			if (!(rpacket = packet_create(packet_class_raw)))
 			{
 			    eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not create rpacket",conn_get_socket(c));
 			    break;
 			}
-			
+
 			packet_append_ntstring(rpacket,tempa);
 			conn_push_outqueue(c,rpacket);
 			packet_del_ref(rpacket);
@@ -220,13 +223,13 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		    {
 			eventlog(eventlog_level_info,__FUNCTION__,"[%d] bot login for \"%s\" refused (corrupted passhash1?)",conn_get_socket(c),loggeduser);
 			conn_set_state(c,conn_state_bot_username);
-			
+
 			if (!(rpacket = packet_create(packet_class_raw)))
 			{
 			    eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not create rpacket",conn_get_socket(c));
 			    break;
 			}
-			
+
 			packet_append_ntstring(rpacket,tempa);
 			conn_push_outqueue(c,rpacket);
 			packet_del_ref(rpacket);
@@ -236,7 +239,7 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
                     testpass = xstrdup(linestr);
 		    {
 			unsigned int i;
-			
+
 			for (i=0; i<strlen(testpass); i++)
 			    if (isupper((int)testpass[i]))
 				testpass[i] = tolower((int)testpass[i]);
@@ -247,13 +250,13 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 			conn_set_state(c,conn_state_bot_username);
 
 			xfree((void *)testpass);
-			
+
 			if (!(rpacket = packet_create(packet_class_raw)))
 			{
 			    eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not create rpacket",conn_get_socket(c));
 			    break;
 			}
-			
+
 			packet_append_ntstring(rpacket,tempa);
 			conn_push_outqueue(c,rpacket);
 			packet_del_ref(rpacket);
@@ -264,31 +267,31 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		    {
 			eventlog(eventlog_level_info,__FUNCTION__,"[%d] bot login for \"%s\" refused (wrong password)",conn_get_socket(c), loggeduser);
 			conn_set_state(c,conn_state_bot_username);
-			
+
 			if (!(rpacket = packet_create(packet_class_raw)))
 			{
 			    eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not create rpacket",conn_get_socket(c));
 			    break;
 			}
-			
+
 			packet_append_ntstring(rpacket,tempa);
 			conn_push_outqueue(c,rpacket);
 			packet_del_ref(rpacket);
 			break;
 		    }
-		    
-		    
+
+
 		    if (account_get_auth_botlogin(account)!=1) /* default to false */
 		    {
 			eventlog(eventlog_level_info,__FUNCTION__,"[%d] bot login for \"%s\" refused (no bot access)",conn_get_socket(c), loggeduser);
 			conn_set_state(c,conn_state_bot_username);
-			
+
 			if (!(rpacket = packet_create(packet_class_raw)))
 			{
 			    eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not create rpacket",conn_get_socket(c));
 			    break;
 			}
-			
+
 			packet_append_ntstring(rpacket,tempb);
 			conn_push_outqueue(c,rpacket);
 			packet_del_ref(rpacket);
@@ -298,19 +301,19 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		    {
 			eventlog(eventlog_level_info,__FUNCTION__,"[%d] bot login for \"%s\" refused (this account is locked)",conn_get_socket(c), loggeduser);
 			conn_set_state(c,conn_state_bot_username);
-			
+
 			if (!(rpacket = packet_create(packet_class_raw)))
 			{
 			    eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not create rpacket",conn_get_socket(c));
 			    break;
 			}
-			
+
 			packet_append_ntstring(rpacket,tempb);
 			conn_push_outqueue(c,rpacket);
 			packet_del_ref(rpacket);
 			break;
 		    }
-		    
+
 		    eventlog(eventlog_level_info,__FUNCTION__,"[%d] \"%s\" bot logged in (correct password)",conn_get_socket(c), loggeduser);
 		}
 		else
@@ -329,22 +332,22 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		    conn_login(c,account,loggeduser);
 
 		    message_send_text(c,message_type_uniqueid,c,loggeduser);
-		    		    
+
 		    if (conn_set_channel(c,CHANNEL_NAME_CHAT)<0)
 			conn_set_channel(c,CHANNEL_NAME_BANNED); /* should not fail */
 	    }
 	    break;
-	    
+
 	case conn_state_loggedin:
 	    {
 		t_channel const * channel;
-		
+
 		conn_set_idletime(c);
-		
+
 		if ((channel = conn_get_channel(c)))
 		    channel_message_log(channel,c,1,linestr);
 		/* we don't log game commands currently */
-		
+
 		if (linestr[0]=='/')
 		    handle_command(c,linestr);
 		else
@@ -353,11 +356,13 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		    /* else discard */
 	    }
 	    break;
-	    
+
 	default:
 	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] unknown bot connection state %d",conn_get_socket(c),(int)conn_get_state(c));
 	}
     }
-    
+
     return 0;
+}
+
 }

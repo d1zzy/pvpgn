@@ -1,5 +1,5 @@
 /*
-  * Copyright (C) 2002,2003 Dizzy 
+  * Copyright (C) 2002,2003 Dizzy
   *
   * This program is free software; you can redistribute it and/or
   * modify it under the terms of the GNU General Public License
@@ -27,6 +27,9 @@
 #define ST_FORCE	1
 
 #define t_storage_info void
+
+namespace pvpgn
+{
 
 typedef int (*t_read_attr_func)(const char *, const char *, void *);
 typedef int (*t_read_accounts_func)(t_storage_info *, void*);
@@ -56,16 +59,23 @@ typedef struct {
     int (*remove_team)(unsigned int);
 } t_storage;
 
+}
+
 #endif /* INCLUDED_STORAGE_TYPES */
 
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_STORAGE_PROTOS
 #define INCLUDED_STORAGE_PROTOS
 
+namespace pvpgn
+{
+
 extern t_storage *storage;
 
 extern int storage_init(const char *);
 extern void storage_close(void);
+
+}
 
 #endif /* INCLUDED_STORAGE_PROTOS */
 #endif /* JUST_NEED_TYPES */

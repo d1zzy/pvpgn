@@ -75,7 +75,8 @@
 
 #endif
 
-
+namespace pvpgn
+{
 
 typedef enum
 {
@@ -112,7 +113,7 @@ typedef enum
   conn_flags_joingamewhisper	= 0x04,
   conn_flags_leavegamewhisper	= 0x08,
   conn_flags_echoback		= 0x10
-  
+
 } t_conn_flags;
 
 #endif
@@ -206,11 +207,11 @@ typedef struct connection
 	} w3;
 	struct {
 	    int ingame;				        /* Are we in a game channel? */
-	    
+
 	    int codepage;
 	    int locale;
 	    int gameType;
-	    
+
 	    char const * apgar;			    /* WOL User Password (encrypted) */
 
 	    char const * gameOptions;		/* Game Options */
@@ -224,6 +225,9 @@ typedef struct connection
 }
 #endif
 t_connection;
+
+}
+
 #endif
 
 
@@ -251,6 +255,9 @@ t_connection;
 
 #define DESTROY_FROM_CONNLIST 0
 #define DESTROY_FROM_DEADLIST 1
+
+namespace pvpgn
+{
 
 extern t_anongame * conn_create_anongame(t_connection * c);
 extern void conn_destroy_anongame(t_connection * c);
@@ -442,7 +449,7 @@ extern void conn_wol_set_ingame(t_connection * c, int wol_ingame);
 extern int conn_wol_get_ingame(t_connection * c);
 
 extern void conn_wol_set_apgar(t_connection * c, char const * apgar);
-extern char const * conn_wol_get_apgar(t_connection * c); 
+extern char const * conn_wol_get_apgar(t_connection * c);
 
 extern void conn_wol_set_codepage(t_connection * c, int codepage);
 extern int conn_wol_get_codepage(t_connection * c);
@@ -451,10 +458,12 @@ extern void conn_wol_set_locale(t_connection * c, int locale);
 extern int conn_wol_get_locale(t_connection * c);
 
 extern void conn_wol_set_game_type(t_connection * c, int gameType);
-extern int conn_wol_get_game_type(t_connection * c); 
+extern int conn_wol_get_game_type(t_connection * c);
 
 extern void conn_wol_set_game_options(t_connection * c, char const * gameOptions);
-extern char const * conn_wol_get_game_options(t_connection * c); 
+extern char const * conn_wol_get_game_options(t_connection * c);
+
+}
 
 #endif
 #endif

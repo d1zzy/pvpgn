@@ -45,6 +45,9 @@
 #include "anongame_infos.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 static FILE *fp = NULL;
 
 static t_anongame_infos *anongame_infos;
@@ -2000,4 +2003,6 @@ static int zlib_compress(void const *src, int srclen, char **dest, int *destlen)
     xfree((void *) tmpdata);
 
     return 0;
+}
+
 }

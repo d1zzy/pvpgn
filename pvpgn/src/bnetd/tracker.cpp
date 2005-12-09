@@ -79,8 +79,11 @@
 #include "common/addr.h"
 #include "common/list.h"
 #include "common/tracker.h"
+#include "tracker.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
 
 static t_addrlist * track_servers=NULL;
 
@@ -90,22 +93,22 @@ extern int tracker_set_servers(char const * servers)
     t_addr const * addr;
     t_elem const * curr;
     char           temp[32];
-    
+
     if (track_servers && addrlist_destroy(track_servers)<0)
         eventlog(eventlog_level_error,__FUNCTION__,"unable to destroy tracker list");
-    
+
     if (!servers)
      {
 	track_servers = NULL;
 	return 0;
      }
-   
+
     if (!(track_servers = addrlist_create(servers,INADDR_LOOPBACK,BNETD_TRACK_PORT)))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create tracking server list");
 	return -1;
     }
-    
+
     LIST_TRAVERSE_CONST(track_servers,curr)
     {
 	addr = (t_addr*)elem_get_data(curr);
@@ -113,7 +116,7 @@ extern int tracker_set_servers(char const * servers)
 	    strcpy(temp,"x.x.x.x:x");
 	eventlog(eventlog_level_info,__FUNCTION__,"tracking packets will be sent to %s",temp);
     }
-    
+
     return 0;
 }
 
@@ -130,7 +133,7 @@ extern int tracker_send_report(t_addrlist const * laddrs)
     t_laddr_info *     laddr_info;
     char               tempa[64];
     char               tempb[64];
-    
+
     if (addrlist_get_length(track_servers)>0)
     {
 	packet.packet_version = htons((unsigned short)TRACK_VERSION);
@@ -168,7 +171,7 @@ extern int tracker_send_report(t_addrlist const * laddrs)
 	packet.uptime = htonl(server_get_uptime());
 	packet.total_logins = htonl(connlist_total_logins());
 	packet.total_games = htonl(gamelist_total_games());
-	
+
 	if (uname(&utsbuf)<0)
 	{
 	    eventlog(eventlog_level_warn,__FUNCTION__,"could not get platform info (uname: %s)",pstrerror(errno));
@@ -181,11 +184,11 @@ extern int tracker_send_report(t_addrlist const * laddrs)
 		    sizeof(packet.platform));
 	    packet.platform[sizeof(packet.platform)-1] = '\0';
 	}
-	
+
 	LIST_TRAVERSE_CONST(laddrs,currl)
 	{
 	    addrl = (t_addr*)elem_get_data(currl);
-	    
+
 	    if (!(laddr_info = (t_laddr_info*)addr_get_data(addrl).p))
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"address data is NULL");
@@ -193,29 +196,31 @@ extern int tracker_send_report(t_addrlist const * laddrs)
 	    }
 	    if (laddr_info->type!=laddr_type_bnet)
 		continue; /* don't report IRC, telnet, and other non-game ports */
-	    
+
 	    packet.port = htons(addr_get_port(addrl));
-	    
+
 	    LIST_TRAVERSE_CONST(track_servers,currt)
 	    {
 		addrt = (t_addr*)elem_get_data(currt);
-		
+
 		memset(&tempaddr,0,sizeof(tempaddr));
-		tempaddr.sin_family = PSOCK_AF_INET; 
+		tempaddr.sin_family = PSOCK_AF_INET;
 		tempaddr.sin_port = htons(addr_get_port(addrt));
 		tempaddr.sin_addr.s_addr = htonl(addr_get_ip(addrt));
-		
+
 		if (!addr_get_addr_str(addrl,tempa,sizeof(tempa)))
 		    strcpy(tempa,"x.x.x.x:x");
 		if (!addr_get_addr_str(addrt,tempb,sizeof(tempb)))
 		    strcpy(tempa,"x.x.x.x:x");
 		/* eventlog(eventlog_level_debug,__FUNCTION__,"sending tracking info from %s to %s",tempa,tempb); */
-		
+
 		if (psock_sendto(laddr_info->usocket,&packet,sizeof(packet),0,(struct sockaddr *)&tempaddr,(psock_t_socklen)sizeof(tempaddr))<0)
 		    eventlog(eventlog_level_warn,__FUNCTION__,"could not send tracking information from %s to %s (psock_sendto: %s)",tempa,tempb,pstrerror(errno));
 	    }
 	}
     }
-    
+
     return 0;
+}
+
 }

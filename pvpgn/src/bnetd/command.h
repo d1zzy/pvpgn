@@ -24,6 +24,12 @@
 #include "connection.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern int handle_command(t_connection * c, char const * text);
+
+}
+
 #endif
 #endif

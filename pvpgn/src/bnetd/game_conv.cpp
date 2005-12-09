@@ -52,6 +52,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern t_game_type bngreqtype_to_gtype(t_clienttag clienttag, unsigned short bngtype)
 {
     char clienttag_str[5];
@@ -61,7 +64,7 @@ extern t_game_type bngreqtype_to_gtype(t_clienttag clienttag, unsigned short bng
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL clienttag");
 	return game_type_none;
     }
-    
+
     if (clienttag==CLIENTTAG_WARCIIBNE_UINT)
     {
 	switch (bngtype)
@@ -186,7 +189,7 @@ extern t_game_type bngtype_to_gtype(t_clienttag clienttag, unsigned short bngtyp
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL clienttag");
 	return game_type_none;
     }
-    
+
     if (clienttag==CLIENTTAG_WARCIIBNE_UINT)
     {
 	switch (bngtype)
@@ -358,13 +361,13 @@ extern unsigned short gtype_to_bngtype(t_game_type gtype)
 extern t_game_option bngoption_to_goption(t_clienttag clienttag, t_game_type gtype, unsigned short bngoption)
 {
     char clienttag_str[5];
-    
+
     if (!clienttag)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL clienttag");
 	return game_option_none;
     }
-    
+
     if (clienttag==CLIENTTAG_WARCIIBNE_UINT)
     {
 	switch (gtype)
@@ -866,7 +869,7 @@ extern int game_parse_info(t_game * game, char const * gameinfo)
     unsigned int bngspeed;
     unsigned int bngmaptype;
     unsigned int bngtileset;
-    
+
     if (!game)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL game");
@@ -877,7 +880,7 @@ extern int game_parse_info(t_game * game, char const * gameinfo)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL gameinfo");
 	return -1;
     }
-    
+
 /*
 
 BW 104:
@@ -895,7 +898,7 @@ Diablo:
 0020:   61 73 64 66 61 73 64 66   61 73 64 66 32 00 61 73    asdfasdfasdf2.as
 0030:   64 66 61 73 64 66 73 61   64 66 61 73 64 66 32 00    dfasdfsadfasdf2.
 0040:   30 0D 7A 62 6E 7A 62 6E   7A 62 6E 0D 4C 54 52 44    0.zbnzbnzbn.LTRD
-0050:   20 31 20 30 20 30 20 33   30 20 31 30 20 32 30 20     1 0 0 30 10 20 
+0050:   20 31 20 30 20 30 20 33   30 20 31 30 20 32 30 20     1 0 0 30 10 20
 0060:   32 35 20 31 30 30 20 30   00                         25 100 0.
 
 10: recv class=bnet[0x01] type=CLIENT_STARTGAME3[0x1aff] length=72
@@ -951,7 +954,7 @@ but instead the starting gold or something.
 FIXME:
 Also, what is the upper player limit on WCII... 8 like on Starcraft?
 */
-    
+
     if (!(clienttag = game_get_clienttag(game)))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"NULL clienttag for game?");
@@ -970,7 +973,7 @@ Also, what is the upper player limit on WCII... 8 like on Starcraft?
     {
         if ((game->type == game_type_diablo2closed) &&
 	    (!strlen(gameinfo)))
-	
+
 	{
 	  /* D2 closed games are handled by d2cs so we can have only have a generic startgame4
 	     without any info :(, this fix also a memory leak for description allocation */
@@ -981,13 +984,13 @@ Also, what is the upper player limit on WCII... 8 like on Starcraft?
 	{
 	  char         difficulty[2];
 	  unsigned int bngdifficulty;
-	  
-	  if (!strlen(gameinfo)) 
+
+	  if (!strlen(gameinfo))
 	  {
 	      eventlog(eventlog_level_info,__FUNCTION__, "got empty gameinfo (from D2 client)");
 	      return -1;
 	  }
-	
+
 	  difficulty[0] = gameinfo[0];
 	  difficulty[1] = '\0';
 	  if (str_to_uint(difficulty,&bngdifficulty)<0)
@@ -1031,12 +1034,12 @@ If the corresponding bit is a '0' then subtract 1 from the character.
 */
         const char *pstr;
 
-	if (!strlen(gameinfo)) 
+	if (!strlen(gameinfo))
 	{
 	    eventlog(eventlog_level_info,__FUNCTION__, "got empty gameinfo (from W3 client)");
 	    return -1;
 	}
-    
+
 	if (strlen(gameinfo) < 0xf + 2 + 1 + 2 + 4) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "got too short W3 mapinfo");
 	    return -1;
@@ -1061,7 +1064,7 @@ If the corresponding bit is a '0' then subtract 1 from the character.
 	eventlog(eventlog_level_error,__FUNCTION__,"could not allocate memory for save");
 	return -1;
     }
-    
+
     if (!(line1  = strtok(save,"\r"))) /* actual game info fields */
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"bad gameinfo format (missing line1) \"%s\"",gameinfo);
@@ -1075,7 +1078,7 @@ If the corresponding bit is a '0' then subtract 1 from the character.
 	return -1;
     }
     /* is there room for another field after that? */
-    
+
     /*
      * This is the same as the normal strtok() function but it doesn't skip over
      * empty entries.  The C-library strtok() will skip past entries like 12,,3
@@ -1144,11 +1147,11 @@ If the corresponding bit is a '0' then subtract 1 from the character.
 	xfree(save);
 	return -1;
     }
-    
+
     mapname = line2; /* only one item on this line */
-    
+
     eventlog(eventlog_level_debug,__FUNCTION__,"got info \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\"", mapsize, maxplayers, speed, maptype, gametype, option, checksum, tileset, player, mapname);
-    
+
     /* The map size is determined by breaking the number into two pieces and
      * multiplying each piece by 32.
      * for example, 34 = (32*3) x (32*4) = 96 x 128
@@ -1158,30 +1161,32 @@ If the corresponding bit is a '0' then subtract 1 from the character.
 	bngmapsize = 88; /* 256x256 */
     game_set_mapsize_x(game,(bngmapsize/10)*32);
     game_set_mapsize_y(game,(bngmapsize%10)*32);
-    
+
     /* special handling for maxplayers, empty is 8 */
     if ((maxplayers[0]=='\0') || (str_to_uint(maxplayers,&bngmaxplayers)<0))
 	bngmaxplayers = 8;
     game_set_maxplayers(game,(bngmaxplayers%10));
-    
+
     /* special handling for gamespeed. empty is fast */
     if ((speed[0]=='\0') || ( str_to_uint(speed,&bngspeed)<0))
 	bngspeed = CLIENT_GAMESPEED_FAST;
     game_set_speed(game,bngspeed_to_gspeed(bngspeed));
-    
+
     /* special handling for maptype. empty is self-made */
     if ((maptype[0]=='\0') || (str_to_uint(maptype,&bngmaptype)<0))
 	bngmaptype = CLIENT_MAPTYPE_SELFMADE;
     game_set_maptype(game,bngmaptype_to_gmaptype(bngmaptype));
-    
+
     /* special handling for tileset. empty is badlands */
     if ((tileset[0]=='\0') || (str_to_uint(tileset,&bngtileset)<0))
 	bngtileset = CLIENT_TILESET_BADLANDS;
     game_set_tileset(game,bngtileset_to_gtileset(bngtileset));
-    
+
     game_set_mapname(game,mapname);
-    
+
     xfree(save);
-    
+
     return 0;
+}
+
 }

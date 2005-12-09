@@ -49,6 +49,9 @@
 #include "friends.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 extern t_account * friend_get_account(t_friend * fr)
 {
     if (fr == NULL)
@@ -295,4 +298,6 @@ extern t_friend * friendlist_find_uid(t_list * flist, unsigned uid)
         if (account_get_uid(fr->friendacc)==uid) return fr;
     }
     return NULL;
+}
+
 }

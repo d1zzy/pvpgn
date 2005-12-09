@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2000  Gediminas (gugini@fortas.ktu.lt)
- * Copyright (C) 2002  Bart³omiej Butyn (bartek@milc.com.pl)
+ * Copyright (C) 2002  Bartomiej Butyn (bartek@milc.com.pl)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,6 +33,9 @@
 #define IPBAN_FUNC_UNKNOWN 6
 
 
+namespace pvpgn
+{
+
 typedef enum
 {
     ipban_type_exact,     /* 192.168.0.10              */
@@ -52,6 +55,8 @@ typedef struct ipban_entry_struct
     time_t			endtime;
 } t_ipban_entry;
 
+}
+
 #endif
 
 #endif
@@ -66,6 +71,9 @@ typedef struct ipban_entry_struct
 #include "connection.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern int ipbanlist_create(void);
 extern int ipbanlist_destroy(void);
 extern int ipbanlist_load(char const * filename);
@@ -75,6 +83,8 @@ extern int ipbanlist_add(t_connection * c, char const * cp, time_t endtime);
 extern int ipbanlist_unload_expired(void);
 extern time_t ipbanlist_str_to_time_t(t_connection * c, char const * timestr);
 extern int handle_ipban_command(t_connection * c, char const * text);
+
+}
 
 #endif
 #endif

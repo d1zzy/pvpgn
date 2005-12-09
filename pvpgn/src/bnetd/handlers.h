@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 Dizzy 
+ * Copyright (C) 2003 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,11 +22,16 @@
 #include "common/packet.h"
 #include "connection.h"
 
+namespace pvpgn
+{
+
 typedef int (* t_handler)(t_connection *, t_packet const * const);
 
 typedef struct {
    int type;
    t_handler handler;
 } t_htable_row;
+
+}
 
 #endif /* __HANDLERS_H__ */

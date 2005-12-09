@@ -54,6 +54,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 static t_list * aliaslist_head=NULL;
 
 #define MAX_ALIAS_LEN 32
@@ -597,4 +600,6 @@ extern int handle_alias_command(t_connection * c, char const * text)
 	return -1;
     }
     return 0;
+}
+
 }

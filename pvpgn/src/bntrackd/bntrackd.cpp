@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 1999  Mark Baysinger (mbaysing@ucsd.edu)
  * Copyright (C) 2000  Ross Combs (rocombs@cs.nmsu.edu)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -133,15 +133,15 @@ static t_prefs prefs;
 extern int main(int argc, char * argv[])
 {
     int sockfd;
-    
+
     if (argc<1 || !argv || !argv[0])
     {
         fprintf(stderr,"bad arguments\n");
         return STATUS_FAILURE;
     }
-    
+
     getprefs(argc,argv);
-    
+
     if (!prefs.debug)
         eventlog_del_level("debug");
     if (prefs.logfile)
@@ -153,7 +153,7 @@ extern int main(int argc, char * argv[])
 	    return STATUS_FAILURE;
 	}
     }
-    
+
 #ifdef DO_DAEMONIZE
     if (!prefs.foreground)
     {
@@ -167,11 +167,11 @@ extern int main(int argc, char * argv[])
 	default: /* parent */
 	    return STATUS_SUCCESS;
 	}
-	
+
 	close(STDINFD);
 	close(STDOUTFD);
 	close(STDERRFD);
-	
+
 # ifdef HAVE_SETPGID
 	if (setpgid(0,0)<0)
 	{
@@ -207,7 +207,7 @@ extern int main(int argc, char * argv[])
 # endif
     }
 #endif
-    
+
     if (prefs.pidfile)
     {
 #ifdef HAVE_GETPID
@@ -229,29 +229,29 @@ extern int main(int argc, char * argv[])
         prefs.pidfile = NULL;
 #endif
     }
-    
+
 #ifdef HAVE_GETPID
     eventlog(eventlog_level_info,__FUNCTION__,"bntrackd version "PVPGN_VERSION" process %u",(unsigned int)getpid());
 #else
     eventlog(eventlog_level_info,__FUNCTION__,"bntrackd version "PVPGN_VERSION);
 #endif
-    
+
     if (psock_init()<0)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"could not initialize socket functions");
         return STATUS_FAILURE;
     }
-    
+
     /* create the socket */
     if ((sockfd = psock_socket(PSOCK_PF_INET,PSOCK_SOCK_DGRAM,PSOCK_IPPROTO_UDP))<0)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create UDP listen socket (psock_socket: %s)\n",pstrerror(psock_errno()));
 	return STATUS_FAILURE;
     }
-    
+
     {
 	struct sockaddr_in servaddr;
-	
+
 	/* bind the socket to correct port and interface */
 	memset(&servaddr,0,sizeof(servaddr));
 	servaddr.sin_family = PSOCK_AF_INET;
@@ -263,7 +263,7 @@ extern int main(int argc, char * argv[])
 	    return STATUS_FAILURE;
 	}
     }
-    
+
     if (server_process(sockfd)<0)
 	return STATUS_FAILURE;
     return STATUS_SUCCESS;
@@ -282,13 +282,13 @@ static int server_process(int sockfd)
     FILE *             outfile;
     psock_t_socklen    len;
     t_trackpacket      packet;
-    
+
     if (!(serverlist_head = list_create()))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create server list");
 	return -1;
     }
-    
+
     /* the main loop */
     last = time(NULL) - prefs.update;
     for (;;)
@@ -298,17 +298,17 @@ static int server_process(int sockfd)
 	if (last+(signed)prefs.update<time(NULL))
 	{
 	    last = time(NULL);
-	    
+
 	    if (!(outfile = fopen(prefs.outfile,"w")))
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"unable to open file \"%s\" for writing (fopen: %s)",prefs.outfile,pstrerror(errno));
 		continue;
 	    }
-	    
+
 	    LIST_TRAVERSE(serverlist_head,curr)
 	    {
 		server = (t_server*)elem_get_data(curr);
-		
+
 		if (server->updated+(signed)prefs.expire<last)
 		{
 		    list_remove_elem(serverlist_head,&curr);
@@ -337,7 +337,7 @@ static int server_process(int sockfd)
 		    fprintf(outfile,"</server>\n");
 		  }
 		  else
-		  { 
+		  {
 		    fprintf(outfile,"%s\n##\n",inet_ntoa(server->address));
 		    fprintf(outfile,"%hu\n##\n",(unsigned short)ntohs(server->info.port));
 		    fprintf(outfile,"%s\n##\n",server->info.server_location);
@@ -360,11 +360,11 @@ static int server_process(int sockfd)
 	    }
             if (fclose(outfile)<0)
                 eventlog(eventlog_level_error,__FUNCTION__,"could not close output file \"%s\" after writing (fclose: %s)",prefs.outfile,pstrerror(errno));
-	    
+
 	    if (prefs.process[0]!='\0')
 		system(prefs.process);
 	}
-	
+
 	/* select socket to operate on */
 	PSOCK_FD_ZERO(&rfds);
 	PSOCK_FD_SET(sockfd,&rfds);
@@ -382,15 +382,15 @@ static int server_process(int sockfd)
         case 0: /* timeout and no sockets ready */
             continue;
         }
-	
+
 	/* New tracking packet */
 	if (PSOCK_FD_ISSET(sockfd,&rfds))
 	{
-	    
+
 	    len = sizeof(cliaddr);
 	    if (psock_recvfrom(sockfd,&packet,sizeof(packet),0,(struct sockaddr *)&cliaddr,&len)>=0)
 	    {
-		
+
 		if (ntohs(packet.packet_version)>=TRACK_VERSION)
 		{
 		    packet.software[sizeof(packet.software)-1] = '\0';
@@ -417,12 +417,12 @@ static int server_process(int sockfd)
 		    packet.contact_email[sizeof(packet.contact_email)-1] = '\0';
 		    if (strstr(packet.contact_email,"##"))
 			fixup_str(packet.contact_email);
-		    
+
 		    /* Find this server's slot */
 		    LIST_TRAVERSE(serverlist_head,curr)
 		    {
 			server = (t_server*)elem_get_data(curr);
-			
+
 			if (!memcmp(&server->address,&cliaddr.sin_addr,sizeof(struct in_addr)))
 			{
 			    if (ntohl(packet.flags)&TF_SHUTDOWN)
@@ -439,7 +439,7 @@ static int server_process(int sockfd)
 			    break;
 			}
 		    }
-		    
+
 		    /* Not found? Make a new slot */
 		    if (!(ntohl(packet.flags)&TF_SHUTDOWN) && !curr)
 		    {
@@ -450,7 +450,7 @@ static int server_process(int sockfd)
 
 			list_append_data(serverlist_head,server);
 		    }
-		    
+
 		    eventlog(eventlog_level_debug,__FUNCTION__,
 			     "Packet received from %s:"
 			     " packet_version=%u"
@@ -483,10 +483,10 @@ static int server_process(int sockfd)
 			     (unsigned long)ntohl(packet.total_games),
 			     (unsigned long)ntohl(packet.total_logins));
 		}
-		
+
 	    }
 	}
-	
+
     }
 }
 
@@ -519,7 +519,7 @@ static void usage(char const * progname)
 static void getprefs(int argc, char * argv[])
 {
     int a;
-    
+
     prefs.foreground = 0;
     prefs.debug      = 0;
     prefs.expire     = 0;
@@ -530,7 +530,7 @@ static void getprefs(int argc, char * argv[])
     prefs.pidfile    = NULL;
     prefs.process    = NULL;
     prefs.logfile    = NULL;
-    
+
     for (a=1; a<argc; a++)
 	if (strncmp(argv[a],"--command=",10)==0)
 	{
@@ -751,7 +751,7 @@ static void getprefs(int argc, char * argv[])
             fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
-    
+
     if (!prefs.process)
 	prefs.process = BNTRACKD_PROCESS;
     if (prefs.expire==0)
@@ -766,7 +766,7 @@ static void getprefs(int argc, char * argv[])
 	prefs.pidfile = BNTRACKD_PIDFILE;
     if (prefs.expire==0)
 	prefs.update  = BNTRACKD_UPDATE;
-    
+
     if (prefs.logfile[0]=='\0')
 	prefs.logfile = NULL;
     if (prefs.pidfile[0]=='\0')
@@ -778,7 +778,7 @@ static void fixup_str(char * str)
 {
     char         prev;
     unsigned int i;
-    
+
     for (prev='\0',i=0; i<strlen(str); prev=str[i],i++)
 	if (prev=='#' && str[i]=='#')
 	    str[i] = '%';

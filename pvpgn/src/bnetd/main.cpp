@@ -69,7 +69,7 @@
 #include "helpfile.h"
 #include "timer.h"
 #include "watch.h"
-#include "common/tracker.h"
+#include "tracker.h"
 #include "realm.h"
 #include "character.h"
 #include "common/give_up_root_privileges.h"
@@ -103,6 +103,8 @@
 
 /* out of memory safety */
 #define OOM_SAFE_MEM	1000000		/* 1 Mbyte of safety memory */
+
+using namespace pvpgn;
 
 void *oom_buffer = NULL;
 

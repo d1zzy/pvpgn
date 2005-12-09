@@ -31,4 +31,5 @@ noinst_HEADERS = account.h account_wrap.h adbanner.h alias_command.h \
 	message.h news.h output.h prefs.h quota.h realm.h runprog.h server.h \
 	sql_dbcreator.h sql_mysql.h sql_odbc.h sql_pgsql.h sql_sqlite3.h \
 	storage_file.h storage.h storage_sql.h support.h team.h tick.h \
-	timer.h topic.h tournament.h udptest_send.h versioncheck.h watch.h
+	timer.h topic.h tournament.h udptest_send.h versioncheck.h watch.h \
+	tracker.h

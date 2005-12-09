@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 1998,1999,2000,2001  Ross Combs (rocombs@cs.nmsu.edu)
  * Copyright (C) 2000,2001  Marco Ziech (mmz@gmx.net)
- * Copyright (C) 2002,2003,2004 Dizzy 
+ * Copyright (C) 2002,2003,2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -91,6 +91,9 @@
 #endif
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 static t_hashtable * accountlist_head=NULL;
 static t_hashtable * accountlist_uid_head=NULL;
 
@@ -124,7 +127,7 @@ static unsigned int account_hash(char const *username)
 static t_account * account_create(char const * username, char const * passhash1)
 {
     t_account * account;
-    
+
     if (username && !passhash1) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL passhash1");
 	return NULL;
@@ -151,7 +154,7 @@ static t_account * account_create(char const * username, char const * passhash1)
     if (username) { /* actually making a new account */
 	/* first check if such a username already owns an account.
 	 * we search in the memory hash mainly for non-indexed storage types.
-	 * indexed storage types check themselves if the username exists already 
+	 * indexed storage types check themselves if the username exists already
 	 * in the storage (see storage_sql.c) */
 	if (accountlist_find_account(username)) {
 		eventlog(eventlog_level_debug,__FUNCTION__,"user \"%s\" already has an account",username);
@@ -225,7 +228,7 @@ extern int account_match(t_account * account, char const * username)
     unsigned int userid=0;
     unsigned int namehash;
     char const * tname;
-    
+
     if (!account)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL account");
@@ -236,11 +239,11 @@ extern int account_match(t_account * account, char const * username)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL username");
 	return -1;
     }
-    
+
     if (username[0]=='#')
         if (str_to_uint(&username[1],&userid)<0)
             userid = 0;
-    
+
     if (userid)
     {
         if (account->uid==userid)
@@ -256,7 +259,7 @@ extern int account_match(t_account * account, char const * username)
 		return 1;
 	}
     }
-    
+
     return 0;
 }
 
@@ -408,7 +411,7 @@ extern int accountlist_load_all(int flag)
     	    eventlog(eventlog_level_error, __FUNCTION__,"got error reading users");
     	    res = -1;
 	    break;
-	case 0: 
+	case 0:
 	    loaded = 1;
 	    eventlog(eventlog_level_info, __FUNCTION__, "loaded %u user accounts in %ld seconds",count,time(NULL) - starttime);
 	    break;
@@ -423,13 +426,13 @@ extern int accountlist_load_all(int flag)
 extern int accountlist_create(void)
 {
     eventlog(eventlog_level_info, __FUNCTION__, "started creating accountlist");
-    
+
     if (!(accountlist_head = hashtable_create(prefs_get_hashtable_size())))
     {
         eventlog(eventlog_level_error, __FUNCTION__, "could not create accountlist_head");
 	return -1;
     }
-    
+
     if (!(accountlist_uid_head = hashtable_create(prefs_get_hashtable_size())))
     {
         eventlog(eventlog_level_error, __FUNCTION__, "could not create accountlist_uid_head");
@@ -510,13 +513,13 @@ extern t_account * accountlist_find_account(char const * username)
     unsigned int userid=0;
     t_entry *    curr;
     t_account *  account;
-    
+
     if (!username)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL username");
 	return NULL;
     }
-    
+
     if (username[0]=='#') {
         if (str_to_uint(&username[1],&userid)<0)
             userid = 0;
@@ -525,7 +528,7 @@ extern t_account * accountlist_find_account(char const * username)
 	    userid = 0;
 
     /* all accounts in list must be hashed already, no need to check */
-    
+
     if (userid) {
         account=accountlist_find_account_by_uid(userid);
         if (account) return account;
@@ -535,7 +538,7 @@ extern t_account * accountlist_find_account(char const * username)
     {
 	unsigned int namehash;
 	char const * tname;
-	
+
 	namehash = account_hash(username);
 	HASHTABLE_TRAVERSE_MATCHING(accountlist_head,curr,namehash)
 	{
@@ -550,7 +553,7 @@ extern t_account * accountlist_find_account(char const * username)
 	    }
 	}
     }
-    
+
     return account_load_new(username,0);
 }
 
@@ -559,7 +562,7 @@ extern t_account * accountlist_find_account_by_uid(unsigned int uid)
 {
     t_entry *    curr;
     t_account *  account;
-    
+
     if (uid) {
 	HASHTABLE_TRAVERSE_MATCHING(accountlist_uid_head,curr,uid)
 	{
@@ -621,8 +624,8 @@ static t_account * accountlist_add_account(t_account * account)
     account->uid = uid;
 
     /* FIXME: this check actually (with the new attr system) happens too late
-     * we already have created the attrgroup here which is "dirty" and refusing 
-     * an account here will trigger attrgroup_destroy which will "sync" the 
+     * we already have created the attrgroup here which is "dirty" and refusing
+     * an account here will trigger attrgroup_destroy which will "sync" the
      * bad data to the storage! The codes should make sure we don't fail here */
     /* mini version of accountlist_find_account(username) || accountlist_find_account(uid)  */
     {
@@ -772,7 +775,7 @@ extern int account_check_mutual( t_account * account, int myuserid)
 	int i;
 	int n = account_get_friendcount(account);
 	int frienduid;
-	for(i=0; i<n; i++) 
+	for(i=0; i<n; i++)
 	{
 	    frienduid = account_get_friend(account,i);
 	    if(!frienduid)  {
@@ -897,7 +900,7 @@ extern int account_set_clanmember(t_account * account, t_clanmember * clanmember
 extern t_clanmember * account_get_clanmember(t_account * account)
 {
     t_clanmember * member;
-    
+
     if(account==NULL)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL account");
@@ -958,7 +961,7 @@ int account_set_conn(t_account * account, t_connection * conn)
   }
 
   account->conn = conn;
-  
+
   return 0;
 }
 
@@ -988,7 +991,7 @@ t_team * account_find_team_by_accounts(t_account * account, t_account **accounts
 {
     if ((account->teams))
       return _list_find_team_by_accounts(accounts,clienttag,account->teams);
-    else 
+    else
       return NULL;
 }
 
@@ -1005,4 +1008,6 @@ t_list * account_get_teams(t_account * account)
   assert(account);
 
   return account->teams;
+}
+
 }

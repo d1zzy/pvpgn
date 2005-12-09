@@ -37,6 +37,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 static double probability(unsigned int a, unsigned int b) ;
 static int coefficient(t_account * account, t_clienttag clienttag, t_ladder_id id);
 
@@ -79,11 +82,11 @@ static double eight_f3(int a, int b, int c, int d, int e) ;
 static double probability(unsigned int a, unsigned int b)
 {
     double i, j;
-    
+
     i = (((double)a) - ((double)b)) / 400.0;
-    
+
     j = pow(10.0,-i);
-    
+
     return (1.0 / (1.0+j));
 }
 
@@ -105,13 +108,13 @@ static int coefficient(t_account * account, t_clienttag clienttag, t_ladder_id i
     int const total_ladder_games=account_get_ladder_wins(account,clienttag,id) +
 				 account_get_ladder_losses(account,clienttag,id) +
 				 account_get_ladder_disconnects(account,clienttag,id);
-    
+
     if (total_ladder_games < 30)
 	return 50;
-    
+
     if (account_get_ladder_rating(account,clienttag,id) < 2400)
 	return 30;
-    
+
     return 20;
 }
 
@@ -126,12 +129,12 @@ static double two_player(unsigned int *rating)
 {
     unsigned int a,b;
     double       ab;
-    
+
     a = rating[0];
     b = rating[1];
-    
+
     ab = probability(a,b);
-    
+
     return ab;
 }
 
@@ -139,11 +142,11 @@ static double three_player(unsigned int *rating)
 {
     unsigned int a,b,c;
     double       ab,ac,bc,cb;
-    
+
     a = rating[0];
     b = rating[1];
     c = rating[2];
-    
+
     ab = probability(a,b);
     ac = probability(a,c);
     bc = probability(b,c);
@@ -156,13 +159,13 @@ static double four_player(unsigned int *rating)
 {
     unsigned int a,b,c,d;
     double       ab,ac,ad,bc,bd,cb,cd,db,dc;
-    
+
     a = rating[0];
     b = rating[1];
     c = rating[2];
     d = rating[3];
 
-    
+
     ab = probability(a,b);
     ac = probability(a,c);
     ad = probability(a,d);
@@ -172,7 +175,7 @@ static double four_player(unsigned int *rating)
     cb = 1.0 - bc;
     db = 1.0 - bd;
     dc = 1.0 - cd;
-    
+
     return (ab*ac*(cd+bd)+ac*ad*(db+cb)+ab*ad*(dc+bc))/3;
 }
 
@@ -191,13 +194,13 @@ static double four_player(unsigned int *rating)
 static double five_player(unsigned int *rating)
 {
     unsigned int a,b,c,d,e;
-    
+
     a = rating[0];
     b = rating[1];
     c = rating[2];
     d = rating[3];
     e = rating[4];
-    
+
     return (five_f1(a,b,c,d,e)+five_f1(a,c,d,e,b)+
             five_f1(a,d,e,b,c)+five_f1(a,e,b,c,d))/30;
 }
@@ -244,7 +247,7 @@ static double five_f2(int a, int b, int c)
 static double six_player(unsigned int *rating)
 {
     unsigned int a,b,c,d,e,f;
-    
+
     a = rating[0];
     b = rating[1];
     c = rating[2];
@@ -282,7 +285,7 @@ static double six_player(unsigned int *rating)
 static double six_f1(int a, int b, int c, int d, int e, int f)
 {
     double ab,ac,ad,bc,bd,cb,cd,db,dc,ef,fe,ae,af;
-    
+
     ab = probability(a,b);
     ac = probability(a,c);
     ad = probability(a,d);
@@ -305,13 +308,13 @@ static double six_f1(int a, int b, int c, int d, int e, int f)
 static double six_f2(int a, int b, int c, int d, int e, int f)
 {
     double ab,ac,ad,ae,af;
-    
+
     ab = probability(a,b);
     ac = probability(a,c);
     ad = probability(a,d);
     ae = probability(a,e);
     af = probability(a,f);
-    
+
     return (six_f3(c,d,e,f)*ab*ac+
             six_f3(d,c,e,f)*ab*ad+
             six_f3(e,c,d,f)*ab*ae+
@@ -324,7 +327,7 @@ static double six_f2(int a, int b, int c, int d, int e, int f)
 static double six_f3(int a, int b, int c, int d)
 {
     double ab,ac,ad,bc,bd,cb,cd,db,dc;
-    
+
     ab = probability(a,b);
     ac = probability(a,c);
     ad = probability(a,d);
@@ -342,7 +345,7 @@ static double six_f3(int a, int b, int c, int d)
 static double seven_player(unsigned int *rating)
 {
     unsigned int a,b,c,d,e,f,g;
-    
+
     a = rating[0];
     b = rating[1];
     c = rating[2];
@@ -408,14 +411,14 @@ return
        (be+ce)*(ad*af*(fg+dg)+af*ag*(ad+ad)+ad*ag*(gf+df))+   /* 3:e */
        (bf+cf)*(ae*ad*(dg+eg)+ad*ag*(ge+de)+ae*ag*(gd+ed))+   /* 3:f */
        (bg+cg)*(ae*af*(fd+ed)+af*ad*(de+fe)+ae*ad*(df+ef))));  /* 3:g */
-     
+
 }
 
 static double eight_player(unsigned int *rating)
 {
     unsigned int a,b,c,d,e,f,g,h;
     double       ab,ac,ad,ae,af,ag,ah;
-    
+
     a = rating[0];
     b = rating[1];
     c = rating[2];
@@ -450,7 +453,7 @@ static double eight_f1(int a, int b, int c, int d, int e, int f, int g)
 {
 /* The winner of the second group, who'll then play against A, may be one
    from six possible players */
-    
+
     return eight_f2(a,b,c,d,e,f,g)+
            eight_f2(a,c,b,d,e,f,g)+
            eight_f2(a,d,b,c,e,f,g)+
@@ -462,7 +465,7 @@ static double eight_f1(int a, int b, int c, int d, int e, int f, int g)
 static double eight_f2(int a, int b, int c, int d, int e, int f, int g)
 {
     double ab,bc,bd,be,bf,bg;
-    
+
     ab = probability(a,b);
     bc = probability(b,c);
     bd = probability(b,d);
@@ -472,7 +475,7 @@ static double eight_f2(int a, int b, int c, int d, int e, int f, int g)
 
 /* There are 5 player who may play against the 3rd. The third (b) will win
    over them and lose against a */
-    
+
     return ab*(eight_f3(a,d,e,f,g)*bc+
                eight_f3(a,c,e,f,g)*bd+
 	       eight_f3(a,c,d,f,g)*be+
@@ -486,7 +489,7 @@ static double eight_f2(int a, int b, int c, int d, int e, int f, int g)
 static double eight_f3(int a, int b, int c, int d, int e)
 {
     double ab,ac,ad,ae,bc,bd,be,cb,cd,ce,db,dc,de,eb,ec,ed;
-    
+
     ab = probability(a,b);
     ac = probability(a,c);
     ad = probability(a,d);
@@ -503,7 +506,7 @@ static double eight_f3(int a, int b, int c, int d, int e)
     eb = 1.0 - be;
     ec = 1.0 - ce;
     ed = 1.0 - de;
-    
+
 /* expansion then factorisation (this function is called 210 times)
  * gain 4 func_call
  *      24 *
@@ -523,7 +526,7 @@ extern int ladder_calc_info(t_clienttag clienttag, t_ladder_id id, unsigned int 
     unsigned int curr;
     unsigned int *rating;
     unsigned int *sorted;
-    
+
     if (!players)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL players");
@@ -550,7 +553,7 @@ extern int ladder_calc_info(t_clienttag clienttag, t_ladder_id id, unsigned int 
 
     for (curr=0; curr<count; curr++)
         rating[curr] = account_get_ladder_rating(players[curr],clienttag,id);
-    
+
     for (curr=0; curr<count; curr++)
     {
 	double k;
@@ -559,14 +562,14 @@ extern int ladder_calc_info(t_clienttag clienttag, t_ladder_id id, unsigned int 
 	t_game_result myresult;
 	unsigned int  opponent_count;
 	unsigned int  team_members;
-	
+
 	k = coefficient(players[curr],clienttag,id);
 	opponent_count = 0;
 	myresult = results[curr];
-	
+
 	{
 	    unsigned int i,j;
-	    
+
 	    /* Put the current user into slot 0, his opponents into other slots
 	       order is not important for the other players */
 	    for (i=0,j=1; i<count; i++)
@@ -583,7 +586,7 @@ extern int ladder_calc_info(t_clienttag clienttag, t_ladder_id id, unsigned int 
 	}
 
 	team_members = count - opponent_count;
-	
+
 	switch (opponent_count)
 	{
 	case 1:
@@ -613,14 +616,14 @@ extern int ladder_calc_info(t_clienttag clienttag, t_ladder_id id, unsigned int 
             xfree((void *)sorted);
 	    return -1;
 	}
-	
+
 	if (results[curr]==game_result_win)
 	    delta = fabs(k * (1.0 - prob) / team_members); /* better the chance of winning -> fewer points added */
 	else
 	    delta = -fabs(k * prob); /* better the chance of winning -> more points subtracted */
-	
+
 	eventlog(eventlog_level_debug,__FUNCTION__,"computed probability=%g, k=%g, deltar=%+g",prob,k,delta);
-	
+
 	info[curr].prob      = prob;
 	info[curr].k         = (unsigned int)k;
 	info[curr].adj       = (int)delta;
@@ -630,6 +633,8 @@ extern int ladder_calc_info(t_clienttag clienttag, t_ladder_id id, unsigned int 
 
     xfree((void *)rating);
     xfree((void *)sorted);
-    
+
     return 0;
+}
+
 }

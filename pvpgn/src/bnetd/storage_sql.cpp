@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2002 TheUndying
  * Copyright (C) 2002 zap-zero
- * Copyright (C) 2002,2003 Dizzy 
+ * Copyright (C) 2002,2003 Dizzy
  * Copyright (C) 2002 Zzzoom
  *
  * This program is free software; you can redistribute it and/or
@@ -79,6 +79,9 @@
 #include "common/elist.h"
 #include "attr.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
 
 static t_storage_info *sql_create_account(char const *);
 static int sql_read_attrs(t_storage_info *, t_read_attr_func, void *);
@@ -557,6 +560,8 @@ static const char *sql_escape_key(const char *key)
 	}
 
     return newkey;
+}
+
 }
 
 #endif				/* WITH_SQL */

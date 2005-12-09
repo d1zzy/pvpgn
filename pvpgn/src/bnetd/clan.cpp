@@ -82,6 +82,9 @@
 #include "compat/uint.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 static t_list *clanlist_head = NULL;
 unsigned max_clanid = 0;
 
@@ -1413,5 +1416,7 @@ extern int str_to_clantag(const char *str)
 	}
     }
     return clantag;
+
+}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Dizzy 
+ * Copyright (C) 2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,6 +29,9 @@
 #include "storage.h"
 #include "prefs.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
 
 static t_attrgroup *defattrs = NULL;
 
@@ -182,4 +185,6 @@ extern void attrlayer_del_dirtylist(t_elist *what)
 extern t_attrgroup * attrlayer_get_defattrgroup(void)
 {
     return defattrs;
+}
+
 }

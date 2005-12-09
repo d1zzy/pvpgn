@@ -45,6 +45,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern int handle_file_packet(t_connection * c, t_packet const * const packet)
 {
     if (!c)
@@ -64,7 +67,7 @@ extern int handle_file_packet(t_connection * c, t_packet const * const packet)
         eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad packet (class %d)",conn_get_socket(c),(int)packet_get_class(packet));
         return -1;
     }
- */   
+ */
     switch (conn_get_state(c))
     {
     case conn_state_connected:
@@ -73,14 +76,14 @@ extern int handle_file_packet(t_connection * c, t_packet const * const packet)
 	case CLIENT_FILE_REQ:
 	{
 	    char const * rawname;
-	    
+
 	    if (!(rawname = packet_get_str_const(packet,sizeof(t_client_file_req),MAX_FILENAME_STR)))
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad FILE_REQ (missing or too long filename)",conn_get_socket(c));
-		
+
 		return -1;
 	    }
-	    
+
 	    file_send(c,rawname,
 		      bn_int_get(packet->u.client_file_req.adid),
 		      bn_int_get(packet->u.client_file_req.extensiontag),
@@ -104,7 +107,7 @@ extern int handle_file_packet(t_connection * c, t_packet const * const packet)
 
 	default:
 	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] unknown file packet type 0x%04x, len %u",conn_get_socket(c),packet_get_type(packet),packet_get_size(packet));
-	    
+
 	    break;
 	}
 	break;
@@ -119,7 +122,7 @@ extern int handle_file_packet(t_connection * c, t_packet const * const packet)
 		psock_recv( conn_get_socket(c), rawname, MAX_FILENAME_STR, 0 );
 		file_send(c, rawname, 0, 0, 0, 1);
 	    }
-	    break;	
+	    break;
 
 	    default:
 		eventlog(eventlog_level_error, __FUNCTION__, "[%d] unknown file packet type 0x%04x, len %u",conn_get_socket(c),packet_get_type(packet),packet_get_size(packet));
@@ -133,4 +136,6 @@ extern int handle_file_packet(t_connection * c, t_packet const * const packet)
     }
 
     return 0;
+}
+
 }

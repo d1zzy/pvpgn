@@ -26,6 +26,9 @@
 
 #define anongame_infos_URL_count 14
 
+namespace pvpgn
+{
+
 typedef enum
 {
 	URL_server,
@@ -179,13 +182,15 @@ typedef struct {
 	char			** anongame_infos_URL;
 	t_anongame_infos_DESC	* anongame_infos_DESC;		/* for default DESC */
 	t_list			* anongame_infos_DESC_list;	/* for localized DESC's */
-	char			anongame_infos_THUMBSDOWN[anongame_infos_THUMBSDOWN_count]; 
+	char			anongame_infos_THUMBSDOWN[anongame_infos_THUMBSDOWN_count];
 	int			anongame_infos_ICON_REQ[anongame_infos_ICON_REQ_count];
 	t_anongame_infos_data * anongame_infos_data_war3;
 	t_anongame_infos_data * anongame_infos_data_w3xp;
 	t_list * anongame_infos_data_lang_war3;
 	t_list * anongame_infos_data_lang_w3xp;
 } t_anongame_infos;
+
+}
 
 #endif
 
@@ -196,6 +201,9 @@ typedef struct {
 #define JUST_NEED_TYPES
 #include "common/tag.h"
 #undef JUST_NEED_TYPES
+
+namespace pvpgn
+{
 
 extern int anongame_infos_load(char const * filename);
 extern int anongame_infos_unload(void);
@@ -210,6 +218,8 @@ extern char * anongame_infos_data_get_map(t_clienttag clienttag, int versionid, 
 extern char * anongame_infos_data_get_type(t_clienttag clienttag, int versionid, int * len);
 extern char * anongame_infos_data_get_desc(char const * langID, t_clienttag clienttag, int versionid, int * len);
 extern char * anongame_infos_data_get_ladr(char const * langID, t_clienttag clienttag, int versionid, int * len);
+
+}
 
 #endif
 #endif

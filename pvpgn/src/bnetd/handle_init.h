@@ -27,7 +27,12 @@
 #include "common/packet.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern int handle_init_packet(t_connection * c, t_packet const * const packet);
+
+}
 
 #endif
 #endif

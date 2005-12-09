@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 1998,1999,2000,2001  Ross Combs (rocombs@cs.nmsu.edu)
  * Copyright (C) 2000,2001  Marco Ziech (mmz@gmx.net)
- * Copyright (C) 2002,2003,2004 Dizzy 
+ * Copyright (C) 2002,2003,2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -94,6 +94,9 @@
 #include "common/tag.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 /* plain file storage API functions */
 
 static t_attr * plain_read_attr(const char *filename, const char *key);
@@ -172,7 +175,7 @@ static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *dat
     char *       escval;
     char * key;
     char * val;
-    
+
     if (!(accountfile = fopen(filename,"r"))) {
 	eventlog(eventlog_level_error, __FUNCTION__,"could not open account file \"%s\" for reading (fopen: %s)", filename, pstrerror(errno));
 	return -1;
@@ -201,14 +204,14 @@ static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *dat
 	    }
 	    escval[0] = '\0';
 	}
-	
+
 	key = unescape_chars(esckey);
 	val = unescape_chars(escval);
 
 /* eventlog(eventlog_level_debug,__FUNCTION__,"strlen(esckey)=%u (%c), len=%u",strlen(esckey),esckey[0],len);*/
 	xfree(esckey);
 	xfree(escval);
-	
+
 	if (cb(key,val,data))
 	    eventlog(eventlog_level_error, __FUNCTION__, "got error from callback (key: '%s' val:'%s')", key, val);
 
@@ -218,7 +221,7 @@ static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *dat
 
     file_get_line(NULL); // clear file_get_line buffer
 
-    if (fclose(accountfile)<0) 
+    if (fclose(accountfile)<0)
 	eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"%s\" after reading (fclose: %s)", filename, pstrerror(errno));
 
     return 0;
@@ -228,4 +231,6 @@ static t_attr * plain_read_attr(const char *filename, const char *key)
 {
     /* flat file storage doesnt know to read selective attributes */
     return NULL;
+}
+
 }

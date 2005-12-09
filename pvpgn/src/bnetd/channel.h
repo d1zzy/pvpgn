@@ -46,6 +46,9 @@
 
 #endif
 
+namespace pvpgn
+{
+
 #ifdef CHANNEL_INTERNAL_ACCESS
 typedef struct channelmember
 {
@@ -87,7 +90,7 @@ typedef struct channel
     t_list *          banlist;    /* of char * */
     char *            logname;    /* NULL if not logged */
     FILE *            log;        /* NULL if not logging */
-    
+
     /**
     *  Westwood Online Extensions
     */
@@ -101,6 +104,8 @@ typedef struct channel
 }
 #endif
 t_channel;
+
+}
 
 #endif
 
@@ -117,6 +122,9 @@ t_channel;
 #define CHANNEL_NAME_BANNED "THE VOID"
 #define CHANNEL_NAME_KICKED "THE VOID"
 #define CHANNEL_NAME_CHAT   "Chat"
+
+namespace pvpgn
+{
 
 extern int channel_set_userflags(t_connection * c);
 extern t_channel * channel_create(char const * fullname, char const * shortname, char const * clienttag, int permflag, int botflag, int operflag, int logflag, char const * country, char const * realmname, int maxmembers, int moderated, int clan,int autoname) ;
@@ -173,6 +181,8 @@ extern int channel_wol_set_game_tournament(t_channel * channel, int tournament);
 
 extern char const * channel_wol_get_game_options(t_channel const * channel);
 extern int channel_wol_set_game_options(t_channel * channel, char const * gameOptions);
+
+}
 
 #endif
 #endif

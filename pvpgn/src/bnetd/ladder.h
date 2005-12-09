@@ -37,6 +37,8 @@
 
 #define W3_XPCALC_MAXLEVEL	50
 
+namespace pvpgn
+{
 
 typedef enum
 {
@@ -109,6 +111,8 @@ typedef struct
 } t_xpcalc_entry;
 #endif
 
+}
+
 #endif
 
 /*****/
@@ -123,6 +127,9 @@ typedef struct
 #include "ladder_binary.h"
 #include "common/tag.h"
 #undef JUST_NEED_TYPES
+
+namespace pvpgn
+{
 
 extern int ladder_init_account(t_account * account, t_clienttag clienttag, t_ladder_id id);
 extern int ladder_check_map(char const * mapname, t_game_maptype maptype, t_clienttag clienttag);
@@ -155,30 +162,30 @@ extern int war3_get_maxleveldiff(void);
  extern int ladder_get_rank(t_ladder *ladder, int uid, unsigned int teamcount, t_clienttag clienttag);
  /* this function returns the rank of a user with a given uid
   * returns 0 if no such user is found */
- 
+
  extern int ladder_update_all_accounts(void);
  /* write the correct ranking information to all user accounts
   * and cut down ladder size to given limit */
- 
+
  extern int ladders_write_to_file(void);
  /* outputs the ladders into  files - for the guys that wanna make ladder pages */
- 
+
  extern void ladders_init(void);
  /* initialize the ladders */
 
  extern void ladders_destroy(void);
  /* remove all ladder data from memory */
- 
+
  extern void ladders_load_accounts_to_ladderlists(void);
  /* enters all accounts from accountlist into the ladders */
- 
+
  extern void ladder_reload_conf(void);
  /* reloads relevant parameters from bnetd.conf (xml/std mode for ladder) */
- 
+
  extern t_account * ladder_get_account(t_ladder *ladder,int rank, unsigned int * teamcount, t_clienttag clienttag);
  /* returns the account that is on specified rank in specified ladder. also return teamcount for AT ladder
   * returns NULL if this rank is still vacant */
- 
+
  extern t_ladder * solo_ladder(t_clienttag clienttag);
  extern t_ladder * team_ladder(t_clienttag clienttag);
  extern t_ladder * ffa_ladder(t_clienttag clienttag);
@@ -195,7 +202,9 @@ extern int war3_get_maxleveldiff(void);
  extern int ladder_get_from_ladder(t_binary_ladder_types type, int rank, int * results);
  extern int ladder_put_into_ladder(t_binary_ladder_types type, int * values);
 
-#endif
-#endif
 
- extern char * create_filename(const char * path, const char * filename, const char * ending);
+extern char * create_filename(const char * path, const char * filename, const char * ending);
+}
+
+#endif
+#endif

@@ -34,6 +34,9 @@
 
 #define MAX_TEAMSIZE 4
 
+namespace pvpgn
+{
+
 typedef struct team
 #ifdef TEAM_INTERNAL_ACCESS
 {
@@ -52,11 +55,16 @@ typedef struct team
 #endif
 t_team;
 
+}
+
 #endif
 
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_TEAM_PROTOS
 #define INCLUDED_TEAM_PROTOS
+
+namespace pvpgn
+{
 
 extern int teamlist_load(void);
 extern int teamlist_unload(void);
@@ -90,6 +98,8 @@ extern int team_inc_wins(t_team * team);
 extern int team_inc_losses(t_team * team);
 
 extern int team_set_saveladderstats(t_team * team, unsigned int gametype, int result, unsigned int opponlevel,t_clienttag clienttag);
+
+}
 
 #endif
 #endif

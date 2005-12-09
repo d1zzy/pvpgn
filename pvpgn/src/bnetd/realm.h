@@ -30,6 +30,9 @@
 #undef JUST_NEED_TYPES
 #endif
 
+namespace pvpgn
+{
+
 struct connection;
 
 typedef struct realm
@@ -50,6 +53,8 @@ typedef struct realm
 #endif
 t_realm;
 
+}
+
 #endif
 
 
@@ -64,6 +69,9 @@ t_realm;
 #include "connection.h"
 #include "common/rcm.h"
 #undef JUST_NEED_TYPES
+
+namespace pvpgn
+{
 
 extern char const * realm_get_name(t_realm const * realm) ;
 extern char const * realm_get_description(t_realm const * realm) ;
@@ -90,6 +98,8 @@ extern struct connection * realm_get_conn(t_realm * realm);
 
 extern t_realm * realm_get(t_realm * realm, t_rcm_regref * regref);
 extern void realm_put(t_realm * realm, t_rcm_regref * regref);
+
+}
 
 #endif
 #endif

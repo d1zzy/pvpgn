@@ -26,7 +26,12 @@
 #ifndef INCLUDED_UDPTEST_SEND_PROTOS
 #define INCLUDED_UDPTEST_SEND_PROTOS
 
+namespace pvpgn
+{
+
 extern int udptest_send(t_connection const * c);
+
+}
 
 #endif
 #endif

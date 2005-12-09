@@ -108,6 +108,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 static char const * bnclass_get_str(unsigned int cclass);
 static void do_whisper(t_connection * user_c, char const * dest, char const * text);
 static void do_whois(t_connection * c, char const * dest);
@@ -4718,4 +4721,6 @@ static int _handle_clearstats_command(t_connection *c, char const *text)
 	_reset_w3_stats(account,CLIENTTAG_WAR3XP_UINT,c);
 
     return 0;
+}
+
 }

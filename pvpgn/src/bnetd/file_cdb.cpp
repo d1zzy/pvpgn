@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003,2004 Dizzy 
+ * Copyright (C) 2003,2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -99,6 +99,9 @@
 #include "common/elist.h"
 #include "attr.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
 
 /* cdb file storage API functions */
 
@@ -317,3 +320,4 @@ static t_attr * cdb_read_attr(const char *filename, const char *key)
 #endif
 }
 
+}

@@ -57,6 +57,9 @@
 
 #endif
 
+namespace pvpgn
+{
+
 typedef enum
 {
     game_type_none,
@@ -128,14 +131,14 @@ typedef enum
     game_option_teamffa_2,
     game_option_teamctf_4,
     game_option_teamctf_3,
-    game_option_teamctf_2, 
-    game_option_topvbot_7, 
-    game_option_topvbot_6, 
-    game_option_topvbot_5, 
-    game_option_topvbot_4, 
-    game_option_topvbot_3, 
-    game_option_topvbot_2, 
-    game_option_topvbot_1 
+    game_option_teamctf_2,
+    game_option_topvbot_7,
+    game_option_topvbot_6,
+    game_option_topvbot_5,
+    game_option_topvbot_4,
+    game_option_topvbot_3,
+    game_option_topvbot_2,
+    game_option_topvbot_1
 } t_game_option;
 
 typedef enum
@@ -216,7 +219,7 @@ typedef struct game
     unsigned int      mapsize_x;
     unsigned int      mapsize_y;
     unsigned int      maxplayers;
-    
+
     t_connection *    owner;
     t_connection * *  connections;
     t_account * *     players;
@@ -224,7 +227,7 @@ typedef struct game
     t_game_result * * reported_results;
     char const * *    report_heads;
     char const * *    report_bodies;
-    
+
     time_t            create_time;
     time_t            start_time;
     time_t            lastaccess_time;
@@ -238,6 +241,8 @@ typedef struct game
 t_game;
 
 typedef int (*t_glist_func)(t_game *, void *);
+
+}
 
 #endif
 
@@ -269,6 +274,9 @@ typedef int (*t_glist_func)(t_game *, void *);
 #include "common/list.h"
 #include "common/tag.h"
 #undef JUST_NEED_TYPES
+
+namespace pvpgn
+{
 
 extern char const * game_type_get_str(t_game_type type) ;
 extern char const * game_status_get_str(t_game_status status) ;
@@ -331,15 +339,17 @@ extern t_game * gamelist_find_game(char const * name, t_clienttag ctag, t_game_t
 extern t_game * gamelist_find_game_byid(unsigned int id);
 extern void gamelist_traverse(t_glist_func cb, void *data);
 extern int gamelist_total_games(void);
-extern int game_set_realm(t_game * game, unsigned int realm); 
-extern unsigned int game_get_realm(t_game const * game); 
-extern char const * game_get_realmname(t_game const * game); 
-extern int game_set_realmname(t_game * game, char const * realmname); 
+extern int game_set_realm(t_game * game, unsigned int realm);
+extern unsigned int game_get_realm(t_game const * game);
+extern char const * game_get_realmname(t_game const * game);
+extern int game_set_realmname(t_game * game, char const * realmname);
 extern void gamelist_check_voidgame(void);
 extern void game_set_flag(t_game * game, t_game_flag flag);
 extern t_game_flag game_get_flag(t_game const * game);
 extern int game_get_count_by_clienttag(t_clienttag ct);
 extern int game_is_ladder(t_game *game);
+
+}
 
 #endif
 #endif

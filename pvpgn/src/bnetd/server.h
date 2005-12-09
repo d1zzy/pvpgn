@@ -19,6 +19,9 @@
 #ifndef INCLUDED_SERVER_TYPES
 #define INCLUDED_SERVER_TYPES
 
+namespace pvpgn
+{
+
 #ifdef SERVER_INTERNAL_ACCESS
 
 typedef enum
@@ -46,6 +49,8 @@ typedef struct
 #endif
 extern time_t now;
 
+}
+
 #endif
 
 
@@ -53,6 +58,9 @@ extern time_t now;
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_SERVER_PROTOS
 #define INCLUDED_SERVER_PROTOS
+
+namespace pvpgn
+{
 
 extern unsigned int server_get_uptime(void);
 extern unsigned int server_get_starttime(void);
@@ -66,6 +74,7 @@ extern void server_quit_wraper(void);
 extern void server_restart_wraper(void);
 extern void server_save_wraper(void);
 
+}
 
 #endif
 #endif

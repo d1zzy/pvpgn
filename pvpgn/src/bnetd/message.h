@@ -32,6 +32,9 @@
 
 #endif
 
+namespace pvpgn
+{
+
 typedef enum
 {
     message_type_adduser,
@@ -87,6 +90,8 @@ typedef struct message
 #endif
 t_message;
 
+}
+
 #endif
 
 /*****/
@@ -99,6 +104,9 @@ t_message;
 #include "connection.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern char * message_format_line(t_connection const * c, char const * in);
 extern t_message * message_create(t_message_type type, t_connection * src, t_connection * dst, char const * text);
 extern int message_destroy(t_message * message);
@@ -110,6 +118,8 @@ extern int message_send_admins(t_connection * src, t_message_type type, char con
 extern int message_send_text(t_connection * dst, t_message_type type, t_connection * src, char const * text);
 extern int message_send_formatted(t_connection * dst, char const * text);
 extern int message_send_file(t_connection * dst, FILE * fd);
+
+}
 
 #endif
 #endif

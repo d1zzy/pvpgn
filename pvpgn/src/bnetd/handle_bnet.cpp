@@ -109,6 +109,9 @@
 #include "common/lstr.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 extern int last_news;
 extern int first_news;
 
@@ -4775,4 +4778,6 @@ static int _client_getpasswordreq(t_connection * c, t_packet const *const packet
      * (as we cannot get the real password back, we should only change the password)     --Soar */
     eventlog(eventlog_level_info, __FUNCTION__, "[%d] get password for account \"%s\" to email \"%s\"", conn_get_socket(c), account_get_name(account), email);
     return 0;
+}
+
 }
