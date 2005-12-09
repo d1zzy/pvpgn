@@ -56,6 +56,9 @@
 #include "team.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 static unsigned int char_icon_to_uint(char * icon);
 
 extern unsigned int account_get_numattr_real(t_account * account, char const * key, char const * fn, unsigned int ln)
@@ -2381,3 +2384,4 @@ extern int account_set_wol_apgar(t_account * account, char const * apgar)
     return account_set_strattr(account,"WOL\\auth\\apgar",apgar);
 }
 
+}

@@ -72,6 +72,9 @@
 #include "server.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 static t_list *teamlist_head = NULL;
 unsigned max_teamid = 0;
 int teamlist_add_team(t_team * team);
@@ -588,3 +591,4 @@ int team_set_saveladderstats(t_team * team, unsigned int gametype, int result, u
   return 0;
 }
 
+}

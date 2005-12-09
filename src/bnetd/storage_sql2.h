@@ -23,7 +23,12 @@
 #ifndef INCLUDED_STORAGE_SQL2_PROTOS
 #define INCLUDED_STORAGE_SQL2_PROTOS
 
+namespace pvpgn
+{
+
 extern t_storage storage_sql2;
+
+}
 
 #endif /* INCLUDED_STORAGE_SQL2_PROTOS */
 #endif /* JUST_NEED_TYPES */

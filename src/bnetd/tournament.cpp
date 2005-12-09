@@ -54,6 +54,9 @@
 #include "tournament.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 static t_tournament_info * tournament_info = NULL;
 static t_list * tournament_head=NULL;
 
@@ -73,7 +76,7 @@ static int gamelist_destroy(void)
 {
     t_elem *		curr;
     t_tournament_user * user;
-    
+
     if (tournament_head) {
 	LIST_TRAVERSE(tournament_head,curr)
 	{
@@ -81,17 +84,17 @@ static int gamelist_destroy(void)
 		eventlog(eventlog_level_error,__FUNCTION__,"tournament list contains NULL item");
 		continue;
 	    }
-	    
+
 	    if (list_remove_elem(tournament_head,&curr)<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
-	    
+
 	    if (user->name)
 		xfree((void *)user->name); /* avoid warning */
-	    
+
 	    xfree(user);
-	    
+
 	}
-	
+
 	if (list_destroy(tournament_head)<0)
 	    return -1;
 	tournament_head = NULL;
@@ -106,7 +109,7 @@ extern int tournament_check_client(t_clienttag clienttag)
 	return 1;
     if (clienttag==CLIENTTAG_WARCRAFT3_UINT && tournament_info->game_client==1)
 	return 1;
-	
+
     return -1;
 }
 
@@ -116,12 +119,12 @@ extern int tournament_signup_user(t_account * account)
 
     if (!(account))
 	return -1;
-    
+
     if ((user = tournament_get_user(account))) {
 	eventlog(eventlog_level_info,__FUNCTION__,"user \"%s\" already signed up in tournament",account_get_name(account));
 	return 0;
     }
-    
+
     user = (t_tournament_user*)xmalloc(sizeof(t_tournament_user));
     user->name		= xstrdup(account_get_name(account));
     user->wins		= 0;
@@ -129,9 +132,9 @@ extern int tournament_signup_user(t_account * account)
     user->ties		= 0;
     user->in_game	= 0;
     user->in_finals	= 0;
-        
+
     list_prepend_data(tournament_head,user);
-    
+
     eventlog(eventlog_level_info,__FUNCTION__,"added user \"%s\" to tournament",account_get_name(account));
     return 0;
 }
@@ -140,7 +143,7 @@ static t_tournament_user * tournament_get_user(t_account * account)
 {
     t_elem const * curr;
     t_tournament_user * user;
-    
+
     if (tournament_head)
 	LIST_TRAVERSE(tournament_head,curr)
 	{
@@ -148,7 +151,7 @@ static t_tournament_user * tournament_get_user(t_account * account)
 	    if (strcmp(user->name, account_get_name(account)) == 0)
 		return user;
 	}
-    
+
     return NULL;
 }
 
@@ -156,7 +159,7 @@ extern int tournament_user_signed_up(t_account * account)
 {
     if (!(tournament_get_user(account)))
 	return -1;
-        
+
     return 0;
 }
 
@@ -164,27 +167,27 @@ extern int tournament_user_signed_up(t_account * account)
 extern int tournament_add_stat(t_account * account, int stat)
 {
     t_tournament_user * user;
-    
+
     if (!(user = tournament_get_user(account)))
 	return -1;
-    
+
     if (stat == 1)
 	user->wins++;
     if (stat == 2)
 	user->losses++;
     if (stat == 3)
 	user->ties++;
-    
+
     return 0;
 }
 
 extern int tournament_get_stat(t_account * account, int stat)
 {
     t_tournament_user * user;
-    
+
     if (!(user = tournament_get_user(account)))
 	return 0;
-    
+
     if (stat == 1)
 	return user->wins;
     if (stat == 2)
@@ -199,47 +202,47 @@ extern int tournament_get_player_score(t_account * account)
 {
     t_tournament_user * user;
     int score;
-    
+
     if (!(user = tournament_get_user(account)))
 	return 0;
-    
+
     score = user->wins * 3 + user->ties - user->losses;
-    
+
     if (score < 0)
 	return 0;
-	
+
     return score;
 }
-    
+
 extern int tournament_set_in_game_status(t_account * account, int status)
 {
     t_tournament_user * user;
-    
+
     if (!(user = tournament_get_user(account)))
 	return -1;
-    
+
     user->in_game = status;
-    
+
     return 0;
 }
 /*
 static int tournament_get_in_game_status(t_account * account)
 {
     t_tournament_user * user;
-    
+
     if (!(user = tournament_get_user(account)))
 	return 0;
-    
+
     return user->in_game;
 }
 */
 extern int tournament_get_in_finals_status(t_account * account)
 {
     t_tournament_user * user;
-    
+
     if (!(user = tournament_get_user(account)))
 	return 0;
-    
+
     return user->in_finals;
 }
 
@@ -247,7 +250,7 @@ extern int tournament_get_game_in_progress(void)
 {
     t_elem const * curr;
     t_tournament_user * user;
-    
+
     if (tournament_head)
 	LIST_TRAVERSE_CONST(tournament_head,curr)
 	{
@@ -255,7 +258,7 @@ extern int tournament_get_game_in_progress(void)
 	    if (user->in_game == 1)
 		return 1;
 	}
-    
+
     return 0;
 }
 
@@ -314,7 +317,7 @@ extern int tournament_init(char const * filename)
     char *have_sponsor = NULL;
     char *have_icon = NULL;
     struct tm * timestamp = (struct tm*)xmalloc(sizeof(struct tm));
-    
+
     sprintf(format,"%%02u/%%02u/%%04u %%02u:%%02u:%%02u");
 
     tournament_info = (t_tournament_info*)xmalloc(sizeof(t_tournament_info));
@@ -333,21 +336,21 @@ extern int tournament_init(char const * filename)
     tournament_info->format		= xstrdup("");
     tournament_info->sponsor		= xstrdup("");
     tournament_info->thumbs_down	= 0;
-    
+
     anongame_tournament_maplists_destroy();
-    
+
     if (!filename) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
         xfree((void *)timestamp);
 	return -1;
     }
-    
+
     if (!(fp = fopen(filename,"r"))) {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
 	xfree((void *)timestamp);
 	return -1;
     }
-    
+
     for (line=1; (buff = file_get_line(fp)); line++) {
 	for (pos=0; buff[pos]=='\t' || buff[pos]==' '; pos++);
 	if (buff[pos]=='\0' || buff[pos]=='#') {
@@ -356,17 +359,17 @@ extern int tournament_init(char const * filename)
 	if ((temp = strrchr(buff,'#'))) {
 	    unsigned int len;
 	    unsigned int endpos;
-	    
+
 	    *temp = '\0';
 	    len = strlen(buff)+1;
 	    for (endpos=len-1; buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
 	    buff[endpos+1] = '\0';
 	}
-	
+
 	if (strcmp(buff,"[MAPS]") == 0) {
 	    char *clienttag, *mapname, *mname;
 	    t_clienttag ctag;
-	    
+
 	    for (; (buff = file_get_line(fp));) {
 		for (pos=0; buff[pos]=='\t' || buff[pos]==' '; pos++);
 		if (buff[pos]=='\0' || buff[pos]=='#') {
@@ -375,7 +378,7 @@ extern int tournament_init(char const * filename)
 		if ((temp = strrchr(buff,'#'))) {
 		    unsigned int len;
 		    unsigned int endpos;
-		    
+
 		    *temp = '\0';
 		    len = strlen(buff)+1;
 		    for (endpos=len-1; buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
@@ -398,7 +401,7 @@ extern int tournament_init(char const * filename)
 		    continue;
 		}
 		mname = xstrdup(mapname);
-		
+
 		anongame_add_tournament_map(ctag, mname);
 		eventlog(eventlog_level_trace,__FUNCTION__,"added tournament map \"%s\" for %s",mname,clienttag);
 		xfree(mname);
@@ -412,18 +415,18 @@ extern int tournament_init(char const * filename)
 	    pointer++;
 	    pointer = strchr(pointer,'=');
 	    pointer++;
-	    
+
 	    if (strcmp(variable,"start_preliminary") == 0) {
 	        pointer = strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-	        
+
 	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
 
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
-	        
+
 	        timestamp->tm_mon	= mon-1;
 	        timestamp->tm_mday	= day;
 	        timestamp->tm_year	= year-1900;
@@ -431,7 +434,7 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_min	= min;
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
-	        
+
 	        tournament_info->start_preliminary = mktime(timestamp);
 	    }
 	    else if (strcmp(variable,"end_signup") == 0) {
@@ -440,9 +443,9 @@ extern int tournament_init(char const * filename)
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-	        
+
 	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
-	        
+
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
 	        timestamp->tm_mon	= mon-1;
@@ -452,7 +455,7 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_min	= min;
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
-		
+
 		tournament_info->end_signup = mktime(timestamp);
 	    }
 	    else if (strcmp(variable,"end_preliminary") == 0) {
@@ -461,9 +464,9 @@ extern int tournament_init(char const * filename)
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-	        
+
 	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
-	        
+
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
 	        timestamp->tm_mon	= mon-1;
@@ -473,7 +476,7 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_min	= min;
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
-    
+
 	        tournament_info->end_preliminary = mktime(timestamp);
 	    }
 	    else if (strcmp(variable,"start_round_1") == 0) {
@@ -482,9 +485,9 @@ extern int tournament_init(char const * filename)
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-	        
+
 	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
-	        
+
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
 	        timestamp->tm_mon	= mon-1;
@@ -494,7 +497,7 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_min	= min;
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
-    		
+
 	        tournament_info->start_round_1 = mktime(timestamp);
 	    }
 	    else if (strcmp(variable,"start_round_2") == 0) {
@@ -503,9 +506,9 @@ extern int tournament_init(char const * filename)
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-	        
+
 	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
-	        
+
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
 	        timestamp->tm_mon	= mon-1;
@@ -515,7 +518,7 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_min	= min;
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
-		
+
 	        tournament_info->start_round_2 = mktime(timestamp);
 	    }
 	    else if (strcmp(variable,"start_round_3") == 0) {
@@ -524,9 +527,9 @@ extern int tournament_init(char const * filename)
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-	        
+
 	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
-	        
+
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
 	        timestamp->tm_mon	= mon-1;
@@ -536,7 +539,7 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_min	= min;
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
-		
+
 	        tournament_info->start_round_3 = mktime(timestamp);
 	    }
 	    else if (strcmp(variable,"start_round_4") == 0) {
@@ -545,9 +548,9 @@ extern int tournament_init(char const * filename)
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-	        
+
 	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
-	        
+
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
 	        timestamp->tm_mon	= mon-1;
@@ -557,7 +560,7 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_min	= min;
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
-		
+
 	        tournament_info->start_round_4 = mktime(timestamp);
 	    }
 	    else if (strcmp(variable,"tournament_end") == 0) {
@@ -566,9 +569,9 @@ extern int tournament_init(char const * filename)
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-	        
+
 	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
-	        
+
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
 	        timestamp->tm_mon	= mon-1;
@@ -578,7 +581,7 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_min	= min;
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
-		
+
 	        tournament_info->tournament_end = mktime(timestamp);
 	    }
 	    else if (strcmp(variable,"game_selection") == 0) {
@@ -599,20 +602,20 @@ extern int tournament_init(char const * filename)
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-	        
+
 	        if (tournament_info->format) xfree((void *)tournament_info->format);
 	        tournament_info->format = xstrdup(value);
 	    }
 	    else if (strcmp(variable,"races") == 0) {
 	        unsigned int intvalue = 0;
 	        unsigned int i;
-	        
+
 	        pointer = strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-	        
+
 	        for(i=0;i<strlen(value);i++) {
 		    if (value[i] == 'H') intvalue = intvalue | 0x01;
 		    if (value[i] == 'O') intvalue = intvalue | 0x02;
@@ -620,10 +623,10 @@ extern int tournament_init(char const * filename)
 		    if (value[i] == 'U') intvalue = intvalue | 0x08;
 		    if (value[i] == 'R') intvalue = intvalue | 0x20;
 		}
-		
+
 		if (intvalue == 0 || intvalue == 0x2F)
 		    intvalue = 0x3F; /* hack to make all races availiable */
-		
+
 	        tournament_info->races = intvalue;
 	    }
 	    else if (strcmp(variable,"sponsor") == 0) {
@@ -632,7 +635,7 @@ extern int tournament_init(char const * filename)
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-		
+
 	        have_sponsor = xstrdup(value);
 	    }
 	    else if (strcmp(variable,"icon") == 0) {
@@ -641,7 +644,7 @@ extern int tournament_init(char const * filename)
 	        value = pointer;
 	        pointer = strchr(pointer,'\"');
 	        pointer[0]='\0';
-		
+
 	        have_icon = xstrdup(value);
 	    }
 	    else if (strcmp(variable,"thumbs_down") == 0) {
@@ -649,10 +652,10 @@ extern int tournament_init(char const * filename)
 	    }
 	    else
 	        eventlog(eventlog_level_error,__FUNCTION__,"bad option \"%s\" in \"%s\"",variable,filename);
-	    
+
 	    if (have_sponsor && have_icon) {
 	        sponsor = (char*)xmalloc(strlen(have_sponsor)+6);
-		
+
 		if (strlen(have_icon) == 4)
 		    sprintf(sponsor, "%c%c%c%c,%s",have_icon[3],have_icon[2],have_icon[1],have_icon[0],have_sponsor);
 		else if (strlen(have_icon) == 2)
@@ -661,10 +664,10 @@ extern int tournament_init(char const * filename)
 		    sprintf(sponsor, "PX3W,%s",have_sponsor); /* default to standard FT icon */
 		    eventlog(eventlog_level_warn,__FUNCTION__,"bad icon length, using W3XP");
 		}
-		
+
 		if (tournament_info->sponsor)
 		    xfree((void *)tournament_info->sponsor);
-	        
+
 		tournament_info->sponsor = xstrdup(sponsor);
 	        xfree((void *)have_sponsor);
 		xfree((void *)have_icon);
@@ -679,8 +682,8 @@ extern int tournament_init(char const * filename)
     xfree((void *)timestamp);
     file_get_line(NULL); // clear file_get_line buffer
     fclose(fp);
-    
-    /* check if we have timestamps for all the times */ 
+
+    /* check if we have timestamps for all the times */
     /* if not disable tournament by setting "start_preliminary" to 0 */
     if (tournament_info->end_signup == 0 || tournament_info->end_preliminary == 0 ||
 	    tournament_info->start_round_1 == 0 || tournament_info->start_round_2 == 0 ||
@@ -691,7 +694,7 @@ extern int tournament_init(char const * filename)
     } else {
     	tournamentlist_create();
     }
-    
+
     return 0;
 }
 
@@ -787,4 +790,7 @@ extern unsigned int tournament_get_thumbs_down(void)
 {
     return tournament_info->thumbs_down;
 }
+
+}
+
 /****/

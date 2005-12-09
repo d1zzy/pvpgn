@@ -66,6 +66,9 @@
 
 #define MAX_LEVEL 100
 
+namespace pvpgn
+{
+
 /* [quetzal] 20020827 - this one get modified by anongame_queue player when there're enough
  * players and map has been chosen based on their preferences. otherwise its NULL
  */
@@ -2028,4 +2031,6 @@ extern int handle_anongame_join(t_connection * c)
 	packet_del_ref(rpacket);
     }
     return 0;
+}
+
 }

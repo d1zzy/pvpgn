@@ -21,6 +21,9 @@
 #include "channel_conv.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 
 extern unsigned int cflags_to_bncflags(unsigned flags)
 {
@@ -43,3 +46,4 @@ extern unsigned int cflags_to_bncflags(unsigned flags)
     return res;
 }
 
+}

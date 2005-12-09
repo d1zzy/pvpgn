@@ -17,6 +17,9 @@
 #ifndef INCLUDED_FRIENDS_H
 #define INCLUDED_FRIENDS_H
 
+namespace pvpgn
+{
+
 typedef struct friend_struct {
    char mutual; /* -1 - unloaded(used to remove deleted elems when reload); 0 - not mutual ; 1 - is mutual */
    t_account *friendacc;
@@ -41,5 +44,7 @@ extern t_friend * friendlist_find_username(t_list *, const char *);
 extern t_friend * friendlist_find_uid(t_list *, unsigned);
 
 #endif
+
+}
 
 #endif

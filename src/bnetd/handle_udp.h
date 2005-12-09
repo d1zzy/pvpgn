@@ -27,7 +27,12 @@
 #include "common/packet.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern int handle_udp_packet(int usock, unsigned int src_addr, unsigned short src_port, t_packet const * const packet);
+
+}
 
 #endif
 #endif

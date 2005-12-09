@@ -60,6 +60,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 static t_list * characterlist_head=NULL;
 
 
@@ -278,7 +281,7 @@ static int load_initial_data (t_character * character, t_character_class chclass
 extern int character_create(t_account * account, t_clienttag clienttag, char const * realmname, char const * name, t_character_class chclass, t_character_expansion expansion)
 {
     t_character * ch;
-    
+
     if (!account)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL account");
@@ -317,7 +320,7 @@ extern int character_create(t_account * account, t_clienttag clienttag, char con
     load_initial_data (ch, chclass, expansion);
 
     account_add_closed_character(account, clienttag, ch);
-    
+
     return 0;
 }
 
@@ -359,13 +362,13 @@ extern char const * character_get_playerinfo(t_character const * ch)
 {
     t_d2char_info d2char_info;
     static char   playerinfo[sizeof(t_d2char_info)+4];
-    
+
     if (!ch)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL character");
 	return NULL;
     }
-    
+
 /*
                                               ff 0f 68 00                ..h.
 0x0040: 01 00 00 00 00 00 00 00   10 00 00 00 00 00 00 00    ................
@@ -401,17 +404,17 @@ extern char const * character_get_playerinfo(t_character const * ch)
     bn_int_set(&d2char_info.unknown3,ch->unknown3);
     bn_int_set(&d2char_info.unknown4,ch->unknown4);
     bn_byte_set(&d2char_info.level,ch->level);
-    bn_byte_set(&d2char_info.status,ch->status); 
+    bn_byte_set(&d2char_info.status,ch->status);
     bn_byte_set(&d2char_info.title,ch->title);
     bn_byte_set(&d2char_info.unknownb13,ch->unknownb13);
     bn_byte_set(&d2char_info.emblembgc,ch->emblembgc);
     bn_byte_set(&d2char_info.emblemfgc,ch->emblemfgc);
     bn_byte_set(&d2char_info.emblemnum,ch->emblemnum);
     bn_byte_set(&d2char_info.unknownb14,ch->unknownb14);
-    
+
     memcpy(playerinfo,&d2char_info,sizeof(d2char_info));
     strcpy(&playerinfo[sizeof(d2char_info)],ch->guildname);
-    
+
     return playerinfo;
 }
 
@@ -432,7 +435,7 @@ extern int character_verify_charlist(t_character const * ch, char const * charli
     char *       temp;
     char const * tok1;
     char const * tok2;
-    
+
     if (!ch)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL character");
@@ -455,18 +458,18 @@ extern int character_verify_charlist(t_character const * ch, char const * charli
 	    eventlog(eventlog_level_error,__FUNCTION__,"bad character list \"%s\"",temp);
 	    break;
 	}
-	
+
 	if (strcasecmp(tok1,ch->realmname)==0 && strcasecmp(tok2,ch->name)==0)
 	{
 	    xfree(temp);
 	    return 0;
 	}
-	
+
         tok1 = strtok(NULL,",");
         tok2 = strtok(NULL,",");
     }
     xfree(temp);
-    
+
     return -1;
 }
 
@@ -482,7 +485,7 @@ extern int characterlist_destroy(void)
 {
     t_elem *      curr;
     t_character * ch;
-    
+
     if (characterlist_head)
     {
         LIST_TRAVERSE(characterlist_head,curr)
@@ -493,7 +496,7 @@ extern int characterlist_destroy(void)
                 eventlog(eventlog_level_error,__FUNCTION__,"characterlist contains NULL item");
                 continue;
             }
-            
+
             if (list_remove_elem(characterlist_head,&curr)<0)
                 eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
             xfree(ch);
@@ -503,7 +506,7 @@ extern int characterlist_destroy(void)
             return -1;
         characterlist_head = NULL;
     }
-    
+
     return 0;
 }
 
@@ -512,7 +515,7 @@ extern t_character * characterlist_find_character(char const * realmname, char c
 {
     t_elem *      curr;
     t_character * ch;
-    
+
     if (!realmname)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL realmname");
@@ -530,6 +533,8 @@ extern t_character * characterlist_find_character(char const * realmname, char c
         if (strcasecmp(ch->name,charname)==0 && strcasecmp(ch->realmname,realmname)==0)
             return ch;
     }
-    
+
     return NULL;
+}
+
 }

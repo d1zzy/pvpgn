@@ -75,6 +75,9 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 typedef struct {
     char const * nick;
     char const * user;
@@ -91,9 +94,9 @@ extern int irc_send_cmd(t_connection * conn, char const * command, char const * 
     t_packet * p;
     char data[MAX_IRC_MESSAGE_LEN+1];
     int len;
-    char const * ircname = server_get_hostname(); 
+    char const * ircname = server_get_hostname();
     char const * nick;
-    
+
     if (!conn) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
 	return -1;
@@ -110,7 +113,7 @@ extern int irc_send_cmd(t_connection * conn, char const * command, char const * 
     nick = conn_get_loggeduser(conn);
     if (!nick)
     	nick = "";
-    	
+
     /* snprintf isn't portable -> check message length first */
     if (params) {
         len = 1+strlen(ircname)+1+strlen(command)+1+strlen(nick)+1+strlen(params)+2;
@@ -140,7 +143,7 @@ extern int irc_send_cmd(t_connection * conn, char const * command, char const * 
 extern int irc_send(t_connection * conn, int code, char const * params)
 {
     char temp[4]; /* '000\0' */
-    
+
     if (!conn) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
 	return -1;
@@ -158,7 +161,7 @@ extern int irc_send_cmd2(t_connection * conn, char const * prefix, char const * 
     t_packet * p;
     char data[MAX_IRC_MESSAGE_LEN+1];
     int len;
-    
+
     if (!conn) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
 	return -1;
@@ -177,7 +180,7 @@ extern int irc_send_cmd2(t_connection * conn, char const * prefix, char const * 
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL postfix");
 	return -1;
     }
-    
+
     if (!(p = packet_create(packet_class_raw))) {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create packet");
 	return -1;
@@ -212,7 +215,7 @@ extern int irc_send_ping(t_connection * conn)
 {
     t_packet * p;
     char data[MAX_IRC_MESSAGE_LEN];
-    
+
     if (!conn) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
 	return -1;
@@ -244,7 +247,7 @@ extern int irc_send_pong(t_connection * conn, char const * params)
 {
     t_packet * p;
     char data[MAX_IRC_MESSAGE_LEN];
-    
+
     if (!conn) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
 	return -1;
@@ -257,7 +260,7 @@ extern int irc_send_pong(t_connection * conn, char const * params)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create packet");
 	return -1;
     }
-    
+
     if (params)
     	sprintf(data,":%s PONG %s :%s\r\n",server_get_hostname(),server_get_hostname(),params);
     else
@@ -304,25 +307,25 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
             irc_send_cmd(conn,"NOTICE",":Authentication rejected (already logged in) ");
     }
     else if (account_get_auth_lock(a)==1) {
-            irc_send_cmd(conn,"NOTICE",":Authentication rejected (account is locked) "); 
+            irc_send_cmd(conn,"NOTICE",":Authentication rejected (account is locked) ");
     }
     else
     {
      	if((conn_get_wol(conn) == 1)) {
     	    temphash = account_get_wol_apgar(a);
     	    tempapgar = conn_wol_get_apgar(conn);
-    	    
+
     	    if(temphash == NULL) {
         		account_set_wol_apgar(a,tempapgar);
         		temphash = account_get_wol_apgar(a);
     	    }
-    	    
+
     	    if(tempapgar == NULL) {
                 irc_send_cmd(conn,"NOTICE",":Authentication failed."); /* bad APGAR */
                 conn_increment_passfail_count(conn);
                 return 0;
             }
-    	    
+
     	    if(strcmp(temphash,tempapgar) == 0) {
                 conn_login(conn,a,username);
     	        conn_set_state(conn,conn_state_loggedin);
@@ -336,7 +339,7 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
     	}
 
         hash_set_str(&h1,passhash);
-        temphash = account_get_pass(a);	
+        temphash = account_get_pass(a);
         hash_set_str(&h2,temphash);
         if (hash_eq(h1,h2)) {
             conn_login(conn,a,username);
@@ -363,7 +366,7 @@ extern int irc_welcome(t_connection * conn)
     char * line, * formatted_line;
     char send_line[MAX_IRC_MESSAGE_LEN];
     char motd_failed = 0;
-    
+
     if (!conn) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
 	return -1;
@@ -376,7 +379,7 @@ extern int irc_welcome(t_connection * conn)
     else
         sprintf(temp,":Maximum length exceeded");
     irc_send(conn,RPL_WELCOME,temp);
-    
+
     if ((14+strlen(server_get_hostname())+10+strlen(PVPGN_SOFTWARE" "PVPGN_VERSION)+1)<=MAX_IRC_MESSAGE_LEN)
         sprintf(temp,":Your host is %s, running "PVPGN_SOFTWARE" "PVPGN_VERSION,server_get_hostname());
     else
@@ -397,25 +400,25 @@ extern int irc_welcome(t_connection * conn)
     else
         sprintf(temp,":Maximum length exceeded");
     irc_send(conn,RPL_MYINFO,temp);
-    
+
     if((conn_get_wol(conn) == 1))
         sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
         WOL_NICKNAME_LEN, MAX_TOPIC_LEN, CHANNEL_NAME_LEN, prefs_get_irc_network_name());
     else
         sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
         CHAR_NAME_LEN, MAX_TOPIC_LEN, CHANNEL_NAME_LEN, prefs_get_irc_network_name());
-    
+
     if((strlen(temp))<=MAX_IRC_MESSAGE_LEN)
         irc_send(conn,RPL_ISUPPORT,temp);
     else {
         sprintf(temp,":Maximum length exceeded");
         irc_send(conn,RPL_ISUPPORT,temp);
-    }    
+    }
 
     if ((3+strlen(server_get_hostname())+22+1)<=MAX_IRC_MESSAGE_LEN)
     	sprintf(temp,":- %s, "PVPGN_SOFTWARE" "PVPGN_VERSION", built on %s",server_get_hostname(),temptimestr);
     else
-        sprintf(temp,":Maximum length exceeded"); 
+        sprintf(temp,":Maximum length exceeded");
     irc_send(conn,RPL_MOTDSTART,temp);
 
     if ((filename = prefs_get_motdfile())) {
@@ -432,12 +435,12 @@ extern int irc_welcome(t_connection * conn)
 	  file_get_line(NULL); // clear file_get_line buffer
 	  fclose(fp);
 	}
-	 else 
+	 else
 	 	motd_failed = 1;
    }
    else
      motd_failed = 1;
-   
+
     if (motd_failed) {
       irc_send(conn,RPL_MOTD,":- Failed to load motd, sending default motd              ");
       irc_send(conn,RPL_MOTD,":- ====================================================== ");
@@ -446,13 +449,13 @@ extern int irc_welcome(t_connection * conn)
     }
     irc_send(conn,RPL_ENDOFMOTD,":End of /MOTD command");
     irc_send_cmd(conn,"NOTICE",":This is an experimental service.");
-    
+
     conn_set_state(conn,conn_state_bot_password);
     if (connlist_find_connection_by_accountname(conn_get_loggeduser(conn))) {
     	irc_send_cmd(conn,"NOTICE","This account is already logged in, use another account.");
 	return -1;
     }
-    
+
     if (conn_get_ircpass(conn)) {
 	irc_send_cmd(conn,"NOTICE",":Trying to authenticate with PASS ...");
 	irc_authenticate(conn,conn_get_ircpass(conn));
@@ -479,7 +482,7 @@ extern char const * irc_convert_channel(t_channel const * channel)
     static char out[CHANNEL_NAME_LEN];
     unsigned int outpos;
     int i;
-    
+
     if (!channel)
 	return "*";
 
@@ -490,7 +493,7 @@ extern char const * irc_convert_channel(t_channel const * channel)
     for (i=0; bname[i]!='\0'; i++) {
 	if (bname[i]==' ') {
 	    out[outpos++] = '_';
-	} else if (bname[i]=='_') { 
+	} else if (bname[i]=='_') {
 	    out[outpos++] = '%';
 	    out[outpos++] = '_';
 	} else if (bname[i]=='%') {
@@ -529,7 +532,7 @@ extern char const * irc_convert_ircname(char const * pircname)
     int special;
     int i;
     char const * ircname = pircname + 1;
-    
+
     if (!ircname) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL ircname");
 	return NULL;
@@ -594,7 +597,7 @@ static char ** irc_split_elems(char * list, int separator, int ignoreblank)
     int i;
     int count;
     char ** out;
-    
+
     if (!list) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL list");
 	return NULL;
@@ -765,7 +768,7 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
     if (strcmp(toname,"\r")==0) {
 	toname = ""; /* HACK: the target field is really empty */
     }
-    	
+
     len = (strlen(e1)+1+strlen(e2)+1+strlen(toname)+1+strlen(e4)+2+1);
     if (len<=MAX_IRC_MESSAGE_LEN) {
 	char msg[MAX_IRC_MESSAGE_LEN+1];
@@ -794,7 +797,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     char * msg;
     char const * ctag;
     t_irc_message_from from;
-    
+
     if (!packet)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
@@ -806,7 +809,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         ctag = clienttag_uint_to_str(conn_get_clienttag(me));
     else
 	    ctag = clienttag_uint_to_str(CLIENTTAG_IIRC_UINT);
-        
+
     switch (type)
     {
     /* case message_type_adduser: this is sent manually in handle_irc */
@@ -822,7 +825,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	    {
         	char temp[MAX_IRC_MESSAGE_LEN];
     		memset(temp,0,sizeof(temp));
-    		
+
     		/**
             *  For WOL the channel JOIN output must be like the following:
     		*   user!WWOL@hostname JOIN :clanID,longIP channelName
@@ -857,9 +860,9 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 		from.nick = server_get_hostname();
 		from.host = server_get_hostname();
 	    }
-	    
+
             from.user = ctag;
-	    
+
     	    if (type==message_type_talk)
     	    	dest = irc_convert_channel(conn_get_channel(me)); /* FIXME: support more channels and choose right one! */
 	    else
@@ -993,16 +996,16 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
 	char const * name = conn_get_chatname(m);
 	char flg[5] = "";
 	unsigned int flags;
-	
+
 	if (!name)
 	    continue;
 	flags = conn_get_flags(m);
 	if (flags & MF_BLIZZARD)
 		strcat(flg,"@");
 	else if ((flags & MF_BNET) || (flags & MF_GAVEL))
-		strcat(flg,"%"); 
+		strcat(flg,"%");
 	else if (flags & MF_VOICE)
-		strcat(flg,"+"); 
+		strcat(flg,"+");
 	if ((strlen(temp)+((!first)?(1):(0))+strlen(flg)+strlen(name)+1)<=sizeof(temp)) {
 	    if (!first) strcat(temp," ");
 
@@ -1026,7 +1029,7 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
 	    first = 0;
 	}
 	conn_unget_chatname(m,name);
-    } 
+    }
     irc_send(c,RPL_NAMREPLY,temp);
     return 0;
 }
@@ -1041,7 +1044,7 @@ static int irc_who_connection(t_connection * dest, t_connection * c)
     char const * tempflags = "@"; /* FIXME: that's dumb */
     char temp[MAX_IRC_MESSAGE_LEN];
     char const * tempchannel;
-    
+
     if (!dest) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL destination");
 	return -1;
@@ -1102,7 +1105,7 @@ extern int irc_who(t_connection * c, char const * name)
 	t_connection * info;
 	t_channel * channel;
 	char const * ircname;
-	
+
 	ircname = irc_convert_ircname(name);
 	channel = channellist_find_channel_by_name(ircname,NULL,NULL);
 	if (!channel) {
@@ -1122,10 +1125,11 @@ extern int irc_who(t_connection * c, char const * name)
     } else {
 	/* it's just one user */
 	t_connection * info;
-	
+
 	if ((info = connlist_find_connection_by_accountname(name)))
-	    return irc_who_connection(c,info);	
+	    return irc_who_connection(c,info);
     }
     return 0;
 }
 
+}

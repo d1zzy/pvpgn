@@ -21,6 +21,11 @@
 #ifndef INCLUDED_HANDLE_ANONGAME_PROTOS
 #define INCLUDED_HANDLE_ANONGAME_PROTOS
 
+namespace pvpgn
+{
+
 extern int handle_anongame_packet(t_connection * c, t_packet const * const packet);
+
+}
 
 #endif

@@ -22,7 +22,12 @@
 #ifndef INCLUDED_HANDLE_IRC_PROTOS
 #define INCLUDED_HANDLE_IRC_PROTOS
 
+namespace pvpgn
+{
+
 extern int handle_irc_packet(t_connection * conn,t_packet const * const packet);
+
+}
 
 #endif
 #endif

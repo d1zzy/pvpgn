@@ -1,5 +1,5 @@
 /*
-   * Copyright (C) 2002,2003 Dizzy 
+   * Copyright (C) 2002,2003 Dizzy
    *
    * This program is free software; you can redistribute it and/or
    * modify it under the terms of the GNU General Public License
@@ -44,6 +44,9 @@
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
 
 t_storage *storage = NULL;
 
@@ -108,3 +111,4 @@ extern void storage_close(void)
     storage->close();
 }
 
+}

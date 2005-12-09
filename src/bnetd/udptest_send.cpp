@@ -65,18 +65,20 @@
 
 extern FILE * hexstrm; /* from main.c */
 
+namespace pvpgn
+{
 
 extern int udptest_send(t_connection const * c)
 {
     t_packet *         upacket;
     struct sockaddr_in caddr;
     unsigned int       tries,successes;
-    
+
     memset(&caddr,0,sizeof(caddr));
     caddr.sin_family = PSOCK_AF_INET;
     caddr.sin_port = htons(conn_get_game_port(c));
     caddr.sin_addr.s_addr = htonl(conn_get_game_addr(c));
-    
+
     for (tries=successes=0; successes!=2 && tries<5; tries++)
     {
 	if (!(upacket = packet_create(packet_class_udp)))
@@ -87,7 +89,7 @@ extern int udptest_send(t_connection const * c)
 	packet_set_size(upacket,sizeof(t_server_udptest));
 	packet_set_type(upacket,SERVER_UDPTEST);
 	bn_int_tag_set(&upacket->u.server_udptest.bnettag,BNETTAG);
-	
+
 	if (hexstrm)
 	{
 	    fprintf(hexstrm,"%d: send class=%s[0x%02x] type=%s[0x%04x] ",
@@ -102,19 +104,21 @@ extern int udptest_send(t_connection const * c)
 		    packet_get_size(upacket));
 	    hexdump(hexstrm,packet_get_raw_data(upacket,0),packet_get_size(upacket));
 	}
-	
+
         if (psock_sendto(conn_get_game_socket(c),
 			 packet_get_raw_data_const(upacket,0),packet_get_size(upacket),
 			 0,(struct sockaddr *)&caddr,(psock_t_socklen)sizeof(caddr))!=(int)packet_get_size(upacket))
             eventlog(eventlog_level_error,__FUNCTION__,"[%d] failed to send UDPTEST to %s (attempt %u) (psock_sendto: %s)",conn_get_socket(c),addr_num_to_addr_str(ntohl(caddr.sin_addr.s_addr),conn_get_game_port(c)),tries+1,pstrerror(psock_errno()));
 	else
 	    successes++;
-	
+
 	packet_del_ref(upacket);
     }
-    
+
     if (successes!=2)
 	return -1;
-    
+
     return 0;
+}
+
 }

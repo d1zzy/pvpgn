@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2000  Gediminas (gugini@fortas.ktu.lt)
- * Copyright (C) 2002  Bart³omiej Butyn (bartek@milc.com.pl)
+ * Copyright (C) 2002  Bartomiej Butyn (bartek@milc.com.pl)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -68,6 +68,9 @@
 #include "ipban.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 static int identify_ipban_function(const char * funcstr);
 static int ipban_func_del(t_connection * c, char const * cp);
 static int ipban_func_list(t_connection * c);
@@ -95,7 +98,7 @@ extern int ipbanlist_destroy(void)
 {
     t_elem *		curr;
     t_ipban_entry *	entry;
-    
+
     if (ipbanlist_head)
     {
 	LIST_TRAVERSE(ipbanlist_head,curr)
@@ -114,7 +117,7 @@ extern int ipbanlist_destroy(void)
 	    return -1;
 	ipbanlist_head = NULL;
     }
-    
+
     return 0;
 }
 
@@ -127,13 +130,13 @@ extern int ipbanlist_load(char const * filename)
     char *		timestr;
     unsigned int	currline;
     unsigned int	endtime;
-    
+
     if (!filename)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
 	return -1;
     }
-    
+
     if (!(fp = fopen(filename,"r")))
     {
         eventlog(eventlog_level_error,__FUNCTION__,"could not open banlist file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
@@ -143,18 +146,18 @@ extern int ipbanlist_load(char const * filename)
     for (currline=1; (buff = file_get_line(fp)); currline++)
     {
 	ip = buff;
-	
+
 	/* eat whitespace in front */
 	while (*ip=='\t' || *ip==' ') ip++;
 	if (*ip=='\0' || *ip=='#')
 	{
 	    continue;
 	}
-	
+
 	/* eat whitespace in back */
 	while (ip[strlen(ip)-1]==' ' || ip[strlen(ip)-1]=='\t')
 	    ip[strlen(ip)-1] = '\0';
-	
+
 	if (strchr(ip,' ') || strchr(ip,'\t'))
 	{
 	    timestr = ip;
@@ -165,7 +168,7 @@ extern int ipbanlist_load(char const * filename)
 	}
 	else
 	    timestr = NULL;
-	    
+
 	if (!timestr)
 	    endtime = 0;
 	else
@@ -174,19 +177,19 @@ extern int ipbanlist_load(char const * filename)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not convert to seconds. Banning pernamently.");
 		endtime = 0;
 	    }
-	
+
 	if (ipbanlist_add(NULL,ip,endtime)!=0)
 	{
 	    eventlog(eventlog_level_warn,__FUNCTION__,"error in %.64s at line %u",filename,currline);
 	    continue;
 	}
-	
+
     }
-    
+
     file_get_line(NULL); // clear file_get_line buffer
     if (fclose(fp)<0)
         eventlog(eventlog_level_error,__FUNCTION__,"could not close banlist file \"%s\" after reading (fclose: %s)",filename,pstrerror(errno));
-    
+
     return 0;
 }
 
@@ -198,13 +201,13 @@ extern int ipbanlist_save(char const * filename)
     FILE *		fp;
     char *		ipstr;
     char		line[1024];
-    
+
     if (!filename)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
 	return -1;
     }
-    
+
     if (!(fp = fopen(filename,"w")))
     {
         eventlog(eventlog_level_error,__FUNCTION__,"could not open banlist file \"%s\" for writing (fopen: %s)",filename,pstrerror(errno));
@@ -215,7 +218,7 @@ extern int ipbanlist_save(char const * filename)
         eventlog(eventlog_level_error,__FUNCTION__,"could not truncate banlist file \"%s\" (ftruncate: %s)",filename,pstrerror(errno));
 	return -1;
     }*/
-    
+
     LIST_TRAVERSE_CONST(ipbanlist_head,curr)
     {
 	entry = (t_ipban_entry*)elem_get_data(curr);
@@ -231,20 +234,20 @@ extern int ipbanlist_save(char const * filename)
 	}
 	if (entry->endtime == 0)
 	    sprintf(line,"%s\n",ipstr);
-	else    
+	else
 	    sprintf(line,"%s %ld\n",ipstr,entry->endtime);
 	if (!(fwrite(line,strlen(line),1,fp)))
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not write to banlist file (write: %s)",pstrerror(errno));
 	xfree(ipstr);
     }
-	
+
     if (fclose(fp)<0)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"could not close banlist file \"%s\" after writing (fclose: %s)",filename,pstrerror(errno));
 	return -1;
     }
-    
-    return 0; 
+
+    return 0;
 }
 
 
@@ -258,37 +261,37 @@ extern int ipbanlist_check(char const * ipaddr)
     char const *    ip3;
     char const *    ip4;
     int		    counter;
-    
+
     if (!ipaddr)
     {
 	eventlog(eventlog_level_warn,__FUNCTION__,"got NULL ipaddr");
 	return -1;
     }
-    
+
     whole = xstrdup(ipaddr);
 
     eventlog(eventlog_level_debug,__FUNCTION__,"lastcheck: %u, now: %u, now-lc: %u.",(unsigned)lastchecktime,(unsigned)now,(unsigned)(now-lastchecktime));
-    
+
     if (now - lastchecktime >= (signed)prefs_get_ipban_check_int()) /* unsigned; no need to check prefs < 0 */
     {
 	ipbanlist_unload_expired();
 	lastchecktime = now;
     }
-    
+
     ip1 = strtok(whole,".");
     ip2 = strtok(NULL,".");
     ip3 = strtok(NULL,".");
     ip4 = strtok(NULL,".");
-    
+
     if (!ip1 || !ip2 || !ip3 || !ip4)
     {
 	eventlog(eventlog_level_warn,__FUNCTION__,"got bad IP address \"%s\"",ipaddr);
 	xfree(whole);
 	return -1;
     }
-    
+
     eventlog(eventlog_level_debug,__FUNCTION__,"checking %s.%s.%s.%s",ip1,ip2,ip3,ip4);
-    
+
     counter = 0;
     LIST_TRAVERSE_CONST(ipbanlist_head,curr)
     {
@@ -298,7 +301,7 @@ extern int ipbanlist_check(char const * ipaddr)
 	    eventlog(eventlog_level_error,__FUNCTION__,"ipbanlist contains NULL item");
 	    return -1;
 	}
-	counter++; 
+	counter++;
 	switch (entry->type)
 	{
 	case ipban_type_exact:
@@ -310,7 +313,7 @@ extern int ipbanlist_check(char const * ipaddr)
 	    }
 	    eventlog(eventlog_level_debug,__FUNCTION__,"address %s does not match exact %s",ipaddr,entry->info1);
 	    continue;
-	 
+
 	case ipban_type_wildcard:
 	    if (strcmp(entry->info1,"*")!=0 && strcmp(ip1,entry->info1)!=0)
 	    {
@@ -332,11 +335,11 @@ extern int ipbanlist_check(char const * ipaddr)
 		eventlog(eventlog_level_debug,__FUNCTION__,"address %s does not match part 4 of wildcard %s.%s.%s.%s",ipaddr,entry->info1,entry->info2,entry->info3,entry->info4);
 		continue;
 	    }
-	    
+
 	    eventlog(eventlog_level_debug,__FUNCTION__,"address %s matched wildcard %s.%s.%s.%s",ipaddr,entry->info1,entry->info2,entry->info3,entry->info4);
 	    xfree(whole);
 	    return counter;
-	    
+
 	case ipban_type_range:
 	    if ((ipban_str_to_ulong(ipaddr) >= ipban_str_to_ulong(entry->info1)) &&
 		(ipban_str_to_ulong(ipaddr) <= ipban_str_to_ulong(entry->info2)))
@@ -347,7 +350,7 @@ extern int ipbanlist_check(char const * ipaddr)
 	    }
 	    eventlog(eventlog_level_debug,__FUNCTION__,"address %s does not match range %s-%s",ipaddr,entry->info1,entry->info2);
 	    continue;
-	
+
 	case ipban_type_netmask:
 	    {
 		unsigned long	lip1;
@@ -362,7 +365,7 @@ extern int ipbanlist_check(char const * ipaddr)
 		    return -1;
 
 		lip1 = lip1 & netmask;
-		lip2 = lip2 & netmask;		
+		lip2 = lip2 & netmask;
 		if (lip1 == lip2)
 		{
 		    eventlog(eventlog_level_debug,__FUNCTION__,"address %s matched netmask %s/%s",ipaddr,entry->info1,entry->info2);
@@ -371,14 +374,14 @@ extern int ipbanlist_check(char const * ipaddr)
 		}
 		eventlog(eventlog_level_debug,__FUNCTION__,"address %s does not match netmask %s/%s",ipaddr,entry->info1,entry->info2);
 		continue;
-	    }	
-	
+	    }
+
 	case ipban_type_prefix:
 	    {
 		unsigned long	lip1;
 		unsigned long	lip2;
 		int		prefix;
-				
+
 		if (!(lip1 = ipban_str_to_ulong(ipaddr)))
 		    return -1;
 		if (!(lip2 = ipban_str_to_ulong(entry->info1)))
@@ -386,7 +389,7 @@ extern int ipbanlist_check(char const * ipaddr)
 		prefix = atoi(entry->info2);
 
 		lip1 = lip1 >> (32 - prefix);
-		lip2 = lip2 >> (32 - prefix);		
+		lip2 = lip2 >> (32 - prefix);
 		if (lip1 == lip2)
 		{
 		    eventlog(eventlog_level_debug,__FUNCTION__,"address %s matched prefix %s/%s",ipaddr,entry->info1,entry->info2);
@@ -395,11 +398,11 @@ extern int ipbanlist_check(char const * ipaddr)
 		}
 		eventlog(eventlog_level_debug,__FUNCTION__,"address %s does not match prefix %s/%s",ipaddr,entry->info1,entry->info2);
 		continue;
-	    }	
+	    }
 	default:  /* unknown type */
 	    eventlog(eventlog_level_warn,__FUNCTION__,"found bad ban type %d",(int)entry->type);
 	}
-    }    
+    }
 
     xfree(whole);
 
@@ -411,7 +414,7 @@ extern int ipbanlist_add(t_connection * c, char const * cp, time_t endtime)
 {
     t_ipban_entry *	entry;
     char		tstr[MAX_MESSAGE_LEN];
-    
+
     if (!(entry = ipban_str_to_ipban_entry(cp)))
     {
 	if (c)
@@ -422,10 +425,10 @@ extern int ipbanlist_add(t_connection * c, char const * cp, time_t endtime)
 
     entry->endtime = endtime;
     list_append_data(ipbanlist_head,entry);
-    
+
     if (c)
     {
-	
+
 	if (endtime == 0)
 	{
             sprintf(tstr,"%s banned permamently by %s.",cp,conn_get_username(c));
@@ -453,7 +456,7 @@ extern int ipbanlist_unload_expired(void)
     t_elem *		curr;
     t_ipban_entry * 	entry;
     char removed;
-    
+
     removed = 0;
     LIST_TRAVERSE(ipbanlist_head,curr)
     {
@@ -484,7 +487,7 @@ extern time_t ipbanlist_str_to_time_t(t_connection * c, char const * timestr)
     char		minstr[MAX_TIME_STR];
     unsigned int	i;
     char		tstr[MAX_MESSAGE_LEN];
-    
+
     for (i=0; isdigit((int)timestr[i]) && i<sizeof(minstr)-1; i++)
 	minstr[i] = timestr[i];
     minstr[i] = '\0';
@@ -495,7 +498,7 @@ extern time_t ipbanlist_str_to_time_t(t_connection * c, char const * timestr)
 	{
 	    if (strlen(minstr)<1)
 		message_send_text(c,message_type_info,c,"There was an error in time.");
-	    else	
+	    else
 	    {
 		sprintf(tstr,"There was an error in time. Banning only for: %s minutes.",minstr);
 	        message_send_text(c,message_type_info,c,tstr);
@@ -511,7 +514,7 @@ extern time_t ipbanlist_str_to_time_t(t_connection * c, char const * timestr)
     if (bmin == 0)
     	return 0;
     else
-    {	
+    {
 	return now + bmin*60;
     }
 }
@@ -522,10 +525,10 @@ extern int handle_ipban_command(t_connection * c, char const * text)
     char		subcommand[MAX_FUNC_LEN];
     char		ipstr[MAX_IP_STR];
     unsigned int 	i,j;
-    
+
     for (i=0; text[i]!=' ' && text[i]!='\0'; i++); /* skip command */
     for (; text[i]==' '; i++);
-    
+
     for (j=0; text[i]!=' ' && text[i]!='\0'; i++) /* get subcommand */
 	if (j<sizeof(subcommand)-1) subcommand[j++] = text[i];
     subcommand[j] = '\0';
@@ -590,7 +593,7 @@ static int ipban_func_del(t_connection * c, char const * cp)
     t_elem *		curr;
     unsigned int	counter;
     char		tstr[MAX_MESSAGE_LEN];
-    
+
     counter = 0;
     if (strchr(cp,'.') || strchr(cp,'/') || strchr(cp,'*'))
     {
@@ -616,14 +619,14 @@ static int ipban_func_del(t_connection * c, char const * cp)
 		    ipban_unload_entry(entry);
 	    }
 	}
-	    
+
 	ipban_unload_entry(to_delete);
 	if (counter == 0)
 	{
 	    message_send_text(c,message_type_error,c,"No matching entry.");
 	    return -1;
 	}
-	else 
+	else
 	{
 	    if (counter == 1)
 		sprintf(tstr,"Entry deleted.");
@@ -633,7 +636,7 @@ static int ipban_func_del(t_connection * c, char const * cp)
 	    return 0;
 	}
     }
-    
+
     to_delete_nmbr = atoi(cp);
     if (to_delete_nmbr <= 0)
     {
@@ -659,7 +662,7 @@ static int ipban_func_del(t_connection * c, char const * cp)
 	    }
 	}
     }
-    
+
     if (to_delete_nmbr > counter)
     {
 	sprintf(tstr,"There are only %u entries.",counter);
@@ -679,7 +682,7 @@ static int ipban_func_list(t_connection * c)
     unsigned int	counter;
     char	 	timestr[50];
     char *		ipstr;
-    
+
     counter = 0;
     message_send_text(c,message_type_info,c,"Banned IPs:");
     LIST_TRAVERSE_CONST(ipbanlist_head,curr)
@@ -707,7 +710,7 @@ static int ipban_func_list(t_connection * c)
     }
 
     if (counter == 0)
-	message_send_text(c,message_type_info,c,"none");    
+	message_send_text(c,message_type_info,c,"none");
     return 0;
 }
 
@@ -716,7 +719,7 @@ static int ipban_func_check(t_connection * c, char const * cp)
 {
     int		res;
     char	entry[MAX_MESSAGE_LEN];
-    
+
     res = ipbanlist_check(cp);
     switch (res)
     {
@@ -729,7 +732,7 @@ static int ipban_func_check(t_connection * c, char const * cp)
 	default:
 	    sprintf(entry,"IP banned by rule #%i.",res);
 	    message_send_text(c,message_type_info,c,entry);
-    }	
+    }
 
     return 0;
 }
@@ -805,7 +808,7 @@ static t_ipban_entry * ipban_str_to_ipban_entry(char const * ipstr)
     char *          whole;
     char *          cp;
     t_ipban_entry * entry;
-    
+
     entry = (t_ipban_entry*)xmalloc(sizeof(t_ipban_entry));
     if (!ipstr)
     {
@@ -842,7 +845,7 @@ static t_ipban_entry * ipban_str_to_ipban_entry(char const * ipstr)
         {
 	    entry->type = ipban_type_wildcard;
 	    eventlog(eventlog_level_debug,__FUNCTION__,"entry: %s matched as ipban_type_wildcard",cp);
-		
+
 	    /* only xfree() info1! */
 	    whole = xstrdup(cp);
 	    entry->info1 = strtok(whole,".");
@@ -871,7 +874,7 @@ static t_ipban_entry * ipban_str_to_ipban_entry(char const * ipstr)
 		    entry->type = ipban_type_prefix;
 		    eventlog(eventlog_level_debug,__FUNCTION__,"entry: %s matched as ipban_type_prefix",cp);
 		}
-	    
+
 		matched[0] = '\0';
 		entry->info1 = xstrdup(cp);
 		entry->info2 = xstrdup(&matched[1]);
@@ -882,14 +885,14 @@ static t_ipban_entry * ipban_str_to_ipban_entry(char const * ipstr)
 	    {
 		entry->type = ipban_type_exact;
 		eventlog(eventlog_level_debug,__FUNCTION__,"entry: %s matched as ipban_type_exact",cp);
-	        
+
 		entry->info1 = xstrdup(cp);
 		entry->info2 = NULL; /* clear unused elements so debugging is nicer */
 		entry->info3 = NULL;
 		entry->info4 = NULL;
 	    }
     xfree(cp);
-    
+
     return entry;
 }
 
@@ -898,7 +901,7 @@ static char * ipban_entry_to_str(t_ipban_entry const * entry)
 {
     char 	tstr[MAX_MESSAGE_LEN];
     char * 	str;
-    
+
     switch (entry->type)
     {
         case ipban_type_exact:
@@ -914,13 +917,13 @@ static char * ipban_entry_to_str(t_ipban_entry const * entry)
 	 case ipban_type_prefix:
 	    sprintf(tstr,"%s/%s",entry->info1,entry->info2);
 	    break;
-	    
+
 	default: /* unknown type */
 	    eventlog(eventlog_level_warn,__FUNCTION__,"found bad ban type %d",(int)entry->type);
 	    return NULL;
     }
     str = xstrdup(tstr);
-    
+
     return str;
 }
 
@@ -932,7 +935,7 @@ static unsigned long ipban_str_to_ulong(char const * ipaddr)
     char *    		ip3;
     char *    		ip4;
     char *		tipaddr;
-    
+
     tipaddr = xstrdup(ipaddr);
     ip1 = strtok(tipaddr,".");
     ip2 = strtok(NULL,".");
@@ -952,12 +955,12 @@ static int ipban_could_be_exact_ip_str(char const * str)
     char *	s;
     char * 	ttok;
     int 	i;
-    
+
     ipstr = xstrdup(str);
-    
+
     s = ipstr;
     for (i=0; i<4; i++)
-    { 
+    {
 	ttok = (char *)strsep(&ipstr, ".");
 	if (!ttok || strlen(ttok)<1 || strlen(ttok)>3)
 	{
@@ -976,7 +979,7 @@ static int ipban_could_be_ip_str(char const * str)
     char *	matched;
     char *	ipstr;
     unsigned int 	i;
-    
+
     if (strlen(str)<7)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"string too short");
@@ -1049,8 +1052,8 @@ static int ipban_could_be_ip_str(char const * str)
 	}
     }
     xfree(ipstr);
-    
-    return 1;    
+
+    return 1;
 }
 
 
@@ -1068,4 +1071,6 @@ static void ipban_usage(t_connection * c)
     message_send_text(c,message_type_info,c,"    (IP have to be entry accepted in bnban)");
     message_send_text(c,message_type_info,c,"to check is specified IP banned:");
     message_send_text(c,message_type_info,c,"    /ipban c[heck] IP");
+}
+
 }

@@ -37,6 +37,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern int handle_init_packet(t_connection * c, t_packet const * const packet)
 {
     if (!c)
@@ -54,7 +57,7 @@ extern int handle_init_packet(t_connection * c, t_packet const * const packet)
         eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad packet (class %d)",conn_get_socket(c),(int)packet_get_class(packet));
         return -1;
     }
-    
+
     switch (packet_get_type(packet))
     {
     case CLIENT_INITCONN:
@@ -71,21 +74,21 @@ extern int handle_init_packet(t_connection * c, t_packet const * const packet)
 	    eventlog(eventlog_level_info,__FUNCTION__,"[%d] client initiated file download connection",conn_get_socket(c));
 	    conn_set_state(c,conn_state_connected);
 	    conn_set_class(c,conn_class_file);
-	    
+
 	    break;
-	    
+
 	case CLIENT_INITCONN_CLASS_BOT:
 	    eventlog(eventlog_level_info,__FUNCTION__,"[%d] client initiated chat bot connection",conn_get_socket(c));
 	    conn_set_state(c,conn_state_connected);
 	    conn_set_class(c,conn_class_bot);
-	    
+
 	    break;
-	    
+
 	case CLIENT_INITCONN_CLASS_TELNET:
 	    eventlog(eventlog_level_info,__FUNCTION__,"[%d] client initiated telnet connection",conn_get_socket(c));
 	    conn_set_state(c,conn_state_connected);
 	    conn_set_class(c,conn_class_telnet);
-	    
+
 	    break;
 
         case CLIENT_INITCONN_CLASS_D2CS_BNETD:
@@ -107,7 +110,7 @@ extern int handle_init_packet(t_connection * c, t_packet const * const packet)
               }
            }
            break;
-	    
+
 	case CLIENT_INITCONN_CLASS_ENC:
 	    eventlog(eventlog_level_info,__FUNCTION__,"[%d] client initiated encrypted connection (not supported)",conn_get_socket(c));
 	    return -1;
@@ -121,8 +124,8 @@ extern int handle_init_packet(t_connection * c, t_packet const * const packet)
 	eventlog(eventlog_level_error,__FUNCTION__,"[%d] unknown init packet type 0x%04x, len %u",conn_get_socket(c),packet_get_type(packet),packet_get_size(packet));
 	return -1;
     }
-    
+
     return 0;
 }
 
-
+}

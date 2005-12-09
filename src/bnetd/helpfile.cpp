@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000  Dizzy 
+ * Copyright (C) 2000  Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -52,6 +52,8 @@
 #include "account_wrap.h"
 #include "command_groups.h"
 
+namespace pvpgn
+{
 
 static FILE* hfd=NULL; /* helpfile descriptor */
 
@@ -91,13 +93,13 @@ extern int handle_help_command(t_connection * c, char const * text)
 {
     unsigned int i,j;
     char         comm[MAX_COMMAND_LEN];
-        
+
     if (hfd == NULL)
     { /* an error ocured opening readonly the help file, helpfile_unload was called, or helpfile_init hasn't been called */
         message_send_text(c,message_type_error,c,"Oops ! There is a problem with the help file. Please contact the administrator of the server.");
         return 0;
     }
-    
+
     rewind(hfd);
     for (i=0; text[i]!=' ' && text[i]!='\0'; i++); /* skip command */
     for (; text[i]==' '; i++);
@@ -106,14 +108,14 @@ extern int handle_help_command(t_connection * c, char const * text)
     for (j=0; text[i]!=' ' && text[i]!='\0'; i++) /* get comm */
     if (j<sizeof(comm)-1) comm[j++] = text[i];
     comm[j] = '\0';
-        
+
     /* just read the whole file and dump only the commands */
     if (comm[0]=='\0')
     {
         list_commands(c);
         return 0;
     }
-    
+
     if (describe_command(c,comm)==0) return 0;
     /* no description was found for this command. inform the user */
     message_send_text(c,message_type_error,c," no help available for that command");
@@ -125,7 +127,7 @@ static int list_commands(t_connection * c)
 {
     char * line;
     int    i;
-    
+
     message_send_text(c,message_type_info,c,"Chat commands:");
     while ((line=file_get_line(hfd))!=NULL)
     {
@@ -136,7 +138,7 @@ static int list_commands(t_connection * c)
             int al;
 	    int skip;
 	    unsigned int length,position;
-	    
+
             /* ok. now we must see if there are any aliases */
             length=MAX_COMMAND_LEN+1; position=0;
             buffer=(char*)xmalloc(length+1); /* initial memory allocation = pretty fair */
@@ -180,7 +182,7 @@ static int describe_command(t_connection * c, char const * comm)
 {
     char * line;
     int    i;
-    
+
     /* ok. the client requested help for a specific command */
     while ((line=file_get_line(hfd))!=NULL)
     {
@@ -229,7 +231,8 @@ static int describe_command(t_connection * c, char const * comm)
         }
     }
     file_get_line(NULL); // clear file_get_line buffer
-    
+
     return -1;
 }
 
+}

@@ -51,11 +51,14 @@
 #include "common/xalloc.h"
 #include "common/tag.h"
 
+namespace pvpgn
+{
+
 char * status_filename;
 
 int output_standard_writer(FILE * fp);
 
-/* 
+/*
  * Initialisation Output *
  */
 
@@ -69,9 +72,9 @@ extern void output_init(void)
 	status_filename = create_filename(prefs_get_outputdir(),"server",".dat"); // WarCraft III
 
     return;
-} 
+}
 
-/* 
+/*
  * Write Functions *
  */
 
@@ -89,7 +92,7 @@ static int _glist_cb_simple(t_game *game, void *data)
     static int number;
     char clienttag_str[5];
 
-    if (!data) { 
+    if (!data) {
 	number = 1;
 	return 0;
     }
@@ -108,7 +111,7 @@ int output_standard_writer(FILE * fp)
     char const		*channel_name;
     int			number;
     char		clienttag_str[5];
-    
+
     if (prefs_get_XML_status_output())
     {
 	fprintf(fp,"<?xml version=\"1.0\"?>\n<status>\n");
@@ -127,7 +130,7 @@ int output_standard_writer(FILE * fp)
 	fprintf(fp,"\t\t</Users>\n");
 	fprintf(fp,"\t\t<Games>\n");
 	fprintf(fp,"\t\t<Number>%d</Number>\n",gamelist_get_length());
-	
+
 	gamelist_traverse(_glist_cb_xml,fp);
 
 	fprintf(fp,"\t\t</Games>\n");
@@ -140,7 +143,7 @@ int output_standard_writer(FILE * fp)
 	    channel_name = channel_get_name(channel);
 	    fprintf(fp,"\t\t<channel>%s</channel>\n",channel_name);
 	}
-	
+
 	fprintf(fp,"\t\t</Channels>\n");
 	fprintf(fp,"</status>\n");
 	return 0;
@@ -173,7 +176,7 @@ int output_standard_writer(FILE * fp)
 		number++;
 	    }
 	}
-	
+
 	return 0;
     }
 }
@@ -181,19 +184,19 @@ int output_standard_writer(FILE * fp)
 extern int output_write_to_file(void)
 {
     FILE * fp;
-  
+
     if (!status_filename)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
 	return -1;
     }
-    
+
     if (!(fp = fopen(status_filename,"w")))
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (fopen: %s)",status_filename,pstrerror(errno)); 
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (fopen: %s)",status_filename,pstrerror(errno));
         return -1;
     }
-    
+
     output_standard_writer(fp);
     fclose(fp);
     return 0;
@@ -202,4 +205,6 @@ extern int output_write_to_file(void)
 extern void output_dispose_filename(void)
 {
   if (status_filename) xfree(status_filename);
+}
+
 }

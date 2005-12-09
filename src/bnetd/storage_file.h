@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2002,2003,2004 Dizzy 
+ * Copyright (C) 2002,2003,2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,9 @@
 
 #include "storage.h"
 
+namespace pvpgn
+{
+
 typedef const char t_file_info;
 
 typedef struct {
@@ -29,13 +32,20 @@ typedef struct {
     int (*write_attrs)(const char *filename, const t_hlist *attributes);
 } t_file_engine;
 
+}
+
 #endif /* INClUDED_STORAGE_FILE_TYPES */
 
 #ifndef JUST_NEED_TYPES
 #ifndef INClUDED_STORAGE_FILE_PROTOS
 #define INClUDED_STORAGE_FILE_PROTOS
 
+namespace pvpgn
+{
+
 extern t_storage storage_file;
+
+}
 
 #endif /* INClUDED_STORAGE_FILE_PROTOS */
 #endif /* JUST_NEED_TYPES */

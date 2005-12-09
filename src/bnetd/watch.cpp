@@ -49,6 +49,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 static t_list * watchlist_head=NULL;
 
 
@@ -57,7 +60,7 @@ extern int watchlist_add_events(t_connection * owner, t_account * who, t_clientt
 {
     t_elem const * curr;
     t_watch_pair * pair;
-    
+
     if (!owner)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL owner");
@@ -84,9 +87,9 @@ extern int watchlist_add_events(t_connection * owner, t_account * who, t_clientt
     pair->who   = who;
     pair->what  = events;
     pair->clienttag = clienttag;
-    
+
     list_prepend_data(watchlist_head,pair);
-    
+
     return 0;
 }
 
@@ -96,13 +99,13 @@ extern int watchlist_del_events(t_connection * owner, t_account * who, t_clientt
 {
     t_elem *       curr;
     t_watch_pair * pair;
-    
+
     if (!owner)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL owner");
 	return -1;
     }
-    
+
     LIST_TRAVERSE(watchlist_head,curr)
     {
 	pair = (t_watch_pair*)elem_get_data(curr);
@@ -124,11 +127,11 @@ extern int watchlist_del_events(t_connection * owner, t_account * who, t_clientt
 		else
 		    xfree(pair);
 	    }
-	    
+
 	    return 0;
 	}
     }
-    
+
     return -1; /* not found */
 }
 
@@ -138,13 +141,13 @@ extern int watchlist_del_all_events(t_connection * owner)
 {
     t_elem *       curr;
     t_watch_pair * pair;
-    
+
     if (!owner)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL owner");
 	return -1;
     }
-    
+
     LIST_TRAVERSE(watchlist_head,curr)
     {
 	pair = (t_watch_pair*)elem_get_data(curr);
@@ -164,7 +167,7 @@ extern int watchlist_del_all_events(t_connection * owner)
 	      { xfree(pair); }
 	}
     }
-    
+
     return 0;
 }
 
@@ -173,13 +176,13 @@ extern int watchlist_del_by_account(t_account * who)
 {
     t_elem *       curr;
     t_watch_pair * pair;
-    
+
     if (!who)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL account");
 	return -1;
     }
-    
+
     LIST_TRAVERSE(watchlist_head,curr)
     {
 	pair = (t_watch_pair*)elem_get_data(curr);
@@ -199,7 +202,7 @@ extern int watchlist_del_by_account(t_account * who)
 	      { xfree(pair); }
 	}
     }
-    
+
     return 0;
 }
 
@@ -245,18 +248,18 @@ static int handle_event_whisper(t_account *account, char const *gamename, t_clie
         if (event == watch_event_login)    sprintf(msg,"Your friend %s has entered %s.",myusername,prefs_get_servername());
         if (event == watch_event_logout)   sprintf(msg,"Your friend %s has left %s.",myusername,prefs_get_servername());
         LIST_TRAVERSE(flist,curr)
-        { 
+        {
             if (!(fr = (t_friend*)elem_get_data(curr)))
             {
                 eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
                 continue;
             }
-        
+
             dest_c = connlist_find_connection_by_account(fr->friendacc);
-      
+
             if (dest_c==NULL) /* If friend is offline, go on to next */
 	        continue;
-            else { 
+            else {
     		cnt++;	/* keep track of successful whispers */
 	    	if(friend_get_mutual(fr))
         	    message_send_text(dest_c,message_type_whisper,NULL,msg);
@@ -267,7 +270,7 @@ static int handle_event_whisper(t_account *account, char const *gamename, t_clie
 
     /* watchlist handling */
 
-    if (event == watch_event_joingame) 
+    if (event == watch_event_joingame)
     {
 	if (gamename)
     	    sprintf(msg,"Watched user %s has entered a %s game named \"%s\".",myusername,game_title,gamename);
@@ -292,7 +295,7 @@ static int handle_event_whisper(t_account *account, char const *gamename, t_clie
 	    message_send_text(pair->owner,message_type_whisper,NULL,msg);
 	}
     }
-  
+
     return 0;
 }
 
@@ -326,7 +329,7 @@ extern int watchlist_destroy(void)
 {
     t_elem *       curr;
     t_watch_pair * pair;
-    
+
     if (watchlist_head)
     {
 	LIST_TRAVERSE(watchlist_head,curr)
@@ -337,17 +340,18 @@ extern int watchlist_destroy(void)
 		eventlog(eventlog_level_error,__FUNCTION__,"watchlist contains NULL item");
 		continue;
 	    }
-	    
+
 	    if (list_remove_elem(watchlist_head,&curr)<0)
         	eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
 	    xfree(pair);
 	}
-	
+
 	if (list_destroy(watchlist_head)<0)
 	    return -1;
 	watchlist_head = NULL;
     }
-    
+
     return 0;
 }
 
+}

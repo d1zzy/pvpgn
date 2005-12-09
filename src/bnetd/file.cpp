@@ -61,6 +61,8 @@
 #include "file.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
 
 static char const * file_get_info(char const * rawname, unsigned int * len, bn_long * modtime);
 
@@ -145,7 +147,7 @@ extern int file_to_mod_time(char const * rawname, bn_long * modtime)
 {
     char const * filename;
     unsigned int len;
-    
+
     if (!rawname)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL rawname");
@@ -156,12 +158,12 @@ extern int file_to_mod_time(char const * rawname, bn_long * modtime)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL modtime");
 	return -1;
     }
-    
+
     if (!(filename = file_get_info(rawname, &len, modtime)))
 	return -1;
-    
+
     xfree((void *)filename); /* avoid warning */
-    
+
     return 0;
 }
 
@@ -177,7 +179,7 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
     FILE *       fp;
     unsigned int filelen;
     int          nbytes;
-    
+
     if (!c)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
@@ -188,7 +190,7 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL rawname");
 	return -1;
     }
-    
+
     if (!(rpacket = packet_create(packet_class_file)))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create file packet");
@@ -196,7 +198,7 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
     }
     packet_set_size(rpacket,sizeof(t_server_file_reply));
     packet_set_type(rpacket,SERVER_FILE_REPLY);
-    
+
     if ((filename = file_get_info(rawname,&filelen,&rpacket->u.server_file_reply.timestamp)))
     {
 	if (!(fp = fopen(filename,"rb")))
@@ -213,7 +215,7 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 	filelen = 0;
 	bn_long_set_a_b(&rpacket->u.server_file_reply.timestamp,0,0);
     }
-    
+
     if (fp)
     {
 	if (startoffset<filelen) {
@@ -246,7 +248,7 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 	eventlog(eventlog_level_warn,__FUNCTION__,"[%d] sending no data for file \"%s\"",conn_get_socket(c),rawname);
 	return -1;
     }
-    
+
     eventlog(eventlog_level_info,__FUNCTION__,"[%d] sending file \"%s\" of length %d",conn_get_socket(c),rawname,filelen);
     for (;;)
     {
@@ -273,8 +275,10 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 	conn_push_outqueue(c,rpacket);
 	packet_del_ref(rpacket);
     }
-    
+
     if (fclose(fp)<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (fclose: %s)",rawname,pstrerror(errno));
     return 0;
+}
+
 }

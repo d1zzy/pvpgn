@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2002,2003 Dizzy 
+ * Copyright (C) 2002,2003 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,7 +22,12 @@
 
 #include "storage.h"
 
+namespace pvpgn
+{
+
 extern t_storage storage_sql;
+
+}
 
 #endif /* INCLUDED_STORAGE_SQL_PROTOS */
 #endif /* JUST_NEED_TYPES */

@@ -113,7 +113,7 @@
 #include "common/network.h"
 #include "prefs.h"
 #include "account.h"
-#include "common/tracker.h"
+#include "tracker.h"
 #include "common/list.h"
 #include "adbanner.h"
 #include "timer.h"
@@ -151,6 +151,9 @@
 
 extern FILE * hexstrm; /* from main.c */
 extern int g_ServiceStatus;
+
+namespace pvpgn
+{
 
 #ifdef DO_POSIXSIG
 static void quit_sig_handle(int unused);
@@ -1540,4 +1543,6 @@ extern int server_process(void)
     _shutdown_addrs(laddrs);
 
     return 0;
+}
+
 }

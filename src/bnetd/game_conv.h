@@ -26,6 +26,9 @@
 #include "game.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern t_game_type bngreqtype_to_gtype(t_clienttag clienttag, unsigned short bngtype) ;
 extern t_game_type bngtype_to_gtype(t_clienttag clienttag, unsigned short bngtype) ;
 extern unsigned short gtype_to_bngtype(t_game_type gtype) ;
@@ -36,6 +39,8 @@ extern t_game_tileset bngtileset_to_gtileset(unsigned int bngtileset) ;
 extern t_game_speed bngspeed_to_gspeed(unsigned int bngspeed) ;
 extern t_game_difficulty bngdifficulty_to_gdifficulty(unsigned int bngdifficulty) ;
 extern int game_parse_info(t_game * game, char const * gameinfo);
+
+}
 
 #endif
 #endif

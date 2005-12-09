@@ -38,6 +38,9 @@
 
 #endif
 
+namespace pvpgn
+{
+
 typedef struct clan
 #ifdef CLAN_INTERNAL_ACCESS
 {
@@ -74,6 +77,8 @@ typedef struct _clanmember
 #endif
 t_clanmember;
 
+}
+
 #define CLAN_CHIEFTAIN 0x04
 #define CLAN_SHAMAN    0x03
 #define CLAN_GRUNT     0x02
@@ -90,6 +95,9 @@ t_clanmember;
 #include "common/list.h"
 #undef JUST_NEED_TYPES
 
+
+namespace pvpgn
+{
 
 extern t_list *clanlist(void);
 extern int clanlist_load(void);
@@ -159,6 +167,8 @@ extern int clan_send_motd_reply(t_connection * c, t_packet const *const packet);
 extern int clan_save_motd_chg(t_connection * c, t_packet const *const packet);
 
 extern int str_to_clantag(const char *str);
+
+}
 
 #endif
 #endif

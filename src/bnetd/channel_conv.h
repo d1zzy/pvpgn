@@ -28,7 +28,12 @@
 #include "channel.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern unsigned int cflags_to_bncflags(unsigned flags);
+
+}
 
 #endif
 #endif

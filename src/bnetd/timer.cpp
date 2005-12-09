@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 1999,2000  Ross Combs (rocombs@cs.nmsu.edu)
- * Copyright (C) 2004 Dizzy 
+ * Copyright (C) 2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,6 +32,8 @@
 #include "timer.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
 
 static t_elist timerlist_head;
 
@@ -46,7 +48,7 @@ extern int timerlist_add_timer(t_connection * owner, time_t when, t_timer_cb cb,
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL owner");
 	return -1;
     }
-    
+
     timer = (t_timer*)xmalloc(sizeof(t_timer));
     timer->owner = owner;
     timer->when  = when;
@@ -125,7 +127,7 @@ extern int timerlist_destroy(void)
 {
     t_elist * curr, *save;
     t_timer * timer;
-    
+
     elist_for_each_safe(curr,&timerlist_head,save)
     {
         timer = elist_entry(curr,t_timer,timers);
@@ -134,6 +136,8 @@ extern int timerlist_destroy(void)
 	xfree((void*)timer);
     }
     elist_init(&timerlist_head);
-    
+
     return 0;
+}
+
 }

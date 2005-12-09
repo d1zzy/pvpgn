@@ -49,6 +49,9 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 static int on_d2cs_accountloginreq(t_connection * c, t_packet const * packet);
 static int on_d2cs_charloginreq(t_connection * c, t_packet const * packet);
 static int on_d2cs_authreply(t_connection * c, t_packet const * packet);
@@ -260,7 +263,7 @@ static int on_d2cs_charloginreq(t_connection * c, t_packet const * packet)
 	char const *	realmname;
 	unsigned int	pos, reply;
 	t_packet *	rpacket;
-	
+
 	if (packet_get_size(packet)<sizeof(t_d2cs_bnetd_charloginreq)) {
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad packet size");
 		return -1;
@@ -341,7 +344,7 @@ extern int send_d2cs_gameinforeq(t_connection * c)
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
 		return -1;
 	}
-	
+
 	if (!(game = conn_get_game(c)))
 	{
 		eventlog(eventlog_level_error,__FUNCTION__,"conn had NULL game");
@@ -378,7 +381,7 @@ static int on_d2cs_gameinforeply(t_connection * c, t_packet const * packet)
 		return -1;
 	}
 
-	if (!(gamename = packet_get_str_const(packet,sizeof(t_d2cs_bnetd_gameinforeply),GAME_NAME_LEN))) 
+	if (!(gamename = packet_get_str_const(packet,sizeof(t_d2cs_bnetd_gameinforeply),GAME_NAME_LEN)))
 	{
 		eventlog(eventlog_level_error,__FUNCTION__,"missing or too long gamename");
 		return -1;
@@ -404,12 +407,13 @@ static int on_d2cs_gameinforeply(t_connection * c, t_packet const * packet)
 		case 2:
 			diff = game_difficulty_hell;
 			break;
-		default: 
+		default:
 			diff = game_difficulty_none;
 	}
 
 	game_set_difficulty(game,diff);
-	
-	return 0;	
+
+	return 0;
 }
 
+}

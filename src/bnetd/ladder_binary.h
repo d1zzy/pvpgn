@@ -18,9 +18,11 @@
 #ifndef INCLUDED_BINARY_LADDER_TYPES
 #define INCLUDED_BINARY_LADDER_TYPES
 
+namespace pvpgn
+{
 
-typedef enum 
-{	WAR3_SOLO, WAR3_TEAM, WAR3_FFA, WAR3_AT, 
+typedef enum
+{	WAR3_SOLO, WAR3_TEAM, WAR3_FFA, WAR3_AT,
 	W3XP_SOLO, W3XP_TEAM, W3XP_FFA, W3XP_AT,
 	STAR_AR,   STAR_AW,   STAR_AG,	/* AR = active-rating, AW = active-wins, AG = active-games */
 	STAR_CR,   STAR_CW,   STAR_CG,	/* CR = current-rating, CW = current-wins, CG = current-games */
@@ -34,13 +36,15 @@ typedef enum
 } t_binary_ladder_types;
 
 typedef enum
-{	load_success = 0, 
+{	load_success = 0,
         illegal_checksum,
 	load_failed
 } t_binary_ladder_load_result;
 
 typedef int (* t_cb_get_from_ladder)(t_binary_ladder_types type, int rank, int *results);
 typedef int (* t_cb_add_to_ladder)(t_binary_ladder_types, int *values);
+
+}
 
 #ifdef BINARY_LADDER_INTERNAL_ACCESS
 
@@ -56,9 +60,13 @@ typedef int (* t_cb_add_to_ladder)(t_binary_ladder_types, int *values);
 #define INCLUDED_BINARY_LADDER_PROTOS
 
 // some protos here
+namespace pvpgn
+{
 
 extern int binary_ladder_save(t_binary_ladder_types type, unsigned int paracount, t_cb_get_from_ladder _cb_get_from_ladder);
 extern t_binary_ladder_load_result binary_ladder_load(t_binary_ladder_types type, unsigned int paracount, t_cb_add_to_ladder _cb_add_to_ladder);
+
+}
 
 #endif
 #endif

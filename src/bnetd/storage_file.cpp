@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 1998,1999,2000,2001  Ross Combs (rocombs@cs.nmsu.edu)
  * Copyright (C) 2000,2001  Marco Ziech (mmz@gmx.net)
- * Copyright (C) 2002,2003,2004 Dizzy 
+ * Copyright (C) 2002,2003,2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -96,6 +96,9 @@
 #include "common/xalloc.h"
 #include "common/elist.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
 
 /* file storage API functions */
 
@@ -770,19 +773,19 @@ static int file_load_teams(t_load_teams_func cb)
 	    eventlog(eventlog_level_error,__FUNCTION__,"invalid team file: file is empty");
 	    goto load_team_failure;
 	}
-	
+
 	if (sscanf(line,"%u,%c,%4s,%u",&fteamid,&size,clienttag,&lastgame)!=4)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"invalid team file: invalid number of arguments on first line");
 	    goto load_team_failure;
 	}
-	
+
 	if (fteamid != teamid)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"invalid team file: filename and stored teamid don't match");
 	    goto load_team_failure;
 	}
-	
+
 	size -='0';
 	if ((size<2) || (size>4))
 	{
@@ -790,7 +793,7 @@ static int file_load_teams(t_load_teams_func cb)
 	    goto load_team_failure;
 	}
 	team->size = size;
-	
+
 	if (!(tag_check_client(team->clienttag = tag_str_to_uint(clienttag))))
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"invalid team file: invalid clienttag");
@@ -846,7 +849,7 @@ static int file_load_teams(t_load_teams_func cb)
 
 	eventlog(eventlog_level_trace,__FUNCTION__,"succesfully loaded team %s",dentry);
 	cb(team);
-	
+
 	goto load_team_success;
 	load_team_failure:
 	  xfree((void*)team);
@@ -893,7 +896,7 @@ static int file_write_team(void *data)
 
     fclose(fp);
     xfree((void *) teamfile);
-    
+
     return 0;
 }
 
@@ -911,6 +914,8 @@ static int file_remove_team(unsigned int teamid)
 	return -1;
     }
     xfree(tempname);
-    
+
     return 0;
+}
+
 }

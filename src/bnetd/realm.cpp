@@ -58,6 +58,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 static t_list * realmlist_head=NULL;
 
 static t_realm * realm_create(char const * name, char const * description, unsigned int ip, unsigned int port);
@@ -66,7 +69,7 @@ static int realm_destroy(t_realm * realm);
 static t_realm * realm_create(char const * name, char const * description, unsigned int ip, unsigned int port)
 {
     t_realm * realm;
-    
+
     if (!name)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL name");
@@ -112,14 +115,14 @@ static int realm_destroy(t_realm * realm)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL realm");
 	return -1;
     }
-    
+
     if (realm->active)
     	realm_deactive(realm);
 
     xfree((void *)realm->name); /* avoid warning */
     xfree((void *)realm->description); /* avoid warning */
     xfree((void *)realm); /* avoid warning */
-    
+
     return 0;
 }
 
@@ -334,19 +337,19 @@ t_list * realmlist_load(char const * filename)
     char *          desc;
     t_realm *       realm;
     t_list *        list_head = NULL;
-    
+
     if (!filename)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
         return NULL;
     }
-    
+
     if (!(fp = fopen(filename,"r")))
     {
         eventlog(eventlog_level_error,__FUNCTION__,"could not open realm file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
         return NULL;
     }
-    
+
     list_head = list_create();
 
     for (line=1; (buff = file_get_line(fp)); line++)
@@ -359,20 +362,20 @@ t_list * realmlist_load(char const * filename)
         if ((temp = strrchr(buff,'#')))
         {
 	    unsigned int endpos;
-	    
+
             *temp = '\0';
 	    len = strlen(buff)+1;
             for (endpos=len-1;  buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
             buff[endpos+1] = '\0';
         }
-        
+
 	/* skip any separators */
 	for (temp = buff; *temp && (*temp == ' ' || *temp == '\t');temp++);
 	if (*temp != '"') {
 	    eventlog(eventlog_level_error,__FUNCTION__,"malformed line %u in file \"%s\" (no realmname)",line,filename);
 	    continue;
 	}
-	
+
 	temp2 = temp + 1;
 	/* find the next " */
 	for (temp = temp2; *temp && *temp != '"';temp++);
@@ -380,16 +383,16 @@ t_list * realmlist_load(char const * filename)
 	    eventlog(eventlog_level_error,__FUNCTION__,"malformed line %u in file \"%s\" (no realmname)",line,filename);
 	    continue;
 	}
-	
+
 	/* save the realmname */
 	*temp = '\0';
         name = xstrdup(temp2);
-	
+
 	/* eventlog(eventlog_level_trace, __FUNCTION__,"found realmname: %s",name); */
 
 	/* skip any separators */
 	for(temp = temp + 1; *temp && (*temp == '\t' || *temp == ' ');temp++);
-	
+
 	if (*temp == '"') { /* we have realm description */
 	    temp2 = temp + 1;
 	    /* find the next " */
@@ -399,11 +402,11 @@ t_list * realmlist_load(char const * filename)
 		xfree(name);
 		continue;
 	    }
-	    
+
 	    /* save the description */
 	    *temp = '\0';
     	    desc = xstrdup(temp2);
-	    
+
 	    /* eventlog(eventlog_level_trace, __FUNCTION__,"found realm desc: %s",desc); */
 
 	    /* skip any separators */
@@ -424,7 +427,7 @@ t_list * realmlist_load(char const * filename)
 	    xfree(desc);
 	    continue;
 	}
-	
+
 	if (!(realm = realm_create(name,desc,addr_get_ip(raddr),addr_get_port(raddr))))
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not create realm");
@@ -437,7 +440,7 @@ t_list * realmlist_load(char const * filename)
 	addr_destroy(raddr);
 	xfree(name);
 	xfree(desc);
-	
+
 	list_prepend_data(list_head,realm);
     }
     file_get_line(NULL); // clear file_get_line buffer
@@ -483,7 +486,7 @@ extern int realmlist_reload(char const * filename)
 	    {
 		match = 1;
 		rcm_chref(&old_realm->rcm,new_realm);
-		
+
 		break;
 	    }
 
@@ -508,14 +511,14 @@ extern int realmlist_create(char const * filename)
        return -1;
 
     return 0;
-       
+
 }
 
 extern int realmlist_unload(t_list * list_head)
 {
     t_elem *  curr;
     t_realm * realm;
-    
+
     if (list_head)
     {
 	LIST_TRAVERSE(list_head,curr)
@@ -529,14 +532,14 @@ extern int realmlist_unload(t_list * list_head)
 	}
 	list_destroy(list_head);
     }
-    
+
     return 0;
 }
 
 extern int realmlist_destroy()
 {
 	int res;
-	
+
 	res = realmlist_unload(realmlist_head);
 	realmlist_head = NULL;
 
@@ -553,7 +556,7 @@ extern t_realm * realmlist_find_realm(char const * realmname)
 {
     t_elem const *  curr;
     t_realm * realm;
-    
+
     if (!realmname)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL realmname");
@@ -566,7 +569,7 @@ extern t_realm * realmlist_find_realm(char const * realmname)
 	if (strcasecmp(realm->name,realmname)==0)
 	    return realm;
     }
-    
+
     return NULL;
 }
 
@@ -587,7 +590,7 @@ extern t_realm * realmlist_find_realm_by_ip(unsigned long ip)
 extern t_connection * realm_get_conn(t_realm * realm)
 {
 	assert(realm);
-	
+
 	return realm->conn;
 }
 
@@ -600,4 +603,6 @@ extern t_realm * realm_get(t_realm * realm, t_rcm_regref * regref)
 extern void realm_put(t_realm * realm, t_rcm_regref * regref)
 {
 	rcm_put(&realm->rcm,regref);
+}
+
 }

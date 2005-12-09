@@ -90,6 +90,9 @@
 #include "common/elist.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 unsigned int sql_defacct;
 t_sql_engine *sql = NULL;
 
@@ -680,7 +683,7 @@ extern int sql_load_teams(t_load_teams_func cb)
 	    team->teammembers[1] = strtoul(row[5],NULL,10);
 	    team->teammembers[2] = strtoul(row[6],NULL,10);
 	    team->teammembers[3] = strtoul(row[7],NULL,10);
-	    
+
 	    for (i=0; i<MAX_TEAMSIZE;i++)
 	    {
 	       if (i<team->size)
@@ -704,7 +707,7 @@ extern int sql_load_teams(t_load_teams_func cb)
 	       }
 	       team->members[i] = NULL;
 	    }
-	
+
 	    team->wins = atoi(row[8]);
 	    team->losses = atoi(row[9]);
 	    team->xp = atoi(row[10]);
@@ -714,7 +717,7 @@ extern int sql_load_teams(t_load_teams_func cb)
 	    eventlog(eventlog_level_trace,__FUNCTION__,"succesfully loaded team %u",team->teamid);
 	    cb(team);
 	    load_team_failure:
-	    ;    
+	    ;
 	}
 
 	sql->free_result(result);
@@ -784,4 +787,5 @@ extern int sql_remove_team(unsigned int teamid)
     return 0;
 }
 
+}
 #endif				/* WITH_SQL */

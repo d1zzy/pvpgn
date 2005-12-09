@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Dizzy 
+ * Copyright (C) 2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,6 +41,9 @@
 #include "server.h"
 #include "common/setup_after.h"
 
+
+namespace pvpgn
+{
 
 static inline void attrgroup_set_accessed(t_attrgroup *attrgroup)
 {
@@ -288,7 +291,7 @@ static const char *attrgroup_escape_key(const char *key)
 
     if (!strncasecmp(key,"DynKey",6)) {
 	/* OLD COMMENT, MIGHT NOT BE VALID ANYMORE
-	 * Recent Starcraft clients seems to query DynKey\*\1\rank instead of 
+	 * Recent Starcraft clients seems to query DynKey\*\1\rank instead of
 	 * Record\*\1\rank. So replace Dynkey with Record for key lookup.
 	 */
 	tmp = xstrdup(key);
@@ -372,7 +375,7 @@ static const char *attrgroup_get_attrlow(t_attrgroup *attrgroup, const char *key
 
     if (attr) val = attr_get_val(attr);
 
-    if (!val && attrgroup != attrlayer_get_defattrgroup()) 
+    if (!val && attrgroup != attrlayer_get_defattrgroup())
 	val = attrgroup_get_attrlow(attrlayer_get_defattrgroup(), newkey, 0);
 
     if (newkey != key) xfree((void*)newkey);
@@ -434,3 +437,4 @@ out:
     return 0;
 }
 
+}
