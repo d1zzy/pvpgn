@@ -21,6 +21,12 @@
 #include "common/packet.h"
 #include "common/list.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 typedef struct
 {
 	unsigned int	seqno;
@@ -40,5 +46,9 @@ extern int gqlist_update_all_clients(void);
 extern int gqlist_check_creategame(int number);
 extern t_gq * gqlist_find_game(char const * gamename);
 extern unsigned int gqlist_get_length(void);
+
+}
+
+}
 
 #endif

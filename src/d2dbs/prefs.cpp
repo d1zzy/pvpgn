@@ -43,6 +43,12 @@
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 static struct
 {
         char const      * logfile;
@@ -67,7 +73,7 @@ static struct
 	unsigned int	ladderupdate_threshold;
 	unsigned int	ladder_chars_only;
 	unsigned int	difficulty_hack;
-	
+
 } prefs_conf;
 
 static int conf_set_logfile(const char* valstr);
@@ -551,4 +557,6 @@ static int conf_setdef_difficulty_hack(void)
 	return conf_set_int(&prefs_conf.difficulty_hack,NULL,0);
 }
 
+}
 
+}

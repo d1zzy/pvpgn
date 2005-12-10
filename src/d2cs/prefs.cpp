@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2000,2001	Onlyer	(onlyer@263.net)
- * Copyright (C) 2005 Dizzy 
+ * Copyright (C) 2005 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,6 +42,12 @@
 #include "prefs.h"
 #include "common/eventlog.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
+
+namespace d2cs
+{
 
 static struct
 {
@@ -1123,4 +1129,8 @@ static int conf_set_pidfile(const char* valstr)
 static int conf_setdef_pidfile(void)
 {
 	return conf_set_str(&prefs_conf.pidfile,NULL,"");
+}
+
+}
+
 }

@@ -46,6 +46,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static t_list	* gqlist_head=NULL;
 static unsigned int gqlist_seqno=0;
 
@@ -197,4 +203,8 @@ extern t_gq * gqlist_find_game(char const * gamename)
 	}
 	END_LIST_TRAVERSE_DATA()
 	return NULL;
+}
+
+}
+
 }

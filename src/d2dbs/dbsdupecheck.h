@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003	
+ * Copyright (C) 2003
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,4 +19,14 @@
 #define DBSDUPECHECK_CONTAINS_DUPE        0
 #define DBSDUPECHECK_CONTAINS_NO_DUPE     1
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 extern int dbsdupecheck(char * data, unsigned int datalen);
+
+}
+
+}

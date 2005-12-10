@@ -44,6 +44,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static t_list		* sqlist_head=NULL;
 static unsigned int	sqlist_seqno=0;
 
@@ -108,7 +114,7 @@ extern t_sq * sqlist_find_sq(unsigned int seqno)
 extern t_sq * sq_create(unsigned int clientid, t_packet * packet,unsigned int gameid )
 {
 	t_sq	* sq;
-	
+
 	sq=(t_sq*)xmalloc(sizeof(t_sq));
 	sq->seqno=++sqlist_seqno;
 	sq->ctime=time(NULL);
@@ -132,7 +138,7 @@ extern int sq_destroy(t_sq * sq,t_elem ** curr)
 	xfree(sq);
 	return 0;
 }
-	  
+
 extern unsigned int sq_get_clientid(t_sq const * sq)
 {
 	ASSERT(sq,0);
@@ -170,3 +176,6 @@ extern unsigned int sq_get_gametoken(t_sq const * sq)
 	return sq->gametoken;
 }
 
+}
+
+}

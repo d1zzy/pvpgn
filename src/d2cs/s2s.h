@@ -20,9 +20,19 @@
 
 #include "connection.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 extern int s2s_init(void);
 extern int s2s_check(void);
 extern t_connection * s2s_create(char const * server, unsigned short def_port, t_conn_class cclass);
 extern int s2s_destroy(t_connection * s2s);
+
+}
+
+}
 
 #endif

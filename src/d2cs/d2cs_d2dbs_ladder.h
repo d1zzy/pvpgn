@@ -21,6 +21,9 @@
 
 #include "common/bn_type.h"
 
+namespace pvpgn
+{
+
 typedef struct
 {
 	bn_int		type;
@@ -43,6 +46,7 @@ typedef struct
 	bn_int		checksum;
 } t_d2ladderfile_header;
 
+}
 
 #define	LADDER_FILE_PREFIX	"ladder"
 

@@ -103,6 +103,12 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 static int		dbs_packet_gs_id = 0;
 static t_preset_d2gsid	*preset_d2gsid_head = NULL;
 t_list * dbs_server_connection_list = NULL;
@@ -156,7 +162,7 @@ int dbs_server_init(void)
 	struct sockaddr_in sinInterface;
 	int val;
 	t_addr	* servaddr;
-		
+
 	dbs_server_connection_list=list_create();
 
 	if (d2dbs_d2ladder_init()==-1)
@@ -176,7 +182,7 @@ int dbs_server_init(void)
 		eventlog(eventlog_level_error,__FUNCTION__,"psock_init() failed");
 		return -1;
 	}
-	
+
 	sd = psock_socket(PSOCK_PF_INET, PSOCK_SOCK_STREAM, PSOCK_IPPROTO_TCP);
 	if (sd==-1)
 	{
@@ -195,7 +201,7 @@ int dbs_server_init(void)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not get servaddr");
 		return -1;
 	}
-	
+
 	sinInterface.sin_family = PSOCK_AF_INET;
 	sinInterface.sin_addr.s_addr = htonl(addr_get_ip(servaddr));
 	sinInterface.sin_port = htons(addr_get_port(servaddr));
@@ -278,7 +284,7 @@ BOOL dbs_server_write_data(t_d2dbs_connection* conn)
 {
 	int nBytes ;
 
-	nBytes = net_send(conn->sd, conn->WriteBuf, 
+	nBytes = net_send(conn->sd, conn->WriteBuf,
 	    conn->nCharsInWriteBuffer > kMaxPacketLength ? kMaxPacketLength : conn->nCharsInWriteBuffer);
 
 	if (nBytes < 0) return FALSE;
@@ -350,7 +356,7 @@ void dbs_server_loop(int lsocket)
 	struct timeval         tv;
 	int highest_fd;
 	psock_t_socklen nAddrSize = sizeof(sinRemote);
-	
+
 	while (1) {
 
 #ifdef WIN32
@@ -384,7 +390,7 @@ void dbs_server_loop(int lsocket)
 				eventlog(eventlog_level_error,__FUNCTION__,"psock_accept() failed : %s",pstrerror(psock_errno()));
 				return;
 			}
-			
+
 			eventlog(eventlog_level_info,__FUNCTION__,"accepted connection from %s:%d , socket %d .",
 				inet_ntoa(sinRemote.sin_addr) , ntohs(sinRemote.sin_port), sd);
 			eventlog_step(prefs_get_logfile_gs(),eventlog_level_info,__FUNCTION__,"accepted connection from %s:%d , socket %d .",
@@ -400,36 +406,36 @@ void dbs_server_loop(int lsocket)
 			/* FIXME: exceptions are not errors with TCP, they are out-of-band data */
 			return;
 		}
-		
+
 		LIST_TRAVERSE(dbs_server_connection_list,elem)
 		{
 			bOK = TRUE;
 			pcErrorType = 0;
-			
+
 			if (!(it=(t_d2dbs_connection*)elem_get_data(elem))) continue;
 			if (PSOCK_FD_ISSET(it->sd, &ExceptFDs)) {
 				bOK = FALSE;
 				pcErrorType = "General socket error"; /* FIXME: no no no no no */
 				PSOCK_FD_CLR(it->sd, &ExceptFDs);
 			} else {
-				
+
 				if (PSOCK_FD_ISSET(it->sd, &ReadFDs)) {
 					bOK = dbs_server_read_data(it);
 					pcErrorType = "Read error";
 					PSOCK_FD_CLR(it->sd, &ReadFDs);
 				}
-				
+
 				if (PSOCK_FD_ISSET(it->sd, &WriteFDs)) {
 					bOK = dbs_server_write_data(it);
 					pcErrorType = "Write error";
 					PSOCK_FD_CLR(it->sd, &WriteFDs);
 				}
 			}
-			
+
 			if (!bOK) {
 				int	err, errno2;
 				psock_t_socklen	errlen;
-				
+
 				err = 0;
 				errlen = sizeof(err);
 				errno2 = psock_errno();
@@ -475,7 +481,7 @@ static void dbs_on_exit(void)
 	{
 		t_preset_d2gsid * curr;
 		t_preset_d2gsid * next;
-		
+
 		for (curr=preset_d2gsid_head; curr; curr=next)
 		{
 			next = curr->next;
@@ -534,4 +540,8 @@ static unsigned int get_preset_d2gsid(unsigned int ipaddr)
 	pgsid->next = preset_d2gsid_head;
 	preset_d2gsid_head = pgsid;
 	return preset_d2gsid_head->d2gsid;
+}
+
+}
+
 }

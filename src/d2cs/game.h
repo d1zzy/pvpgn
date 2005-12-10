@@ -22,6 +22,12 @@
 #include "connection.h"
 #include "bit.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 typedef struct
 {
 	unsigned char		chclass;
@@ -66,9 +72,9 @@ typedef struct
 #define gameflag_get_template(gameflag)		BIT_TST_FLAG(gameflag, D2_GAMEFLAG_TEMPLATE)	/* true if use template settings */
 
 #define gameflag_set_difficulty(gameflag,n) ( gameflag |= ((n & 0x07) << 0x0C) )
-#define gameflag_set_expansion(gameflag,n)  BIT_SET_CLR_FLAG(gameflag, D2_GAMEFLAG_EXPANSION, n) 
+#define gameflag_set_expansion(gameflag,n)  BIT_SET_CLR_FLAG(gameflag, D2_GAMEFLAG_EXPANSION, n)
 #define gameflag_set_ladder(gameflag,n)     BIT_SET_CLR_FLAG(gameflag, D2_GAMEFLAG_LADDER, n)
-#define gameflag_set_hardcore(gameflag,n)   BIT_SET_CLR_FLAG(gameflag, D2_GAMEFLAG_HARDCORE, n) 
+#define gameflag_set_hardcore(gameflag,n)   BIT_SET_CLR_FLAG(gameflag, D2_GAMEFLAG_HARDCORE, n)
 
 #define gameflag_create(l,e,h,d) (0x04|(e?D2_GAMEFLAG_EXPANSION:0) | (h?D2_GAMEFLAG_HARDCORE:0) | ((d & 0x07) << 0x0c) | (l?D2_GAMEFLAG_LADDER:0))
 
@@ -83,7 +89,7 @@ extern void d2cs_gamelist_check_voidgame(void);
 extern t_game * d2cs_game_create(char const * gamename, char const * gamepass, char const * gamedesc,
 				unsigned int gameflag);
 extern int game_destroy(t_game * game, t_elem ** elem);
-extern int game_add_character(t_game * game, char const * charname, 
+extern int game_add_character(t_game * game, char const * charname,
 				unsigned char chclass, unsigned char level);
 extern int game_del_character(t_game * game, char const * charname);
 
@@ -123,5 +129,9 @@ extern t_game * gamelist_find_character(char const * charname);
 extern unsigned int gamelist_get_totalgame(void);
 extern t_elem const * gamelist_get_curr_elem(void);
 extern void gamelist_set_curr_elem(t_elem const * elem);
+
+}
+
+}
 
 #endif

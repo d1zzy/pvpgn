@@ -82,6 +82,12 @@
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 
 /* FIXME: use addr.h code to do this and make a separate error
  * return path so that 255.255.255.255 isn't an error.
@@ -106,7 +112,7 @@ extern int net_socket(int type)
 	int	sock;
 	int	val;
 	int     ipproto;
-	
+
 	if (type==PSOCK_SOCK_STREAM) {
 		ipproto = PSOCK_IPPROTO_TCP;
 	} else {
@@ -132,7 +138,7 @@ extern int net_check_connected(int sock)
 {
 	int		err;
 	psock_t_socklen	errlen;
-	
+
 	err = 0;
 	errlen = sizeof(err);
 	if (psock_getsockopt(sock,PSOCK_SOL_SOCKET, PSOCK_SO_ERROR, &err, &errlen)<0) {
@@ -149,9 +155,9 @@ extern int net_listen(unsigned int ip, unsigned int port, int type)
 {
 	int			sock;
 	int			val;
-	struct  sockaddr_in	addr;	
+	struct  sockaddr_in	addr;
 	int    			ipproto;
-	
+
 	if (type==PSOCK_SOCK_STREAM) {
 		ipproto = PSOCK_IPPROTO_TCP;
 	} else {
@@ -203,7 +209,7 @@ extern int net_send_data(int sock, char * buff, int buffsize, int * pos, int * c
 	}
 	if (nsend<0) {
 		if (
-#ifdef PSOCK_EINTR	
+#ifdef PSOCK_EINTR
 			psock_errno()==PSOCK_EINTR ||
 #endif
 #ifdef PSOCK_EAGAIN
@@ -250,10 +256,10 @@ extern int net_recv_data(int sock, char * buff, int buffsize, int * pos, int * c
 	if (nrecv==0) {
 		eventlog(eventlog_level_info,__FUNCTION__,"[%d] remote host closed connection",sock);
 		return -1;
-	} 
+	}
 	if (nrecv<0) {
 		if (
-#ifdef PSOCK_EINTR	
+#ifdef PSOCK_EINTR
 			psock_errno()==PSOCK_EINTR ||
 #endif
 #ifdef PSOCK_EAGAIN
@@ -267,8 +273,8 @@ extern int net_recv_data(int sock, char * buff, int buffsize, int * pos, int * c
 #endif
 		0)
 			return 0;
-	
-		if ( 
+
+		if (
 #ifdef PSOCK_ENOTCONN
 			psock_errno()==PSOCK_ENOTCONN ||
 #endif
@@ -284,4 +290,8 @@ extern int net_recv_data(int sock, char * buff, int buffsize, int * pos, int * c
 	}
 	* currsize += nrecv;
 	return 1;
+}
+
+}
+
 }

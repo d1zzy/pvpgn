@@ -75,6 +75,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 extern int s2s_check(void)
 {
 	bnetd_check();
@@ -181,4 +187,8 @@ extern int s2s_destroy(t_connection * c)
 			return -1;
 	}
 	return 0;
+}
+
+}
+
 }

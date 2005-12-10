@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2000,2001	Onlyer	(onlyer@263.net)
- * Copyright (C) 2005	Dizzy	
+ * Copyright (C) 2005	Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,6 +18,12 @@
  */
 #ifndef INCLUDED_PREFS_H
 #define INCLUDED_PREFS_H
+
+namespace pvpgn
+{
+
+namespace d2cs
+{
 
 extern int d2cs_prefs_load(char const * filename);
 extern int prefs_reload(char const * filename);
@@ -73,5 +79,9 @@ extern char const * prefs_get_charlist_sort(void);
 extern char const * prefs_get_charlist_sort_order(void);
 extern unsigned int prefs_get_max_connections(void);
 extern char const * prefs_get_pidfile(void);
+
+}
+
+}
 
 #endif

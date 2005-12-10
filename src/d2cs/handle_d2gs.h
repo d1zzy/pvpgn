@@ -34,7 +34,17 @@
 #endif
 
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 extern int handle_d2gs_packet(t_connection * c, t_packet * packet);
 extern int handle_d2gs_init(t_connection * c);
+
+}
+
+}
 
 #endif

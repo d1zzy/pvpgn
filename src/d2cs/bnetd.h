@@ -20,11 +20,21 @@
 
 #include "s2s.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 extern int bnetd_init(void);
 extern int bnetd_check(void);
 extern t_connection * bnetd_conn(void);
 extern int bnetd_destroy(t_connection * c);
 extern int bnetd_set_connection(t_connection * c);
 extern int bnetd_keepalive(void);
+
+}
+
+}
 
 #endif
