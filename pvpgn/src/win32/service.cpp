@@ -47,7 +47,7 @@ void Win32_ServiceInstall()
 {
 	SERVICE_DESCRIPTION sdBuf; 
     CSD_T ChangeServiceDescription;
-    HANDLE advapi32;
+	HMODULE advapi32;
 	SC_HANDLE serviceControlManager = OpenSCManager(0, 0, SC_MANAGER_CREATE_SERVICE);
 
 	if (serviceControlManager)
@@ -73,7 +73,6 @@ void Win32_ServiceInstall()
 					return;
 				}
 				
-				;
 				if (!(ChangeServiceDescription = (CSD_T) GetProcAddress(advapi32, "ChangeServiceConfig2A")))
 				{
 					CloseServiceHandle(service);

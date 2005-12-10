@@ -40,7 +40,7 @@
 
 #ifdef WIN32 /* winsock2 */
 
-#include <Winsock2.h>
+#include <winsock2.h>
 
 /* protocol families */
 #define PSOCK_PF_INET PF_INET
@@ -128,17 +128,17 @@ extern int psock_init(void);               /* a real functions in */
 extern int psock_deinit(void);             /* compat/psock.c      */
 #define psock_errno()                      WSAGetLastError()
 #define psock_socket(pf, t, ps)            socket(pf, t, ps)
-#define psock_getsockopt(s, l, o, v, size) getsockopt(s, l, o, (void *)(v), size)
-#define psock_setsockopt(s, l, o, v, size) setsockopt(s, l, o, (void *)(v), size)
+#define psock_getsockopt(s, l, o, v, size) getsockopt(s, l, o, (char *)(v), size)
+#define psock_setsockopt(s, l, o, v, size) setsockopt(s, l, o, (const char *)(v), size)
 extern int psock_ctl(int sd, int mode);    /* a real function in compat/psock.c */
 #define psock_listen(s, b)                 listen(s, b)
 #define psock_bind(s, a, l)                bind(s, a, l)
 #define psock_accept(s, a, l)              accept(s, a, l)
 #define psock_connect(s, a, l)             connect(s, a, l)
-#define psock_send(s, b, l, f)             send(s, (void *)(b), l, f)
-#define psock_sendto(s, b, l, f, a, al)    sendto(s, (void *)(b), l, f, a, al)
-#define psock_recv(s, b, l, f)             recv(s, (void *)(b), l, f)
-#define psock_recvfrom(s, b, l, f, a, al)  recvfrom(s, (void *)(b), l, f, a, al)
+#define psock_send(s, b, l, f)             send(s, (const char *)(b), l, f)
+#define psock_sendto(s, b, l, f, a, al)    sendto(s, (const char *)(b), l, f, a, al)
+#define psock_recv(s, b, l, f)             recv(s, (char *)(b), l, f)
+#define psock_recvfrom(s, b, l, f, a, al)  recvfrom(s, (char *)(b), l, f, a, al)
 #define psock_shutdown(s, how)             shutdown(s, how)
 #define psock_close(s)                     closesocket(s)
 #define psock_select(s, r, w, e, t)        select(s, r, w, e ,t)

@@ -19,7 +19,6 @@
 #include "common/setup_before.h"
 #ifdef WIN32
 
-#include <Winsock2.h>
 #include "psock.h"
 #include "common/setup_after.h"
 
