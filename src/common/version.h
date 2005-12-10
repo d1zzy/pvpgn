@@ -14,8 +14,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifndef PVPGN_VERSION
-#define PVPGN_VERSION "1.7.10-CVS"
+#define PVPGN_VERSION "1.99.0-CVS"
 #endif
 #ifndef PVPGN_SOFTWARE
-#define PVPGN_SOFTWARE "PvPGN BnetD Mod"
+#define PVPGN_SOFTWARE "PvPGN"
 #endif
