@@ -67,7 +67,7 @@
 
 
 #ifndef JUST_NEED_TYPES
-#include "d2cs_d2gs_character.h"
+#include "common/d2cs_d2gs_character.h"
 
 namespace pvpgn
 {

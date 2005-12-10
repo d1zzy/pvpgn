@@ -52,7 +52,7 @@
 #include "prefs.h"
 #include "d2charfile.h"
 #include "d2ladder.h"
-#include "d2cs_protocol.h"
+#include "common/d2cs_protocol.h"
 #include "common/tag.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"

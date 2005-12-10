@@ -20,8 +20,8 @@
 #define INCLUDED_D2LADDER_H
 
 #include "common/bn_type.h"
-#include "d2cs_protocol.h"
-#include "d2cs_d2dbs_ladder.h"
+#include "common/d2cs_protocol.h"
+#include "common/d2cs_d2dbs_ladder.h"
 
 namespace pvpgn
 {

@@ -33,7 +33,7 @@
 #include "account.h"
 #include "account_wrap.h"
 #include "game.h"
-#include "d2cs/d2cs_bnetd_protocol.h"
+#include "common/d2cs_bnetd_protocol.h"
 #include "common/bnethash.h"
 #include "common/bnethashconv.h"
 #include "common/eventlog.h"

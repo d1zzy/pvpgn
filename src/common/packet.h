@@ -20,30 +20,30 @@
 #define INCLUDED_PACKET_TYPES
 
 #ifdef JUST_NEED_TYPES
-# include "common/field_sizes.h"
-# include "common/init_protocol.h"
-# include "common/bnet_protocol.h"
-# include "common/anongame_protocol.h"
-# include "common/file_protocol.h"
-# include "common/bot_protocol.h"
-# include "common/udp_protocol.h"
-# include "common/d2game_protocol.h"
-# include "d2cs/d2cs_protocol.h"
-# include "d2cs/d2cs_d2gs_protocol.h"
-# include "d2cs/d2cs_bnetd_protocol.h"
+# include "field_sizes.h"
+# include "init_protocol.h"
+# include "bnet_protocol.h"
+# include "anongame_protocol.h"
+# include "file_protocol.h"
+# include "bot_protocol.h"
+# include "udp_protocol.h"
+# include "d2game_protocol.h"
+# include "d2cs_protocol.h"
+# include "d2cs_d2gs_protocol.h"
+# include "d2cs_bnetd_protocol.h"
 #else
 # define JUST_NEED_TYPES
-# include "common/field_sizes.h"
-# include "common/init_protocol.h"
-# include "common/bnet_protocol.h"
-# include "common/anongame_protocol.h"
-# include "common/file_protocol.h"
-# include "common/bot_protocol.h"
-# include "common/udp_protocol.h"
-# include "common/d2game_protocol.h"
-# include "d2cs/d2cs_protocol.h"
-# include "d2cs/d2cs_d2gs_protocol.h"
-# include "d2cs/d2cs_bnetd_protocol.h"
+# include "field_sizes.h"
+# include "init_protocol.h"
+# include "bnet_protocol.h"
+# include "anongame_protocol.h"
+# include "file_protocol.h"
+# include "bot_protocol.h"
+# include "udp_protocol.h"
+# include "d2game_protocol.h"
+# include "d2cs_protocol.h"
+# include "d2cs_d2gs_protocol.h"
+# include "d2cs_bnetd_protocol.h"
 # undef JUST_NEED_TYPES
 #endif
 
@@ -80,20 +80,20 @@ typedef struct
     t_packet_class pclass;
     unsigned int   flags; /* user-defined flags (used to mark UDP in bnproxy) */
     unsigned int   len;   /* raw packets have no header, so we use this */
-    
+
     /* next part looks just like it would on the network (no padding, byte for byte) */
     union
     {
         char data[MAX_PACKET_SIZE];
-        
+
         t_bnet_generic   bnet;
         t_file_generic   file;
         t_udp_generic    udp;
         t_d2game_generic d2game;
 	t_w3route_generic w3route;
-        
+
 	t_client_initconn client_initconn;
-	
+
         t_server_authreply1         server_authreply1;
         t_server_authreq1           server_authreq1;
         t_client_authreq1           client_authreq1;
@@ -291,7 +291,7 @@ typedef struct
 	t_client_findanongame_profile		client_findanongame_profile;
 
 	t_server_findanongame_profile2		server_findanongame_profile2;
-		
+
 	t_client_w3route_req			client_w3route_req;
 	t_server_w3route_ack			server_w3route_ack;
 	t_server_w3route_playerinfo		server_w3route_playerinfo;
@@ -308,7 +308,7 @@ typedef struct
 
 	t_client_findanongame_inforeq		client_findanongame_inforeq;
 	t_server_findanongame_inforeply		server_findanongame_inforeply;
-	
+
 	t_client_w3xp_clan_invitereq		client_w3xp_clan_invitereq;
     	t_server_w3xp_clan_invitereply		server_w3xp_clan_invitereply;
 	t_server_w3xp_clan_invitereq		server_w3xp_clan_invitereq;
@@ -363,7 +363,7 @@ typedef struct
 #ifndef INCLUDED_PACKET_PROTOS
 #define INCLUDED_PACKET_PROTOS
 
-#include "common/lstr.h"
+#include "lstr.h"
 
 extern t_packet * packet_create(t_packet_class pclass) ;
 extern void packet_destroy(t_packet const * packet);

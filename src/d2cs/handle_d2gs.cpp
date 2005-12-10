@@ -53,7 +53,7 @@
 #include "game.h"
 #include "connection.h"
 #include "prefs.h"
-#include "d2cs_d2gs_protocol.h"
+#include "common/d2cs_d2gs_protocol.h"
 #include "common/trans.h"
 #include "common/addr.h"
 #include "common/eventlog.h"

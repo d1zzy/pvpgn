@@ -20,7 +20,7 @@
 
 #include <stdio.h>
 #include "common/list.h"
-#include "d2cs/d2cs_d2dbs_ladder.h"
+#include "common/d2cs_d2dbs_ladder.h"
 #define JUST_NEED_TYPES
 #include "d2cs/d2charfile.h"
 #undef JUST_NEED_TYPES

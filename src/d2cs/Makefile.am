@@ -10,8 +10,6 @@ d2cs_LDADD = $(top_builddir)/src/common/libcommon.a \
 	$(top_builddir)/src/compat/libcompat.a
 
 noinst_HEADERS = bit.h bnetd.h cmdline.h connection.h d2charfile.h \
-	d2charlist.h d2cs_bnetd_protocol.h d2cs_d2dbs_ladder.h \
-	d2cs_d2gs_character.h d2cs_d2gs_protocol.h d2cs_protocol.h d2gs.h \
-	d2ladder.h game.h gamequeue.h handle_bnetd.h handle_d2cs.h \
-	handle_d2gs.h handle_init.h handle_signal.h net.h prefs.h s2s.h \
-	server.h serverqueue.h setup.h version.h
+	d2charlist.h d2gs.h d2ladder.h game.h gamequeue.h handle_bnetd.h \
+	handle_d2cs.h handle_d2gs.h handle_init.h handle_signal.h net.h \
+	prefs.h s2s.h server.h serverqueue.h setup.h version.h
