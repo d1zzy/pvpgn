@@ -24,7 +24,7 @@
  */
 
 #ifdef WIN32
-# include <Winsock2.h>
+# include <winsock2.h>
 #endif
 
 #ifndef HAVE_GETHOSTNAME

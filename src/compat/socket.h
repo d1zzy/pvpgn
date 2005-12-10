@@ -21,7 +21,7 @@
 
 #ifdef WIN32 /* assume winsock2 is available */
 
-# include <Winsock2.h>
+# include <winsock2.h>
 /*
  * Including that file is basically equivalent to including:
  *
