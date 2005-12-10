@@ -33,6 +33,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 struct connection;
 
 typedef struct realm
@@ -55,6 +58,8 @@ t_realm;
 
 }
 
+}
+
 #endif
 
 
@@ -71,6 +76,9 @@ t_realm;
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
+{
+
+namespace bnetd
 {
 
 extern char const * realm_get_name(t_realm const * realm) ;
@@ -98,6 +106,8 @@ extern struct connection * realm_get_conn(t_realm * realm);
 
 extern t_realm * realm_get(t_realm * realm, t_rcm_regref * regref);
 extern void realm_put(t_realm * realm, t_rcm_regref * regref);
+
+}
 
 }
 

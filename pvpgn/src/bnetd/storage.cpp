@@ -48,6 +48,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 t_storage *storage = NULL;
 
 extern int storage_init(const char *spath)
@@ -109,6 +112,8 @@ extern int storage_init(const char *spath)
 extern void storage_close(void)
 {
     storage->close();
+}
+
 }
 
 }

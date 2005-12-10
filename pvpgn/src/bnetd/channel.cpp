@@ -78,6 +78,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static t_list * channellist_head=NULL;
 
 static t_channelmember * memberlist_curr=NULL;
@@ -1698,6 +1701,8 @@ extern int channel_wol_set_game_options(t_channel * channel, char const * gameOp
 	channel->gameOptions = xstrdup(gameOptions);
 
 	return 1;
+}
+
 }
 
 }

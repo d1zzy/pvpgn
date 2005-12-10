@@ -24,7 +24,12 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int handle_anongame_packet(t_connection * c, t_packet const * const packet);
+
+}
 
 }
 

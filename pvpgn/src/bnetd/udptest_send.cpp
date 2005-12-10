@@ -68,6 +68,9 @@ extern FILE * hexstrm; /* from main.c */
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int udptest_send(t_connection const * c)
 {
     t_packet *         upacket;
@@ -119,6 +122,8 @@ extern int udptest_send(t_connection const * c)
 	return -1;
 
     return 0;
+}
+
 }
 
 }

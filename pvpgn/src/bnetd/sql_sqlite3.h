@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 Dizzy 
+ * Copyright (C) 2005 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +22,16 @@
 # include "sql_common.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern t_sql_engine sql_sqlite3;
+
+}
+
+}
 
 #endif /* INCLUDED_SQL_MYSQL_PROTOS */

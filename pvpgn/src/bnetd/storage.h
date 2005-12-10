@@ -31,6 +31,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef int (*t_read_attr_func)(const char *, const char *, void *);
 typedef int (*t_read_accounts_func)(t_storage_info *, void*);
 typedef int (*t_load_clans_func)(void*);
@@ -61,6 +64,8 @@ typedef struct {
 
 }
 
+}
+
 #endif /* INCLUDED_STORAGE_TYPES */
 
 #ifndef JUST_NEED_TYPES
@@ -70,10 +75,15 @@ typedef struct {
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern t_storage *storage;
 
 extern int storage_init(const char *);
 extern void storage_close(void);
+
+}
 
 }
 

@@ -87,6 +87,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static int identify_mail_function(const char *);
 static void mail_usage(t_connection*);
 static void mail_func_send(t_connection*,const char *);
@@ -689,6 +692,8 @@ extern char const * check_mail(t_connection const * c) {
       sprintf(tmp,"You have %d message(s) in your mailbox.",count);
       return tmp;
    }
+}
+
 }
 
 }

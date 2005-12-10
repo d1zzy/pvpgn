@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2002,2003 Dizzy 
+ * Copyright (C) 2002,2003 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,6 +25,12 @@
 #include "storage_sql.h"
 #include "sql_pgsql.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
+
+namespace bnetd
+{
 
 static int sql_pgsql_init(const char *, const char *, const char *, const char *, const char *, const char *);
 static int sql_pgsql_close(void);
@@ -270,6 +276,10 @@ static int sql_pgsql_free_fields(t_sql_field *fields)
 static void sql_pgsql_escape_string(char *escape, const char *from, int len)
 {
     PQescapeString(escape, from, len);
+}
+
+}
+
 }
 
 #endif /* WITH_SQL_PGSQL */

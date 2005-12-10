@@ -112,6 +112,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int last_news;
 extern int first_news;
 
@@ -2877,7 +2880,7 @@ static int _client_adreq(t_connection * c, t_packet const *const packet)
     }
 
     {
-	const pvpgn::AdBanner *ad = pvpgn::adbannerlist_pick(conn_get_clienttag(c), bn_int_get(packet->u.client_adreq.prev_adid));
+	const AdBanner *ad = adbannerlist_pick(conn_get_clienttag(c), bn_int_get(packet->u.client_adreq.prev_adid));
 	if (!ad)
 		return 0;
 
@@ -2940,7 +2943,7 @@ static int _client_adclick2(t_connection * c, t_packet const *const packet)
     eventlog(eventlog_level_info, __FUNCTION__, "[%d] ad click2 for adid 0x%04hx from \"%s\"", conn_get_socket(c), bn_int_get(packet->u.client_adclick2.adid), conn_get_username(c));
 
     {
-	const pvpgn::AdBanner *ad = pvpgn::adbannerlist_find(conn_get_clienttag(c), bn_int_get(packet->u.client_adclick2.adid));
+	const AdBanner *ad = adbannerlist_find(conn_get_clienttag(c), bn_int_get(packet->u.client_adclick2.adid));
 	if (!ad)
 		return -1;
 
@@ -3826,13 +3829,13 @@ static int _client_gamereport(t_connection * c, t_packet const *const packet)
 		break;
 	    }
 
-	    // as player position in game structure and in game report might differ, 
+	    // as player position in game structure and in game report might differ,
 	    // search for right position
 	    for (s=0; s<game_get_count(game); s++)
 	    {
 	        if (game_get_player(game,s)==other_account) break;
 	    }
-	    
+
 	    if (s<game_get_count(game))
 	    {
 	      result = bngresult_to_gresult(bn_int_get(result_data->result));
@@ -4792,6 +4795,8 @@ static int _client_getpasswordreq(t_connection * c, t_packet const *const packet
      * (as we cannot get the real password back, we should only change the password)     --Soar */
     eventlog(eventlog_level_info, __FUNCTION__, "[%d] get password for account \"%s\" to email \"%s\"", conn_get_socket(c), account_get_name(account), email);
     return 0;
+}
+
 }
 
 }

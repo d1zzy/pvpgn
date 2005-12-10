@@ -52,6 +52,12 @@
 # undef JUST_NEED_TYPES
 #endif
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 typedef struct
 {
     time_t	 inf;
@@ -63,5 +69,9 @@ typedef struct
     unsigned int totcount;
     t_list *     list;
 } t_quota;
+
+}
+
+}
 
 #endif

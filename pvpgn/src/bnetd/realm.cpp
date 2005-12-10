@@ -61,6 +61,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static t_list * realmlist_head=NULL;
 
 static t_realm * realm_create(char const * name, char const * description, unsigned int ip, unsigned int port);
@@ -603,6 +606,8 @@ extern t_realm * realm_get(t_realm * realm, t_rcm_regref * regref)
 extern void realm_put(t_realm * realm, t_rcm_regref * regref)
 {
 	rcm_put(&realm->rcm,regref);
+}
+
 }
 
 }

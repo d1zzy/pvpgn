@@ -30,9 +30,14 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int helpfile_init(char const * filename);
 extern int helpfile_unload(void);
 extern int handle_help_command(t_connection *, char const *);
+
+}
 
 }
 

@@ -23,6 +23,12 @@
 
 #include "common/tag.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 #ifdef VERSIONCHECK_INTERNAL_ACCESS
 typedef struct
 {
@@ -57,11 +63,21 @@ typedef struct s_versioncheck
 #endif
 t_versioncheck;
 
+}
+
+}
+
 #endif
 
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_VERSIONCHECK_PROTOS
 #define INCLUDED_VERSIONCHECK_PROTOS
+
+namespace pvpgn
+{
+
+namespace bnetd
+{
 
 extern t_versioncheck * versioncheck_create(t_tag archtag, t_tag clienttag);
 extern int versioncheck_destroy(t_versioncheck * vc);
@@ -74,6 +90,10 @@ extern int versioncheck_unload(void);
 
 extern char const * versioncheck_get_versiontag(t_versioncheck const * vc);
 extern int versioncheck_set_versiontag(t_versioncheck * vc, char const * versiontag);
+
+}
+
+}
 
 #endif
 #endif

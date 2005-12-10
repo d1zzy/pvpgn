@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Dizzy 
+ * Copyright (C) 2005  Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +19,12 @@
 #ifndef __CMDLINE_H_PROTOS__
 #define __CMDLINE_H_PROTOS__
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern int cmdline_load(int argc, char * * argv);
 extern void cmdline_unload(void);
 
@@ -28,5 +34,9 @@ extern int cmdline_get_foreground(void);
 #endif
 extern const char* cmdline_get_preffile(void);
 extern const char* cmdline_get_hexfile(void);
+
+}
+
+}
 
 #endif /* __CMDLINE_H_PROTOS__ */

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 1998  Mark Baysinger (mbaysing@ucsd.edu)
  * Copyright (C) 1998,1999,2000  Ross Combs (rocombs@cs.nmsu.edu)
- * Copyright (C) 2005 Dizzy 
+ * Copyright (C) 2005 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -45,6 +45,12 @@
 #include "common/eventlog.h"
 #include "common/conf.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
+
+namespace bnetd
+{
 
 static struct {
 #ifdef DO_DAEMONIZE
@@ -126,7 +132,7 @@ static void usage(void)
             "    --service                run as service\n"
             "    -s install               install service\n"
             "    -s uninstall             uninstall service\n"
-#endif      
+#endif
             ,progname);
 }
 
@@ -302,3 +308,7 @@ static int conf_setdef_servaction(void)
     return 0;
 }
 #endif
+
+}
+
+}

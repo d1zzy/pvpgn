@@ -46,6 +46,12 @@
 #include "runprog.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 
 #ifdef DO_SUBPROC
 static pid_t currpid=0;
@@ -59,31 +65,31 @@ extern FILE * runprog_open(char const * command)
 #else
     int    fds[2];
     FILE * pp;
-    
+
     if (!command)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL command");
 	return NULL;
     }
-    
+
     if (pipe(fds)<0)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create pipe (pipe: %s)",pstrerror(errno));
 	return NULL;
     }
-    
+
     switch ((currpid = fork()))
     {
     case 0:
 	close(fds[0]);
-	
+
 	close(STDINFD);
 	close(STDOUTFD);
 	close(STDERRFD);
 	/* FIXME: we should close all other fds to make sure the program doesn't use them.
 	   For now, leave it alone because we would either have to keep track of them all
 	   or do a for for (fd=0; fd<BIGNUMBER; fd++) close(fd); loop :( */
-	
+
 	/* assume prog doesn't use stdin */
 	if (fds[1]!=STDOUTFD)
 	    dup2(fds[1],STDOUTFD);
@@ -91,21 +97,21 @@ extern FILE * runprog_open(char const * command)
 	    dup2(fds[1],STDERRFD);
 	if (fds[1]!=STDOUTFD && fds[1]!=STDERRFD)
 	    close(fds[1]);
-	
+
 	if (execlp(command,command,(char *)NULL)<0)
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not execute \"%s\" (execlp: %s)",command,pstrerror(errno));
-	
+
 	exit(127); /* popen exec failure code */
-	
+
     case -1:
 	eventlog(eventlog_level_error,__FUNCTION__,"could not fork (fork: %s)",pstrerror(errno));
 	close(fds[0]);
 	close(fds[1]);
 	return NULL;
-	
+
     default:
 	close(fds[1]);
-	
+
 	if (!(pp = fdopen(fds[0],"r")))
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not streamify output (fdopen: %s)",pstrerror(errno));
@@ -113,7 +119,7 @@ extern FILE * runprog_open(char const * command)
 	    return NULL;
 	}
     }
-    
+
     return pp;
 #endif
 }
@@ -126,19 +132,19 @@ extern int runprog_close(FILE * pp)
 #else
     int   status;
     pid_t pid;
-    
+
     if (!pp)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL pp");
 	return -1;
     }
-    
+
     if (fclose(pp)<0)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not close process (fclose: %s)",pstrerror(errno));
 	return -1;
     }
-    
+
     for (;;)
     {
 # ifdef HAVE_WAITPID
@@ -158,4 +164,8 @@ extern int runprog_close(FILE * pp)
 	    return 0;
     }
 #endif
+}
+
+}
+
 }

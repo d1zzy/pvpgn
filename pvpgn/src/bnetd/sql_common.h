@@ -22,6 +22,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef unsigned int t_sql_info;
 
 /* used as a pointer to it */
@@ -48,6 +51,8 @@ typedef struct {
 
 }
 
+}
+
 #endif /* INCLUDED_SQL_COMMON_TYPES */
 
 #ifndef JUST_NEED_TYPES
@@ -57,6 +62,9 @@ typedef struct {
 #include "storage.h"
 
 namespace pvpgn
+{
+
+namespace bnetd
 {
 
 extern t_storage storage_sql;
@@ -99,6 +107,8 @@ extern int sql_write_team(void *data);
 extern int sql_remove_team(unsigned int teamid);
 
 #endif /* SQL_INTERNAL */
+
+}
 
 }
 

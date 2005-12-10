@@ -34,6 +34,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef struct
 {
     int				currentplayers;
@@ -72,6 +75,8 @@ typedef struct
 
 }
 
+}
+
 #endif
 
 /*****/
@@ -85,6 +90,9 @@ typedef struct
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
+{
+
+namespace bnetd
 {
 
 extern int		anongame_matchlists_create(void);
@@ -123,6 +131,8 @@ extern void		anongame_set_joined(t_anongame * a, char joined);
 
 extern int		handle_w3route_packet(t_connection * c, t_packet const * const packet);
 extern int		handle_anongame_join(t_connection * c);
+
+}
 
 }
 

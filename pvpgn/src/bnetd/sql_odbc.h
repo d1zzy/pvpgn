@@ -22,6 +22,16 @@
 # include "sql_common.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern t_sql_engine sql_odbc;
+
+}
+
+}
 
 #endif /* INCLUDED_SQL_ODBC_PROTOS */

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2002,2003 Dizzy 
+ * Copyright (C) 2002,2003 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,6 +30,12 @@
 #include "storage_sql.h"
 #include "sql_mysql.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
+
+namespace bnetd
+{
 
 static int sql_mysql_init(const char *, const char *, const char *, const char *, const char *, const char *);
 static int sql_mysql_close(void);
@@ -220,6 +226,10 @@ static void sql_mysql_escape_string(char *escape, const char *from, int len)
 	return;
     }
     mysql_real_escape_string(mysql, escape, from, len);
+}
+
+}
+
 }
 
 #endif /* WITH_SQL_MYSQL */

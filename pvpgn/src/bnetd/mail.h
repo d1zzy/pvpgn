@@ -71,6 +71,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef enum {
     mbox_mode_read = 0x01,
     mbox_mode_write = 0x02
@@ -97,6 +100,8 @@ typedef struct maillist_struct {
 
 }
 
+}
+
 #endif
 
 #endif
@@ -112,8 +117,13 @@ typedef struct maillist_struct {
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int handle_mail_command(t_connection *, char const *);
 extern char const * check_mail(t_connection const * c);
+
+}
 
 }
 

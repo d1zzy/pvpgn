@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2000 Alexey Belyaev (spider@omskart.ru)
- * Copyright (C) 2004 Dizzy 
+ * Copyright (C) 2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -61,15 +61,21 @@
 #include "news.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 static t_elist news_head;
 
 static int _news_parsetime(char *buff, struct tm *date, unsigned line)
 {
     char *p;
 
-    date->tm_hour= 6; 
+    date->tm_hour= 6;
     date->tm_min = 6;  // need to set non-zero values or else date is displayed wrong
-    date->tm_sec = 6;  
+    date->tm_sec = 6;
     date->tm_isdst=-1;
 
     if (!(p = strchr(buff,'/'))) return -1;
@@ -250,4 +256,8 @@ extern void news_traverse(t_news_cb cb, void *data)
 	cni = elist_entry(curr,t_news_index,list);
 	if (cb(cni->date,&cni->body,data)) break;
     }
+}
+
+}
+
 }

@@ -76,6 +76,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static int message_telnet_format(t_packet * packet, t_message_type type, t_connection * me, t_connection * dst, char const * text, unsigned int dstflags);
 static int message_bot_format(t_packet * packet, t_message_type type, t_connection * me, t_connection * dst, char const * text, unsigned int dstflags);
 static int message_bnet_format(t_packet * packet, t_message_type type, t_connection * me, t_connection * dst, char const * text, unsigned int dstflags);
@@ -1639,6 +1642,8 @@ extern int message_send_file(t_connection * dst, FILE * fd)
     file_get_line(NULL); // clear file_get_line buffer
 
     return 0;
+}
+
 }
 
 }

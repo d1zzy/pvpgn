@@ -69,6 +69,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 /* for War3 XP computations */
 static t_xpcalc_entry  * xpcalc;
 static t_xplevel_entry * xplevels;
@@ -2172,6 +2175,8 @@ extern int ladder_war3_get_min_xp(unsigned int Level)
 	return -1;
   }
   return xplevels[Level-1].startxp;
+}
+
 }
 
 }

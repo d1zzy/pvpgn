@@ -29,8 +29,13 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int file_to_mod_time(char const * rawname, bn_long * modtime);
 extern int file_send(t_connection * c, char const * rawname, unsigned int adid, unsigned int etag, unsigned int startoffset, int need_header);
+
+}
 
 }
 

@@ -27,7 +27,12 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int handle_command(t_connection * c, char const * text);
+
+}
 
 }
 

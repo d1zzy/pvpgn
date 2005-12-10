@@ -52,6 +52,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static t_list * watchlist_head=NULL;
 
 
@@ -352,6 +355,8 @@ extern int watchlist_destroy(void)
     }
 
     return 0;
+}
+
 }
 
 }

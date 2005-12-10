@@ -31,6 +31,12 @@
 
 #endif
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 typedef struct topic
 #ifdef TOPIC_INTERNAL_ACCESS
 {
@@ -40,6 +46,10 @@ typedef struct topic
 }
 #endif
 t_topic;
+
+}
+
+}
 
 #define DO_SAVE_TOPIC 1
 #define NO_SAVE_TOPIC 0
@@ -54,10 +64,20 @@ t_topic;
 #include "common/list.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 int    topiclist_load(char const * topicfile);
 int    topiclist_unload(void);
 int    channel_set_topic(char const * channel_name, char const * topic_text, int do_save);
 char * channel_get_topic(char const * channel_name);
+
+}
+
+}
 
 #endif
 #endif

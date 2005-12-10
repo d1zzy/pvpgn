@@ -35,6 +35,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static t_elist timerlist_head;
 
 
@@ -138,6 +141,8 @@ extern int timerlist_destroy(void)
     elist_init(&timerlist_head);
 
     return 0;
+}
+
 }
 
 }

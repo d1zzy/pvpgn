@@ -30,6 +30,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int attrlayer_init(void);
 extern int attrlayer_cleanup(void);
 extern int attrlayer_load_default(void);
@@ -40,6 +43,8 @@ extern void attrlayer_add_loadedlist(t_elist *what);
 extern void attrlayer_del_loadedlist(t_elist *what);
 extern void attrlayer_add_dirtylist(t_elist *what);
 extern void attrlayer_del_dirtylist(t_elist *what);
+
+}
 
 }
 

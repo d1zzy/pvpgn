@@ -83,6 +83,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static t_storage_info *sql_create_account(char const *);
 static int sql_read_attrs(t_storage_info *, t_read_attr_func, void *);
 static t_attr *sql_read_attr(t_storage_info *, const char *);
@@ -560,6 +563,8 @@ static const char *sql_escape_key(const char *key)
 	}
 
     return newkey;
+}
+
 }
 
 }

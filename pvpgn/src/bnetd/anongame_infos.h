@@ -29,6 +29,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef enum
 {
 	URL_server,
@@ -192,6 +195,8 @@ typedef struct {
 
 }
 
+}
+
 #endif
 
 #ifndef JUST_NEED_TYPES
@@ -203,6 +208,9 @@ typedef struct {
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
+{
+
+namespace bnetd
 {
 
 extern int anongame_infos_load(char const * filename);
@@ -218,6 +226,8 @@ extern char * anongame_infos_data_get_map(t_clienttag clienttag, int versionid, 
 extern char * anongame_infos_data_get_type(t_clienttag clienttag, int versionid, int * len);
 extern char * anongame_infos_data_get_desc(char const * langID, t_clienttag clienttag, int versionid, int * len);
 extern char * anongame_infos_data_get_ladr(char const * langID, t_clienttag clienttag, int versionid, int * len);
+
+}
 
 }
 

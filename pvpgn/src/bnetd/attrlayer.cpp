@@ -33,6 +33,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static t_attrgroup *defattrs = NULL;
 
 static DECLARE_ELIST_INIT(loadedlist);
@@ -185,6 +188,8 @@ extern void attrlayer_del_dirtylist(t_elist *what)
 extern t_attrgroup * attrlayer_get_defattrgroup(void)
 {
     return defattrs;
+}
+
 }
 
 }

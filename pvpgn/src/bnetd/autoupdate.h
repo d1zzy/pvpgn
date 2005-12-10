@@ -22,6 +22,12 @@
 
 #include "common/tag.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 #ifdef AUTOUPDATE_INTERNAL_ACCESS
 typedef struct
 {
@@ -32,6 +38,10 @@ typedef struct
 } t_autoupdate;
 #endif
 
+}
+
+}
+
 #endif
 
 
@@ -40,9 +50,19 @@ typedef struct
 #ifndef INCLUDED_AUTOUPDATE_PROTOS
 #define INCLUDED_AUTOUPDATE_PROTOS
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern int autoupdate_load(char const * filename);
 extern int autoupdate_unload(void);
 extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, char const * versiontag);
+
+}
+
+}
 
 #endif
 #endif

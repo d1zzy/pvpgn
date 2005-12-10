@@ -29,7 +29,12 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int udptest_send(t_connection const * c);
+
+}
 
 }
 

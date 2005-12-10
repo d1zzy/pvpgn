@@ -25,7 +25,12 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int handle_irc_packet(t_connection * conn,t_packet const * const packet);
+
+}
 
 }
 

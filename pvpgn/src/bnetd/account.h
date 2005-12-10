@@ -41,6 +41,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 struct connection;
 
 typedef struct account_struct
@@ -61,6 +64,8 @@ t_account;
 
 }
 
+}
+
 #endif
 
 /*****/
@@ -74,6 +79,9 @@ t_account;
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
+{
+
+namespace bnetd
 {
 
 extern unsigned int maxuserid;
@@ -121,6 +129,8 @@ extern void account_add_team(t_account * account, t_team * team);
 extern t_team * account_find_team_by_accounts(t_account * account, t_account **accounts, t_clienttag clienttag);
 extern t_team * account_find_team_by_teamid(t_account * account, unsigned int teamid);
 extern t_list * account_get_teams(t_account * account);
+
+}
 
 }
 

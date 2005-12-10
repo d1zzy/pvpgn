@@ -155,6 +155,9 @@ extern int g_ServiceStatus;
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 #ifdef DO_POSIXSIG
 static void quit_sig_handle(int unused);
 static void restart_sig_handle(int unused);
@@ -1382,9 +1385,9 @@ static void _server_mainloop(t_addrlist *laddrs)
 	    if (helpfile_init(prefs_get_helpfile())<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not load the helpfile");
 
-	    if (pvpgn::adbannerlist_destroy()<0)
+	    if (adbannerlist_destroy()<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not unload old adbanner list");
-	    if (pvpgn::adbannerlist_create(prefs_get_adfile())<0)
+	    if (adbannerlist_create(prefs_get_adfile())<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not load new adbanner list");
 
 	    ladder_reload_conf();
@@ -1543,6 +1546,8 @@ extern int server_process(void)
     _shutdown_addrs(laddrs);
 
     return 0;
+}
+
 }
 
 }

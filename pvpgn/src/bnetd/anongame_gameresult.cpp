@@ -46,6 +46,12 @@
 #include "anongame_gameresult.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern int gameresult_destroy(t_anongame_gameresult * gameresult)
 {
   if (!(gameresult))
@@ -192,4 +198,8 @@ extern int gameresult_get_player_number(t_anongame_gameresult * gameresult, int 
   }
 
   return gameresult->players[player].number;
+}
+
+}
+
 }

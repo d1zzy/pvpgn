@@ -30,6 +30,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int handle_udp_packet(int usock, unsigned int src_addr, unsigned short src_port, t_packet const * const packet)
 {
     if (!packet)
@@ -133,6 +136,8 @@ extern int handle_udp_packet(int usock, unsigned int src_addr, unsigned short sr
     }
 
     return 0;
+}
+
 }
 
 }

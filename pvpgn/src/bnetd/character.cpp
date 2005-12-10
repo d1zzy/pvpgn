@@ -63,6 +63,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static t_list * characterlist_head=NULL;
 
 
@@ -535,6 +538,8 @@ extern t_character * characterlist_find_character(char const * realmname, char c
     }
 
     return NULL;
+}
+
 }
 
 }

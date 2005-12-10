@@ -27,6 +27,12 @@
 #ifndef INCLUDED_PREFS_PROTOS
 #define INCLUDED_PREFS_PROTOS
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern int prefs_load(char const * filename);
 extern void prefs_unload(void);
 extern char const * prefs_get_storage_path(void) ;
@@ -179,6 +185,10 @@ extern char const * prefs_get_wol_addrs(void);
 extern char const * prefs_get_wol_timezone(void);
 extern char const * prefs_get_wol_longitude(void);
 extern char const * prefs_get_wol_latitude(void);
+
+}
+
+}
 
 #endif
 #endif
