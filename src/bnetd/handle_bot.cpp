@@ -63,6 +63,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 {
     t_packet * rpacket;
@@ -363,6 +366,8 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
     }
 
     return 0;
+}
+
 }
 
 }

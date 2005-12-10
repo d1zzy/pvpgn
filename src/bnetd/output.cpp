@@ -54,6 +54,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 char * status_filename;
 
 int output_standard_writer(FILE * fp);
@@ -205,6 +208,8 @@ extern int output_write_to_file(void)
 extern void output_dispose_filename(void)
 {
   if (status_filename) xfree(status_filename);
+}
+
 }
 
 }

@@ -63,6 +63,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static t_list * adbannerlist_init_head=NULL;
 static t_list * adbannerlist_start_head=NULL;
 static t_list * adbannerlist_norm_head=NULL;
@@ -446,6 +449,8 @@ extern int adbannerlist_destroy(void)
 	}
 
 	return 0;
+}
+
 }
 
 }

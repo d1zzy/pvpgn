@@ -27,6 +27,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int irc_send_cmd(t_connection * conn, char const * command, char const * params);
 extern int irc_send_cmd2(t_connection * conn, char const * prefix, char const * command, char const * postfix, char const * comment);
 extern int irc_send(t_connection * conn, int code, char const * params);
@@ -44,6 +47,8 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest);
 extern int irc_message_format(t_packet * packet, t_message_type type, t_connection * me, t_connection * dst, char const * text, unsigned int dstflags);
 extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel);
 extern int irc_who(t_connection * c, char const * name);
+
+}
 
 }
 

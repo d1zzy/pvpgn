@@ -35,6 +35,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef enum
 {
     message_type_adduser,
@@ -92,6 +95,8 @@ t_message;
 
 }
 
+}
+
 #endif
 
 /*****/
@@ -107,6 +112,9 @@ t_message;
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern char * message_format_line(t_connection const * c, char const * in);
 extern t_message * message_create(t_message_type type, t_connection * src, t_connection * dst, char const * text);
 extern int message_destroy(t_message * message);
@@ -118,6 +126,8 @@ extern int message_send_admins(t_connection * src, t_message_type type, char con
 extern int message_send_text(t_connection * dst, t_message_type type, t_connection * src, char const * text);
 extern int message_send_formatted(t_connection * dst, char const * text);
 extern int message_send_file(t_connection * dst, FILE * fd);
+
+}
 
 }
 

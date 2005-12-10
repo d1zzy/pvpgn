@@ -74,6 +74,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef int (* t_irc_command)(t_connection * conn, int numparams, char ** params, char * text);
 
 typedef struct {
@@ -1628,6 +1631,8 @@ static int _handle_listsearch_command(t_connection * conn, int numparams, char *
 {
 	// FIXME: Not implemented
 	return 0;
+}
+
 }
 
 }

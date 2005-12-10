@@ -50,6 +50,12 @@
 
 //#define COMMANDGROUPSDEBUG 1
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 static t_list * command_groups_head=NULL;
 static FILE * fp = NULL;
 
@@ -62,7 +68,7 @@ extern int command_groups_load(char const * filename)
     char const *	command;
     unsigned int	group;
     t_command_groups *	entry;
-    
+
     if (!filename) {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
         return -1;
@@ -71,9 +77,9 @@ extern int command_groups_load(char const * filename)
         eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
         return -1;
     }
-    
+
     command_groups_head = list_create();
-    
+
     for (line=1; (buff = file_get_line(fp)); line++) {
         for (pos=0; buff[pos]=='\t' || buff[pos]==' '; pos++);
 	if (buff[pos]=='\0' || buff[pos]=='#') {
@@ -82,7 +88,7 @@ extern int command_groups_load(char const * filename)
 	if ((temp = strrchr(buff,'#'))) {
 	    unsigned int len;
 	    unsigned int endpos;
-	    
+
             *temp = '\0';
 	    len = strlen(buff)+1;
             for (endpos=len-1; buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
@@ -99,7 +105,7 @@ extern int command_groups_load(char const * filename)
 	if (group == 0 || group > 8) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"group '%u' not within groups limits (1-8)",group);
 	    continue;
-	} 
+	}
 	while ((command = strtok(NULL," \t"))) {
 	    entry = (t_command_groups*)xmalloc(sizeof(t_command_groups));
 	    entry->group = 1 << (group-1);
@@ -119,7 +125,7 @@ extern int command_groups_unload(void)
 {
     t_elem *		curr;
     t_command_groups *	entry;
-    
+
     if (command_groups_head) {
 	LIST_TRAVERSE(command_groups_head,curr) {
 	    if (!(entry = (t_command_groups*)elem_get_data(curr)))
@@ -156,4 +162,8 @@ extern int command_groups_reload(char const * filename)
 {
     command_groups_unload();
     return command_groups_load(filename);
+}
+
+}
+
 }

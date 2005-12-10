@@ -45,6 +45,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static inline void attrgroup_set_accessed(t_attrgroup *attrgroup)
 {
     FLAG_SET(&attrgroup->flags, ATTRGROUP_FLAG_ACCESSED);
@@ -435,6 +438,8 @@ out:
     if (newkey != key) xfree((void*)newkey);
 
     return 0;
+}
+
 }
 
 }

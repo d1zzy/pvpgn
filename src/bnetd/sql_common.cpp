@@ -93,6 +93,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 unsigned int sql_defacct;
 t_sql_engine *sql = NULL;
 
@@ -788,4 +791,7 @@ extern int sql_remove_team(unsigned int teamid)
 }
 
 }
+
+}
+
 #endif				/* WITH_SQL */

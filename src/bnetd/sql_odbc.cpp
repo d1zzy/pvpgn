@@ -29,6 +29,12 @@
 #include "sql_odbc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 /* t_sql_engine Interface methods. */
 static int sql_odbc_init(const char *, const char *, const char *, const char *, const char *, const char *);
 static int sql_odbc_close(void);
@@ -127,7 +133,7 @@ static t_sql_res* sql_odbc_query_res(const char *query)
 	SQLRETURN result = 0;
 	t_odbc_rowSet *rowSet = NULL;
 	ROWCOUNT = 0;
-	
+
 	/* Validate query. */
 	if(query == NULL) {
 		eventlog(eventlog_level_error, __FUNCTION__, "Got a NULL query!");
@@ -399,6 +405,10 @@ static int odbc_Fail()
 {
 	sql_odbc_close();
 	return -1;
+}
+
+}
+
 }
 
 #endif

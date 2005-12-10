@@ -26,8 +26,18 @@
 #include <stdio.h>
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern FILE * runprog_open(char const * command);
 extern int runprog_close(FILE * pp);
+
+}
+
+}
 
 #endif
 #endif

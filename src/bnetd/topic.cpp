@@ -64,6 +64,12 @@
 #include "topic.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 static t_list * topiclist_head=NULL;
 
 t_topic * get_topic(char const * channel_name)
@@ -105,7 +111,7 @@ int topiclist_save(char const * topic_file)
   if (topiclist_head)
   {
 
-    if ((fp = fopen(topic_file,"w"))==NULL) 
+    if ((fp = fopen(topic_file,"w"))==NULL)
     {
       eventlog(eventlog_level_error, __FUNCTION__,"can't open topic file");
       return -1;
@@ -118,7 +124,7 @@ int topiclist_save(char const * topic_file)
         eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
         continue;
       }
-      if (topic->save == DO_SAVE_TOPIC) 
+      if (topic->save == DO_SAVE_TOPIC)
         fprintf(fp,"\"%s\",\"%s\"\n",topic->channel_name,topic->topic);
     }
 
@@ -131,7 +137,7 @@ int topiclist_save(char const * topic_file)
 int topiclist_add_topic(char const * channel_name, char const * topic_text, int do_save)
 {
   t_topic * topic;
-  
+
   topic = (t_topic*)xmalloc(sizeof(t_topic));
   topic->channel_name = xstrdup(channel_name);
   topic->topic = xstrdup(topic_text);
@@ -187,14 +193,14 @@ int topiclist_load(char const * topicfile)
   // make sure to unload previous topiclist before loading again
   if (topiclist_head) topiclist_unload();
 
-  if ((fp = fopen(topicfile,"r"))==NULL) 
+  if ((fp = fopen(topicfile,"r"))==NULL)
   {
     eventlog(eventlog_level_error, __FUNCTION__,"can't open topic file");
     return -1;
   }
-  
+
   topiclist_head = list_create();
-  
+
   eventlog(eventlog_level_trace,__FUNCTION__,"start reading topic file");
 
   while (fscanf(fp,"\"%[^\"]\",\"%[^\"]\"\n",channel_name,topic)==2)
@@ -235,4 +241,8 @@ int topiclist_unload(void)
     topiclist_head = NULL;
   }
   return 0;
+}
+
+}
+
 }

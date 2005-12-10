@@ -100,6 +100,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 /* file storage API functions */
 
 static int file_init(const char *);
@@ -916,6 +919,8 @@ static int file_remove_team(unsigned int teamid)
     xfree(tempname);
 
     return 0;
+}
+
 }
 
 }

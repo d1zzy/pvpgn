@@ -49,6 +49,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 #ifdef CHANNEL_INTERNAL_ACCESS
 typedef struct channelmember
 {
@@ -107,6 +110,8 @@ t_channel;
 
 }
 
+}
+
 #endif
 
 #ifndef JUST_NEED_TYPES
@@ -124,6 +129,9 @@ t_channel;
 #define CHANNEL_NAME_CHAT   "Chat"
 
 namespace pvpgn
+{
+
+namespace bnetd
 {
 
 extern int channel_set_userflags(t_connection * c);
@@ -181,6 +189,8 @@ extern int channel_wol_set_game_tournament(t_channel * channel, int tournament);
 
 extern char const * channel_wol_get_game_options(t_channel const * channel);
 extern int channel_wol_set_game_options(t_channel * channel, char const * gameOptions);
+
+}
 
 }
 

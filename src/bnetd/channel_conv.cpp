@@ -24,6 +24,8 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
 
 extern unsigned int cflags_to_bncflags(unsigned flags)
 {
@@ -44,6 +46,8 @@ extern unsigned int cflags_to_bncflags(unsigned flags)
         res |= CF_OFFICIAL;
 
     return res;
+}
+
 }
 
 }

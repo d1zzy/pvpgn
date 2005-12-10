@@ -40,6 +40,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef enum
 {
     ladder_sort_highestrated,
@@ -113,6 +116,8 @@ typedef struct
 
 }
 
+}
+
 #endif
 
 /*****/
@@ -129,6 +134,9 @@ typedef struct
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
+{
+
+namespace bnetd
 {
 
 extern int ladder_init_account(t_account * account, t_clienttag clienttag, t_ladder_id id);
@@ -204,6 +212,8 @@ extern int war3_get_maxleveldiff(void);
 
 
 extern char * create_filename(const char * path, const char * filename, const char * ending);
+}
+
 }
 
 #endif

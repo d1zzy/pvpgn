@@ -49,6 +49,12 @@
 #include "prefs.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 t_elem  * curr_table  = NULL;
 t_elem  * curr_column = NULL;
 t_elem  * curr_cmd    = NULL;
@@ -60,19 +66,19 @@ static void sql_escape_command(char *escape, const char *from, int len);
 t_column * create_column(char * name, char * value, char * mode, char * extra_cmd)
 {
   t_column * column;
-  
+
   if (!(name))
     {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL column name");
       return NULL;
     }
-  
+
   if (!(value))
     {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL column value");
       return NULL;
     }
-  
+
   column = xmalloc(sizeof(t_column));
   column->name  = xstrdup(name);
   column->value = xstrdup(value);
@@ -106,13 +112,13 @@ void dispose_column(t_column * column)
 t_sqlcommand * create_sqlcommand(char * sql_command, char * mode, char * extra_cmd)
 {
   t_sqlcommand * sqlcommand;
-  
+
   if (!(sql_command))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"got NULL sql_command");
     return NULL;
   }
-  
+
   sqlcommand = xmalloc(sizeof(t_sqlcommand));
   sqlcommand->sql_command = xstrdup(sql_command);
   if (mode && extra_cmd)
@@ -143,19 +149,19 @@ void dispose_sqlcommand(t_sqlcommand * sqlcommand)
 t_table * create_table(char * name)
 {
   t_table * table;
-  
+
   if (!(name))
     {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL table name");
       return NULL;
     }
-  
+
   table = xmalloc(sizeof(t_table));
   table->name = xstrdup(name);
 
   table->columns = list_create();
   table->sql_commands = list_create();
-  
+
   return table;
 }
 
@@ -164,7 +170,7 @@ void dispose_table(t_table * table)
   t_elem * curr;
   t_column * column;
   t_sqlcommand * sql_command;
-  
+
   if (table)
     {
       if (table->name) xfree((void *)table->name);
@@ -181,7 +187,7 @@ void dispose_table(t_table * table)
 	      dispose_column(column);
 	      list_remove_elem(table->columns,&curr);
 	    }
-	  
+
 	  list_destroy(table->columns);
         }
 
@@ -197,11 +203,11 @@ void dispose_table(t_table * table)
 	      dispose_sqlcommand(sql_command);
 	      list_remove_elem(table->sql_commands,&curr);
 	    }
-	  
+
 	  list_destroy(table->sql_commands);
         }
-      
-      
+
+
       xfree((void *)table);
     }
 }
@@ -225,11 +231,11 @@ void table_add_sql_command(t_table * table, t_sqlcommand * sql_command)
 t_db_layout * create_db_layout()
 {
   t_db_layout * db_layout;
-  
+
   db_layout = xmalloc(sizeof(t_db_layout));
 
   db_layout->tables = list_create();
-  
+
   return db_layout;
 }
 
@@ -237,7 +243,7 @@ void dispose_db_layout(t_db_layout * db_layout)
 {
   t_elem  * curr;
   t_table * table;
- 
+
 
   if (db_layout)
     {
@@ -257,7 +263,7 @@ void dispose_db_layout(t_db_layout * db_layout)
         }
       xfree((void *)db_layout);
     }
-  
+
 }
 
 void db_layout_add_table(t_db_layout * db_layout, t_table * table)
@@ -657,11 +663,11 @@ int sql_dbcreator(t_sql_engine * sql)
   load_db_layout(prefs_get_DBlayoutfile());
 
   eventlog(eventlog_level_info, __FUNCTION__,"Creating missing tables and columns (if any)");
- 
+
   for (table = db_layout_get_first_table(db_layout);table;table = db_layout_get_next_table(db_layout))
   {
      column = table_get_first_column(table);
-     sprintf(query,"CREATE TABLE %s (%s default %s)",table->name,column->name,column->value); 
+     sprintf(query,"CREATE TABLE %s (%s default %s)",table->name,column->name,column->value);
      //create table if missing
      if (!(sql->query(query)))
      {
@@ -685,7 +691,7 @@ int sql_dbcreator(t_sql_engine * sql)
 /*
 	sscanf(column->name,"%s",_column);
 	sprintf(query,"ALTER TABLE %s ALTER %s SET DEFAULT %s",table->name,_column,column->value);
-	
+
 	// If failed, try alternate language.  (From ZSoft for sql_odbc.)
 	if(sql->query(query)) {
 	    sprintf(query,"ALTER TABLE %s ADD DEFAULT %s FOR %s",table->name,column->value,_column);
@@ -742,10 +748,10 @@ int sql_dbcreator(t_sql_engine * sql)
     }
 
   }
-  
+
   dispose_db_layout(db_layout);
- 
-  eventlog(eventlog_level_info,__FUNCTION__,"finished adding missing tables and columns");  
+
+  eventlog(eventlog_level_info,__FUNCTION__,"finished adding missing tables and columns");
   return 0;
 }
 
@@ -758,36 +764,40 @@ static void sql_escape_command(char *escape, const char *from, int len)
 		char * tmp3 = NULL;				/* begining of string to be escaped */
 		char * tmp4 = xmalloc(strlen(tmp1) * 2);	/* escaped string */
 		unsigned int i,j;
-	
+
 /*		eventlog(eventlog_level_trace,__FUNCTION__,"COMMAND: %s",tmp1); */
-		
+
 		for (i=0; tmp1[i] && i < len; i++, tmp2++)
 		{
 			*tmp2 = tmp1[i]; /* copy 'from' to 'escape' */
-			
+
 			if (tmp1[i] == '\'') /* check if we find a string by checking for a single quote (') */
 			{
 				tmp3 = &tmp1[++i]; /* set tmp3 to the begining of the string to be escaped */
-				
+
 				for(; tmp1[i] && tmp1[i] != '\'' && i < len; i++); /* find the end of the string to be escaped */
-				
+
 				tmp1[i] = '\0'; /* set end of string with null terminator */
 /*				eventlog(eventlog_level_trace,__FUNCTION__,"STRING: %s",tmp3); */
-				
+
 				sql->escape_string(tmp4, tmp3, strlen(tmp3)); /* escape the string */
 /*				eventlog(eventlog_level_trace,__FUNCTION__,"ESCAPE STRING: %s",tmp4); */
-				
+
 				for (j=0, tmp2++; tmp4[j]; j++, tmp2++) *tmp2 = tmp4[j]; /* add 'escaped string' to 'escape' */
-				
+
 				*tmp2 = '\''; /* add single quote to end after adding 'escaped string' */
 			}
 		}
 		*tmp2 = '\0';
 /*		eventlog(eventlog_level_trace,__FUNCTION__,"ESCAPED COMMAND: %s",escape); */
-		
+
 		xfree(tmp1);
 		xfree(tmp4);
 	}
+}
+
+}
+
 }
 
 #endif /* WITH_SQL */

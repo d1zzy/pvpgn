@@ -24,6 +24,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef const char t_file_info;
 
 typedef struct {
@@ -31,6 +34,8 @@ typedef struct {
     int (*read_attrs)(const char *filename, t_read_attr_func cb, void *data);
     int (*write_attrs)(const char *filename, const t_hlist *attributes);
 } t_file_engine;
+
+}
 
 }
 
@@ -43,7 +48,12 @@ typedef struct {
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern t_storage storage_file;
+
+}
 
 }
 

@@ -25,6 +25,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 class AdBanner
 {
 public:
@@ -50,6 +53,8 @@ private:
 
 }
 
+}
+
 #endif
 
 
@@ -65,11 +70,17 @@ private:
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int adbannerlist_create(char const * filename);
 extern int adbannerlist_destroy(void);
 extern const AdBanner* adbannerlist_pick(t_clienttag ctag, unsigned int prev_id);
 extern const AdBanner* adbannerlist_find(t_clienttag ctag, unsigned int id);
 
 }
+
+}
+
 #endif
 #endif

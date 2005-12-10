@@ -104,7 +104,7 @@
 /* out of memory safety */
 #define OOM_SAFE_MEM	1000000		/* 1 Mbyte of safety memory */
 
-using namespace pvpgn;
+using namespace pvpgn::bnetd;
 
 void *oom_buffer = NULL;
 
@@ -337,7 +337,7 @@ int pre_server_startup(void)
     ipbanlist_create();
     if (ipbanlist_load(prefs_get_ipbanfile())<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load IP ban list");
-    if (pvpgn::adbannerlist_create(prefs_get_adfile())<0)
+    if (adbannerlist_create(prefs_get_adfile())<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load adbanner list");
     if (autoupdate_load(prefs_get_mpqfile())<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load autoupdate list");
@@ -404,7 +404,7 @@ void post_server_shutdown(int status)
 	    news_unload();
     	    versioncheck_unload();
     	    autoupdate_unload();
-    	    pvpgn::adbannerlist_destroy();
+    	    adbannerlist_destroy();
     	    ipbanlist_save(prefs_get_ipbanfile());
     	    ipbanlist_destroy();
     	    helpfile_unload();

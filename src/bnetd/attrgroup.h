@@ -40,6 +40,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 /* attrgroup represents a group of attributes which are read/saved/flush together
  * ex: each account stores it's data into a attrgroup */
 typedef struct attrgroup_struct
@@ -69,6 +72,8 @@ extern const char *attrgroup_get_attr(t_attrgroup *attrgroup, const char *key);
 extern int attrgroup_set_attr(t_attrgroup *attrgroup, const char *key, const char *val);
 extern int attrgroup_save(t_attrgroup *attrgroup, int flags);
 extern int attrgroup_flush(t_attrgroup *attrgroup, int flags);
+
+}
 
 }
 

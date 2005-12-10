@@ -19,7 +19,17 @@
 #ifndef INCLUDED_SUPPORT_PROTOS
 #define INCLUDED_SUPPORT_PROTOS
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern int support_check_files(char const * supportfile);
+
+}
+
+}
 
 #endif
 

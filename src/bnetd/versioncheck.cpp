@@ -77,6 +77,12 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 static t_list * versioninfo_head=NULL;
 static t_versioncheck dummyvc={ "A=42 B=42 C=42 4 A=A^S B=B^B C=C^C A=A^S", "IX86ver1.mpq", "NoVC" };
 
@@ -684,4 +690,8 @@ extern int versioncheck_unload(void)
     }
 
     return 0;
+}
+
+}
+
 }

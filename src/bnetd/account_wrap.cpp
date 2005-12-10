@@ -59,6 +59,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static unsigned int char_icon_to_uint(char * icon);
 
 extern unsigned int account_get_numattr_real(t_account * account, char const * key, char const * fn, unsigned int ln)
@@ -2382,6 +2385,8 @@ extern int account_set_wol_apgar(t_account * account, char const * apgar)
 {
     eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] WOL\\auth\\apgar = %s",apgar);
     return account_set_strattr(account,"WOL\\auth\\apgar",apgar);
+}
+
 }
 
 }

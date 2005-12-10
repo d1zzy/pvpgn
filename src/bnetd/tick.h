@@ -22,7 +22,17 @@
 #ifndef INCLUDED_TICK_PROTOS
 #define INCLUDED_TICK_PROTOS
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern unsigned int get_ticks(void);
+
+}
+
+}
 
 #endif
 #endif

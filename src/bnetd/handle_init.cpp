@@ -40,6 +40,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int handle_init_packet(t_connection * c, t_packet const * const packet)
 {
     if (!c)
@@ -126,6 +129,8 @@ extern int handle_init_packet(t_connection * c, t_packet const * const packet)
     }
 
     return 0;
+}
+
 }
 
 }

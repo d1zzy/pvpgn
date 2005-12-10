@@ -122,6 +122,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 /* types and data structures used for the connlist array */
 typedef struct {
     t_connection *c;
@@ -3942,6 +3945,8 @@ extern char const * conn_wol_get_game_options(t_connection * c)
     }
 
     return c->protocol.wol.gameOptions;
+}
+
 }
 
 }

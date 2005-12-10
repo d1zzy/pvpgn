@@ -89,6 +89,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 DECLARE_ELIST_INIT(gamelist_head);
 static int glist_length=0;
 static int totalcount=0;
@@ -1711,7 +1714,7 @@ extern t_account * game_get_player(t_game * game, unsigned int i)
 	eventlog(eventlog_level_error,__FUNCTION__,"requested illegal player id %u",i);
 	return NULL;
     }
-    
+
     return game->players[i];
 }
 
@@ -2256,6 +2259,8 @@ extern int game_is_ladder(t_game *game)
 	game_match_name(game_get_name(game),prefs_get_ladder_prefix())) return 1;
 
     return 0;
+}
+
 }
 
 }

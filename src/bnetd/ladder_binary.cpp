@@ -51,6 +51,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static void dispose_filename(const char * filename)
 {
     if (filename) xfree((void*)filename);
@@ -204,6 +207,8 @@ extern t_binary_ladder_load_result binary_ladder_load(t_binary_ladder_types type
   eventlog(eventlog_level_info,__FUNCTION__,"successfully loaded %s",filename);
   dispose_filename(filename);
   return load_success;
+
+}
 
 }
 

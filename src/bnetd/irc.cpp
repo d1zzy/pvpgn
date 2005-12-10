@@ -78,6 +78,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef struct {
     char const * nick;
     char const * user;
@@ -1130,6 +1133,8 @@ extern int irc_who(t_connection * c, char const * name)
 	    return irc_who_connection(c,info);
     }
     return 0;
+}
+
 }
 
 }

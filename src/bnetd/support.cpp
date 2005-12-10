@@ -52,6 +52,12 @@
 #include "common/util.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern int support_check_files(char const * supportfile)
 {
 
@@ -82,7 +88,7 @@ extern int support_check_files(char const * supportfile)
     {
       continue;
     }
-    
+
     namebuff = (char*)xmalloc(filedirlen + 1 + strlen(buff) + 1);
     sprintf(namebuff,"%s/%s",prefs_get_filedir(),buff);
 
@@ -101,4 +107,8 @@ extern int support_check_files(char const * supportfile)
   fclose(fp);
 
   return 0;
+}
+
+}
+
 }

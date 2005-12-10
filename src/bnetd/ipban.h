@@ -36,6 +36,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef enum
 {
     ipban_type_exact,     /* 192.168.0.10              */
@@ -57,6 +60,8 @@ typedef struct ipban_entry_struct
 
 }
 
+}
+
 #endif
 
 #endif
@@ -74,6 +79,9 @@ typedef struct ipban_entry_struct
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int ipbanlist_create(void);
 extern int ipbanlist_destroy(void);
 extern int ipbanlist_load(char const * filename);
@@ -83,6 +91,8 @@ extern int ipbanlist_add(t_connection * c, char const * cp, time_t endtime);
 extern int ipbanlist_unload_expired(void);
 extern time_t ipbanlist_str_to_time_t(t_connection * c, char const * timestr);
 extern int handle_ipban_command(t_connection * c, char const * text);
+
+}
 
 }
 

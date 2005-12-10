@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2004 CreepLord (creeplord@pvpgn.org)
  *
  * This program is free software; you can redistribute it and/or
@@ -45,6 +45,12 @@
 #define MAXMAPS_PER_QUEUE 32 /* cannot be changed (map_prefs only supports 32 maps) */
 
 /**********************************************************************************/
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 static char *	maplist_war3[MAXMAPS];
 static char *	maplist_w3xp[MAXMAPS];
 static int	number_maps_war3 = 0;
@@ -68,7 +74,7 @@ static char *	queue_names[ANONGAME_TYPES] = {
 static int _maplists_type_get_queue(const char * type)
 {
     int i;
-    
+
     for (i = 0; i < ANONGAME_TYPES; i++)
 	if (strcmp(type, queue_names[i]) == 0)
 	    return i;
@@ -96,7 +102,7 @@ static void _maplists_add_map(t_clienttag clienttag, char * mapname, int queue)
     int in_list = 0;
     int j;
     char clienttag_str[5];
-	
+
     if (clienttag==CLIENTTAG_WARCRAFT3_UINT) {
 	for (j = 0; j < number_maps_war3; j++) {
 	    if (strcmp(maplist_war3[j], mapname) == 0) { /* already in list */
@@ -104,10 +110,10 @@ static void _maplists_add_map(t_clienttag clienttag, char * mapname, int queue)
 		break;
 	    }
 	}
-	
+
 	if (!in_list)
 	    maplist_war3[number_maps_war3++] = xstrdup(mapname);
-	
+
 	if (maplists_war3[queue][0] < MAXMAPS_PER_QUEUE) {
 	    maplists_war3[queue][0]++;
 	    maplists_war3[queue][(int)maplists_war3[queue][0]] = j;
@@ -117,7 +123,7 @@ static void _maplists_add_map(t_clienttag clienttag, char * mapname, int queue)
 		mapname, _maplists_queue_get_type(queue), MAXMAPS_PER_QUEUE);
 	}
     }
-    
+
     else if (clienttag==CLIENTTAG_WAR3XP_UINT) {
 	for (j = 0; j < number_maps_w3xp; j++) {
 	    if (strcmp(maplist_w3xp[j], mapname) == 0) { /* already in list */
@@ -125,10 +131,10 @@ static void _maplists_add_map(t_clienttag clienttag, char * mapname, int queue)
 		break;
 	    }
 	}
-	
+
 	if (!in_list)
 	    maplist_w3xp[number_maps_w3xp++] = xstrdup(mapname);
-	
+
 	if (maplists_w3xp[queue][0] < MAXMAPS_PER_QUEUE) {
 	    maplists_w3xp[queue][0]++;
 	    maplists_w3xp[queue][(int)maplists_w3xp[queue][0]] = j;
@@ -154,55 +160,55 @@ extern int anongame_maplists_create(void)
       eventlog(eventlog_level_error, "anongame_maplists_create","invalid mapsfile, check your config");
       return -1;
    }
-   
+
    if ((mapfd = fopen(prefs_get_mapsfile(), "rt")) == NULL) {
       eventlog(eventlog_level_error, "anongame_maplists_create", "could not open mapsfile : \"%s\"", prefs_get_mapsfile());
       return -1;
    }
-   
+
    /* init the maps, they say static vars are 0-ed anyway but u never know :) */
    for(i=0; i < ANONGAME_TYPES; i++) {
       maplists_war3[i][0] = 0;
       maplists_w3xp[i][0] = 0;
    }
-   
+
    while(fgets(buffer, 256, mapfd)) {
       len = strlen(buffer);
       if (len < 1) continue;
       if (buffer[len-1] == '\n') {
 	 buffer[len-1] = '\0';
       }
-      
+
       /* search for comments and comment them out */
-      for(p = buffer; *p ; p++) 
+      for(p = buffer; *p ; p++)
 	if (*p == '#') {
 	   *p = '\0';
 	   break;
 	}
-      
+
       /* skip spaces and/or tabs */
       for(p = buffer; *p && ( *p == ' ' || *p == '\t' ); p++); /* p = clienttag */
       if (*p == '\0') continue;
-      
+
       /* find next delimiter */
       for(q = p; *q && *q != ' ' && *q != '\t'; q++);
       if (*q == '\0' || q - p != 4) continue; /* clienttag needs to have 4 chars */
 
       *q = '\0'; /* end of clienttag */
-      
+
       /* skip spaces and/or tabs */
       for (q++ ; *q && ( *q == ' ' || *q == '\t'); q++); /* q = type */
       if (*q == '\0') continue;
-      
+
       /* find next delimiter */
       for (r = q+1; *r && *r != ' ' && *r != '\t'; r++);
-      
+
       *r = '\0'; /* end of type */
-      
+
       /* skip spaces and/or tabs */
       for (r++ ; *r && ( *r == ' ' || *r == '\t'); r++); /* r = mapname */
       if (*r == '\0') continue;
-      
+
       if (*r!='\"') /* mapname without quotes */
       /* find next delimiter */
         for (u = r+1; *u && *u != ' ' && *u != '\t'; u++);
@@ -216,7 +222,7 @@ extern int anongame_maplists_create(void)
 	  }
 	}
       *u = '\0'; /* end of mapname */
-      
+
       if ((queue = _maplists_type_get_queue(q)) < 0) continue; /* invalid queue */
 
       _maplists_add_map(tag_case_str_to_uint(p), r, queue);
@@ -230,17 +236,17 @@ extern int maplists_get_totalmaps(t_clienttag clienttag)
 {
     if (clienttag==CLIENTTAG_WARCRAFT3_UINT)
 	return number_maps_war3;
-    
+
     if (clienttag==CLIENTTAG_WAR3XP_UINT)
         return number_maps_w3xp;
-    
+
     return 0;
 }
 
 extern void maplists_add_maps_to_packet(t_packet * packet, t_clienttag clienttag)
 {
     int i;
-    
+
     if (clienttag==CLIENTTAG_WARCRAFT3_UINT)
 	for (i = 0; i < number_maps_war3; i++)
 	    packet_append_string(packet, maplist_war3[i]);
@@ -255,17 +261,17 @@ extern int maplists_get_totalmaps_by_queue(t_clienttag clienttag, int queue)
 {
     if (clienttag==CLIENTTAG_WARCRAFT3_UINT)
 	return maplists_war3[queue][0];
-    
+
     if (clienttag==CLIENTTAG_WAR3XP_UINT)
 	return maplists_w3xp[queue][0];
-    
+
     return 0;
 }
-    
+
 extern void maplists_add_map_info_to_packet(t_packet * rpacket, t_clienttag clienttag, int queue)
 {
     int i;
-    
+
     if (clienttag==CLIENTTAG_WARCRAFT3_UINT) {
 	for (i = 0; i < maplists_war3[queue][0] + 1; i++)
 	    packet_append_data(rpacket, &maplists_war3[queue][i], 1);
@@ -283,14 +289,14 @@ extern char * maplists_get_map(int queue, t_clienttag clienttag, int mapnumber)
 	return maplist_war3[(int)maplists_war3[queue][mapnumber]];
     if (clienttag==CLIENTTAG_WAR3XP_UINT)
 	return maplist_w3xp[(int)maplists_w3xp[queue][mapnumber]];
-    
+
     return NULL;
 }
-	
+
 extern void anongame_maplists_destroy()
 {
     int i;
-   
+
     for (i = 0; i < MAXMAPS; i++) {
 	if (maplist_war3[i])
 	    xfree((void *)maplist_war3[i]);
@@ -308,4 +314,8 @@ extern int anongame_add_tournament_map(t_clienttag clienttag, char * mapname)
 extern void anongame_tournament_maplists_destroy(void)
 {
     return; /* nothing to destroy */
+}
+
+}
+
 }

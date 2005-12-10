@@ -35,6 +35,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 /* convenience functions */
 extern unsigned int account_get_numattr_real(t_account * account, char const * key, char const * fn, unsigned int ln);
 #define account_get_numattr(A,K) account_get_numattr_real(A,K,__FILE__,__LINE__)
@@ -220,6 +223,8 @@ extern char const * account_get_email(t_account * account);
 */
 extern char const * account_get_wol_apgar(t_account * account);
 extern int account_set_wol_apgar(t_account * account, char const * apgar);
+
+}
 
 }
 

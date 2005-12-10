@@ -52,6 +52,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static int on_d2cs_accountloginreq(t_connection * c, t_packet const * packet);
 static int on_d2cs_charloginreq(t_connection * c, t_packet const * packet);
 static int on_d2cs_authreply(t_connection * c, t_packet const * packet);
@@ -414,6 +417,8 @@ static int on_d2cs_gameinforeply(t_connection * c, t_packet const * packet)
 	game_set_difficulty(game,diff);
 
 	return 0;
+}
+
 }
 
 }

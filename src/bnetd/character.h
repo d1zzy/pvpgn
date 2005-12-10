@@ -33,6 +33,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef enum
 {
     character_class_none,
@@ -103,6 +106,8 @@ t_character;
 
 }
 
+}
+
 #endif
 
 
@@ -119,6 +124,9 @@ t_character;
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int character_create(t_account * account, t_clienttag clienttag, char const * realmname, char const * name, t_character_class chclass, t_character_expansion expansion);
 extern char const * character_get_name(t_character const * ch);
 extern char const * character_get_realmname(t_character const * ch);
@@ -130,6 +138,8 @@ extern int character_verify_charlist(t_character const * ch, char const * charli
 extern int characterlist_create(char const * dirname);
 extern int characterlist_destroy(void);
 extern t_character * characterlist_find_character(char const * realmname, char const * charname);
+
+}
 
 }
 

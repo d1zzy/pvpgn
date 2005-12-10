@@ -57,6 +57,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 /* option - handling function */
 
 /* 0x00 */ /* PG style search - handle_anongame_search() in anongame.c */
@@ -924,6 +927,8 @@ extern int handle_anongame_packet(t_connection * c, t_packet const * const packe
           eventlog(eventlog_level_error,__FUNCTION__,"got unhandled option %d",bn_byte_get(packet->u.client_findanongame.option));
 	  return -1;
     }
+}
+
 }
 
 }

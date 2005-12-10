@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Dizzy 
+ * Copyright (C) 2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,13 @@
 #define __ATTR_INCLUDED__
 
 #include "common/elist.h"
+#include "common/xalloc.h"
+
+namespace pvpgn
+{
+
+namespace bnetd
+{
 
 typedef struct attr_struct {
     const char 		*key;
@@ -27,8 +34,6 @@ typedef struct attr_struct {
     int			dirty;
     t_hlist		link;
 } t_attr;
-
-#include "common/xalloc.h"
 
 static inline t_attr *attr_create(const char *key, const char *val)
 {
@@ -84,6 +89,10 @@ static inline void attr_set_val(t_attr *attr, const char *val)
 static inline void attr_set_dirty(t_attr *attr)
 {
     attr->dirty = 1;
+}
+
+}
+
 }
 
 #endif /* __ATTR_H_INCLUDED__ */

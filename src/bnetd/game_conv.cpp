@@ -55,6 +55,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern t_game_type bngreqtype_to_gtype(t_clienttag clienttag, unsigned short bngtype)
 {
     char clienttag_str[5];
@@ -1187,6 +1190,8 @@ If the corresponding bit is a '0' then subtract 1 from the character.
     xfree(save);
 
     return 0;
+}
+
 }
 
 }

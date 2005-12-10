@@ -78,6 +78,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef enum
 {
     conn_class_init,
@@ -228,6 +231,8 @@ t_connection;
 
 }
 
+}
+
 #endif
 
 
@@ -257,6 +262,9 @@ t_connection;
 #define DESTROY_FROM_DEADLIST 1
 
 namespace pvpgn
+{
+
+namespace bnetd
 {
 
 extern t_anongame * conn_create_anongame(t_connection * c);
@@ -462,6 +470,8 @@ extern int conn_wol_get_game_type(t_connection * c);
 
 extern void conn_wol_set_game_options(t_connection * c, char const * gameOptions);
 extern char const * conn_wol_get_game_options(t_connection * c);
+
+}
 
 }
 

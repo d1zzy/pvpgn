@@ -40,6 +40,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static double probability(unsigned int a, unsigned int b) ;
 static int coefficient(t_account * account, t_clienttag clienttag, t_ladder_id id);
 
@@ -635,6 +638,8 @@ extern int ladder_calc_info(t_clienttag clienttag, t_ladder_id id, unsigned int 
     xfree((void *)sorted);
 
     return 0;
+}
+
 }
 
 }

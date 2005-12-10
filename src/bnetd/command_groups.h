@@ -16,6 +16,12 @@
 #ifndef INCLUDED_COMMAND_GROUPS_TYPES
 #define INCLUDED_COMMAND_GROUPS_TYPES
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 #ifdef COMMAND_GROUPS_INTERNAL_ACCESS
 
 typedef struct
@@ -26,16 +32,30 @@ typedef struct
 
 #endif
 
+}
+
+}
+
 #endif
 
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_COMMAND_GROUPS_PROTOS
 #define INCLUDED_COMMAND_GROUPS_PROTOS
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern int command_groups_load(char const * filename);
 extern int command_groups_unload(void);
 extern int command_groups_reload(char const * filename);
 extern unsigned int command_get_group(char const * command);
+
+}
+
+}
 
 #endif
 #endif

@@ -71,6 +71,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static int identify_ipban_function(const char * funcstr);
 static int ipban_func_del(t_connection * c, char const * cp);
 static int ipban_func_list(t_connection * c);
@@ -1071,6 +1074,8 @@ static void ipban_usage(t_connection * c)
     message_send_text(c,message_type_info,c,"    (IP have to be entry accepted in bnban)");
     message_send_text(c,message_type_info,c,"to check is specified IP banned:");
     message_send_text(c,message_type_info,c,"    /ipban c[heck] IP");
+}
+
 }
 
 }

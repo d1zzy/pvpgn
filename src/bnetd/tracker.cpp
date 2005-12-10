@@ -85,6 +85,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static t_addrlist * track_servers=NULL;
 
 
@@ -221,6 +224,8 @@ extern int tracker_send_report(t_addrlist const * laddrs)
     }
 
     return 0;
+}
+
 }
 
 }

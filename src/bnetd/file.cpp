@@ -64,6 +64,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static char const * file_get_info(char const * rawname, unsigned int * len, bn_long * modtime);
 
 static char * file_find_default(const char *rawname)
@@ -279,6 +282,8 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
     if (fclose(fp)<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (fclose: %s)",rawname,pstrerror(errno));
     return 0;
+}
+
 }
 
 }

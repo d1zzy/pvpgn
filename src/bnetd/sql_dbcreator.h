@@ -19,6 +19,12 @@
 
 #include "common/list.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 typedef struct sqlcommand
 #ifdef SQL_DBCREATOR_INTERNAL_ACCESS
 {
@@ -36,7 +42,7 @@ typedef struct column
   char * value;
   char * mode;
   char * extra_cmd;
-} 
+}
 #endif
 t_column;
 
@@ -46,7 +52,7 @@ typedef struct table
   char   * name;
   t_list * columns;
   t_list * sql_commands;
-} 
+}
 #endif
 t_table;
 
@@ -54,10 +60,13 @@ typedef struct db_layout
 #ifdef SQL_DBCREATOR_INTERNAL_ACCESS
 {
   t_list * tables;
-} 
+}
 #endif
 t_db_layout;
 
+}
+
+}
 
 #endif /* INCLUDED_SQL_DBCREATOR_TYPES */
 
@@ -72,7 +81,17 @@ t_db_layout;
 # include "sql_common.h"
 #undef SQL_INTERNAL
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 int sql_dbcreator(t_sql_engine * sql);
+
+}
+
+}
 
 #endif /* INCLUDED_SQL_DBCREATOR_PROTOS */
 #endif /* JUST_NEED_TYPES */

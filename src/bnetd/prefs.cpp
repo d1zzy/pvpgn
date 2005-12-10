@@ -2,7 +2,7 @@
  * Copyright (C) 1998,1999,2000,2001  Ross Combs (rocombs@cs.nmsu.edu)
  * Copyright (C) 1999  Rob Crittenden (rcrit@greyoak.com)
  * Copyright (C) 1999  Mark Baysinger (mbaysing@ucsd.edu)
- * Copyright (C) 2004,2005 Dizzy 
+ * Copyright (C) 2004,2005 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -55,6 +55,12 @@
 #include "common/setup_after.h"
 
 #define NONE 0
+
+namespace pvpgn
+{
+
+namespace bnetd
+{
 
 static struct {
     /* files and paths */
@@ -178,7 +184,7 @@ static struct {
     unsigned int max_connections;
     unsigned int sync_on_logoff;
     char const * irc_network_name;
-    
+
     char const * woladdrs;
     char const * woltimezone;
     char const * wollongitude;
@@ -790,7 +796,7 @@ static t_conf_entry conf_table[] =
     { "sync_on_logoff",         conf_set_sync_on_logoff,       conf_get_sync_on_logoff,conf_setdef_sync_on_logoff},
     { "ladder_prefix",		conf_set_ladder_prefix,	       conf_get_ladder_prefix,conf_setdef_ladder_prefix},
     { "irc_network_name",		conf_set_irc_network_name,	       conf_get_irc_network_name, conf_setdef_irc_network_name},
- 
+
     { "woladdrs",		conf_set_wol_addrs,	       conf_get_wol_addrs, conf_setdef_wol_addrs},
     { "woltimezone",		conf_set_wol_timezone,         conf_get_wol_timezone, conf_setdef_wol_timezone},
     { "wollongitude",		conf_set_wol_longitude,             conf_get_wol_longitude, conf_setdef_wol_longitude},
@@ -2056,7 +2062,7 @@ static const char* conf_get_quota(void)
 extern unsigned int prefs_get_quota_lines(void)
 {
     unsigned int rez;
-    
+
     rez=prefs_runtime_config.quota_lines;
     if (rez<1) rez = 1;
     if (rez>100) rez = 100;
@@ -2082,7 +2088,7 @@ static const char* conf_get_quota_lines(void)
 extern unsigned int prefs_get_quota_time(void)
 {
     unsigned int rez;
-    
+
     rez=prefs_runtime_config.quota_time;
     if (rez<1) rez = 1;
     if (rez>10) rez = 60;
@@ -2108,7 +2114,7 @@ static const char* conf_get_quota_time(void)
 extern unsigned int prefs_get_quota_wrapline(void)
 {
     unsigned int rez;
-    
+
     rez=prefs_runtime_config.quota_wrapline;
     if (rez<1) rez = 1;
     if (rez>256) rez = 256;
@@ -2134,7 +2140,7 @@ static const char* conf_get_quota_wrapline(void)
 extern unsigned int prefs_get_quota_maxline(void)
 {
     unsigned int rez;
-    
+
     rez=prefs_runtime_config.quota_maxline;
     if (rez<1) rez = 1;
     if (rez>256) rez = 256;
@@ -2333,7 +2339,7 @@ static const char* conf_get_mail_support(void)
 extern unsigned int prefs_get_mail_quota(void)
 {
     unsigned int rez;
-    
+
     rez=prefs_runtime_config.mail_quota;
     if (rez<1) rez = 1;
     if (rez>30) rez = 30;
@@ -3402,4 +3408,8 @@ static char const * conf_get_wol_latitude(void)
 static int conf_setdef_wol_latitude(void)
 {
     return conf_set_str(&prefs_runtime_config.wollatitude,NULL,0);
+}
+
+}
+
 }

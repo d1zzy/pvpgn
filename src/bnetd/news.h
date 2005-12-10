@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2000 Alexey Belyaev (spider@omskart.ru)
- * Copyright (C) 2004 Dizzy 
+ * Copyright (C) 2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,6 +26,12 @@
 #include "common/elist.h"
 #include "common/lstr.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 typedef struct news_index
 #ifdef NEWS_INTERNAL_ACCESS
 {
@@ -38,12 +44,23 @@ t_news_index;
 
 typedef int (*t_news_cb)(time_t, t_lstr *, void *);
 
+}
+
+}
+
+
 #endif
 
 /*****/
 #ifndef JUST_NEED_TYPES
 #ifndef NEWS_INTERNAL_ACCESS
 #define NEWS_INTERNAL_ACCESS
+
+namespace pvpgn
+{
+
+namespace bnetd
+{
 
 extern int news_load(const char *filename);
 extern int news_unload(void);
@@ -52,6 +69,10 @@ extern unsigned int news_get_firstnews(void);
 extern unsigned int news_get_lastnews(void);
 
 extern void news_traverse(t_news_cb cb, void *data);
+
+}
+
+}
 
 #endif
 #endif

@@ -60,6 +60,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef enum
 {
     game_type_none,
@@ -244,6 +247,8 @@ typedef int (*t_glist_func)(t_game *, void *);
 
 }
 
+}
+
 #endif
 
 
@@ -276,6 +281,9 @@ typedef int (*t_glist_func)(t_game *, void *);
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
+{
+
+namespace bnetd
 {
 
 extern char const * game_type_get_str(t_game_type type) ;
@@ -349,6 +357,8 @@ extern void game_set_flag(t_game * game, t_game_flag flag);
 extern t_game_flag game_get_flag(t_game const * game);
 extern int game_get_count_by_clienttag(t_clienttag ct);
 extern int game_is_ladder(t_game *game);
+
+}
 
 }
 

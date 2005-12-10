@@ -50,6 +50,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef union
 {
     unsigned long n;
@@ -70,6 +73,8 @@ typedef struct timer_struct
 }
 #endif
 t_timer;
+
+}
 
 }
 
@@ -96,11 +101,16 @@ t_timer;
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int timerlist_create(void);
 extern int timerlist_destroy(void);
 extern int timerlist_add_timer(t_connection * owner, time_t when, t_timer_cb cb, t_timer_data data);
 extern int timerlist_del_all_timers(t_connection * owner);
 extern int timerlist_check_timers(time_t when);
+
+}
 
 }
 

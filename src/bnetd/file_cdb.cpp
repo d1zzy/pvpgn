@@ -103,6 +103,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 /* cdb file storage API functions */
 
 static int cdb_read_attrs(const char *filename, t_read_attr_func cb, void *data);
@@ -318,6 +321,8 @@ static t_attr * cdb_read_attr(const char *filename, const char *key)
 #else
     return NULL;
 #endif
+}
+
 }
 
 }

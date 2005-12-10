@@ -22,6 +22,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 #ifdef SERVER_INTERNAL_ACCESS
 
 typedef enum
@@ -51,6 +54,8 @@ extern time_t now;
 
 }
 
+}
+
 #endif
 
 
@@ -60,6 +65,9 @@ extern time_t now;
 #define INCLUDED_SERVER_PROTOS
 
 namespace pvpgn
+{
+
+namespace bnetd
 {
 
 extern unsigned int server_get_uptime(void);
@@ -73,6 +81,8 @@ extern int server_process(void);
 extern void server_quit_wraper(void);
 extern void server_restart_wraper(void);
 extern void server_save_wraper(void);
+
+}
 
 }
 

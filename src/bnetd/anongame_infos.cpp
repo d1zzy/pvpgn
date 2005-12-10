@@ -48,6 +48,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static FILE *fp = NULL;
 
 static t_anongame_infos *anongame_infos;
@@ -2003,6 +2006,8 @@ static int zlib_compress(void const *src, int srclen, char **dest, int *destlen)
     xfree((void *) tmpdata);
 
     return 0;
+}
+
 }
 
 }

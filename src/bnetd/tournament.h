@@ -19,6 +19,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef struct
 {
     unsigned int start_preliminary;
@@ -54,6 +57,8 @@ typedef struct
 
 }
 
+}
+
 #endif
 
 #ifndef JUST_NEED_TYPES
@@ -65,6 +70,9 @@ typedef struct
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
+{
+
+namespace bnetd
 {
 
 extern int tournament_signup_user(t_account * account);
@@ -100,6 +108,8 @@ extern unsigned int tournament_get_races(void);
 extern char * tournament_get_format(void);
 extern char * tournament_get_sponsor(void);
 extern unsigned int tournament_get_thumbs_down(void);
+
+}
 
 }
 

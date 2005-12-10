@@ -57,6 +57,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static t_tournament_info * tournament_info = NULL;
 static t_list * tournament_head=NULL;
 
@@ -789,6 +792,8 @@ extern char * tournament_get_sponsor(void)
 extern unsigned int tournament_get_thumbs_down(void)
 {
     return tournament_info->thumbs_down;
+}
+
 }
 
 }

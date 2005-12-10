@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 Dizzy 
+ * Copyright (C) 2005 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,6 +27,12 @@
 #include "storage_sql.h"
 #include "sql_sqlite3.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
+
+namespace bnetd
+{
 
 typedef struct {
     char** results;
@@ -208,6 +214,10 @@ static void sql_sqlite3_escape_string(char *escape, const char *from, int len)
 	return;
     }
     sqlite3_snprintf(len * 2 + 1, escape, "%q", from);
+}
+
+}
+
 }
 
 #endif /* WITH_SQL_SQLITE3 */

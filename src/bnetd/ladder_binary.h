@@ -21,6 +21,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 typedef enum
 {	WAR3_SOLO, WAR3_TEAM, WAR3_FFA, WAR3_AT,
 	W3XP_SOLO, W3XP_TEAM, W3XP_FFA, W3XP_AT,
@@ -46,6 +49,8 @@ typedef int (* t_cb_add_to_ladder)(t_binary_ladder_types, int *values);
 
 }
 
+}
+
 #ifdef BINARY_LADDER_INTERNAL_ACCESS
 
 #define magick 0xdeadbeef
@@ -63,8 +68,13 @@ typedef int (* t_cb_add_to_ladder)(t_binary_ladder_types, int *values);
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 extern int binary_ladder_save(t_binary_ladder_types type, unsigned int paracount, t_cb_get_from_ladder _cb_get_from_ladder);
 extern t_binary_ladder_load_result binary_ladder_load(t_binary_ladder_types type, unsigned int paracount, t_cb_add_to_ladder _cb_add_to_ladder);
+
+}
 
 }
 

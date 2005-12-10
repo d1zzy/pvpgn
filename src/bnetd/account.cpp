@@ -94,6 +94,9 @@
 namespace pvpgn
 {
 
+namespace bnetd
+{
+
 static t_hashtable * accountlist_head=NULL;
 static t_hashtable * accountlist_uid_head=NULL;
 
@@ -1008,6 +1011,8 @@ t_list * account_get_teams(t_account * account)
   assert(account);
 
   return account->teams;
+}
+
 }
 
 }
