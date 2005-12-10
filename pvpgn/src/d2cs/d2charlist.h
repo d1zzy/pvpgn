@@ -18,7 +18,7 @@
  */
 
 #include "common/elist.h"
-#include "d2cs_d2gs_character.h"
+#include "common/d2cs_d2gs_character.h"
 
 namespace pvpgn
 {

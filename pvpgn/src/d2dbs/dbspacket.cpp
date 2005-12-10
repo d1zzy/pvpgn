@@ -103,7 +103,7 @@
 #include "common/bn_type.h"
 #include "common/d2char_checksum.h"
 #include "common/xstring.h"
-#include "d2cs/d2cs_d2gs_character.h"
+#include "common/d2cs_d2gs_character.h"
 #include "common/list.h"
 #include "common/eventlog.h"
 #include "common/addr.h"
