@@ -75,6 +75,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 char			* d2ladder_ladder_file = NULL;
 char			* d2ladder_backup_file = NULL;
 
@@ -117,23 +123,23 @@ extern int d2ladder_update(t_d2ladder_info * pcharladderinfo)
 
 	if (prefs_get_ladder_chars_only() && (!charstatus_get_ladder(status)))
           return -1;
-	
-	hardcore=charstatus_get_hardcore(status); 
-	expansion=charstatus_get_expansion(status); 
-	ladder_overall_type=0;
-	if (!expansion && chclass> D2CHAR_CLASS_MAX ) return -1; 
-	if (expansion && chclass> D2CHAR_EXP_CLASS_MAX ) return -1; 
-	if (hardcore && expansion) { 
-		ladder_overall_type=D2LADDER_EXP_HC_OVERALL; 
-	} else if (!hardcore && expansion) { 
-		ladder_overall_type=D2LADDER_EXP_STD_OVERALL; 
-	} else if (hardcore && !expansion) { 
-		ladder_overall_type=D2LADDER_HC_OVERALL; 
-	} else if (!hardcore && !expansion) { 
-		ladder_overall_type=D2LADDER_STD_OVERALL; 
-	} 
 
-	ladder_class_type=ladder_overall_type + chclass+1; 
+	hardcore=charstatus_get_hardcore(status);
+	expansion=charstatus_get_expansion(status);
+	ladder_overall_type=0;
+	if (!expansion && chclass> D2CHAR_CLASS_MAX ) return -1;
+	if (expansion && chclass> D2CHAR_EXP_CLASS_MAX ) return -1;
+	if (hardcore && expansion) {
+		ladder_overall_type=D2LADDER_EXP_HC_OVERALL;
+	} else if (!hardcore && expansion) {
+		ladder_overall_type=D2LADDER_EXP_STD_OVERALL;
+	} else if (hardcore && !expansion) {
+		ladder_overall_type=D2LADDER_HC_OVERALL;
+	} else if (!hardcore && !expansion) {
+		ladder_overall_type=D2LADDER_STD_OVERALL;
+	}
+
+	ladder_class_type=ladder_overall_type + chclass+1;
 
 	d2ladder=d2ladderlist_find_type(ladder_overall_type);
 	if(d2ladder_insert(d2ladder,pcharladderinfo)==1) {
@@ -206,10 +212,10 @@ int d2ladder_find_pos(t_d2ladder * d2ladder, t_d2ladder_info * info)
 	int	i;
 
 	if (!d2ladder || !info) return -1;
-	
+
 	// only allow if the experience threshold is reached
 	if (info->experience < prefs_get_ladderupdate_threshold()) return -1;
-	
+
 	i=d2ladder->len;
 	while (i--) {
 		if (d2ladder->info[i].experience > info->experience) {
@@ -255,7 +261,7 @@ int d2ladder_find_char_all(t_d2ladder * d2ladder, t_d2ladder_info * info)
 int d2ladder_update_info_and_pos(t_d2ladder * d2ladder, t_d2ladder_info * info, int oldpos, int newpos)
 {
 	int	i;
-	int	direction;	
+	int	direction;
 	int	outflag;
 	t_d2ladder_info * ladderdata;
 
@@ -495,7 +501,7 @@ int d2ladder_readladder(void)
 		xfree(ldata);
 	}
 	leftsize-=blocksize;
-	
+
 	xfree(lhead);
 	fclose(fdladder);
 	return 0;
@@ -549,7 +555,7 @@ int d2ladder_empty(void)
 {
 	unsigned int i;
 	t_d2ladder * d2ladder;
-	
+
 	for (i=0;i<d2ladder_maxtype;i++) {
 		d2ladder=d2ladderlist_find_type(i);
 		if(d2ladder) {
@@ -564,11 +570,11 @@ const char * get_prefix(int type, int status, int chclass)
   int  difficulty;
   static char prefix [4][4][2][16] =
                                   {{{"",""},{"",""},{"",""},{"",""}},
-	  
+
                                    {{"Count" ,"Countess"} ,     {"Sir","Dame"},
                                     {"Destroyer","Destroyer"} , {"Slayer","Slayer"}},
 
-	  		           {{"Duke"  ,"Duchess"}  ,     {"Lord","Lady"}, 
+	  		           {{"Duke"  ,"Duchess"}  ,     {"Lord","Lady"},
                                     {"Conqueror","Conqueror"} , {"Champion","Champion"}},
 
 			           {{"King"  ,"Queen"}    ,     {"Baron","Baroness"},
@@ -578,7 +584,7 @@ const char * get_prefix(int type, int status, int chclass)
 
   difficulty = ((status >> 0x08) & 0x0f) / 5;
 
-			           
+
   return prefix[difficulty][type][sex[chclass]];
 }
 
@@ -596,31 +602,31 @@ int d2ladder_print_XML(FILE *ladderstrm)
   fprintf(ladderstrm,"<?xml version=\"1.0\"?>\n<D2_ladders>\n");
   for(type=0; type <d2ladder_maxtype; type++) {
     d2ladder=d2ladderlist_find_type(type);
-    if (!d2ladder) 
+    if (!d2ladder)
       continue;
-    if(d2ladder->len<=0) 
+    if(d2ladder->len<=0)
       continue;
     ldata=d2ladder->info;
 
     overalltype=0;
     classtype=0;
 
-    if(type<= D2LADDER_HC_OVERALL+D2CHAR_CLASS_MAX +1) 
+    if(type<= D2LADDER_HC_OVERALL+D2CHAR_CLASS_MAX +1)
       {
 	overalltype=0 ;
 	classtype=type-D2LADDER_HC_OVERALL;
       }
-    else if(type >= D2LADDER_STD_OVERALL && type<= D2LADDER_STD_OVERALL+D2CHAR_CLASS_MAX +1) 
+    else if(type >= D2LADDER_STD_OVERALL && type<= D2LADDER_STD_OVERALL+D2CHAR_CLASS_MAX +1)
       {
 	overalltype=1;
 	classtype=type-D2LADDER_STD_OVERALL;
       }
-    else if(type >= D2LADDER_EXP_HC_OVERALL && type<= D2LADDER_EXP_HC_OVERALL+D2CHAR_EXP_CLASS_MAX +1) 
+    else if(type >= D2LADDER_EXP_HC_OVERALL && type<= D2LADDER_EXP_HC_OVERALL+D2CHAR_EXP_CLASS_MAX +1)
       {
 	overalltype=2;
 	classtype=type-D2LADDER_EXP_HC_OVERALL;
       }
-    else if(type >= D2LADDER_EXP_STD_OVERALL && type<= D2LADDER_EXP_STD_OVERALL+D2CHAR_EXP_CLASS_MAX +1) 
+    else if(type >= D2LADDER_EXP_STD_OVERALL && type<= D2LADDER_EXP_STD_OVERALL+D2CHAR_EXP_CLASS_MAX +1)
       {
 	overalltype=3;
 	classtype=type-D2LADDER_EXP_STD_OVERALL ;
@@ -638,7 +644,7 @@ int d2ladder_print_XML(FILE *ladderstrm)
 		             ldata[i].experience,charclass[ldata[i].chclass+1]);
 	  fprintf(ladderstrm,"\t\t<prefix>%s</prefix>\n",
 		             get_prefix(overalltype,ldata[i].status,ldata[i].chclass+1));
-          if (((ldata[i].status) & (D2CHARINFO_STATUS_FLAG_DEAD | D2CHARINFO_STATUS_FLAG_HARDCORE)) == 
+          if (((ldata[i].status) & (D2CHARINFO_STATUS_FLAG_DEAD | D2CHARINFO_STATUS_FLAG_HARDCORE)) ==
 				   (D2CHARINFO_STATUS_FLAG_DEAD | D2CHARINFO_STATUS_FLAG_HARDCORE))
 	    fprintf(ladderstrm,"\t\t<status>dead</status>\n\t</char>\n");
 	  else
@@ -679,7 +685,7 @@ extern int d2ladder_saveladder(void)
 		bn_int_set(&lhead[i].number,d2ladder->len);
 		start+=d2ladder->len*sizeof(*ldata);
 	}
-	
+
 	if (!d2ladder_ladder_file) return -1;
 	if (!d2ladder_backup_file) return -1;
 
@@ -754,9 +760,9 @@ int d2ladder_print(FILE *ladderstrm)
 
 	for(type=0; type <d2ladder_maxtype; type++) {
 		d2ladder=d2ladderlist_find_type(type);
-		if (!d2ladder) 
+		if (!d2ladder)
 			continue;
-		if(d2ladder->len<=0) 
+		if(d2ladder->len<=0)
 			continue;
 		ldata=d2ladder->info;
 
@@ -768,17 +774,17 @@ int d2ladder_print(FILE *ladderstrm)
 			overalltype=0 ;
 			classtype=type-D2LADDER_HC_OVERALL;
 		}
-		else if	(type >= D2LADDER_STD_OVERALL && type<= D2LADDER_STD_OVERALL+D2CHAR_CLASS_MAX +1) 
+		else if	(type >= D2LADDER_STD_OVERALL && type<= D2LADDER_STD_OVERALL+D2CHAR_CLASS_MAX +1)
 		{
 			overalltype=1;
 			classtype=type-D2LADDER_STD_OVERALL;
 		}
-		else if	(type >= D2LADDER_EXP_HC_OVERALL && type<= D2LADDER_EXP_HC_OVERALL+D2CHAR_EXP_CLASS_MAX +1) 
+		else if	(type >= D2LADDER_EXP_HC_OVERALL && type<= D2LADDER_EXP_HC_OVERALL+D2CHAR_EXP_CLASS_MAX +1)
 		{
 			overalltype=2;
 			classtype=type-D2LADDER_EXP_HC_OVERALL;
 		}
-		else if	(type >= D2LADDER_EXP_STD_OVERALL && type<= D2LADDER_EXP_STD_OVERALL+D2CHAR_EXP_CLASS_MAX +1) 
+		else if	(type >= D2LADDER_EXP_STD_OVERALL && type<= D2LADDER_EXP_STD_OVERALL+D2CHAR_EXP_CLASS_MAX +1)
 		{
 			overalltype=3;
 			classtype=type-	D2LADDER_EXP_STD_OVERALL ;
@@ -918,7 +924,7 @@ int d2ladder_checksum_check(void)
 			return -1;
 		}
 		curlen+=readlen;
-	} 
+	}
 	fclose(fdladder);
 
 	oldchecksum=bn_int_get(header->checksum);
@@ -932,4 +938,8 @@ int d2ladder_checksum_check(void)
 		eventlog(eventlog_level_debug,__FUNCTION__,"ladder file checksum mismatch 0x%X - 0x%X",oldchecksum, checksum);
 		return 0;
 	}
+}
+
+}
+
 }

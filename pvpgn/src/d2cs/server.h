@@ -20,8 +20,18 @@
 
 #include "common/fdwatch.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 extern int d2cs_server_process(void);
 extern int d2cs_server_handle_tcp(void*,t_fdwatch_type);
 extern int d2cs_server_handle_accept(void*,t_fdwatch_type);
+
+}
+
+}
 
 #endif

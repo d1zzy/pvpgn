@@ -70,6 +70,8 @@
 #endif
 #include "common/setup_after.h"
 
+using namespace pvpgn::d2cs;
+
 char serviceLongName[] = "d2cs service";
 char serviceName[] = "d2cs";
 char serviceDescription[] = "Diablo 2 Character Server";
@@ -88,7 +90,7 @@ static char * write_to_pidfile(void);
 static int setup_daemon(void)
 {
 	int pid;
-	
+
 	if (chdir("/")<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"can not change working directory to root directory (chdir: %s)",pstrerror(errno));
 		return -1;
@@ -117,16 +119,16 @@ static int setup_daemon(void)
 static char * write_to_pidfile(void)
 {
 	char *pidfile = xstrdup(prefs_get_pidfile());
-	
+
 	if (pidfile[0]=='\0') {
 		xfree((void *)pidfile); /* avoid warning */
 		return NULL;
 	}
-	
+
 	if (pidfile) {
 #ifdef HAVE_GETPID
 		FILE * fp;
-		
+
 		if (!(fp = fopen(pidfile,"w"))) {
 			eventlog(eventlog_level_error,__FUNCTION__,"unable to open pid file \"%s\" for writing (fopen: %s)",pidfile,pstrerror(errno));
 			xfree((void *)pidfile); /* avoid warning */
@@ -136,14 +138,14 @@ static char * write_to_pidfile(void)
 			if (fclose(fp)<0)
 				eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (fclose: %s)",pidfile,pstrerror(errno));
 		}
-		
+
 #else
 		eventlog(eventlog_level_warn,__FUNCTION__,"no getpid() system call, disable pid file in d2cs.conf");
 		xfree((void *)pidfile); /* avoid warning */
 		return NULL;
 #endif
 	}
-	
+
 	return pidfile;
 }
 
@@ -242,7 +244,7 @@ static int config_init(int argc, char * * argv)
 static int config_cleanup(void)
 {
 	d2cs_prefs_unload();
-	cmdline_unload(); 
+	cmdline_unload();
 	return 0;
 }
 
@@ -254,7 +256,7 @@ extern int main(int argc, char * * argv)
 {
 	int pid;
 	char * pidfile;
-	
+
 	eventlog_set(stderr);
 	if (!((pid = config_init(argc, argv)) == 0)) {
 //		if (pid==1) pid=0;

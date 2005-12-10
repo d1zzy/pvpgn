@@ -91,6 +91,12 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static int d2cs_send_client_ladder(t_connection * c, unsigned char type, unsigned short from);
 static unsigned int d2cs_try_joingame(t_connection const * c, t_game const * game, char const * gamepass);
 
@@ -424,10 +430,10 @@ static int on_client_joingamereq(t_connection * c, t_packet * packet)
 	} else if (!(gs=game_get_d2gs(game))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"missing game server for game %s",gamename);
 		reply=D2CS_CLIENT_JOINGAMEREPLY_NOT_EXIST;
-	} else { 
+	} else {
 		reply=d2cs_try_joingame(c,game,gamepass);
 	}
-	
+
 	seqno=bn_short_get(packet->u.client_d2cs_joingamereq.seqno);
 	if (reply!=D2CS_CLIENT_JOINGAMEREPLY_SUCCEED) {
 		t_packet	* rpacket;
@@ -448,7 +454,7 @@ static int on_client_joingamereq(t_connection * c, t_packet * packet)
 		t_packet	* gspacket;
 		t_sq		* sq;
 		struct in_addr	addr;
-		
+
 		if ((gspacket=packet_create(packet_class_d2gs))) {
 			if ((sq=sq_create(d2cs_conn_get_sessionnum(c),packet,d2cs_game_get_id(game)))) {
 				packet_set_size(gspacket,sizeof(t_d2cs_d2gs_joingamereq));
@@ -770,7 +776,7 @@ static int on_client_motdreq(t_connection * c, t_packet * packet)
 
 	if (!packet)
 	    return -1;
-	
+
 	/* client will crash if motd is too long */
 	motd = xstrdup(prefs_get_motd());
 	motd_len = strlen(motd);
@@ -797,7 +803,7 @@ static int on_client_cancelcreategame(t_connection * c, t_packet * packet)
 
 	if (!packet)
 	    return -1;
-	
+
 	if (!(gq=conn_get_gamequeue(c))) {
 		return 0;
 	}
@@ -852,8 +858,8 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 {
 	t_packet		* rpacket;
 	t_pdir			* dir;
-	char const		* account; 
-	char const		* charname; 
+	char const		* account;
+	char const		* charname;
 	char			* path;
 	t_d2charinfo_file       * charinfo;
 	unsigned int		n, maxchar;
@@ -862,7 +868,7 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 
 	if (!packet)
 	    return -1;
-	
+
 	if (!(account=d2cs_conn_get_account(c))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"missing account for connection");
 		return -1;
@@ -871,7 +877,7 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 	charlist_sort_order = prefs_get_charlist_sort_order();
 
 	elist_init(&charlist_head);
-	
+
 	d2char_get_infodir_name(path,account);
 	maxchar=prefs_get_maxchar();
 	if ((rpacket=packet_create(packet_class_d2cs))) {
@@ -906,7 +912,7 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 			{
 			    t_elist * curr, * safe;
 			    t_d2charlist * ccharlist;
-			
+
 			    elist_for_each_safe(curr,&charlist_head,safe)
 			    {
 				ccharlist = elist_entry(curr,t_d2charlist,list);
@@ -920,7 +926,7 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 			{
 			    t_elist * curr, * safe;
 			    t_d2charlist * ccharlist;
-			
+
 			    elist_for_each_safe_rev(curr,&charlist_head,safe)
 			    {
 				ccharlist = elist_entry(curr,t_d2charlist,list);
@@ -945,8 +951,8 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 {
 	t_packet		* rpacket;
 	t_pdir			* dir;
-	char const		* account; 
-	char const		* charname; 
+	char const		* account;
+	char const		* charname;
 	char			* path;
 
 	t_d2charinfo_file       * charinfo;
@@ -959,22 +965,22 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 
 	if (!packet)
 	    return -1;
-	
+
 	if (!(account=d2cs_conn_get_account(c))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"missing account for connection");
 		return -1;
 	}
 	path=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
 	charlist_sort_order = prefs_get_charlist_sort_order();
-	
+
 	elist_init(&charlist_head);
-	
+
 	d2char_get_infodir_name(path,account);
-	if (prefs_allow_newchar()) 
+	if (prefs_allow_newchar())
 		maxchar=prefs_get_maxchar();
 	else
 		maxchar=0;
-	
+
 	if ((rpacket=packet_create(packet_class_d2cs))) {
 		packet_set_size(rpacket,sizeof(t_d2cs_client_charlistreply_110));
 		packet_set_type(rpacket,D2CS_CLIENT_CHARLISTREPLY_110);
@@ -1003,15 +1009,15 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 				n++;
 				if (n>=maxchar) break;
 			}
-			if (n>=maxchar) 
+			if (n>=maxchar)
 				maxchar = 0;
-			
+
 			p_closedir(dir);
 			if (!strcmp(charlist_sort_order, "ASC"))
 			{
 			    t_elist * curr, *safe;
 			    t_d2charlist * ccharlist;
-			
+
 			    elist_for_each_safe(curr,&charlist_head,safe)
 			    {
 			    	bn_int bn_exp_time;
@@ -1029,7 +1035,7 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 			{
 			    t_elist * curr, *safe;
 			    t_d2charlist * ccharlist;
-			
+
 			    elist_for_each_safe_rev(curr,&charlist_head,safe)
 			    {
 			    	bn_int bn_exp_time;
@@ -1145,4 +1151,8 @@ static unsigned int d2cs_try_joingame(t_connection const * c, t_game const * gam
 		}
 	}
 	return reply;
+}
+
+}
+
 }

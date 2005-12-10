@@ -29,6 +29,12 @@
 #define DEFAULT_LADDER_DIR		"var/ladders"
 #define LADDERFILE_CHECKSUM_OFFSET	offsetof(t_d2ladderfile_header,checksum)
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 typedef struct
 {
 	unsigned int	experience;
@@ -57,5 +63,9 @@ extern int d2ladder_rebuild(void);
 extern int d2ladder_update(t_d2ladder_info * pcharladderinfo);
 extern int d2ladder_print(FILE * ladderstrm);
 extern int d2ladder_saveladder(void);
+
+}
+
+}
 
 #endif

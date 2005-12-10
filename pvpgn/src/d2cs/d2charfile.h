@@ -69,7 +69,13 @@
 #ifndef JUST_NEED_TYPES
 #include "d2cs_d2gs_character.h"
 
-extern int d2char_create(char const * account, char const * charname, unsigned char chclass, 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
+extern int d2char_create(char const * account, char const * charname, unsigned char chclass,
 			unsigned short status);
 extern int d2char_delete(char const * account, char const * charname);
 extern int d2char_get_summary(char const * account, char const * charname,t_d2charinfo_summary * charinfo);
@@ -96,6 +102,11 @@ extern int d2char_check_charname(char const * name);
 
 extern int file_write(char const * filename, void * data, unsigned int size);
 extern int file_read(char const * filename, void * data, unsigned int * size);
+
+}
+
+}
+
 #endif
 
 

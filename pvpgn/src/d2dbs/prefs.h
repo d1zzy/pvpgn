@@ -19,6 +19,12 @@
 #ifndef INCLUDED_PREFS_H
 #define INCLUDED_PREFS_H
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 extern int d2dbs_prefs_load(char const * filename);
 extern int d2dbs_prefs_reload(char const * filename);
 extern int d2dbs_prefs_unload(void);
@@ -45,5 +51,9 @@ extern unsigned int prefs_get_ladderupdate_threshold(void);
 extern unsigned int prefs_get_ladder_chars_only(void);
 extern unsigned int prefs_get_difficulty_hack(void);
 extern char const * d2dbs_prefs_get_pidfile(void);
+
+}
+
+}
 
 #endif

@@ -18,6 +18,12 @@
 #ifndef INCLUDED_HANDLE_SIGNAL_H
 #define INCLUDED_HANDLE_SIGNAL_H
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 #ifndef WIN32
 extern int handle_signal_init(void);
 #else
@@ -29,5 +35,9 @@ extern void signal_restart_d2gs_wrapper(void);
 #endif
 
 extern int handle_signal(void);
+
+}
+
+}
 
 #endif

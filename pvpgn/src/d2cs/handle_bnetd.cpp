@@ -39,6 +39,12 @@
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 DECLARE_PACKET_HANDLER(on_bnetd_accountloginreply)
 DECLARE_PACKET_HANDLER(on_bnetd_charloginreply)
 DECLARE_PACKET_HANDLER(on_bnetd_authreq)
@@ -76,7 +82,7 @@ extern int handle_bnetd_packet(t_connection * c, t_packet * packet)
 extern int handle_bnetd_init(t_connection * c)
 {
 	t_packet * packet;
-	
+
 	packet=packet_create(packet_class_init);
 	packet_set_size(packet,sizeof(t_client_initconn));
 	bn_byte_set(&packet->u.client_initconn.cclass, CLIENT_INITCONN_CLASS_D2CS_BNETD);
@@ -180,10 +186,10 @@ static int on_bnetd_charloginreply(t_connection * c, t_packet * packet)
 	int		result, reply, type;
 	char const	* charname;
 	t_elem		* elem;
-	
+
 	if (!packet || !c)
 	    return -1;
-	
+
 	seqno=bn_int_get(packet->u.d2cs_bnetd.h.seqno);
 	if (!(sq=sqlist_find_sq(seqno))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"seqno %d not found",seqno);
@@ -268,7 +274,7 @@ int on_bnetd_gameinforeq(t_connection * c, t_packet * packet)
 		return -1;
 	}
 
-	if (!(gamename = packet_get_str_const(packet,sizeof(t_bnetd_d2cs_gameinforeq),GAME_NAME_LEN))) 
+	if (!(gamename = packet_get_str_const(packet,sizeof(t_bnetd_d2cs_gameinforeq),GAME_NAME_LEN)))
 	{
 		eventlog(eventlog_level_error,__FUNCTION__,"missing or too long gamename");
 		return -1;
@@ -285,12 +291,15 @@ int on_bnetd_gameinforeq(t_connection * c, t_packet * packet)
 		packet_set_type(rpacket, D2CS_BNETD_GAMEINFOREPLY);
 		bn_int_set(&rpacket->u.d2cs_bnetd_gameinforeply.h.seqno,0);
 		packet_append_string(rpacket, gamename);
-		
+
 		bn_byte_set(&rpacket->u.d2cs_bnetd_gameinforeply.difficulty, game_get_gameflag_difficulty(game));
-		
+
 		conn_push_outqueue(c,rpacket);
 		packet_del_ref(rpacket);
 	}
-	return 0;	
+	return 0;
 }
 
+}
+
+}

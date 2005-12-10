@@ -58,6 +58,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static t_d2ladder	* ladder_data=NULL;
 static unsigned int	max_ladder_type=0;
 
@@ -71,7 +77,7 @@ extern int d2ladder_init(void)
 	if (d2ladder_readladder()<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"failed to initialize ladder data");
 		return -1;
-	} 
+	}
 	eventlog(eventlog_level_info,__FUNCTION__,"ladder data initialized");
 	return 0;
 }
@@ -277,4 +283,8 @@ extern int d2ladder_find_character_pos(unsigned int type, char const * charname)
 		if (!strcasecmp(ladder->info[i].charname,charname)) return i;
 	}
 	return -1;
+}
+
+}
+
 }

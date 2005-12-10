@@ -39,6 +39,12 @@
 #include "common/bn_type.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static int on_d2gs_initconn(t_connection * c);
 static int on_d2cs_initconn(t_connection * c);
 
@@ -98,4 +104,8 @@ static int on_d2cs_initconn(t_connection * c)
 	d2cs_conn_set_class(c,conn_class_d2cs);
 	d2cs_conn_set_state(c,conn_state_connected);
 	return 0;
+}
+
+}
+
 }

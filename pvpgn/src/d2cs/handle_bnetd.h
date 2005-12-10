@@ -21,7 +21,17 @@
 #include "connection.h"
 #include "common/packet.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 extern int handle_bnetd_packet(t_connection * c, t_packet * packet);
 extern int handle_bnetd_init(t_connection * c);
+
+}
+
+}
 
 #endif

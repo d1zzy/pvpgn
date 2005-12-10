@@ -21,10 +21,15 @@
 #include "common/list.h"
 #include "common/packet.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
 
 typedef struct serverqueue
 {
-	unsigned int		seqno;	
+	unsigned int		seqno;
 	unsigned int		ctime;
 	unsigned int		clientid;
 	t_packet		* packet;
@@ -47,5 +52,9 @@ extern unsigned int sq_get_seqno(t_sq const * sq);
 extern int sq_set_gametoken(t_sq * sq, unsigned int gametoken);
 extern unsigned int sq_get_gametoken(t_sq const * sq);
 extern t_packet * sq_get_packet(t_sq const * sq);
+
+}
+
+}
 
 #endif

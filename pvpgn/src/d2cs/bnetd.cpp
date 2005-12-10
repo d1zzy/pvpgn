@@ -44,6 +44,12 @@
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static t_connection * bnetd_connection=NULL;
 
 extern int bnetd_init(void)
@@ -96,4 +102,8 @@ extern int bnetd_destroy(t_connection * c)
 	}
 	bnetd_connection=NULL;
 	return 0;
+}
+
+}
+
 }

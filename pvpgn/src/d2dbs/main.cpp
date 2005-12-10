@@ -65,6 +65,8 @@
 #endif
 #include "common/setup_after.h"
 
+using namespace pvpgn::d2dbs;
+
 static FILE * eventlog_fp;
 
 char serviceLongName[] = "d2dbs service";
@@ -85,7 +87,7 @@ static char * write_to_pidfile(void);
 static int setup_daemon(void)
 {
 	int pid;
-	
+
 	if (chdir("/")<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"can not change working directory to root directory (chdir: %s)",pstrerror(errno));
 		return -1;
@@ -115,16 +117,16 @@ static int setup_daemon(void)
 static char * write_to_pidfile(void)
 {
 	char *pidfile = xstrdup(d2dbs_prefs_get_pidfile());
-	
+
 	if (pidfile[0]=='\0') {
 		xfree((void *)pidfile); /* avoid warning */
 		return NULL;
 	}
-	
+
 	if (pidfile) {
 #ifdef HAVE_GETPID
 		FILE * fp;
-		
+
 		if (!(fp = fopen(pidfile,"w"))) {
 			eventlog(eventlog_level_error,__FUNCTION__,"unable to open pid file \"%s\" for writing (fopen: %s)",pidfile,pstrerror(errno));
 			xfree((void *)pidfile); /* avoid warning */
@@ -134,14 +136,14 @@ static char * write_to_pidfile(void)
 			if (fclose(fp)<0)
 				eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (fclose: %s)",pidfile,pstrerror(errno));
 		}
-		
+
 #else
 		eventlog(eventlog_level_warn,__FUNCTION__,"no getpid() system call, disable pid file in d2dbs.conf");
 		xfree((void *)pidfile); /* avoid warning */
 		return NULL;
 #endif
 	}
-	
+
 	return pidfile;
 }
 
@@ -154,7 +156,7 @@ static int cleanup(void)
 {
 	return 0;
 }
-	
+
 static int config_init(int argc, char * * argv)
 {
     char const * levels;
@@ -178,7 +180,7 @@ static int config_init(int argc, char * * argv)
 		eventlog(eventlog_level_error,__FUNCTION__,"error loading configuration file %s",cmdline_get_preffile());
 		return -1;
 	}
-	
+
     eventlog_clear_level();
     if ((levels = d2dbs_prefs_get_loglevels()))
     {
@@ -219,7 +221,7 @@ static int config_init(int argc, char * * argv)
 static int config_cleanup(void)
 {
 	d2dbs_prefs_unload();
-	cmdline_unload(); 
+	cmdline_unload();
 	eventlog_close();
 	if (eventlog_fp) fclose(eventlog_fp);
 	return 0;
@@ -233,7 +235,7 @@ extern int main(int argc, char * * argv)
 {
 	int pid;
 	char * pidfile;
-	
+
 	eventlog_set(stderr);
 	pid = config_init(argc, argv);
 	if (!(pid == 0)) {
@@ -248,7 +250,7 @@ extern int main(int argc, char * * argv)
 	} else {
 		eventlog(eventlog_level_info,__FUNCTION__,"server initialized");
 	}
-#ifndef WIN32 
+#ifndef WIN32
 	d2dbs_handle_signal_init();
 #endif
 	dbs_server_main();

@@ -48,12 +48,18 @@
 #include "d2charlist.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 extern int d2charlist_add_char(t_elist * list_head, t_d2charinfo_file * charinfo, unsigned int expiration_time)
 {
     t_d2charlist * charlist, * ccharlist;
     char const * d2char_sort;
     t_elist * curr;
-    
+
     d2char_sort = prefs_get_charlist_sort();
     charlist = (t_d2charlist*)xmalloc(sizeof(t_d2charlist));
     charlist->charinfo = charinfo;
@@ -102,3 +108,6 @@ extern int d2charlist_add_char(t_elist * list_head, t_d2charinfo_file * charinfo
     return 0;
 }
 
+}
+
+}

@@ -21,6 +21,16 @@
 #include "connection.h"
 #include "common/packet.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 extern int d2cs_handle_init_packet(t_connection * c, t_packet * packet);
+
+}
+
+}
 
 #endif

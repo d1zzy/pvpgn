@@ -96,6 +96,12 @@
 #endif
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static int server_listen(void);
 static int server_accept(int sock);
 static int server_handle_timed_event(void);
@@ -351,4 +357,8 @@ extern int d2cs_server_process(void)
 	eventlog(eventlog_level_info,__FUNCTION__,"exit from server loop,cleanup");
 	server_cleanup();
 	return 0;
+}
+
+}
+
 }

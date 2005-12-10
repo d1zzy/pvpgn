@@ -95,6 +95,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static t_hashtable 	* connlist_head=NULL;
 static t_hashtable	* conn_charname_list_head=NULL;
 static t_list		* connlist_dead=NULL;
@@ -149,7 +155,7 @@ extern int d2cs_connlist_destroy(void)
 {
 	t_connection 	* c;
 	t_elem		* curr;
-	
+
 
         if (connlist_dead) {
                 d2cs_connlist_reap();
@@ -181,7 +187,7 @@ extern int d2cs_connlist_destroy(void)
 extern int d2cs_connlist_reap(void)
 {
 	t_connection 	* c;
-	
+
 	if (!connlist_dead) return 0;
 	BEGIN_LIST_TRAVERSE_DATA(connlist_dead, c, t_connection)
 	{
@@ -283,7 +289,7 @@ static int conn_handle_connecting(t_connection * c)
         /* this is a kind of hack to not update fd but updating breaks kqueue
          * and the clean fix would require a cache a userland copy of the kernel
 	 * kqueue fds, considering that it also doesnt brake anything else should do
-	 * for the moment 
+	 * for the moment
 	fdwatch_update_fd(c->sock, fdwatch_type_read); */
 	switch (c->cclass) {
 		case conn_class_bnetd:
@@ -424,7 +430,7 @@ extern int connlist_check_timeout(void)
 	return 0;
 }
 
-extern t_connection * d2cs_conn_create(int sock, unsigned int local_addr, unsigned short local_port, 
+extern t_connection * d2cs_conn_create(int sock, unsigned int local_addr, unsigned short local_port,
 				unsigned int addr, unsigned short port)
 {
 	static unsigned int	sessionnum=1;
@@ -537,7 +543,7 @@ extern int d2cs_conn_set_state(t_connection * c, t_conn_state state)
 	c->state=state;
 	return 0;
 }
-	
+
 extern t_conn_class d2cs_conn_get_class(t_connection const * c)
 {
 	ASSERT(c,conn_class_none);
@@ -842,4 +848,8 @@ extern int conn_add_fd(t_connection * c, t_fdwatch_type rw, fdwatch_handler hand
 	assert(c);
 	c->fdw_idx = fdwatch_add_fd(c->sock,rw,handler,c);
 	return c->fdw_idx;
+}
+
+}
+
 }

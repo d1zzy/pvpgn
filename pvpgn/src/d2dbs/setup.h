@@ -22,9 +22,19 @@
 # define MAX_PATH		1024
 #endif
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 #ifndef WIN32
 typedef unsigned int		BOOL;
 #endif
+
+}
+
+}
 
 #define TRUE			1
 #define FALSE			0

@@ -21,12 +21,18 @@
 #include "common/list.h"
 #include "connection.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 typedef enum
 {
     d2gs_state_none,
     d2gs_state_connected,
     d2gs_state_authed
-} t_d2gs_state; 
+} t_d2gs_state;
 
 typedef struct d2gs
 {
@@ -69,6 +75,10 @@ extern int d2gs_deactive(t_d2gs * gs, t_connection * c);
 extern unsigned int d2gs_calc_checksum(t_connection * c);
 extern int d2gs_keepalive(void);
 extern int d2gs_restart_all_gs(void);
+
+}
+
+}
 
 #define D2GS_MAJOR_VERSION_MASK			0xffffff00
 

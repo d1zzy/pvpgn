@@ -110,6 +110,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn,char * AccountName,char * CharName,char * data,unsigned int datalen);
 static unsigned int dbs_packet_savedata_charinfo(t_d2dbs_connection* conn,char * AccountName,char * CharName,char * data,unsigned int datalen);
 static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn,char * AccountName,char * CharName,char * data,unsigned int bufsize);
@@ -133,7 +139,7 @@ static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn, char 
 	FILE * fd;
 	int checksum_header;
 	int checksum_calc;
-	
+
 	strtolower(AccountName);
 	strtolower(CharName);
 
@@ -192,7 +198,7 @@ static unsigned int dbs_packet_savedata_charinfo(t_d2dbs_connection* conn,char *
 	FILE * fd;
 	unsigned short curlen,readlen,leftlen,writelen;
 	struct stat statbuf;
-	
+
 	strtolower(AccountName);
 	strtolower(CharName);
 
@@ -245,10 +251,10 @@ static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn,char * 
 	FILE * fd;
 	unsigned short curlen,readlen,leftlen,writelen;
 	long filesize;
-	
+
 	strtolower(AccountName);
 	strtolower(CharName);
-	
+
 	sprintf(filename,"%s/%s",d2dbs_prefs_get_charsave_dir(),CharName);
 	sprintf(filename_d2closed,"%s/%s.d2s",d2dbs_prefs_get_charsave_dir(),CharName);
 	if ((access(filename, F_OK) < 0) && (access(filename_d2closed, F_OK) == 0))
@@ -299,7 +305,7 @@ static unsigned int dbs_packet_getdata_charinfo(t_d2dbs_connection* conn,char * 
 	FILE * fd;
 	unsigned short curlen,readlen,leftlen,writelen;
 	long filesize;
-	
+
 	strtolower(AccountName);
 	strtolower(CharName);
 
@@ -349,16 +355,16 @@ static int dbs_packet_savedata(t_d2dbs_connection * conn)
 {
 	unsigned short writelen;
 	unsigned short      datatype;
-	unsigned short      datalen; 
-	unsigned int        result; 
+	unsigned short      datalen;
+	unsigned int        result;
 	char AccountName[MAX_ACCTNAME_LEN];
 	char CharName[MAX_CHARNAME_LEN];
 	char RealmName[MAX_REALMNAME_LEN];
-	t_d2gs_d2dbs_save_data_request	* savecom; 
-	t_d2dbs_d2gs_save_data_reply	* saveret; 
+	t_d2gs_d2dbs_save_data_request	* savecom;
+	t_d2dbs_d2gs_save_data_reply	* saveret;
 	char * readpos;
 	unsigned char * writepos;
-	
+
 	readpos=conn->ReadBuf;
 	savecom=(t_d2gs_d2dbs_save_data_request	*)readpos;
 	datatype=bn_short_get(savecom->datatype);
@@ -438,13 +444,13 @@ static int dbs_packet_getdata(t_d2dbs_connection * conn)
 {
 	unsigned short	writelen;
 	unsigned short	datatype;
-	unsigned short	datalen; 
-	unsigned int	result; 
+	unsigned short	datalen;
+	unsigned int	result;
 	char		AccountName[MAX_ACCTNAME_LEN];
 	char		CharName[MAX_CHARNAME_LEN];
 	char		RealmName[MAX_REALMNAME_LEN];
-	t_d2gs_d2dbs_get_data_request	* getcom; 
-	t_d2dbs_d2gs_get_data_reply	* getret; 
+	t_d2gs_d2dbs_get_data_request	* getcom;
+	t_d2dbs_d2gs_get_data_reply	* getret;
 	char		* readpos;
 	char		* writepos;
 	char		databuf[kBufferSize ];
@@ -455,7 +461,7 @@ static int dbs_packet_getdata(t_d2dbs_connection * conn)
 	readpos=conn->ReadBuf;
 	getcom=(t_d2gs_d2dbs_get_data_request *)readpos;
 	datatype=bn_short_get(getcom->datatype);
-	
+
 	readpos+=sizeof(*getcom);
 	strncpy(AccountName,readpos,MAX_ACCTNAME_LEN);
 	if (AccountName[MAX_ACCTNAME_LEN-1]!=0)
@@ -521,7 +527,7 @@ static int dbs_packet_getdata(t_d2dbs_connection * conn)
 					eventlog(eventlog_level_info,__FUNCTION__,"unlock char %s(*%s)@%s for gs %s(%d)",CharName,\
 						AccountName,RealmName,conn->serverip,conn->serverid);
 				}
-					
+
 			}
 		}
 		if (result==D2DBS_GET_DATA_SUCCESS) {
@@ -539,7 +545,7 @@ static int dbs_packet_getdata(t_d2dbs_connection * conn)
 	} else if (datatype==D2GS_DATA_PORTRAIT) {
 		datalen=dbs_packet_getdata_charinfo(conn,AccountName,CharName,databuf,kBufferSize );
 		if (datalen>0) result=D2DBS_GET_DATA_SUCCESS    ;
-		else { 
+		else {
 			datalen=0;
 			result=D2DBS_GET_DATA_FAILED    ;
 		}
@@ -567,13 +573,13 @@ static int dbs_packet_updateladder(t_d2dbs_connection * conn)
 {
 	char CharName[MAX_CHARNAME_LEN];
 	char RealmName[MAX_REALMNAME_LEN];
-	t_d2gs_d2dbs_update_ladder	* updateladder; 
+	t_d2gs_d2dbs_update_ladder	* updateladder;
 	char * readpos;
 	t_d2ladder_info			charladderinfo;
 
 	readpos=conn->ReadBuf;
 	updateladder=(t_d2gs_d2dbs_update_ladder *)readpos;
-	
+
 	readpos+=sizeof(*updateladder);
 	strncpy(CharName,readpos,MAX_CHARNAME_LEN);
 	if (CharName[MAX_CHARNAME_LEN-1]!=0)
@@ -609,12 +615,12 @@ static int dbs_packet_charlock(t_d2dbs_connection * conn)
 	char CharName[MAX_CHARNAME_LEN];
 	char AccountName[MAX_ACCTNAME_LEN];
 	char RealmName[MAX_REALMNAME_LEN];
-	t_d2gs_d2dbs_char_lock * charlock; 
+	t_d2gs_d2dbs_char_lock * charlock;
 	char * readpos;
 
 	readpos=conn->ReadBuf;
 	charlock=(t_d2gs_d2dbs_char_lock*)readpos;
-	
+
 	readpos+=sizeof(*charlock);
 	strncpy(AccountName,readpos,MAX_ACCTNAME_LEN);
 	if (AccountName[MAX_ACCTNAME_LEN-1]!=0)
@@ -665,11 +671,11 @@ static int dbs_packet_charlock(t_d2dbs_connection * conn)
 	0  :  not get a whole packet,do nothing
 	-1 :  error
 */
-extern int dbs_packet_handle(t_d2dbs_connection* conn) 
+extern int dbs_packet_handle(t_d2dbs_connection* conn)
 {
 	unsigned short		readlen,writelen;
 	t_d2dbs_d2gs_header	* readhead;
-	int		retval; 
+	int		retval;
 
 	if (conn->stats==0) {
 		if (conn->nCharsInReadBuffer<(signed)sizeof(t_d2gs_d2dbs_connect)) {
@@ -755,7 +761,7 @@ static int dbs_verify_ipaddr(char const * addrlist,t_d2dbs_connection * c)
 	while ((s=strsep(&temp, ","))) {
 		host_lookup(s, &resolveipaddr);
 		if(resolveipaddr == 0) continue;
-				
+
 		if (!strcmp(ipaddr, (const char *)addr_num_to_ip_str(resolveipaddr))) {
 			valid=1;
 			break;
@@ -851,7 +857,7 @@ static void dbs_packet_set_charinfo_level(char * CharName,char * charinfo)
     if (prefs_get_difficulty_hack()) { /* difficulty hack enabled */
 	unsigned int	level = bn_int_get((bn_basic*)&charinfo[CHARINFO_SUMMARY_LEVEL_OFFSET]);
 	unsigned int	plevel = bn_byte_get((bn_basic*)&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET]);
-	
+
 	/* levels 257 thru 355 */
 	if (level != plevel) {
 	    eventlog(eventlog_level_info,__FUNCTION__,"level mis-match for %s ( %u != %u ) setting to 255",CharName,level,plevel);
@@ -869,7 +875,7 @@ static int dbs_packet_fix_charinfo(t_d2dbs_connection * conn,char * AccountName,
 	unsigned short	status = bn_short_get((bn_basic*)&charsave[CHARSAVE_STATUS_OFFSET]);
 	unsigned short	pstatus = charstatus_to_portstatus(status);
 	int		i;
-	
+
 	/*
 	 * charinfo is only updated from level 1 to 99 (d2gs issue)
 	 * from 100 to 256 d2gs does not send it
@@ -880,44 +886,48 @@ static int dbs_packet_fix_charinfo(t_d2dbs_connection * conn,char * AccountName,
 	 */
 	if (level == 0) /* level 256, 512, 768, etc */
 	    level = 255;
-	
+
 	if (level < 100)
 	    return 1; /* d2gs will send charinfo - level will be set to 255 at that time if needed */
-	
+
 	eventlog(eventlog_level_info,__FUNCTION__,"level %u > 99 for %s",level,CharName);
-	
+
 	if(!(dbs_packet_getdata_charinfo(conn,AccountName,CharName,(char*)charinfo,CHARINFO_SIZE))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"unable to get charinfo for %s",CharName);
 	    return 0;
 	}
-	
+
 	/* if level in charinfo file is already set to 255,
-	 * then is must have been set when d2gs sent the charinfo 
+	 * then is must have been set when d2gs sent the charinfo
 	 * and got a level mis-match (levels 257 - 355)
 	 * or level is actually 255. In eather case we set to 255
 	 * this should work for any level mod
 	 */
 	if (bn_byte_get(&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET]) == 255)
 	    level = 255;
-	
+
 	eventlog(eventlog_level_info,__FUNCTION__,"updating charinfo for %s -> level = %u , status = 0x%04X , pstatus = 0x%04X",CharName,level,status,pstatus);
 	bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET],level);
 	bn_int_set((bn_int *)&charinfo[CHARINFO_SUMMARY_LEVEL_OFFSET],level);
 	bn_short_set((bn_short *)&charinfo[CHARINFO_PORTRAIT_STATUS_OFFSET],pstatus);
 	bn_int_set((bn_int *)&charinfo[CHARINFO_SUMMARY_STATUS_OFFSET],status);
-	
+
 	for (i=0;i<11;i++) {
 	    bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_GFX_OFFSET+i],bn_byte_get((bn_basic*)&charsave[CHARSAVE_GFX_OFFSET+i]));
 	    bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_COLOR_OFFSET+i],bn_byte_get((bn_basic*)&charsave[CHARSAVE_GFX_OFFSET+i]));
 	}
-	
+
 	if (!(dbs_packet_savedata_charinfo(conn,AccountName,CharName,(char*)charinfo,CHARINFO_SIZE))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"unable to save charinfo for %s",CharName);
 	    return 0;
 	}
-	
+
 	return 1; /* charinfo updated */
     }
-    
+
     return 1; /* difficulty hack not enabled */
+}
+
+}
+
 }

@@ -71,6 +71,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 static void on_signal(int s);
 
 static volatile struct
@@ -214,3 +220,6 @@ static void on_signal(int s)
 }
 #endif
 
+}
+
+}

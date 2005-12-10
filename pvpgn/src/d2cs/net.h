@@ -18,11 +18,21 @@
 #ifndef INCLUDED_NET_H
 #define INCLUDED_NET_H
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 extern int net_socket(int type);
 extern unsigned long int net_inet_addr(char const * host);
 extern int net_check_connected(int sock);
 extern int net_listen(unsigned int ip, unsigned int port, int type);
 extern int net_send_data(int sock, char * buff, int buffsize, int * pos, int * currsize);
 extern int net_recv_data(int sock, char * buff, int buffsize, int * pos, int * currsize);
+
+}
+
+}
 
 #endif

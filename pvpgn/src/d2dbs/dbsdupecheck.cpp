@@ -46,6 +46,12 @@
 #include "common/bn_type.h"
 #include "common/eventlog.h"
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 const char * delimiter = "JM";
 
 int is_delimit(char * data)
@@ -91,7 +97,7 @@ extern int dbsdupecheck(char * data, unsigned int datalen)
      datap = pointer;
    }
    while ((is_delimit(datap)!=1) || (is_delimit(datap+4)!=1)); // now we should have found "JMxxJM"
-   
+
    itemcount = bn_short_get((bn_basic*)&datap[2]);
 
    datap+=4;
@@ -100,7 +106,7 @@ extern int dbsdupecheck(char * data, unsigned int datalen)
    for (counter=0; counter<itemcount; counter++)
    {
       if ((datap[4]&0x20)==0x20)
-      { 
+      {
 	 eventlog(eventlog_level_info,__FUNCTION__,"simple item");
 	 datap+=14;
 	 restlen-=14;
@@ -115,6 +121,10 @@ extern int dbsdupecheck(char * data, unsigned int datalen)
 	datap = pointer;
       }
    }
-   
+
    return DBSDUPECHECK_CONTAINS_NO_DUPE;
+}
+
+}
+
 }

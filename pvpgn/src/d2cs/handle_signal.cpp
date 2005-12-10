@@ -73,6 +73,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static void on_signal(int s);
 
 static volatile struct
@@ -152,7 +158,7 @@ extern int handle_signal(void)
         }
 #ifdef DO_DAEMONIZE
 		if (!cmdline_get_foreground())
-#endif		
+#endif
 			eventlog_open(d2cs_prefs_get_logfile());
 	}
 	if (signal_data.reload_ladder) {
@@ -160,13 +166,13 @@ extern int handle_signal(void)
 		eventlog(eventlog_level_info,__FUNCTION__,"reloading ladder data due to signal");
 		d2ladder_refresh();
 	}
-	
+
 	if (signal_data.restart_d2gs) {
 		signal_data.restart_d2gs=0;
 		eventlog(eventlog_level_info,__FUNCTION__,"restarting all game servers due to signal");
 		d2gs_restart_all_gs();
 	}
-	
+
 	return 0;
 }
 #ifdef WIN32
@@ -242,3 +248,6 @@ static void on_signal(int s)
 }
 #endif
 
+}
+
+}

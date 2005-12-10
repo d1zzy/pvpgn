@@ -27,11 +27,14 @@
 #ifdef D2GS
 # include "bn_types.h"
 #pragma pack(push, character_h, 1)
-#endif 
+#endif
 
 #define D2CHARINFO_MAGICWORD			0x12345678
 #define D2CHARINFO_VERSION			0x00010000
 #define D2CHARINFO_PORTRAIT_PADSIZE		30
+
+namespace pvpgn
+{
 
 typedef struct
 {
@@ -80,6 +83,8 @@ typedef struct
         bn_byte         		pad[D2CHARINFO_PORTRAIT_PADSIZE];
 	t_d2charinfo_summary		summary;
 } t_d2charinfo_file;
+
+}
 
 #ifdef D2GS
 #pragma pack(pop, character_h)

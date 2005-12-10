@@ -83,6 +83,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static t_list		* d2gslist_head=NULL;
 static unsigned int	d2gs_id=0;
 static unsigned int	total_d2gs=0;
@@ -243,7 +249,7 @@ extern t_d2gs * d2gslist_get_server_by_id(unsigned int id)
 	END_LIST_TRAVERSE_DATA_CONST()
 	return NULL;
 }
-	  
+
 extern t_d2gs * d2gslist_choose_server(void)
 {
 	t_d2gs			* gs;
@@ -432,7 +438,7 @@ extern int d2gs_keepalive(void)
 	packet_set_size(packet,sizeof(t_d2cs_d2gs_echoreq));
 	packet_set_type(packet,D2CS_D2GS_ECHOREQ);
         /* FIXME: sequence number not set */
-        bn_int_set(&packet->u.d2cs_d2gs.h.seqno,0);       	
+        bn_int_set(&packet->u.d2cs_d2gs.h.seqno,0);
 	BEGIN_LIST_TRAVERSE_DATA(d2gslist_head,gs,t_d2gs)
 	{
 		if (gs->active && gs->connection) {
@@ -448,7 +454,7 @@ extern int d2gs_restart_all_gs(void)
 {
 	t_packet        * packet;
 	t_d2gs          * gs;
-	
+
 	if (!(packet=packet_create(packet_class_d2gs))) {
     		eventlog(eventlog_level_error, __FUNCTION__, "error creating packet");
     		return -1;
@@ -456,19 +462,22 @@ extern int d2gs_restart_all_gs(void)
         packet_set_size(packet,sizeof(t_d2cs_d2gs_control));
         packet_set_type(packet,D2CS_D2GS_CONTROL);
         /* FIXME: sequence number not set */
-        bn_int_set(&packet->u.d2cs_d2gs.h.seqno,0);        		
+        bn_int_set(&packet->u.d2cs_d2gs.h.seqno,0);
         bn_int_set(&packet->u.d2cs_d2gs_control.cmd, D2CS_D2GS_CONTROL_CMD_RESTART);
         bn_int_set(&packet->u.d2cs_d2gs_control.value, prefs_get_d2gs_restart_delay());
-	
+
         BEGIN_LIST_TRAVERSE_DATA(d2gslist_head,gs,t_d2gs)
         {
     		if (gs->connection) {
             	    conn_push_outqueue(gs->connection,packet);
                 }
         }
-	
+
         END_LIST_TRAVERSE_DATA()
         packet_del_ref(packet);
         return 0;
 }
 
+}
+
+}

@@ -75,6 +75,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static int d2charsave_init(void * buffer,char const * charname,unsigned char chclass,unsigned short status);
 static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, char const * charname,
 				unsigned char chclass, unsigned short status);
@@ -135,7 +141,7 @@ static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, c
 	bn_byte_set(&chardata->portrait.end,'\0');
 
 	memset(chardata->pad,0,sizeof(chardata->pad));
-	
+
 	return 0;
 }
 
@@ -155,12 +161,12 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 	if (chclass>D2CHAR_MAX_CLASS) chclass=0;
 	status &= D2CHARINFO_STATUS_FLAG_INIT_MASK;
 	charstatus_set_init(status,1);
-	
+
 /*	We need to make sure we are creating the correct character (Classic or Expansion)
 	for the type of game server we are running. If lod_realm = 1 then only Expansion
 	characters can be created and if set to 0 then only Classic character can
 	be created	*/
-	
+
 	if (!(prefs_get_lod_realm() == 2)) {
 		if (prefs_get_lod_realm() && ((status & 0x20) != 0x20)) {
 		    eventlog(eventlog_level_warn,__FUNCTION__,"This Realm is for LOD Characters Only");
@@ -171,9 +177,9 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 		    return -1;
 		}
 	}
-	
-/*	Once correct type of character is varified then continue with creation of character */	
-	
+
+/*	Once correct type of character is varified then continue with creation of character */
+
 	if (!prefs_allow_newchar()) {
 		eventlog(eventlog_level_warn,__FUNCTION__,"creation of new character is disabled");
 		return -1;
@@ -204,7 +210,7 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 		xfree(savefile);
 		return -1;
 	}
-	
+
 	infofile=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
 	d2char_get_infofile_name(infofile,account,charname);
 
@@ -212,7 +218,7 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 	ladder_time = prefs_get_ladder_start_time();
 	if ((ladder_time > 0) && (now < ladder_time))
 		charstatus_set_ladder(status, 0);
-	
+
 	d2charsave_init(buffer,charname,chclass,status);
 	d2charinfo_init(&chardata,account,charname,chclass,status);
 
@@ -280,7 +286,7 @@ extern int d2char_convert(char const * account, char const * charname)
 	We need to do this to prevent creating classic char
 	and converting to expantion on a classic realm.
 	LOD Char must be created on LOD realm	*/
-		
+
 	if (!prefs_get_allow_convert()) {
 		eventlog(eventlog_level_info,__FUNCTION__,"Convert char has been disabled");
 		return -1;
@@ -288,7 +294,7 @@ extern int d2char_convert(char const * account, char const * charname)
 
 /*	Procedure is stopped here and returned if
 	allow_convet = 0 in d2cs.conf */
-		
+
 	if (d2char_check_charname(charname)<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad character name \"%s\"",charname);
 		return -1;
@@ -313,11 +319,11 @@ extern int d2char_convert(char const * account, char const * charname)
 	charstatus=bn_int_get(charinfo.summary.charstatus);
 	charstatus_set_expansion(charstatus,1);
 	bn_int_set(&charinfo.summary.charstatus,charstatus);
-	
+
 	status=bn_byte_get(charinfo.portrait.status);
 	charstatus_set_expansion(status,1);
 	bn_byte_set(&charinfo.portrait.status,status);
-	
+
 	fseek(fp,0,SEEK_SET); /* FIXME: check return */
 	if (fwrite(&charinfo,1,sizeof(charinfo),fp)!=sizeof(charinfo)) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error writing charinfo file for character \"%s\" (fwrite: %s)",charname,pstrerror(errno));
@@ -328,7 +334,7 @@ extern int d2char_convert(char const * account, char const * charname)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not close charinfo file for character \"%s\" after writing (fclose: %s)",charname,pstrerror(errno));
 		return -1;
 	}
-	
+
 	file=(char*)xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
 	d2char_get_savefile_name(file,charname);
 	if (!(fp=fopen(file,"rb+"))) {
@@ -385,7 +391,7 @@ extern int d2char_delete(char const * account, char const * charname)
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad account name \"%s\"",account);
 		return -1;
 	}
-	
+
 	/* charsave file */
 	file=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
 	d2char_get_infofile_name(file,account,charname);
@@ -395,7 +401,7 @@ extern int d2char_delete(char const * account, char const * charname)
 		return -1;
 	}
 	xfree(file);
-	
+
 	/* charinfo file */
 	file=(char*)xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
 	d2char_get_savefile_name(file,charname);
@@ -403,7 +409,7 @@ extern int d2char_delete(char const * account, char const * charname)
 		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete charsave file \"%s\" (remove: %s)",file,pstrerror(errno));
 	}
 	xfree(file);
-	
+
 	/* bak charsave file */
 	file=(char*)xmalloc(strlen(prefs_get_bak_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
 	d2char_get_bak_infofile_name(file,account,charname);
@@ -413,7 +419,7 @@ extern int d2char_delete(char const * account, char const * charname)
 	    }
 	}
 	xfree(file);
-	
+
 	/* bak charinfo file */
 	file=(char*)xmalloc(strlen(prefs_get_bak_charsave_dir())+1+strlen(charname)+1);
 	d2char_get_bak_savefile_name(file,charname);
@@ -423,7 +429,7 @@ extern int d2char_delete(char const * account, char const * charname)
 	    }
 	}
 	xfree(file);
-	
+
 	eventlog(eventlog_level_info,__FUNCTION__,"character %s(*%s) deleted",charname,account);
 	return 0;
 }
@@ -610,7 +616,7 @@ extern int d2char_check_charname(char const * name)
 {
 	unsigned int	i;
 	unsigned char	ch;
-	
+
 	if (!name) return -1;
 	if (!isalpha((int)name[0])) return -1;
 
@@ -632,7 +638,7 @@ extern int d2char_check_acctname(char const * name)
 {
 	unsigned int	i;
 	unsigned char	ch;
-	
+
 	if (!name) return -1;
 	if (!isalnum((int)name[0])) return -1;
 
@@ -799,12 +805,12 @@ extern int file_read(char const * filename, void * data, unsigned int * size)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
 		return -1;
 	}
-	
+
 	fseek(fp,0,SEEK_END); /* FIXME: check return value */
 	n=ftell(fp);
 	n=min(*size,n);
 	rewind(fp); /* FIXME: check return value */
-	
+
 	if (fread(data,1,n,fp)!=n) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error reading file \"%s\" (fread: %s)",filename,pstrerror(errno));
 		fclose(fp);
@@ -840,4 +846,8 @@ extern int file_write(char const * filename, void * data, unsigned int size)
 		return -1;
 	}
 	return 0;
+}
+
+}
+
 }

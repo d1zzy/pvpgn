@@ -47,6 +47,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 /* FIXME: for simplification, no multiple realm support now */
 
 /* local functions */
@@ -265,3 +271,6 @@ static unsigned int string_hash(char const *string)
 	return hash;
 }
 
+}
+
+}

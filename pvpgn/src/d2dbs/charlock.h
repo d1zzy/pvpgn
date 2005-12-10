@@ -20,6 +20,12 @@
 
 #define DEFAULT_HASHTBL_LEN		65000
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 /* char locking info */
 typedef struct raw_charlockinfo {
 	unsigned char	charname[MAX_CHARNAME_LEN];
@@ -41,5 +47,8 @@ int cl_lock_char(unsigned char *charname,
 int cl_unlock_char(unsigned char *charname, unsigned char *realmname, unsigned int gsid);
 int cl_unlock_all_char_by_gsid(unsigned int gsid);
 
+}
+
+}
 
 #endif  /* INCLUDED_CHARLOCK_H */

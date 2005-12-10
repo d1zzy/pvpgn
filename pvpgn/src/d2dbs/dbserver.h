@@ -20,6 +20,12 @@
 
 #include "common/list.h"
 
+namespace pvpgn
+{
+
+namespace d2dbs
+{
+
 typedef struct {
 	int		sd;
 	unsigned int	ipaddr;
@@ -47,5 +53,9 @@ int dbs_server_main(void);
 int dbs_server_shutdown_connection(t_d2dbs_connection* conn);
 
 extern t_list * dbs_server_connection_list;
+
+}
+
+}
 
 #endif

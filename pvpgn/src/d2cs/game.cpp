@@ -56,6 +56,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 static t_list		* gamelist_head=NULL;
 static t_elem const	* gamelist_curr_elem=NULL;
 static unsigned int	total_game=0;
@@ -527,4 +533,8 @@ extern t_list * game_get_charlist(t_game const * game)
 extern unsigned int gamelist_get_totalgame(void)
 {
 	return total_game;
+}
+
+}
+
 }

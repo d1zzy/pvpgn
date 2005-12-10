@@ -63,6 +63,12 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace d2cs
+{
+
 DECLARE_PACKET_HANDLER(on_d2gs_authreply)
 DECLARE_PACKET_HANDLER(on_d2gs_setgsinfo)
 DECLARE_PACKET_HANDLER(on_d2gs_echoreply)
@@ -229,8 +235,8 @@ static int on_d2gs_authreply(t_connection * c, t_packet * packet)
 		d2gs_active(gs,c);
 	} else {
 		eventlog(eventlog_level_error,__FUNCTION__,"game server %s failed to auth",addr_num_to_ip_str(d2cs_conn_get_addr(c)));
-		/* 
-		d2cs_conn_set_state(c,conn_state_destroy); 
+		/*
+		d2cs_conn_set_state(c,conn_state_destroy);
 		*/
 	}
 	if ((rpacket=packet_create(packet_class_d2gs))) {
@@ -241,7 +247,7 @@ static int on_d2gs_authreply(t_connection * c, t_packet * packet)
 		conn_push_outqueue(c,rpacket);
 		packet_del_ref(rpacket);
 	}
-	
+
 	return 0;
 }
 
@@ -356,7 +362,7 @@ static int on_d2gs_joingamereply(t_connection * c, t_packet * packet)
 	unsigned int	gsaddr;
 	t_elem		* curr;
 	unsigned short	gsport;
-			
+
 
 	seqno=bn_int_get(packet->u.d2cs_d2gs.h.seqno);
 	if (!(sq=sqlist_find_sq(seqno))) {
@@ -423,14 +429,14 @@ static int on_d2gs_joingamereply(t_connection * c, t_packet * packet)
 			gsaddr = d2gs_get_ip(gs);
 			gsport = 4000;
 			trans_net(d2cs_conn_get_addr(client), &gsaddr, &gsport);
-			
+
 			if(d2gs_get_ip(gs)!=gsaddr)
 			{
 			    eventlog(eventlog_level_info,__FUNCTION__,"translated gameserver %s -> %s",addr_num_to_ip_str(d2gs_get_ip(gs)),addr_num_to_ip_str(gsaddr));
 			} else {
 			    eventlog(eventlog_level_info,__FUNCTION__,"no translation required for gamserver %s",addr_num_to_ip_str(gsaddr));
 			}
-			
+
 			bn_int_nset(&rpacket->u.d2cs_client_joingamereply.addr,gsaddr);
 
 		} else {
@@ -515,4 +521,8 @@ extern int handle_d2gs_init(t_connection * c)
 	}
 	eventlog(eventlog_level_info,__FUNCTION__,"sent init packet to d2gs %d (sessionnum=%d)",conn_get_d2gs_id(c),d2cs_conn_get_sessionnum(c));
 	return 0;
+}
+
+}
+
 }

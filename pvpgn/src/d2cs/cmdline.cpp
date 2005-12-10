@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005           Dizzy       
+ * Copyright (C) 2005           Dizzy
  * Copyright (C) 2005           Olaf Freyer (aaron@cs.tu-berlin.de)
  *
  * This program is free software; you can redistribute it and/or
@@ -48,6 +48,12 @@
 #include "compat/strcasecmp.h"
 #include "common/eventlog.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
+
+namespace d2cs
+{
 
 static struct {
 #ifdef DO_DAEMONIZE
@@ -155,7 +161,7 @@ static void usage(void)
 		"    --service                run as service\n"
 		"    -s install               install service\n"
 		"    -s uninstall             uninstall service\n"
-#endif	    
+#endif
 		"\n"
 		"Notes:\n"
 		"	1.You should always use absolute path here for all FILE names\n\n",
@@ -316,3 +322,7 @@ static int conf_setdef_servaction(void)
 }
 
 #endif
+
+}
+
+}
