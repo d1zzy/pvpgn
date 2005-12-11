@@ -19,9 +19,17 @@
 #ifndef INCLUDED_BNI_H
 #define INCLUDED_BNI_H
 
+#include <stdio.h>
+
 #ifndef BNI_MAXICONS
 #define BNI_MAXICONS 4096
 #endif
+
+namespace pvpgn
+{
+
+namespace bni
+{
 
 typedef struct {
 	unsigned int id;		/* Icon ID */
@@ -43,9 +51,11 @@ typedef struct {
 } t_bnifile;
 
 
-#include <stdio.h>
-
 extern t_bnifile * load_bni(FILE *f);
 extern int write_bni(FILE *f, t_bnifile *b);
+
+}
+
+}
 
 #endif

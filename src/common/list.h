@@ -18,6 +18,9 @@
 #ifndef INCLUDED_LIST_TYPES
 #define INCLUDED_LIST_TYPES
 
+namespace pvpgn
+{
+
 typedef struct elem
 #ifdef LIST_INTERNAL_ACCESS
 {
@@ -38,6 +41,8 @@ typedef struct list
 #endif
 t_list;
 
+}
+
 #endif
 
 
@@ -45,6 +50,9 @@ t_list;
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_LIST_PROTOS
 #define INCLUDED_LIST_PROTOS
+
+namespace pvpgn
+{
 
 extern t_list * list_create(void) ;
 extern int list_destroy(t_list * list);
@@ -59,7 +67,7 @@ extern t_elem const * list_get_elem_by_data_const(t_list const * list, void cons
      a pointer to the traversal variable needs to be passed to the list_remove functions, so they
      can properly modify it to point to the "previous" element (the one before the element to be deleted)
      so the next elem_get_next call will address the "next" element (the one after the element to be deleted) */
-   
+
 extern int list_remove_data(t_list * list, void const * data, t_elem ** elem); /* delete matching item */
 extern int list_remove_elem(t_list * list, t_elem ** elem);
 
@@ -85,6 +93,8 @@ extern t_elem const * elem_get_next_const(t_list const * list, t_elem const * el
 
 #define LIST_TRAVERSE(list,curr) for (curr=(list)?list_get_first(list):(NULL); curr; curr=elem_get_next(list,curr))
 #define LIST_TRAVERSE_CONST(list,curr) for (curr=(list)?list_get_first_const(list):(NULL); curr; curr=elem_get_next_const(list,curr))
+
+}
 
 #endif
 #endif

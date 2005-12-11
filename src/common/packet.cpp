@@ -51,10 +51,13 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern t_packet * packet_create(t_packet_class pclass)
 {
     t_packet * temp;
-    
+
     if (pclass!=packet_class_init &&
 	pclass!=packet_class_bnet &&
 	pclass!=packet_class_file &&
@@ -75,7 +78,7 @@ extern t_packet * packet_create(t_packet_class pclass)
     temp->pclass = pclass;
     temp->flags = 0;
     packet_set_size(temp,0);
-    
+
     return temp;
 }
 
@@ -87,7 +90,7 @@ extern void packet_destroy(t_packet const * packet)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return;
     }
-    
+
     xfree((void *)packet); /* avoid warning */
 }
 
@@ -99,7 +102,7 @@ extern t_packet * packet_add_ref(t_packet * packet)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return NULL;
     }
-    
+
     packet->ref++;
     return packet;
 }
@@ -112,7 +115,7 @@ extern void packet_del_ref(t_packet * packet)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return;
     }
-    
+
     if (packet->ref<2) /* if would go to zero */
 	packet_destroy(packet);
     else
@@ -127,7 +130,7 @@ extern t_packet_class packet_get_class(t_packet const * packet)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return packet_class_none;
     }
-    
+
     switch (packet->pclass)
     {
     case packet_class_init:
@@ -166,7 +169,7 @@ extern char const * packet_get_class_str(t_packet const * packet)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return "unknown";
     }
-    
+
     switch (packet->pclass)
     {
     case packet_class_init:
@@ -224,7 +227,7 @@ extern int packet_set_class(t_packet * packet, t_packet_class pclass)
 	eventlog(eventlog_level_error,__FUNCTION__,"invalid packet class %d",(int)pclass);
         return -1;
     }
-    
+
     packet->pclass = pclass;
     return 0;
 }
@@ -237,12 +240,12 @@ extern unsigned int packet_get_type(t_packet const * packet)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return 0;
     }
-    
+
     switch (packet->pclass)
     {
     case packet_class_init:
 	return CLIENT_INITCONN; /* all init packets are of this type */
-	
+
     case packet_class_bnet:
 	if (packet_get_size(packet)<sizeof(t_bnet_header))
 	{
@@ -250,7 +253,7 @@ extern unsigned int packet_get_type(t_packet const * packet)
 	    return 0;
 	}
 	return (unsigned int)bn_short_get(packet->u.bnet.h.type);
-	
+
     case packet_class_file:
 	if (packet_get_size(packet)<sizeof(t_file_header))
 	{
@@ -258,7 +261,7 @@ extern unsigned int packet_get_type(t_packet const * packet)
 	    return 0;
 	}
 	return (unsigned int)bn_short_get(packet->u.file.h.type);
-	
+
     case packet_class_udp:
 	if (packet_get_size(packet)<sizeof(t_udp_header))
 	{
@@ -266,10 +269,10 @@ extern unsigned int packet_get_type(t_packet const * packet)
 	    return 0;
 	}
 	return bn_int_get(packet->u.udp.h.type);
-	
+
     case packet_class_raw:
 	return 0; /* raw packets don't have a type, but don't warn because the packet dump tries anyway */
-	
+
     case packet_class_d2game:
 	if (packet_get_size(packet)<sizeof(t_d2game_header))
 	{
@@ -277,7 +280,7 @@ extern unsigned int packet_get_type(t_packet const * packet)
 	    return 0;
 	}
 	return bn_byte_get(packet->u.d2game.h.type);
-	
+
     case packet_class_d2gs:
         if (packet_get_size(packet)<sizeof(t_d2cs_d2gs_header))
         {
@@ -308,7 +311,7 @@ extern unsigned int packet_get_type(t_packet const * packet)
 	}
 	return bn_short_get(packet->u.w3route.h.type);
 
-	
+
     default:
 	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return 0;
@@ -323,7 +326,7 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return "unknown";
     }
-    
+
     switch (dir)
     {
     case packet_dir_from_client:
@@ -368,7 +371,7 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    case CLIENT_CDKEY2:
 		return "CLIENT_CDKEY2";
 	    case CLIENT_CDKEY3:
-		return "CLIENT_CDKEY3";		
+		return "CLIENT_CDKEY3";
 	    case CLIENT_REALMLISTREQ:
 		return "CLIENT_REALMLISTREQ";
 	    case CLIENT_REALMLISTREQ_110:
@@ -384,13 +387,13 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    case CLIENT_MOTD_W3:
 		return "CLIENT_MOTD_W3";
 	    case CLIENT_LOGINREQ_W3:
-                return "CLIENT_LOGINREQ_W3"; 
+                return "CLIENT_LOGINREQ_W3";
 	    case CLIENT_LOGONPROOFREQ:
                 return "CLIENT_LOGONPROOFREQ";
 	    case CLIENT_CREATEACCOUNT_W3:
 		return "CLIENT_CREATEACCOUNT_W3";
 	    case CLIENT_CHANGEGAMEPORT:
-                return "CLIENT_CHANGEGAMEPORT"; 
+                return "CLIENT_CHANGEGAMEPORT";
             case CLIENT_CREATEACCTREQ2:
 		return "CLIENT_CREATEACCTREQ2";
 	    case CLIENT_UDPOK:
@@ -472,9 +475,9 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    case CLIENT_ARRANGEDTEAM_FRIENDSCREEN:
 		return "CLIENT_ARRANGEDTEAM_FRIENDSCREEN";
 	    case CLIENT_ARRANGEDTEAM_INVITE_FRIEND:
-		return "CLIENT_ARRANGEDTEAM_INVITE_FRIEND";		
+		return "CLIENT_ARRANGEDTEAM_INVITE_FRIEND";
 	    case CLIENT_ARRANGEDTEAM_ACCEPT_DECLINE_INVITE:
-		return "CLIENT_ARRANGEDTEAM_ACCEPT_DECLINE_INVITE";		
+		return "CLIENT_ARRANGEDTEAM_ACCEPT_DECLINE_INVITE";
 	    case CLIENT_FRIENDSLISTREQ:
 		return "CLIENT_FRIENDSLISTREQ";
 	    case CLIENT_FRIENDINFOREQ:
@@ -483,7 +486,7 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    	return "CLIENT_CLANINFOREQ";
 	    }
 	    return "unknown";
-	    
+
 	case packet_class_file:
 	    if (packet_get_size(packet)<sizeof(t_file_header))
 	    {
@@ -496,7 +499,7 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 		return "CLIENT_FILE_REQ";
 	    }
 	    return "unknown";
-	    
+
 	case packet_class_udp:
 	    if (packet_get_size(packet)<sizeof(t_udp_header))
 	    {
@@ -515,10 +518,10 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 		return "CLIENT_SESSIONADDR2";
 	    }
 	    return "unknown";
-	
+
 	case packet_class_raw:
 	    return "CLIENT_RAW";
-	
+
        case packet_class_d2game:
 	    if (packet_get_size(packet)<sizeof(t_d2game_header))
 	    {
@@ -531,14 +534,14 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 		return "CLIENT_D2GAME";
 	    }
 	    return "unknown";
-	    
+
         case packet_class_d2cs:
                 return "D2CS";
         case packet_class_d2gs:
                 return "D2GS";
         case packet_class_d2cs_bnetd:
                 return "D2CS_BNETD";
-	    
+
 	case packet_class_w3route:
 	    if (packet_get_size(packet)<sizeof(t_w3route_header))
 	    {
@@ -550,7 +553,7 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    case CLIENT_W3ROUTE_REQ:
 	        return "CLIENT_W3ROUTE_REQ";
 	    case CLIENT_W3ROUTE_LOADINGDONE:
-	        return "CLIENT_W3ROUTE_LOADINGDONE";	        
+	        return "CLIENT_W3ROUTE_LOADINGDONE";
 	    case CLIENT_W3ROUTE_ABORT:
 	        return "CLIENT_W3ROUTE_ABORT";
 	    case CLIENT_W3ROUTE_CONNECTED:
@@ -558,19 +561,19 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    case CLIENT_W3ROUTE_ECHOREPLY:
 	        return "CLIENT_W3ROUTE_ECHOREPLY";
 	    case CLIENT_W3ROUTE_GAMERESULT:
-	        return "CLIENT_W3ROUTE_GAMERESULT";	        
+	        return "CLIENT_W3ROUTE_GAMERESULT";
 	    case CLIENT_W3ROUTE_GAMERESULT_W3XP:
 	        return "CLIENT_W3ROUTE_GAMERESULT_W3XP";
 	    }
 	    return "unknown";
-	
+
 	case packet_class_none:
 	    return "unknown";
 	}
-	
+
 	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return "unknown";
-	
+
     case packet_dir_from_server:
 	switch (packet->pclass)
 	{
@@ -615,7 +618,7 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    case SERVER_REALMLISTREPLY:
 		return "SERVER_REALMLISTREPLY";
 	    case SERVER_REALMLISTREPLY_110:
-		return "SERVER_REALMLISTREPLY_110";		
+		return "SERVER_REALMLISTREPLY_110";
 	    case SERVER_PROFILEREPLY:
 		return "SERVER_PROFILEREPLY";
 	    case SERVER_UNKNOWN_37:
@@ -625,13 +628,13 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    case SERVER_LOGINREPLY_W3:
 		return "SERVER_LOGINREPLY_W3";
 	    case SERVER_LOGONPROOFREPLY:
-		return "SERVER_LOGONPROOFREPLY";				
+		return "SERVER_LOGONPROOFREPLY";
 	    case SERVER_CREATEACCOUNT_W3:
 		return "SERVER_CREATEACCTREPLY2";
 	    case SERVER_LOGINREPLY2:
 		return "SERVER_LOGINREPLY2";
 	    case SERVER_CREATEACCTREPLY2:
-		return "SERVER_CREATEACCOUNT_W3";		
+		return "SERVER_CREATEACCOUNT_W3";
 	    case SERVER_FILEINFOREPLY:
 		return "SERVER_FILEINFOREPLY";
 	    case SERVER_STATSREPLY:
@@ -683,22 +686,22 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    case SERVER_ARRANGEDTEAM_SEND_INVITE:
 		return "SERVER_ARRANGEDTEAM_SEND_INVITE";
 	    case SERVER_ARRANGEDTEAM_MEMBER_DECLINE:
-		return "SERVER_ARRANGEDTEAM_MEMBER_DECLINE";		
+		return "SERVER_ARRANGEDTEAM_MEMBER_DECLINE";
 	    case SERVER_FRIENDSLISTREPLY:
-		return "SERVER_FRIENDSLISTREPLY";		
+		return "SERVER_FRIENDSLISTREPLY";
 	    case SERVER_FRIENDINFOREPLY:
-		return "SERVER_FRIENDINFOREPLY";		
+		return "SERVER_FRIENDINFOREPLY";
 	    case SERVER_FRIENDADD_ACK:
 		return "SERVER_FRIENDADD_ACK";
 	    case SERVER_FRIENDDEL_ACK:
-		return "SERVER_FRIENDDEL_ACK";		
+		return "SERVER_FRIENDDEL_ACK";
 	    case SERVER_FRIENDMOVE_ACK:
-		return "SERVER_FRIENDMOVE_ACK";		
+		return "SERVER_FRIENDMOVE_ACK";
 	    case SERVER_CLANINFOREPLY:
 	    	return "SERVER_CLANINFO_REPLY";
 	    }
 	    return "unknown";
-	    
+
 	case packet_class_file:
 	    if (packet_get_size(packet)<sizeof(t_file_header))
 	    {
@@ -711,7 +714,7 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 		return "SERVER_FILE_REPLY";
 	    }
 	    return "unknown";
-	    
+
 	case packet_class_udp:
 	    if (packet_get_size(packet)<sizeof(t_udp_header))
 	    {
@@ -724,10 +727,10 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 		return "SERVER_UDPTEST";
 	    }
 	    return "unknown";
-	
+
 	case packet_class_raw:
 	    return "SERVER_RAW";
-	    
+
 	case packet_class_d2game:
 	    if (packet_get_size(packet)<sizeof(t_d2game_header))
 	    {
@@ -740,7 +743,7 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 		return "SERVER_D2GAME";
 	    }
 	    return "unknown";
-	    
+
         case packet_class_d2cs:
                 return "D2CS";
         case packet_class_d2gs:
@@ -759,29 +762,29 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    case SERVER_W3ROUTE_READY:
 	        return "SERVER_W3ROUTE_READY";
 	    case SERVER_W3ROUTE_LOADINGACK:
-	        return "SERVER_W3ROUTE_LOADINGACK";	        
+	        return "SERVER_W3ROUTE_LOADINGACK";
 	    case SERVER_W3ROUTE_ECHOREQ:
-	        return "SERVER_W3ROUTE_ECHOREQ";	        
+	        return "SERVER_W3ROUTE_ECHOREQ";
 	    case SERVER_W3ROUTE_ACK:
-	        return "SERVER_W3ROUTE_ACK";	        
+	        return "SERVER_W3ROUTE_ACK";
 	    case SERVER_W3ROUTE_PLAYERINFO:
-	        return "SERVER_W3ROUTE_PLAYERINFO";	        
+	        return "SERVER_W3ROUTE_PLAYERINFO";
 	    case SERVER_W3ROUTE_LEVELINFO:
 	        return "SERVER_W3ROUTE_LEVELINFO";
 	    case SERVER_W3ROUTE_STARTGAME1:
-	        return "SERVER_W3ROUTE_STARTGAME1";	        
+	        return "SERVER_W3ROUTE_STARTGAME1";
 	    case SERVER_W3ROUTE_STARTGAME2:
-	        return "SERVER_W3ROUTE_STARTGAME2";	        
-	    }	
+	        return "SERVER_W3ROUTE_STARTGAME2";
+	    }
 	    return "unknown";
 	case packet_class_none:
 	    return "unknown";
 	}
-	
+
 	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return "unknown";
     }
-    
+
     eventlog(eventlog_level_error,__FUNCTION__,"got unknown direction %d",(int)dir);
     return "unknown";
 }
@@ -794,7 +797,7 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return -1;
     }
-    
+
     switch (packet->pclass)
     {
     case packet_class_init:
@@ -804,7 +807,7 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	    return -1;
 	}
 	return 0;
-	
+
     case packet_class_bnet:
 	if (packet_get_size(packet)<sizeof(t_bnet_header))
 	{
@@ -818,7 +821,7 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	}
 	bn_short_set(&packet->u.bnet.h.type,(unsigned short)type);
 	return 0;
-	
+
     case packet_class_file:
 	if (packet_get_size(packet)<sizeof(t_file_header))
 	{
@@ -832,7 +835,7 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	}
 	bn_short_set(&packet->u.file.h.type,(unsigned short)type);
 	return 0;
-	
+
     case packet_class_udp:
 	if (packet_get_size(packet)<sizeof(t_udp_header))
 	{
@@ -841,7 +844,7 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	}
 	bn_int_set(&packet->u.udp.h.type,type);
 	return 0;
-	
+
     case packet_class_d2game:
 	if (packet_get_size(packet)<sizeof(t_d2game_header))
 	{
@@ -850,7 +853,7 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	}
 	bn_byte_set(&packet->u.d2game.h.type,type);
 	return 0;
-	
+
     case packet_class_d2gs:
         if (packet_get_size(packet)<sizeof(t_d2cs_d2gs_header))
         {
@@ -887,11 +890,11 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	bn_short_set(&packet->u.w3route.h.type,(unsigned short)type);
 	return 0;
 
-	
+
     case packet_class_raw:
 	eventlog(eventlog_level_error,__FUNCTION__,"can not set packet type for raw packet");
 	return 0;
-	
+
     default:
 	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return -1;
@@ -903,13 +906,13 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 extern unsigned int packet_get_size(t_packet const * packet)
 {
     unsigned int size;
-    
+
     if (!packet)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return 0;
     }
-    
+
     switch (packet->pclass)
     {
     case packet_class_init:
@@ -946,7 +949,7 @@ extern unsigned int packet_get_size(t_packet const * packet)
 	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return 0;
     }
-    
+
     if (size>MAX_PACKET_SIZE)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"packet has bad size %u",size);
@@ -968,7 +971,7 @@ extern int packet_set_size(t_packet * packet, unsigned int size)
         eventlog(eventlog_level_error,__FUNCTION__,"got bad size %u",size);
 	return -1;
     }
-    
+
     switch (packet->pclass)
     {
     case packet_class_init:
@@ -1040,7 +1043,7 @@ extern unsigned int packet_get_header_size(t_packet const * packet)
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return MAX_PACKET_SIZE;
     }
-    
+
     switch (packet_get_class(packet))
     {
     case packet_class_init:
@@ -1077,7 +1080,7 @@ extern unsigned int packet_get_flags(t_packet const * packet)
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
         return 0;
     }
-    
+
     return packet->flags;
 }
 
@@ -1089,7 +1092,7 @@ extern int packet_set_flags(t_packet * packet, unsigned int flags)
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
         return -1;
     }
-    
+
     packet->flags = flags;
     return 0;
 }
@@ -1100,7 +1103,7 @@ extern int packet_append_string(t_packet * packet, char const * str)
     unsigned int   len;
     unsigned short addlen;
     unsigned short size;
-    
+
     if (!packet)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
@@ -1111,23 +1114,23 @@ extern int packet_append_string(t_packet * packet, char const * str)
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL string");
         return -1;
     }
-    
+
     len = strlen(str)+1;
     size = packet_get_size(packet);
     if (size>=MAX_PACKET_SIZE)
         return -1;
-    
+
     if (MAX_PACKET_SIZE-(unsigned int)size>len)
 	    addlen = len;
     else
 	    addlen = MAX_PACKET_SIZE-size;
     if (addlen<1)
 	return -1;
-    
+
     memcpy(packet->u.data+size,str,addlen-1);
     packet->u.data[size+addlen-1] = '\0';
     packet_set_size(packet,size+addlen);
-    
+
     return (int)addlen;
 }
 
@@ -1137,7 +1140,7 @@ extern int packet_append_ntstring(t_packet * packet, char const * str)
     unsigned int   len;
     unsigned short addlen;
     unsigned short size;
-    
+
     if (!packet)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
@@ -1148,22 +1151,22 @@ extern int packet_append_ntstring(t_packet * packet, char const * str)
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL string");
         return -1;
     }
-    
+
     len = strlen(str);
     size = packet_get_size(packet);
     if (size>=MAX_PACKET_SIZE)
         return -1;
-    
+
     if (MAX_PACKET_SIZE-(unsigned int)size>len)
 	    addlen = len;
     else
 	    addlen = MAX_PACKET_SIZE-size;
     if (addlen<1)
 	return -1;
-    
+
     memcpy(packet->u.data+size,str,addlen);
     packet_set_size(packet,size+addlen);
-    
+
     return (int)addlen;
 }
 
@@ -1172,7 +1175,7 @@ extern int packet_append_lstr(t_packet * packet, t_lstr *lstr)
 {
     unsigned short addlen;
     unsigned short size;
-    
+
     if (!packet)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
@@ -1187,18 +1190,18 @@ extern int packet_append_lstr(t_packet * packet, t_lstr *lstr)
     size = packet_get_size(packet);
     if (size>=MAX_PACKET_SIZE)
         return -1;
-    
+
     if (MAX_PACKET_SIZE-(unsigned int)size>lstr_get_len(lstr))
 	    addlen = lstr_get_len(lstr);
     else
 	    addlen = MAX_PACKET_SIZE-size;
     if (addlen<1)
 	return -1;
-    
+
     memcpy(packet->u.data+size,lstr_get_str(lstr),addlen-1);
     packet->u.data[size+addlen-1] = '\0';
     packet_set_size(packet,size+addlen);
-    
+
     return (int)addlen;
 }
 
@@ -1207,7 +1210,7 @@ extern int packet_append_data(t_packet * packet, void const * data, unsigned int
 {
     unsigned short addlen;
     unsigned short size;
-    
+
     if (!packet)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
@@ -1218,21 +1221,21 @@ extern int packet_append_data(t_packet * packet, void const * data, unsigned int
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL data");
         return -1;
     }
-    
+
     size = packet_get_size(packet);
     if (size>=MAX_PACKET_SIZE)
         return -1;
-    
+
     if (MAX_PACKET_SIZE-(unsigned int)size>len)
 	    addlen = len;
     else
 	    addlen = MAX_PACKET_SIZE-size;
     if (addlen<1)
 	return -1;
-    
+
     memcpy(packet->u.data+size,data,addlen);
     packet_set_size(packet,size+addlen);
-    
+
     return (int)addlen;
 }
 
@@ -1240,7 +1243,7 @@ extern int packet_append_data(t_packet * packet, void const * data, unsigned int
 extern void const * packet_get_raw_data_const(t_packet const * packet, unsigned int offset)
 {
     unsigned int size;
-    
+
     if (!packet)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
@@ -1252,7 +1255,7 @@ extern void const * packet_get_raw_data_const(t_packet const * packet, unsigned 
         eventlog(eventlog_level_error,__FUNCTION__,"got bad offset %u for packet size %u",offset,size);
         return NULL;
     }
-    
+
     return packet->u.data+offset;
 }
 
@@ -1260,7 +1263,7 @@ extern void const * packet_get_raw_data_const(t_packet const * packet, unsigned 
 extern void * packet_get_raw_data(t_packet * packet, unsigned int offset)
 {
     unsigned int size;
-    
+
     if (!packet)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
@@ -1272,7 +1275,7 @@ extern void * packet_get_raw_data(t_packet * packet, unsigned int offset)
         eventlog(eventlog_level_error,__FUNCTION__,"got bad offset %u for packet size %u",offset,size);
         return NULL;
     }
-    
+
     return packet->u.data+offset;
 }
 
@@ -1284,13 +1287,13 @@ extern void * packet_get_raw_data_build(t_packet * packet, unsigned int offset)
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
         return NULL;
     }
-    
+
     if (offset>=MAX_PACKET_SIZE)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got bad offset %u for packet",offset);
         return NULL;
     }
-    
+
     return packet->u.data+offset;
 }
 
@@ -1300,7 +1303,7 @@ extern char const * packet_get_str_const(t_packet const * packet, unsigned int o
 {
     unsigned int size;
     unsigned int pos;
-    
+
     if (!packet)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
@@ -1312,7 +1315,7 @@ extern char const * packet_get_str_const(t_packet const * packet, unsigned int o
         eventlog(eventlog_level_error,__FUNCTION__,"got bad offset %u for packet size %u",offset,size);
         return NULL;
     }
-    
+
     for (pos=offset; packet->u.data[pos]!='\0'; pos++)
 	if (pos>=size || pos-offset>=maxlen)
 	    return NULL;
@@ -1325,7 +1328,7 @@ extern char const * packet_get_str_const(t_packet const * packet, unsigned int o
 extern void const * packet_get_data_const(t_packet const * packet, unsigned int offset, unsigned int len)
 {
     unsigned int size;
-    
+
     if (!packet)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
@@ -1342,7 +1345,7 @@ extern void const * packet_get_data_const(t_packet const * packet, unsigned int 
         eventlog(eventlog_level_error,__FUNCTION__,"got bad offset %u and length %u for packet size %u",offset,len,size);
         return NULL;
     }
-    
+
     return packet->u.data+offset;
 }
 
@@ -1350,7 +1353,7 @@ extern void const * packet_get_data_const(t_packet const * packet, unsigned int 
 extern t_packet * packet_duplicate(t_packet const * src)
 {
     t_packet * p;
-    
+
     if (!(p = packet_create(packet_get_class(src))))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create packet");
@@ -1358,7 +1361,8 @@ extern t_packet * packet_duplicate(t_packet const * src)
     }
     packet_append_data(p,src->u.data,packet_get_size(src));
     packet_set_flags(p,packet_get_flags(src));
-    
+
     return p;
 }
 
+}

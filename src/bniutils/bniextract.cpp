@@ -66,9 +66,14 @@
 #include "bni.h"
 #include "common/setup_after.h"
 
+using namespace pvpgn::bni;
+using namespace pvpgn;
+
+namespace
+{
 
 /* extract a portion of an image creating a new image */
-static t_tgaimg * area2img(t_tgaimg *src, int x, int y, int width, int height, t_tgaimgtype type) {
+t_tgaimg * area2img(t_tgaimg *src, int x, int y, int width, int height, t_tgaimgtype type) {
 	t_tgaimg *dst;
 	int pixelsize;
 	unsigned char *datap;
@@ -80,10 +85,10 @@ static t_tgaimg * area2img(t_tgaimg *src, int x, int y, int width, int height, t
 	if ((y+height)>src->height) return NULL;
 	pixelsize = getpixelsize(src);
 	if (pixelsize == 0) return NULL;
-	
+
 	dst = new_tgaimg(width,height,src->bpp,type);
 	dst->data = (t_uint8*)malloc(width*height*pixelsize);
-	
+
 	datap = src->data;
 	datap += y*src->width*pixelsize;
 	destp = dst->data;
@@ -97,7 +102,7 @@ static t_tgaimg * area2img(t_tgaimg *src, int x, int y, int width, int height, t
 }
 
 
-static void usage(char const * progname)
+void usage(char const * progname)
 {
     fprintf(stderr,
 	    "usage: %s [<options>] [--] <BNI file> <output directory>\n"
@@ -107,6 +112,7 @@ static void usage(char const * progname)
     exit(STATUS_FAILURE);
 }
 
+}
 
 extern int main(int argc, char * argv[])
 {
@@ -117,13 +123,13 @@ extern int main(int argc, char * argv[])
     int          a;
     int          forcefile=0;
     char         dash[]="-"; /* unique address used as flag */
-    
+
     if (argc<1 || !argv || !argv[0])
     {
 	fprintf(stderr,"bad arguments\n");
 	return STATUS_FAILURE;
     }
-    
+
     for (a=1; a<argc; a++)
         if (forcefile && !bnifile)
             bnifile = argv[a];
@@ -157,7 +163,7 @@ extern int main(int argc, char * argv[])
             fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
-    
+
     if (!bnifile)
     {
 	fprintf(stderr,"%s: BNI file not specified\n",argv[0]);
@@ -168,7 +174,7 @@ extern int main(int argc, char * argv[])
 	fprintf(stderr,"%s: output directory not specified\n",argv[0]);
 	usage(argv[0]);
     }
-    
+
     if (bnifile==dash)
         fbni = stdin;
     else
@@ -177,7 +183,7 @@ extern int main(int argc, char * argv[])
 	    fprintf(stderr,"%s: could not open BNI file \"%s\" for reading (fopen: %s)\n",argv[0],bnifile,pstrerror(errno));
 	    return STATUS_FAILURE;
 	}
-    
+
     if (outdir==dash)
     {
 	fprintf(stderr,"%s: can not write directory to <stdout>\n",argv[0]);
@@ -208,7 +214,7 @@ extern int main(int argc, char * argv[])
 		fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (fclose: %s)\n",argv[0],bnifile,pstrerror(errno));
 	    return STATUS_FAILURE;
 	}
-    
+
     {
 	unsigned int i;
 	int          curry;
@@ -216,7 +222,7 @@ extern int main(int argc, char * argv[])
 	t_bnifile *  bni;
 	FILE *       indexfile;
 	char *       indexfilename;
-	
+
 	fprintf(stderr,"Info: Loading \"%s\" ...\n",bnifile);
 	bni = load_bni(fbni);
 	if (bni == NULL) return STATUS_FAILURE;
@@ -229,7 +235,7 @@ extern int main(int argc, char * argv[])
 	fprintf(stderr,"Info: Loading image ...\n");
 	iconimg = load_tga(fbni);
 	if (iconimg == NULL) return STATUS_FAILURE;
-	
+
 	fprintf(stderr,"Info: Extracting icons ...\n");
 	indexfilename = (char*)malloc(strlen(outdir)+14);
 	sprintf(indexfilename,"%s/bniindex.lst",outdir);
@@ -292,6 +298,6 @@ extern int main(int argc, char * argv[])
     }
     if (bnifile!=dash && fclose(fbni)<0)
 	fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (fclose: %s)\n",argv[0],bnifile,pstrerror(errno));
-    
+
     return STATUS_SUCCESS;
 }

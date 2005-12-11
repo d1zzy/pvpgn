@@ -42,14 +42,17 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern char const * inet_ntoa(struct in_addr const * addr)
 {
     static char   buff[16];
     unsigned long val;
-    
+
     if (!addr)
 	return NULL;
-    
+
     val = ntohl(addr->s_addr);
     sprintf(buff,"%u.%u.%u.%u",
 	    (val>>24)&0xff,
@@ -57,6 +60,8 @@ extern char const * inet_ntoa(struct in_addr const * addr)
 	    (val>> 8)&0xff,
 	    (val    )&0xff);
     return buff;
+}
+
 }
 
 #else

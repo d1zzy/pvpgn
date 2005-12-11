@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2003 Dizzy 
+ * Copyright (C) 2003 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -58,8 +58,13 @@
 #define pmunmap(a,b) munmap(a,b)
 #else
 
+namespace pvpgn
+{
+
 extern void * pmmap(void *addr, unsigned len, int prot, int flags, int fd, unsigned offset);
 extern int pmunmap(void *addr, unsigned len);
+
+}
 
 #endif
 

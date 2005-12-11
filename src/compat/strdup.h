@@ -20,7 +20,12 @@
 
 #ifndef HAVE_STRDUP
 
+namespace pvpgn
+{
+
 extern char * strdup(char const * str);
+
+}
 
 #endif
 

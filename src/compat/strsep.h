@@ -20,7 +20,12 @@
 
 #ifndef HAVE_STRSEP
 
+namespace pvpgn
+{
+
 extern char * strsep(char * * str, char const * delim);
+
+}
 
 #endif
 

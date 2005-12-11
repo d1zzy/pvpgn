@@ -36,23 +36,26 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern int gettimeofday(struct timeval * tv, struct timezone * tz)
 {
 #ifdef HAVE_FTIME
     struct timeb tb;
 #endif
-    
+
     if (!tv)
     {
 	errno = EFAULT;
 	return -1;
     }
-    
+
 #ifdef HAVE_FTIME
     tb.millitm = 0; /* apparently the MS CRT version of this doesn't set this member */
     /* FIXME: what would be a more appropriate function for that platform? */
     ftime(&tb); /* FIXME: some versions are void return others int */
-    
+
     tv->tv_sec  = tb.time;
     tv->tv_usec = ((long)tb.millitm)*1000;
     if (tz)
@@ -60,11 +63,13 @@ extern int gettimeofday(struct timeval * tv, struct timezone * tz)
 	tz->tz_minuteswest = 0;
 	tz->tz_dsttime     = 0;
     }
-    
+
     return 0;
 #else
 # error "This program requires either gettimeofday() or ftime()"
 #endif
+}
+
 }
 
 #else

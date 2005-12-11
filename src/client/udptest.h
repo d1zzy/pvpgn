@@ -19,8 +19,18 @@
 #ifndef INCLUDED_UDPTEST_PROTOS
 #define INCLUDED_UDPTEST_PROTOS
 
+namespace pvpgn
+{
+
+namespace client
+{
+
 extern int client_udptest_setup(char const * progname, unsigned short * lsock_port_ret);
 extern int client_udptest_recv(char const * progname, int lsock, unsigned short lsock_port, unsigned int timeout);
+
+}
+
+}
 
 #endif
 #endif

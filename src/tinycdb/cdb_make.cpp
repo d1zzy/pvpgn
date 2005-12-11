@@ -27,6 +27,9 @@
 #include "cdb_int.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 void
 cdb_pack(unsigned num, unsigned char buf[4])
 {
@@ -188,3 +191,4 @@ cdb_make_finish(struct cdb_make *cdbmp)
   return r;
 }
 
+}

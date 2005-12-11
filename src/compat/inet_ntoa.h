@@ -27,7 +27,12 @@
 # include <arpa/inet.h>
 #endif
 
+namespace pvpgn
+{
+
 extern char const * inet_ntoa(struct in_addr const * addr);
+
+}
 
 #endif
 

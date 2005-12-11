@@ -16,6 +16,9 @@
 #include "cdb_int.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 int
 cdb_make_add(struct cdb_make *cdbmp,
 	     const void *key, unsigned klen,
@@ -50,3 +53,4 @@ cdb_make_add(struct cdb_make *cdbmp,
   return 0;
 }
 
+}

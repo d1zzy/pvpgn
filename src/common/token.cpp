@@ -45,6 +45,9 @@
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 /*
  * Given a string and an integer pointer skip past pos characters and return
  * the next white-space delimited string, setting pos to the new position.
@@ -54,16 +57,16 @@ extern char * next_token(char * ptr, unsigned int * pos)
     unsigned int i;
     unsigned int start;
     int          quoted;
-    
+
     if (!ptr || !pos)
-	return NULL; 
-    
+	return NULL;
+
     /* skip leading whitespace */
     for (i=*pos; isspace((int)ptr[i]); i++);
-    
+
     if (ptr[i]=='\0')
 	return NULL; /* if after whitespace, we're done */
-    
+
     if (ptr[i]=='"')
     {
 	quoted = 1;
@@ -71,7 +74,7 @@ extern char * next_token(char * ptr, unsigned int * pos)
     }
     else
 	quoted = 0;
-    
+
     start = i;
     for (;;)
     {
@@ -87,7 +90,7 @@ extern char * next_token(char * ptr, unsigned int * pos)
 		break;
 	i++;
     }
-    
+
     if (ptr[i]!='\0')
     {
 	ptr[i] = '\0'; /* terminate the string */
@@ -95,6 +98,8 @@ extern char * next_token(char * ptr, unsigned int * pos)
     }
     else
 	*pos = i; /* this was the last token, just remember the NUL */
-    
+
     return &ptr[start];
+}
+
 }

@@ -28,18 +28,23 @@
 #include "memset.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 /* very slow, but we don't care */
 extern void * memset(void * dest, int c, unsigned long n)
 {
     unsigned char * temp=dest;
     unsigned long   i;
-    
+
     if (!temp)
 	return NULL;
-    
+
     for (i=0; i<n; i++)
 	temp[i] = (unsigned char)c;
     return dest;
+}
+
 }
 
 #else

@@ -13,6 +13,9 @@
 #include "cdb_int.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 int
 cdb_init(struct cdb *cdbp, FILE *fd)
 {
@@ -87,4 +90,6 @@ cdb_read(const struct cdb *cdbp, void *buf, unsigned len, unsigned pos)
   if (!data) return -1;
   memcpy(buf, data, len);
   return 0;
+}
+
 }

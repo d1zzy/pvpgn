@@ -18,6 +18,9 @@
 #include "common/setup_before.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 extern int d2charsave_checksum(unsigned char const * data, unsigned int len,unsigned int offset)
 {
 	int		checksum;
@@ -36,3 +39,4 @@ extern int d2charsave_checksum(unsigned char const * data, unsigned int len,unsi
 	return checksum;
 }
 
+}

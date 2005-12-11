@@ -89,6 +89,9 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+using namespace pvpgn;
+
+namespace {
 
 /******************************************************************************
  * TYPES
@@ -118,16 +121,17 @@ typedef struct
 /******************************************************************************
  * STATIC FUNCTION PROTOTYPES
  *****************************************************************************/
-static int server_process(int sockfd);
-static void usage(char const * progname);
-static void getprefs(int argc, char * argv[]);
-static void fixup_str(char * str);
+int server_process(int sockfd);
+void usage(char const * progname);
+void getprefs(int argc, char * argv[]);
+void fixup_str(char * str);
 
 
 /******************************************************************************
  * GLOBAL VARIABLES
  *****************************************************************************/
-static t_prefs prefs;
+t_prefs prefs;
+}
 
 
 extern int main(int argc, char * argv[])
@@ -269,8 +273,9 @@ extern int main(int argc, char * argv[])
     return STATUS_SUCCESS;
 }
 
+namespace {
 
-static int server_process(int sockfd)
+int server_process(int sockfd)
 {
     t_list *           serverlist_head;
     t_elem *           curr;
@@ -491,7 +496,7 @@ static int server_process(int sockfd)
 }
 
 
-static void usage(char const * progname)
+void usage(char const * progname)
 {
     fprintf(stderr,"usage: %s [<options>]\n",progname);
     fprintf(stderr,
@@ -516,7 +521,7 @@ static void usage(char const * progname)
 }
 
 
-static void getprefs(int argc, char * argv[])
+void getprefs(int argc, char * argv[])
 {
     int a;
 
@@ -774,7 +779,7 @@ static void getprefs(int argc, char * argv[])
 }
 
 
-static void fixup_str(char * str)
+void fixup_str(char * str)
 {
     char         prev;
     unsigned int i;
@@ -782,4 +787,6 @@ static void fixup_str(char * str)
     for (prev='\0',i=0; i<strlen(str); prev=str[i],i++)
 	if (prev=='#' && str[i]=='#')
 	    str[i] = '%';
+}
+
 }

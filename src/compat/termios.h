@@ -21,11 +21,16 @@
 /* FIXME: this might already exist even if termios.h doesn't... check
    for the type in autoconf */
 # ifndef HAVE_TERMIOS_H
+namespace pvpgn
+{
+
 struct termios
 {
     int c_lflag;
     int c_cc[1];
 };
+
+}
 
 #  define ECHO   1
 #  define ICANON 1

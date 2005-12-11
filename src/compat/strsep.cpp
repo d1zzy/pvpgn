@@ -30,16 +30,19 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern char * strsep(char * * str, char const * delims)
 {
     char * begin;
 
     begin = *str;
-    
+
     if (!begin)
         return NULL; /* already returned last token */
-   
-    /* FIXME: optimiz case of 1 char delims (maybe not worth the effort) */ 
+
+    /* FIXME: optimiz case of 1 char delims (maybe not worth the effort) */
     for (; **str!='\0'; (*str)++)
         if (strchr(delims,**str))
         {
@@ -47,9 +50,11 @@ extern char * strsep(char * * str, char const * delims)
             (*str)++; /* remember the position of the next char */
             return begin;
         }
-    
+
     *str = NULL;
     return begin; /* return the whole input string */
+}
+
 }
 
 #else

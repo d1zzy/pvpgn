@@ -8,6 +8,9 @@
 #ifndef TINYCDB_VERSION
 #define TINYCDB_VERSION 0.74
 
+namespace pvpgn
+{
+
 typedef unsigned int cdbi_t; /* compatibility */
 
 /* common routines */
@@ -99,5 +102,7 @@ int cdb_make_put(struct cdb_make *cdbmp,
 #define CDB_PUT_INSERT	2	/* add only if not already exists */
 #define CDB_PUT_WARN	3	/* add unconditionally but ret. 1 if exists */
 int cdb_make_finish(struct cdb_make *cdbmp);
+
+}
 
 #endif /* include guard */

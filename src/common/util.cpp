@@ -58,6 +58,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern int strstart(char const * full, char const * part)
 {
     size_t strlen_part;
@@ -704,4 +707,6 @@ extern int timestr_to_time(char const * timestr, time_t* ptime)
 extern void strlower(char* str)
 {
 	for(;*str;str++) *str = tolower(*str);
+}
+
 }

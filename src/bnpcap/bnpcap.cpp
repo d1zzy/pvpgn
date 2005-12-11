@@ -35,6 +35,8 @@
 #include "common/util.h"
 #include "common/setup_after.h"
 
+using namespace pvpgn;
+
 /* FIXME: everywhere: add checks for NULL pointers */
 
 char *filename = NULL;

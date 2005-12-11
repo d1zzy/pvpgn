@@ -52,6 +52,9 @@
 
 #define DEBUG_TRANS
 
+namespace pvpgn
+{
+
 static t_list * trans_head=NULL;
 
 extern int trans_load(char const * filename, int program)
@@ -72,7 +75,7 @@ extern int trans_load(char const * filename, int program)
     char		tmp2[32];
     char		tmp3[32];
     t_trans		*entry;
-    
+
     if (!filename) {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
         return -1;
@@ -90,7 +93,7 @@ extern int trans_load(char const * filename, int program)
         if ((temp = strrchr(buff,'#'))) {
 	    unsigned int len;
 	    unsigned int endpos;
-	    
+
             *temp = '\0';
 	    len = strlen(buff)+1;
             for (endpos=len-1; buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
@@ -169,7 +172,7 @@ extern int trans_load(char const * filename, int program)
 		    npos++;
 		    continue;
 		}
-	    } else { 
+	    } else {
 		if (!(entry->network = netaddr_create_str(network))) {
 		    eventlog(eventlog_level_error,__FUNCTION__,"could not allocate memory for network address");
 		    addr_destroy(entry->output);
@@ -227,7 +230,7 @@ extern int trans_load(char const * filename, int program)
 		    npos++;
 		    continue;
 		}
-	    } else { 
+	    } else {
 		if (!(entry->network = netaddr_create_str(network))) {
 		    eventlog(eventlog_level_error,__FUNCTION__,"could not allocate memory for network address");
 		    addr_destroy(entry->output);
@@ -259,7 +262,7 @@ extern int trans_unload(void)
 {
     t_elem	*curr;
     t_trans	*entry;
-    
+
     if (trans_head) {
 	LIST_TRAVERSE(trans_head,curr)
 	{
@@ -294,7 +297,7 @@ extern int trans_net(unsigned int clientaddr, unsigned int *addr, unsigned short
     char         temp2[32];
     char         temp3[32];
     char	 temp4[32];
-    
+
 #ifdef DEBUG_TRANS
     eventlog(eventlog_level_debug,__FUNCTION__,"checking %s for client %s ...",
 	addr_num_to_addr_str(*addr, *port),
@@ -308,13 +311,13 @@ extern int trans_net(unsigned int clientaddr, unsigned int *addr, unsigned short
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 		continue;
 	    }
-	    
+
 #ifdef DEBUG_TRANS
 	    eventlog(eventlog_level_debug,__FUNCTION__,"against entry -> %s output %s network %s",
 		addr_get_addr_str(entry->input,temp1,sizeof(temp1)),
 		addr_get_addr_str(entry->output,temp2,sizeof(temp2)),
 		netaddr_get_addr_str(entry->network,temp3,sizeof(temp3)));
-#endif		
+#endif
 	    if (addr_get_ip(entry->input)!=*addr || addr_get_port(entry->input)!=*port) {
 #ifdef DEBUG_TRANS
 		eventlog(eventlog_level_debug,__FUNCTION__,"entry does match input address");
@@ -342,4 +345,6 @@ extern int trans_net(unsigned int clientaddr, unsigned int *addr, unsigned short
 	addr_num_to_addr_str(*addr, *port));
 #endif
     return 0; /* no match found in list */
+}
+
 }

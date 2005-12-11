@@ -27,6 +27,8 @@
 #include "cdb.h"
 #include "common/setup_after.h"
 
+using namespace pvpgn;
+
 #ifndef EPROTO
 # define EPROTO EINVAL
 #endif

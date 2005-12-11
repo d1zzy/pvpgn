@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004  Dizzy 
+ * Copyright (C) 2004  Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@
 
 /*
  * Reference Change Mechanism
- * an abstract interface to implement safe management of references of objects 
+ * an abstract interface to implement safe management of references of objects
  * which do not share any specific dependencies
  */
 
@@ -26,6 +26,9 @@
 #define __RCM_H_TYPES__
 
 #include "common/elist.h"
+
+namespace pvpgn
+{
 
 /* reference change mechanism main object
  * an object which wishes to be referenced using RCM has to include this */
@@ -47,17 +50,24 @@ typedef struct {
     t_elist refs_link;
 } t_rcm_regref;
 
+}
+
 #endif /* __RCM_H_TYPES__ */
 
 #ifndef __RCM_H_PROTOS__
 #define __RCM_H_PROTOS__
 
+namespace pvpgn
+{
+
 extern void rcm_init(t_rcm *rcm);
 extern void rcm_regref_init(t_rcm_regref *regref, t_chref_cb cb, void *data);
 extern void rcm_get(t_rcm *rcm, t_rcm_regref *regref);
 extern void rcm_put(t_rcm *rcm, t_rcm_regref *regref);
-/* the main function, cycles through the registered references and calls the 
+/* the main function, cycles through the registered references and calls the
  * registered callback with the new reference */
 extern void rcm_chref(t_rcm *rcm, void *newref);
+
+}
 
 #endif /* __RCM_H_PROTOS__ */

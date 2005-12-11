@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004  Dizzy 
+ * Copyright (C) 2004  Dizzy
  *
  * lstr is a structure to be used for cached string lengths for speed
  *
@@ -21,15 +21,23 @@
 #ifndef INCLUDED_LSTR_TYPES
 #define INCLUDED_LSTR_TYPES
 
+namespace pvpgn
+{
+
 typedef struct lstr {
     char *str;
     unsigned len;
 } t_lstr;
 
+}
+
 #endif /* INCLUDED_LSTR_TYPES */
 
 #ifndef INCLUDED_LSTR_PROTOS
 #define INCLUDED_LSTR_PROTOS
+
+namespace pvpgn
+{
 
 static inline void lstr_set_str(t_lstr *lstr, char *str)
 {
@@ -49,6 +57,8 @@ static inline void lstr_set_len(t_lstr *lstr, unsigned len)
 static inline unsigned lstr_get_len(t_lstr *lstr)
 {
     return lstr->len;
+}
+
 }
 
 #endif /* INCLUDED_LSTR_PROTOS */

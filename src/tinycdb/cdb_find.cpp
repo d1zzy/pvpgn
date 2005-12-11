@@ -8,6 +8,9 @@
 #include "cdb_int.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 int
 cdb_find(struct cdb *cdbp, const void *key, unsigned klen)
 {
@@ -73,5 +76,7 @@ cdb_find(struct cdb *cdbp, const void *key, unsigned klen)
     if ((htp += 8) >= htend)
       htp = htab;
   }
+
+}
 
 }

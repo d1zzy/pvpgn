@@ -41,11 +41,14 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern int verparts_to_vernum(unsigned short v1, unsigned short v2, unsigned short v3, unsigned short v4, unsigned long * vernum)
 {
     if (!vernum)
 	return -1;
-    
+
     *vernum = (((unsigned long)v4)<<24) |
               (((unsigned long)v3)<<16) |
               (((unsigned long)v2)<< 8) |
@@ -57,14 +60,14 @@ extern int verparts_to_vernum(unsigned short v1, unsigned short v2, unsigned sho
 extern int verstr_to_vernum(char const * verstr, unsigned long * vernum)
 {
     unsigned long v1,v2,v3,v4;
-    
+
     if (!vernum)
 	return -1;
-    
+
     if (strchr(verstr,'.'))
     {
 	int count;
-	
+
 	count = sscanf(verstr,"%lu.%lu.%lu.%lu",&v4,&v3,&v2,&v1);
         if (count<4)
 	{
@@ -80,14 +83,14 @@ extern int verstr_to_vernum(char const * verstr, unsigned long * vernum)
     else
     {
 	unsigned long temp;
-	
+
 	temp = strtoul(verstr,NULL,10);
 	v4 = (temp/100);
         v3 = (temp/ 10)%10;
         v2 = (temp    )%10;
         v1 = 0;
     }
-    
+
     if (v1>255 || v2>255 || v3>255 || v4>255)
 	return -1;
     *vernum = (v4<<24) | (v3<<16) | (v2<< 8) | (v1    );
@@ -98,11 +101,13 @@ extern int verstr_to_vernum(char const * verstr, unsigned long * vernum)
 extern char const * vernum_to_verstr(unsigned long vernum)
 {
     static char verstr[16];
-    
+
     sprintf(verstr,"%lu.%lu.%lu.%lu",
             (vernum>>24)     ,
             (vernum>>16)&0xff,
             (vernum>> 8)&0xff,
             (vernum    )&0xff);
     return verstr;
+}
+
 }

@@ -20,6 +20,9 @@
 
 #include "common/bn_type.h"
 
+namespace pvpgn
+{
+
 typedef struct
 {
 	bn_short	size;
@@ -108,5 +111,7 @@ typedef struct
 	bn_byte			difficulty;
 	/* gamename */
 } t_d2cs_bnetd_gameinforeply;
+
+}
 
 #endif

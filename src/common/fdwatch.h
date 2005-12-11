@@ -24,6 +24,9 @@
 
 #include "common/elist.h"
 
+namespace pvpgn
+{
+
 typedef enum {
     fdwatch_type_none = 0,
     fdwatch_type_read = 1,
@@ -73,5 +76,7 @@ extern void fdwatch_handle(void);
 #ifdef FDWATCH_BACKEND
 extern void fdwatch_traverse(t_fdw_cb cb, void *data);
 #endif
+
+}
 
 #endif /* __FDWATCH_INCLUDED__ */

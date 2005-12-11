@@ -18,6 +18,11 @@
 #ifndef INCLUDED_GIVE_UP_ROOT_PRIVILEGES
 #define INCLUDED_GIVE_UP_ROOT_PRIVILEGES
 
+namespace pvpgn
+{
+
 extern int give_up_root_privileges(char const * user_name, char const * group_name);
+
+}
 
 #endif

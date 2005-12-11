@@ -47,6 +47,9 @@
 # undef JUST_NEED_TYPES
 #endif
 
+namespace pvpgn
+{
+
 typedef enum
 {
     packet_class_none,
@@ -356,6 +359,8 @@ typedef struct
 	} u;
 } t_packet;
 
+}
+
 #endif
 
 /*****/
@@ -364,6 +369,9 @@ typedef struct
 #define INCLUDED_PACKET_PROTOS
 
 #include "lstr.h"
+
+namespace pvpgn
+{
 
 extern t_packet * packet_create(t_packet_class pclass) ;
 extern void packet_destroy(t_packet const * packet);
@@ -390,6 +398,8 @@ extern void * packet_get_raw_data_build(t_packet * packet, unsigned int offset);
 extern char const * packet_get_str_const(t_packet const * packet, unsigned int offset, unsigned int maxlen);
 extern void const * packet_get_data_const(t_packet const * packet, unsigned int offset, unsigned int len);
 extern t_packet * packet_duplicate(t_packet const * src);
+
+}
 
 #endif
 #endif

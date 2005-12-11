@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005 Olaf Freyer (aaron@cs.tu-berlin.de)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -29,6 +29,9 @@
 #define SPECIAL	32		/* 0x */
 #define LARGE	64		/* use 'ABCDEF' instead of 'abcdef' */
 
+namespace pvpgn
+{
+
 typedef struct {
 	const char* trans;	/* points to the translation of the format */
 	unsigned translen;	/* how many chars in this translation */
@@ -37,11 +40,13 @@ typedef struct {
 } t_fmtentry;
 
 /* "array" snprintf - this function prints all vargs into the prepared buffer,
- * each of them as a \0 terminated string. The prepared char* [] locations will 
+ * each of them as a \0 terminated string. The prepared char* [] locations will
  * contain the starting position of each seperate string afterwards.
  * The function returns the number of vargs that have been printed.
  */
 int asnprintf(char * buffer, size_t size, t_fmtentry *entries, unsigned entlen, const char *fmt, ...);
 int vasnprintf(char * buffer, size_t size, t_fmtentry *entries, unsigned entlen, const char *fmt, va_list args);
+
+}
 
 #endif

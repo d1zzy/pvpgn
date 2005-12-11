@@ -36,6 +36,9 @@
 #include "memcpy.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 extern void * memcpy(void * dest, void const * src, unsigned long n)
 {
 #ifdef HAVE_BCOPY
@@ -46,14 +49,16 @@ extern void * memcpy(void * dest, void const * src, unsigned long n)
     unsigned char * td=dest;
     unsigned char * ts=src;
     unsigned long   i;
-    
+
     if (!td || !ts)
 	return NULL;
-    
+
     for (i=0; i<n; i++)
 	td[i] = ts[i];
     return dest;
 #endif
+}
+
 }
 
 #else

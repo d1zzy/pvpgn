@@ -9,6 +9,9 @@
 #include "cdb_int.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 static int
 match(FILE *fd, unsigned pos, const char *key, unsigned klen)
 {
@@ -81,4 +84,6 @@ cdb_make_exists(struct cdb_make *cdbmp,
                 const void *key, unsigned klen)
 {
   return _cdb_make_find(cdbmp, key, klen, cdb_hash(key, klen), NULL);
+}
+
 }

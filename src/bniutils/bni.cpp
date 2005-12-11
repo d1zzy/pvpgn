@@ -29,12 +29,18 @@
 #include "bni.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace bni
+{
+
 extern t_bnifile * load_bni(FILE *f) {
 	t_bnifile *b;
 	unsigned int i;
 
 	if (f == NULL) return NULL;
-	b = (t_bnifile*)malloc(sizeof(t_bnifile));	
+	b = (t_bnifile*)malloc(sizeof(t_bnifile));
 	file_rpush(f);
 	b->unknown1 = file_readd_le();
 	if (b->unknown1 != 0x00000010)
@@ -65,7 +71,7 @@ extern t_bnifile * load_bni(FILE *f) {
 		}
 		b->icons->icon[i].unknown = file_readd_le();
 	}
-	if (ftell(f)!=(long)b->dataoffset) 
+	if (ftell(f)!=(long)b->dataoffset)
 		fprintf(stderr,"load_bni: Warning, %lu bytes of garbage after BNI header\n",(unsigned long)(b->dataoffset-ftell(f)));
 	file_rpop();
 	return b;
@@ -73,7 +79,7 @@ extern t_bnifile * load_bni(FILE *f) {
 
 extern int write_bni(FILE *f,t_bnifile *b) {
 	unsigned int i;
-	
+
 	if (f == NULL) return -1;
 	if (b == NULL) return -1;
 	file_wpush(f);
@@ -82,7 +88,7 @@ extern int write_bni(FILE *f,t_bnifile *b) {
 		fprintf(stderr,"write_bni: field 1 is not 0x00000010. Data may be invalid!\n");
 	file_writed_le(b->unknown2);
 	if (b->unknown2 != 0x00000001)
-		fprintf(stderr,"write_bni: field 2 is not 0x00000001. Data may be invalid!\n");	
+		fprintf(stderr,"write_bni: field 2 is not 0x00000001. Data may be invalid!\n");
 	file_writed_le(b->numicons);
 	file_writed_le(b->dataoffset);
 	for (i = 0; i < b->numicons; i++) {
@@ -100,3 +106,6 @@ extern int write_bni(FILE *f,t_bnifile *b) {
 	return 0;
 }
 
+}
+
+}

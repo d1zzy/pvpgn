@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Dizzy 
+ * Copyright (C) 2005  Dizzy
  *
  * xstr is a module trying to offer some high-level string functionality
  *
@@ -21,10 +21,15 @@
 #ifndef INCLUDED_XSTR_TYPES
 #define INCLUDED_XSTR_TYPES
 
+namespace pvpgn
+{
+
 typedef struct {
 	unsigned alen, ulen;
 	char *str;
 } t_xstr;
+
+}
 
 #define DECLARE_XSTR(var) \
 	t_xstr var = { 0, 0, NULL };
@@ -36,6 +41,9 @@ typedef struct {
 
 /* for NULL */
 #include <stdio.h>
+
+namespace pvpgn
+{
 
 extern t_xstr* xstr_alloc(void);
 extern void xstr_free(t_xstr*);
@@ -68,6 +76,8 @@ static inline t_xstr* xstr_clear(t_xstr* xstr)
     xstr->ulen = 0;
 
     return xstr;
+}
+
 }
 
 #endif /* INCLUDED_STR_PROTOS */

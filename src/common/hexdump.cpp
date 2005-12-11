@@ -32,7 +32,10 @@
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
-extern void hexdump(FILE * stream, void const * data, unsigned int len) 
+namespace pvpgn
+{
+
+extern void hexdump(FILE * stream, void const * data, unsigned int len)
 {
     unsigned int i;
     char dst[100];
@@ -64,7 +67,7 @@ extern void hexdump_string(unsigned char * data, unsigned int datalen, char * ds
 
     datatmp = data;
     tlen += sprintf((dst+tlen), "%04X:   ", counter);
-	
+
     for (c=0; c<8; c++) /* left half of hex dump */
         if (c<datalen)
     	    tlen += sprintf((dst+tlen), "%02X ", *(datatmp++));
@@ -88,5 +91,7 @@ extern void hexdump_string(unsigned char * data, unsigned int datalen, char * ds
 	    else
 		tlen += sprintf((dst+tlen), "."); /* put this for non-printables */
 	}
+
+}
 
 }

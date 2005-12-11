@@ -18,6 +18,9 @@
 #ifndef INCLUDED_HASHTABLE_TYPES
 #define INCLUDED_HASHTABLE_TYPES
 
+namespace pvpgn
+{
+
 #ifdef HASHTABLE_INTERNAL_ACCESS
 struct hashtable; /* forward reference for t_entry */
 #endif
@@ -52,6 +55,8 @@ typedef struct hashtable
 #endif
 t_hashtable;
 
+}
+
 #endif
 
 
@@ -59,6 +64,9 @@ t_hashtable;
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_HASHTABLE_PROTOS
 #define INCLUDED_HASHTABLE_PROTOS
+
+namespace pvpgn
+{
 
 extern t_hashtable * hashtable_create(unsigned int num_rows) ;
 extern int hashtable_destroy(t_hashtable * hashtable);
@@ -98,6 +106,8 @@ extern int hashtable_stats(t_hashtable * hashtable);
 
 #define HASHTABLE_TRAVERSE(hashtable,curr) for (curr=hashtable_get_first(hashtable); curr; curr=entry_get_next(curr))
 #define HASHTABLE_TRAVERSE_MATCHING(hashtable,curr,hash) for (curr=hashtable_get_first_matching(hashtable,hash); curr; curr=entry_get_next_matching(curr))
+
+}
 
 #endif
 #endif

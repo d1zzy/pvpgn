@@ -42,6 +42,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern char * strdup(char const * str)
 {
     char * out;
@@ -50,6 +53,8 @@ extern char * strdup(char const * str)
         return NULL;
     strcpy(out,str);
     return out;
+}
+
 }
 
 #else

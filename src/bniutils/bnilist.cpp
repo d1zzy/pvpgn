@@ -43,17 +43,22 @@
 #include "common/version.h"
 #include "common/setup_after.h"
 
+using namespace pvpgn::bni;
 
-static void usage(char const * progname)
+namespace
+{
+
+void usage(char const * progname)
 {
     fprintf(stderr,
             "usage: %s [<options>] [--] [<BNI file>]\n"
             "    -h, --help, --usage  show this information and exit\n"
             "    -v, --version        print version number and exit\n",progname);
-    
+
     exit(STATUS_FAILURE);
 }
 
+}
 
 extern int main(int argc, char * argv[])
 {
@@ -62,13 +67,13 @@ extern int main(int argc, char * argv[])
     int          a;
     int          forcefile=0;
     char         dash[]="-"; /* unique address used as flag */
-    
+
     if (argc<1 || !argv || !argv[0])
     {
         fprintf(stderr,"bad arguments\n");
         return STATUS_FAILURE;
     }
-    
+
     for (a=1; a<argc; a++)
         if (forcefile && !bnifile)
             bnifile = argv[a];
@@ -96,10 +101,10 @@ extern int main(int argc, char * argv[])
             fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
-    
+
     if (!bnifile)
 	bnifile = dash;
-    
+
     if (bnifile==dash)
 	fp = stdin;
     else
@@ -108,13 +113,13 @@ extern int main(int argc, char * argv[])
 	    fprintf(stderr,"%s: could not open BNI file \"%s\" for reading (fopen: %s)\n",argv[0],bnifile,pstrerror(errno));
 	    exit(STATUS_FAILURE);
 	}
-    
+
     {
 	t_tgaimg * tgaimg;
 	int        i;
 	int        bniid, unknown, icons, datastart;
 	int        expected_width, expected_height;
-	
+
 	file_rpush(fp);
 	bniid = file_readd_le();
 	unknown = file_readd_le();
@@ -153,7 +158,7 @@ extern int main(int argc, char * argv[])
 	fprintf(stderr,"Check: Expected ImageType 10, got %d. %s\n",tgaimg->imgtype,(tgaimg->imgtype == 10) ? "OK." : "FAIL.");
 	file_rpop();
     }
-    
+
     if (bnifile!=dash && fclose(fp)<0)
 	fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (fclose: %s)\n",argv[0],bnifile,pstrerror(errno));
     return STATUS_SUCCESS;

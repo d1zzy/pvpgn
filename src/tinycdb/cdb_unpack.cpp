@@ -8,6 +8,9 @@
 #include "cdb.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 unsigned
 cdb_unpack(const unsigned char buf[4])
 {
@@ -16,4 +19,6 @@ cdb_unpack(const unsigned char buf[4])
   n <<= 8; n |= buf[1];
   n <<= 8; n |= buf[0];
   return n;
+}
+
 }

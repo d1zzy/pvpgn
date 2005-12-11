@@ -28,6 +28,9 @@
 #include "memmove.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 extern void * memmove(void * dest, void const * src, unsigned long n)
 {
 /* very slow, but we don't care */
@@ -35,13 +38,15 @@ extern void * memmove(void * dest, void const * src, unsigned long n)
     unsigned char * td=dest;
     const unsigned char * ts=src;
     unsigned long   i;
-    
+
     if (!td || !ts)
 	return NULL;
-    
+
     for (i=0; i<n; i++)
 	td[i] = ts[i];
     return dest;
+}
+
 }
 
 #else

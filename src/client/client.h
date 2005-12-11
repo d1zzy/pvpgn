@@ -19,11 +19,20 @@
 #ifndef INCLUDED_CLIENT_PROTOS
 #define INCLUDED_CLIENT_PROTOS
 
+namespace pvpgn
+{
+
+namespace client
+{
+
 extern int client_blocksend_packet(int sock, t_packet const * packet);
 extern int client_blockrecv_packet(int sock, t_packet * packet);
 extern int client_blockrecv_raw_packet(int sock, t_packet * packet, unsigned int len);
 extern int client_get_termsize(int fd, unsigned int * w, unsigned int * h);
 extern int client_get_comm(char const * prompt, char * text, unsigned int maxlen, unsigned int * curpos, int visible, int redraw, unsigned int width);
 
+}
+
+}
 #endif
 #endif

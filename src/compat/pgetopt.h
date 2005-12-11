@@ -30,9 +30,8 @@
 
 #ifndef HAVE_GETOPT
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
+namespace pvpgn
+{
 
 /* For communication from `getopt' to the caller.
    When `getopt' finds an option that takes an argument,
@@ -142,9 +141,7 @@ extern int _getopt_internal ();
 #undef extern
 #endif
 
-#ifdef	__cplusplus
 }
-#endif
 
 #endif /* !HAVE_GETOPT */
 

@@ -23,6 +23,9 @@
 
 #if !defined(HAVE_SNPRINTF) && !defined(HAVE__SNPRINTF)
 
+namespace pvpgn
+{
+
 extern int snprintf(char *str, size_t size, const char *format, ...)
 {
     int result;
@@ -32,6 +35,8 @@ extern int snprintf(char *str, size_t size, const char *format, ...)
     result = vsnprintf(str,size,format,args);
     va_end(args);
     return result;
+}
+
 }
 
 #else

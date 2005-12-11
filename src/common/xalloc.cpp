@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Dizzy 
+ * Copyright (C) 2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,6 +42,9 @@
 #define XALLOC_INTERNAL_ACCESS
 #include "common/setup_after.h"
 #undef XALLOC_INTERNAL_ACCESS
+
+namespace pvpgn
+{
 
 static t_oom_cb oom_cb = NULL;
 
@@ -114,6 +117,8 @@ void xfree_real(void *ptr, const char *fn, unsigned ln)
 void xalloc_setcb(t_oom_cb cb)
 {
     oom_cb = cb;
+}
+
 }
 
 #endif /* XALLOC_SKIP */

@@ -1,3 +1,5 @@
+#ifndef COMMON_RLIMIT_H_INCLUDED
+#define COMMON_RLIMIT_H_INCLUDED
 /*
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,4 +18,11 @@
 
 /*****/
 
+namespace pvpgn
+{
+
 extern int get_socket_limit(void);
+
+}
+
+#endif

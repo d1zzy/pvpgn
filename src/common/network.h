@@ -27,10 +27,15 @@
 #include "common/packet.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern int net_recv(int sock, void *buff, int len);
 extern int net_send(int sock, const void *buff, int len);
 extern int net_recv_packet(int sock, t_packet * packet, unsigned int * currsize);
 extern int net_send_packet(int sock, t_packet const * packet, unsigned int * currsize);
+
+}
 
 #endif
 #endif

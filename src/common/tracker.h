@@ -18,6 +18,9 @@
 #ifndef INCLUDED_TRACKER_TYPES
 #define INCLUDED_TRACKER_TYPES
 
+namespace pvpgn
+{
+
 /*
  *
  * Here's how this works:
@@ -60,5 +63,7 @@ typedef struct
 #define TF_PRIVATE  0x2     /* server is private and should not be
                              * listed (Currently ignored) */
 #endif
+
+}
 
 #endif

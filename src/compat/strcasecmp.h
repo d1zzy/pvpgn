@@ -25,7 +25,12 @@
 # define HAVE_STRCASECMP
 #else
 
+namespace pvpgn
+{
+
 extern int strcasecmp(char const * str1, char const * str2);
+
+}
 
 #endif
 

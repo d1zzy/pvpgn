@@ -41,31 +41,36 @@
 #include "common/version.h"
 #include "common/setup_after.h"
 
+using namespace pvpgn;
 
-static void usage(char const * progname)
+namespace
+{
+
+void usage(char const * progname)
 {
     fprintf(stderr,
             "usage: %s [<options>] [--] [<cleartextpassword>]\n"
             "    -h, --help, --usage  show this information and exit\n"
             "    -v, --version        print version number and exit\n",progname);
-    
+
     exit(STATUS_FAILURE);
 }
 
+}
 
 extern int main(int argc, char * argv[])
 {
-    
+
     char const * pass=NULL;
     int          a;
     int          forcepass=0;
-    
+
     if (argc<1 || !argv || !argv[0])
     {
         fprintf(stderr,"bad arguments\n");
         return STATUS_FAILURE;
     }
-    
+
     for (a=1; a<argc; a++)
         if (forcepass && !pass)
             pass = argv[a];
@@ -93,14 +98,14 @@ extern int main(int argc, char * argv[])
             fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
-    
+
     {
 	char         buff[256];
 	t_hash       hash;
 	unsigned int i;
-	
+
 	eventlog_set(stderr); /* bnet_hash() and friends use eventlog */
-	
+
 	if (!pass)
 	{
 	    printf("Enter password to hash: ");
@@ -114,15 +119,15 @@ extern int main(int argc, char * argv[])
 	    strncpy(buff,pass,sizeof(buff));
 	    buff[sizeof(buff)-1] = '\0';
 	}
-	
+
 	/* FIXME: what is the max password length? */
 	for (i=0; i<strlen(buff); i++)
 	    if (isascii((int)buff[i]) && isupper((int)buff[i])) /* some tolower()'s are broken */
 		buff[i] = tolower((int)buff[i]);
-	
+
 	bnet_hash(&hash,strlen(buff),buff);
 	printf("\"BNET\\\\acct\\\\passhash1\"=\"%s\"\n",hash_get_str(hash));
     }
-    
+
     return STATUS_SUCCESS;
 }

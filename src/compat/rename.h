@@ -23,6 +23,9 @@
 #endif
 #include "compat/access.h"
 
+namespace pvpgn
+{
+
 static inline int p_rename(const char * oldpath, const char * newpath)
 {
 #ifdef WIN32
@@ -32,5 +35,7 @@ static inline int p_rename(const char * oldpath, const char * newpath)
 #endif
     return rename(oldpath, newpath);
 }
-		
+
+}
+
 #endif

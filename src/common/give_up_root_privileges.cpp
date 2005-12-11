@@ -52,6 +52,9 @@
 #define ILLEGAL_ID -1
 
 
+namespace pvpgn
+{
+
 static int gurp_gname2id(const char *name);
 static int gurp_uname2id(const char *name);
 
@@ -60,9 +63,9 @@ extern int give_up_root_privileges(char const * user_name, char const * group_na
 {
     int user_id  = 0;
     int group_id = 0;
-    
+
     eventlog(eventlog_level_debug,__FUNCTION__,"about to give up root privileges");
-    
+
     if (user_name)
     {
 	if ((user_id = gurp_uname2id(user_name))==ILLEGAL_ID)
@@ -77,12 +80,12 @@ extern int give_up_root_privileges(char const * user_name, char const * group_na
         else
 	  { eventlog(eventlog_level_debug,__FUNCTION__,"should change to group = '%s' (%d)", group_name, group_id); }
     }
-    
+
     /*  Change first the group ID, later we might not be able to anymore
      *  We can use setgid safely because we don't want to return to root
      *  privileges anymore
      */
-    
+
 #ifdef HAVE_SETGID
     if (group_name)
     {
@@ -90,13 +93,13 @@ extern int give_up_root_privileges(char const * user_name, char const * group_na
         {
             eventlog(eventlog_level_fatal,__FUNCTION__,"could not set gid to %d (setgid: %s)", group_id, pstrerror(errno));
             return -1;
-        }    
+        }
 # ifdef HAVE_GETUID
         eventlog(eventlog_level_info,__FUNCTION__,"Changed privileges to gid = %d", getgid());
 # endif
     }
 #endif
-    
+
 #ifdef HAVE_SETUID
     if (user_name)
     {
@@ -104,13 +107,13 @@ extern int give_up_root_privileges(char const * user_name, char const * group_na
         {
             eventlog(eventlog_level_fatal,__FUNCTION__,"could not set uid to %d (setuid: %s)", user_id, pstrerror(errno));
             return -1;
-        }    
+        }
 # ifdef HAVE_GETGID
         eventlog(eventlog_level_info,__FUNCTION__,"Changed privileges to uid = %d", getuid());
 # endif
     }
 #endif
-    
+
     return 0;
 }
 
@@ -118,7 +121,7 @@ extern int give_up_root_privileges(char const * user_name, char const * group_na
 static int gurp_uname2id(const char *name)
 {
     int id = ILLEGAL_ID;
-    
+
     if (name != NULL)
     {
         if (name[0] == '#')
@@ -129,9 +132,9 @@ static int gurp_uname2id(const char *name)
         {
 #ifdef HAVE_GETPWNAM
             struct passwd * ent;
-            
+
             eventlog(eventlog_level_debug,__FUNCTION__,"about to getpwnam(%s)", name);
-            
+
             if (!(ent = getpwnam(name)))
             {
                 eventlog(eventlog_level_fatal,__FUNCTION__,"cannot get password file entry for '%s' (getpwnam: %s)", name, pstrerror(errno));
@@ -151,7 +154,7 @@ static int gurp_uname2id(const char *name)
 static int gurp_gname2id(const char *name)
 {
     int id = ILLEGAL_ID;
-    
+
     if (name != NULL)
     {
         if (name[0] == '#')
@@ -162,9 +165,9 @@ static int gurp_gname2id(const char *name)
         {
 #ifdef HAVE_GETGRNAM
             struct group * ent;
-            
+
             eventlog(eventlog_level_debug,__FUNCTION__,"about to getgrnam(%s)", name);
-            
+
             if (!(ent = getgrnam(name)))
             {
                 eventlog(eventlog_level_fatal,__FUNCTION__,"cannot get group file entry for '%s' (getgrnam: %s)", name, pstrerror(errno));
@@ -178,4 +181,6 @@ static int gurp_gname2id(const char *name)
     }
 
     return id;
+}
+
 }
