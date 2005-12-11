@@ -28,6 +28,9 @@
 #endif
 #endif
 
+namespace pvpgn
+{
+
 typedef struct queue
 #ifdef QUEUE_INTERNAL_ACCESS
 {
@@ -37,6 +40,8 @@ typedef struct queue
 }
 #endif
 t_queue;
+
+}
 
 #endif
 
@@ -50,11 +55,15 @@ t_queue;
 #include "common/packet.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern t_packet * queue_pull_packet(t_queue * * queue);
 extern t_packet * queue_peek_packet(t_queue const * const * queue);
 extern void queue_push_packet(t_queue * * queue, t_packet * packet);
 extern int queue_get_length(t_queue const * const * queue);
 extern void queue_clear(t_queue * * queue);
 
+}
 #endif
 #endif

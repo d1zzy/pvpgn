@@ -1,6 +1,6 @@
 /*
   * Abstraction API/layer for the various ways PvPGN can inspect sockets state
-  * 2003 (C) 
+  * 2003 (C)
   *
   * Code is based on the ideas found in thttpd project.
   *
@@ -23,6 +23,11 @@
 #ifndef __INCLUDED_FDWATCH_KQUEUE__
 #define __INCLUDED_FDWATCH_KQUEUE__
 
+namespace pvpgn
+{
+
 extern t_fdw_backend fdw_kqueue;
+
+}
 
 #endif /* __INCLUDED_FDWATCH_KQUEUE__ */

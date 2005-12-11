@@ -53,6 +53,9 @@
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 unsigned fdw_maxcons;
 t_fdwatch_fd *fdw_fds = NULL;
 
@@ -209,4 +212,6 @@ extern void fdwatch_traverse(t_fdw_cb cb, void *data)
     {
 	if (cb(elist_entry(curr,t_fdwatch_fd,uselist),data)) break;
     }
+}
+
 }

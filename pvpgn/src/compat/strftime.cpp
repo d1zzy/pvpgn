@@ -30,13 +30,16 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 /* We are not even trying to copy the functionality.
    We are just trying to get a timestamp. */
 extern int strftime(char * buf, int bufsize, char const * fmt, struct tm const * tm)
 {
     if (!buf || !fmt || !tm)
         return 0;
-    
+
     if (bufsize>24)
 	sprintf(buf,"%.4d %.2d %.2d %02.2d:%02.2d:%02.2d",
 		tm->tm_year,
@@ -52,8 +55,10 @@ extern int strftime(char * buf, int bufsize, char const * fmt, struct tm const *
 		tm->tm_sec);
     else
 	buf[0] = '\0';
-    
+
     return strlen(buf);
+}
+
 }
 
 #else

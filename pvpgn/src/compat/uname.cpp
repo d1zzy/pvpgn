@@ -30,6 +30,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern int uname(struct utsname * buf)
 {
     if (!buf)
@@ -37,7 +40,7 @@ extern int uname(struct utsname * buf)
 	errno = EFAULT;
 	return -1;
     }
-    
+
 #ifdef WIN32
 /* FIXME: distinguish between: */
 /*   Microsoft Windows 3.1-32s/3.11-32s/95/95SP1/95A/95B/95OSR2/95OSR2.1/95OSR2.5/95B+MSIE/98/98OEM/98SE/2000ME "New Technology" 3.1/3.5 Server/3.51 Server/4.0 Server/4.0SP1 Server/4.0SP2 Server/4.0SP3 Server/4.0SP4 Server/4.0SP6 Server/3.5 Workstation/3.51 Workstation/4.0 Workstation/4.0SP1 Workstation/4.0SP2 Workstation/4.0SP3 Workstation/4.0SP4 Workstation/4.0SP6 Workstation/"2000 Professional Edition"/"2000 Server"/"2000 Advanced Server"/"Windows 2000 Terminal Server" Win CE/"Windows Powered"/"Pocket OS" 1.0/1.1/2.0/2.1 */
@@ -51,8 +54,10 @@ extern int uname(struct utsname * buf)
     strcpy(buf->version,"");
     strcpy(buf->machine,"");
     strcpy(buf->domainname,"");
-    
+
     return 0;
+}
+
 }
 
 #else

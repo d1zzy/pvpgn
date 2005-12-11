@@ -20,8 +20,13 @@
 
 #ifndef HAVE_MEMCPY
 
+namespace pvpgn
+{
+
 /* this should use size_t, but some systems don't define it */
 extern void * memcpy(void * dest, void const * src, unsigned long n);
+
+}
 
 #endif
 

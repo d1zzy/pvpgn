@@ -31,7 +31,12 @@
 # endif
 #endif
 
+namespace pvpgn
+{
+
 extern double difftime(time_t after, time_t before);
+
+}
 
 #endif
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Dizzy 
+ * Copyright (C) 2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,8 +18,13 @@
 
 #ifndef INCLUDED_XALLOC_TYPES
 
+namespace pvpgn
+{
+
 /* out of memory callback function */
 typedef int (*t_oom_cb)(void);
+
+}
 
 #define INCLUDED_XALLOC_TYPES
 
@@ -40,6 +45,8 @@ typedef int (*t_oom_cb)(void);
 #endif
 
 #ifndef XALLOC_SKIP
+namespace pvpgn
+{
 
 #define xmalloc(size) xmalloc_real(size,__FILE__,__LINE__)
 void *xmalloc_real(size_t size, const char *fn, unsigned ln);
@@ -52,6 +59,8 @@ char *xstrdup_real(const char *str, const char *fn, unsigned ln);
 #define xfree(ptr) xfree_real(ptr,__FILE__,__LINE__)
 void xfree_real(void *ptr, const char *fn, unsigned ln);
 void xalloc_setcb(t_oom_cb cb);
+
+}
 
 #else /* XALLOC_SKIP */
 

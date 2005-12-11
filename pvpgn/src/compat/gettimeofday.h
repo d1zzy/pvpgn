@@ -20,6 +20,9 @@
 
 #ifndef HAVE_GETTIMEOFDAY
 
+namespace pvpgn
+{
+
 /* FIXME: these might already exist even if gettimeofday() doesn't */
 struct timeval
 {
@@ -34,6 +37,8 @@ struct timezone
     int tz_dsttime;
 };
 
+}
+
 #endif
 
 #endif
@@ -43,7 +48,12 @@ struct timezone
 #define INCLUDED_GETTIMEOFDAY_PROTOS
 
 #ifndef HAVE_GETTIMEOFDAY
+namespace pvpgn
+{
+
 extern int gettimeofday(struct timeval * tv, struct timezone * tz);
+
+}
 #endif
 
 #endif

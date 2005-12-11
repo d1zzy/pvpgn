@@ -50,6 +50,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern int net_recv(int sock, void *buff, int len)
 {
     int res;
@@ -95,7 +98,7 @@ extern int net_recv_packet(int sock, t_packet * packet, unsigned int * currsize)
     int          addlen;
     unsigned int header_size;
     void *       temp;
-    
+
     if (!packet) {
 	eventlog(eventlog_level_error,__FUNCTION__,"[%d] got NULL packet (closing connection)",sock);
 	return -1;
@@ -105,17 +108,17 @@ extern int net_recv_packet(int sock, t_packet * packet, unsigned int * currsize)
 	eventlog(eventlog_level_error,__FUNCTION__,"[%d] got NULL currsize (closing connection)",sock);
 	return -1;
     }
-    
+
     if ((header_size = packet_get_header_size(packet))>=MAX_PACKET_SIZE) {
 	eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not determine header size (closing connection)",sock);
 	return -1;
     }
-    
+
     if (!(temp = packet_get_raw_data_build(packet,*currsize))) {
 	eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not obtain raw data pointer at offset %u (closing connection)",sock,*currsize);
 	return -1;
     }
-    
+
     if (*currsize<header_size)
 	addlen = net_recv(sock, temp, header_size-*currsize);
     else {
@@ -137,10 +140,10 @@ extern int net_recv_packet(int sock, t_packet * packet, unsigned int * currsize)
     if (addlen<=0) return addlen;
 
     *currsize += addlen;
-    
+
     if (*currsize>=header_size && *currsize==packet_get_size(packet))
 	return 1;
-    
+
     return 0;
 }
 
@@ -218,4 +221,6 @@ extern int net_send_packet(int sock, t_packet const * packet, unsigned int * cur
     }
 
     return 0;
+}
+
 }

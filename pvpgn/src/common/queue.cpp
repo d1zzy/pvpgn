@@ -49,6 +49,9 @@
 
 #define QUEUE_QUANTUM	10 /* allocate ring buffer slots for 10 packets at once */
 
+namespace pvpgn
+{
+
 extern t_packet * queue_pull_packet(t_queue * * queue)
 {
     t_queue *  temp;
@@ -78,7 +81,7 @@ extern t_packet * queue_pull_packet(t_queue * * queue)
 	eventlog(eventlog_level_error,__FUNCTION__,"NULL packet in queue");
         return NULL;
     }
-    
+
     return packet;
 }
 
@@ -97,13 +100,13 @@ extern t_packet * queue_peek_packet(t_queue const * const * queue)
         return NULL;
 
     packet = (*queue)->ring[(*queue)->tail];
-    
+
     if (!packet)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"NULL packet in queue");
         return NULL;
     }
-    
+
     return packet;
 }
 
@@ -204,4 +207,6 @@ extern void queue_clear(t_queue * * queue)
 	if ((*queue)->ring) xfree((void*)((*queue)->ring));
 	xfree((void*)(*queue));
     }
+}
+
 }

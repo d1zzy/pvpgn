@@ -1,8 +1,14 @@
+#ifndef INCLUDED_COMMON_D2CHAR_FILE
+#define INCLUDED_COMMON_D2CHAR_FILE
+
 #define D2CHARFILE_PADBYTE              0xff
+
+namespace pvpgn
+{
 
 typedef struct {
     /* Finish copying from bnet_protocol.h/t_d2_char_info */
-    
+
     bn_long experience;
     bn_byte reservedxp[30];
     bn_long invgold;
@@ -11,13 +17,13 @@ typedef struct {
     bn_long reservedgold[8];
     bn_byte skilllvls[30];
     bn_byte reservedskills[30];
-    
+
     bn_short strength;
     bn_short vitaility;
     bn_short dexterity;
     bn_short energy;
     bn_short reservedattr[4];
-    
+
     bn_byte questflags[4];           /* 1 byte/8 bits each act */
     bn_byte reservedquestflags[16];
     bn_byte waypoints[4][3];         /* 3 bytes/24 bits each act */
@@ -59,6 +65,8 @@ typedef struct {
     bn_byte reservedstash[200];
 } t_d2char_record;
 
+}
+
 /* item
 description
 base type (1 byte)
@@ -68,3 +76,5 @@ modifer level
 magic dword 1
 magic dword 2
 */
+
+#endif

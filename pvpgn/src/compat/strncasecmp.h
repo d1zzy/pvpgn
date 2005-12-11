@@ -25,7 +25,12 @@
 # define HAVE_STRNCASECMP /* don't include our own function */
 #else
 
+namespace pvpgn
+{
+
 extern int strncasecmp(char const * str1, char const * str2, unsigned int cnt);
+
+}
 
 #endif
 

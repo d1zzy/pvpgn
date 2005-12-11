@@ -24,6 +24,9 @@
 # define SYS_NMLN 64
 #endif
 
+namespace pvpgn
+{
+
 struct utsname
 {
     char sysname[SYS_NMLN];
@@ -34,6 +37,8 @@ struct utsname
     char domainname[SYS_NMLN];
 };
 
+}
+
 #endif
 
 #endif
@@ -43,7 +48,12 @@ struct utsname
 #define INCLUDED_UNAME_PROTOS
 
 #ifndef HAVE_UNAME
+namespace pvpgn
+{
+
 extern int uname(struct utsname * buf);
+
+}
 #endif
 
 #endif

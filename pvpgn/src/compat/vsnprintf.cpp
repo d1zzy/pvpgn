@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Dizzy 
+ * Copyright (C) 2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +22,9 @@
 
 #if !defined(HAVE_VSNPRINTF) && !defined(HAVE__VSNPRINTF) && defined(HAVE_DOPRNT) && defined(_IOWRT) && defined(_IOSTRG)
 
+namespace pvpgn
+{
+
 extern int vsnprintf(char *str, int size, const char *format, va_list ap)
 {
     FILE b;
@@ -38,6 +41,8 @@ extern int vsnprintf(char *str, int size, const char *format, va_list ap)
     ret = _doprnt(format, ap, &b);
     putc('\0', &b);
     return ret;
+}
+
 }
 
 #else

@@ -23,11 +23,14 @@
 # define EPROTO EINVAL
 #endif
 
+namespace pvpgn
+{
+
 struct cdb_rec {
   cdbi_t hval;
   cdbi_t rpos;
 };
-  
+
 struct cdb_rl {
   struct cdb_rl *next;
   cdbi_t cnt;
@@ -39,3 +42,5 @@ int _cdb_make_find(struct cdb_make *cdbmp,
 		   struct cdb_rl **rlp);
 int _cdb_make_write(struct cdb_make *cdbmp,
 		    const char *ptr, cdbi_t len);
+
+}

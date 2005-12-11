@@ -18,6 +18,9 @@
 #ifndef INCLUDED_ELIST_TYPES
 #define INCLUDED_ELIST_TYPES
 
+namespace pvpgn
+{
+
 typedef struct elist_struct {
     struct elist_struct *next, *prev;
 } t_elist;
@@ -26,6 +29,8 @@ typedef struct elist_struct {
 typedef struct hlist_struct {
     struct hlist_struct *next;
 } t_hlist;
+
+}
 
 #endif /* INCLUDED_ELIST_TYPES */
 
@@ -44,6 +49,9 @@ typedef struct hlist_struct {
 #define elist_init(elist) __elist_init(elist,elist)
 #define DECLARE_ELIST_INIT(var) \
     t_elist var = { &var, &var }
+
+namespace pvpgn
+{
 
 /* link an new node just after "where" */
 static inline void elist_add(t_elist *where, t_elist *what)
@@ -138,5 +146,7 @@ static inline void hlist_promote(t_hlist *what, t_hlist *prev, t_hlist *prev2)
 #define hlist_for_each_safe(pos,head,save) elist_for_each_safe(pos,head,save)
 
 #define hlist_empty(ptr) elist_empty(ptr)
+
+}
 
 #endif /* INCLUDED_ELIST_PROTOS */

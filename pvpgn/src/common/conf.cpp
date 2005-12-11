@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004,2005  Dizzy 
+ * Copyright (C) 2004,2005  Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,6 +34,9 @@
 #include "common/conf.h"
 #include "compat/snprintf.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
 
 extern int conf_set_int(unsigned *pint, const char *valstr, unsigned def)
 {
@@ -164,7 +167,7 @@ static void _process_option(const char *key, const char *val, t_conf_entry *conf
     t_conf_entry *curr;
 
     for(curr = conftab; curr->name; curr++)
-	if (!strcmp(key,curr->name)) { 
+	if (!strcmp(key,curr->name)) {
 	    curr->set(val);
 	    return;
 	}
@@ -292,4 +295,6 @@ extern int conf_load_cmdline(int argc, char **argv, t_conf_entry *conftab)
     }
 
     return 0;
+}
+
 }

@@ -15,6 +15,9 @@
 
 /* read a chunk from file, ignoring interrupts (EINTR) */
 
+namespace pvpgn
+{
+
 int
 cdb_bread(FILE *fd, void *buf, int len)
 {
@@ -98,4 +101,6 @@ cdb_seek(FILE *fd, const void *key, unsigned klen, unsigned *dlenp)
       needseek = 1;
     }
   }
+}
+
 }

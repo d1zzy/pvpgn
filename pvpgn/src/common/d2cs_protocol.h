@@ -20,6 +20,9 @@
 
 #include "common/bn_type.h"
 
+namespace pvpgn
+{
+
 typedef struct
 {
 	bn_short		size;
@@ -242,7 +245,7 @@ typedef struct
 	t_d2cs_client_header	h;
 	bn_byte			type;			/* ladder type request */
 	bn_short		total_len;		/* total length of the ladder data */
-							
+
 	bn_short		curr_len;		/* length of ladder data in this packet */
 	bn_short		cont_len;		/* length of ladder data in previous packets */
 							/* length here include the header but
@@ -265,7 +268,7 @@ typedef struct
 {
 	bn_int			explow;
 	bn_int			exphigh;		/* always zero */
-	bn_short		status;	
+	bn_short		status;
 	bn_byte			level;
 	bn_byte			u1;			/* always zero */
 	char			charname[16];
@@ -376,6 +379,6 @@ typedef struct
 	/* each block is 0x22 bytes static length */
 } t_d2cs_client_chardata;
 
-
+}
 
 #endif

@@ -18,7 +18,7 @@
  */
 #ifndef INCLUDED_D2CS_D2GS_PROTOCOL_H
 #define INCLUDED_D2CS_D2GS_PROTOCOL_H
-/* 
+/*
  * there is only little comments in this header file
  * check the documents for more details
 */
@@ -32,6 +32,9 @@
 # include "bn_types.h"
 #pragma pack(push, pack01, 1)
 #endif
+
+namespace pvpgn
+{
 
 typedef struct
 {
@@ -210,5 +213,7 @@ typedef struct
 #ifdef D2GS
 #pragma pack(pop, pack01)
 #endif
+
+}
 
 #endif

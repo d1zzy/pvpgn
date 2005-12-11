@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005 Dizzy 
+ * Copyright (C) 2005 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +19,9 @@
 #ifndef __CDBHASH_H_INCLUDED__
 #define __CDBHASH_H_INCLUDED__
 
+namespace pvpgn
+{
+
 typedef unsigned int t_cdbhash;
 
 static inline t_cdbhash cdb_hash(const void* data, size_t len)
@@ -32,6 +35,8 @@ static inline t_cdbhash cdb_hash(const void* data, size_t len)
 	}
 	return h;
 }
- 
+
+}
+
 #endif /* __CDBHASH_H_INCLUDED__ */
 

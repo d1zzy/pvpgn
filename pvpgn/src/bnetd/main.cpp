@@ -105,6 +105,7 @@
 #define OOM_SAFE_MEM	1000000		/* 1 Mbyte of safety memory */
 
 using namespace pvpgn::bnetd;
+using namespace pvpgn;
 
 void *oom_buffer = NULL;
 

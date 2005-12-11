@@ -1,6 +1,6 @@
 /*
   * Abstraction API/layer for the various ways PvPGN can inspect sockets state
-  * 2003 (C) 
+  * 2003 (C)
   *
   * Code is based on the ideas found in thttpd project.
   *
@@ -49,6 +49,9 @@
 #include "common/setup_after.h"
 
 #ifdef HAVE_POLL
+namespace pvpgn
+{
+
 static int sr;
 static struct pollfd *fds = NULL; /* working set */
 static int *_rridx = NULL;
@@ -130,7 +133,7 @@ static int fdw_poll_del_fd(int idx)
 {
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd);
     if (_ridx[idx] < 0 || !nofds) return -1;
-    if (sr > 0) 
+    if (sr > 0)
 	eventlog(eventlog_level_error, __FUNCTION__, "BUG: called while still handling sockets");
 
     /* move the last entry to the deleted one and decrement nofds count */
@@ -161,7 +164,7 @@ static void fdw_poll_handle(void)
 	changed = 0;
 	cfd = fdw_fds + _rridx[i];
 
-	if (fdw_rw(cfd) & fdwatch_type_read && 
+	if (fdw_rw(cfd) & fdwatch_type_read &&
 	    fds[i].revents & (POLLIN  | POLLERR | POLLHUP | POLLNVAL))
 	{
 	    if (fdw_hnd(cfd)(fdw_data(cfd), fdwatch_type_read) == -2) {
@@ -171,7 +174,7 @@ static void fdw_poll_handle(void)
 	    changed = 1;
 	}
 
-	if (fdw_rw(cfd) & fdwatch_type_write && 
+	if (fdw_rw(cfd) & fdwatch_type_write &&
 	    fds[i].revents & (POLLOUT  | POLLERR | POLLHUP | POLLNVAL))
 	{
 	    fdw_hnd(cfd)(fdw_data(cfd), fdwatch_type_write);
@@ -180,6 +183,8 @@ static void fdw_poll_handle(void)
 
 	if (changed) sr--;
     }
+}
+
 }
 
 #endif /* HAVE_POLL */

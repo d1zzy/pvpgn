@@ -26,6 +26,8 @@
 # undef JUST_NEED_TYPES
 #endif
 
+namespace pvpgn
+{
 
 /******************************************************/
 typedef struct
@@ -78,14 +80,14 @@ typedef struct
 /******************************************************/
 
 /*
-the next 2 file requests appeared on w3 first. first it sends filereq2 then 
-server replies with some rnadom int then client sends filereq3 (which is a 
-raw packet with no valuable header) then filename then server replies with 
+the next 2 file requests appeared on w3 first. first it sends filereq2 then
+server replies with some rnadom int then client sends filereq3 (which is a
+raw packet with no valuable header) then filename then server replies with
 normal file_reply and sends the contents
 
 12: recv class=file[0x03] type=unknown[0x0200] length=20
 0000:   14 00 00 02 36 38 58 49   33 52 41 57 00 00 00 00    ....68XI3RAW....
-0010:   00 00 00 00                                          ....            
+0010:   00 00 00 00                                          ....
 */
 #define CLIENT_FILE_REQ2		0x0200
 typedef struct
@@ -142,5 +144,7 @@ typedef struct
 {
     bn_int	unknown;
 } PACKED_ATTR() t_server_file_unknown1;
+
+}
 
 #endif

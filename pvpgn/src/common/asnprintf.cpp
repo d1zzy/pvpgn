@@ -38,6 +38,9 @@
 #include "asnprintf.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 static int skip_atoi(const char **s)
 {
 	int i=0;
@@ -418,4 +421,6 @@ int asnprintf(char * buf, size_t size, t_fmtentry *entries, unsigned entlen, con
 	i=vasnprintf(buf,size,entries,entlen,fmt,args);
 	va_end(args);
 	return i;
+}
+
 }

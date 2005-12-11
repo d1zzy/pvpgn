@@ -51,6 +51,9 @@
 # endif
 #endif
 
+namespace pvpgn
+{
+
 extern int get_socket_limit(void)
 {
 	int socklimit = 0;
@@ -73,4 +76,6 @@ extern int get_socket_limit(void)
 	socklimit -= 64;
 
 	return socklimit;
+}
+
 }

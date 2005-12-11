@@ -29,6 +29,9 @@
 #endif
 
 
+namespace pvpgn
+{
+
 /*
  * The protocol for communicating between a Diablo II client
  * and game server.
@@ -107,19 +110,19 @@ typedef struct
 /*
 0000:   60 00 27 04 18 79 27 04   A8 00 00 00 07 02 00 00    `.'..y'.........
 0010:   B0 01 01 00 00 6F 6E 6C   79 65 72 00 B8 6A F7 BF    .....onlyer..j..
-0020:   00 00 00 00 34 00 00 04   00 00 00 00 00             ....4........   
+0020:   00 00 00 00 34 00 00 04   00 00 00 00 00             ....4........
 
 0000:   60 00 27 04 18 79 27 04   30 0D 00 00 07 02 00 00    `.'..y'.0.......
 0010:   B0 01 04 00 01 41 4C 42   45 52 54 00 B8 6A F7 BF    .....ALBERT..j..
-0020:   00 00 00 00 34 00 00 04   00 00 00 00 00             ....4........   
+0020:   00 00 00 00 34 00 00 04   00 00 00 00 00             ....4........
 
 0000:   60 00 27 04 18 79 27 04   A0 0A 00 00 07 02 00 00    `.'..y'.........
 0010:   B0 01 04 00 02 41 4C 42   45 52 54 00 B8 6A F7 BF    .....ALBERT..j..
-0020:   00 00 00 00 34 00 00 04   00 00 00 00 00             ....4........   
+0020:   00 00 00 00 34 00 00 04   00 00 00 00 00             ....4........
 
 0000:   60 00 AB 04 18 79 AB 04   DE 00 9F 00 0C 02 00 00    `....y..........
 0010:   60 01 04 00 00 62 62 62   00 71 DF 77 A6 C0 E6 77    `....bbb.q.w...w
-0020:   A6 C0 E6 77 34 05 00 04   00 00 00 00 00             ...w4........   
+0020:   A6 C0 E6 77 34 05 00 04   00 00 00 00 00             ...w4........
 
 */
 
@@ -146,10 +149,10 @@ typedef struct
  bn_byte	    difficulty;
  bn_charname	    charname;
  bn_short	    arena;
- bn_int		    gameflag;		
+ bn_int		    gameflag;
  bn_byte	    unknownb2;		/* unused */
  bn_byte	    unknownb3;		/* unused */
-} t_d2game_client_creategamereq;    
+} t_d2game_client_creategamereq;
 
 
 typedef struct
@@ -163,7 +166,7 @@ typedef struct
 				    /* bit 0x02,0x04,0xF0 is ignored in reply  */
 				    /* have sth to do with char template */
 				    /* opengame */
-				     
+
     bn_byte	flag3;		    /* guild data (not in reply) */
 				    /* 0x01 means have guild */
 				    /* others bits seems all unused */
@@ -179,14 +182,14 @@ typedef struct
 0040  00 00 6F 6E 6C 79 65 72  2D 63 6E 61 61 00 24 E0   ..onlyer-cnaa.$.
 0050  7B 05                                              {.
 */
-	
+
 #define D2GAME_CLIENT_JOINGAMEREQ		    0x61
 typedef struct
 {
     t_d2game_header  h;
-    bn_int	    token; 
+    bn_int	    token;
     bn_short	    gameid;
-    bn_byte	    charclass;	    /* 00=Amazon 01=Sor 02=Nec 03=Pal 04=Bar */ 
+    bn_byte	    charclass;	    /* 00=Amazon 01=Sor 02=Nec 03=Pal 04=Bar */
     bn_int	    version;
     bn_charname	    charname;
     /*	    16 bytes playe name	(including 0x0 ending)    */
@@ -220,7 +223,7 @@ typedef struct
 /*
 0000:   8F 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00    ................
 0010:   00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00    ................
-0020:   00                                                   .               
+0020:   00                                                   .
 */
 
 #define D2GAME_SERVER_UNKNOWN_8F		    0x8f    /* echo reply? */
@@ -242,7 +245,7 @@ typedef struct
 0030  22 1C C4 53 00 00 01 00  04 00 00 00 00 02         "..S..........
 */
 #define D2GAME_SERVER_JOINOK			    0x01
-/* this message will appear after 
+/* this message will appear after
  * 1. CLIENT_CREATEGAEM valid
  * 2. CLIENT_JOINGAME valid
  */
@@ -330,19 +333,19 @@ typedef struct
 #define D2GAME_SERVER_ERROR_HARDCORE_NORMAL	    20
 #define D2GAME_SERVER_ERROR_DEAD_HARDCORE	    21
 /*
-0000:   15 01 00 69 20 77 69 6C   6C 20 67 6F 00 00 00       ...i will go... 
+0000:   15 01 00 69 20 77 69 6C   6C 20 67 6F 00 00 00       ...i will go...
 
 0000:   15 01 00 74 68 61 6E 6B   73 20 66 6F 72 20 79 6F    ...thanks for yo
-0010:   75 72 20 68 65 6C 70 00   00 00                      ur help...      
+0010:   75 72 20 68 65 6C 70 00   00 00                      ur help...
 
-0000:   15 01 00 73 65 65 20 75   00 00 00                   ...see u...     
+0000:   15 01 00 73 65 65 20 75   00 00 00                   ...see u...
 
 
 */
 
 #define D2GAME_CLIENT_CHAT_MESSAGE		    0x15
-typedef struct 
-{   
+typedef struct
+{
     t_d2game_header	h;
     bn_short		unknown1;
     /* chat message */
@@ -355,10 +358,10 @@ typedef struct
 
 0000:   26 01 00 02 00 00 00 00   00 01 6F 6E 6C 79 65 72    &.........onlyer
 0010:   2D 63 6E 61 61 00 74 68   61 6E 6B 73 20 66 6F 72    -cnaa.thanks for
-0020:   20 79 6F 75 72 20 68 65   6C 70 00                    your help.     
+0020:   20 79 6F 75 72 20 68 65   6C 70 00                    your help.
 
 0000:   26 01 00 02 00 00 00 00   00 01 6F 6E 6C 79 65 72    &.........onlyer
-0010:   2D 63 6E 61 61 00 73 65   65 20 75 00                -cnaa.see u.    
+0010:   2D 63 6E 61 61 00 73 65   65 20 75 00                -cnaa.see u.
 
 0000:   26 01 00 02 00 00 00 00   00 17 63 63 00 62 79 65    &.........cc.bye
 0010:   00 67 49 00 00 00 01 86   17 32 12 01 00 07 00 05    .gI......2......
@@ -366,7 +369,7 @@ typedef struct
 */
 
 #define D2GAME_SERVER_CHAT_MESSAGE		    0x26
-typedef struct 
+typedef struct
 {
     t_d2game_header	h;
     bn_short		unknown1;
@@ -384,7 +387,7 @@ typedef struct
 
 
 /*
-0000:   62                                                   b               
+0000:   62                                                   b
 */
 
 #define D2GAME_CLIENT_QUITGAME				    0x62
@@ -411,7 +414,7 @@ typedef struct
 00D0:   00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00    ................
 00E0:   00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00    ................
 00F0:   00 00 00 00 00 00 00 00   00 00 00 00 00 00 00 00    ................
-0100:   00 00 00 00 00 00                                    ......          
+0100:   00 00 00 00 00 00                                    ......
 
 
 
@@ -419,7 +422,7 @@ typedef struct
 */
 
 #define D2GAME_SERVER_PLAYERSAVE		    0x9b
-typedef struct 
+typedef struct
 {
     t_d2game_header	h;
     bn_byte		size;
@@ -430,7 +433,7 @@ typedef struct
 
 
 /*
-0000:	98 05 06					    
+0000:	98 05 06
 */
 
 #define D2GAME_SERVER_CLOSEGAME		    0x98
@@ -443,7 +446,7 @@ typedef struct
 /*
 0000:   5A 02 04 00 00 00 00 03   61 72 63 68 5F 6E 61 67    Z.......arch_nag
 0010:   61 00 00 00 B0 FD B6 08   00 FF FF FF 78 07 39 04    a...........x.9.
-0020:   D5 16 2D 04 01 FD B6 08                              ..-.....        
+0020:   D5 16 2D 04 01 FD B6 08                              ..-.....
 */
 
 #define D2GAME_SERVER_JOINGAME_MESSAGE	    0x5a
@@ -467,18 +470,18 @@ typedef struct
 
 
 /*
-0000:   02 73 00 00 00 4E 00 8B   0F 7B 14 00 00             .s...N...{...   
+0000:   02 73 00 00 00 4E 00 8B   0F 7B 14 00 00             .s...N...{...
 
 #define D2GAME_SERVER_UNKNOWN_2			    0x2
 
 */
 
 /*
-0000:   67 06 00 00 00 01 B2 0F   6B 14 01 00 07 00 05       g.......k...... 
+0000:   67 06 00 00 00 01 B2 0F   6B 14 01 00 07 00 05       g.......k......
 
-0000:   67 06 00 00 00 01 B2 0F   71 14 01 00 07 00 05       g.......q...... 
+0000:   67 06 00 00 00 01 B2 0F   71 14 01 00 07 00 05       g.......q......
 
-0000:   67 0A 00 00 00 01 72 0F   63 14 01 00 07 00 05       g.....r.c...... 
+0000:   67 0A 00 00 00 01 72 0F   63 14 01 00 07 00 05       g.....r.c......
 
 
 #define D2GAME_SERVER_UNKNOWN_67		    0x67
@@ -487,13 +490,13 @@ typedef struct
 
 
 /*
-0000:   6D 0A 00 00 00 76 0F 64   14 80                      m....v.d..      
+0000:   6D 0A 00 00 00 76 0F 64   14 80                      m....v.d..
 
-0000:   6D 0A 00 00 00 72 0F 63   14 80                      m....r.c..      
+0000:   6D 0A 00 00 00 72 0F 63   14 80                      m....r.c..
 
 0000:   6D 06 00 00 00 B2 0F 71   14 80 8A 01 0B 00 00 00    m......q........
 
-0000:   6D 06 00 00 00 B2 0F 6B   14 80                      m......k..      
+0000:   6D 06 00 00 00 B2 0F 6B   14 80                      m......k..
 
 
 
@@ -503,9 +506,9 @@ typedef struct
 
 /*
 0000:   8A 01 0B 00 00 00 6D 0B   00 00 00 9B 0F 70 14 80    ......m......p..
-0010:   2C 01 0B 00 00 00 11 00                              ,.......        
+0010:   2C 01 0B 00 00 00 11 00                              ,.......
 
-0000:   8A 01 0B 00 00 00                                    ......          
+0000:   8A 01 0B 00 00 00                                    ......
 
 
 #define D2GAME_SERVER_UNKNOWN_8A		    0x8a
@@ -514,14 +517,14 @@ typedef struct
 
 
 /*
-0000:   96 59 80 CC 07 36 8A 4C   36                         .Y...6.L6       
+0000:   96 59 80 CC 07 36 8A 4C   36                         .Y...6.L6
 
 #define D2GAME_SERVER_UNKNOWN_96		    0x96
 
 */
 
 /*
-0000:   24 62 00 00 00                                       $b...           
+0000:   24 62 00 00 00                                       $b...
 
 #define D2GAME_CLIENT_UNKNOWN_24		    0x24
 
@@ -531,13 +534,13 @@ typedef struct
 /*
 CLIENT:
 
-0000:   2F 01 00 00 00 49 00 00   00                         /....I...       
+0000:   2F 01 00 00 00 49 00 00   00                         /....I...
 
-0000:   31 49 00 00 00 00 00 00   00                         1I.......       
+0000:   31 49 00 00 00 00 00 00   00                         1I.......
 
-0000:   30 01 00 00 00 49 00 00   00                         0....I...       
+0000:   30 01 00 00 00 49 00 00   00                         0....I...
 
-0000:   03 8C 17 2E 12                                       .....           
+0000:   03 8C 17 2E 12                                       .....
 
 0000:   03 87 17 27 12                                       ...'.	command ?
 
@@ -547,5 +550,6 @@ SERVER:
 
 
 */
+}
 
 #endif

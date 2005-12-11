@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005  Dizzy 
+ * Copyright (C) 2005  Dizzy
  *
  * lstr is a structure to be used for cached string lengths for speed
  *
@@ -33,6 +33,9 @@
 
 /* how many bytes allocate at once on enlarging a xstr */
 #define XSTR_INCREMENT	256
+
+namespace pvpgn
+{
 
 /* enlarge "dst" enough so it can hold more "size" characters (not including terminator) */
 static void xstr_enlarge(t_xstr* dst, int size)
@@ -142,4 +145,6 @@ extern t_xstr* xstr_cat_char(t_xstr * dst, const char ch)
 	dst->str[dst->ulen] = '\0';
 
 	return dst;
+}
+
 }

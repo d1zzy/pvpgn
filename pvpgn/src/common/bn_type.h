@@ -26,11 +26,16 @@
 # undef JUST_NEED_TYPES
 #endif
 
+namespace pvpgn
+{
+
 typedef t_uint8  bn_basic;
 typedef bn_basic bn_byte[1];
 typedef bn_basic bn_short[2];
 typedef bn_basic bn_int[4];
 typedef bn_basic bn_long[8];
+
+}
 
 #endif
 
@@ -43,6 +48,9 @@ typedef bn_basic bn_long[8];
 #define JUST_NEED_TYPES
 # include "compat/uint.h"
 #undef JUST_NEED_TYPES
+
+namespace pvpgn
+{
 
 extern int bn_byte_tag_get(bn_byte const * src, char * dst, unsigned int len);
 extern int bn_short_tag_get(bn_short const * src, char * dst, unsigned int len);
@@ -85,6 +93,8 @@ extern int bn_int_tag_eq(bn_int const src, char const * tag) ;
 extern int bn_long_tag_eq(bn_long const src, char const * tag) ;
 
 extern int uint32_to_int(t_uint32 num);
+
+}
 
 #endif
 #endif

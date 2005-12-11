@@ -8,6 +8,9 @@
 #include "cdb_int.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 int
 cdb_seqnext(unsigned *cptr, struct cdb *cdbp) {
   unsigned klen, vlen;
@@ -27,4 +30,6 @@ cdb_seqnext(unsigned *cptr, struct cdb *cdbp) {
   cdbp->cdb_vlen = vlen;
   *cptr = pos + klen + vlen;
   return 1;
+}
+
 }

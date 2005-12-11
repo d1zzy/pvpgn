@@ -28,10 +28,15 @@
 #undef JUST_NEED_TYPES
 #endif
 
+namespace pvpgn
+{
+
 typedef t_uint32	t_tag;
 typedef t_tag		t_archtag;
 typedef t_tag		t_clienttag;
 typedef t_tag		t_gamelang;
+
+}
 
 #endif
 
@@ -117,6 +122,9 @@ typedef t_tag		t_gamelang;
 #define EXTENSIONTAG_SMK "kms."
 #define EXTENSIONTAG_MNG "gnm."
 
+namespace pvpgn
+{
+
 extern t_clienttag clienttag_str_to_uint(char const * clienttag);
 extern char const * clienttag_uint_to_str(t_clienttag clienttag);
 extern char const * clienttag_get_title(t_clienttag clienttag);
@@ -128,6 +136,8 @@ extern char *	tag_uint_to_revstr(char * tag_str, t_tag tag_uint);
 extern int	tag_check_arch(t_tag tag_uint);
 extern int	tag_check_client(t_tag tag_uint);
 extern int	tag_check_gamelang(t_tag tag_uint);
+
+}
 
 #endif
 #endif

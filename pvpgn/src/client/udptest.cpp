@@ -89,27 +89,33 @@
 #endif
 
 
+namespace pvpgn
+{
+
+namespace client
+{
+
 extern int client_udptest_setup(char const * progname, unsigned short * lsock_port_ret)
 {
     int                lsock;
     struct sockaddr_in laddr;
     unsigned short     lsock_port;
-    
+
     if (!progname)
     {
 	fprintf(stderr,"got NULL progname\n");
 	return -1;
     }
-    
+
     if ((lsock = psock_socket(PF_INET,SOCK_DGRAM,PSOCK_IPPROTO_UDP))<0)
     {
 	fprintf(stderr,"%s: could not create UDP socket (psock_socket: %s)\n",progname,pstrerror(psock_errno()));
 	return -1;
     }
-    
+
     if (psock_ctl(lsock,PSOCK_NONBLOCK)<0)
 	fprintf(stderr,"%s: could not set UDP socket to non-blocking mode (psock_ctl: %s)\n",progname,pstrerror(psock_errno()));
-    
+
     for (lsock_port=BNETD_MIN_TEST_PORT; lsock_port<=BNETD_MAX_TEST_PORT; lsock_port++)
     {
 	memset(&laddr,0,sizeof(laddr));
@@ -118,7 +124,7 @@ extern int client_udptest_setup(char const * progname, unsigned short * lsock_po
 	laddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	if (psock_bind(lsock,(struct sockaddr *)&laddr,(psock_t_socklen)sizeof(laddr))==0)
 	    break;
-	
+
 	if (lsock_port==BNETD_MIN_TEST_PORT)
 	    dprintf("Could not bind to standard UDP port %hu, trying others. (psock_bind: %s)\n",BNETD_MIN_TEST_PORT,pstrerror(psock_errno()));
     }
@@ -128,10 +134,10 @@ extern int client_udptest_setup(char const * progname, unsigned short * lsock_po
 	psock_close(lsock);
 	return -1;
     }
-    
+
     if (lsock_port_ret)
 	*lsock_port_ret = lsock_port;
-    
+
     return lsock;
 }
 
@@ -142,19 +148,19 @@ extern int client_udptest_recv(char const * progname, int lsock, unsigned short 
     unsigned int count;
     t_packet *   rpacket;
     time_t       start;
-    
+
     if (!progname)
     {
 	fprintf(stderr,"%s: got NULL progname\n",progname);
 	return -1;
     }
-    
+
     if (!(rpacket = packet_create(packet_class_bnet)))
     {
 	fprintf(stderr,"%s: could not create packet\n",progname);
 	return -1;
     }
-    
+
     start = time(NULL);
     count = 0;
     while (start+(time_t)timeout>=time(NULL))  /* timeout after a few seconds from last packet */
@@ -166,33 +172,37 @@ extern int client_udptest_recv(char const * progname, int lsock, unsigned short 
 	    continue;
 	}
 	packet_set_size(rpacket,len);
-	
+
 	if (packet_get_type(rpacket)!=SERVER_UDPTEST)
 	{
 	    dprintf("Got unexpected UDP packet type %u on port %hu\n",packet_get_type(rpacket),lsock_port);
 	    continue;
 	}
-	
+
 	if (bn_int_tag_eq(rpacket->u.server_udptest.bnettag,BNETTAG)<0)
 	{
 	    fprintf(stderr,"%s: got bad UDPTEST packet on port %hu\n",progname,lsock_port);
 	    continue;
 	}
-	
+
 	count++;
 	if (count>=2)
 	    break;
-	
+
 	start = time(NULL);
     }
-    
+
     packet_destroy(rpacket);
-    
+
     if (count<2)
     {
 	printf("Only received %d UDP packets on port %hu. Connection may be slow or firewalled.\n",count,lsock_port);
 	return -1;
     }
-    
+
     return 0;
+}
+
+}
+
 }

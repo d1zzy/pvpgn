@@ -78,6 +78,8 @@
 #include "common/addr.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
 
 static char const * netaddr_num_to_addr_str(unsigned int netipaddr, unsigned int netmask);
 
@@ -90,15 +92,15 @@ extern char const * addr_num_to_addr_str(unsigned int ipaddr, unsigned short por
     static unsigned int curr=0;
     static char         temp[HACK_SIZE][64];
     struct sockaddr_in  tsa;
-    
+
     curr = (curr+1)%HACK_SIZE;
-    
+
     memset(&tsa,0,sizeof(tsa));
     tsa.sin_family = PSOCK_AF_INET;
     tsa.sin_port = htons((unsigned short)0);
     tsa.sin_addr.s_addr = htonl(ipaddr);
     sprintf(temp[curr],"%.32s:%hu",inet_ntoa(tsa.sin_addr),port);
-    
+
     return temp[curr];
 }
 
@@ -109,15 +111,15 @@ extern char const * addr_num_to_ip_str(unsigned int ipaddr)
     static unsigned int curr=0;
     static char         temp[HACK_SIZE][64];
     struct sockaddr_in  tsa;
-    
+
     curr = (curr+1)%HACK_SIZE;
-    
+
     memset(&tsa,0,sizeof(tsa));
     tsa.sin_family = PSOCK_AF_INET;
     tsa.sin_port = htons((unsigned short)0);
     tsa.sin_addr.s_addr = htonl(ipaddr);
     sprintf(temp[curr],"%.32s",inet_ntoa(tsa.sin_addr));
-    
+
     return temp[curr];
 }
 
@@ -127,15 +129,15 @@ static char const * netaddr_num_to_addr_str(unsigned int netipaddr, unsigned int
     static unsigned int curr=0;
     static char         temp[HACK_SIZE][64];
     struct sockaddr_in  tsa;
-    
+
     curr = (curr+1)%HACK_SIZE;
-    
+
     memset(&tsa,0,sizeof(tsa));
     tsa.sin_family = PSOCK_AF_INET;
     tsa.sin_port = htons((unsigned short)0);
     tsa.sin_addr.s_addr = htonl(netipaddr);
     sprintf(temp[curr],"%.32s/0x%08x",inet_ntoa(tsa.sin_addr),netmask);
-    
+
     return temp[curr];
 }
 
@@ -147,7 +149,7 @@ extern char const * host_lookup(char const * hoststr, unsigned int * ipaddr)
 #ifdef HAVE_GETHOSTBYNAME
     struct hostent *   hp;
 #endif
-    
+
     if (!hoststr)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hoststr");
@@ -158,11 +160,11 @@ extern char const * host_lookup(char const * hoststr, unsigned int * ipaddr)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL ipaddr");
 	return NULL;
     }
-    
+
     memset(&tsa,0,sizeof(tsa));
     tsa.sin_family = PSOCK_AF_INET;
     tsa.sin_port = htons(0);
-    
+
 #ifdef HAVE_GETHOSTBYNAME
 #ifdef WIN32
     psock_init();
@@ -182,7 +184,7 @@ extern char const * host_lookup(char const * hoststr, unsigned int * ipaddr)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not lookup host \"%s\"",hoststr);
 	return NULL;
     }
-    
+
 #ifdef HAVE_GETHOSTBYNAME
     memcpy(&tsa.sin_addr,(void *)hp->h_addr_list[0],sizeof(struct in_addr)); /* avoid warning */
     *ipaddr = ntohl(tsa.sin_addr.s_addr);
@@ -196,14 +198,14 @@ extern char const * host_lookup(char const * hoststr, unsigned int * ipaddr)
 extern t_addr * addr_create_num(unsigned int ipaddr, unsigned short port)
 {
     t_addr * temp;
-    
+
     temp = (t_addr*)xmalloc(sizeof(t_addr));
     temp->str = xstrdup(addr_num_to_addr_str(ipaddr,port));
     temp->str    = NULL;
     temp->ip     = ipaddr;
     temp->port   = port;
     temp->data.p = NULL;
-    
+
     return temp;
 }
 
@@ -217,35 +219,35 @@ extern t_addr * addr_create_str(char const * str, unsigned int defipaddr, unsign
     char const *       hoststr;
     char *             portstr;
     char const *       hostname;
-    
+
     if (!str)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL str");
 	return NULL;
     }
-    
+
     tstr = xstrdup(str);
 
     if ((portstr = strrchr(tstr,':')))
     {
 	char * protstr;
-	
+
 	*portstr = '\0';
 	portstr++;
-	
+
 	if ((protstr = strrchr(portstr,'/')))
 	{
 	    *protstr = '\0';
 	    protstr++;
 	}
-	
+
 	if (portstr[0]!='\0')
 	{
 	    if (str_to_ushort(portstr,&port)<0)
 	    {
 #ifdef HAVE_GETSERVBYNAME
 		struct servent * sp;
-		
+
 		if (!(sp = getservbyname(portstr,protstr?protstr:"tcp")))
 #endif
 		{
@@ -263,24 +265,24 @@ extern t_addr * addr_create_str(char const * str, unsigned int defipaddr, unsign
     }
     else
 	port = defport;
-    
+
     if (tstr[0]!='\0')
 	hoststr = tstr;
     else
     {
 	struct sockaddr_in tsa;
-	
+
 	tsa.sin_addr.s_addr = htonl(defipaddr);
 	hoststr = inet_ntoa(tsa.sin_addr);
     }
-    
+
     if (!(hostname = host_lookup(hoststr,&ipaddr)))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not lookup host \"%s\"",hoststr);
 	xfree(tstr);
 	return NULL;
     }
-    
+
     temp = (t_addr*)xmalloc(sizeof(t_addr));
     temp->str = xstrdup(hostname);
     xfree(tstr);
@@ -288,7 +290,7 @@ extern t_addr * addr_create_str(char const * str, unsigned int defipaddr, unsign
     temp->ip     = ipaddr;
     temp->port   = port;
     temp->data.p = NULL;
-    
+
     return temp;
 }
 
@@ -300,11 +302,11 @@ extern int addr_destroy(t_addr const * addr)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	return -1;
     }
-    
+
     if (addr->str)
 	xfree((void *)addr->str); /* avoid warning */
     xfree((void *)addr); /* avoid warning */
-    
+
     return 0;
 }
 
@@ -327,16 +329,16 @@ extern char * addr_get_host_str(t_addr const * addr, char * str, unsigned int le
 	eventlog(eventlog_level_error,__FUNCTION__,"str too short");
 	return NULL;
     }
-    
+
     if (!addr->str)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"addr has NULL str");
 	return NULL;
     }
-    
+
     strncpy(str,addr->str,len-1);
     str[len-1] = '\0';
-    
+
     return str;
 }
 
@@ -359,10 +361,10 @@ extern char * addr_get_addr_str(t_addr const * addr, char * str, unsigned int le
 	eventlog(eventlog_level_error,__FUNCTION__,"str too short");
 	return NULL;
     }
-    
+
     strncpy(str,addr_num_to_addr_str(addr->ip,addr->port),len-1);
     str[len-1] = '\0';
-    
+
     return str;
 }
 
@@ -374,7 +376,7 @@ extern unsigned int addr_get_ip(t_addr const * addr)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	return 0;
     }
-    
+
     return addr->ip;
 }
 
@@ -386,7 +388,7 @@ extern unsigned short addr_get_port(t_addr const * addr)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	return 0;
     }
-    
+
     return addr->port;
 }
 
@@ -398,7 +400,7 @@ extern int addr_set_data(t_addr * addr, t_addr_data data)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	return -1;
     }
-    
+
     addr->data = data;
     return 0;
 }
@@ -407,14 +409,14 @@ extern int addr_set_data(t_addr * addr, t_addr_data data)
 extern t_addr_data addr_get_data(t_addr const * addr)
 {
     t_addr_data tdata;
-    
+
     if (!addr)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr");
 	tdata.p = NULL;
 	return tdata;
     }
-    
+
     return addr->data;
 }
 
@@ -427,13 +429,13 @@ extern t_netaddr * netaddr_create_str(char const * netstr)
     char const * netmaskstr;
     unsigned int netip;
     unsigned int netmask;
-    
+
     if (!netstr)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"unable to allocate memory for netaddr");
 	return NULL;
     }
-    
+
     temp = xstrdup(netstr);
     if (!(netipstr = strtok(temp,"/")))
     {
@@ -445,7 +447,7 @@ extern t_netaddr * netaddr_create_str(char const * netstr)
 	xfree(temp);
 	return NULL;
     }
-    
+
     netaddr = (t_netaddr*)xmalloc(sizeof(t_netaddr));
 
     /* FIXME: call getnetbyname() first, then host_lookup() */
@@ -457,11 +459,11 @@ extern t_netaddr * netaddr_create_str(char const * netstr)
 	return NULL;
     }
     netaddr->ip = netip;
-    
+
     if (str_to_uint(netmaskstr,&netmask)<0)
     {
 	struct sockaddr_in tsa;
-	
+
 	if (inet_aton(netmaskstr,&tsa.sin_addr))
 	    netmask = ntohl(tsa.sin_addr.s_addr);
 	else
@@ -486,9 +488,9 @@ extern t_netaddr * netaddr_create_str(char const * netstr)
 	    netmask = ~((1<<(32-netmask))-1);
     }
     netaddr->mask = netmask;
-    
+
     xfree(temp);		// [zap-zero] 20020731 - (hopefully) fixed memory leak
-    
+
     return netaddr;
 }
 
@@ -500,9 +502,9 @@ extern int netaddr_destroy(t_netaddr const * netaddr)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL netaddr");
 	return -1;
     }
-    
+
     xfree((void *)netaddr); /* avoid warning */
-    
+
     return 0;
 }
 
@@ -524,10 +526,10 @@ extern char * netaddr_get_addr_str(t_netaddr const * netaddr, char * str, unsign
 	eventlog(eventlog_level_error,__FUNCTION__,"str too short");
 	return NULL;
     }
-    
+
     strncpy(str,netaddr_num_to_addr_str(netaddr->ip,netaddr->mask),len-1); /* FIXME: format nicely with x.x.x.x/bitcount */
     str[len-1] = '\0';
-    
+
     return str;
 }
 
@@ -539,7 +541,7 @@ extern int netaddr_contains_addr_num(t_netaddr const * netaddr, unsigned int ipa
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL netaddr");
 	return -1;
     }
-    
+
     return (ipaddr&netaddr->mask)==netaddr->ip;
 }
 
@@ -549,9 +551,9 @@ extern int addrlist_append(t_addrlist * addrlist, char const * str, unsigned int
     t_addr *     addr;
     char *       tstr;
     char *       tok;
-    
+
     assert(addrlist != NULL);
-    
+
     if (!str)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL str");
@@ -569,9 +571,9 @@ extern int addrlist_append(t_addrlist * addrlist, char const * str, unsigned int
 	}
 	list_append_data(addrlist,addr);
     }
-    
+
     xfree(tstr);
-    
+
     return 0;
 }
 
@@ -584,7 +586,7 @@ extern t_addrlist * addrlist_create(char const * str, unsigned int defipaddr, un
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL str");
 	return NULL;
     }
-    
+
     addrlist = list_create();
 
     if (addrlist_append(addrlist,str,defipaddr,defport)<0) {
@@ -600,13 +602,13 @@ extern int addrlist_destroy(t_addrlist * addrlist)
 {
     t_elem * curr;
     t_addr * addr;
-    
+
     if (!addrlist)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addrlist");
 	return -1;
     }
-    
+
     LIST_TRAVERSE(addrlist,curr)
     {
         if (!(addr = (t_addr*)elem_get_data(curr)))
@@ -615,7 +617,7 @@ extern int addrlist_destroy(t_addrlist * addrlist)
             addr_destroy(addr);
         list_remove_elem(addrlist,&curr);
     }
-    
+
     return list_destroy(addrlist);
 }
 
@@ -623,4 +625,6 @@ extern int addrlist_destroy(t_addrlist * addrlist)
 extern int addrlist_get_length(t_addrlist const * addrlist)
 {
     return list_get_length(addrlist);
+}
+
 }

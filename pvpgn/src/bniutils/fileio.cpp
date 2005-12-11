@@ -29,13 +29,24 @@
 #include "fileio.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
+namespace bni
+{
+
 typedef struct t_file {
 	FILE *f;
 	struct t_file *next;
 } t_file;
 
-static t_file *r_file = NULL;
-static t_file *w_file = NULL;
+namespace
+{
+
+t_file *r_file = NULL;
+t_file *w_file = NULL;
+
+}
 
 /* ----------------------------------------------------------------- */
 
@@ -193,4 +204,8 @@ extern int file_writed_be(t_uint32 u) {
 		return -1;
 	}
 	return 0;
+}
+
+}
+
 }

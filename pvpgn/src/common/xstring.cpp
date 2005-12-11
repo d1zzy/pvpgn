@@ -44,6 +44,9 @@
 #include "xstring.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 extern char * strtolower(char * str)
 {
 	unsigned int	i;
@@ -131,7 +134,7 @@ extern unsigned int hexstrtoraw(unsigned char const * src, char * data, unsigned
 			} else if (ch=='\\') {
 				data[j++]=ch;
 			} else if (ch=='x') {
-				if (isxdigit(src[i+1])) { 
+				if (isxdigit(src[i+1])) {
 					if (isxdigit(src[i+2])) {
 						data[j++]=xtoi(src[i+1]) * 0x10 + xtoi(src[i+2]);
 						i+=2;
@@ -251,7 +254,7 @@ extern char * arraytostr(char * * array, char const * delim, int count)
 
 	need_delim=0;
 	for (i=0; i<count; i++) {
-		if (!array[i]) continue;	
+		if (!array[i]) continue;
 		if (strlen(result)+strlen(array[i])+strlen(delim)>=n) {
 			n+=COMBINE_STRING_INCREASEMENT;
 			result=(char*)xrealloc(result,n);
@@ -266,3 +269,4 @@ extern char * arraytostr(char * * array, char const * delim, int count)
 	return result;
 }
 
+}

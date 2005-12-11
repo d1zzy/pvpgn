@@ -27,8 +27,13 @@
 #include "common/bnethash.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern void bnhash_to_hash(bn_int const * bnhash, t_hash * hash);
 extern void hash_to_bnhash(t_hash const * hash, bn_int * bnhash);
+
+}
 
 #endif
 #endif

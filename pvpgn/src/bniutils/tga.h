@@ -19,6 +19,8 @@
 #ifndef INCLUDED_TGA_H
 #define INCLUDED_TGA_H
 
+#include <stdio.h>
+
 #ifdef JUST_NEED_TYPES
 # include "compat/uint.h"
 #else
@@ -26,6 +28,12 @@
 # include "compat/uint.h"
 # undef JUST_NEED_TYPES
 #endif
+
+namespace pvpgn
+{
+
+namespace bni
+{
 
 typedef struct {
         t_uint8  idlen; /* number of bytes in Field 6: 0==no id */
@@ -87,8 +95,6 @@ typedef enum {
    the end of the file */
 #define TGAMAGIC "TRUEVISION-XFILE."
 
-#include <stdio.h>
-
 extern t_tgaimg * new_tgaimg(unsigned int width, unsigned int height, unsigned int bpp, t_tgaimgtype imgtype);
 extern int getpixelsize(t_tgaimg const *img);
 extern t_tgaimg * load_tgaheader(void);
@@ -97,5 +103,8 @@ extern int write_tga(FILE *f, t_tgaimg *img);
 extern void destroy_img(t_tgaimg * img);
 extern void print_tga_info(t_tgaimg const * img, FILE * fp);
 
+}
+
+}
 #endif
 

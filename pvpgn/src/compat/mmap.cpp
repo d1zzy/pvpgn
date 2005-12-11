@@ -38,10 +38,13 @@
 #endif
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 extern void * pmmap(void *addr, unsigned len, int prot, int flags, int fd, unsigned offset)
 {
     void *mem;
-#ifdef WIN32 
+#ifdef WIN32
     HANDLE	hFile, hMapping;
 
     /* under win32 we only support readonly mappings, the only ones used in pvpgn now :) */
@@ -79,6 +82,9 @@ extern int pmunmap(void *addr, unsigned len)
 #endif
     return 0;
 }
+
+}
+
 #else
 typedef int filenotempty; /* make ISO standard happy */
 #endif

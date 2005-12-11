@@ -23,15 +23,18 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern unsigned long strtoul(char const * str, char * * endptr, int base)
 {
     unsigned long val;
     char symbolval;
     char * pos;
-    
+
     if (!str)
 	return 0; /* EINVAL */
-    
+
     for (pos=(char *)str; *pos==' ' || *pos=='\t'; pos++);
     if (*pos=='-' || *pos=='+')
         pos++;
@@ -47,17 +50,17 @@ extern unsigned long strtoul(char const * str, char * * endptr, int base)
 	}
     else if (base==0)
     	{
-    	    base = 10;	
+    	    base = 10;
     	}
-    	
+
     if (base<2 || base>16) /* sorry, not complete emulation (should do up to 36) */
 	return 0; /* EINVAL */
-    
+
     val = 0;
     for (; *pos!='\0'; pos++)
     {
         val *= base;
-	
+
 	if (isxdigit(*pos))
 	{
 		symbolval = isdigit(*pos) ? *pos-'0' : tolower(*pos)-'a'+10;
@@ -65,14 +68,16 @@ extern unsigned long strtoul(char const * str, char * * endptr, int base)
 			val += symbolval;
 		else
 			break;
-		
+
 	}
     }
-    
+
     if (endptr)
 	*endptr = (void *)pos; /* avoid warning */
-    
+
     return val;
+}
+
 }
 
 #else

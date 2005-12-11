@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004 Dizzy 
+ * Copyright (C) 2004 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,12 +21,17 @@
 #include <stdio.h>
 #include "compat/vargs.h"
 
-#if !defined(HAVE_VSNPRINTF) 
+#if !defined(HAVE_VSNPRINTF)
 #ifdef HAVE__VSNPRINTF
 #define vsnprintf(str,size,format,ap) _vsnprintf(str,size,format,ap)
 #else
 #if defined(_IOSTRG) && defined(_IOSTRG) && defined(HAVE_DOPRNT)
+namespace pvpgn
+{
+
 extern int vsnprintf(char *str, int size, const char *format, va_list ap);
+
+}
 #else
 #error "Your system lacks ANY kind of vsnprintf support!"
 #endif

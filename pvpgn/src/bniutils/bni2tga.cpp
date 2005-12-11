@@ -43,11 +43,14 @@
 #include "common/version.h"
 #include "common/setup_after.h"
 
-
 #define BUFSIZE 1024
 
+using namespace pvpgn::bni;
 
-static void usage(char const * progname)
+namespace
+{
+
+void usage(char const * progname)
 {
     fprintf(stderr,
             "usage: %s [<options>] [--] [<BNI file> [<TGA file>]]\n"
@@ -57,6 +60,7 @@ static void usage(char const * progname)
     exit(STATUS_FAILURE);
 }
 
+}
 
 extern int main(int argc, char * argv[])
 {
@@ -67,13 +71,13 @@ extern int main(int argc, char * argv[])
     int           a;
     int           forcefile=0;
     char          dash[]="-"; /* unique address used as flag */
-    
+
     if (argc<1 || !argv || !argv[0])
     {
 	fprintf(stderr,"bad arguments\n");
 	return STATUS_FAILURE;
     }
-    
+
     for (a=1; a<argc; a++)
         if (forcefile && !bnifile)
             bnifile = argv[a];
@@ -112,7 +116,7 @@ extern int main(int argc, char * argv[])
 	bnifile = dash;
     if (!tgafile)
 	tgafile = dash;
-    
+
     if (bnifile==dash)
 	fbni = stdin;
     else
@@ -129,12 +133,12 @@ extern int main(int argc, char * argv[])
 	    fprintf(stderr,"%s: could not open TGA file \"%s\" for reading (fopen: %s)\n",argv[0],tgafile,pstrerror(errno));
 	    exit(STATUS_FAILURE);
 	}
-    
+
     {
 	unsigned char buf[BUFSIZE];
 	size_t        rc;
 	t_bnifile     bnih;
-	
+
 	file_rpush(fbni);
 	bnih.unknown1 = file_readd_le();
 	bnih.unknown2 = file_readd_le();
@@ -154,11 +158,11 @@ extern int main(int argc, char * argv[])
 	}
 	file_rpop();
     }
-    
+
     if (tgafile!=dash && fclose(ftga)<0)
 	fprintf(stderr,"%s: could not close TGA file \"%s\" after writing (fclose: %s)\n",argv[0],tgafile,pstrerror(errno));
     if (bnifile!=dash && fclose(fbni)<0)
 	fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (fclose: %s)\n",argv[0],bnifile,pstrerror(errno));
-    
+
     return STATUS_SUCCESS;
 }

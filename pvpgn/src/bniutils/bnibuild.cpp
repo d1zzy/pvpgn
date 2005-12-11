@@ -52,14 +52,18 @@
 #include "common/version.h"
 #include "common/setup_after.h"
 
-
 #define BUFSIZE 1024
 
+using namespace pvpgn;
+using namespace pvpgn::bni;
 
-static int read_list(char const * progname, t_bnifile * bnifile, char const * name) {
+namespace
+{
+
+int read_list(char const * progname, t_bnifile * bnifile, char const * name) {
 	FILE * f;
 	char   line[BUFSIZE];
-	
+
 	f = fopen(name,"r");
 	if (f == NULL) {
 		fprintf(stderr,"%s: could not open index file \"%s\" for reading (fopen: %s)\n",progname,name,pstrerror(errno));
@@ -67,7 +71,7 @@ static int read_list(char const * progname, t_bnifile * bnifile, char const * na
 	}
 	bnifile->unknown1 = 0x00000010; /* in case they are not set */
 	bnifile->unknown2 = 0x00000001;
-	bnifile->numicons = 0; 
+	bnifile->numicons = 0;
 	bnifile->dataoffset = 16; /* size of header */
 	bnifile->icons = (struct bni_iconlist_struct*)malloc(1); /* some realloc()s are broken */
 	while (fgets(line,sizeof(line),f)) {
@@ -123,7 +127,7 @@ static int read_list(char const * progname, t_bnifile * bnifile, char const * na
 }
 
 
-static char * geticonfilename(t_bnifile *bnifile, char const * indir, int i) {
+char * geticonfilename(t_bnifile *bnifile, char const * indir, int i) {
 	char * name;
 
 	if (bnifile->icons->icon[i].id == 0) {
@@ -138,7 +142,7 @@ static char * geticonfilename(t_bnifile *bnifile, char const * indir, int i) {
 }
 
 
-static int img2area(t_tgaimg *dst, t_tgaimg *src, int x, int y) {
+int img2area(t_tgaimg *dst, t_tgaimg *src, int x, int y) {
 	unsigned char *sdp;
 	unsigned char *ddp;
 	int pixelsize;
@@ -163,7 +167,7 @@ static int img2area(t_tgaimg *dst, t_tgaimg *src, int x, int y) {
 }
 
 
-static void usage(char const * progname)
+void usage(char const * progname)
 {
     fprintf(stderr,
             "usage: %s [<options>] [--] <input directory> [<BNI file>]\n"
@@ -173,6 +177,7 @@ static void usage(char const * progname)
     exit(STATUS_FAILURE);
 }
 
+}
 
 extern int main(int argc, char * argv[])
 {
@@ -183,13 +188,13 @@ extern int main(int argc, char * argv[])
     int          a;
     int          forcefile=0;
     char         dash[]="-"; /* unique address used as flag */
-	
+
     if (argc<1 || !argv || !argv[0])
     {
 	fprintf(stderr,"bad arguments\n");
 	return STATUS_FAILURE;
     }
-    
+
     for (a=1; a<argc; a++)
         if (forcefile && !indir)
             indir = argv[a];
@@ -223,7 +228,7 @@ extern int main(int argc, char * argv[])
             fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
-    
+
     if (!indir)
     {
         fprintf(stderr,"%s: input directory not specified\n",argv[0]);
@@ -231,7 +236,7 @@ extern int main(int argc, char * argv[])
     }
     if (!bnifile)
 	bnifile = dash;
-    
+
     if (indir==dash)
     {
 	fprintf(stderr,"%s: can not read directory from <stdin>\n",argv[0]);
@@ -245,7 +250,7 @@ extern int main(int argc, char * argv[])
         fprintf(stderr,"%s: \"%s\" is not a directory\n",argv[0],indir);
 	return -1;
     }
-    
+
     if (bnifile==dash)
 	fbni = stdout;
     else
@@ -254,14 +259,14 @@ extern int main(int argc, char * argv[])
 	    fprintf(stderr,"%s: could not open BNI file \"%s\" for writing (fopen: %s)\n",argv[0],bnifile,pstrerror(errno));
 	    return STATUS_FAILURE;
 	}
-    
+
     {
 	unsigned int i;
 	unsigned int yline;
 	t_tgaimg *   img;
 	t_bnifile    bni;
 	char *       listfilename;
-	
+
 	listfilename = (char*)malloc(strlen(indir)+14);
 	sprintf(listfilename,"%s/bniindex.lst",indir);
 	fprintf(stderr,"Info: Reading index from file \"%s\"...\n",listfilename);
@@ -297,7 +302,7 @@ extern int main(int argc, char * argv[])
 			fprintf(stderr,"Error: could not close TGA file \"%s\" after reading (fclose: %s)\n",name,pstrerror(errno));
 		if (icon == NULL) {
 			fprintf(stderr,"Error: load_tga failed with data from TGA file \"%s\"\n",name);
-			return STATUS_FAILURE;			
+			return STATUS_FAILURE;
 		}
 		if (img2area(img,icon,0,yline)<0) {
 			fprintf(stderr,"Error: inserting icon from TGA file \"%s\" into big TGA failed\n",name);
@@ -305,7 +310,7 @@ extern int main(int argc, char * argv[])
 		}
 		yline += icon->height;
 		destroy_img(icon);
-	}	
+	}
 	if (write_tga(fbni,img)<0) {
 		fprintf(stderr,"Error: Failed to write TGA to BNI file.\n");
 		return STATUS_FAILURE;

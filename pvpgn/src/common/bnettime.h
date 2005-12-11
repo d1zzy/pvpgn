@@ -20,6 +20,9 @@
 #ifndef INCLUDED_BNETTIME_TYPES
 #define INCLUDED_BNETTIME_TYPES
 
+namespace pvpgn
+{
+
 typedef struct
 {
 #ifdef BNETTIME_INTERNAL_ACCESS
@@ -30,6 +33,8 @@ typedef struct
     unsigned int _private2;
 #endif
 } t_bnettime;
+
+}
 
 #endif
 
@@ -53,6 +58,9 @@ typedef struct
 #include "common/bn_type.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern t_bnettime secs_to_bnettime(double secs) ;
 extern double bnettime_to_secs(t_bnettime bntime) ;
 extern t_bnettime time_to_bnettime(time_t stdtime, unsigned int usec) ;
@@ -64,6 +72,8 @@ extern int local_tzbias(void);
 extern t_bnettime bnettime_add_tzbias(t_bnettime bntime, int tzbias);
 extern void bnettime_to_bn_long(t_bnettime in, bn_long * out);
 extern void bn_long_to_bnettime(bn_long in, t_bnettime * out);
+
+}
 
 #endif
 #endif

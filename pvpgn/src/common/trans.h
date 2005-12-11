@@ -28,12 +28,17 @@
 # undef JUST_NEED_TYPES
 #endif
 
+namespace pvpgn
+{
+
 typedef struct
 {
     t_addr	*input;
     t_addr	*output;
     t_netaddr	*network;
 } t_trans;
+
+}
 
 #endif
 
@@ -46,10 +51,15 @@ typedef struct
 #define TRANS_BNETD 1
 #define TRANS_D2CS  2
 
+namespace pvpgn
+{
+
 extern int trans_load(char const * filename, int program);
 extern int trans_unload(void);
 extern int trans_reload(char const * filename, int program);
 extern int trans_net(unsigned int clientaddr, unsigned int *addr, unsigned short *port);
+
+}
 
 #endif
 #endif

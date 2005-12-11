@@ -32,9 +32,14 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern double difftime(time_t after, time_t before)
 {
     return ((double)after)-((double)before);
+}
+
 }
 
 #else

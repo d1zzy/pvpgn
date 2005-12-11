@@ -21,6 +21,9 @@
 #ifdef HAVE_STDINT_H
 
 # include <stdint.h>
+namespace pvpgn
+{
+
 typedef uint8_t  t_uint8;
 typedef uint16_t t_uint16;
 typedef uint32_t t_uint32;
@@ -30,10 +33,16 @@ typedef int8_t   t_int8;
 typedef int16_t  t_int16;
 typedef int32_t  t_int32;
 typedef int64_t  t_int64;
+
+}
+
 # define HAVE_UINT64_T
 
 #else
 #ifdef HAVE_MODE_ATTR
+namespace pvpgn
+{
+
 typedef unsigned int t_uint8   MODE_ATTR(__QI__);
 typedef unsigned int t_uint16  MODE_ATTR(__HI__);
 typedef unsigned int t_uint32  MODE_ATTR(__SI__);
@@ -42,6 +51,8 @@ typedef signed int   t_int8    MODE_ATTR(__QI__);
 typedef signed int   t_int16   MODE_ATTR(__HI__);
 typedef signed int   t_int32   MODE_ATTR(__SI__);
 typedef signed int   t_int64   MODE_ATTR(__DI__); /* FIXME: I guess DI is always available... Is there a way to check? */
+
+}
 #  define HAVE_UINT64_T
 
 # else
@@ -54,6 +65,9 @@ typedef signed int   t_int64   MODE_ATTR(__DI__); /* FIXME: I guess DI is always
 #  else
 #   define MY_CHAR_BIT CHAR_BIT
 #  endif
+
+namespace pvpgn
+{
 
 #  if SIZEOF_UNSIGNED_CHAR*MY_CHAR_BIT == 8
 typedef unsigned char      t_uint8;
@@ -144,6 +158,8 @@ typedef signed long long   t_int64;
 #    endif
 #   endif
 #  endif
+
+}
 
 #  undef MY_CHAR_BIT
 

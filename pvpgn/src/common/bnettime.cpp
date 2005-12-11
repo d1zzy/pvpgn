@@ -58,6 +58,9 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 /*
  * By comparing the hex numbers from packet dumps with the times displayed
  * on the login screen, bnettime seems to be in units of 10E-7 seconds. It
@@ -114,10 +117,10 @@
 extern t_bnettime secs_to_bnettime(double secs)
 {
     t_bnettime temp;
-    
+
     temp.u = (unsigned int)(secs*UPPER_PER_SEC);
     temp.l = (unsigned int)(secs*LOWER_PER_SEC);
-    
+
     return temp;
 }
 
@@ -145,7 +148,7 @@ extern time_t bnettime_to_time(t_bnettime bntime)
 extern t_bnettime bnettime(void)
 {
     struct timeval tv;
-    
+
     if (gettimeofday(&tv,NULL)<0)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"could not get time (gettimeofday: %s)",pstrerror(errno));
@@ -159,9 +162,9 @@ extern t_bnettime bnettime(void)
 extern char const * bnettime_get_str(t_bnettime bntime)
 {
     static char temp[1024];
-    
+
     sprintf(temp,"%u %u",bntime.u,bntime.l);
-    
+
     return temp;
 }
 
@@ -178,10 +181,10 @@ extern int bnettime_set_str(t_bnettime * bntime, char const * timestr)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL timestr");
 	return -1;
     }
-    
+
     if (sscanf(timestr,"%u %u",&bntime->u,&bntime->l)!=2)
 	return -1;
-    
+
     return 0;
 }
 
@@ -193,7 +196,7 @@ extern void bnettime_to_bn_long(t_bnettime in, bn_long * out)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL out");
 	return;
     }
-    
+
     bn_long_set_a_b(out,in.u,in.l);
 }
 
@@ -205,7 +208,7 @@ extern void bn_long_to_bnettime(bn_long in, t_bnettime * out)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL out");
 	return;
     }
-    
+
     out->u = bn_long_get_a(in);
     out->l = bn_long_get_b(in);
 }
@@ -220,17 +223,17 @@ extern int local_tzbias(void) /* in minutes */
     struct tm * temp;
 
     now = time(NULL);
-    
+
     if (!(temp = gmtime(&now)))
 	return 0;
     if ((test = mktime(temp))==(time_t)(-1))
 	return 0;
-    
+
     if (!(temp = localtime(&now)))
 	return 0;
     if ((testloc = mktime(temp))==(time_t)(-1))
 	return 0;
-    
+
     if (testloc>test) /* time_t is probably unsigned... */
 	return -(int)(testloc-test)/60;
     return (int)(test-testloc)/60;
@@ -243,4 +246,6 @@ extern int local_tzbias(void) /* in minutes */
 extern t_bnettime bnettime_add_tzbias(t_bnettime bntime, int tzbias)
 {
     return secs_to_bnettime(bnettime_to_secs(bntime)-(double)tzbias*60.0);
+}
+
 }

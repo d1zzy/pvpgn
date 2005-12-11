@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001  Dizzy 
+ * Copyright (C) 2001  Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -67,12 +67,15 @@
 #include "common/setup_after.h"
 
 
+namespace pvpgn
+{
+
 extern t_pdir * p_opendir(const char * path) {
 #ifdef WIN32
    char npath[_MAX_PATH];
 #endif
    t_pdir * pdir;
-   
+
    if (path==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL path");
       return NULL;
@@ -108,9 +111,9 @@ extern t_pdir * p_opendir(const char * path) {
       xfree(pdir);
       return NULL;
    }
-   
+
 #endif /* WIN32-POSIX */
-   
+
    return pdir;
 }
 
@@ -187,7 +190,7 @@ extern char const * p_readdir(t_pdir * pdir) {
 #else /* POSIX */
    {
 	struct dirent * dentry;
-	
+
 	if (pdir->dir==NULL) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"POSIX: got pdir with NULL dir");
 	    return NULL;
@@ -202,7 +205,7 @@ extern char const * p_readdir(t_pdir * pdir) {
 
 extern int p_closedir(t_pdir * pdir) {
    int ret;
-   
+
    if (pdir==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL pdir");
       return -1;
@@ -211,7 +214,7 @@ extern int p_closedir(t_pdir * pdir) {
       eventlog(eventlog_level_error,__FUNCTION__,"got pdir with NULL path");
       return -1;
    }
-   
+
 #ifdef WIN32
    if (pdir->status!=-1)
    {
@@ -234,8 +237,10 @@ extern int p_closedir(t_pdir * pdir) {
     ret = closedir(pdir->dir);
 # endif
 #endif /* WIN32-POSIX */
-   
+
    xfree((void *)pdir->path); /* avoid warning */
    xfree(pdir);
    return ret;
+}
+
 }

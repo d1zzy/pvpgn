@@ -20,8 +20,13 @@
 
 #ifndef HAVE_MEMSET
 
+namespace pvpgn
+{
+
 /* this should use size_t, but some systems don't define it */
 extern void * memset(void * dest, int c, unsigned long n);
+
+}
 
 #endif
 

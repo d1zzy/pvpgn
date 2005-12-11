@@ -22,6 +22,9 @@
 #include "strerror.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 extern char const * pstrerror(int errornum)
 {
     if (errornum==0)
@@ -285,6 +288,8 @@ extern char const * pstrerror(int errornum)
     return "Unknown error";
 }
 
+}
+
 #else
 #ifdef HAVE_STRING_H
 # include <string.h>
@@ -296,6 +301,9 @@ extern char const * pstrerror(int errornum)
 
 #ifdef WIN32
 #include <winsock2.h>
+
+namespace pvpgn
+{
 
 extern char const * pstrerror(int errornum)
 {
@@ -354,6 +362,9 @@ extern char const * pstrerror(int errornum)
     default: return strerror(errornum);
 	}
 }
+
+}
+
 #endif
 
 #endif

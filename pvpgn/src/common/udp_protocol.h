@@ -19,6 +19,9 @@
 #ifndef INCLUDED_UDP_PROTOCOL_TYPES
 #define INCLUDED_UDP_PROTOCOL_TYPES
 
+namespace pvpgn
+{
+
 /*
  * This file describes the UDP chat packets. The game packets aren't
  * in here and would probably go in another file.  The first 4 bytes
@@ -97,5 +100,7 @@ typedef struct
     bn_int       sessionnum;
 } PACKED_ATTR() t_client_sessionaddr2;
 /******************************************************/
+
+}
 
 #endif

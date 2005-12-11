@@ -25,6 +25,12 @@
 #include "compat/uint.h"
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
+namespace bni
+{
+
 extern void file_rpush(FILE *f);
 extern void file_rpop(void);
 extern void file_wpush(FILE *f);
@@ -41,5 +47,8 @@ extern int file_writew_be(t_uint16 u);
 extern int file_writed_le(t_uint32 u);
 extern int file_writed_be(t_uint32 u);
 
+}
+
+}
 #endif
 #endif

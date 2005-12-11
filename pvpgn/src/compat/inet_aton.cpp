@@ -55,11 +55,6 @@
 #include "common/setup_before.h"
 #ifndef HAVE_INET_ATON
 
-#if defined(LIBC_SCCS) && !defined(lint)
-static char sccsid[] = "@(#)inet_addr.c	8.1 (Berkeley) 6/17/93";
-static char rcsid[] = "$Id: inet_aton.c,v 1.1.1.1 2002/12/27 08:45:08 dizzy Exp $";
-#endif /* LIBC_SCCS and not lint */
-
 #include <ctype.h>
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
@@ -76,6 +71,14 @@ static char rcsid[] = "$Id: inet_aton.c,v 1.1.1.1 2002/12/27 08:45:08 dizzy Exp 
 #include "compat/socket.h" /* for Win32 address types, maybe there should be compat/netinet_in.h */
 #include "inet_aton.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
+
+#if defined(LIBC_SCCS) && !defined(lint)
+static char sccsid[] = "@(#)inet_addr.c	8.1 (Berkeley) 6/17/93";
+static char rcsid[] = "$Id: inet_aton.c,v 1.1.1.1 2002/12/27 08:45:08 dizzy Exp $";
+#endif /* LIBC_SCCS and not lint */
 
 
 /*
@@ -176,6 +179,8 @@ extern int inet_aton(char const * cp, struct in_addr * addr)
 	if (addr)
 		addr->s_addr = htonl(val);
 	return (1);
+}
+
 }
 
 #else

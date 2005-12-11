@@ -20,7 +20,12 @@
 
 #ifndef HAVE_STRFTIME
 
+namespace pvpgn
+{
+
 extern int strftime(char * buf, int bufsize, char const * fmt, struct tm const * tm);
+
+}
 
 #endif
 

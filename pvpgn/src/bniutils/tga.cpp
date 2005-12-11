@@ -38,15 +38,16 @@
 #include "tga.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
 
-static int rotate_updown(t_tgaimg *img);
-static int rotate_leftright(t_tgaimg *img);
-static int RLE_decompress(FILE *f, void *buf, int bufsize, int pixelsize);
-static void RLE_write_pkt(FILE *f, t_tgapkttype pkttype, int len, void *data, int pixelsize);
-static int RLE_compress(FILE *f, t_tgaimg const *img);
+namespace bni
+{
 
+namespace
+{
 
-static int rotate_updown(t_tgaimg *img) {
+int rotate_updown(t_tgaimg *img) {
 	unsigned char *ndata;
 	int pixelsize;
 	int y;
@@ -65,7 +66,7 @@ static int rotate_updown(t_tgaimg *img) {
 	return 0;
 }
 
-static int rotate_leftright(t_tgaimg *img) {
+int rotate_leftright(t_tgaimg *img) {
         unsigned char *ndata, *datap;
         int pixelsize;
         int y,x;
@@ -86,204 +87,17 @@ static int rotate_leftright(t_tgaimg *img) {
         }
         free(img->data);
         img->data = ndata;
-	
+
 	return 0;
 }
 
-extern int getpixelsize(t_tgaimg const *img) {
-	switch (img->bpp) {
-		case 8:
-			return 1;
-		case 15:
-		case 16:
-			return 2;
-		case 24:
-			return 3;
-		case 32:
-			return 4;
-		default:
-			fprintf(stderr,"load_tga: color depth %u is not supported!\n",img->bpp);
-			return 0;
-	}
-}
-
-
-extern t_tgaimg * new_tgaimg(unsigned int width, unsigned int height, unsigned int bpp, t_tgaimgtype imgtype) {
-	t_tgaimg *img;
-	
-	img = (t_tgaimg*)malloc(sizeof(t_tgaimg));
-        img->idlen = 0;
-        img->cmaptype = tgacmap_none;
-        img->imgtype = imgtype;
-        img->cmapfirst = 0;
-        img->cmaplen = 0;
-        img->cmapes = 0;
-        img->xorigin = 0;
-        img->yorigin = 0;
-        img->width = width;
-        img->height = height;
-        img->bpp = bpp;
-        img->desc = 0; /* no attribute bits, top, left, and zero reserved */
-	img->data = NULL;
-	img->extareaoff = 0;
-	img->devareaoff = 0;
-	
-	return img;
-}
-
-extern t_tgaimg * load_tgaheader(void) {
-	t_tgaimg *img;
-	
-	img = (t_tgaimg*)malloc(sizeof(t_tgaimg));
-        img->idlen = file_readb();
-        img->cmaptype = file_readb();
-        img->imgtype = file_readb();
-        img->cmapfirst = file_readw_le();
-        img->cmaplen = file_readw_le();
-        img->cmapes = file_readb();
-        img->xorigin = file_readw_le();
-        img->yorigin = file_readw_le();
-        img->width = file_readw_le();
-        img->height = file_readw_le();
-        img->bpp = file_readb();
-        img->desc = file_readb();
-	img->data = NULL;
-	img->extareaoff = 0; /* ignored when reading */
-	img->devareaoff = 0; /* ignored when reading */
-	
-	return img;
-}
-
-extern t_tgaimg * load_tga(FILE *f) {
-	t_tgaimg *img;
-	int pixelsize;
-	
-	file_rpush(f);
-	img = load_tgaheader();
-	
-	/* make sure we understand the header fields */
-	if (img->cmaptype != tgacmap_none) {
-		fprintf(stderr,"load_tga: Color-mapped images are not (yet?) supported!\n");
-		free(img);
-		return NULL;
-	}
-	if (img->imgtype!=tgaimgtype_uncompressed_truecolor && img->imgtype!=tgaimgtype_rlecompressed_truecolor) {
-		fprintf(stderr,"load_tga: imagetype %u is not supported. (only 2 and 10 are supported)\n",img->imgtype);
-		free(img);
-		return NULL;
-	}
-	
-	pixelsize = getpixelsize(img);
-	if (pixelsize == 0) {
-		free(img);
-		return NULL;
-	}
-	/* Skip the ID if there is one */
-	if (img->idlen > 0) {
-		fprintf(stderr,"load_tga: ID present, skipping %d bytes\n",img->idlen);
-		if (fseek(f,img->idlen,SEEK_CUR)<0)
-			fprintf(stderr,"load_tga: could not seek %u bytes forward (fseek: %s)\n",img->idlen,pstrerror(errno));
-	}
-	
-	/* Now, we can alloc img->data */
-	img->data = (t_uint8*)malloc(img->width*img->height*pixelsize);
-	if (img->imgtype == tgaimgtype_uncompressed_truecolor) {
-		if (fread(img->data,pixelsize,img->width*img->height,f)<(unsigned)(img->width*img->height)) {
-			fprintf(stderr,"load_tga: error while reading data!\n");
-			free(img->data);
-			free(img);
-			return NULL;
-		}
-	}
-	else { /* == tgaimgtype_rlecompressed_truecolor */
-		if (RLE_decompress(f,img->data,img->width*img->height*pixelsize,pixelsize) < 0) {
-			fprintf(stderr,"load_tga: error while decompressing data!\n");
-			free(img->data);
-			free(img);
-			return NULL;
-		}
-	}
-	file_rpop();
-	if ((img->desc & tgadesc_horz) == 1) { /* right, want left */
-		if (rotate_leftright(img)<0) {
-			fprintf(stderr,"ERROR: rotate_leftright failed!\n");
-		}
-	}
-	if ((img->desc & tgadesc_vert) == 0) { /* bottom, want top */
-		if (rotate_updown(img)<0) {
-			fprintf(stderr,"ERROR: rotate_updown failed!\n");
-		}
-	}
-	return img;
-}
-
-extern int write_tga(FILE *f, t_tgaimg *img) {
-	if (f == NULL) return -1;
-	if (img == NULL) return -1;
-	if (img->data == NULL) return -1;
-	if (img->idlen!=0) return -1;
-	if (img->cmaptype!=tgacmap_none) return -1;
-	if (img->imgtype!=tgaimgtype_uncompressed_truecolor && img->imgtype!=tgaimgtype_rlecompressed_truecolor) return -1;
-	file_wpush(f);
-	
-	file_writeb(img->idlen);
-	file_writeb(img->cmaptype);
-	file_writeb(img->imgtype);
-	file_writew_le(img->cmapfirst);
-	file_writew_le(img->cmaplen);
-	file_writeb(img->cmapes);
-	file_writew_le(img->xorigin);
-	file_writew_le(img->yorigin);
-	file_writew_le(img->width);
-	file_writew_le(img->height);
-	file_writeb(img->bpp);
-	file_writeb(img->desc);
-	
-	if ((img->desc&tgadesc_horz)==1) { /* right, want left */
-	        fprintf(stderr,"write_tga: flipping horizontally\n");
-		if (rotate_leftright(img)<0) {
-			fprintf(stderr,"ERROR: rotate_updown failed!\n");
-		}
-	}
-	if ((img->desc&tgadesc_vert)==0) { /* bottom, want top */
-	        fprintf(stderr,"write_tga: flipping vertically\n");
-		if (rotate_updown(img)<0) {
-			fprintf(stderr,"ERROR: rotate_updown failed!\n");
-		}
-	}
-	if (img->imgtype==tgaimgtype_uncompressed_truecolor) {
-		int pixelsize;
-		
-		pixelsize = getpixelsize(img);
-		if (pixelsize == 0) return -1;
-		if (fwrite(img->data,pixelsize,img->width*img->height,f)<(unsigned)(img->width*img->height)) {
-			fprintf(stderr,"write_tga: could not write %d pixels (fwrite: %s)\n",img->width*img->height,pstrerror(errno));
-			file_wpop();
-			return -1;
-		}
-	} else if (img->imgtype==tgaimgtype_rlecompressed_truecolor) {
-	        fprintf(stderr,"write_tga: using RLE compression\n");
-		if (RLE_compress(f,img)<0) {
-			fprintf(stderr,"write_tga: RLE compression failed.\n");
-		}
-	}
-	/* Write the file-footer */
-	file_writed_le(img->extareaoff);
-	file_writed_le(img->devareaoff);
-	if (fwrite(TGAMAGIC,strlen(TGAMAGIC)+1,1,f)<1)
-		fprintf(stderr,"write_tga: could not write TGA footer magic (fwrite: %s)\n",pstrerror(errno));
-	/* Ready */
-	file_wpop();
-	return 0;
-}
-
-static int RLE_decompress(FILE *f, void *buf, int bufsize, int pixelsize) {
+int RLE_decompress(FILE *f, void *buf, int bufsize, int pixelsize) {
 	unsigned char pt;
 	unsigned char *bufp;
 	unsigned char temp[8]; /* MAXPIXELSIZE */
 	int bufi;
 	int count;
-	
+
 	file_rpush(f);
 	bufp = (unsigned char*)buf;
 	for (bufi=0; bufi<bufsize; ) {
@@ -337,9 +151,9 @@ static int RLE_decompress(FILE *f, void *buf, int bufsize, int pixelsize) {
 	return 0;
 }
 
-static void RLE_write_pkt(FILE *f, t_tgapkttype pkttype, int len, void *data, int pixelsize) {
+void RLE_write_pkt(FILE *f, t_tgapkttype pkttype, int len, void *data, int pixelsize) {
 	unsigned char count;
-	
+
 	if (len<1 || len>128) {
 		fprintf(stderr,"RLE_write_pkt: packet has bad length (%d bytes)\n",len);
 		return;
@@ -364,7 +178,7 @@ static void RLE_write_pkt(FILE *f, t_tgapkttype pkttype, int len, void *data, in
 }
 
 
-static int RLE_compress(FILE *f, t_tgaimg const *img) {
+int RLE_compress(FILE *f, t_tgaimg const *img) {
 	int pixelsize;
 	unsigned char const *datap;
 	unsigned char *pktdata;
@@ -376,16 +190,16 @@ static int RLE_compress(FILE *f, t_tgaimg const *img) {
 
 	pkttype = RAW;
 	pktdatap = NULL;
-	
+
 	if (img == NULL) return -1;
 	if (img->data == NULL) return -1;
 	pixelsize = getpixelsize(img);
 	if (pixelsize == 0) return -1;
-	
+
 	datap = img->data;
 	pktdata = (unsigned char*)malloc(img->width*img->height*pixelsize);
 	pktlen = 0;
-	
+
 	for (i=0; i<img->width*img->height; ) {
 		if (pktlen == 0) {
 			pktdatap = pktdata;
@@ -447,9 +261,198 @@ static int RLE_compress(FILE *f, t_tgaimg const *img) {
 	return 0;
 }
 
+}
+
+extern int getpixelsize(t_tgaimg const *img) {
+	switch (img->bpp) {
+		case 8:
+			return 1;
+		case 15:
+		case 16:
+			return 2;
+		case 24:
+			return 3;
+		case 32:
+			return 4;
+		default:
+			fprintf(stderr,"load_tga: color depth %u is not supported!\n",img->bpp);
+			return 0;
+	}
+}
+
+
+extern t_tgaimg * new_tgaimg(unsigned int width, unsigned int height, unsigned int bpp, t_tgaimgtype imgtype) {
+	t_tgaimg *img;
+
+	img = (t_tgaimg*)malloc(sizeof(t_tgaimg));
+        img->idlen = 0;
+        img->cmaptype = tgacmap_none;
+        img->imgtype = imgtype;
+        img->cmapfirst = 0;
+        img->cmaplen = 0;
+        img->cmapes = 0;
+        img->xorigin = 0;
+        img->yorigin = 0;
+        img->width = width;
+        img->height = height;
+        img->bpp = bpp;
+        img->desc = 0; /* no attribute bits, top, left, and zero reserved */
+	img->data = NULL;
+	img->extareaoff = 0;
+	img->devareaoff = 0;
+
+	return img;
+}
+
+extern t_tgaimg * load_tgaheader(void) {
+	t_tgaimg *img;
+
+	img = (t_tgaimg*)malloc(sizeof(t_tgaimg));
+        img->idlen = file_readb();
+        img->cmaptype = file_readb();
+        img->imgtype = file_readb();
+        img->cmapfirst = file_readw_le();
+        img->cmaplen = file_readw_le();
+        img->cmapes = file_readb();
+        img->xorigin = file_readw_le();
+        img->yorigin = file_readw_le();
+        img->width = file_readw_le();
+        img->height = file_readw_le();
+        img->bpp = file_readb();
+        img->desc = file_readb();
+	img->data = NULL;
+	img->extareaoff = 0; /* ignored when reading */
+	img->devareaoff = 0; /* ignored when reading */
+
+	return img;
+}
+
+extern t_tgaimg * load_tga(FILE *f) {
+	t_tgaimg *img;
+	int pixelsize;
+
+	file_rpush(f);
+	img = load_tgaheader();
+
+	/* make sure we understand the header fields */
+	if (img->cmaptype != tgacmap_none) {
+		fprintf(stderr,"load_tga: Color-mapped images are not (yet?) supported!\n");
+		free(img);
+		return NULL;
+	}
+	if (img->imgtype!=tgaimgtype_uncompressed_truecolor && img->imgtype!=tgaimgtype_rlecompressed_truecolor) {
+		fprintf(stderr,"load_tga: imagetype %u is not supported. (only 2 and 10 are supported)\n",img->imgtype);
+		free(img);
+		return NULL;
+	}
+
+	pixelsize = getpixelsize(img);
+	if (pixelsize == 0) {
+		free(img);
+		return NULL;
+	}
+	/* Skip the ID if there is one */
+	if (img->idlen > 0) {
+		fprintf(stderr,"load_tga: ID present, skipping %d bytes\n",img->idlen);
+		if (fseek(f,img->idlen,SEEK_CUR)<0)
+			fprintf(stderr,"load_tga: could not seek %u bytes forward (fseek: %s)\n",img->idlen,pstrerror(errno));
+	}
+
+	/* Now, we can alloc img->data */
+	img->data = (t_uint8*)malloc(img->width*img->height*pixelsize);
+	if (img->imgtype == tgaimgtype_uncompressed_truecolor) {
+		if (fread(img->data,pixelsize,img->width*img->height,f)<(unsigned)(img->width*img->height)) {
+			fprintf(stderr,"load_tga: error while reading data!\n");
+			free(img->data);
+			free(img);
+			return NULL;
+		}
+	}
+	else { /* == tgaimgtype_rlecompressed_truecolor */
+		if (RLE_decompress(f,img->data,img->width*img->height*pixelsize,pixelsize) < 0) {
+			fprintf(stderr,"load_tga: error while decompressing data!\n");
+			free(img->data);
+			free(img);
+			return NULL;
+		}
+	}
+	file_rpop();
+	if ((img->desc & tgadesc_horz) == 1) { /* right, want left */
+		if (rotate_leftright(img)<0) {
+			fprintf(stderr,"ERROR: rotate_leftright failed!\n");
+		}
+	}
+	if ((img->desc & tgadesc_vert) == 0) { /* bottom, want top */
+		if (rotate_updown(img)<0) {
+			fprintf(stderr,"ERROR: rotate_updown failed!\n");
+		}
+	}
+	return img;
+}
+
+extern int write_tga(FILE *f, t_tgaimg *img) {
+	if (f == NULL) return -1;
+	if (img == NULL) return -1;
+	if (img->data == NULL) return -1;
+	if (img->idlen!=0) return -1;
+	if (img->cmaptype!=tgacmap_none) return -1;
+	if (img->imgtype!=tgaimgtype_uncompressed_truecolor && img->imgtype!=tgaimgtype_rlecompressed_truecolor) return -1;
+	file_wpush(f);
+
+	file_writeb(img->idlen);
+	file_writeb(img->cmaptype);
+	file_writeb(img->imgtype);
+	file_writew_le(img->cmapfirst);
+	file_writew_le(img->cmaplen);
+	file_writeb(img->cmapes);
+	file_writew_le(img->xorigin);
+	file_writew_le(img->yorigin);
+	file_writew_le(img->width);
+	file_writew_le(img->height);
+	file_writeb(img->bpp);
+	file_writeb(img->desc);
+
+	if ((img->desc&tgadesc_horz)==1) { /* right, want left */
+	        fprintf(stderr,"write_tga: flipping horizontally\n");
+		if (rotate_leftright(img)<0) {
+			fprintf(stderr,"ERROR: rotate_updown failed!\n");
+		}
+	}
+	if ((img->desc&tgadesc_vert)==0) { /* bottom, want top */
+	        fprintf(stderr,"write_tga: flipping vertically\n");
+		if (rotate_updown(img)<0) {
+			fprintf(stderr,"ERROR: rotate_updown failed!\n");
+		}
+	}
+	if (img->imgtype==tgaimgtype_uncompressed_truecolor) {
+		int pixelsize;
+
+		pixelsize = getpixelsize(img);
+		if (pixelsize == 0) return -1;
+		if (fwrite(img->data,pixelsize,img->width*img->height,f)<(unsigned)(img->width*img->height)) {
+			fprintf(stderr,"write_tga: could not write %d pixels (fwrite: %s)\n",img->width*img->height,pstrerror(errno));
+			file_wpop();
+			return -1;
+		}
+	} else if (img->imgtype==tgaimgtype_rlecompressed_truecolor) {
+	        fprintf(stderr,"write_tga: using RLE compression\n");
+		if (RLE_compress(f,img)<0) {
+			fprintf(stderr,"write_tga: RLE compression failed.\n");
+		}
+	}
+	/* Write the file-footer */
+	file_writed_le(img->extareaoff);
+	file_writed_le(img->devareaoff);
+	if (fwrite(TGAMAGIC,strlen(TGAMAGIC)+1,1,f)<1)
+		fprintf(stderr,"write_tga: could not write TGA footer magic (fwrite: %s)\n",pstrerror(errno));
+	/* Ready */
+	file_wpop();
+	return 0;
+}
+
 extern void destroy_img(t_tgaimg * img) {
 	if (img == NULL) return;
-	
+
 	if (img->data)
 		free(img->data);
 	free(img);
@@ -463,10 +466,10 @@ extern void print_tga_info(t_tgaimg const * img, FILE * fp) {
 	char const * horzstr;
 	char const * vertstr;
 	char const * intlstr;
-	
+
 	if (!img || !fp)
 		return;
-	
+
 	interleave = ((img->desc&tgadesc_interleave1)!=0)*2+((img->desc&tgadesc_interleave2)!=0);
 	attrbits = img->desc&(tgadesc_attrbits0|tgadesc_attrbits1|tgadesc_attrbits2|tgadesc_attrbits3);
 	switch (img->imgtype) {
@@ -535,11 +538,15 @@ extern void print_tga_info(t_tgaimg const * img, FILE * fp) {
 		intlstr = "unknown";
 		break;
 	}
-	
+
 	fprintf(fp,"TGAHeader: IDLength=%u ColorMapType=%u(%s)\n",img->idlen,img->cmaptype,cmapstr);
 	fprintf(fp,"TGAHeader: ImageType=%u(%s)\n",img->imgtype,typestr);
 	fprintf(fp,"TGAHeader: ColorMap: FirstEntryIndex=%u ColorMapLength=%u\n",img->cmapfirst,img->cmaplen);
 	fprintf(fp,"TGAHeader: ColorMap: ColorMapEntrySize=%ubits\n",img->cmapes);
 	fprintf(fp,"TGAHeader: X-origin=%u Y-origin=%u Width=%u(0x%x) Height=%u(0x%x)\n",img->xorigin,img->yorigin,img->width,img->width,img->height,img->height);
 	fprintf(fp,"TGAHeader: PixelDepth=%ubits ImageDescriptor=0x%02x(%u attribute bits, origin is %s %s, interleave=%s)\n",img->bpp,img->desc,attrbits,vertstr,horzstr,intlstr);
+}
+
+}
+
 }

@@ -1,6 +1,6 @@
 /*
   * Abstraction API/layer for the various ways PvPGN can inspect sockets state
-  * 2003 (C) 
+  * 2003 (C)
   *
   * Code is based on the ideas found in thttpd project.
   *
@@ -59,6 +59,9 @@
 #include "common/setup_after.h"
 
 #ifdef HAVE_SELECT
+
+namespace pvpgn
+{
 
 static int sr;
 static int smaxfd;
@@ -133,7 +136,7 @@ static int fdw_select_del_fd(int idx)
 
     fd = fdw_fd(fdw_fds + idx);
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd);
-    if (sr > 0) 
+    if (sr > 0)
 	eventlog(eventlog_level_error, __FUNCTION__, "BUG: called while still handling sockets");
     PSOCK_FD_CLR(fd, trfds);
     PSOCK_FD_CLR(fd, twfds);
@@ -171,6 +174,8 @@ static void fdw_select_handle(void)
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called nofds: %d", fdw_nofds);
     fdwatch_traverse(fdw_select_cb,NULL);
     sr = 0;
+}
+
 }
 
 #endif /* HAVE_SELECT */

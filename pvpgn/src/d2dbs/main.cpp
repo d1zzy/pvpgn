@@ -66,6 +66,7 @@
 #include "common/setup_after.h"
 
 using namespace pvpgn::d2dbs;
+using namespace pvpgn;
 
 static FILE * eventlog_fp;
 

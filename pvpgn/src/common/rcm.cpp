@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004  Dizzy 
+ * Copyright (C) 2004  Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +24,9 @@
 #include "common/elist.h"
 #include "common/rcm.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
 
 extern void rcm_init(t_rcm *rcm)
 {
@@ -72,4 +75,6 @@ extern void rcm_chref(t_rcm *rcm, void *newref)
 	regref = elist_entry(curr,t_rcm_regref,refs_link);
 	if (regref->chref) regref->chref(regref->data,newref);
     }
+}
+
 }

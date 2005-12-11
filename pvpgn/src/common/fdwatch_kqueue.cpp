@@ -1,6 +1,6 @@
 /*
   * Abstraction API/layer for the various ways PvPGN can inspect sockets state
-  * 2003 (C) 
+  * 2003 (C)
   *
   * Code is based on the ideas found in thttpd project.
   *
@@ -51,6 +51,9 @@
 #include "common/setup_after.h"
 
 #ifdef HAVE_KQUEUE
+namespace pvpgn
+{
+
 static int sr;
 static int kq;
 static struct kevent *kqchanges = NULL;		/* changes to make to kqueue */
@@ -132,7 +135,7 @@ static int fdw_kqueue_add_fd(int idx, t_fdwatch_type rw)
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (read) fd on %d", ridx); */
 	}
 	EV_SET(kqchanges + ridx, fdw_fd(cfd), EVFILT_READ, EV_ADD, 0, 0, (void*)idx);
-    } 
+    }
     else if (fdw_rw(cfd) & fdwatch_type_read && !( rw & fdwatch_type_read))
     {
 	if (_rridx[idx] >= 0 && _rridx[idx] < nochanges && kqchanges[_rridx[idx]].ident == fdw_fd(cfd))
@@ -183,13 +186,13 @@ static int fdw_kqueue_del_fd(int idx)
     t_fdwatch_fd *cfd;
 
 /*    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd); */
-    if (sr > 0) 
+    if (sr > 0)
 	eventlog(eventlog_level_error, __FUNCTION__, "BUG: called while still handling sockets");
 
     cfd = fdw_fds + idx;
     /* the last event changes about this fd has not yet been sent to kernel */
     if (fdw_rw(cfd) & fdwatch_type_read &&
-        nochanges && _rridx[idx] >= 0 && _rridx[idx] < nochanges && 
+        nochanges && _rridx[idx] >= 0 && _rridx[idx] < nochanges &&
 	kqchanges[_rridx[idx]].ident == fdw_fd(cfd))
     {
 	nochanges--;
@@ -198,7 +201,7 @@ static int fdw_kqueue_del_fd(int idx)
 	    int oidx;
 
 	    oidx = (int)(kqchanges[nochanges].udata);
-	    if (kqchanges[nochanges].filter == EVFILT_READ && 
+	    if (kqchanges[nochanges].filter == EVFILT_READ &&
 		_rridx[oidx] == nochanges)
 	    {
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", kqchanges[rnfds].ident); */
@@ -218,7 +221,7 @@ static int fdw_kqueue_del_fd(int idx)
     }
 
     if (fdw_rw(cfd) & fdwatch_type_write &&
-        nochanges && _wridx[idx] >= 0 && _wridx[idx] < nochanges && 
+        nochanges && _wridx[idx] >= 0 && _wridx[idx] < nochanges &&
 	kqchanges[_wridx[idx]].ident == fdw_fd(cfd))
     {
 	nochanges--;
@@ -227,7 +230,7 @@ static int fdw_kqueue_del_fd(int idx)
 	    int oidx;
 
 	    oidx = (int)(kqchanges[nochanges].udata);
-	    if (kqchanges[nochanges].filter == EVFILT_READ && 
+	    if (kqchanges[nochanges].filter == EVFILT_READ &&
 		_rridx[oidx] == nochanges)
 	    {
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", kqchanges[rnfds].ident); */
@@ -281,6 +284,8 @@ static void fdw_kqueue_handle(void)
 	    fdw_hnd(cfd) (fdw_data(cfd), fdwatch_type_write);
     }
     sr = 0;
+}
+
 }
 
 #endif				/* HAVE_KQUEUE */

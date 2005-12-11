@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001  Dizzy 
+ * Copyright (C) 2001  Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,6 +62,9 @@
 
 #endif
 
+namespace pvpgn
+{
+
 typedef struct pdir_struct
 #ifdef PDIR_INTERNAL_ACCESS
 {
@@ -78,16 +81,23 @@ typedef struct pdir_struct
 #endif
 t_pdir;
 
+}
+
 #endif
 
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_PDIR_PROTOS
 #define INCLUDED_PDIR_PROTOS
 
+namespace pvpgn
+{
+
 extern t_pdir * p_opendir(const char * dirname);
 extern int p_rewinddir(t_pdir * pdir);
 extern char const * p_readdir(t_pdir * pdir);
 extern int p_closedir(t_pdir * pdir);
+
+}
 
 #endif
 

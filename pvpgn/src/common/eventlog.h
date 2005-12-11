@@ -19,6 +19,9 @@
 #ifndef INCLUDED_EVENTLOG_TYPES
 #define INCLUDED_EVENTLOG_TYPES
 
+namespace pvpgn
+{
+
 typedef enum
 {
     eventlog_level_none = 0,
@@ -29,6 +32,8 @@ typedef enum
     eventlog_level_error=16,
     eventlog_level_fatal=32
 } t_eventlog_level;
+
+}
 
 #endif
 
@@ -41,6 +46,9 @@ typedef enum
 #define JUST_NEED_TYPES
 #include <stdio.h>
 #undef JUST_NEED_TYPES
+
+namespace pvpgn
+{
 
 extern void eventlog_set_debugmode(int debugmode);
 extern void eventlog_set(FILE * fp);
@@ -85,6 +93,7 @@ extern void eventlog_step(char const * filename, t_eventlog_level level, char co
 #define TRACE2(fmt,arg1,arg2) eventlog(eventlog_level_trace,__FUNCTION__,fmt,arg1,arg2)
 #define TRACE3(fmt,arg1,arg2,arg3) eventlog(eventlog_level_trace,__FUNCTION__,fmt,arg1,arg2,arg3)
 
+}
 
 #endif
 #endif

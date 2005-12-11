@@ -36,6 +36,9 @@
 #endif
 #undef JUST_NEED_TYPES
 
+namespace pvpgn
+{
+
 extern int strstart(char const * full, char const * part) ;
 extern char * file_get_line(FILE * fp) ;
 extern char * strreverse(char * str);
@@ -64,6 +67,8 @@ static inline char * str_skip_word(char *str)
 {
     for(;*str != ' ' && *str != '\t' && *str;str++);
     return str;
+}
+
 }
 
 #endif

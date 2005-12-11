@@ -10,6 +10,9 @@
 #include "cdb_int.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 int
 cdb_findinit(struct cdb_find *cdbfp, struct cdb *cdbp,
              const void *key, unsigned klen)
@@ -78,5 +81,7 @@ cdb_findnext(struct cdb_find *cdbfp) {
   }
 
   return 0;
+
+}
 
 }

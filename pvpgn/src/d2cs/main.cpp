@@ -71,6 +71,7 @@
 #include "common/setup_after.h"
 
 using namespace pvpgn::d2cs;
+using namespace pvpgn;
 
 char serviceLongName[] = "d2cs service";
 char serviceName[] = "d2cs";

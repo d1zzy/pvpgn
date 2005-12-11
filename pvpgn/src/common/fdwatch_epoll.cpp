@@ -1,6 +1,6 @@
 /*
   * Abstraction API/layer for the various ways PvPGN can inspect sockets state
-  * 2003 (C) 
+  * 2003 (C)
   *
   * Code is based on the ideas found in thttpd project.
   *
@@ -46,6 +46,9 @@
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/setup_after.h"
+
+namespace pvpgn
+{
 
 static int sr;
 static int epfd;
@@ -116,7 +119,7 @@ static int fdw_epoll_add_fd(int idx, unsigned rw)
 static int fdw_epoll_del_fd(int idx)
 {
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd);
-    if (sr > 0) 
+    if (sr > 0)
 	eventlog(eventlog_level_error, __FUNCTION__, "BUG: called while still handling sockets");
 
     if (fdw_rw(fdw_fds + idx)) {
@@ -155,6 +158,8 @@ static void fdw_epoll_handle(void)
             fdw_hnd(cfd) (fdw_data(cfd), fdwatch_type_write);
     }
     sr = 0;
+}
+
 }
 
 #endif				/* HAVE_EPOLL */

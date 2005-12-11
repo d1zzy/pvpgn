@@ -8,6 +8,9 @@
 #include "cdb.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 unsigned
 cdb_hash(const void *buf, unsigned len)
 {
@@ -17,4 +20,6 @@ cdb_hash(const void *buf, unsigned len)
   while (p < end)
     hash = (hash + (hash << 5)) ^ *p++;
   return hash;
+}
+
 }

@@ -27,6 +27,9 @@
 # undef JUST_NEED_TYPES
 #endif
 
+namespace pvpgn
+{
+
 /***********************************************************************************/
 /* first packet recieved from client - option decides which struct to use next */
 #define CLIENT_FINDANONGAME 			0x44ff
@@ -134,10 +137,10 @@ typedef struct
 {
     t_bnet_header h;
     bn_byte      option;
-    bn_int       count;     
+    bn_int       count;
     bn_int       tid;        /* team id */
-    bn_int       timestamp;  
-    bn_byte	 teamsize;  
+    bn_int       timestamp;
+    bn_byte	 teamsize;
     bn_int       info[5];   /* client get this info from SERVER_ARRANGEDTEAM_INVITE_FRIEND_ACK (0x61ff) */
     bn_int       unknown2;  /* 00 00 00 00 */
     bn_byte      type;      /* 0 = PG  , 1 = AT  , 2 = TY - from TYPE */
@@ -247,7 +250,7 @@ typedef struct
     t_bnet_header	h;
     bn_byte		option;     /* 1: anongame found */
     bn_int		count;
-    bn_int		unknown1;   /* 00 00 00 00 */ 
+    bn_int		unknown1;   /* 00 00 00 00 */
     bn_int		ip;
     bn_short		port;
     bn_byte		unknown2;
@@ -283,7 +286,7 @@ typedef struct
 typedef struct
 {
     t_bnet_header       h;
-    bn_byte             option;         /* type of request: 
+    bn_byte             option;         /* type of request:
 					 * 0x02 for matchmaking infos */
     bn_int              count;          /* 0x00000001 increments each request of same type */
     bn_byte             noitems;
@@ -484,7 +487,7 @@ typedef struct
 	/* usernames get appended here */
 } PACKED_ATTR() t_server_arrangedteam_friendscreen;
 
-#define SERVER_ARRANGED_TEAM_ADDNAME 0x01 
+#define SERVER_ARRANGED_TEAM_ADDNAME 0x01
 
 /***********************************************************************************/
 /*
@@ -580,7 +583,7 @@ typedef struct
 {
     t_bnet_header h;
 } PACKED_ATTR() t_client_friendslistreq;
-    
+
 /*
 # 158 packet from server: type=0x65ff(unknown) length=16 class=bnet
 0000:   FF 65 10 00     01 66 6F 6F   00 00 00 00 00 00 00 00    .e.. .foo. .......
@@ -601,7 +604,7 @@ typedef struct
     bn_byte location;
     bn_int clienttag;
 } PACKED_ATTR() t_server_friendslistreply_status;
-	
+
 /*
 # 124 packet from client: type=0x66ff(unknown) length=5 class=bnet
 0000:   FF 66 05 00 00                                       .f...
@@ -678,5 +681,7 @@ typedef struct
 #define FRIENDSTATUS_CHAT       	0x02
 #define FRIENDSTATUS_PUBLIC_GAME	0x03
 #define FRIENDSTATUS_PRIVATE_GAME	0x05
+
+}
 
 #endif

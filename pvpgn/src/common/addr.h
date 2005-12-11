@@ -26,6 +26,9 @@
 # undef JUST_NEED_TYPES
 #endif
 
+namespace pvpgn
+{
+
 typedef union
 {
     unsigned long n;
@@ -55,6 +58,8 @@ t_netaddr;
 
 typedef t_list t_addrlist;
 
+}
+
 #endif
 
 
@@ -62,6 +67,9 @@ typedef t_list t_addrlist;
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_ADDR_PROTOS
 #define INCLUDED_ADDR_PROTOS
+
+namespace pvpgn
+{
 
 /* ipaddr and port are in host byte order */
 extern char const * addr_num_to_addr_str(unsigned int ipaddr, unsigned short port);
@@ -95,6 +103,7 @@ extern int addrlist_append(t_addrlist * addrlist, char const * str, unsigned int
 extern t_addrlist * addrlist_create(char const * str, unsigned int defipaddr, unsigned short defport) ;
 extern int addrlist_destroy(t_addrlist * addrlist);
 extern int addrlist_get_length(t_addrlist const * addrlist);
+}
 
 #endif
 #endif

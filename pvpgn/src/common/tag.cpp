@@ -45,6 +45,9 @@
 #include "common/tag.h"
 #include "common/setup_after.h"
 
+namespace pvpgn
+{
+
 /* fixme: have all functions call tag_str_to_uint() */
 extern t_clienttag clienttag_str_to_uint(char const * clienttag)
 {
@@ -103,9 +106,9 @@ extern t_tag tag_case_str_to_uint(char const * tag_str)
 {
     unsigned int i, len;
     char temp_str[5];
-    
+
     len = strlen(tag_str);
-    if (len != 4) 
+    if (len != 4)
 	eventlog(eventlog_level_warn,__FUNCTION__,"got unusual sized clienttag '%s'",tag_str);
 
     for (i=0; i<len && i < 4; i++)
@@ -113,26 +116,26 @@ extern t_tag tag_case_str_to_uint(char const * tag_str)
 	    temp_str[i] = toupper((int)tag_str[i]);
 	else
 	    temp_str[i] = tag_str[i];
-	    
+
     temp_str[4] = '\0';
-    
+
     return tag_str_to_uint(temp_str);
 }
 
 extern t_tag tag_str_to_uint(char const * tag_str)
 {
     t_tag	tag_uint;
-    
+
     if (!tag_str) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL tag");
 	return 0; /* unknown */
     }
-    
+
     tag_uint  = tag_str[0]<<24;
     tag_uint |= tag_str[1]<<16;
     tag_uint |= tag_str[2]<< 8;
     tag_uint |= tag_str[3]    ;
-    
+
     return tag_uint;
 }
 /* tag_uint_to_str()
@@ -148,7 +151,7 @@ extern char * tag_uint_to_str(char * tag_str, t_tag tag_uint)
 {
     if (!tag_uint) /* return "UNKN" if tag_uint = 0 */
 	return TAG_UNKNOWN;
-    
+
     tag_str[0] = ((unsigned char)(tag_uint>>24)     );
     tag_str[1] = ((unsigned char)(tag_uint>>16)&0xff);
     tag_str[2] = ((unsigned char)(tag_uint>> 8)&0xff);
@@ -161,7 +164,7 @@ extern char * tag_uint_to_revstr(char * tag_str, t_tag tag_uint)
 {
     if (!tag_uint) /* return "UNKN" if tag_uint = 0 */
 	return TAG_UNKNOWN;
-    
+
     tag_str[0] = ((unsigned char)(tag_uint    )&0xff);
     tag_str[1] = ((unsigned char)(tag_uint>> 8)&0xff);
     tag_str[2] = ((unsigned char)(tag_uint>>16)&0xff);
@@ -267,3 +270,4 @@ extern char const * clienttag_get_title(t_clienttag clienttag)
    }
 }
 
+}
