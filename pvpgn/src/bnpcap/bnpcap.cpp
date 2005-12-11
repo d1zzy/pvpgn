@@ -23,7 +23,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "compat/strerror.h"
-#include "compat/getopt.h"
+#include "compat/pgetopt.h"
 #include "common/init_protocol.h"
 #include "common/bnet_protocol.h"
 #include "common/udp_protocol.h"

@@ -20,7 +20,7 @@
 # endif
 #endif
 #include <stdarg.h>
-#include "compat/getopt.h"
+#include "compat/pgetopt.h"
 #include "compat/strerror.h"
 #include <errno.h>
 #include "common/xalloc.h"
