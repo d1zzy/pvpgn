@@ -215,6 +215,49 @@ _may_ use them.
 Some types, classes, etc are better to be declared inside some other class 
 (like the exceptions, see the above section or smart pointers for the class).
 
+"static" keyword to declare "local" variables and functions it's not allowed. 
+Instead of it, use unnamed namespaces. A ISO C++98 compliant compiler has to 
+provide for each separate translation unit an unique name for the unnamed 
+namespace that could be declared in that translation unit. As such, instead of 
+
+------------------------
+static int myvar;
+static int myfunc(int);
+
+extern int externfunc()
+{
+}
+
+static int myfunc()
+{
+}
+------------------------
+
+Make it
+
+------------------------
+namespace
+{
+
+int myvar;
+int myfunc(int);
+
+}
+
+extern int externfunc()
+{
+}
+
+namespace
+{
+
+int myfunc(int)
+{
+}
+
+}
+------------------------
+
 f. Identifiers
 
 Class names should start with a capital and all words composing it should too
