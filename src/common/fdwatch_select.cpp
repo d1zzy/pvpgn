@@ -23,20 +23,8 @@
 
 #define FDWATCH_BACKEND
 #include "common/setup_before.h"
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include "fdwatch_select.h"
+#include <cstring>
 /* According to earlier standards */
 #ifdef HAVE_SYS_TIME_H
 # include <sys/time.h>
@@ -51,11 +39,7 @@
 #ifdef HAVE_SYS_SELECT_H
 # include <sys/select.h>
 #endif
-#include "compat/psock.h"
-#include "fdwatch.h"
 #include "common/eventlog.h"
-#include "common/xalloc.h"
-#include "common/elist.h"
 #include "common/setup_after.h"
 
 #ifdef HAVE_SELECT
@@ -63,116 +47,101 @@
 namespace pvpgn
 {
 
-static int sr;
-static int smaxfd;
-static t_psock_fd_set *rfds = NULL, *wfds = NULL, /* working sets (updated often) */
-                      *trfds = NULL, *twfds = NULL; /* templates (updated rare) */
-
-static int fdw_select_init(int nfds);
-static int fdw_select_close(void);
-static int fdw_select_add_fd(int idx, unsigned rw);
-static int fdw_select_del_fd(int idx);
-static int fdw_select_watch(long timeout_msecs);
-static void fdw_select_handle(void);
-
-t_fdw_backend fdw_select = {
-    fdw_select_init,
-    fdw_select_close,
-    fdw_select_add_fd,
-    fdw_select_del_fd,
-    fdw_select_watch,
-    fdw_select_handle
-};
-
-static int fdw_select_init(int nfds)
+FDWSelectBackend::FDWSelectBackend(int nfds_)
+:FDWBackend(nfds), sr(0), smaxfd(0)
 {
-    if (nfds > FD_SETSIZE) return -1; /* this should not happen */
+	 /* this should not happen */
+	if (nfds > FD_SETSIZE)
+		throw FDWInitError("nfds over FD_SETSIZE");
 
-    rfds = (t_psock_fd_set*)xmalloc(sizeof(t_psock_fd_set));
-    wfds = (t_psock_fd_set*)xmalloc(sizeof(t_psock_fd_set));
-    trfds = (t_psock_fd_set*)xmalloc(sizeof(t_psock_fd_set));
-    twfds = (t_psock_fd_set*)xmalloc(sizeof(t_psock_fd_set));
+	rfds.reset(new t_psock_fd_set);
+	wfds.reset(new t_psock_fd_set);
+	trfds.reset(new t_psock_fd_set);
+	twfds.reset(new t_psock_fd_set);
 
-    PSOCK_FD_ZERO(trfds); PSOCK_FD_ZERO(twfds);
-    smaxfd = sr = 0;
+	PSOCK_FD_ZERO(trfds.get()); PSOCK_FD_ZERO(twfds.get());
 
-    eventlog(eventlog_level_info, __FUNCTION__, "fdwatch select() based layer initialized (max %d sockets)", nfds);
-    return 0;
+	INFO1("fdwatch select() based layer initialized (max %d sockets)", nfds);
 }
 
-static int fdw_select_close(void)
+FDWSelectBackend::~FDWSelectBackend() throw()
+{}
+
+int
+FDWSelectBackend::add(int idx, unsigned rw)
 {
-    if (rfds) { xfree((void *)rfds); rfds = NULL; }
-    if (wfds) { xfree((void *)wfds); wfds = NULL; }
-    if (trfds) { xfree((void *)trfds); trfds = NULL; }
-    if (twfds) { xfree((void *)twfds); twfds = NULL; }
-    smaxfd = sr = 0;
-
-    return 0;
-}
-
-static int fdw_select_add_fd(int idx, unsigned rw)
-{
-    int fd;
-
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d rw: %d", fd, rw);
-    fd = fdw_fd(fdw_fds + idx);
+	int fd = fdw_fd(fdw_fds + idx);
 
     /* select() interface is limited by FD_SETSIZE max socket value */
-    if (fd >= FD_SETSIZE) return -1;
+	if (fd >= FD_SETSIZE) return -1;
 
-    if (rw & fdwatch_type_read) PSOCK_FD_SET(fd, trfds);
-    else PSOCK_FD_CLR(fd, trfds);
-    if (rw & fdwatch_type_write) PSOCK_FD_SET(fd, twfds);
-    else PSOCK_FD_CLR(fd, twfds);
-    if (smaxfd < fd) smaxfd = fd;
+	if (rw & fdwatch_type_read) PSOCK_FD_SET(fd, trfds.get());
+	else PSOCK_FD_CLR(fd, trfds.get());
+	if (rw & fdwatch_type_write) PSOCK_FD_SET(fd, twfds.get());
+	else PSOCK_FD_CLR(fd, twfds.get());
+	if (smaxfd < fd) smaxfd = fd;
 
-    return 0;
+	return 0;
 }
 
-static int fdw_select_del_fd(int idx)
+int
+FDWSelectBackend::del(int idx)
 {
-    int fd;
-
-    fd = fdw_fd(fdw_fds + idx);
+	int fd = fdw_fd(fdw_fds + idx);
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd);
-    if (sr > 0)
-	eventlog(eventlog_level_error, __FUNCTION__, "BUG: called while still handling sockets");
-    PSOCK_FD_CLR(fd, trfds);
-    PSOCK_FD_CLR(fd, twfds);
+	if (sr > 0)
+		ERROR0("BUG: called while still handling sockets");
+	PSOCK_FD_CLR(fd, trfds);
+	PSOCK_FD_CLR(fd, twfds);
 
-    return 0;
+	return 0;
 }
 
-static int fdw_select_watch(long timeout_msec)
+int
+FDWSelectBackend::watch(long timeout_msec)
 {
-    static struct timeval tv;
+	static struct timeval tv;
 
-    tv.tv_sec  = timeout_msec / 1000;
-    tv.tv_usec = timeout_msec % 1000;
+	tv.tv_sec  = timeout_msec / 1000;
+	tv.tv_usec = timeout_msec % 1000;
 
-    /* set the working sets based on the templates */
-    memcpy(rfds, trfds, sizeof(t_psock_fd_set));
-    memcpy(wfds, twfds, sizeof(t_psock_fd_set));
+	/* set the working sets based on the templates */
+	std::memcpy(rfds.get(), trfds.get(), sizeof(t_psock_fd_set));
+	std::memcpy(wfds.get(), twfds.get(), sizeof(t_psock_fd_set));
 
-    return (sr = psock_select(smaxfd + 1, rfds, wfds, NULL, &tv));
+	return (sr = psock_select(smaxfd + 1, rfds.get(), wfds.get(), NULL, &tv));
 }
 
-static int fdw_select_cb(t_fdwatch_fd *cfd, void *data)
+namespace
+{
+
+int fdw_select_cb(t_fdwatch_fd *cfd, void *data)
+{
+	FDWSelectBackend *obj = static_cast<FDWSelectBackend*>(data);
+
+	return obj->cb(cfd);
+}
+
+}
+
+int
+FDWSelectBackend::cb(t_fdwatch_fd* cfd)
 {
 //    eventlog(eventlog_level_trace, __FUNCTION__, "idx: %d fd: %d", idx, fdw_fd->fd);
-    if (fdw_rw(cfd) & fdwatch_type_read && PSOCK_FD_ISSET(fdw_fd(cfd), rfds)
-        && fdw_hnd(cfd)(fdw_data(cfd), fdwatch_type_read) == -2) return 0;
-    if (fdw_rw(cfd) & fdwatch_type_write && PSOCK_FD_ISSET(fdw_fd(cfd), wfds))
-        fdw_hnd(cfd)(fdw_data(cfd), fdwatch_type_write);
+	if (fdw_rw(cfd) & fdwatch_type_read && PSOCK_FD_ISSET(fdw_fd(cfd), rfds.get())
+		&& fdw_hnd(cfd)(fdw_data(cfd), fdwatch_type_read) == -2) return 0;
+	if (fdw_rw(cfd) & fdwatch_type_write && PSOCK_FD_ISSET(fdw_fd(cfd), wfds.get()))
+		fdw_hnd(cfd)(fdw_data(cfd), fdwatch_type_write);
 
-    return 0;
+	return 0;
 }
 
-static void fdw_select_handle(void)
+void
+FDWSelectBackend::handle()
 {
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called nofds: %d", fdw_nofds);
-    fdwatch_traverse(fdw_select_cb,NULL);
+    fdwatch_traverse(fdw_select_cb,this);
     sr = 0;
 }
 

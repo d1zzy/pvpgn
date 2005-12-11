@@ -22,6 +22,8 @@
 #ifndef __FDWATCH_INCLUDED__
 #define __FDWATCH_INCLUDED__
 
+#include <stdexcept>
+
 #include "common/elist.h"
 
 namespace pvpgn
@@ -45,18 +47,30 @@ typedef struct {
     t_elist freelist;
 } t_fdwatch_fd;
 
-#ifdef FDWATCH_BACKEND
 typedef int (*t_fdw_cb)(t_fdwatch_fd *cfd, void *data);
-#endif
 
-typedef struct {
-    int (*init)(int nfds);
-    int (*close)(void);
-    int (*add_fd)(int idx, unsigned rw);
-    int (*del_fd)(int idx);
-    int (*watch)(long timeout_msecs);
-    void (*handle)(void);
-} t_fdw_backend;
+class FDWInitError:public std::runtime_error
+{
+public:
+	explicit FDWInitError(const std::string& str = "")
+	:std::runtime_error(str) {}
+	~FDWInitError() throw() {}
+};
+
+class FDWBackend
+{
+public:
+	explicit FDWBackend(int nfds_);
+	virtual ~FDWBackend() throw();
+
+	virtual int add(int idx, unsigned rw) = 0;
+	virtual int del(int idx) = 0;
+	virtual int watch(long timeout_msecs) = 0;
+	virtual void handle() = 0;
+
+protected:
+	int nfds;
+};
 
 extern unsigned fdw_maxcons;
 extern t_fdwatch_fd *fdw_fds;
@@ -73,9 +87,7 @@ extern int fdwatch_update_fd(int idx, unsigned rw);
 extern int fdwatch_del_fd(int idx);
 extern int fdwatch(long timeout_msecs);
 extern void fdwatch_handle(void);
-#ifdef FDWATCH_BACKEND
 extern void fdwatch_traverse(t_fdw_cb cb, void *data);
-#endif
 
 }
 

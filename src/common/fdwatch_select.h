@@ -23,11 +23,36 @@
 #ifndef __INCLUDED_FDWATCH_SELECT__
 #define __INCLUDED_FDWATCH_SELECT__
 
+#ifdef HAVE_SELECT
+
+#include "scoped_ptr.h"
+#include "compat/psock.h"
+#include "fdwatch.h"
+
 namespace pvpgn
 {
 
-extern t_fdw_backend fdw_select;
+class FDWSelectBackend: public FDWBackend
+{
+public:
+	explicit FDWSelectBackend(int nfds_);
+	~FDWSelectBackend() throw();
+
+	int add(int idx, unsigned rw);
+	int del(int idx);
+	int watch(long timeout_msecs);
+	void handle();
+
+	int cb(t_fdwatch_fd* cfd);
+
+private:
+	int sr, smaxfd;
+	scoped_ptr<t_psock_fd_set> rfds, wfds, /* working sets (updated often) */
+	                              trfds, twfds; /* templates (updated rare) */
+};
 
 }
+
+#endif /* HAVE_SELECT */
 
 #endif /* __INCLUDED_FDWATCH_SELECT__ */
