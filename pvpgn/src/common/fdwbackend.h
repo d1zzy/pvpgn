@@ -4,8 +4,6 @@
   *
   * Code is based on the ideas found in thttpd project.
   *
-  * select() based backend
-  *
   * This program is free software; you can redistribute it and/or
   * modify it under the terms of the GNU General Public License
   * as published by the Free Software Foundation; either version 2
@@ -20,40 +18,38 @@
   * along with this program; if not, write to the Free Software
   * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
   */
-#ifndef __INCLUDED_FDWATCH_SELECT__
-#define __INCLUDED_FDWATCH_SELECT__
 
-#ifdef HAVE_SELECT
+#ifndef __PVPGN_FDWBACKEND_INCLUDED__
+#define __PVPGN_FDWBACKEND_INCLUDED__
 
-#include "scoped_ptr.h"
-#include "compat/psock.h"
-#include "fdwatch.h"
-#include "fdwbackend.h"
+#include <stdexcept>
 
 namespace pvpgn
 {
 
-class FDWSelectBackend: public FDWBackend
+class FDWBackend
 {
 public:
-	explicit FDWSelectBackend(int nfds_);
-	~FDWSelectBackend() throw();
+	class InitError:public std::runtime_error
+	{
+	public:
+		explicit InitError(const std::string& str = "")
+		:std::runtime_error(str) {}
+		~InitError() throw() {}
+	};
 
-	int add(int idx, unsigned rw);
-	int del(int idx);
-	int watch(long timeout_msecs);
-	void handle();
+	explicit FDWBackend(int nfds_);
+	virtual ~FDWBackend() throw();
 
-	int cb(t_fdwatch_fd* cfd);
+	virtual int add(int idx, unsigned rw) = 0;
+	virtual int del(int idx) = 0;
+	virtual int watch(long timeout_msecs) = 0;
+	virtual void handle() = 0;
 
-private:
-	int sr, smaxfd;
-	scoped_ptr<t_psock_fd_set> rfds, wfds, /* working sets (updated often) */
-	                              trfds, twfds; /* templates (updated rare) */
+protected:
+	int nfds;
 };
 
 }
 
-#endif /* HAVE_SELECT */
-
-#endif /* __INCLUDED_FDWATCH_SELECT__ */
+#endif /* __PVPGN_FDWBACKEND_INCLUDED__ */

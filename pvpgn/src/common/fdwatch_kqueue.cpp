@@ -34,6 +34,7 @@
 # include <sys/time.h>
 #endif
 #include "common/eventlog.h"
+#include "fdwatch.h"
 #include "common/setup_after.h"
 
 #ifdef HAVE_KQUEUE
@@ -44,7 +45,7 @@ FDWKqueueBackend::FDWKqueueBackend(int nfds_)
 :FDWBackend(nfds_), sr(0), nochanges(0)
 {
 	if ((kq = kqueue()) == -1)
-		throw FDWInitError("error from kqueue()");
+		throw InitError("error from kqueue()");
 
 	kqevents.reset(new struct kevent[nfds]);
 	kqchanges.reset(new struct kevent[nfds * 2]);

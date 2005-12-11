@@ -19,4 +19,5 @@ noinst_HEADERS = addr.h anongame_protocol.h asnprintf.h bnethashconv.h \
 	rcm.h rlimit.h setup_after.h setup_before.h tag.h token.h tracker.h \
 	trans.h udp_protocol.h util.h version.h xalloc.h xstring.h \
 	d2cs_bnetd_protocol.h d2cs_d2dbs_ladder.h d2cs_d2gs_character.h \
-	d2cs_d2gs_protocol.h d2cs_protocol.h scoped_array.h scoped_ptr.h
+	d2cs_d2gs_protocol.h d2cs_protocol.h scoped_array.h scoped_ptr.h \
+	fdwbackend.h fdwbackend.cpp

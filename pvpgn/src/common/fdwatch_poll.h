@@ -34,7 +34,7 @@
 #endif
 
 #include "scoped_array.h"
-#include "fdwatch.h"
+#include "fdwbackend.h"
 
 namespace pvpgn
 {

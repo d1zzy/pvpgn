@@ -52,7 +52,7 @@ FDWSelectBackend::FDWSelectBackend(int nfds_)
 {
 	 /* this should not happen */
 	if (nfds > FD_SETSIZE)
-		throw FDWInitError("nfds over FD_SETSIZE");
+		throw InitError("nfds over FD_SETSIZE");
 
 	rfds.reset(new t_psock_fd_set);
 	wfds.reset(new t_psock_fd_set);
