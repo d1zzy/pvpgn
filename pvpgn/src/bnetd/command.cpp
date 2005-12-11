@@ -4271,10 +4271,8 @@ static int _handle_tos_command(t_connection * c, char const * text)
   char * filename=NULL;
   FILE * fp;
 
-  filename = (char*)xmalloc(strlen(prefs_get_filedir()) + 1 + strlen(prefs_get_tosfile()));
-  strcpy(filename, prefs_get_filedir());
-  strcat(filename, "/");
-  strcat(filename, prefs_get_tosfile());
+  filename = buildpath(prefs_get_filedir(),prefs_get_tosfile());
+
   /* FIXME: if user enters relative path to tos file in config,
      above routine will fail */
 
