@@ -23,11 +23,39 @@
 #ifndef __INCLUDED_FDWATCH_EPOLL__
 #define __INCLUDED_FDWATCH_EPOLL__
 
+#ifdef HAVE_EPOLL
+
+#ifdef HAVE_SYS_EPOLL_H
+# include "compat/uint.h"
+# include <sys/epoll.h>
+#endif
+
+#include "scoped_array.h"
+#include "fdwatch.h"
+
 namespace pvpgn
 {
 
-extern t_fdw_backend fdw_epoll;
+class FDWEpollBackend: public FDWBackend
+{
+public:
+	explicit FDWEpollBackend(int nfds_);
+	~FDWEpollBackend() throw();
+
+	int add(int idx, unsigned rw);
+	int del(int idx);
+	int watch(long timeout_msecs);
+	void handle();
+
+private:
+	int sr;
+	int epfd;
+	/* events to investigate */
+	scoped_array<struct epoll_event> epevents;
+};
 
 }
+
+#endif /* HAVE_EPOLL */
 
 #endif /* __INCLUDED_FDWATCH_EPOLL__ */

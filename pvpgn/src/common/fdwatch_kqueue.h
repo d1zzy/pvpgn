@@ -23,11 +23,39 @@
 #ifndef __INCLUDED_FDWATCH_KQUEUE__
 #define __INCLUDED_FDWATCH_KQUEUE__
 
+#ifdef HAVE_KQUEUE
+
+#include "scoped_array.h"
+#include "fdwatch.h"
+
 namespace pvpgn
 {
 
-extern t_fdw_backend fdw_kqueue;
+class FDWKqueueBackend: public FDWBackend
+{
+public:
+	explicit FDWKqueueBackend(int nfds_);
+	~FDWKqueueBackend() throw();
+
+	int add(int idx, unsigned rw);
+	int del(int idx);
+	int watch(long timeout_msecs);
+	void handle();
+
+private:
+	int sr;
+	int kq;
+	/* changes to make to kqueue */
+	scoped_array<struct kevent> kqchanges;
+	/* events to investigate */
+	scoped_array<struct kevent> kqevents;
+	/* r/w indices from idx to the kqchanges index where the change is stored */
+	scoped_array<int> rridx, wridx;
+	unsigned nochanges;
+};
 
 }
+
+#endif /* HAVE_KQUEUE */
 
 #endif /* __INCLUDED_FDWATCH_KQUEUE__ */
