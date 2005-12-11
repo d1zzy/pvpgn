@@ -20,15 +20,15 @@
   */
 
 #include "common/setup_before.h"
+#include "fdwatch.h"
 #include <cstring>
 #include "common/eventlog.h"
-#include "fdwatch.h"
 #include "fdwatch_select.h"
 #include "fdwatch_poll.h"
 #include "fdwatch_kqueue.h"
 #include "fdwatch_epoll.h"
 #include "common/rlimit.h"
-#include "common/xalloc.h"
+#include "fdwbackend.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -54,7 +54,7 @@ extern int fdwatch_init(int maxcons)
 	}
 	fdw_maxcons = maxcons;
 
-	fdw_fds = (t_fdwatch_fd*)xmalloc(sizeof(t_fdwatch_fd) * fdw_maxcons);
+	fdw_fds = new t_fdwatch_fd[fdw_maxcons];
 	std::memset(fdw_fds, 0, sizeof(t_fdwatch_fd) * fdw_maxcons);
 	/* add all slots to the freelist */
 	for(i = 0; i < fdw_maxcons; i++)
@@ -64,28 +64,28 @@ extern int fdwatch_init(int maxcons)
 	try {
 		fdw = new FDWEpollBackend(fdw_maxcons);
 		return 0;
-	} catch(const FDWInitError&) {
+	} catch(const FDWBackend::InitError&) {
 	}
 #endif
 #ifdef HAVE_KQUEUE
 	try {
 		fdw = new FDWKqueueBackend(fdw_maxcons);
 		return 0;
-	} catch(const FDWInitError&) {
+	} catch(const FDWBackend::InitError&) {
 	}
 #endif
 #ifdef HAVE_POLL
 	try {
 		fdw = new FDWPollBackend(fdw_maxcons);
 		return 0;
-	} catch(const FDWInitError&) {
+	} catch(const FDWBackend::InitError&) {
 	}
 #endif
 #ifdef HAVE_SELECT
 	try {
 		fdw = new FDWSelectBackend(fdw_maxcons);
 		return 0;
-	} catch(const FDWInitError&) {
+	} catch(const FDWBackend::InitError&) {
 	}
 #endif
 
@@ -98,7 +98,7 @@ extern int fdwatch_init(int maxcons)
 extern int fdwatch_close(void)
 {
 	if (fdw) { delete fdw; fdw = NULL; }
-	if (fdw_fds) { xfree((void*)fdw_fds); fdw_fds = NULL; }
+	if (fdw_fds) { delete[] fdw_fds; fdw_fds = NULL; }
 	elist_init(&freelist);
 	elist_init(&uselist);
 

@@ -4,8 +4,6 @@
   *
   * Code is based on the ideas found in thttpd project.
   *
-  * select() based backend
-  *
   * This program is free software; you can redistribute it and/or
   * modify it under the terms of the GNU General Public License
   * as published by the Free Software Foundation; either version 2
@@ -20,40 +18,19 @@
   * along with this program; if not, write to the Free Software
   * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
   */
-#ifndef __INCLUDED_FDWATCH_SELECT__
-#define __INCLUDED_FDWATCH_SELECT__
 
-#ifdef HAVE_SELECT
-
-#include "scoped_ptr.h"
-#include "compat/psock.h"
-#include "fdwatch.h"
+#include "common/setup_before.h"
 #include "fdwbackend.h"
+#include "common/setup_after.h"
 
 namespace pvpgn
 {
 
-class FDWSelectBackend: public FDWBackend
-{
-public:
-	explicit FDWSelectBackend(int nfds_);
-	~FDWSelectBackend() throw();
+FDWBackend::FDWBackend(int nfds_)
+:nfds(nfds_)
+{}
 
-	int add(int idx, unsigned rw);
-	int del(int idx);
-	int watch(long timeout_msecs);
-	void handle();
-
-	int cb(t_fdwatch_fd* cfd);
-
-private:
-	int sr, smaxfd;
-	scoped_ptr<t_psock_fd_set> rfds, wfds, /* working sets (updated often) */
-	                              trfds, twfds; /* templates (updated rare) */
-};
+FDWBackend::~ FDWBackend() throw()
+{}
 
 }
-
-#endif /* HAVE_SELECT */
-
-#endif /* __INCLUDED_FDWATCH_SELECT__ */

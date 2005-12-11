@@ -26,6 +26,7 @@
 #include <cstring>
 #ifdef HAVE_EPOLL
 #include "common/eventlog.h"
+#include "fdwatch.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -35,7 +36,7 @@ FDWEpollBackend::FDWEpollBackend(int nfds_)
 :FDWBackend(nfds_), sr(0)
 {
 	if ((epfd = epoll_create(nfds)) < 0)
-		throw FDWInitError("failed to open epoll device");
+		throw InitError("failed to open epoll device");
 	epevents.reset(new struct epoll_event[nfds]);
 
 	std::memset(epevents.get(), 0, sizeof(struct epoll_event) * nfds);
