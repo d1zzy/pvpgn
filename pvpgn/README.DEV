@@ -188,6 +188,21 @@ exception represents an error that NEEDS to be handled differentely (ie
 catched separately from other exceptions). All such user defined exception 
 classes should be defined NESTED in the class that throws them.
 
+Catching exceptions should ONLY be done using the "const reference" catching 
+scheme like in:
+} catch (const std::exception& ex) {
+
+This allows for 2 important things to happen:
+- it allows proper polymorphic mechanisms for exceptions (so with the example 
+above ANY exception derived from std::exception is caught and handled as it 
+should be)
+- it behaves nicely on out of memory condition ie an ISO C++98 compliant 
+compiler even when out of memory condition is reached has to provide ENOUGH 
+memory to create a temporary object that (and this is what you do when 
+throwing an exception to be caught with reference, you throw like 
+throw MyException(); whcih means it creates a temporary object MyException() 
+and that object reference is passed to the handlers)
+
 e. Namespaces
 
 All pvpgn codes will belong to the "pvpgn" namespace. Specific application 
