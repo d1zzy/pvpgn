@@ -53,6 +53,7 @@ FDWEpollBackend::add(int idx, unsigned rw)
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d rw: %d", fd, rw);
 
 	struct epoll_event tmpev;
+	std::memset(&tmpev, 0, sizeof(tmpev));
 	tmpev.events = 0;
 	if (rw & fdwatch_type_read)
 		tmpev.events |= EPOLLIN;
@@ -79,6 +80,7 @@ FDWEpollBackend::del(int idx)
 
 	if (fdw_rw(fdw_fds + idx)) {
 		struct epoll_event tmpev;
+		std::memset(&tmpev, 0, sizeof(tmpev));
 		tmpev.events = 0;
 		tmpev.data.fd = idx;
 		if (epoll_ctl(epfd, EPOLL_CTL_DEL, fdw_fd(fdw_fds + idx), &tmpev)) {
