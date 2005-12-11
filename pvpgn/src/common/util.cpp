@@ -289,8 +289,8 @@ extern char const * seconds_to_timestr(unsigned int totsecs)
     int         seconds;
 
     days    = totsecs/(24*60*60);
-    hours   = totsecs/(60*60) - days*24;
-    minutes = totsecs/60 - days*24*60 - hours*60;
+    hours   = (totsecs/(60*60)) % 24;
+    minutes = (totsecs/60) % 60;
     seconds = totsecs % 60;
 
     if (days>0)
