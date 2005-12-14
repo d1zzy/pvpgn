@@ -92,8 +92,8 @@ FDWSelectBackend::del(int idx)
 //    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd);
 	if (sr > 0)
 		ERROR0("BUG: called while still handling sockets");
-	PSOCK_FD_CLR(fd, trfds);
-	PSOCK_FD_CLR(fd, twfds);
+	PSOCK_FD_CLR(fd, trfds.get());
+	PSOCK_FD_CLR(fd, twfds.get());
 
 	return 0;
 }
