@@ -29,10 +29,12 @@
 #ifdef JUST_NEED_TYPES
 # include <stdio.h>
 # include "common/list.h"
+# include "account.h"
 #else
 # define JUST_NEED_TYPES
 # include <stdio.h>
 # include "common/list.h"
+# include "account.h"
 # undef JUST_NEED_TYPES
 #endif
 
@@ -69,7 +71,7 @@ t_clan;
 typedef struct _clanmember
 #ifdef CLAN_INTERNAL_ACCESS
 {
-    void *memberacc;
+    t_account * memberacc;
     char status;
     time_t join_time;
     t_clan * clan;

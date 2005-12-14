@@ -132,7 +132,7 @@ static t_sql_res * sql_pgsql_query_res(const char * query)
     }
 
     res = (t_pgsql_res *)xmalloc(sizeof(t_pgsql_res));
-    res->rowbuf = xmalloc(sizeof(char *) * PQnfields(pgres));
+    res->rowbuf = (char **)xmalloc(sizeof(char *) * PQnfields(pgres));
     res->pgres = pgres;
     res->crow = 0;
 
@@ -254,7 +254,7 @@ static t_sql_field * sql_pgsql_fetch_fields(t_sql_res *result)
 
     fieldno = PQnfields(res->pgres);
 
-    rfields = xmalloc(sizeof(t_sql_field) * (fieldno + 1));
+    rfields = (t_sql_field *)xmalloc(sizeof(t_sql_field) * (fieldno + 1));
     for(i = 0; i < fieldno; i++)
 	rfields[i] = PQfname(res->pgres, i);
     rfields[i] = NULL;

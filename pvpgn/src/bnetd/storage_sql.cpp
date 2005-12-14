@@ -391,7 +391,7 @@ static t_attr *sql_read_attr(t_storage_info * info, const char *key)
     attr = attr_create(key, row[0]);
     sql->free_result(result);
 
-    return (void *) attr;
+    return attr;
 #else
     return NULL;
 #endif				/* SQL_ON_DEMAND */

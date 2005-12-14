@@ -414,7 +414,7 @@ extern int sql_load_clans(t_load_clans_func cb)
 		continue;
 	    }
 
-	    clan = xmalloc(sizeof(t_clan));
+	    clan = (t_clan *)xmalloc(sizeof(t_clan));
 
 	    if (!(clan->clanid = atoi(row[0])))
 	    {
@@ -440,7 +440,7 @@ extern int sql_load_clans(t_load_clans_func cb)
 		if (sql->num_rows(result2) >= 1)
 		    while ((row2 = sql->fetch_row(result2)) != NULL)
 		    {
-			member = xmalloc(sizeof(t_clanmember));
+			member = (t_clanmember *)xmalloc(sizeof(t_clanmember));
 			if (row2[0] == NULL)
 			{
 			    eventlog(eventlog_level_error, __FUNCTION__, "got NULL uid from db");
@@ -525,7 +525,7 @@ extern int sql_write_clan(void *data)
 	{
 	    unsigned int uid;
 
-	    if (!(member = elem_get_data(curr)))
+	    if (!(member = (t_clanmember *)elem_get_data(curr)))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "got NULL elem in list");
 		continue;
@@ -670,7 +670,7 @@ extern int sql_load_teams(t_load_teams_func cb)
 		continue;
 	    }
 
-	    team = xmalloc(sizeof(t_team));
+	    team = (t_team *)xmalloc(sizeof(t_team));
 
 	    if (!(team->teamid = atoi(row[0])))
 	    {

@@ -110,7 +110,7 @@ static t_sql_res * sql_sqlite3_query_res(const char* query)
         return NULL;
     }
 
-    res = xmalloc(sizeof(t_sqlite3_res));
+    res = (t_sqlite3_res *)xmalloc(sizeof(t_sqlite3_res));
 
     if (sqlite3_get_table(db, query, &res->results, &res->rows, &res->columns, NULL) != SQLITE_OK) {
 /*        eventlog(eventlog_level_debug, __FUNCTION__, "got error (%s) from query (%s)", sqlite3_errmsg(db), query); */
