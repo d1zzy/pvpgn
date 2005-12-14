@@ -23,14 +23,12 @@
 #define JUST_NEED_TYPES
 #include "common/list.h"
 #include "common/elist.h"
-#include "clan.h"
 #include "team.h"
 #include "attrgroup.h"
 #undef JUST_NEED_TYPES
 #else
 #include "common/list.h"
 #include "common/elist.h"
-#include "clan.h"
 #include "team.h"
 #include "attrgroup.h"
 #endif
@@ -45,6 +43,8 @@ namespace bnetd
 {
 
 struct connection;
+struct _clanmember;
+struct clan;
 
 typedef struct account_struct
 #ifdef ACCOUNT_INTERNAL_ACCESS
@@ -55,7 +55,7 @@ typedef struct account_struct
     unsigned int  uid;      /* cached from attrs */
     unsigned int  flags;
     struct connection * conn;
-    t_clanmember   * clanmember;
+    struct _clanmember   * clanmember;
     t_list * friends;
     t_list * teams;
 }
@@ -116,11 +116,11 @@ extern char const * account_get_name_real(t_account * account, char const * fn, 
 extern int account_check_mutual( t_account * account,  int myuserid);
 extern t_list * account_get_friends(t_account * account);
 
-extern int account_set_clanmember(t_account * account, t_clanmember * clanmember);
-extern t_clanmember * account_get_clanmember(t_account * account);
-extern t_clanmember * account_get_clanmember_forced(t_account * account);
-extern t_clan * account_get_clan(t_account * account);
-extern t_clan * account_get_creating_clan(t_account * account);
+extern int account_set_clanmember(t_account * account, _clanmember * clanmember);
+extern _clanmember * account_get_clanmember(t_account * account);
+extern _clanmember * account_get_clanmember_forced(t_account * account);
+extern clan * account_get_clan(t_account * account);
+extern clan * account_get_creating_clan(t_account * account);
 
 extern int account_set_conn(t_account * account, t_connection * conn);
 extern t_connection * account_get_conn(t_account * account);

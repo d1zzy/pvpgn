@@ -79,7 +79,7 @@ t_column * create_column(char * name, char * value, char * mode, char * extra_cm
       return NULL;
     }
 
-  column = xmalloc(sizeof(t_column));
+  column = (t_column *)xmalloc(sizeof(t_column));
   column->name  = xstrdup(name);
   column->value = xstrdup(value);
 
@@ -119,7 +119,7 @@ t_sqlcommand * create_sqlcommand(char * sql_command, char * mode, char * extra_c
     return NULL;
   }
 
-  sqlcommand = xmalloc(sizeof(t_sqlcommand));
+  sqlcommand = (t_sqlcommand *)xmalloc(sizeof(t_sqlcommand));
   sqlcommand->sql_command = xstrdup(sql_command);
   if (mode && extra_cmd)
   {
@@ -156,7 +156,7 @@ t_table * create_table(char * name)
       return NULL;
     }
 
-  table = xmalloc(sizeof(t_table));
+  table = (t_table *)xmalloc(sizeof(t_table));
   table->name = xstrdup(name);
 
   table->columns = list_create();
@@ -179,7 +179,7 @@ void dispose_table(t_table * table)
         {
           LIST_TRAVERSE(table->columns,curr)
 	    {
-	      if (!(column = elem_get_data(curr)))
+	      if (!(column = (t_column *)elem_get_data(curr)))
 		{
 		  eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 		  continue;
@@ -195,7 +195,7 @@ void dispose_table(t_table * table)
         {
           LIST_TRAVERSE(table->sql_commands,curr)
 	    {
-	      if (!(sql_command = elem_get_data(curr)))
+	      if (!(sql_command = (t_sqlcommand *)elem_get_data(curr)))
 		{
 		  eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 		  continue;
@@ -232,7 +232,7 @@ t_db_layout * create_db_layout()
 {
   t_db_layout * db_layout;
 
-  db_layout = xmalloc(sizeof(t_db_layout));
+  db_layout = (t_db_layout *)xmalloc(sizeof(t_db_layout));
 
   db_layout->tables = list_create();
 
@@ -251,7 +251,7 @@ void dispose_db_layout(t_db_layout * db_layout)
         {
           LIST_TRAVERSE(db_layout->tables,curr)
 	    {
-	      if (!(table = elem_get_data(curr)))
+	      if (!(table = (t_table *)elem_get_data(curr)))
 		{
 		  eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 		  continue;
@@ -298,7 +298,7 @@ t_table * db_layout_get_first_table(t_db_layout * db_layout)
     return NULL;
   }
 
-  if (!(table = elem_get_data(curr_table)))
+  if (!(table = (t_table *)elem_get_data(curr_table)))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
     return NULL;
@@ -321,7 +321,7 @@ t_table * db_layout_get_next_table(t_db_layout * db_layout)
 
   if (!(curr_table = elem_get_next(db_layout->tables, curr_table))) return NULL;
 
-  if (!(table = elem_get_data(curr_table)))
+  if (!(table = (t_table *)elem_get_data(curr_table)))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
     return NULL;
@@ -352,7 +352,7 @@ t_column * table_get_first_column(t_table * table)
     return NULL;
   }
 
-  if (!(column = elem_get_data(curr_column)))
+  if (!(column = (t_column *)elem_get_data(curr_column)))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
     return NULL;
@@ -373,7 +373,7 @@ t_column * table_get_next_column(t_table * table)
 
   if (!(curr_column = elem_get_next(table->columns, curr_column))) return NULL;
 
-  if (!(column = elem_get_data(curr_column)))
+  if (!(column = (t_column *)elem_get_data(curr_column)))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
     return NULL;
@@ -403,7 +403,7 @@ t_sqlcommand * table_get_first_sql_command(t_table * table)
     return NULL;
   }
 
-  if (!(sql_command = elem_get_data(curr_cmd)))
+  if (!(sql_command = (t_sqlcommand *)elem_get_data(curr_cmd)))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
     return NULL;
@@ -424,7 +424,7 @@ t_sqlcommand * table_get_next_sql_command(t_table * table)
 
   if (!(curr_cmd = elem_get_next(table->sql_commands, curr_cmd))) return NULL;
 
-  if (!(sql_command = elem_get_data(curr_cmd)))
+  if (!(sql_command = (t_sqlcommand *)elem_get_data(curr_cmd)))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"got NULL elem in list");
     return NULL;
@@ -569,7 +569,7 @@ int load_db_layout(char const * filename)
 	}
 	if (extra_cmd)
 	{
-		extra_cmd_escaped = xmalloc(strlen(extra_cmd) * 2);
+		extra_cmd_escaped = (char *)xmalloc(strlen(extra_cmd) * 2);
 		sql_escape_command(extra_cmd_escaped, extra_cmd, strlen(extra_cmd));
 	}
 	_column = create_column(column,value,mode,extra_cmd_escaped);
@@ -624,11 +624,11 @@ int load_db_layout(char const * filename)
 	    continue;
 	  }
 	}
-	sqlcmd_escaped = xmalloc(strlen(sqlcmd) * 2);
+	sqlcmd_escaped = (char *)xmalloc(strlen(sqlcmd) * 2);
 	sql_escape_command(sqlcmd_escaped, sqlcmd, strlen(sqlcmd));
 	if (extra_cmd)
 	{
-		extra_cmd_escaped = xmalloc(strlen(extra_cmd) * 2);
+		extra_cmd_escaped = (char *)xmalloc(strlen(extra_cmd) * 2);
 		sql_escape_command(extra_cmd_escaped, extra_cmd, strlen(extra_cmd));
 	}
 	_sqlcommand = create_sqlcommand(sqlcmd_escaped,mode,extra_cmd_escaped);
@@ -762,7 +762,7 @@ static void sql_escape_command(char *escape, const char *from, int len)
 		char * tmp1 = xstrdup(from);			/* copy of 'from' */
 		char * tmp2 = escape;
 		char * tmp3 = NULL;				/* begining of string to be escaped */
-		char * tmp4 = xmalloc(strlen(tmp1) * 2);	/* escaped string */
+		char * tmp4 = (char *)xmalloc(strlen(tmp1) * 2);	/* escaped string */
 		unsigned int i,j;
 
 /*		eventlog(eventlog_level_trace,__FUNCTION__,"COMMAND: %s",tmp1); */

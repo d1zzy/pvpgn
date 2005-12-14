@@ -1,4 +1,4 @@
-AM_CPPFLAGS=-I$(top_srcdir)/src -DBNETD_DEFAULT_CONF_FILE=\"$(sysconfdir)/bnetd.conf\"
+AM_CPPFLAGS=-I$(top_srcdir)/src -DBNETD_DEFAULT_CONF_FILE=\"$(sysconfdir)/bnetd.conf\" ${DEFINES}
 
 sbin_PROGRAMS = bnetd
 

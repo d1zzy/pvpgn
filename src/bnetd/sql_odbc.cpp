@@ -151,7 +151,7 @@ static t_sql_res* sql_odbc_query_res(const char *query)
 	}
 
 	/* Create a result. */
-	res = xmalloc(sizeof *res);
+	res = (t_odbc_res *)xmalloc(sizeof *res);
 	res->stmt = stmt;
 	rowSet = odbc_alloc_rowSet();
 	res->rowSet = rowSet;
@@ -297,7 +297,7 @@ static t_sql_field* sql_odbc_fetch_fields(t_sql_res *result)
 		TCHAR *tmp;
 		SQLSMALLINT fNameSz;
 		SQLColAttribute(res->stmt, i+1, SQL_DESC_NAME, NULL, 0, &fNameSz, NULL);
-		fName = xmalloc(fNameSz);
+		fName = (TCHAR *)xmalloc(fNameSz);
 		if(!fName) {
 			return NULL;
 		}
@@ -371,7 +371,7 @@ static t_sql_row* odbc_alloc_row(t_odbc_res *result, SQLINTEGER *sizes)
 
 static t_odbc_rowSet* odbc_alloc_rowSet()
 {
-	t_odbc_rowSet *rowSet = xmalloc(sizeof *rowSet);
+	t_odbc_rowSet *rowSet = (t_odbc_rowSet *)xmalloc(sizeof *rowSet);
 	rowSet->row = NULL;
 	rowSet->next = NULL;
 	return rowSet;
