@@ -9,6 +9,9 @@ PvPGN Version History:
 [SC/BW/W2BNE]
   -- fixed problem with parsing gameresults with unexpected order of players
 
+[WAR3]
+  -- fixed "clan membership lost after invitation" bug.
+
 [IRC]
   -- fixed PING problem occouring after about 25 days uptime
   
