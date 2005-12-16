@@ -14,6 +14,13 @@ NOTE: If updating through several versions (example if updating from 1.7.1 to
 version in between and including the last one (ex. you have to go through 
 1.7.1 to 1.7.2 update info, then 1.7.2 to 1.7.3, and so on until 1.7.4 to 1.7.5)
 
+ Updating from 1.7.9 to 1.7.10
+===============================
+Configuration files changed:
+- conf/sql_DB_layout2.conf : added creation of two additional indices
+- conf/versioncheck.conf : added D2 / W3 entries + cleanups
+- conf/autoupdate.conf : general cleanup/update
+
  Updating from 1.7.8 to 1.7.9
 ==============================
 Configuration files changed:
