@@ -523,10 +523,18 @@ extern int clan_get_possible_member(t_connection * c, t_packet const *const pack
 	}
     } else
     {
-	/* If in a private channel, retreive all users in the channel */
+	/* If in a private channel, retreive all non-clan war3/w3xp users in the channel */
 	for (conn = channel_get_first(channel); conn; conn = channel_get_next())
 	{
-	    if ((conn != c) && (username = conn_get_username(conn)))
+	    t_account * acc;
+	    t_clienttag clienttag;
+	    if ((conn != c)
+		&& (acc = conn_get_account(conn))
+		&& (!account_get_clan(acc))
+		&& (!account_get_creating_clan(acc))
+		&& (clienttag = conn_get_clienttag(conn))
+		&& ((clienttag == CLIENTTAG_WAR3XP_UINT) || (clienttag ==  CLIENTTAG_WARCRAFT3_UINT))
+	        && (username = conn_get_username(conn)))
 	    {
 		friend_count++;
 		packet_append_string(rpacket, username);
