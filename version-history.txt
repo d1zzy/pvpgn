@@ -1,5 +1,23 @@
 PvPGN Version History:
 
+
+ ChangeLog for 1.7.10 (since 1.7.9)
+=======================================
+[SQL]
+  -- inserted additional indices for BNET table in sql2 layout
+
+[SC/BW/W2BNE]
+  -- fixed problem with parsing gameresults with unexpected order of players
+
+[IRC]
+  -- fixed PING problem occouring after about 25 days uptime
+  
+[VERSIONCHECK]
+  -- added SC/BW 1.13e entries (XMAC & PMAC)
+  -- added D2/D2XP 1.11b entries
+  -- added W3 1.20b entried
+  
+
  ChangeLog for 1.7.9 (since 1.7.8)
 =======================================
 
