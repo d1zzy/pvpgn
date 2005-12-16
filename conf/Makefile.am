@@ -4,7 +4,8 @@ bnetd_confs = bnetd.conf ad.conf anongame_infos.conf address_translation.conf \
 	bnetd_default_user.plain bnhelp.conf bnissue.txt bnmaps.conf \
 	bnmotd.txt bnxpcalc.conf bnxplevel.conf channel.conf \
 	command_groups.conf news.txt realm.conf sql_DB_layout.conf \
-	supportfile.conf topics.conf tournament.conf versioncheck.conf
+	supportfile.conf topics.conf tournament.conf versioncheck.conf \
+	sql_DB_layout2.conf
 bnetd_extras = bnetd.conf.in bnetd.conf.win32
 else
 bnetd_confs =
