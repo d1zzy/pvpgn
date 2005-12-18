@@ -8,7 +8,7 @@ libcommon_a_SOURCES = conf.cpp list.cpp eventlog.cpp hexdump.cpp bn_type.cpp uti
 	fdwatch.cpp fdwatch_epoll.cpp fdwatch_kqueue.cpp fdwatch_poll.cpp \
 	fdwatch_select.cpp give_up_root_privileges.cpp hashtable.cpp \
 	proginfo.cpp queue.cpp rcm.cpp rlimit.cpp tag.cpp token.cpp trans.cpp \
-	fdwbackend.cpp xstr.cpp
+	fdwbackend.cpp xstr.cpp systemerror.cpp
 
 noinst_HEADERS = addr.h anongame_protocol.h asnprintf.h bnethashconv.h \
 	bnethash.h bnet_protocol.h bnettime.h bn_type.h bot_protocol.h \
@@ -21,4 +21,4 @@ noinst_HEADERS = addr.h anongame_protocol.h asnprintf.h bnethashconv.h \
 	trans.h udp_protocol.h util.h version.h xalloc.h xstring.h \
 	d2cs_bnetd_protocol.h d2cs_d2dbs_ladder.h d2cs_d2gs_character.h \
 	d2cs_d2gs_protocol.h d2cs_protocol.h scoped_array.h scoped_ptr.h \
-	fdwbackend.h xstr.h
+	fdwbackend.h xstr.h systemerror.h
