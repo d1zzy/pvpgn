@@ -34,10 +34,10 @@ public:
 		cleanup();
 	}
 
-	/** get the wrapped array pointer */
+	/** get the wrapped pointer */
 	T* get() const { return ptr; }
 
-	/** release ownership of the array */
+	/** release ownership of the memory */
 	T* release() {
 		T* tmp = ptr;
 		ptr = 0;
@@ -69,7 +69,7 @@ public:
 private:
 	T* ptr;
 
-	/* do not allow to copy a scoped_array */
+	/* do not allow to copy a scoped_ptr */
 	scoped_ptr(const scoped_ptr&);
 	scoped_ptr& operator=(const scoped_ptr&);
 
