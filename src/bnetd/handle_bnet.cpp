@@ -2880,7 +2880,7 @@ static int _client_adreq(t_connection * c, t_packet const *const packet)
     }
 
     {
-	const AdBanner *ad = adbannerlist_pick(conn_get_clienttag(c), bn_int_get(packet->u.client_adreq.prev_adid));
+	const AdBanner *ad = adbannerlist->pick(conn_get_clienttag(c), bn_int_get(packet->u.client_adreq.prev_adid));
 	if (!ad)
 		return 0;
 
@@ -2943,7 +2943,7 @@ static int _client_adclick2(t_connection * c, t_packet const *const packet)
     eventlog(eventlog_level_info, __FUNCTION__, "[%d] ad click2 for adid 0x%04hx from \"%s\"", conn_get_socket(c), bn_int_get(packet->u.client_adclick2.adid), conn_get_username(c));
 
     {
-	const AdBanner *ad = adbannerlist_find(conn_get_clienttag(c), bn_int_get(packet->u.client_adclick2.adid));
+	const AdBanner *ad = adbannerlist->find(conn_get_clienttag(c), bn_int_get(packet->u.client_adclick2.adid));
 	if (!ad)
 		return -1;
 

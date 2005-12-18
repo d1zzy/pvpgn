@@ -15,12 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#include "common/tag.h"
-
-#ifndef INCLUDED_ADBANNER_TYPES
-#define INCLUDED_ADBANNER_TYPES
+#ifndef INCLUDED_ADBANNER_H
+#define INCLUDED_ADBANNER_H
 
 #include <string>
+#include <map>
+
+#include "common/tag.h"
+#include "common/scoped_ptr.h"
 
 namespace pvpgn
 {
@@ -31,7 +33,7 @@ namespace bnetd
 class AdBanner
 {
 public:
-	AdBanner(unsigned id_, bn_int extag, unsigned delay_, unsigned next_, const std::string& fname, const std::string& link_, const char* clientstr);
+	AdBanner(unsigned id_, bn_int extag, unsigned delay_, unsigned next_, const std::string& fname, const std::string& link_, t_clienttag client_);
 	~AdBanner() throw();
 
 	unsigned getId() const;
@@ -51,36 +53,34 @@ private:
 	t_clienttag client;
 };
 
-}
-
-}
-
-#endif
-
-
-/*****/
-#ifndef JUST_NEED_TYPES
-#ifndef INCLUDED_ADBANNER_PROTOS
-#define INCLUDED_ADBANNER_PROTOS
-
-#define JUST_NEED_TYPES
-#include "connection.h"
-#undef JUST_NEED_TYPES
-
-namespace pvpgn
+class AdBannerComponent
 {
+public:
+	explicit AdBannerComponent(const std::string& fname);
+	~AdBannerComponent() throw();
 
-namespace bnetd
-{
+	const AdBanner* pick(t_clienttag ctag, unsigned prev_id) const;
+	const AdBanner* find(t_clienttag ctag, unsigned id) const;
 
-extern int adbannerlist_create(char const * filename);
-extern int adbannerlist_destroy(void);
-extern const AdBanner* adbannerlist_pick(t_clienttag ctag, unsigned int prev_id);
-extern const AdBanner* adbannerlist_find(t_clienttag ctag, unsigned int id);
+private:
+	typedef std::map<unsigned, AdBanner> AdIdMap;
+	typedef std::map<t_clienttag, AdIdMap> AdCtagMap;
+	typedef std::map<unsigned, AdIdMap::const_iterator> AdIdRefMap;
+	typedef std::map<t_clienttag, AdIdRefMap> AdCtagRefMap;
+
+	AdCtagMap adlist;
+	AdCtagRefMap adlist_init;
+	AdCtagRefMap adlist_start;
+	AdCtagRefMap adlist_norm;
+
+	const AdBanner* findRandom(const AdCtagRefMap& where, t_clienttag ctag) const;
+	void insert(AdCtagRefMap& where, const std::string& fname, unsigned id, unsigned delay, const std::string& link, unsigned next_id, const std::string& client);
+};
+
+extern scoped_ptr<AdBannerComponent> adbannerlist;
 
 }
 
 }
 
-#endif
 #endif

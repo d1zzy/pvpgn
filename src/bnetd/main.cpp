@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 1998  Mark Baysinger (mbaysing@ucsd.edu)
  * Copyright (C) 1998,1999,2000  Ross Combs (rocombs@cs.nmsu.edu)
+ * Copyright (C) 2005 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -338,8 +339,7 @@ int pre_server_startup(void)
     ipbanlist_create();
     if (ipbanlist_load(prefs_get_ipbanfile())<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load IP ban list");
-    if (adbannerlist_create(prefs_get_adfile())<0)
-	eventlog(eventlog_level_error,__FUNCTION__,"could not load adbanner list");
+    adbannerlist.reset(new AdBannerComponent(prefs_get_adfile()));
     if (autoupdate_load(prefs_get_mpqfile())<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load autoupdate list");
     if (versioncheck_load(prefs_get_versioncheck_file())<0)
@@ -405,7 +405,7 @@ void post_server_shutdown(int status)
 	    news_unload();
     	    versioncheck_unload();
     	    autoupdate_unload();
-    	    adbannerlist_destroy();
+    	    delete adbannerlist.release();
     	    ipbanlist_save(prefs_get_ipbanfile());
     	    ipbanlist_destroy();
     	    helpfile_unload();

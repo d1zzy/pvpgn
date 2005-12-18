@@ -1385,10 +1385,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 	    if (helpfile_init(prefs_get_helpfile())<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not load the helpfile");
 
-	    if (adbannerlist_destroy()<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not unload old adbanner list");
-	    if (adbannerlist_create(prefs_get_adfile())<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not load new adbanner list");
+	    adbannerlist.reset(new AdBannerComponent(prefs_get_adfile()));
 
 	    ladder_reload_conf();
 
