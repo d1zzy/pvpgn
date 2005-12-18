@@ -3449,7 +3449,7 @@ static int _client_joingame(t_connection * c, t_packet const *const packet)
     eventlog(eventlog_level_debug, __FUNCTION__, "[%d] trying to join game \"%s\" pass=\"%s\"", conn_get_socket(c), gamename, gamepass);
 
     if (conn_get_joingamewhisper_ack(c) == 0) {
-	watchlist_notify_event(conn_get_account(c), gamename, conn_get_clienttag(c), watch_event_joingame);
+	watchlist->dispatch(conn_get_account(c), gamename, conn_get_clienttag(c), Watch::ET_joingame);
 	conn_set_joingamewhisper_ack(c, 1);	/* 1 = already whispered. We reset this each time user joins a channel */
 	clanmember_on_change_status_by_connection(c);
     }
@@ -3515,7 +3515,7 @@ static int _client_startgame1(t_connection * c, t_packet const *const packet)
 	    return -1;
 	}
 	if (conn_get_joingamewhisper_ack(c) == 0) {
-	    if (watchlist_notify_event(conn_get_account(c), gamename, conn_get_clienttag(c), watch_event_joingame) == 0)
+	    if (watchlist->dispatch(conn_get_account(c), gamename, conn_get_clienttag(c), Watch::ET_joingame) == 0)
 		eventlog(eventlog_level_info, "handle_bnet", "Told Mutual Friends your in game %s", gamename);
 
 	    conn_set_joingamewhisper_ack(c, 1);	//1 = already whispered. We reset this each time user joins a channel
@@ -3601,7 +3601,7 @@ static int _client_startgame3(t_connection * c, t_packet const *const packet)
 	    return -1;
 	}
 	if (conn_get_joingamewhisper_ack(c) == 0) {
-	    if (watchlist_notify_event(conn_get_account(c), gamename, conn_get_clienttag(c), watch_event_joingame) == 0)
+	    if (watchlist->dispatch(conn_get_account(c), gamename, conn_get_clienttag(c), Watch::ET_joingame) == 0)
 		eventlog(eventlog_level_info, "handle_bnet", "Told Mutual Friends your in game %s", gamename);
 
 	    conn_set_joingamewhisper_ack(c, 1);	//1 = already whispered. We reset this each time user joins a channel
@@ -3690,7 +3690,7 @@ static int _client_startgame4(t_connection * c, t_packet const *const packet)
 	    return -1;
 	}
 	if (conn_get_joingamewhisper_ack(c) == 0) {
-	    if (watchlist_notify_event(conn_get_account(c), gamename, conn_get_clienttag(c), watch_event_joingame) == 0)
+	    if (watchlist->dispatch(conn_get_account(c), gamename, conn_get_clienttag(c), Watch::ET_joingame) == 0)
 		eventlog(eventlog_level_info, "handle_bnet", "Told Mutual Friends your in game %s", gamename);
 
 	    conn_set_joingamewhisper_ack(c, 1);	//1 = already whispered. We reset this each time user joins a channel

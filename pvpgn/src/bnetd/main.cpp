@@ -346,7 +346,7 @@ int pre_server_startup(void)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load versioncheck list");
    if (news_load(prefs_get_newsfile())<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load news list");
-    watchlist_create();
+    watchlist.reset(new WatchComponent());
     output_init();
     attrlayer_init();
     accountlist_create();
@@ -401,11 +401,11 @@ void post_server_shutdown(int status)
 	    output_dispose_filename();
 	    accountlist_destroy();
     	    attrlayer_cleanup();
-    	    watchlist_destroy();
+    	    watchlist.reset();
 	    news_unload();
     	    versioncheck_unload();
     	    autoupdate_unload();
-    	    delete adbannerlist.release();
+    	    adbannerlist.reset();
     	    ipbanlist_save(prefs_get_ipbanfile());
     	    ipbanlist_destroy();
     	    helpfile_unload();
