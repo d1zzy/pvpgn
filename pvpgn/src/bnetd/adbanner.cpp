@@ -22,21 +22,6 @@
 #include <fstream>
 #include <sstream>
 
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
 #ifdef HAVE_STRING_H
 # include <string.h>
 #else
@@ -44,20 +29,11 @@
 #  include <strings.h>
 # endif
 #endif
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
-#include "compat/strrchr.h"
-#include "compat/strdup.h"
 #include "compat/strcasecmp.h"
 #include <errno.h>
 #include "compat/strerror.h"
-#include "common/tag.h"
 #include "common/bn_type.h"
 #include "common/eventlog.h"
-#include "common/list.h"
-#include "common/util.h"
-#include "common/xalloc.h"
 #include "common/systemerror.h"
 #include "connection.h"
 #include "adbanner.h"
