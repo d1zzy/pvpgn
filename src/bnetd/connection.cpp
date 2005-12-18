@@ -627,13 +627,13 @@ extern void conn_destroy(t_connection * c, t_elem ** elem, int conn_or_dead_list
     conn_set_game(c,NULL,NULL,NULL,game_type_none,0);
     c->protocol.state = conn_state_empty;
 
-    watchlist_del_all_events(c);
+    watchlist->del(c);
     timerlist_del_all_timers(c);
 
     clanmember_set_offline(c);
 
     if(c->protocol.account)
-	watchlist_notify_event(c->protocol.account,NULL,c->protocol.client.clienttag,watch_event_logout);
+	watchlist->dispatch(c->protocol.account,NULL,c->protocol.client.clienttag,Watch::ET_logout);
 
     if (c->protocol.client.versioncheck)
 	versioncheck_destroy((t_versioncheck*)c->protocol.client.versioncheck); /* avoid warning */
@@ -1494,7 +1494,7 @@ static void conn_set_account(t_connection * c, t_account * account)
 
     totalcount++;
 
-    watchlist_notify_event(c->protocol.account,NULL,c->protocol.client.clienttag,watch_event_login);
+    watchlist->dispatch(c->protocol.account, NULL, c->protocol.client.clienttag, Watch::ET_login);
 
     return;
 }
@@ -1789,8 +1789,7 @@ extern int conn_add_watch(t_connection * c, t_account * account, t_clienttag cli
         return -1;
     }
 
-    if (watchlist_add_events(c,account,clienttag,watch_event_login|watch_event_logout|watch_event_joingame|watch_event_leavegame)<0)
-	return -1;
+    watchlist->add(c, account, clienttag, Watch::ET_login|Watch::ET_logout|Watch::ET_joingame|Watch::ET_leavegame);
     return 0;
 }
 
@@ -1803,7 +1802,7 @@ extern int conn_del_watch(t_connection * c, t_account * account, t_clienttag cli
         return -1;
     }
 
-    if (watchlist_del_events(c,account,clienttag,watch_event_login|watch_event_logout|watch_event_joingame|watch_event_leavegame)<0)
+    if (watchlist->del(c, account, clienttag, Watch::ET_login|Watch::ET_logout|Watch::ET_joingame|Watch::ET_leavegame)<0)
 	return -1;
     return 0;
 }

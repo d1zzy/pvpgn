@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 1999  Ross Combs (rocombs@cs.nmsu.edu)
+ * Copyright (C) 2005 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,62 +16,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef INCLUDED_WATCH_TYPES
-#define INCLUDED_WATCH_TYPES
+#ifndef PVPGN_BNETD_WATCH_H
+#define PVPGN_BNETD_WATCH_H
 
-#ifdef WATCH_INTERNAL_ACCESS
+#include <list>
 
-#ifdef JUST_NEED_TYPES
-# include "account.h"
-# include "connection.h"
-#else
-# define JUST_NEED_TYPES
-# include "account.h"
-# include "connection.h"
-# undef JUST_NEED_TYPES
-#endif
-#include "common/tag.h"
+#include "common/scoped_ptr.h"
 
-#endif
-
-namespace pvpgn
-{
-
-namespace bnetd
-{
-
-typedef enum
-{
-    watch_event_login=1,
-    watch_event_logout=2,
-    watch_event_joingame=4,
-    watch_event_leavegame=8
-} t_watch_event;
-
-#ifdef WATCH_INTERNAL_ACCESS
-typedef struct
-{
-    t_connection * owner; /* who to notify */
-    t_account *    who;   /* when this account */
-    unsigned       what;  /* does one of these things */
-    t_clienttag clienttag;
-} t_watch_pair;
-#endif
-
-}
-
-}
-
-#endif
-
-#ifndef JUST_NEED_TYPES
-#ifndef INCLUDED_WATCH_PROTOS
-#define INCLUDED_WATCH_PROTOS
-
-#define JUST_NEED_TYPES
 #include "account.h"
 #include "connection.h"
-#undef JUST_NEED_TYPES
+#include "common/tag.h"
 
 namespace pvpgn
 {
@@ -78,17 +33,57 @@ namespace pvpgn
 namespace bnetd
 {
 
-extern int watchlist_create(void);
-extern int watchlist_destroy(void);
-extern int watchlist_add_events(t_connection * owner, t_account * who, t_clienttag clienttag, unsigned events);
-extern int watchlist_del_events(t_connection * owner, t_account * who, t_clienttag clienttag, unsigned events);
-extern int watchlist_del_all_events(t_connection * owner);
-extern int watchlist_del_by_account(t_account * account);
-extern int watchlist_notify_event(t_account * who, char const * gamename, t_clienttag clienttag, t_watch_event event);
+class Watch
+{
+public:
+	enum EventType
+	{
+		ET_login=1,
+		ET_logout=2,
+		ET_joingame=4,
+		ET_leavegame=8
+	};
+
+	Watch(t_connection* owner_, t_account* who_, unsigned what_, t_clienttag ctag_);
+	~Watch() throw();
+
+	t_connection* getOwner() const;
+	t_account* getAccount() const;
+	unsigned getEventMask() const;
+	t_clienttag getClientTag() const;
+
+	void setEventMask(unsigned what_);
+
+private:
+	t_connection * owner; /* who to notify */
+	t_account *    who;   /* when this account */
+	unsigned       what;  /* does one of these things */
+	t_clienttag    ctag;  /* while logged in with this clienttag (0 for any) */
+};
+
+class WatchComponent
+{
+public:
+	WatchComponent();
+	~WatchComponent() throw();
+
+	void add(t_connection * owner, t_account * who, t_clienttag clienttag, unsigned events);
+	int del(t_connection * owner, t_account * who, t_clienttag clienttag, unsigned events);
+	void del(t_connection * owner);
+	int dispatch(t_account * who, char const * gamename, t_clienttag clienttag, Watch::EventType event) const;
+
+private:
+	typedef std::list<Watch> WatchList;
+
+	WatchList wlist;
+
+	int dispatch_whisper(t_account *account, char const *gamename, t_clienttag clienttag, Watch::EventType event) const;
+};
+
+extern scoped_ptr<WatchComponent> watchlist;
 
 }
 
 }
 
-#endif
 #endif
