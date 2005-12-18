@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 1999  Ross Combs (rocombs@cs.nmsu.edu)
+ * Copyright (C) 2005 Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,6 +19,8 @@
 #include "common/setup_before.h"
 
 #include <stdexcept>
+#include <fstream>
+#include <sstream>
 
 #include <stdio.h>
 #ifdef HAVE_STDDEF_H
@@ -55,6 +58,7 @@
 #include "common/list.h"
 #include "common/util.h"
 #include "common/xalloc.h"
+#include "common/systemerror.h"
 #include "connection.h"
 #include "adbanner.h"
 #include "common/setup_after.h"
@@ -66,34 +70,16 @@ namespace pvpgn
 namespace bnetd
 {
 
-static t_list * adbannerlist_init_head=NULL;
-static t_list * adbannerlist_start_head=NULL;
-static t_list * adbannerlist_norm_head=NULL;
-static unsigned int adbannerlist_init_count=0;
-static unsigned int adbannerlist_start_count=0;
-static unsigned int adbannerlist_norm_count=0;
+scoped_ptr<AdBannerComponent> adbannerlist;
 
-
-static int adbannerlist_insert(t_list * head, unsigned int * count, char const * filename, unsigned int delay, char const * link, unsigned int next_id, char const * client);
-static AdBanner * adbannerlist_find_adbanner_by_id(t_list const * head, unsigned int id, t_clienttag clienttag);
-static AdBanner * adbannerlist_get_random(t_list const * head, t_clienttag client);
-
-AdBanner::AdBanner(unsigned id_, bn_int extag, unsigned delay_, unsigned next_, const std::string& fname, const std::string& link_, const char* clientstr)
-:id(id_), extensiontag(bn_int_get(extag)), delay(delay_), next(next_), filename(fname), link(link_)
+AdBanner::AdBanner(unsigned id_, bn_int extag, unsigned delay_, unsigned next_, const std::string& fname, const std::string& link_, t_clienttag client_)
+:id(id_), extensiontag(bn_int_get(extag)), delay(delay_), next(next_), filename(fname), link(link_), client(client_)
 {
-	if (!clientstr)
-		throw std::runtime_error("Got bad client");
-
-	if (strcasecmp(clientstr,"NULL")==0)
-		client = 0;
-	else
-		client = clienttag_str_to_uint(clientstr);
-
 	/* I'm aware that this statement looks stupid */
 	if (client && (!tag_check_client(client)))
-		throw std::runtime_error("banner with invalid clienttag \"" + std::string(clientstr) + "\"encountered");
+		throw std::runtime_error("banner with invalid clienttag \"" + std::string(clienttag_uint_to_str(client)) + "\"encountered");
 
-	eventlog(eventlog_level_debug,__FUNCTION__,"created ad id=0x%08x filename=\"%s\" extensiontag=0x%04x delay=%u link=\"%s\" next_id=0x%08x client=\"%s\"",id, filename.c_str(), extensiontag, delay, link.c_str(), next, clientstr ? clientstr : "");
+	eventlog(eventlog_level_debug,__FUNCTION__, "created ad id=0x%08x filename=\"%s\" extensiontag=0x%04x delay=%u link=\"%s\" next_id=0x%08x client=\"%s\"", id, filename.c_str(), extensiontag, delay, link.c_str(), next, client ? clienttag_uint_to_str(client) : "NULL");
 }
 
 
@@ -102,59 +88,43 @@ AdBanner::~AdBanner() throw()
 }
 
 const AdBanner*
-adbannerlist_find(t_clienttag ctag, unsigned id)
+AdBannerComponent::find(t_clienttag ctag, unsigned id) const
 {
-	AdBanner* banner;
+	AdCtagMap::const_iterator cit(adlist.find(ctag));
+	if (cit == adlist.end()) return 0;
 
-	banner = adbannerlist_find_adbanner_by_id(adbannerlist_init_head,id,ctag);
-	if (!banner) banner = adbannerlist_find_adbanner_by_id(adbannerlist_start_head,id,ctag);
-	if (!banner) banner = adbannerlist_find_adbanner_by_id(adbannerlist_norm_head,id,ctag);
+	AdIdMap::const_iterator iit(cit->second.find(id));
+	if (iit == cit->second.end()) return 0;
 
-	return banner;
+	return &(iit->second);
 }
 
 const AdBanner*
-adbannerlist_pick(t_clienttag ctag, unsigned int prev_id)
+AdBannerComponent::pick(t_clienttag ctag, unsigned  prev_id) const
 {
     /* eventlog(eventlog_level_debug,__FUNCTION__,"prev_id=%u init_count=%u start_count=%u norm_count=%u",prev_id,adbannerlist_init_count,adbannerlist_start_count,adbannerlist_norm_count); */
     /* if this is the first ad, randomly choose an init sequence (if there is one) */
-	if (prev_id==0 && adbannerlist_init_count>0)
-		return adbannerlist_get_random(adbannerlist_init_head,ctag);
+	if (prev_id==0 && !adlist_init.empty())
+		return findRandom(adlist_init, ctag);
 //        return list_get_data_by_pos(adbannerlist_init_head,((unsigned int)rand())%adbannerlist_init_count);
     /* eventlog(eventlog_level_debug,__FUNCTION__,"not sending init banner"); */
 
-	AdBanner const * prev;
-	unsigned int       next_id;
-
-    /* find the previous adbanner */
-	if ((prev = adbannerlist_find_adbanner_by_id(adbannerlist_init_head,prev_id,ctag)))
-		next_id = prev->getNextId();
-	else if ((prev = adbannerlist_find_adbanner_by_id(adbannerlist_start_head,prev_id,ctag)))
-		next_id = prev->getNextId();
-	else if ((prev = adbannerlist_find_adbanner_by_id(adbannerlist_norm_head,prev_id,ctag)))
-		next_id = prev->getNextId();
-	else
-		next_id = 0;
+	unsigned next_id = 0;
+	const AdBanner* prev(find(ctag, prev_id));
+	if (prev) next_id = prev->getNextId();
 
 	/* return its next ad if there is one */
 	if (next_id)
 	{
-		AdBanner * curr;
-
-		if ((curr = adbannerlist_find_adbanner_by_id(adbannerlist_init_head,next_id,ctag)))
-			return curr;
-		if ((curr = adbannerlist_find_adbanner_by_id(adbannerlist_start_head,next_id,ctag)))
-			return curr;
-		if ((curr = adbannerlist_find_adbanner_by_id(adbannerlist_norm_head,next_id,ctag)))
-			return curr;
-
-		eventlog(eventlog_level_error,__FUNCTION__,"could not locate next requested ad with id 0x%06x",next_id);
+		const AdBanner* curr(find(ctag, next_id));
+		if (curr) return curr;
+		ERROR1("could not locate next requested ad with id 0x%06x", next_id);
 	}
     /* eventlog(eventlog_level_debug,__FUNCTION__,"not sending next banner"); */
 
     /* otherwise choose another starting point randomly */
-	if (adbannerlist_start_count>0)
-		return adbannerlist_get_random(adbannerlist_start_head,ctag);
+	if (!adlist_start.empty())
+		return findRandom(adlist_start, ctag);
 
 	/* eventlog(eventlog_level_debug,__FUNCTION__,"not sending start banner... nothing to return"); */
 	return NULL; /* nothing else to return */
@@ -200,256 +170,157 @@ AdBanner::getClient() const
 }
 
 
-static AdBanner *
-adbannerlist_find_adbanner_by_id(t_list const * head, unsigned int id, t_clienttag clienttag)
+const AdBanner*
+AdBannerComponent::findRandom(const AdCtagRefMap& where, t_clienttag ctag) const
 {
-	if (!head)
-		return NULL;
-
-	t_elem const * curr;
-	AdBanner *   temp;
-
-	LIST_TRAVERSE_CONST(head,curr)
+	/* first try to lookup a random banner into the specific client tag map */
+	AdCtagRefMap::const_iterator cit(where.find(ctag));
+	if (cit != where.end() && cit->second.size() > 0)
 	{
-		if (!(temp = (AdBanner*)elem_get_data(curr)))
+		unsigned pos = (static_cast<unsigned>(rand())) % cit->second.size();
+		/* TODO: optimize this linear search ? */
+		for(AdIdRefMap::const_iterator it(cit->second.begin()); it != cit->second.end(); ++it)
 		{
-			eventlog(eventlog_level_error,__FUNCTION__,"found NULL adbanner in list");
-			continue;
+			if (!pos) return &(it->second->second);
+			--pos;
 		}
-		if (temp->getId() == id && (temp->getClient() == 0 || temp->getClient() == clienttag))
-			return temp;
 	}
 
-	return NULL;
-}
+	if (ctag != 0) return findRandom(where, 0);
 
-/*
- * Dizzy: maybe we should use a temporary list, right now we parse the list for
- * 2 times. It should not matter for servers without more than 20 ads :)
-*/
-static AdBanner *
-adbannerlist_get_random(t_list const * head, t_clienttag client)
-{
-	if (!head)
-		return NULL;
-
-	t_elem const * curr;
-	AdBanner *   temp;
-	unsigned ccount, ocount, pos;
-
-	ocount = 0; ccount = 0;
-	LIST_TRAVERSE_CONST(head,curr)
-	{
-		if (!(temp = (AdBanner*)elem_get_data(curr)))
-		{
-			eventlog(eventlog_level_error,__FUNCTION__,"found NULL adbanner in list");
-			continue;
-		}
-		if ((temp->getClient() == client))
-			ccount++;
-		else if ((temp->getClient() == 0))
-			ocount++;
-	}
-
-	if (ccount) {
-		pos = ((unsigned int)rand())%ccount;
-		ccount = 0;
-		LIST_TRAVERSE_CONST(head,curr)
-		{
-			if (!(temp = (AdBanner*)elem_get_data(curr))) continue;
-			if ((temp->getClient() == client))
-				if (ccount++ == pos) return temp;
-		}
-		eventlog(eventlog_level_error,__FUNCTION__,"found client ads but couldnt locate random chosed!");
-	} else if (ocount) {
-		pos = ((unsigned int)rand())%ocount;
-		ocount = 0;
-		LIST_TRAVERSE_CONST(head,curr)
-		{
-			if (!(temp = (AdBanner*)elem_get_data(curr))) continue;
-			if ((temp->getClient() == 0))
-				if (ocount++ == pos) return temp;
-		}
-		eventlog(eventlog_level_error,__FUNCTION__,"couldnt locate random chosed!");
-	}
-
-	return NULL;
+	return 0;
 }
 
 
-static int adbannerlist_insert(t_list * head, unsigned int * count, char const * filename, unsigned int delay, char const * link, unsigned int next_id, char const * client)
+void
+AdBannerComponent::insert(AdCtagRefMap& where, const std::string& fname, unsigned id, unsigned delay, const std::string& link, unsigned next_id, const std::string& client)
 {
-	assert(head != NULL);
-	assert(count != NULL);
-	assert(filename != NULL);
-	assert(link != NULL);
-
-	if (strlen(filename)<7)
+	std::string::size_type idx(fname.rfind('.'));
+	if (idx == std::string::npos || idx + 4 != fname.size())
 	{
-		eventlog(eventlog_level_error,__FUNCTION__,"got bad ad filename \"%s\"",filename);
-		return -1;
+		ERROR1("Invalid extension for '%s'", fname.c_str());
+		return;
 	}
 
-	char *       ext = (char*)xmalloc(strlen(filename));
-	unsigned int id;
-	if (sscanf(filename,"%*c%*c%x.%s",&id,ext)!=2)
-	{
-		eventlog(eventlog_level_error,__FUNCTION__,"got bad ad filename \"%s\"",filename);
-		xfree(ext);
-		return -1;
-	}
+	std::string ext(fname.substr(idx + 1));
 
-	bn_int       bntag;
-	if (strcasecmp(ext,"pcx")==0)
-		bn_int_tag_set(&bntag,EXTENSIONTAG_PCX);
-	else if (strcasecmp(ext,"mng")==0)
-		bn_int_tag_set(&bntag,EXTENSIONTAG_MNG);
-	else if (strcasecmp(ext,"smk")==0)
-		bn_int_tag_set(&bntag,EXTENSIONTAG_SMK);
+	bn_int bntag;
+	if (strcasecmp(ext.c_str(), "pcx") == 0)
+		bn_int_tag_set(&bntag, EXTENSIONTAG_PCX);
+	else if (strcasecmp(ext.c_str(), "mng") == 0)
+		bn_int_tag_set(&bntag, EXTENSIONTAG_MNG);
+	else if (strcasecmp(ext.c_str(), "smk") == 0)
+		bn_int_tag_set(&bntag, EXTENSIONTAG_SMK);
 	else {
-		eventlog(eventlog_level_error,__FUNCTION__,"unknown extension on filename \"%s\"",filename);
-		xfree(ext);
-		return -1;
+		ERROR1("unknown extension on filename \"%s\"", fname.c_str());
+		return;
 	}
-	xfree(ext);
 
-	list_prepend_data(head, new AdBanner(id, bntag, delay, next_id, filename, link, client));
-
-	(*count)++;
-
-	return 0;
-}
-
-extern int adbannerlist_create(char const * filename)
-{
-    FILE *          fp;
-    unsigned int    line;
-    unsigned int    pos;
-    unsigned int    len;
-    char *          buff;
-    char *          name;
-    char *          when;
-    char *          link;
-    char *	    client;
-    char *          temp;
-    unsigned int    delay;
-    unsigned int    next_id;
-
-    if (!filename)
-    {
-        eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
-        return -1;
-    }
-
-    adbannerlist_init_head = list_create();
-    adbannerlist_start_head = list_create();
-    adbannerlist_norm_head = list_create();
-
-    if (!(fp = fopen(filename,"r")))
-    {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open adbanner file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
-	list_destroy(adbannerlist_norm_head);
-	list_destroy(adbannerlist_start_head);
-	list_destroy(adbannerlist_init_head);
-	adbannerlist_init_head=adbannerlist_start_head=adbannerlist_norm_head = NULL;
-        return -1;
-    }
-
-    for (line=1; (buff = file_get_line(fp)); line++)
-    {
-        for (pos=0; buff[pos]=='\t' || buff[pos]==' '; pos++);
-        if (buff[pos]=='\0' || buff[pos]=='#')
-        {
-            continue;
-        }
-        if ((temp = strrchr(buff,'#')))
-        {
-	    unsigned int endpos;
-
-            *temp = '\0';
-	    len = strlen(buff)+1;
-            for (endpos=len-1;  buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
-            buff[endpos+1] = '\0';
-        }
-        len = strlen(buff)+1;
-
-        name = (char*)xmalloc(len);
-        when = (char*)xmalloc(len);
-        link = (char*)xmalloc(len);
-        client =(char*) xmalloc(len);
-
-	if (sscanf(buff," \"%[^\"]\" %[a-z] %u \"%[^\"]\" %x \"%[^\"]\"",name,when,&delay,link,&next_id,client)!=6)
-	    {
-		eventlog(eventlog_level_error,__FUNCTION__,"malformed line %u in file \"%s\"",line,filename);
-		xfree(client);
-		xfree(link);
-		xfree(name);
-         	xfree(when);
-		continue;
-	    }
-
-	if (strcmp(when,"init")==0)
-	    adbannerlist_insert(adbannerlist_init_head,&adbannerlist_init_count,name,delay,link,next_id,client);
-	else if (strcmp(when,"start")==0)
-	    adbannerlist_insert(adbannerlist_start_head,&adbannerlist_start_count,name,delay,link,next_id,client);
-	else if (strcmp(when,"norm")==0)
-	    adbannerlist_insert(adbannerlist_norm_head,&adbannerlist_norm_count,name,delay,link,next_id,client);
+	t_clienttag ctag;
+	if (!strcasecmp(client.c_str(), "NULL"))
+		ctag = 0;
 	else
-	    eventlog(eventlog_level_error,__FUNCTION__,"when field has unknown value on line %u in file \"%s\"",line,filename);
+		ctag = clienttag_str_to_uint(client.c_str());
 
-	xfree(client);
-	xfree(link);
-	xfree(name);
-        xfree(when);
-    }
+	AdCtagMap::iterator cit(adlist.find(ctag));
+	if (cit == adlist.end())
+	{
+		std::pair<AdCtagMap::iterator, bool> res(adlist.insert(std::make_pair(ctag, AdIdMap())));
+		if (!res.second)
+			throw std::runtime_error("Could not insert unexistent element into map?!");
+		cit = res.first;
+	}
 
-    file_get_line(NULL); // clear file_get_line buffer
-    if (fclose(fp)<0)
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close adbanner file \"%s\" after reading (fclose: %s)",filename,pstrerror(errno));
-    return 0;
+	std::pair<AdIdMap::iterator, bool> res(cit->second.insert(std::make_pair(id, AdBanner(id, bntag, delay, next_id, fname, link, ctag))));
+	if (!res.second)
+	{
+		ERROR0("Couldnt insert new ad banner, duplicate banner IDs ?!");
+		return;
+	}
+
+	AdCtagRefMap::iterator cit2(where.find(ctag));
+	if (cit2 == where.end())
+	{
+		std::pair<AdCtagRefMap::iterator, bool> res2(where.insert(std::make_pair(ctag, AdIdRefMap())));
+		if (!res2.second)
+		{
+			cit->second.erase(res.first);
+			throw std::runtime_error("Could not insert unexistent element into map?!");
+		}
+		cit2 = res2.first;
+	}
+
+	if (!cit2->second.insert(std::make_pair(id, res.first)).second)
+	{
+		cit->second.erase(res.first);
+		throw std::runtime_error("Could not insert unexistent element into map?!");
+	}
 }
 
-
-static void destroy_adlist(t_list* list)
+AdBannerComponent::AdBannerComponent(const std::string& fname)
+:adlist(), adlist_init(), adlist_start(), adlist_norm()
 {
-	t_elem *     curr;
-	AdBanner * ad;
-
-	LIST_TRAVERSE(list, curr)
+	std::ifstream fp(fname.c_str());
+	if (!fp)
 	{
-		if (!(ad = (AdBanner*)elem_get_data(curr)))
-			eventlog(eventlog_level_error,__FUNCTION__,"found NULL adbanner in init list");
-		else delete ad;
-		list_remove_elem(list, &curr);
+		ERROR2("could not open adbanner file \"%s\" for reading (fopen: %s)", fname.c_str(), pstrerror(errno));
+		throw SystemError("open");
 	}
-	list_destroy(list);
+
+	unsigned delay;
+	unsigned next_id;
+	unsigned id;
+
+	std::string name, when, link, client;
+	std::string buff;
+	for(unsigned line = 1; std::getline(fp, buff); ++line)
+	{
+		std::string::size_type idx(buff.find('#'));
+		if (idx != std::string::npos) buff.erase(idx);
+
+		idx = buff.find_first_not_of(" \t");
+		if (idx == std::string::npos) continue;
+
+		std::istringstream is(buff);
+
+		is >> name;
+		is >> id;
+		is >> when;
+		is >> delay;
+		is >> link;
+		is >> std::hex >> next_id;
+		is >> client;
+
+		if (!is || name.size() < 2 || link.size() < 2 || client.size() < 2 || id < 1)
+		{
+			ERROR2("malformed line %u in file \"%s\"", line, fname.c_str());
+			continue;
+		}
+
+		name.erase(0, 1);
+		name.erase(name.size() - 1);
+		link.erase(0, 1);
+		link.erase(link.size() - 1);
+		client.erase(0, 1);
+		client.erase(client.size() - 1);
+
+		if (when == "init")
+			insert(adlist_init, name, id, delay, link, next_id, client);
+		else if (when == "start")
+			insert(adlist_start, name, id, delay, link, next_id, client);
+		else if (when == "norm")
+			insert(adlist_norm, name, id, delay, link, next_id, client);
+		else
+/*
+			ERROR4("when field has unknown value on line %u in file \"%s\": \"%s\" when == init: %d", line, fname.c_str(), when.c_str(), when == "init");
+*/
+			eventlog(eventlog_level_error, __FUNCTION__, "when field has unknown value on line %u in file \"%s\": \"%s\" when == init: %d", line, fname.c_str(), when.c_str(), when == "init");
+	}
 }
 
-extern int adbannerlist_destroy(void)
-{
-	if (adbannerlist_init_head)
-	{
-		destroy_adlist(adbannerlist_init_head);
-		adbannerlist_init_head = NULL;
-		adbannerlist_init_count = 0;
-	}
 
-	if (adbannerlist_start_head)
-	{
-		destroy_adlist(adbannerlist_start_head);
-		adbannerlist_start_head = NULL;
-		adbannerlist_start_count = 0;
-	}
-
-	if (adbannerlist_norm_head)
-	{
-		destroy_adlist(adbannerlist_norm_head);
-		adbannerlist_norm_head = NULL;
-		adbannerlist_norm_count = 0;
-	}
-
-	return 0;
-}
+AdBannerComponent::~AdBannerComponent() throw()
+{}
 
 }
 
