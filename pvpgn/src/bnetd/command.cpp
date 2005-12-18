@@ -4538,7 +4538,14 @@ static int _handle_topic_command(t_connection * c, char const * text)
     message_send_text(c,message_type_error,c,msgtemp);
     return -1;
   }
-
+  
+  if (strlen(topic) >= MAX_TOPIC_LEN)
+  {
+    sprintf(msgtemp,"max topic length exceeded (max %d symbols)", MAX_TOPIC_LEN);
+    message_send_text(c,message_type_error,c,msgtemp);
+    return -1;
+  }
+  
   channel_name = channel_get_name(channel);
 
   if (!(account_is_operator_or_admin(conn_get_account(c),channel_name))) {
