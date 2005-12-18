@@ -45,7 +45,7 @@ public:
 	}
 
 	/** reinitilize object, release owned resource first if any */
-	void reset(T* ptr_) {
+	void reset(T* ptr_ = 0) {
 		cleanup();
 		ptr = ptr_;
 	}
