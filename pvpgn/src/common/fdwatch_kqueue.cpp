@@ -22,22 +22,13 @@
   */
 
 #include "common/setup_before.h"
+#ifdef HAVE_KQUEUE
 #include "fdwatch_kqueue.h"
 #include <cstring>
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_EVENT_H
-# include <sys/event.h>
-#endif
-#ifdef HAVE_SYS_TIME_H
-# include <sys/time.h>
-#endif
 #include "common/eventlog.h"
 #include "fdwatch.h"
 #include "common/setup_after.h"
 
-#ifdef HAVE_KQUEUE
 namespace pvpgn
 {
 
@@ -97,7 +88,7 @@ FDWKqueueBackend::add(int idx, unsigned rw)
 			rridx[idx] = idxr;
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (read) fd on %d", ridx); */
 		}
-		EV_SET(kqchanges + idxr, fdw_fd(cfd), EVFILT_READ, EV_DELETE, 0, 0, (void*)idx);
+		EV_SET(kqchanges.get() + idxr, fdw_fd(cfd), EVFILT_READ, EV_DELETE, 0, 0, (void*)idx);
 	}
 
 	/* adding write event filter */
@@ -112,7 +103,7 @@ FDWKqueueBackend::add(int idx, unsigned rw)
 			wridx[idx] = idxr;
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (write) fd on %d", ridx); */
 		}
-		EV_SET(kqchanges + idxr, fdw_fd(cfd), EVFILT_WRITE, EV_ADD, 0, 0, (void*)idx);
+		EV_SET(kqchanges.get() + idxr, fdw_fd(cfd), EVFILT_WRITE, EV_ADD, 0, 0, (void*)idx);
 	}
 	else if (fdw_rw(cfd) & fdwatch_type_write && !(rw & fdwatch_type_write))
 	{
@@ -125,7 +116,7 @@ FDWKqueueBackend::add(int idx, unsigned rw)
 			wridx[idx] = idxr;
 /*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (write) fd on %d", ridx); */
 		}
-		EV_SET(kqchanges + idxr, fdw_fd(cfd), EVFILT_WRITE, EV_DELETE, 0, 0, (void*)idx);
+		EV_SET(kqchanges.get() + idxr, fdw_fd(cfd), EVFILT_WRITE, EV_DELETE, 0, 0, (void*)idx);
 	}
 
 	return 0;
