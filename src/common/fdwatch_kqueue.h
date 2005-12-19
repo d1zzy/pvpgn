@@ -25,6 +25,16 @@
 
 #ifdef HAVE_KQUEUE
 
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_EVENT_H
+# include <sys/event.h>
+#endif
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+
 #include "scoped_array.h"
 #include "fdwbackend.h"
 
