@@ -16,9 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
+#include "channel_conv.h"
 #include "common/bnet_protocol.h"
 #include "channel.h"
-#include "channel_conv.h"
 #include "common/setup_after.h"
 
 namespace pvpgn

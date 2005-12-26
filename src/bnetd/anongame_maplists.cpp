@@ -17,28 +17,15 @@
  */
 
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
+#include "anongame_maplists.h"
+
+#include <cstring>
 
 #include "common/packet.h"
 #include "common/tag.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "prefs.h"
-#include "anongame_maplists.h"
 #include "common/setup_after.h"
 
 #define MAXMAPS 100
@@ -76,7 +63,7 @@ static int _maplists_type_get_queue(const char * type)
     int i;
 
     for (i = 0; i < ANONGAME_TYPES; i++)
-	if (strcmp(type, queue_names[i]) == 0)
+	if (std::strcmp(type, queue_names[i]) == 0)
 	    return i;
 
     return -1;
@@ -105,7 +92,7 @@ static void _maplists_add_map(t_clienttag clienttag, char * mapname, int queue)
 
     if (clienttag==CLIENTTAG_WARCRAFT3_UINT) {
 	for (j = 0; j < number_maps_war3; j++) {
-	    if (strcmp(maplist_war3[j], mapname) == 0) { /* already in list */
+	    if (std::strcmp(maplist_war3[j], mapname) == 0) { /* already in list */
 		in_list = 1;
 		break;
 	    }
@@ -126,7 +113,7 @@ static void _maplists_add_map(t_clienttag clienttag, char * mapname, int queue)
 
     else if (clienttag==CLIENTTAG_WAR3XP_UINT) {
 	for (j = 0; j < number_maps_w3xp; j++) {
-	    if (strcmp(maplist_w3xp[j], mapname) == 0) { /* already in list */
+	    if (std::strcmp(maplist_w3xp[j], mapname) == 0) { /* already in list */
 		in_list = 1;
 		break;
 	    }
@@ -173,7 +160,7 @@ extern int anongame_maplists_create(void)
    }
 
    while(fgets(buffer, 256, mapfd)) {
-      len = strlen(buffer);
+      len = std::strlen(buffer);
       if (len < 1) continue;
       if (buffer[len-1] == '\n') {
 	 buffer[len-1] = '\0';

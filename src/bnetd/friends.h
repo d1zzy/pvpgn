@@ -17,6 +17,8 @@
 #ifndef INCLUDED_FRIENDS_H
 #define INCLUDED_FRIENDS_H
 
+#include "account.h"
+
 namespace pvpgn
 {
 

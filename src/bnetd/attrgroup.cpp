@@ -17,24 +17,18 @@
  */
 
 #include "common/setup_before.h"
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#define ATTRGROUP_INTERNAL_ACCESS
+#include "attrgroup.h"
+
+#include <cassert>
+#include <cstring>
+
 #include "common/eventlog.h"
 #include "common/flags.h"
 #include "common/xalloc.h"
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
-#define ATTRGROUP_INTERNAL_ACCESS
 #include "attr.h"
-#include "attrgroup.h"
 #include "attrlayer.h"
 #include "storage.h"
 #include "prefs.h"
@@ -298,14 +292,14 @@ static const char *attrgroup_escape_key(const char *key)
 	 * Record\*\1\rank. So replace Dynkey with Record for key lookup.
 	 */
 	tmp = xstrdup(key);
-	strncpy(tmp,"Record",6);
+	std::strncpy(tmp,"Record",6);
 	newkey = tmp;
-    } else if (!strncmp(key,"Star",4)) {
+    } else if (!std::strncmp(key,"Star",4)) {
 	/* OLD COMMENT
 	 * Starcraft clients query Star instead of STAR on logon screen.
 	 */
 	tmp = xstrdup(key);
-	strncpy(tmp,"STAR",4);
+	std::strncpy(tmp,"STAR",4);
 	newkey = tmp;
     }
 
@@ -420,7 +414,7 @@ extern int attrgroup_set_attr(t_attrgroup *attrgroup, const char *key, const cha
 
     if (attr) {
 	if (attr_get_val(attr) == val ||
-	    (attr_get_val(attr) && val && !strcmp(attr_get_val(attr), val)))
+	    (attr_get_val(attr) && val && !std::strcmp(attr_get_val(attr), val)))
 	    goto out;	/* no need to modify anything, values are the same */
 
 	/* new value for existent key, replace the old one */

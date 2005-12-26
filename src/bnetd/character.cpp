@@ -17,36 +17,11 @@
  */
 #define CHARACTER_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/memcpy.h"
+#include "character.h"
+
+#include <cstring>
+
 #include "compat/strcasecmp.h"
-#include "compat/strdup.h"
-#include <errno.h>
-#include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "compat/uint.h"
@@ -56,7 +31,6 @@
 #include "common/bn_type.h"
 #include "common/util.h"
 #include "common/xalloc.h"
-#include "character.h"
 #include "common/setup_after.h"
 
 
@@ -415,8 +389,8 @@ extern char const * character_get_playerinfo(t_character const * ch)
     bn_byte_set(&d2char_info.emblemnum,ch->emblemnum);
     bn_byte_set(&d2char_info.unknownb14,ch->unknownb14);
 
-    memcpy(playerinfo,&d2char_info,sizeof(d2char_info));
-    strcpy(&playerinfo[sizeof(d2char_info)],ch->guildname);
+    std::memcpy(playerinfo,&d2char_info,sizeof(d2char_info));
+    std::strcpy(&playerinfo[sizeof(d2char_info)],ch->guildname);
 
     return playerinfo;
 }
@@ -452,8 +426,8 @@ extern int character_verify_charlist(t_character const * ch, char const * charli
 
     temp = xstrdup(charlist);
 
-    tok1 = (char const *)strtok(temp,","); /* strtok modifies the string it is passed */
-    tok2 = strtok(NULL,",");
+    tok1 = (char const *)std::strtok(temp,","); /* std::strtok modifies the string it is passed */
+    tok2 = std::strtok(NULL,",");
     while (tok1)
     {
 	if (!tok2)
@@ -468,8 +442,8 @@ extern int character_verify_charlist(t_character const * ch, char const * charli
 	    return 0;
 	}
 
-        tok1 = strtok(NULL,",");
-        tok2 = strtok(NULL,",");
+        tok1 = std::strtok(NULL,",");
+        tok2 = std::strtok(NULL,",");
     }
     xfree(temp);
 

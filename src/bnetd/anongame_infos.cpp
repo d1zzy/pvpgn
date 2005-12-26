@@ -15,23 +15,11 @@
  */
 #define TIMER_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strrchr.h"
-#include <errno.h>
-#include "compat/strerror.h"
+#include "anongame_infos.h"
+
+#include <cstring>
+#include <cerrno>
+
 #include "common/list.h"
 #include "common/eventlog.h"
 #include "common/util.h"
@@ -42,7 +30,6 @@
 #include "zlib/pvpgn_zlib.h"
 #include "tournament.h"
 #include "anongame_maplists.h"
-#include "anongame_infos.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -505,7 +492,7 @@ static t_anongame_infos_DESC *anongame_infos_get_anongame_infos_DESC_by_langID(t
 	    eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 	else
 	{
-	    if ((entry->langID) && (strcmp(entry->langID, langID) == 0))
+	    if ((entry->langID) && (std::strcmp(entry->langID, langID) == 0))
 		return entry;
 	}
     }
@@ -892,7 +879,7 @@ extern char *anongame_infos_data_get_desc(char const *langID, t_clienttag client
 	{
 	    LIST_TRAVERSE(anongame_infos->anongame_infos_data_lang_war3, curr)
 	    {
-		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
+		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && std::strcmp(entry->langID, langID) == 0)
 		{
 		    (*len) = entry->desc_comp_len;
 		    return entry->desc_comp_data;
@@ -907,7 +894,7 @@ extern char *anongame_infos_data_get_desc(char const *langID, t_clienttag client
 	{
 	    LIST_TRAVERSE(anongame_infos->anongame_infos_data_lang_w3xp, curr)
 	    {
-		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
+		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && std::strcmp(entry->langID, langID) == 0)
 		{
 		    (*len) = entry->desc_comp_len;
 		    return entry->desc_comp_data;
@@ -929,7 +916,7 @@ extern char *anongame_infos_data_get_ladr(char const *langID, t_clienttag client
 	{
 	    LIST_TRAVERSE(anongame_infos->anongame_infos_data_lang_war3, curr)
 	    {
-		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
+		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && std::strcmp(entry->langID, langID) == 0)
 		{
 		    (*len) = entry->ladr_comp_len;
 		    return entry->ladr_comp_data;
@@ -944,7 +931,7 @@ extern char *anongame_infos_data_get_ladr(char const *langID, t_clienttag client
 	{
 	    LIST_TRAVERSE(anongame_infos->anongame_infos_data_lang_w3xp, curr)
 	    {
-		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && strcmp(entry->langID, langID) == 0)
+		if ((entry = (t_anongame_infos_data_lang*)elem_get_data(curr)) && std::strcmp(entry->langID, langID) == 0)
 		{
 		    (*len) = entry->ladr_comp_len;
 		    return entry->ladr_comp_data;
@@ -1263,23 +1250,23 @@ static t_parse_mode switch_parse_mode(char *text, char *langID)
 {
     if (!(text))
 	return parse_UNKNOWN;
-    else if (strcmp(text, "[URL]") == 0)
+    else if (std::strcmp(text, "[URL]") == 0)
 	return parse_URL;
-    else if (strcmp(text, "[THUMBS_DOWN_LIMIT]") == 0)
+    else if (std::strcmp(text, "[THUMBS_DOWN_LIMIT]") == 0)
 	return parse_THUMBSDOWN;
-    else if (strcmp(text, "[ICON_REQUIRED_RACE_WINS_WAR3]") == 0)
+    else if (std::strcmp(text, "[ICON_REQUIRED_RACE_WINS_WAR3]") == 0)
 	return parse_ICON_REQ_WAR3;
-    else if (strcmp(text, "[ICON_REQUIRED_RACE_WINS_W3XP]") == 0)
+    else if (std::strcmp(text, "[ICON_REQUIRED_RACE_WINS_W3XP]") == 0)
 	return parse_ICON_REQ_W3XP;
-    else if (strcmp(text, "[ICON_REQUIRED_TOURNEY_WINS]") == 0)
+    else if (std::strcmp(text, "[ICON_REQUIRED_TOURNEY_WINS]") == 0)
 	return parse_ICON_REQ_TOURNEY;
-    else if (strcmp(text, "[DEFAULT_DESC]") == 0)
+    else if (std::strcmp(text, "[DEFAULT_DESC]") == 0)
     {
 	langID[0] = '\0';
 	return parse_DESC;
-    } else if (strlen(text) == 6)
+    } else if (std::strlen(text) == 6)
     {
-	strncpy(langID, &(text[1]), 4);
+	std::strncpy(langID, &(text[1]), 4);
 	langID[4] = '\0';
 	return parse_DESC;
     } else
@@ -1325,7 +1312,7 @@ extern int anongame_infos_load(char const *filename)
 
     if (!(fp = fopen(filename, "r")))
     {
-	eventlog(eventlog_level_error, "anongameinfo_load", "could not open file \"%s\" for reading (fopen: %s), using default values", filename, pstrerror(errno));
+	eventlog(eventlog_level_error, "anongameinfo_load", "could not open file \"%s\" for reading (fopen: %s), using default values", filename, std::strerror(errno));
 	goto anongame_infos_loading_failure;
     }
 
@@ -1336,18 +1323,18 @@ extern int anongame_infos_load(char const *filename)
 	{
 	    continue;
 	}
-	if ((temp = strrchr(buff, '#')))
+	if ((temp = std::strrchr(buff, '#')))
 	{
 	    unsigned int len;
 	    unsigned int endpos;
 
 	    *temp = '\0';
-	    len = strlen(buff) + 1;
+	    len = std::strlen(buff) + 1;
 	    for (endpos = len - 1; buff[endpos] == '\t' || buff[endpos] == ' '; endpos--);
 	    buff[endpos + 1] = '\0';
 	}
 
-	if ((buff[0] == '[') && (buff[strlen(buff) - 1] == ']'))
+	if ((buff[0] == '[') && (buff[std::strlen(buff) - 1] == ']'))
 	{
 	    if ((parse_state == unchanged) && (anongame_infos_DESC != NULL))
 	    {
@@ -1373,7 +1360,7 @@ extern int anongame_infos_load(char const *filename)
 	    {
 	    case parse_UNKNOWN:
 		{
-		    if ((buff[0] != '[') || (buff[strlen(buff) - 1] != ']'))
+		    if ((buff[0] != '[') || (buff[std::strlen(buff) - 1] != ']'))
 		    {
 			eventlog(eventlog_level_error, __FUNCTION__, "expected [] section start, but found %s on line %u", buff, line);
 		    } else
@@ -1387,19 +1374,19 @@ extern int anongame_infos_load(char const *filename)
 		{
 		    parse_state = unchanged;
 		    variable = buff;
-		    pointer = strchr(variable, '=');
+		    pointer = std::strchr(variable, '=');
 		    for (pointer--; pointer[0] == ' '; pointer--);
 		    pointer[1] = '\0';
 		    pointer++;
 		    pointer++;
-		    pointer = strchr(pointer, '\"');
+		    pointer = std::strchr(pointer, '\"');
 		    pointer++;
 		    value = pointer;
-		    pointer = strchr(pointer, '\"');
+		    pointer = std::strchr(pointer, '\"');
 		    pointer[0] = '\0';
 
 		    for (URL_table_row = URL_handler_table; URL_table_row->anongame_infos_URL_string != NULL; URL_table_row++)
-			if (strcmp(URL_table_row->anongame_infos_URL_string, variable) == 0)
+			if (std::strcmp(URL_table_row->anongame_infos_URL_string, variable) == 0)
 			{
 			    if (URL_table_row->member != -1)
 			        anongame_infos_URL_set_URL(URL_table_row->member, value);
@@ -1419,19 +1406,19 @@ extern int anongame_infos_load(char const *filename)
 		    }
 
 		    variable = buff;
-		    pointer = strchr(variable, '=');
+		    pointer = std::strchr(variable, '=');
 		    for (pointer--; pointer[0] == ' '; pointer--);
 		    pointer[1] = '\0';
 		    pointer++;
 		    pointer++;
-		    pointer = strchr(pointer, '\"');
+		    pointer = std::strchr(pointer, '\"');
 		    pointer++;
 		    value = pointer;
-		    pointer = strchr(pointer, '\"');
+		    pointer = std::strchr(pointer, '\"');
 		    pointer[0] = '\0';
 
 		    for (DESC_table_row = DESC_handler_table; DESC_table_row->anongame_infos_DESC_string != NULL; DESC_table_row++)
-			if (strcmp(DESC_table_row->anongame_infos_DESC_string, variable) == 0)
+			if (std::strcmp(DESC_table_row->anongame_infos_DESC_string, variable) == 0)
 			{
 			    if (DESC_table_row->member != -1)
 			        anongame_infos_DESC_set_DESC(anongame_infos_DESC, DESC_table_row->member, value);
@@ -1442,12 +1429,12 @@ extern int anongame_infos_load(char const *filename)
 		{
 		    parse_state = unchanged;
 		    variable = buff;
-		    pointer = strchr(variable, '=');
+		    pointer = std::strchr(variable, '=');
 		    for (pointer--; pointer[0] == ' '; pointer--);
 		    pointer[1] = '\0';
 		    pointer++;
 		    pointer++;
-		    pointer = strchr(pointer, '=');
+		    pointer = std::strchr(pointer, '=');
 		    pointer++;
 		    int_value = atoi(pointer);
 		    if (int_value < 0)
@@ -1457,7 +1444,7 @@ extern int anongame_infos_load(char const *filename)
 		    char_value = (char) int_value;
 
 		    for (THUMBSDOWN_table_row = THUMBSDOWN_handler_table; THUMBSDOWN_table_row->anongame_infos_THUMBSDOWN_string != NULL; THUMBSDOWN_table_row++)
-			if (strcmp(THUMBSDOWN_table_row->anongame_infos_THUMBSDOWN_string, variable) == 0)
+			if (std::strcmp(THUMBSDOWN_table_row->anongame_infos_THUMBSDOWN_string, variable) == 0)
 			{
 			    if (THUMBSDOWN_table_row->member != -1)
 				anongame_infos_THUMBSDOWN_set_THUMBSDOWN(anongame_infos->anongame_infos_THUMBSDOWN,
@@ -1469,19 +1456,19 @@ extern int anongame_infos_load(char const *filename)
 		{
 		    parse_state = unchanged;
 		    variable = buff;
-		    pointer = strchr(variable, '=');
+		    pointer = std::strchr(variable, '=');
 		    for (pointer--; pointer[0] == ' '; pointer--);
 		    pointer[1] = '\0';
 		    pointer++;
 		    pointer++;
-		    pointer = strchr(pointer, '=');
+		    pointer = std::strchr(pointer, '=');
 		    pointer++;
 		    int_value = atoi(pointer);
 		    if (int_value < 0)
 			int_value = 0;
 
 		    for (ICON_REQ_WAR3_table_row = ICON_REQ_WAR3_handler_table; ICON_REQ_WAR3_table_row->anongame_infos_ICON_REQ_WAR3_string != NULL; ICON_REQ_WAR3_table_row++)
-			if (strcmp(ICON_REQ_WAR3_table_row->anongame_infos_ICON_REQ_WAR3_string, variable) == 0)
+			if (std::strcmp(ICON_REQ_WAR3_table_row->anongame_infos_ICON_REQ_WAR3_string, variable) == 0)
 			{
 			    if (ICON_REQ_WAR3_table_row->member != -1)
 			        anongame_infos_ICON_REQ_set_REQ(anongame_infos,ICON_REQ_WAR3_table_row->member,int_value);
@@ -1492,19 +1479,19 @@ extern int anongame_infos_load(char const *filename)
 		{
 		    parse_state = unchanged;
 		    variable = buff;
-		    pointer = strchr(variable, '=');
+		    pointer = std::strchr(variable, '=');
 		    for (pointer--; pointer[0] == ' '; pointer--);
 		    pointer[1] = '\0';
 		    pointer++;
 		    pointer++;
-		    pointer = strchr(pointer, '=');
+		    pointer = std::strchr(pointer, '=');
 		    pointer++;
 		    int_value = atoi(pointer);
 		    if (int_value < 0)
 			int_value = 0;
 
 		    for (ICON_REQ_W3XP_table_row = ICON_REQ_W3XP_handler_table; ICON_REQ_W3XP_table_row->anongame_infos_ICON_REQ_W3XP_string != NULL; ICON_REQ_W3XP_table_row++)
-			if (strcmp(ICON_REQ_W3XP_table_row->anongame_infos_ICON_REQ_W3XP_string, variable) == 0)
+			if (std::strcmp(ICON_REQ_W3XP_table_row->anongame_infos_ICON_REQ_W3XP_string, variable) == 0)
 			{
 			    if (ICON_REQ_W3XP_table_row->member != -1)
 			        anongame_infos_ICON_REQ_set_REQ(anongame_infos,ICON_REQ_W3XP_table_row->member,int_value);
@@ -1515,19 +1502,19 @@ extern int anongame_infos_load(char const *filename)
 		{
 		    parse_state = unchanged;
 		    variable = buff;
-		    pointer = strchr(variable, '=');
+		    pointer = std::strchr(variable, '=');
 		    for (pointer--; pointer[0] == ' '; pointer--);
 		    pointer[1] = '\0';
 		    pointer++;
 		    pointer++;
-		    pointer = strchr(pointer, '=');
+		    pointer = std::strchr(pointer, '=');
 		    pointer++;
 		    int_value = atoi(pointer);
 		    if (int_value < 0)
 			int_value = 0;
 
 		    for (ICON_REQ_TOURNEY_table_row = ICON_REQ_TOURNEY_handler_table; ICON_REQ_TOURNEY_table_row->anongame_infos_ICON_REQ_TOURNEY_string != NULL; ICON_REQ_TOURNEY_table_row++)
-			if (strcmp(ICON_REQ_TOURNEY_table_row->anongame_infos_ICON_REQ_TOURNEY_string, variable) == 0)
+			if (std::strcmp(ICON_REQ_TOURNEY_table_row->anongame_infos_ICON_REQ_TOURNEY_string, variable) == 0)
 			{
 			    if (ICON_REQ_TOURNEY_table_row->member != -1)
 			        anongame_infos_ICON_REQ_set_REQ(anongame_infos,ICON_REQ_TOURNEY_table_row->member,int_value);
@@ -1942,12 +1929,12 @@ static int anongame_infos_data_load(void)
 	    packet_append_string(raw, anongame_infos_URL_get_URL(URL_ladder_clan_4v4));
 	    anongame_infos_data_lang_war3->ladr_len = packet_get_size(raw);
 	    anongame_infos_data_lang_war3->ladr_data = (char *) xmalloc(anongame_infos_data_lang_war3->ladr_len);
-	    memcpy(anongame_infos_data_lang_war3->ladr_data, packet_get_data_const(raw, 0, anongame_infos_data_lang_war3->ladr_len), anongame_infos_data_lang_war3->ladr_len);
+	    std::memcpy(anongame_infos_data_lang_war3->ladr_data, packet_get_data_const(raw, 0, anongame_infos_data_lang_war3->ladr_len), anongame_infos_data_lang_war3->ladr_len);
 	    zlib_compress(anongame_infos_data_lang_war3->ladr_data, anongame_infos_data_lang_war3->ladr_len, &anongame_infos_data_lang_war3->ladr_comp_data, &anongame_infos_data_lang_war3->ladr_comp_len);
 	    list_append_data(anongame_infos->anongame_infos_data_lang_war3, anongame_infos_data_lang_war3);
 	    anongame_infos_data_lang_w3xp->ladr_len = packet_get_size(raw);
 	    anongame_infos_data_lang_w3xp->ladr_data = (char *) xmalloc(anongame_infos_data_lang_w3xp->ladr_len);
-	    memcpy(anongame_infos_data_lang_w3xp->ladr_data, packet_get_data_const(raw, 0, anongame_infos_data_lang_w3xp->ladr_len), anongame_infos_data_lang_w3xp->ladr_len);
+	    std::memcpy(anongame_infos_data_lang_w3xp->ladr_data, packet_get_data_const(raw, 0, anongame_infos_data_lang_w3xp->ladr_len), anongame_infos_data_lang_w3xp->ladr_len);
 	    zlib_compress(anongame_infos_data_lang_w3xp->ladr_data, anongame_infos_data_lang_w3xp->ladr_len, &anongame_infos_data_lang_w3xp->ladr_comp_data, &anongame_infos_data_lang_w3xp->ladr_comp_len);
 	    list_append_data(anongame_infos->anongame_infos_data_lang_w3xp, anongame_infos_data_lang_w3xp);
 	}
@@ -1977,7 +1964,7 @@ static int zlib_compress(void const *src, int srclen, char **dest, int *destlen)
 
     tmpdata = (char *) xmalloc(srclen + (srclen / 0x10) + 0x200 + 0x8000);
 
-    memset(&zcpr, 0, sizeof(z_stream));
+    std::memset(&zcpr, 0, sizeof(z_stream));
     pvpgn_deflateInit(&zcpr, 9);
     zcpr.next_in = (Bytef*) src;
     zcpr.next_out = (Bytef*)tmpdata;
@@ -1998,7 +1985,7 @@ static int zlib_compress(void const *src, int srclen, char **dest, int *destlen)
 	(*dest) = (char*)xmalloc((*destlen) + 4);
 	bn_short_set((bn_short *) (*dest), lorigdone);
 	bn_short_set((bn_short *) (*dest + 2), *destlen);
-	memcpy((*dest) + 4, tmpdata, (*destlen));
+	std::memcpy((*dest) + 4, tmpdata, (*destlen));
 	(*destlen) += 4;
     }
     pvpgn_deflateEnd(&zcpr);

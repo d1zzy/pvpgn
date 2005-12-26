@@ -18,37 +18,17 @@
  */
 #define GAME_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strdup.h"
-#include "compat/strsep.h"
-#include "common/tag.h"
-#include "common/eventlog.h"
-#include "game.h"
-#include "common/bnet_protocol.h"
-#include "common/util.h"
-#include "common/bn_type.h"
-#include "common/xalloc.h"
 #include "game_conv.h"
+
+#include <cstring>
+
+#include "common/eventlog.h"
+#include "common/tag.h"
+#include "common/bnet_protocol.h"
+#include "common/bn_type.h"
+#include "common/util.h"
+
+#include "game.h"
 #include "common/setup_after.h"
 
 
@@ -975,7 +955,7 @@ Also, what is the upper player limit on WCII... 8 like on Starcraft?
 	     clienttag==CLIENTTAG_DIABLO2XP_UINT)
     {
         if ((game->type == game_type_diablo2closed) &&
-	    (!strlen(gameinfo)))
+	    (!std::strlen(gameinfo)))
 
 	{
 	  /* D2 closed games are handled by d2cs so we can have only have a generic startgame4
@@ -988,7 +968,7 @@ Also, what is the upper player limit on WCII... 8 like on Starcraft?
 	  char         difficulty[2];
 	  unsigned int bngdifficulty;
 
-	  if (!strlen(gameinfo))
+	  if (!std::strlen(gameinfo))
 	  {
 	      eventlog(eventlog_level_info,__FUNCTION__, "got empty gameinfo (from D2 client)");
 	      return -1;
@@ -1037,13 +1017,13 @@ If the corresponding bit is a '0' then subtract 1 from the character.
 */
         const char *pstr;
 
-	if (!strlen(gameinfo))
+	if (!std::strlen(gameinfo))
 	{
 	    eventlog(eventlog_level_info,__FUNCTION__, "got empty gameinfo (from W3 client)");
 	    return -1;
 	}
 
-	if (strlen(gameinfo) < 0xf + 2 + 1 + 2 + 4) {
+	if (std::strlen(gameinfo) < 0xf + 2 + 1 + 2 + 4) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "got too short W3 mapinfo");
 	    return -1;
 	}
@@ -1068,13 +1048,13 @@ If the corresponding bit is a '0' then subtract 1 from the character.
 	return -1;
     }
 
-    if (!(line1  = strtok(save,"\r"))) /* actual game info fields */
+    if (!(line1  = std::strtok(save,"\r"))) /* actual game info fields */
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"bad gameinfo format (missing line1) \"%s\"",gameinfo);
 	xfree(save);
 	return -1;
     }
-    if (!(line2  = strtok(NULL,"\r")))
+    if (!(line2  = std::strtok(NULL,"\r")))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"bad gameinfo format (missing player) \"%s\"",gameinfo);
 	xfree(save);
@@ -1083,11 +1063,11 @@ If the corresponding bit is a '0' then subtract 1 from the character.
     /* is there room for another field after that? */
 
     /*
-     * This is the same as the normal strtok() function but it doesn't skip over
-     * empty entries.  The C-library strtok() will skip past entries like 12,,3
+     * This is the same as the normal std::strtok() function but it doesn't skip over
+     * empty entries.  The C-library std::strtok() will skip past entries like 12,,3
      * and rather than you being able to get "12", "", "3" you get "12", "3".
      * Since some values returned by the client contain these empty entries we
-     * need this.  Unlike strtok() all state is recorded in the first argument.
+     * need this.  Unlike std::strtok() all state is recorded in the first argument.
      */
     currtok = line1;
     if (!(unknown    = strsep(&currtok,","))) /* skip past first field (always empty?) */

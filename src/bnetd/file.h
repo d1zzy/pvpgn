@@ -23,7 +23,8 @@
 #define INCLUDED_FILE_PROTOS
 
 #define JUST_NEED_TYPES
-#include "common/bn_type.h"
+# include "common/bn_type.h"
+# include "connection.h"
 #undef JUST_NEED_TYPES
 
 namespace pvpgn

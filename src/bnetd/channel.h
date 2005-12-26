@@ -32,13 +32,13 @@
 
 #ifdef CHANNEL_INTERNAL_ACCESS
 
+#include <cstdio>
+
 #ifdef JUST_NEED_TYPES
-# include <stdio.h>
 # include "connection.h"
 # include "common/list.h"
 #else
 # define JUST_NEED_TYPES
-# include <stdio.h>
 # include "connection.h"
 # include "common/list.h"
 # undef JUST_NEED_TYPES
@@ -92,7 +92,7 @@ typedef struct channel
     t_channelmember * memberlist;
     t_list *          banlist;    /* of char * */
     char *            logname;    /* NULL if not logged */
-    FILE *            log;        /* NULL if not logging */
+    std::FILE *       log;        /* NULL if not logging */
 
     /**
     *  Westwood Online Extensions

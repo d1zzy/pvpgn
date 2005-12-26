@@ -17,31 +17,16 @@
  */
 #define CHARACTER_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include "account_wrap.h"
+
+#include <cstring>
+
 #include "common/list.h"
 #include "common/eventlog.h"
 #include "common/util.h"
 #include "common/bnettime.h"
 #include "ladder.h"
 #include "account.h"
-#include "account_wrap.h"
 #include "character.h"
 #include "connection.h"
 #include "compat/strcasecmp.h"
@@ -1466,7 +1451,7 @@ extern int account_check_closed_character(t_account * account, t_clienttag clien
 
 	eventlog(eventlog_level_debug,__FUNCTION__,"got characterlist \"%s\" for Realm %s",charlist,realmname);
 
-	list_len  = strlen(charlist);
+	list_len  = std::strlen(charlist);
 	start     = charlist;
 	next_char = start;
 	for (i = 0; i < list_len; i++, next_char++)
@@ -1475,12 +1460,12 @@ extern int account_check_closed_character(t_account * account, t_clienttag clien
 	    {
 	        name_len = next_char - start;
 
-	        strncpy(tempname, start, name_len);
+	        std::strncpy(tempname, start, name_len);
 		tempname[name_len] = '\0';
 
 	        eventlog(eventlog_level_debug,__FUNCTION__,"found character \"%s\"",tempname);
 
-		if (strcmp(tempname, charname) == 0)
+		if (std::strcmp(tempname, charname) == 0)
 		    return 1;
 
 		start = next_char + 1;
@@ -1489,12 +1474,12 @@ extern int account_check_closed_character(t_account * account, t_clienttag clien
 
 	name_len = next_char - start;
 
-	strncpy(tempname, start, name_len);
+	std::strncpy(tempname, start, name_len);
 	tempname[name_len] = '\0';
 
 	eventlog(eventlog_level_debug,__FUNCTION__,"found tail character \"%s\"",tempname);
 
-	if (strcmp(tempname, charname) == 0)
+	if (std::strcmp(tempname, charname) == 0)
 	    return 1;
     }
 
@@ -2214,7 +2199,7 @@ extern char const * account_get_user_icon( t_account * account, t_clienttag clie
   sprintf(key,"Record\\%s\\userselected_icon",tag_uint_to_str(clienttag_str,clienttag));
   retval = account_get_strattr(account,key);
 
-  if ((retval) && ((strcmp(retval,"NULL")!=0)))
+  if ((retval) && ((std::strcmp(retval,"NULL")!=0)))
     return retval;
   else
     return NULL;
@@ -2293,7 +2278,7 @@ extern unsigned int account_icon_to_profile_icon(char const * icon,t_account * a
 
 	if (icon==NULL) return account_get_icon_profile(account,ctag);
 	if (sizeof(icon)>=4){
-		strncpy(tmp_icon,icon,4);
+		std::strncpy(tmp_icon,icon,4);
 		tmp_icon[0]=tmp_icon[0]-48;
 		if (ctag==CLIENTTAG_WAR3XP_UINT) {
 			number_ctag = 6;
@@ -2341,7 +2326,7 @@ static unsigned int char_icon_to_uint(char * icon)
     unsigned int value;
 
     if (!icon) return 0;
-    if (strlen(icon)!=4) return 0;
+    if (std::strlen(icon)!=4) return 0;
 
     value  = ((unsigned int)icon[0])<<24;
     value |= ((unsigned int)icon[1])<<16;

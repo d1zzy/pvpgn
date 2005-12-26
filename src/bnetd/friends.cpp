@@ -15,38 +15,12 @@
  */
 
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include "friends.h"
 
 #include "compat/strcasecmp.h"
-
-#include "common/eventlog.h"
 #include "common/list.h"
-#include "common/xalloc.h"
-#include "account.h"
-#include "prefs.h"
-#include "friends.h"
+#include "common/eventlog.h"
+
 #include "common/setup_after.h"
 
 namespace pvpgn

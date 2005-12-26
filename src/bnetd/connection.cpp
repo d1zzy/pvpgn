@@ -19,82 +19,52 @@
  */
 #define CONNECTION_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-// amadeo
-#ifdef WIN32_GUI
-#include <win32/winmain.h>
-#endif
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/strtoul.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
-#include "compat/strchr.h"
-#include "compat/strrchr.h"
-#include "compat/strdup.h"
-#include "compat/strcasecmp.h"
-#include "compat/strncasecmp.h"
-#include <errno.h>
-#include "compat/strerror.h"
+#include "connection.h"
+
+#include <cerrno>
+#include <cstring>
+
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#include "compat/difftime.h"
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
 #ifdef HAVE_SYS_SOCKET_H
 # include <sys/socket.h>
 #endif
+#ifdef WIN32_GUI
+#include <win32/winmain.h>
+#endif
+#include "compat/strtoul.h"
+#include "compat/strcasecmp.h"
+#include "compat/strncasecmp.h"
+#include "compat/difftime.h"
 #include "compat/socket.h"
 #include "compat/psock.h"
 #include "common/eventlog.h"
 #include "common/addr.h"
+#include "common/queue.h"
+#include "common/packet.h"
+#include "common/tag.h"
+#include "common/bn_type.h"
+#include "common/version.h"
+#include "common/util.h"
+#include "common/list.h"
+#include "common/bnet_protocol.h"
+#include "common/field_sizes.h"
+#include "common/rcm.h"
+#include "common/fdwatch.h"
+#include "common/elist.h"
+#include "common/xalloc.h"
 #include "account.h"
 #include "account_wrap.h"
 #include "realm.h"
 #include "channel.h"
 #include "game.h"
-#include "common/queue.h"
 #include "tick.h"
-#include "common/packet.h"
-#include "common/tag.h"
-#include "common/bn_type.h"
 #include "message.h"
-#include "common/version.h"
 #include "prefs.h"
-#include "common/util.h"
-#include "common/list.h"
 #include "watch.h"
 #include "timer.h"
 #include "irc.h"
@@ -103,20 +73,13 @@
 #include "udptest_send.h"
 #include "character.h"
 #include "versioncheck.h"
-#include "common/bnet_protocol.h"
-#include "common/field_sizes.h"
 #include "anongame.h"
 #include "clan.h"
-#include "connection.h"
 #include "topic.h"
 #include "server.h"
 #include "handle_d2cs.h"
 #include "command_groups.h"
 #include "attrlayer.h"
-#include "common/rcm.h"
-#include "common/fdwatch.h"
-#include "common/elist.h"
-#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -172,10 +135,10 @@ static void conn_send_welcome(t_connection * c)
 	{
 	    message_send_file(c,fp);
 	    if (fclose(fp)<0)
-	      { eventlog(eventlog_level_error,__FUNCTION__,"could not close MOTD file \"%s\" after reading (fopen: %s)",filename,pstrerror(errno)); }
+	      { eventlog(eventlog_level_error,__FUNCTION__,"could not close MOTD file \"%s\" after reading (fopen: %s)",filename,std::strerror(errno)); }
 	}
 	else
-	  { eventlog(eventlog_level_error,__FUNCTION__,"could not open MOTD file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno)); }
+	  { eventlog(eventlog_level_error,__FUNCTION__,"could not open MOTD file \"%s\" for reading (fopen: %s)",filename,std::strerror(errno)); }
     }
     c->protocol.cflags|= conn_flags_welcomed;
 }
@@ -197,10 +160,10 @@ static void conn_send_issue(t_connection * c)
 	{
 	    message_send_file(c,fp);
 	    if (fclose(fp)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close issue file \"%s\" after reading (fopen: %s)",filename,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close issue file \"%s\" after reading (fopen: %s)",filename,std::strerror(errno));
 	}
 	else
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not open issue file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not open issue file \"%s\" for reading (fopen: %s)",filename,std::strerror(errno));
     else
 	eventlog(eventlog_level_debug,__FUNCTION__,"no issue file");
 }

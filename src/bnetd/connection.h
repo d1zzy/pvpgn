@@ -21,19 +21,10 @@
 
 #ifdef CONNECTION_INTERNAL_ACCESS
 
+#include <ctime>
+
 #ifdef JUST_NEED_TYPES
-# ifdef TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h>
-# else
-#   if HAVE_SYS_TIME_H
-#    include <sys/time.h>
-#   else
-#    include <time.h>
-#   endif
-# endif
 # include "game.h"
-# include "common/queue.h"
 # include "channel.h"
 # include "account.h"
 # include "quota.h"
@@ -41,24 +32,14 @@
 # include "versioncheck.h"
 # include "anongame.h"
 # include "realm.h"
+# include "common/queue.h"
 # include "common/tag.h"
 # include "common/elist.h"
 # include "common/packet.h"
 # include "common/rcm.h"
 #else
 # define JUST_NEED_TYPES
-# ifdef TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h>
-# else
-#   if HAVE_SYS_TIME_H
-#    include <sys/time.h>
-#   else
-#    include <time.h>
-#   endif
-# endif
 # include "game.h"
-# include "common/queue.h"
 # include "channel.h"
 # include "account.h"
 # include "quota.h"
@@ -66,6 +47,7 @@
 # include "versioncheck.h"
 # include "anongame.h"
 # include "realm.h"
+# include "common/queue.h"
 # include "common/tag.h"
 # include "common/elist.h"
 # include "common/packet.h"
@@ -179,7 +161,7 @@ typedef struct connection
 	    t_account * *	ignore_list;
 	    unsigned int	ignore_count;
 	    t_quota		quota;
-	    time_t		last_message;
+	    std::time_t		last_message;
 	    char const *	lastsender; /* last person to whisper to this connection */
 	    struct {
 		char const *		ircline; /* line cache for IRC connections */
@@ -201,7 +183,7 @@ typedef struct connection
 	} d2;
 	struct {
 	    char const *		w3_playerinfo; /* ADDED BY UNDYING SOULZZ 4/7/02 */
-	    time_t			anongame_search_starttime;
+	    std::time_t			anongame_search_starttime;
    /* [zap-zero] 20020527 - matching w3route connection for game connection /
     matching game connection for w3route connection */
    /* FIXME: this "optimization" is so confusing leading to many possible bugs */
@@ -241,6 +223,8 @@ t_connection;
 #ifndef INCLUDED_CONNECTION_PROTOS
 #define INCLUDED_CONNECTION_PROTOS
 
+#include <ctime>
+
 #define JUST_NEED_TYPES
 #include "common/packet.h"
 #include "common/queue.h"
@@ -273,8 +257,8 @@ extern void conn_destroy_anongame(t_connection * c);
 extern t_anongame * conn_get_anongame(t_connection *c);
 
 
-extern void conn_shutdown(t_connection * c, time_t now, t_timer_data foo);
-extern void conn_test_latency(t_connection * c, time_t now, t_timer_data delta);
+extern void conn_shutdown(t_connection * c, std::time_t now, t_timer_data foo);
+extern void conn_test_latency(t_connection * c, std::time_t now, t_timer_data delta);
 extern char const * conn_class_get_str(t_conn_class cclass) ;
 extern char const * conn_state_get_str(t_conn_state state) ;
 
@@ -428,7 +412,7 @@ extern int conn_set_joingamewhisper_ack(t_connection * c, unsigned int value);
 extern int conn_get_joingamewhisper_ack(t_connection * c);
 extern int conn_set_leavegamewhisper_ack(t_connection * c, unsigned int value);
 extern int conn_get_leavegamewhisper_ack(t_connection * c);
-extern int conn_set_anongame_search_starttime(t_connection * c, time_t t);
+extern int conn_set_anongame_search_starttime(t_connection * c, std::time_t t);
 extern time_t conn_get_anongame_search_starttime(t_connection * c);
 
 extern int conn_get_user_count_by_clienttag(t_clienttag ct);

@@ -19,20 +19,22 @@
 
 #ifdef JUST_NEED_TYPES
 # include "common/bn_type.h"
+# include "connection.h"
+# include "common/packet.h"
 #else
 # define JUST_NEED_TYPES
 # include "common/bn_type.h"
+# include "connection.h"
+# include "common/packet.h"
 # undef JUST_NEED_TYPES
 #endif
 
 #ifdef CLAN_INTERNAL_ACCESS
 #ifdef JUST_NEED_TYPES
-# include <stdio.h>
 # include "common/list.h"
 # include "account.h"
 #else
 # define JUST_NEED_TYPES
-# include <stdio.h>
 # include "common/list.h"
 # include "account.h"
 # undef JUST_NEED_TYPES

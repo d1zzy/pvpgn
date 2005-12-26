@@ -17,15 +17,12 @@
  */
 
 #include "common/setup_before.h"
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
+#define ATTRGROUP_INTERNAL_ACCESS
+#include "attrlayer.h"
 #include "common/eventlog.h"
 #include "common/flags.h"
-#define ATTRGROUP_INTERNAL_ACCESS
 #include "attr.h"
 #include "attrgroup.h"
-#include "attrlayer.h"
 #include "storage.h"
 #include "prefs.h"
 #include "common/setup_after.h"

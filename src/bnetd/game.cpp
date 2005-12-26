@@ -18,72 +18,25 @@
  */
 #define GAME_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strdup.h"
-#include "compat/strcasecmp.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#include "compat/difftime.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
+#include "game.h"
+
+#include <cerrno>
+#include <cstring>
+
+#include "compat/rename.h"
 #include "common/eventlog.h"
-#include "prefs.h"
+#include "common/addr.h"
+#include "common/bnettime.h"
+
 #include "connection.h"
+#include "server.h"
 #include "account.h"
 #include "account_wrap.h"
-#include "ladder.h"
-#include "ladder_calc.h"
-#include "common/bnettime.h"
-#include "common/util.h"
-#include "common/elist.h"
-#include "common/tag.h"
-#include "common/addr.h"
-#include "common/xalloc.h"
-#include "realm.h"
+#include "prefs.h"
 #include "watch.h"
+#include "realm.h"
+#include "ladder.h"
 #include "game_conv.h"
-#include "game.h"
-#include "server.h"
-#include "compat/uint.h"
-#include "compat/rename.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -922,7 +875,7 @@ static int game_report(t_game * game)
 
     if (!(fp = fopen(tempname,"w")))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open report file \"%s\" for writing (fopen: %s)",tempname,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open report file \"%s\" for writing (fopen: %s)",tempname,std::strerror(errno));
 	if (ladder_info)
 	    xfree(ladder_info);
 	xfree(realname);
@@ -1065,7 +1018,7 @@ static int game_report(t_game * game)
 
     if (fclose(fp)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close report file \"%s\" after writing (fclose: %s)",tempname,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close report file \"%s\" after writing (fclose: %s)",tempname,std::strerror(errno));
 	xfree(realname);
 	xfree(tempname);
 	return -1;
@@ -1073,7 +1026,7 @@ static int game_report(t_game * game)
 
     if (p_rename(tempname,realname)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not rename report file to \"%s\" (rename: %s)",realname,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not rename report file to \"%s\" (rename: %s)",realname,std::strerror(errno));
 	xfree(realname);
 	xfree(tempname);
 	return -1;

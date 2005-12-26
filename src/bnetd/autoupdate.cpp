@@ -17,42 +17,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define AUTOUPDATE_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
+#define AUTOUPDATE_INTERNAL_ACCESS
+#include "autoupdate.h"
+
+#include <cerrno>
+#include <cstring>
+
 #include "compat/strtoul.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strchr.h"
-#include "compat/strdup.h"
-#include <errno.h>
-#include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/util.h"
 #include "common/proginfo.h"
 #include "common/tag.h"
 #include "common/xalloc.h"
-#include "autoupdate.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -95,7 +73,7 @@ extern int autoupdate_load(char const * filename)
     }
 
     if (!(fp = fopen(filename,"r"))) {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (fopen: %s)", filename, std::strerror(errno));
 	return -1;
     }
 
@@ -108,30 +86,30 @@ extern int autoupdate_load(char const * filename)
 	    continue;
 	}
 
-	if ((temp = strrchr(buff,'#'))) {
+	if ((temp = std::strrchr(buff,'#'))) {
 	    unsigned int len;
 	    unsigned int endpos;
 
 	    *temp = '\0';
-	    len = strlen(buff)+1;
+	    len = std::strlen(buff)+1;
 	    for (endpos=len-1;  buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
 	    buff[endpos+1] = '\0';
 	}
 
-	/* FIXME: use next_token instead of strtok */
-	if (!(archtag = strtok(buff, " \t"))) { /* strtok modifies the string it is passed */
+	/* FIXME: use next_token instead of std::strtok */
+	if (!(archtag = std::strtok(buff, " \t"))) { /* std::strtok modifies the string it is passed */
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing archtag on line %u of file \"%s\"",line,filename);
 	    continue;
 	}
-	if (!(clienttag = strtok(NULL," \t"))) {
+	if (!(clienttag = std::strtok(NULL," \t"))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing clienttag on line %u of file \"%s\"",line,filename);
 	    continue;
 	}
-        if (!(versiontag = strtok(NULL, " \t"))) {
+        if (!(versiontag = std::strtok(NULL, " \t"))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing versiontag on line %u of file \"%s\"",line,filename);
 	    continue;
 	}
-	if (!(mpqfile = strtok(NULL," \t"))) {
+	if (!(mpqfile = std::strtok(NULL," \t"))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing mpqfile on line %u of file \"%s\"",line,filename);
 	    continue;
 	}
@@ -211,7 +189,7 @@ extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, c
 		continue;
 	    if (entry->clienttag != clienttag)
 		continue;
-	    if (strcmp(entry->versiontag, versiontag) != 0)
+	    if (std::strcmp(entry->versiontag, versiontag) != 0)
 		continue;
 
 	    /* if we have a gamelang then add it to the mpq file name */
@@ -224,9 +202,9 @@ extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, c
 		tag_uint_to_str(gltag,gamelang);
 		tempmpq = xstrdup(entry->mpqfile);
 
-		temp = (char*)xmalloc(strlen(tempmpq)+6);
+		temp = (char*)xmalloc(std::strlen(tempmpq)+6);
 
-		extention = strrchr(tempmpq,'.');
+		extention = std::strrchr(tempmpq,'.');
 		*extention = '\0';
 		extention++;
 

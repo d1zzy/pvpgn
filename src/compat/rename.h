@@ -18,9 +18,7 @@
 #ifndef INCLUDED_RENAME_PROTOS
 #define INCLUDED_RENAME_PROTOS
 
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <cstdio>
 #include "compat/access.h"
 
 namespace pvpgn

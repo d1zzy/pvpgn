@@ -22,32 +22,12 @@
 #ifdef GAME_INTERNAL_ACCESS
 
 #ifdef JUST_NEED_TYPES
-# ifdef TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h>
-# else
-#  ifdef HAVE_SYS_TIME_H
-#   include <sys/time.h>
-#  else
-#   include <time.h>
-#  endif
-# endif
 # include "account.h"
 # include "connection.h"
 # include "common/tag.h"
 # include "common/elist.h"
 #else
 # define JUST_NEED_TYPES
-# ifdef TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h>
-# else
-#  ifdef HAVE_SYS_TIME_H
-#   include <sys/time.h>
-#  else
-#   include <time.h>
-#  endif
-# endif
 # include "account.h"
 # include "connection.h"
 # include "common/tag.h"
@@ -264,16 +244,6 @@ typedef int (*t_glist_func)(t_game *, void *);
 #define STARTVER_REALM1 104
 
 #define JUST_NEED_TYPES
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
 #include "account.h"
 #include "connection.h"
 #include "common/list.h"

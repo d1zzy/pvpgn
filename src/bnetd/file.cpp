@@ -17,48 +17,30 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strchr.h"
-#include <errno.h>
-#include "compat/strerror.h"
+#include "file.h"
+
+#include <cstring>
+#include <cerrno>
+
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
-#include "common/bn_type.h"
-#include "common/queue.h"
-#include "connection.h"
-#include "common/packet.h"
-#include "common/file_protocol.h"
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
 #include "common/eventlog.h"
-#include "prefs.h"
-#include "common/bnettime.h"
-#include "common/util.h"
 #include "common/xalloc.h"
-#include "file.h"
+#include "common/bnettime.h"
+#include "common/packet.h"
+#include "common/util.h"
+#include "common/bn_type.h"
+
+#include "prefs.h"
+#include "connection.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -83,14 +65,14 @@ static char * file_find_default(const char *rawname)
     char *filename = NULL;
 
     for (pattern = defaultfiles, extension = defaultfiles + 1; *pattern; pattern+=2, extension+=2)
-    	if (!strncmp(rawname, *pattern,strlen(*pattern))) {	/* Check if there is a default file available for this kind of file */
-	    filename = (char*)xmalloc(strlen(prefs_get_filedir()) + 1 + strlen(*pattern) + 7 + strlen(*extension) + 1);
+    	if (!std::strncmp(rawname, *pattern,std::strlen(*pattern))) {	/* Check if there is a default file available for this kind of file */
+	    filename = (char*)xmalloc(std::strlen(prefs_get_filedir()) + 1 + std::strlen(*pattern) + 7 + std::strlen(*extension) + 1);
 
-	    strcpy(filename, prefs_get_filedir());
-	    strcat(filename, "/");
-	    strcat(filename, *pattern);
-	    strcat(filename, "default");
-	    strcat(filename, *extension);
+	    std::strcpy(filename, prefs_get_filedir());
+	    std::strcat(filename, "/");
+	    std::strcat(filename, *pattern);
+	    std::strcat(filename, "default");
+	    std::strcat(filename, *extension);
 
 	    break;
 	}
@@ -101,8 +83,8 @@ static char * file_find_default(const char *rawname)
 static char const * file_get_info(char const * rawname, unsigned int * len, bn_long * modtime)
 {
     char *filename;
-    struct stat  sfile;
     t_bnettime   bt;
+    struct stat sfile;
 
     if (!rawname) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL rawname");
@@ -119,19 +101,19 @@ static char const * file_get_info(char const * rawname, unsigned int * len, bn_l
 	return NULL;
     }
 
-    if (strchr(rawname,'/') || strchr(rawname,'\\')) {
+    if (std::strchr(rawname,'/') || std::strchr(rawname,'\\')) {
 	eventlog(eventlog_level_warn,__FUNCTION__,"got rawname containing '/' or '\\' \"%s\"",rawname);
 	return NULL;
     }
 
     filename = buildpath(prefs_get_filedir(), rawname);
 
-    if (stat(filename,&sfile)<0) { /* if it doesn't exist, try to replace with default file */
+    if (stat(filename, &sfile)<0) { /* if it doesn't exist, try to replace with default file */
 	xfree((void*)filename);
 	filename = file_find_default(rawname);
 	if (!filename) return NULL; /* no default version */
 
-	if (stat(filename,&sfile)<0) { /* try again */
+	if (stat(filename, &sfile)<0) { /* try again */
 	    /* FIXME: check for lower-case version of filename */
 	    xfree(filename);
 	    return NULL;
@@ -207,7 +189,7 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 	if (!(fp = fopen(filename,"rb")))
 	{
 	    /* FIXME: check for lower-case version of filename */
-	    eventlog(eventlog_level_error,__FUNCTION__,"stat() succeeded yet could not open file \"%s\" for reading (fclose: %s)",filename,pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"stat() succeeded yet could not open file \"%s\" for reading (fclose: %s)",filename,std::strerror(errno));
 	    filelen = 0;
 	}
 	xfree((void *)filename); /* avoid warning */
@@ -259,7 +241,7 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not create raw packet");
 	    if (fclose(fp)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (fclose: %s)",rawname,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (fclose: %s)",rawname,std::strerror(errno));
 	    return -1;
 	}
 	if ((nbytes = fread(packet_get_raw_data_build(rpacket,0),1,MAX_PACKET_SIZE,fp))<(int)MAX_PACKET_SIZE)
@@ -271,7 +253,7 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 	    }
 	    packet_del_ref(rpacket);
 	    if (ferror(fp))
-		eventlog(eventlog_level_error,__FUNCTION__,"read failed before EOF on file \"%s\" (fread: %s)",rawname,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"read failed before EOF on file \"%s\" (fread: %s)",rawname,std::strerror(errno));
 	    break;
 	}
 	packet_set_size(rpacket,nbytes);
@@ -280,7 +262,7 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
     }
 
     if (fclose(fp)<0)
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (fclose: %s)",rawname,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (fclose: %s)",rawname,std::strerror(errno));
     return 0;
 }
 
