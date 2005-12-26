@@ -24,84 +24,53 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/strtoul.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strdup.h"
-#include "compat/strcasecmp.h"
-#include <ctype.h>
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
+#include "command.h"
+
+#include <cctype>
+#include <cerrno>
+#include <cstring>
+
 #ifdef HAVE_SYS_TYPES
 # include <sys/types.h>
 #endif
-#include "compat/strftime.h"
-#include "message.h"
+
+#include "compat/strtoul.h"
+#include "compat/strcasecmp.h"
 #include "common/tag.h"
-#include "connection.h"
-#include "channel.h"
-#include "game.h"
 #include "common/util.h"
 #include "common/version.h"
+#include "common/eventlog.h"
+#include "common/bnettime.h"
+#include "common/addr.h"
+#include "common/packet.h"
+#include "common/bnethash.h"
+#include "common/list.h"
+#include "common/proginfo.h"
+#include "common/queue.h"
+#include "common/bn_type.h"
+#include "common/xalloc.h"
+#include "common/trans.h"
+#include "common/lstr.h"
+
+#include "connection.h"
+#include "message.h"
+#include "channel.h"
+#include "game.h"
 #include "team.h"
 #include "account.h"
 #include "account_wrap.h"
 #include "server.h"
 #include "prefs.h"
-#include "common/eventlog.h"
 #include "ladder.h"
 #include "timer.h"
-#include "common/bnettime.h"
-#include "common/addr.h"
-#include "common/packet.h"
 #include "helpfile.h"
 #include "mail.h"
-#include "common/bnethash.h"
 #include "runprog.h"
-#include "common/list.h"
-#include "common/proginfo.h"
 #include "alias_command.h"
 #include "realm.h"
 #include "ipban.h"
 #include "command_groups.h"
-#include "common/queue.h"
-#include "common/bn_type.h"
-#include "common/xalloc.h"
-#include "command.h"
 #include "news.h"
-#include "common/trans.h"
-#include "common/lstr.h"
-// aaron
 #include "topic.h"
 #include "friends.h"
 #include "clan.h"
@@ -1660,8 +1629,8 @@ static int _handle_status_command(t_connection * c, char const *text)
     }
 
     for (i=0; i<strlen(ctag); i++)
-	if (isascii((int)ctag[i]) && islower((int)ctag[i]))
-	    ctag[i] = toupper((int)ctag[i]);
+	if (isascii((int)ctag[i]) && std::islower((int)ctag[i]))
+	    ctag[i] = std::toupper((int)ctag[i]);
 
     if (strcmp(ctag,"ALL") == 0)
 	clienttag = 0;
@@ -2955,7 +2924,7 @@ static int _handle_addacct_command(t_connection * c, char const *text)
 
     /* FIXME: truncate or err on too long password */
     for (i=0; i<strlen(pass); i++)
-	if (isupper((int)pass[i])) pass[i] = tolower((int)pass[i]);
+	if (std::isupper((int)pass[i])) pass[i] = std::tolower((int)pass[i]);
 
     bnet_hash(&passhash,strlen(pass),pass);
 
@@ -3045,7 +3014,7 @@ static int _handle_chpass_command(t_connection * c, char const *text)
   }
 
   for (i=0; i<strlen(pass); i++)
-    if (isupper((int)pass[i])) pass[i] = tolower((int)pass[i]);
+    if (std::isupper((int)pass[i])) pass[i] = std::tolower((int)pass[i]);
 
   bnet_hash(&passhash,strlen(pass),pass);
 
@@ -3444,7 +3413,7 @@ static int _handle_killsession_command(t_connection * c, char const *text)
       message_send_text(c,message_type_info,c,"usage: /killsession <session> [min]");
       return 0;
     }
-  if (!isxdigit((int)session[0]))
+  if (!std::isxdigit((int)session[0]))
     {
       message_send_text(c,message_type_error,c,"That is not a valid session.");
       return 0;
@@ -4250,11 +4219,11 @@ static int _handle_motd_command(t_connection * c, char const *text)
       {
 	message_send_file(c,fp);
 	if (fclose(fp)<0)
-	  eventlog(eventlog_level_error,__FUNCTION__,"could not close motd file \"%s\" after reading (fopen: %s)",filename,pstrerror(errno));
+	  eventlog(eventlog_level_error,__FUNCTION__,"could not close motd file \"%s\" after reading (fopen: %s)",filename,std::strerror(errno));
       }
     else
       {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open motd file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open motd file \"%s\" for reading (fopen: %s)",filename,std::strerror(errno));
 	message_send_text(c,message_type_error,c,"Unable to open motd.");
       }
     return 0;
@@ -4309,11 +4278,11 @@ static int _handle_tos_command(t_connection * c, char const * text)
 
 
        	if (fclose(fp)<0)
-	       eventlog(eventlog_level_error,__FUNCTION__,"could not close tos file \"%s\" after reading (fopen: %s)",filename,pstrerror(errno));
+	       eventlog(eventlog_level_error,__FUNCTION__,"could not close tos file \"%s\" after reading (fopen: %s)",filename,std::strerror(errno));
     }
     else
     {
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not open tos file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not open tos file \"%s\" for reading (fopen: %s)",filename,std::strerror(errno));
         message_send_text(c,message_type_error,c,"Unable to send TOS (terms of service).");
     }
     xfree((void *)filename);
@@ -4538,14 +4507,14 @@ static int _handle_topic_command(t_connection * c, char const * text)
     message_send_text(c,message_type_error,c,msgtemp);
     return -1;
   }
-  
+
   if (strlen(topic) >= MAX_TOPIC_LEN)
   {
     sprintf(msgtemp,"max topic length exceeded (max %d symbols)", MAX_TOPIC_LEN);
     message_send_text(c,message_type_error,c,msgtemp);
     return -1;
   }
-  
+
   channel_name = channel_get_name(channel);
 
   if (!(account_is_operator_or_admin(conn_get_account(c),channel_name))) {

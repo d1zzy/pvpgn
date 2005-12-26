@@ -17,23 +17,9 @@
  */
 
 #include "common/setup_before.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
+#include "anongame.h"
+
+#include <cstring>
 
 #ifdef WIN32
 # include "compat/socket.h"	/* is this needed */
@@ -54,7 +40,6 @@
 #include "common/addr.h"
 #include "common/xalloc.h"
 #include "versioncheck.h"
-#include "anongame.h"
 #include "tournament.h"
 #include "timer.h"
 #include "ladder.h"
@@ -846,7 +831,7 @@ static int _anongame_match(t_connection * c, int queue)
 
 	    LIST_TRAVERSE(matchlists[queue][level + delta], curr) {
 		md = (t_matchdata*)elem_get_data(curr);
-		if (md->versiontag && _conn_get_versiontag(c) && !strcmp(md->versiontag, _conn_get_versiontag(c)) && (cur_prefs & md->map_prefs)) {
+		if (md->versiontag && _conn_get_versiontag(c) && !std::strcmp(md->versiontag, _conn_get_versiontag(c)) && (cur_prefs & md->map_prefs)) {
 		    /* set maxlevel and minlevel to keep all players within 6 levels */
 		    maxlevel = (level + delta + diff < maxlevel) ? level + delta + diff : maxlevel;
 		    minlevel = (level + delta - diff > minlevel) ? level + delta - diff : minlevel;
@@ -1665,7 +1650,7 @@ extern int handle_w3route_packet(t_connection * c, t_packet const *const packet)
 	    return 0;
 	}
 
-	if (bn_int_get((unsigned char const *) packet->u.data + sizeof(t_client_w3route_req) + strlen(username) + 2) != anongame_get_id(a)) {
+	if (bn_int_get((unsigned char const *) packet->u.data + sizeof(t_client_w3route_req) + std::strlen(username) + 2) != anongame_get_id(a)) {
 	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] client sent wrong id for user '%s', closing connection", conn_get_socket(c), username);
 	    conn_set_state(c, conn_state_destroy);
 	    return 0;
@@ -1685,7 +1670,7 @@ extern int handle_w3route_packet(t_connection * c, t_packet const *const packet)
 	/* set clienttag for w3route connections; we can do conn_get_clienttag() on them */
 	conn_set_clienttag(c, conn_get_clienttag(gamec));
 
-	anongame_set_addr(a, bn_int_get((unsigned char const *) packet->u.data + sizeof(t_client_w3route_req) + strlen(username) + 2 + 12));
+	anongame_set_addr(a, bn_int_get((unsigned char const *) packet->u.data + sizeof(t_client_w3route_req) + std::strlen(username) + 2 + 12));
 	anongame_set_joined(a, 0);
 	anongame_set_loaded(a, 0);
 	anongame_set_result(a, -1);

@@ -19,9 +19,7 @@
 #ifndef __ATTRGROUP_H_INCLUDED__
 #define __ATTRGROUP_H_INCLUDED__
 
-#ifdef HAVE_TIME_H
-# include <time.h>
-#endif
+#include <ctime>
 #include "common/elist.h"
 
 #ifndef JUST_NEED_TYPES
@@ -51,8 +49,8 @@ typedef struct attrgroup_struct
     t_hlist		list;
     t_storage_info	*storage;
     int			flags;
-    time_t		lastaccess;
-    time_t		dirtytime;
+    std::time_t		lastaccess;
+    std::time_t		dirtytime;
     t_elist		loadedlist;
     t_elist		dirtylist;
 }

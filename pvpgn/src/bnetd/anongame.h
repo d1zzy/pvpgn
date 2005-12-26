@@ -16,7 +16,6 @@
 #ifndef INCLUDED_ANONGAME_TYPES
 #define INCLUDED_ANONGAME_TYPES
 
-#include "common/setup_before.h"
 #ifdef JUST_NEED_TYPES
 # include "account.h"
 # include "connection.h"
@@ -29,7 +28,6 @@
 # undef JUST_NEED_TYPES
 #endif
 # include "anongame_gameresult.h"
-#include "common/setup_after.h"
 
 namespace pvpgn
 {

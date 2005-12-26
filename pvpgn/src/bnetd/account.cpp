@@ -19,48 +19,13 @@
  */
 #define ACCOUNT_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include <cstddef>
 #include "compat/strchr.h"
 #include "compat/strdup.h"
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
-#include <ctype.h>
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif
 #include "compat/char_bit.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#include <errno.h>
 #include "compat/strerror.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
 #include "compat/pdir.h"
 #include "common/list.h"
 #include "common/elist.h"
@@ -86,9 +51,6 @@
 #include "storage.h"
 #include "common/flags.h"
 #include "common/xalloc.h"
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
 #include "common/setup_after.h"
 
 namespace pvpgn

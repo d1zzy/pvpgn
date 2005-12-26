@@ -18,31 +18,13 @@
  */
 #define ALIAS_COMMAND_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+
+#include <cerrno>
+#include <cstring>
+#include <cctype>
+
+#include "alias_command.h"
 #include "compat/strcasecmp.h"
-#include <ctype.h>
-#include <errno.h>
-#include "compat/strerror.h"
 #include "common/field_sizes.h"
 #include "common/util.h"
 #include "common/eventlog.h"
@@ -50,7 +32,6 @@
 #include "common/xalloc.h"
 #include "message.h"
 #include "connection.h"
-#include "alias_command.h"
 #include "common/setup_after.h"
 
 
@@ -122,9 +103,9 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
     off1 = off2 = 0;
 
     out = xstrdup(in);
-    size = strlen(out);
+    size = std::strlen(out);
 
-    for (inpos=outpos=0; inpos<strlen(in); inpos++)
+    for (inpos=outpos=0; inpos<std::strlen(in); inpos++)
     {
 	if (in[inpos]!='$')
 	{
@@ -138,7 +119,7 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
 	if (in[inpos]=='*')
 	{
 	    off1 = offsets[0];
-	    off2 = strlen(text);
+	    off2 = std::strlen(text);
 	}
         else if (in[inpos]=='{')
 	{
@@ -191,14 +172,14 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
 	    }
 	    off1 = offsets[arg1];
 	    if (arg2+1==numargs)
-		off2 = strlen(text);
+		off2 = std::strlen(text);
 	    else
 		off2 = offsets[arg2+1]-1;
 
 	    while (in[inpos]!='\0' && in[inpos]!='}')
 		inpos++;
 	}
-	else if (isdigit((int)in[inpos]))
+	else if (std::isdigit((int)in[inpos]))
 	{
 	    int arg;
 
@@ -223,7 +204,7 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
 
             newout = (char*)xmalloc(size+(off2-off1)+1); /* curr + new + nul */
 	    size = size+(off2-off1)+1;
-	    memmove(newout,out,outpos);
+	    std::memmove(newout,out,outpos);
 	    xfree(out);
             out = newout;
 
@@ -290,7 +271,7 @@ static int do_alias(t_connection * c, char const * cmd, char const * text)
 	if (!(alias = (t_alias*)elem_get_data(elem1)))
 	    continue;
 
-	if (strstr(alias->alias,cmd)==NULL)
+	if (std::strstr(alias->alias,cmd)==NULL)
 	    continue;
 
 	LIST_TRAVERSE_CONST(alias->output,elem2)
@@ -319,13 +300,13 @@ static int do_alias(t_connection * c, char const * cmd, char const * text)
 		  {
 		    if ((msgtmp[0]=='/')&&(msgtmp[1]!='/')) // to make sure we don't get endless aliasing loop
 		    {
-		      tmp2 = (char*)xmalloc(strlen(msgtmp)+3);
+		      tmp2 = (char*)xmalloc(std::strlen(msgtmp)+3);
 		      sprintf(tmp2,"%s%s",cmd,msgtmp);
 		      xfree((void *)msgtmp);
 		      msgtmp=tmp2;
 
 		    }
-		    if (strlen(msgtmp)>MAX_MESSAGE_LEN)
+		    if (std::strlen(msgtmp)>MAX_MESSAGE_LEN)
 		    {
 		      msgtmp[MAX_MESSAGE_LEN]='\0';
 		      eventlog(eventlog_level_info,__FUNCTION__,"message line after alias expansion was too long, truncating it");
@@ -362,7 +343,7 @@ extern int aliasfile_load(char const * filename)
     }
     if (!(afp = fopen(filename,"r")))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"unable to open alias file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error, __FUNCTION__, "unable to open alias file \"%s\" for reading (fopen: %s)", filename, std::strerror(errno));
 	return -1;
     }
 
@@ -376,15 +357,15 @@ extern int aliasfile_load(char const * filename)
 	{
 	    continue;
 	}
-	if (!(temp = strrchr(buff,'"'))) /* FIXME: assumes comments don't contain " */
+	if (!(temp = std::strrchr(buff,'"'))) /* FIXME: assumes comments don't contain " */
 	    temp = buff;
-	if ((temp = strrchr(temp,'#')))
+	if ((temp = std::strrchr(temp,'#')))
 	{
 	    unsigned int len;
 	    unsigned int endpos;
 
 	    *temp = '\0';
-	    len = strlen(buff)+1;
+	    len = std::strlen(buff)+1;
 	    for (endpos=len-1;  buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
 	    buff[endpos+1] = '\0';
 	}
@@ -425,7 +406,7 @@ extern int aliasfile_load(char const * filename)
 		  break;
 	      }
 
-	      if ((dummy=strchr(&buff[pos],']')))
+	      if ((dummy=std::strchr(&buff[pos],']')))
 	      {
 		if (dummy[1]!='\0') out = xstrdup(&dummy[1]);
 	      }
@@ -479,7 +460,7 @@ extern int aliasfile_load(char const * filename)
 		t_output * output;
 
 		min = max = 0;
-		if ((dummy=strchr(&buff[pos],']')))
+		if ((dummy=std::strchr(&buff[pos],']')))
 		  {
 		    if (dummy[1]!='\0') out = xstrdup(&dummy[1]);
 		  }

@@ -19,43 +19,15 @@
  */
 #define CHANNEL_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include "channel.h"
+
+#include <cstring>
+#include <cerrno>
+
 #include "compat/strrchr.h"
 #include "compat/strdup.h"
 #include "compat/strcasecmp.h"
-#include <errno.h>
 #include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
@@ -68,7 +40,6 @@
 #include "common/util.h"
 #include "prefs.h"
 #include "common/token.h"
-#include "channel.h"
 #include "irc.h"
 #include "common/tag.h"
 #include "common/xalloc.h"
@@ -112,9 +83,9 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
         eventlog(eventlog_level_error,__FUNCTION__,"got empty shortname");
 	return NULL;
     }
-    if (clienttag && strlen(clienttag)!=4)
+    if (clienttag && std::strlen(clienttag)!=4)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"client tag has bad length (%u chars)",strlen(clienttag));
+	eventlog(eventlog_level_error,__FUNCTION__,"client tag has bad length (%u chars)",std::strlen(clienttag));
 	return NULL;
     }
 
@@ -123,7 +94,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
     {
 	if ((channel = channellist_find_channel_by_fullname(fullname)))
 	{
-	    if ((channel_get_clienttag(channel)) && (clienttag) && (strcmp(channel_get_clienttag(channel),clienttag)==0))
+	    if ((channel_get_clienttag(channel)) && (clienttag) && (std::strcmp(channel_get_clienttag(channel),clienttag)==0))
 	    {
 	      eventlog(eventlog_level_error,__FUNCTION__,"could not create duplicate permanent channel (fullname \"%s\")",fullname);
 	      return NULL;
@@ -230,7 +201,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 		    tmnow->tm_min,
 		    tmnow->tm_sec);
 
-	channel->logname = (char*)xmalloc(strlen(prefs_get_chanlogdir())+9+strlen(dstr)+1+6+1); /* dir + "/chanlog-" + dstr + "-" + id + NUL */
+	channel->logname = (char*)xmalloc(std::strlen(prefs_get_chanlogdir())+9+std::strlen(dstr)+1+6+1); /* dir + "/chanlog-" + dstr + "-" + id + NUL */
 	sprintf(channel->logname,"%s/chanlog-%s-%06u",prefs_get_chanlogdir(),dstr,channel->id);
 
 	if (!(channel->log = fopen(channel->logname,"w")))
@@ -253,7 +224,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 	    if (tmnow)
 		strftime(timetemp,sizeof(timetemp),CHANLOG_TIME_FORMAT,tmnow);
 	    else
-		strcpy(timetemp,"?");
+		std::strcpy(timetemp,"?");
 	    fprintf(channel->log,"created=\"%s\"\n\n",timetemp);
 	    fflush(channel->log);
 	}
@@ -325,7 +296,7 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
 
 	now = time(NULL);
 	if ((!(tmnow = localtime(&now))))
-	    strcpy(timetemp,"?");
+	    std::strcpy(timetemp,"?");
 	else
 	    strftime(timetemp,sizeof(timetemp),CHANLOG_TIME_FORMAT,tmnow);
 	fprintf(channel->log,"\ndestroyed=\"%s\"\n",timetemp);
@@ -565,7 +536,7 @@ extern int channel_del_connection(t_channel * channel, t_connection * connection
     channel->currmembers--;
 
     if (conn_get_tmpOP_channel(connection) &&
-	strcmp(conn_get_tmpOP_channel(connection),channel_get_name(channel))==0)
+	std::strcmp(conn_get_tmpOP_channel(connection),channel_get_name(channel))==0)
     {
 	conn_set_tmpOP_channel(connection,NULL);
     }
@@ -654,7 +625,7 @@ extern void channel_message_log(t_channel const * channel, t_connection * me, in
 
 	now = time(NULL);
 	if ((!(tmnow = localtime(&now))))
-	    strcpy(timetemp,"?");
+	    std::strcpy(timetemp,"?");
 	else
 	    strftime(timetemp,sizeof(timetemp),CHANLOGLINE_TIME_FORMAT,tmnow);
 
@@ -1042,15 +1013,15 @@ static int channellist_load_permanent(char const * filename)
 		continue;
 	}
 
-	if (strcmp(sname,"NULL") == 0)
+	if (std::strcmp(sname,"NULL") == 0)
 	    sname = NULL;
-	if (strcmp(tag,"NULL") == 0)
+	if (std::strcmp(tag,"NULL") == 0)
 	    tag = NULL;
-        if (strcmp(name,"NONE") == 0)
+        if (std::strcmp(name,"NONE") == 0)
 	    name = NULL;
-        if (strcmp(country, "NULL") == 0)
+        if (std::strcmp(country, "NULL") == 0)
             country = NULL;
-        if (strcmp(realmname,"NULL") == 0)
+        if (std::strcmp(realmname,"NULL") == 0)
             realmname = NULL;
 
 	if (name)
@@ -1093,11 +1064,11 @@ static char * channel_format_name(char const * sname, char const * country, char
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL sname");
         return NULL;
     }
-    len = strlen(sname)+1; /* FIXME: check lengths and format */
+    len = std::strlen(sname)+1; /* FIXME: check lengths and format */
     if (country)
-    	len = len + strlen(country) + 1;
+    	len = len + std::strlen(country) + 1;
     if (realmname)
-    	len = len + strlen(realmname) + 1;
+    	len = len + std::strlen(realmname) + 1;
     len = len + 32 + 1;
 
     fullname=(char*)xmalloc(len);
@@ -1323,7 +1294,7 @@ extern int channel_conn_is_tmpOP(t_channel const * channel, t_connection * c)
 
 	if (!conn_get_tmpOP_channel(c)) return 0;
 
-	if (strcmp(conn_get_tmpOP_channel(c),channel_get_name(channel))==0) return 1;
+	if (std::strcmp(conn_get_tmpOP_channel(c),channel_get_name(channel))==0) return 1;
 
 	return 0;
 }
@@ -1344,7 +1315,7 @@ extern int channel_conn_has_tmpVOICE(t_channel const * channel, t_connection * c
 
 	if (!conn_get_tmpVOICE_channel(c)) return 0;
 
-	if (strcmp(conn_get_tmpVOICE_channel(c),channel_get_name(channel))==0) return 1;
+	if (std::strcmp(conn_get_tmpVOICE_channel(c),channel_get_name(channel))==0) return 1;
 
 	return 0;
 }
@@ -1429,9 +1400,9 @@ extern t_channel * channellist_find_channel_by_name(char const * name, char cons
 		/* FIXME: what should we do if the client doesn't have a country?  For now, just take the first
 		 * channel that would otherwise match. */
                 if ( ((!channel->country && !foundlang) || !country ||
-		      (channel->country && country && (strcmp(channel->country, country)==0))) &&
+		      (channel->country && country && (std::strcmp(channel->country, country)==0))) &&
 	             ((!channel->realmname && !realmname) ||
-		      (channel->realmname && realmname && (strcmp(channel->realmname, realmname)==0))) )
+		      (channel->realmname && realmname && (std::strcmp(channel->realmname, realmname)==0))) )
 
 		{
 		    if (channel->maxmembers==-1 || channel->currmembers<channel->maxmembers)

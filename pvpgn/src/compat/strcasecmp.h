@@ -18,6 +18,8 @@
 #ifndef INCLUDED_STRCASECMP_PROTOS
 #define INCLUDED_STRCASECMP_PROTOS
 
+#include <cstring>
+
 #ifndef HAVE_STRCASECMP
 
 #ifdef HAVE_STRICMP

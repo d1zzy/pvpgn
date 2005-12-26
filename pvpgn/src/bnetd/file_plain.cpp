@@ -18,80 +18,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strchr.h"
-#include "compat/strdup.h"
-#include "compat/strcasecmp.h"
-#include "compat/strncasecmp.h"
-#include <ctype.h>
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif
-#include "compat/char_bit.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#else
-# ifdef WIN32
-#  include <io.h>
-# endif
-#endif
-#include "compat/pdir.h"
+#include "file_plain.h"
+
+#include <cstring>
+#include <cerrno>
+
 #include "common/eventlog.h"
-#include "prefs.h"
 #include "common/util.h"
-#include "common/field_sizes.h"
-#include "common/bnethash.h"
-#define CLAN_INTERNAL_ACCESS
-#include "common/introtate.h"
-#include "account.h"
-#include "common/hashtable.h"
-#include "storage.h"
-#include "storage_file.h"
-#include "common/list.h"
-#include "common/xalloc.h"
-#include "connection.h"
-#include "watch.h"
-#include "clan.h"
-#undef CLAN_INTERNAL_ACCESS
-#include "common/elist.h"
-#include "attr.h"
-#include "common/tag.h"
+
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -124,7 +58,7 @@ static int plain_write_attrs(const char *filename, const t_hlist *attributes)
     char const *  val;
 
     if (!(accountfile = fopen(filename,"w"))) {
-	eventlog(eventlog_level_error, __FUNCTION__, "unable to open file \"%s\" for writing (fopen: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error, __FUNCTION__, "unable to open file \"%s\" for writing (fopen: %s)",filename,std::strerror(errno));
 	return -1;
     }
 
@@ -132,21 +66,21 @@ static int plain_write_attrs(const char *filename, const t_hlist *attributes)
 	attr = hlist_entry(curr, t_attr, link);
 
 	if (attr_get_key(attr))
-	    key = escape_chars(attr_get_key(attr),strlen(attr_get_key(attr)));
+	    key = escape_chars(attr_get_key(attr),std::strlen(attr_get_key(attr)));
 	else {
 	    eventlog(eventlog_level_error, __FUNCTION__, "attribute with NULL key in list");
 	    key = NULL;
 	}
 
 	if (attr_get_val(attr))
-	    val = escape_chars(attr_get_val(attr),strlen(attr_get_val(attr)));
+	    val = escape_chars(attr_get_val(attr),std::strlen(attr_get_val(attr)));
 	else {
 	    eventlog(eventlog_level_error, __FUNCTION__, "attribute with NULL val in list");
 	    val = NULL;
 	}
 
 	if (key && val) {
-	    if (strncmp("BNET\\CharacterDefault\\", key, 20) == 0) {
+	    if (std::strncmp("BNET\\CharacterDefault\\", key, 20) == 0) {
 		eventlog(eventlog_level_debug, __FUNCTION__, "skipping attribute key=\"%s\"",attr->key);
 	    } else {
 		eventlog(eventlog_level_debug, __FUNCTION__, "saving attribute key=\"%s\" val=\"%s\"",attr->key,attr->val);
@@ -161,7 +95,7 @@ static int plain_write_attrs(const char *filename, const t_hlist *attributes)
     }
 
     if (fclose(accountfile)<0) {
-	eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"%s\" after writing (fclose: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"%s\" after writing (fclose: %s)",filename,std::strerror(errno));
 	return -1;
     }
 
@@ -180,7 +114,7 @@ static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *dat
     char * val;
 
     if (!(accountfile = fopen(filename,"r"))) {
-	eventlog(eventlog_level_error, __FUNCTION__,"could not open account file \"%s\" for reading (fopen: %s)", filename, pstrerror(errno));
+	eventlog(eventlog_level_error, __FUNCTION__,"could not open account file \"%s\" for reading (fopen: %s)", filename, std::strerror(errno));
 	return -1;
     }
 
@@ -189,12 +123,12 @@ static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *dat
 	    continue;
 	}
 
-	if (strlen(buff)<6) /* "?"="" */ {
+	if (std::strlen(buff)<6) /* "?"="" */ {
 	    eventlog(eventlog_level_error, __FUNCTION__, "malformed line %d of account file \"%s\"", line, filename);
 	    continue;
 	}
 
-	len = strlen(buff)-5+1; /* - ""="" + NUL */
+	len = std::strlen(buff)-5+1; /* - ""="" + NUL */
 	esckey = (char*)xmalloc(len);
 	escval = (char*)xmalloc(len);
 
@@ -211,7 +145,7 @@ static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *dat
 	key = unescape_chars(esckey);
 	val = unescape_chars(escval);
 
-/* eventlog(eventlog_level_debug,__FUNCTION__,"strlen(esckey)=%u (%c), len=%u",strlen(esckey),esckey[0],len);*/
+/* eventlog(eventlog_level_debug,__FUNCTION__,"std::strlen(esckey)=%u (%c), len=%u",std::strlen(esckey),esckey[0],len);*/
 	xfree(esckey);
 	xfree(escval);
 
@@ -225,7 +159,7 @@ static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *dat
     file_get_line(NULL); // clear file_get_line buffer
 
     if (fclose(accountfile)<0)
-	eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"%s\" after reading (fclose: %s)", filename, pstrerror(errno));
+	eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"%s\" after reading (fclose: %s)", filename, std::strerror(errno));
 
     return 0;
 }

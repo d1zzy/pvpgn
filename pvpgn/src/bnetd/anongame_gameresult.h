@@ -77,6 +77,10 @@ t_anongame_gameresult;
 #ifndef INCLUDED_ANONGAME_GAMERESULT_PROTOS
 #define INCLUDED_ANONGAME_GAMERESULT_PROTOS
 
+#define JUST_NEED_TYPES
+# include "common/packet.h"
+#undef JUST_NEED_TYPES
+
 namespace pvpgn
 {
 

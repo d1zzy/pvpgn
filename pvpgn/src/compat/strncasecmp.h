@@ -18,6 +18,8 @@
 #ifndef INCLUDED_STRNCASECMP_PROTOS
 #define INCLUDED_STRNCASECMP_PROTOS
 
+#include <cstring>
+
 #ifndef HAVE_STRNCASECMP
 
 #ifdef HAVE_STRNICMP

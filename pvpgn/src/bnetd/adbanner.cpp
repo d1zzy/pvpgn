@@ -17,26 +17,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
+#include "adbanner.h"
 
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
 
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
 #include "compat/strcasecmp.h"
-#include <errno.h>
 #include "compat/strerror.h"
-#include "common/bn_type.h"
 #include "common/eventlog.h"
 #include "common/systemerror.h"
 #include "connection.h"
-#include "adbanner.h"
 #include "common/setup_after.h"
 
 

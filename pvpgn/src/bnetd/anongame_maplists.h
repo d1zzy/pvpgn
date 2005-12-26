@@ -26,7 +26,8 @@
 #define INCLUDED_ANONGAME_MAPLISTS_PROTOS
 
 #define JUST_NEED_TYPES
-#include "common/packet.h"
+# include "common/packet.h"
+# include "common/tag.h"
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
