@@ -19,6 +19,8 @@
 #ifndef PVPGN_SCOPED_PTR_H
 #define PVPGN_SCOPED_PTR_H
 
+#include <memory>
+
 namespace pvpgn
 {
 
@@ -29,6 +31,17 @@ public:
 	/** initilize the object aquiring ownership of the given parameter (0 for no onwership) */
 	explicit scoped_ptr(T* ptr_ = 0)
 	:ptr(ptr_) {}
+
+	/** initilize from a blind pointer supporting implicit conversion */
+	template<typename V>
+	explicit scoped_ptr(V* ptr_)
+	:ptr(ptr_) {}
+
+	/** initilize the object transfering ownership from an std::auto_ptr<> */
+	template<typename V>
+	explicit scoped_ptr(std::auto_ptr<V>& aptr)
+	:ptr(aptr.release()) {}
+
 	/** release memory if aquired ownershipt */
 	~scoped_ptr() throw() {
 		cleanup();
@@ -50,18 +63,29 @@ public:
 		ptr = ptr_;
 	}
 
+	/** reinitilize object, supports implicit conversions */
+	template<typename V>
+	void reset(V* ptr_) {
+		cleanup();
+		ptr = ptr_;
+	}
+
+	/** const-dereference of the wrapped pointer */
 	const T& operator*() const {
 		return *ptr;
 	}
 
+	/** dereference of the wrapped pointer */
 	T& operator*() {
 		return *ptr;
 	}
 
+	/** const-member access to the wrapped pointer */
 	const T* operator->() const {
 		return ptr;
 	}
 
+	/** member access to the wrapped pointer */
 	T* operator->() {
 		return ptr;
 	}
@@ -69,7 +93,7 @@ public:
 private:
 	T* ptr;
 
-	/* do not allow to copy a scoped_ptr */
+	/* do not allow to copy a scoped_ptr (use std::auto_ptr<> if you need that) */
 	scoped_ptr(const scoped_ptr&);
 	scoped_ptr& operator=(const scoped_ptr&);
 
