@@ -21,10 +21,20 @@
 #include <stdarg.h>
 #include "common/eventlog.h"
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+          
 extern int gui_printf(const char *format, ...);
 extern void guiOnUpdateUserList(void);
 
 extern int gui_lvprintf(t_eventlog_level l, const char *format, va_list arglist);
 extern int gui_lprintf(t_eventlog_level l, const char *format, ...);
+
+}
+
+}
 
 #endif

@@ -46,6 +46,12 @@
 
 #define WM_SHELLNOTIFY          (WM_USER+1)
 
+namespace pvpgn
+{
+
+namespace bnetd
+{
+
 extern int server_main(int, char*[]);
 
 static void	guiThread(void*);
@@ -588,7 +594,7 @@ extern void guiOnUpdateUserList()
 	
 	LIST_TRAVERSE_CONST(connlist(),curr)
 	{
-		if (!(c = elem_get_data(curr))) continue;
+		if (!(c = (t_connection *)elem_get_data(curr))) continue;
 		if (!(acc = conn_get_account(c))) continue;
 		
 		SendMessage(gui.hwndUsers, LB_ADDSTRING, 0, (LPARAM)account_get_name(acc));
@@ -851,6 +857,10 @@ BOOL CALLBACK KickDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 			return FALSE;
 	}
 	return TRUE;
+}
+
+}
+
 }
 
 #endif

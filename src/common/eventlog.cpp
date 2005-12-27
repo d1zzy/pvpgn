@@ -251,7 +251,7 @@ extern void eventlog_hexdump_data(void const * data, unsigned int len)
 	hexdump_string(datac, (len - i < 16) ? (len - i) : 16, dst, i);
 	fprintf(eventstrm,"%s\n",dst);
 #ifdef WIN32_GUI
-        gui_lprintf(eventlog_level_info,"%s\n",dst);
+        bnetd::gui_lprintf(eventlog_level_info,"%s\n",dst);
 #endif
        if (eventlog_debugmode)
        {
@@ -286,7 +286,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
     {
 	fprintf(eventstrm,"%s [error] eventlog: got NULL module\n",time_string);
 #ifdef WIN32_GUI
-        gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL module\n",time_string);
+        bnetd::gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL module\n",time_string);
 #endif
 	fflush(eventstrm);
 	return;
@@ -296,7 +296,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
     {
 	fprintf(eventstrm,"%s [error] eventlog: got NULL fmt\n",time_string);
 #ifdef WIN32_GUI
-        gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL fmt\n",time_string);
+        bnetd::gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL fmt\n",time_string);
 #endif
 	fflush(eventstrm);
 	return;
@@ -304,7 +304,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 
     fprintf(eventstrm,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
 #ifdef WIN32_GUI
-    gui_lprintf(level,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
+    bnetd::gui_lprintf(level,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
 #endif
 
     VA_START(args,fmt);
@@ -312,7 +312,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 #ifdef HAVE_VPRINTF
     vfprintf(eventstrm,fmt,args);
 #ifdef WIN32_GUI
-    gui_lvprintf(level,fmt,args);
+    bnetd::gui_lvprintf(level,fmt,args);
 #endif
 #else
 # if HAVE__DOPRNT
@@ -324,7 +324,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
     va_end(args);
     fprintf(eventstrm,"\n");
 #ifdef WIN32_GUI
-    gui_lprintf(level,"\n");
+    bnetd::gui_lprintf(level,"\n");
 #endif
 
     if (eventlog_debugmode) {
