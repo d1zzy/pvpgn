@@ -285,9 +285,9 @@ static t_sql_field* sql_odbc_fetch_fields(t_sql_res *result)
 		eventlog(eventlog_level_error, __FUNCTION__, "Got NULL result.");
 		return NULL;
 	}
-	res = (t_odbc_res*)result;
+	res = (t_odbc_res *)result;
 	fieldCount = sql_odbc_num_fields(result);
-	fields = xcalloc(sizeof *fields, fieldCount+1);
+	fields = (t_sql_field *)xcalloc(sizeof *fields, fieldCount+1);
 	if(!fields) {
 		return NULL;
 	}
@@ -347,18 +347,18 @@ static t_sql_row* odbc_alloc_row(t_odbc_res *result, SQLINTEGER *sizes)
 
 	fieldCount = sql_odbc_num_fields(result);
 	/* Create a new row. */
-	row = xcalloc(sizeof *row, fieldCount+1);
+	row = (t_sql_row *)xcalloc(sizeof *row, fieldCount+1);
 	if(!row) {
 		return NULL;
 	}
 	row[fieldCount] = NULL;
-	sizes = xcalloc(sizeof *sizes, fieldCount);
+	sizes = (SQLINTEGER *)xcalloc(sizeof *sizes, fieldCount);
 
 	for(i=0; i<fieldCount; i++) {
 		TCHAR *cell;
 		SQLLEN cellSz;
 		SQLColAttribute(stmt, i+1, SQL_DESC_DISPLAY_SIZE, NULL, 0, NULL, &cellSz);
-		cell = xcalloc(sizeof *cell, ++cellSz);
+		cell = (TCHAR *)xcalloc(sizeof *cell, ++cellSz);
 		if(!cell) {
 			return NULL;
 		}
@@ -385,7 +385,7 @@ static void odbc_Error(SQLSMALLINT type, void *obj, t_eventlog_level level, cons
 	short i = 0;
 
 	while(SQLGetDiagRec(type, obj, ++i, NULL, NULL, NULL, 0, &mTextLen) != SQL_NO_DATA) {
-		SQLCHAR *mText = xcalloc(sizeof *mText, ++mTextLen);
+		SQLCHAR *mText = (SQLCHAR *)xcalloc(sizeof *mText, ++mTextLen);
 		SQLGetDiagRec(type, obj, i, mState,	&native, mText, mTextLen, NULL);
 		eventlog(level, function, "ODBC Error: State %s, Native %i: %s", mState, native, mText);
 		xfree(mText);
