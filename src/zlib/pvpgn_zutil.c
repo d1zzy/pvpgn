@@ -48,8 +48,7 @@ void pvpgn_z_error (m)
 /* exported to allow conversion of error code to string for compress() and
  * uncompress()
  */
-const char * ZEXPORT pvpgn_zError(err)
-    int err;
+const char * ZEXPORT pvpgn_zError(int err)
 {
     return ERR_MSG(err);
 }
@@ -204,18 +203,13 @@ extern voidp  calloc OF((uInt items, uInt size));
 extern void   free   OF((voidpf ptr));
 #endif
 
-voidpf pvpgn_zcalloc (opaque, items, size)
-    voidpf opaque;
-    unsigned items;
-    unsigned size;
+voidpf pvpgn_zcalloc (voidpf opaque, unsigned items, unsigned size)
 {
     if (opaque) items += size - size; /* make compiler happy */
     return (voidpf)calloc(items, size);
 }
 
-void  pvpgn_zcfree (opaque, ptr)
-    voidpf opaque;
-    voidpf ptr;
+void  pvpgn_zcfree (voidpf opaque, voidpf ptr)
 {
     free(ptr);
     if (opaque) return; /* make compiler happy */
