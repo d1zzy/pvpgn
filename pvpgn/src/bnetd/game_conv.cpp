@@ -28,6 +28,8 @@
 #include "common/bn_type.h"
 #include "common/util.h"
 
+#include "compat/strsep.h"
+
 #include "game.h"
 #include "common/setup_after.h"
 
