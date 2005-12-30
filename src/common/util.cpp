@@ -17,44 +17,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/strtoul.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
+#include "common/util.h"
+#include <cstdlib>
+#include <cctype>
+#include <cstdio>
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
 #include "common/xalloc.h"
-#include <ctype.h>
-#include "common/util.h"
 #include "common/setup_after.h"
 
 
@@ -69,7 +38,7 @@ extern int strstart(char const * full, char const * part)
     if (!full || !part)
 	return 1;
 
-    strlen_part = strlen(part);
+    strlen_part = std::strlen(part);
     compare_result = strncasecmp(full,part,strlen_part);
 
     /* If there is more than the command, make sure it is separated */
@@ -84,7 +53,7 @@ extern int strstart(char const * full, char const * part)
 #define DEF_LEN 64
 #define INC_LEN 16
 
-extern char * file_get_line(FILE * fp)
+extern char * file_get_line(std::FILE * fp)
 {
     static char *       line = NULL;
     static unsigned int	len = 0;
@@ -108,7 +77,7 @@ extern char * file_get_line(FILE * fp)
     }
 
     prev_char = '\0';
-    while ((curr_char = fgetc(fp))!=EOF)
+    while ((curr_char = std::fgetc(fp))!=EOF)
     {
 	if (((char)curr_char)=='\r')
 	    continue; /* make DOS line endings look Unix-like */
@@ -150,7 +119,7 @@ extern char * strreverse(char * str)
     if (!str)
 	return NULL;
 
-    len = strlen(str);
+    len = std::strlen(str);
 
     for (start=str,end=str+len-1;start<end;start++,end--)
     {
@@ -184,7 +153,7 @@ extern int str_to_uint(char const * str, unsigned int * num)
 	    return -1;
 
 	pval = val;
-	if (isdigit(*pos))
+	if (std::isdigit(*pos))
 		val += *pos - '0';
 	else
 		return -1;
@@ -220,7 +189,7 @@ extern int str_to_ushort(char const * str, unsigned short * num)
 
 	pval = val;
 
-	if (isdigit(*pos))
+	if (std::isdigit(*pos))
 		val += *pos - '0';
 	else
 		return -1;
@@ -237,7 +206,7 @@ extern int str_to_ushort(char const * str, unsigned short * num)
 /* This routine assumes ASCII like control chars.
    If len is zero, it will print all characters up to the first NUL,
    otherwise it will print exactly that many characters. */
-int str_print_term(FILE * fp, char const * str, unsigned int len, int allow_nl)
+int str_print_term(std::FILE * fp, char const * str, unsigned int len, int allow_nl)
 {
     unsigned int i;
 
@@ -247,13 +216,13 @@ int str_print_term(FILE * fp, char const * str, unsigned int len, int allow_nl)
 	return -1;
 
     if (len==0)
-	len = strlen(str);
+	len = std::strlen(str);
     for (i=0; i<len; i++)
 	if ((str[i]=='\177' || (str[i]>='\000' && str[i]<'\040')) &&
 	    (!allow_nl || (str[i]!='\r' && str[i]!='\n')))
-	    fprintf(fp,"^%c",str[i]+64);
+	    std::fprintf(fp,"^%c",str[i]+64);
 	else
-	    fputc((int)str[i],fp);
+	    std::fputc((int)str[i],fp);
 
     return 0;
 }
@@ -267,13 +236,13 @@ extern int str_get_bool(char const * str)
     if (strcasecmp(str,"true")==0 ||
 	strcasecmp(str,"yes")==0 ||
 	strcasecmp(str,"on")==0 ||
-	strcmp(str,"1")==0)
+	std::strcmp(str,"1")==0)
 	return 1;
 
     if (strcasecmp(str,"false")==0 ||
 	strcasecmp(str,"no")==0 ||
 	strcasecmp(str,"off")==0 ||
-	strcmp(str,"0")==0)
+	std::strcmp(str,"0")==0)
 	return 0;
 
     return -1;
@@ -294,22 +263,22 @@ extern char const * seconds_to_timestr(unsigned int totsecs)
     seconds = totsecs % 60;
 
     if (days>0)
-	sprintf(temp,"%d day%s %d hour%s %d minute%s %d second%s",
+	std::sprintf(temp,"%d day%s %d hour%s %d minute%s %d second%s",
                 days,days==1 ? "" : "s",
                 hours,hours==1 ? "" : "s",
                 minutes,minutes==1 ? "" : "s",
                 seconds,seconds==1 ? "" : "s");
     else if (hours>0)
-	sprintf(temp,"%d hour%s %d minute%s %d second%s",
+	std::sprintf(temp,"%d hour%s %d minute%s %d second%s",
                 hours,hours==1 ? "" : "s",
                 minutes,minutes==1 ? "" : "s",
                 seconds,seconds==1 ? "" : "s");
     else if (minutes>0)
-	sprintf(temp,"%d minute%s %d second%s",
+	std::sprintf(temp,"%d minute%s %d second%s",
                 minutes,minutes==1 ? "" : "s",
                 seconds,seconds==1 ? "" : "s");
     else
-	sprintf(temp,"%d second%s.",
+	std::sprintf(temp,"%d second%s.",
                 seconds,seconds==1 ? "" : "s");
 
     return temp;
@@ -326,13 +295,13 @@ extern int clockstr_to_seconds(char const * clockstr, unsigned int * totsecs)
     if (!totsecs)
 	return -1;
 
-    for (i=j=temp=0; j<strlen(clockstr); j++)
+    for (i=j=temp=0; j<std::strlen(clockstr); j++)
     {
 	switch (clockstr[j])
 	{
 	case ':':
 	    temp *= 60;
-	    temp += strtoul(&clockstr[i],NULL,10);
+	    temp += std::strtoul(&clockstr[i],NULL,10);
 	    i = j+1;
 	    break;
 	case '0':
@@ -353,7 +322,7 @@ extern int clockstr_to_seconds(char const * clockstr, unsigned int * totsecs)
     if (i<j)
     {
 	temp *= 60;
-	temp += strtoul(&clockstr[i],NULL,10);
+	temp += std::strtoul(&clockstr[i],NULL,10);
     }
 
     *totsecs = temp;
@@ -378,7 +347,7 @@ extern char * escape_fs_chars(char const * in, unsigned int len)
 	{
 	    out[outpos++] = '%';
 	    /* always 00 through FF hex */
-	    sprintf(&out[outpos],"%02X",(unsigned int)(unsigned char)in[inpos]);
+	    std::sprintf(&out[outpos],"%02X",(unsigned int)(unsigned char)in[inpos]);
 	    outpos += 2;
 	}
 	else
@@ -413,7 +382,7 @@ extern char * escape_chars(char const * in, unsigned int len)
 	    out[outpos++] = '\\';
 	    out[outpos++] = '"';
 	}
-        else if (isascii((int)in[inpos]) && isprint((int)in[inpos]))
+        else if (std::isprint((int)in[inpos]))
 	    out[outpos++] = in[inpos];
         else if (in[inpos]=='\a')
 	{
@@ -454,7 +423,7 @@ extern char * escape_chars(char const * in, unsigned int len)
 	{
 	    out[outpos++] = '\\';
 	    /* always 001 through 377 octal */
-	    sprintf(&out[outpos],"%03o",(unsigned int)(unsigned char)in[inpos]);
+	    std::sprintf(&out[outpos],"%03o",(unsigned int)(unsigned char)in[inpos]);
 	    outpos += 3;
 	}
     }
@@ -475,7 +444,7 @@ extern char * unescape_chars(char const * in)
     if (!in)
 	return NULL;
 
-    inlen = strlen(in);
+    inlen = std::strlen(in);
     out = (char*)xmalloc(inlen+1);
 
     for (inpos=0,outpos=0; inpos<inlen; inpos++)
@@ -534,12 +503,12 @@ extern char * unescape_chars(char const * in)
 		temp[i] = '\0';
 		inpos--;
 
-		num = strtoul(temp,NULL,8);
+		num = std::strtoul(temp,NULL,8);
 		if (i<3 || num<1 || num>255) /* bad escape (including \000), leave it as-is */
 		{
 		    out[outpos++] = '\\';
-		    strcpy(&out[outpos],temp);
-		    outpos += strlen(temp);
+		    std::strcpy(&out[outpos],temp);
+		    outpos += std::strlen(temp);
 		}
 		else
 		    out[outpos++] = (unsigned char)num;
@@ -560,10 +529,10 @@ extern void str_to_hex(char * target, char * data, int datalen)
     {
         c = (data[i]) & 0xff;
 
-	sprintf(target + i*3, "%02X    ", c);
+	std::sprintf(target + i*3, "%02X    ", c);
 	target[i*3+3] = '\0';
 
-	/* fprintf(stderr, "str_to_hex %d | '%02x' '%s'\n", i, c, target); */
+	/* std::fprintf(stderr, "str_to_hex %d | '%02x' '%s'\n", i, c, target); */
     }
 }
 
@@ -582,24 +551,24 @@ extern int hex_to_str(char const * source, char * data, int datalen)
     {
 	byte  = 0;
 
-	/* fprintf(stderr, "hex_to_str %d | '%02x'", i, byte); */
+	/* std::fprintf(stderr, "hex_to_str %d | '%02x'", i, byte); */
 
 	c = source [i*3 + 0];
 	byte += 16 * ( c > '9' ? (c - 'A' + 10) : (c - '0'));
 
-	/* fprintf(stderr, " | '%c' '%02x'", c, byte); */
+	/* std::fprintf(stderr, " | '%c' '%02x'", c, byte); */
 
 	c = source [i*3 + 1];
 	byte +=  1 * ( c > '9' ? (c - 'A' + 10) : (c - '0'));
 
-	/* fprintf(stderr, " | '%c' '%02x'", c, byte); */
+	/* std::fprintf(stderr, " | '%c' '%02x'", c, byte); */
 
-	/* fprintf(stderr, "\n"); */
+	/* std::fprintf(stderr, "\n"); */
 
 	data[i] = byte;
     }
 
-    /* fprintf(stderr, "finished, returning %d from '%s'\n", i, source);  */
+    /* std::fprintf(stderr, "finished, returning %d from '%s'\n", i, source);  */
 
     return i;
 }
@@ -608,9 +577,9 @@ extern char * buildpath(char const *root, const char *suffix)
 {
     char *result;
 
-    result = (char*) xmalloc(strlen(root) + 1 + strlen(suffix) + 1);
+    result = (char*) xmalloc(strlen(root) + 1 + std::strlen(suffix) + 1);
 
-    strcpy(result,root); strcat(result,"/"); strcat(result,suffix);
+    std::strcpy(result,root); std::strcat(result,"/"); std::strcat(result,suffix);
     return result;
 }
 
@@ -619,11 +588,11 @@ time string format is:
 yyyy/mm/dd or yyyy-mm-dd or yyyy.mm.dd
 hh:mm:ss
 */
-extern int timestr_to_time(char const * timestr, time_t* ptime)
+extern int timestr_to_time(char const * timestr, std::time_t* ptime)
 {
         char const * p;
         char ch;
-        struct tm when;
+        struct std::tm when;
         int day_s, time_s, last;
 
         if (!timestr) return -1;
@@ -635,7 +604,7 @@ extern int timestr_to_time(char const * timestr, time_t* ptime)
         p = timestr;
         day_s = time_s = 0;
         last = 0;
-        memset(&when, 0, sizeof(when));
+	std::memset(&when, 0, sizeof(when));
         when.tm_mday = 1;
         when.tm_isdst = -1;
         while (1) {
@@ -646,11 +615,11 @@ extern int timestr_to_time(char const * timestr, time_t* ptime)
                 case '-':
                 case '.':
                         if (day_s == 0) {
-                                when.tm_year = atoi(p) - 1900;
+                                when.tm_year = std::atoi(p) - 1900;
                         } else if (day_s == 1) {
-                                when.tm_mon = atoi(p) - 1;
+                                when.tm_mon = std::atoi(p) - 1;
                         } else if (day_s == 2) {
-                                when.tm_mday = atoi(p);
+                                when.tm_mday = std::atoi(p);
                         }
                         time_s = 0;
                         day_s++;
@@ -659,11 +628,11 @@ extern int timestr_to_time(char const * timestr, time_t* ptime)
                         break;
                 case ':':
                         if (time_s == 0) {
-                                when.tm_hour = atoi(p);
+                                when.tm_hour = std::atoi(p);
                         } else if (time_s == 1) {
-                                when.tm_min = atoi(p);
+                                when.tm_min = std::atoi(p);
                         } else if (time_s == 2) {
-                                when.tm_sec = atoi(p);
+                                when.tm_sec = std::atoi(p);
                         }
                         day_s = 0;
                         time_s++;
@@ -675,19 +644,19 @@ extern int timestr_to_time(char const * timestr, time_t* ptime)
                 case '\x0':
                         if (last == 1) {
                                 if (day_s == 0) {
-                                        when.tm_year = atoi(p) - 1900;
+                                        when.tm_year = std::atoi(p) - 1900;
                                 } else if (day_s == 1) {
-                                        when.tm_mon = atoi(p) - 1;
+                                        when.tm_mon = std::atoi(p) - 1;
                                 } else if (day_s == 2) {
-                                        when.tm_mday = atoi(p);
+                                        when.tm_mday = std::atoi(p);
                                 }
                         } else if (last == 2) {
                                 if (time_s == 0) {
-                                        when.tm_hour = atoi(p);
+                                        when.tm_hour = std::atoi(p);
                                 } else if (time_s == 1) {
-                                        when.tm_min = atoi(p);
+                                        when.tm_min = std::atoi(p);
                                 } else if (time_s == 2) {
-                                        when.tm_sec = atoi(p);
+                                        when.tm_sec = std::atoi(p);
                                 }
                         }
                         time_s = day_s = 0;
@@ -706,7 +675,7 @@ extern int timestr_to_time(char const * timestr, time_t* ptime)
 
 extern void strlower(char* str)
 {
-	for(;*str;str++) *str = tolower(*str);
+	for(;*str;str++) *str = std::tolower(*str);
 }
 
 }

@@ -17,16 +17,10 @@
  */
 
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
+#include "common/give_up_root_privileges.h"
+#include <cerrno>
+#include <cstring>
+#include <cstdlib>
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
@@ -39,13 +33,7 @@
 #ifdef HAVE_GRP_H
 # include <grp.h>
 #endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#endif
-#include <errno.h>
-#include "compat/strerror.h"
 #include "common/eventlog.h"
-#include "common/give_up_root_privileges.h"
 #include "common/setup_after.h"
 
 
@@ -91,7 +79,7 @@ extern int give_up_root_privileges(char const * user_name, char const * group_na
     {
         if (-1 == setgid(group_id))
         {
-            eventlog(eventlog_level_fatal,__FUNCTION__,"could not set gid to %d (setgid: %s)", group_id, pstrerror(errno));
+            eventlog(eventlog_level_fatal,__FUNCTION__,"could not set gid to %d (setgid: %s)", group_id, std::strerror(errno));
             return -1;
         }
 # ifdef HAVE_GETUID
@@ -105,7 +93,7 @@ extern int give_up_root_privileges(char const * user_name, char const * group_na
     {
         if (-1 == setuid(user_id))
         {
-            eventlog(eventlog_level_fatal,__FUNCTION__,"could not set uid to %d (setuid: %s)", user_id, pstrerror(errno));
+            eventlog(eventlog_level_fatal,__FUNCTION__,"could not set uid to %d (setuid: %s)", user_id, std::strerror(errno));
             return -1;
         }
 # ifdef HAVE_GETGID
@@ -126,7 +114,7 @@ static int gurp_uname2id(const char *name)
     {
         if (name[0] == '#')
         {
-            id = atoi(&name[1]);
+            id = std::atoi(&name[1]);
         }
         else
         {
@@ -137,7 +125,7 @@ static int gurp_uname2id(const char *name)
 
             if (!(ent = getpwnam(name)))
             {
-                eventlog(eventlog_level_fatal,__FUNCTION__,"cannot get password file entry for '%s' (getpwnam: %s)", name, pstrerror(errno));
+                eventlog(eventlog_level_fatal,__FUNCTION__,"cannot get password file entry for '%s' (getpwnam: %s)", name, std::strerror(errno));
                 return id;
             }
             id = ent->pw_uid;
@@ -159,7 +147,7 @@ static int gurp_gname2id(const char *name)
     {
         if (name[0] == '#')
         {
-            id = atoi(&name[1]);
+            id = std::atoi(&name[1]);
         }
         else
         {
@@ -170,7 +158,7 @@ static int gurp_gname2id(const char *name)
 
             if (!(ent = getgrnam(name)))
             {
-                eventlog(eventlog_level_fatal,__FUNCTION__,"cannot get group file entry for '%s' (getgrnam: %s)", name, pstrerror(errno));
+                eventlog(eventlog_level_fatal,__FUNCTION__,"cannot get group file entry for '%s' (getgrnam: %s)", name, std::strerror(errno));
                 return id;
             }
             id = ent->gr_gid;

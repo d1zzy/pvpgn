@@ -17,39 +17,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
 #include "compat/strcasecmp.h"
 #include "compat/vargs.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#include "compat/strftime.h"
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <ctime>
 #include "common/eventlog.h"
 #include "common/hexdump.h"
 #include "common/setup_after.h"
@@ -103,7 +76,7 @@ extern int eventlog_open(char const * filename)
 
     if (!(temp = fopen(filename,"a")))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for appending (fopen: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for appending (fopen: %s)",filename,std::strerror(errno));
 	return -1;
     }
 
@@ -111,7 +84,7 @@ extern int eventlog_open(char const * filename)
 	if (fclose(eventstrm)<0)
 	{
 	    eventstrm = temp;
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not close previous logfile after writing (fclose: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not close previous logfile after writing (fclose: %s)",std::strerror(errno));
 	    return 0;
 	}
     eventstrm = temp;
@@ -249,13 +222,13 @@ extern void eventlog_hexdump_data(void const * data, unsigned int len)
     for (i = 0, datac = (unsigned char*)data; i < len; i += 16, datac += 16)
     {
 	hexdump_string(datac, (len - i < 16) ? (len - i) : 16, dst, i);
-	fprintf(eventstrm,"%s\n",dst);
+	std::fprintf(eventstrm,"%s\n",dst);
 #ifdef WIN32_GUI
         bnetd::gui_lprintf(eventlog_level_info,"%s\n",dst);
 #endif
        if (eventlog_debugmode)
        {
-	 printf("%s\n",dst);
+	       std::printf("%s\n",dst);
        }
 
     }
@@ -267,8 +240,8 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 {
     va_list     args;
     char        time_string[EVENT_TIME_MAXLEN];
-    struct tm * tmnow;
-    time_t      now;
+    struct std::tm * tmnow;
+    std::time_t      now;
 
     if (!(level&currlevel))
 	return;
@@ -276,15 +249,15 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 	return;
 
     /* get the time before parsing args */
-    time(&now);
-    if (!(tmnow = localtime(&now)))
-	strcpy(time_string,"?");
+    std::time(&now);
+    if (!(tmnow = std::localtime(&now)))
+	std::strcpy(time_string,"?");
     else
-	strftime(time_string,EVENT_TIME_MAXLEN,EVENT_TIME_FORMAT,tmnow);
+	std::strftime(time_string,EVENT_TIME_MAXLEN,EVENT_TIME_FORMAT,tmnow);
 
     if (!module)
     {
-	fprintf(eventstrm,"%s [error] eventlog: got NULL module\n",time_string);
+	    std::fprintf(eventstrm,"%s [error] eventlog: got NULL module\n",time_string);
 #ifdef WIN32_GUI
         bnetd::gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL module\n",time_string);
 #endif
@@ -294,7 +267,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 
     if (!fmt)
     {
-	fprintf(eventstrm,"%s [error] eventlog: got NULL fmt\n",time_string);
+	    std::fprintf(eventstrm,"%s [error] eventlog: got NULL fmt\n",time_string);
 #ifdef WIN32_GUI
         bnetd::gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL fmt\n",time_string);
 #endif
@@ -302,7 +275,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 	return;
     }
 
-    fprintf(eventstrm,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
+    std::fprintf(eventstrm,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
 #ifdef WIN32_GUI
     bnetd::gui_lprintf(level,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
 #endif
@@ -310,7 +283,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
     VA_START(args,fmt);
 
 #ifdef HAVE_VPRINTF
-    vfprintf(eventstrm,fmt,args);
+    std::vfprintf(eventstrm,fmt,args);
 #ifdef WIN32_GUI
     bnetd::gui_lvprintf(level,fmt,args);
 #endif
@@ -318,29 +291,29 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 # if HAVE__DOPRNT
     _doprnt(fmt,args,eventstrm);
 # else
-    fprintf(eventstrm,"sorry, vfprintf() and _doprnt() are not available on this system");
+    std::fprintf(eventstrm,"sorry, vfprintf() and _doprnt() are not available on this system");
 # endif
 #endif
     va_end(args);
-    fprintf(eventstrm,"\n");
+    std::fprintf(eventstrm,"\n");
 #ifdef WIN32_GUI
     bnetd::gui_lprintf(level,"\n");
 #endif
 
     if (eventlog_debugmode) {
-    	printf("%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
+	    std::printf("%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
     	va_start(args,fmt);
 #ifdef HAVE_VPRINTF
-    	vprintf(fmt,args);
+	std::vprintf(fmt,args);
 #else
 # if HAVE__DOPRNT
     	_doprnt(fmt,args,stdout);
 # else
-    	printf("sorry, vfprintf() and _doprnt() are not available on this system");
+	std::printf("sorry, vfprintf() and _doprnt() are not available on this system");
 # endif
 #endif
     	va_end(args);
-    	printf("\n");
+	std::printf("\n");
 	fflush(stdout);
     }
     fflush(eventstrm);
@@ -351,8 +324,8 @@ extern void eventlog_step(char const * filename, t_eventlog_level level, char co
 {
     va_list args;
     char        time_string[EVENT_TIME_MAXLEN];
-    struct tm * tmnow;
-    time_t      now;
+    struct std::tm * tmnow;
+    std::time_t      now;
     FILE *      fp;
 
     if (!(level&currlevel))
@@ -364,38 +337,38 @@ extern void eventlog_step(char const * filename, t_eventlog_level level, char co
 	return;
 
     /* get the time before parsing args */
-    time(&now);
-    if (!(tmnow = localtime(&now)))
-	strcpy(time_string,"?");
+    std::time(&now);
+    if (!(tmnow = std::localtime(&now)))
+	std::strcpy(time_string,"?");
     else
-	strftime(time_string,EVENT_TIME_MAXLEN,EVENT_TIME_FORMAT,tmnow);
+	std::strftime(time_string,EVENT_TIME_MAXLEN,EVENT_TIME_FORMAT,tmnow);
 
     if (!module)
     {
-	fprintf(fp,"%s [error] eventlog_step: got NULL module\n",time_string);
+	    std::fprintf(fp,"%s [error] eventlog_step: got NULL module\n",time_string);
 	fclose(fp);
 	return;
     }
     if (!fmt)
     {
-	fprintf(fp,"%s [error] eventlog_step: got NULL fmt\n",time_string);
+	    std::fprintf(fp,"%s [error] eventlog_step: got NULL fmt\n",time_string);
 	fclose(fp);
 	return;
     }
 
-    fprintf(fp,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
+    std::fprintf(fp,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
     va_start(args,fmt);
 #ifdef HAVE_VPRINTF
-    vfprintf(fp,fmt,args);
+    std::vfprintf(fp,fmt,args);
 #else
 # if HAVE__DOPRNT
     _doprnt(fmt,args,fp);
 # else
-    fprintf(fp,"sorry, vfprintf() and _doprnt() are not available on this system");
+    std::fprintf(fp,"sorry, vfprintf() and _doprnt() are not available on this system");
 # endif
 #endif
     va_end(args);
-    fprintf(fp,"\n");
+    std::fprintf(fp,"\n");
     fclose(fp);
 }
 

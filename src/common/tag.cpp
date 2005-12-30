@@ -17,32 +17,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include <ctype.h>
-#include "errno.h"
-#include "compat/strerror.h"
-#include "common/eventlog.h"
 #include "common/tag.h"
+#include <cstring>
+#include <cctype>
+#include "common/eventlog.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -107,13 +85,13 @@ extern t_tag tag_case_str_to_uint(char const * tag_str)
     unsigned int i, len;
     char temp_str[5];
 
-    len = strlen(tag_str);
+    len = std::strlen(tag_str);
     if (len != 4)
 	eventlog(eventlog_level_warn,__FUNCTION__,"got unusual sized clienttag '%s'",tag_str);
 
     for (i=0; i<len && i < 4; i++)
-	if (islower((int)tag_str[i]))
-	    temp_str[i] = toupper((int)tag_str[i]);
+	if (std::islower((int)tag_str[i]))
+	    temp_str[i] = std::toupper((int)tag_str[i]);
 	else
 	    temp_str[i] = tag_str[i];
 

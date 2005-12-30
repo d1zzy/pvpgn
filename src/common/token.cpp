@@ -16,32 +16,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define PREFS_INTERNAL_ACCESS
+//#define PREFS_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include <ctype.h>
 #include "token.h"
+#include <cctype>
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
@@ -62,7 +40,7 @@ extern char * next_token(char * ptr, unsigned int * pos)
 	return NULL;
 
     /* skip leading whitespace */
-    for (i=*pos; isspace((int)ptr[i]); i++);
+    for (i=*pos; std::isspace((int)ptr[i]); i++);
 
     if (ptr[i]=='\0')
 	return NULL; /* if after whitespace, we're done */

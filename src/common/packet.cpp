@@ -17,31 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef HAVE_MEMORY_H
-# include <memory.h>
-#endif
-#include "compat/memcpy.h"
+#include <cstring>
 #include "common/eventlog.h"
 #include "common/bn_type.h"
 #include "common/field_sizes.h"
@@ -1115,7 +1091,7 @@ extern int packet_append_string(t_packet * packet, char const * str)
         return -1;
     }
 
-    len = strlen(str)+1;
+    len = std::strlen(str)+1;
     size = packet_get_size(packet);
     if (size>=MAX_PACKET_SIZE)
         return -1;
@@ -1127,7 +1103,7 @@ extern int packet_append_string(t_packet * packet, char const * str)
     if (addlen<1)
 	return -1;
 
-    memcpy(packet->u.data+size,str,addlen-1);
+    std::memcpy(packet->u.data+size,str,addlen-1);
     packet->u.data[size+addlen-1] = '\0';
     packet_set_size(packet,size+addlen);
 
@@ -1152,7 +1128,7 @@ extern int packet_append_ntstring(t_packet * packet, char const * str)
         return -1;
     }
 
-    len = strlen(str);
+    len = std::strlen(str);
     size = packet_get_size(packet);
     if (size>=MAX_PACKET_SIZE)
         return -1;
@@ -1198,7 +1174,7 @@ extern int packet_append_lstr(t_packet * packet, t_lstr *lstr)
     if (addlen<1)
 	return -1;
 
-    memcpy(packet->u.data+size,lstr_get_str(lstr),addlen-1);
+    std::memcpy(packet->u.data+size,lstr_get_str(lstr),addlen-1);
     packet->u.data[size+addlen-1] = '\0';
     packet_set_size(packet,size+addlen);
 
@@ -1233,7 +1209,7 @@ extern int packet_append_data(t_packet * packet, void const * data, unsigned int
     if (addlen<1)
 	return -1;
 
-    memcpy(packet->u.data+size,data,addlen);
+    std::memcpy(packet->u.data+size,data,addlen);
     packet_set_size(packet,size+addlen);
 
     return (int)addlen;

@@ -17,9 +17,7 @@
  */
 
 #include "common/setup_before.h"
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
+#include <cassert>
 #include "common/xalloc.h"
 #include "common/elist.h"
 #include "common/rcm.h"

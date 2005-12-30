@@ -26,7 +26,10 @@ namespace pvpgn
 extern char * strdup(char const * str);
 
 }
-
+#else
+// dirty hack? but I don't like to include <string.h> directly when I just want this one...
+// better solutions welcome
+#  include <string.h>
 #endif
 
 #endif

@@ -18,17 +18,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <string.h>
-#include "common/packet.h"
 #include "common/hexdump.h"
+#include <cstdio>
+#include "common/packet.h"
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
@@ -54,7 +46,7 @@ extern void hexdump(FILE * stream, void const * data, unsigned int len)
     for (i = 0, datac = (unsigned char*)data ; i < len; i += 16, datac += 16)
     {
 	hexdump_string(datac, (len - i < 16) ? (len - i) : 16, dst, i);
-	fprintf(stream, "%s\n", dst);
+	std::fprintf(stream, "%s\n", dst);
 	fflush(stream);
     }
 }
@@ -66,30 +58,30 @@ extern void hexdump_string(unsigned char * data, unsigned int datalen, char * ds
     unsigned char *datatmp;
 
     datatmp = data;
-    tlen += sprintf((dst+tlen), "%04X:   ", counter);
+    tlen += std::sprintf((dst+tlen), "%04X:   ", counter);
 
     for (c=0; c<8; c++) /* left half of hex dump */
         if (c<datalen)
-    	    tlen += sprintf((dst+tlen), "%02X ", *(datatmp++));
+    	    tlen += std::sprintf((dst+tlen), "%02X ", *(datatmp++));
 	else
-	    tlen += sprintf((dst+tlen), "   "); /* pad if short line */
+	    tlen += std::sprintf((dst+tlen), "   "); /* pad if short line */
 
-    tlen += sprintf((dst+tlen),"  ");
+    tlen += std::sprintf((dst+tlen),"  ");
 
     for (c=8; c<16; c++) /* right half of hex dump */
         if (c<datalen)
-	    tlen += sprintf((dst+tlen), "%02X ", *(datatmp++));
+	    tlen += std::sprintf((dst+tlen), "%02X ", *(datatmp++));
 	else
-	    tlen += sprintf((dst+tlen),"   "); /* pad if short line */
+	    tlen += std::sprintf((dst+tlen),"   "); /* pad if short line */
 
-    tlen += sprintf((dst+tlen),"   ");
+    tlen += std::sprintf((dst+tlen),"   ");
 
     for (c=0, datatmp = data; c<16; c++, datatmp++) /* ASCII dump */
         if (c<datalen) {
 	    if (*datatmp >=32 && *datatmp<127)
-		tlen += sprintf((dst+tlen), "%c", *datatmp);
+		tlen += std::sprintf((dst+tlen), "%c", *datatmp);
 	    else
-		tlen += sprintf((dst+tlen), "."); /* put this for non-printables */
+		tlen += std::sprintf((dst+tlen), "."); /* put this for non-printables */
 	}
 
 }

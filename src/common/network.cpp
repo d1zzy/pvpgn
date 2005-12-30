@@ -17,18 +17,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include "common/network.h"
+#include <cerrno>
+#include <cstring>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#include <errno.h>
-#include "compat/strerror.h"
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
@@ -46,7 +40,6 @@
 #include "common/packet.h"
 #include "common/eventlog.h"
 #include "common/field_sizes.h"
-#include "common/network.h"
 #include "common/setup_after.h"
 
 
@@ -85,11 +78,11 @@ extern int net_recv(int sock, void *buff, int len)
 	psock_errno()==PSOCK_ECONNRESET ||
 #endif
 	0) {
-/*	    eventlog(eventlog_level_debug,__FUNCTION__,"[%d] remote host closed connection (psock_recv: %s)",sock,pstrerror(psock_errno())); */
+/*	    eventlog(eventlog_level_debug,__FUNCTION__,"[%d] remote host closed connection (psock_recv: %s)",sock,std::strerror(psock_errno())); */
 	    return -1; /* common error: close connection, but no message */
     }
 
-    eventlog(eventlog_level_debug,__FUNCTION__,"[%d] receive error (closing connection) (psock_recv: %s)",sock,pstrerror(psock_errno()));
+    eventlog(eventlog_level_debug,__FUNCTION__,"[%d] receive error (closing connection) (psock_recv: %s)",sock,std::strerror(psock_errno()));
     return -1;
 }
 
@@ -182,7 +175,7 @@ extern int net_send(int sock, const void *buff, int len)
 #ifdef PSOCK_ECONNRESET
 	psock_errno()!=PSOCK_ECONNRESET &&
 #endif
-	1) eventlog(eventlog_level_debug,__FUNCTION__,"[%d] could not send data (closing connection) (psock_send: %s)",sock,pstrerror(psock_errno()));
+	1) eventlog(eventlog_level_debug,__FUNCTION__,"[%d] could not send data (closing connection) (psock_send: %s)",sock,std::strerror(psock_errno()));
 
     return -1;
 }

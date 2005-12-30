@@ -17,34 +17,11 @@
  */
 #define QUEUE_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
+#include <cstring>
+#include "common/queue.h"
 #include "common/packet.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
-#include "common/queue.h"
 #include "common/setup_after.h"
 
 #define QUEUE_QUANTUM	10 /* allocate ring buffer slots for 10 packets at once */
@@ -155,7 +132,7 @@ extern void queue_push_packet(t_queue * * queue, t_packet * packet)
 	    unsigned moved;
 
 	    moved = (QUEUE_QUANTUM <= temp->head) ? QUEUE_QUANTUM : temp->head;
-	    memmove(temp->ring + temp->ulen, temp->ring, sizeof(t_packet *) * moved);
+	    std::memmove(temp->ring + temp->ulen, temp->ring, sizeof(t_packet *) * moved);
 	    if (temp->head > QUEUE_QUANTUM) {
 		memmove(temp->ring, temp->ring + moved, sizeof(t_packet *) * (temp->head - moved));
 		temp->head -= moved;

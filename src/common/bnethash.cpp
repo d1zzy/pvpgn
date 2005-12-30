@@ -17,28 +17,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include <cstdio>
+#include <cstring>
+#include "common/bnethash.h"
 #include "compat/uint.h"
 #include "common/introtate.h"
 #include "common/eventlog.h"
-#include "common/bnethash.h"
 #include "common/setup_after.h"
 
 
@@ -219,7 +203,7 @@ extern char const * hash_get_str(t_hash const hash)
     }
 
     for (i=0; i<5; i++)
-        sprintf(&temp[i*8],"%08x",hash[i]);
+        std::sprintf(&temp[i*8],"%08x",hash[i]);
 
     return temp;
 }
@@ -244,14 +228,14 @@ extern int hash_set_str(t_hash * hash, char const * str)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL str");
         return -1;
     }
-    if (strlen(str)!=5*8)
+    if (std::strlen(str)!=5*8)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got string with length %u (should be %u)",strlen(str),5*8);
         return -1;
     }
 
     for (i=0; i<5; i++)
-        if (sscanf(&str[i*8],"%8x",&(*hash)[i])!=1)
+        if (std::sscanf(&str[i*8],"%8x",&(*hash)[i])!=1)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"got bad string");
 	    return -1;

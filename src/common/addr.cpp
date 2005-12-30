@@ -17,34 +17,7 @@
  */
 #define ADDR_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef HAVE_MEMORY_H
-# include <memory.h>
-#endif
-#include "compat/memset.h"
-#include "compat/memcpy.h"
-#include "compat/strrchr.h"
-#include "compat/strdup.h"
+
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
@@ -67,9 +40,10 @@
 #ifdef HAVE_NETDB_H
 # include <netdb.h>
 #endif
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+#include <cassert>
 #include "compat/psock.h"
 #include "common/eventlog.h"
 #include "common/list.h"
@@ -95,11 +69,11 @@ extern char const * addr_num_to_addr_str(unsigned int ipaddr, unsigned short por
 
     curr = (curr+1)%HACK_SIZE;
 
-    memset(&tsa,0,sizeof(tsa));
+    std::memset(&tsa,0,sizeof(tsa));
     tsa.sin_family = PSOCK_AF_INET;
     tsa.sin_port = htons((unsigned short)0);
     tsa.sin_addr.s_addr = htonl(ipaddr);
-    sprintf(temp[curr],"%.32s:%hu",inet_ntoa(tsa.sin_addr),port);
+    std::sprintf(temp[curr],"%.32s:%hu",inet_ntoa(tsa.sin_addr),port);
 
     return temp[curr];
 }
@@ -114,11 +88,11 @@ extern char const * addr_num_to_ip_str(unsigned int ipaddr)
 
     curr = (curr+1)%HACK_SIZE;
 
-    memset(&tsa,0,sizeof(tsa));
+    std::memset(&tsa,0,sizeof(tsa));
     tsa.sin_family = PSOCK_AF_INET;
     tsa.sin_port = htons((unsigned short)0);
     tsa.sin_addr.s_addr = htonl(ipaddr);
-    sprintf(temp[curr],"%.32s",inet_ntoa(tsa.sin_addr));
+    std::sprintf(temp[curr],"%.32s",inet_ntoa(tsa.sin_addr));
 
     return temp[curr];
 }
@@ -132,11 +106,11 @@ static char const * netaddr_num_to_addr_str(unsigned int netipaddr, unsigned int
 
     curr = (curr+1)%HACK_SIZE;
 
-    memset(&tsa,0,sizeof(tsa));
+    std::memset(&tsa,0,sizeof(tsa));
     tsa.sin_family = PSOCK_AF_INET;
     tsa.sin_port = htons((unsigned short)0);
     tsa.sin_addr.s_addr = htonl(netipaddr);
-    sprintf(temp[curr],"%.32s/0x%08x",inet_ntoa(tsa.sin_addr),netmask);
+    std::sprintf(temp[curr],"%.32s/0x%08x",inet_ntoa(tsa.sin_addr),netmask);
 
     return temp[curr];
 }
@@ -161,7 +135,7 @@ extern char const * host_lookup(char const * hoststr, unsigned int * ipaddr)
 	return NULL;
     }
 
-    memset(&tsa,0,sizeof(tsa));
+    std::memset(&tsa,0,sizeof(tsa));
     tsa.sin_family = PSOCK_AF_INET;
     tsa.sin_port = htons(0);
 
@@ -186,7 +160,7 @@ extern char const * host_lookup(char const * hoststr, unsigned int * ipaddr)
     }
 
 #ifdef HAVE_GETHOSTBYNAME
-    memcpy(&tsa.sin_addr,(void *)hp->h_addr_list[0],sizeof(struct in_addr)); /* avoid warning */
+    std::memcpy(&tsa.sin_addr,(void *)hp->h_addr_list[0],sizeof(struct in_addr)); /* avoid warning */
     *ipaddr = ntohl(tsa.sin_addr.s_addr);
     if (hp->h_name)
 	return hp->h_name;
@@ -228,14 +202,14 @@ extern t_addr * addr_create_str(char const * str, unsigned int defipaddr, unsign
 
     tstr = xstrdup(str);
 
-    if ((portstr = strrchr(tstr,':')))
+    if ((portstr = std::strrchr(tstr,':')))
     {
 	char * protstr;
 
 	*portstr = '\0';
 	portstr++;
 
-	if ((protstr = strrchr(portstr,'/')))
+	if ((protstr = std::strrchr(portstr,'/')))
 	{
 	    *protstr = '\0';
 	    protstr++;
@@ -362,7 +336,7 @@ extern char * addr_get_addr_str(t_addr const * addr, char * str, unsigned int le
 	return NULL;
     }
 
-    strncpy(str,addr_num_to_addr_str(addr->ip,addr->port),len-1);
+    std::strncpy(str,addr_num_to_addr_str(addr->ip,addr->port),len-1);
     str[len-1] = '\0';
 
     return str;
@@ -489,7 +463,7 @@ extern t_netaddr * netaddr_create_str(char const * netstr)
     }
     netaddr->mask = netmask;
 
-    xfree(temp);		// [zap-zero] 20020731 - (hopefully) fixed memory leak
+    xfree(temp);
 
     return netaddr;
 }
