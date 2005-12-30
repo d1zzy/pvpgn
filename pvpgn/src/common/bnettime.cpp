@@ -18,43 +18,17 @@
  */
 #define BNETTIME_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
+#include "common/bnettime.h"
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+#include <ctime>
 #include "compat/gettimeofday.h"
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
 #include "common/eventlog.h"
 #include "common/bn_type.h"
-#include "common/bnettime.h"
 #include "common/setup_after.h"
 
 
@@ -151,7 +125,7 @@ extern t_bnettime bnettime(void)
 
     if (gettimeofday(&tv,NULL)<0)
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not get time (gettimeofday: %s)",pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not get time (gettimeofday: %s)",std::strerror(errno));
         return time_to_bnettime(time(NULL),0);
     }
     return time_to_bnettime((time_t)tv.tv_sec,tv.tv_usec);
@@ -163,7 +137,7 @@ extern char const * bnettime_get_str(t_bnettime bntime)
 {
     static char temp[1024];
 
-    sprintf(temp,"%u %u",bntime.u,bntime.l);
+    std::sprintf(temp,"%u %u",bntime.u,bntime.l);
 
     return temp;
 }
@@ -216,30 +190,26 @@ extern void bn_long_to_bnettime(bn_long in, t_bnettime * out)
 
 extern int local_tzbias(void) /* in minutes */
 {
-#ifdef HAVE_MKTIME
-    time_t      now;
-    time_t      test;
-    time_t      testloc;
-    struct tm * temp;
+	std::time_t      now;
+	std::time_t      test;
+	std::time_t      testloc;
+        struct std::tm * temp;
 
-    now = time(NULL);
+    now = std::time(NULL);
 
-    if (!(temp = gmtime(&now)))
+    if (!(temp = std::gmtime(&now)))
 	return 0;
-    if ((test = mktime(temp))==(time_t)(-1))
+    if ((test = std::mktime(temp))==(std::time_t)(-1))
 	return 0;
 
-    if (!(temp = localtime(&now)))
+    if (!(temp = std::localtime(&now)))
 	return 0;
-    if ((testloc = mktime(temp))==(time_t)(-1))
+    if ((testloc = std::mktime(temp))==(std::time_t)(-1))
 	return 0;
 
     if (testloc>test) /* time_t is probably unsigned... */
 	return -(int)(testloc-test)/60;
     return (int)(test-testloc)/60;
-#else
-    return 0; /* can't determine current offset */
-#endif
 }
 
 

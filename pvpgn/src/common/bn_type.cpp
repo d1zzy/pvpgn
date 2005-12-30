@@ -16,15 +16,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#endif
-#ifdef HAVE_MEMORY_H
-# include <memory.h>
-#endif
-#include "compat/memcpy.h"
-#include "common/eventlog.h"
 #include "common/bn_type.h"
+#include <cstring>
+#include "common/eventlog.h"
 #include "common/setup_after.h"
 
 
@@ -551,7 +545,7 @@ extern int bn_raw_set(void * dst, void const * src, unsigned int len)
 	return -1;
     }
 
-    memcpy(dst,src,len);
+    std::memcpy(dst,src,len);
     return 0;
 }
 

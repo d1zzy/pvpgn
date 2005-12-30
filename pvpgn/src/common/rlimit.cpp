@@ -15,24 +15,10 @@
  */
 
 #include "common/setup_before.h"
-#include <stdio.h>
+#include <cerrno>
+#include <cstring>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
-#endif
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
 #endif
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
@@ -60,7 +46,7 @@ extern int get_socket_limit(void)
 #ifdef HAVE_GETRLIMIT
 	struct rlimit rlim;
 	if(getrlimit(RLIM_NUMFILES, &rlim) < 0)
-		eventlog(eventlog_level_error, __FUNCTION__, "getrlimit returned error: %s", pstrerror(errno));
+		eventlog(eventlog_level_error, __FUNCTION__, "getrlimit returned error: %s", std::strerror(errno));
 	socklimit = rlim.rlim_cur;
 #else
 	/* FIXME: WIN32: somehow get WSAData win32 socket limit here */

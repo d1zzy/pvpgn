@@ -19,23 +19,6 @@
 #include "common/setup_before.h"
 #ifndef XALLOC_SKIP
 
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
 #include "compat/strdup.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"

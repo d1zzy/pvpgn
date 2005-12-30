@@ -17,31 +17,12 @@
  */
 #include "common/setup_before.h"
 
-#include <stdio.h>
-#include <ctype.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/memcpy.h"
-#include "compat/memmove.h"
-#include "compat/strdup.h"
-
-#include "common/xalloc.h"
 #include "xstring.h"
+#include <cstdio>
+#include <cctype>
+#include <cstring>
+#include "compat/strdup.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -54,7 +35,7 @@ extern char * strtolower(char * str)
 
 	if (!str) return NULL;
 	for (i=0; (ch=str[i]); i++) {
-		if ((isupper(ch))) str[i]=ch+('a'-'A');
+		if ((std::isupper(ch))) str[i]=ch+('a'-'A');
 	}
 	return str;
 }
@@ -63,7 +44,7 @@ extern unsigned char xtoi(unsigned char ch)
 {
 	unsigned char retval;
 
-	if (isalpha(ch)) retval=tolower(ch);
+	if (std::isalpha(ch)) retval=std::tolower(ch);
 	else retval=ch;
 	if (retval < 'A') retval -= ('0'-0);
 	else retval -= ('a' - 0xa);
@@ -100,7 +81,7 @@ extern char * str_strip_affix(char * str, char const * affix)
 	if (i>j) {
 		str[0]='\0';
 	} else {
-		memmove(str,str+i,j-i+1);
+		std::memmove(str,str+i,j-i+1);
 		str[j-i+1]='\0';
 	}
 	return str;
@@ -134,7 +115,7 @@ extern unsigned int hexstrtoraw(unsigned char const * src, char * data, unsigned
 			} else if (ch=='\\') {
 				data[j++]=ch;
 			} else if (ch=='x') {
-				if (isxdigit(src[i+1])) {
+				if (std::isxdigit(src[i+1])) {
 					if (isxdigit(src[i+2])) {
 						data[j++]=xtoi(src[i+1]) * 0x10 + xtoi(src[i+2]);
 						i+=2;
@@ -224,13 +205,13 @@ extern char * * strtoargv(char const * str, unsigned int * count)
 		return NULL;
 	}
 	result=(char*)xmalloc(j+index_size);
-	memcpy(result+index_size,temp,j);
+	std::memcpy(result+index_size,temp,j);
 
 	ptrindex=(void**)xmalloc(*count * sizeof (char*));
 	for (i=0; i< *count; i++) {
 		ptrindex[i] = result + index_size + pindex[i];
 	}
-	memcpy(result,ptrindex,index_size);
+	std::memcpy(result,ptrindex,index_size);
 	xfree(temp);
 	xfree(pindex);
 	xfree(ptrindex);
@@ -255,14 +236,14 @@ extern char * arraytostr(char * * array, char const * delim, int count)
 	need_delim=0;
 	for (i=0; i<count; i++) {
 		if (!array[i]) continue;
-		if (strlen(result)+strlen(array[i])+strlen(delim)>=n) {
+		if (std::strlen(result)+std::strlen(array[i])+std::strlen(delim)>=n) {
 			n+=COMBINE_STRING_INCREASEMENT;
 			result=(char*)xrealloc(result,n);
 		}
 		if (need_delim) {
-			strcat(result,delim);
+			std::strcat(result,delim);
 		}
-		strcat(result,array[i]);
+		std::strcat(result,array[i]);
 		need_delim=1;
 	}
 	result=(char*)xrealloc(result,strlen(result)+1);

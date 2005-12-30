@@ -20,13 +20,8 @@
 
 #include "common/setup_before.h"
 #include "common/xstr.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include <cstring>
+#include <cassert>
 #include <assert.h>
 #include "common/xalloc.h"
 #include "common/setup_after.h"
@@ -82,7 +77,7 @@ extern t_xstr * xstr_cpy_str(t_xstr * dst, const char * src)
 	/* need to enlarge dst ? */
 	xstr_enlarge(dst, len);
 
-	memcpy(dst->str, src, len + 1);
+	std::memcpy(dst->str, src, len + 1);
 	dst->ulen = len;
 
 	return dst;
@@ -97,7 +92,7 @@ extern t_xstr* xstr_cat_xstr(t_xstr* dst, const t_xstr* src)
 	/* need to enlarge dst ? */
 	xstr_enlarge(dst, src->ulen);
 
-	memcpy(dst->str + dst->ulen, src->str, src->ulen + 1);
+	std::memcpy(dst->str + dst->ulen, src->str, src->ulen + 1);
 	dst->ulen += src->ulen;
 
 	return dst;
@@ -116,7 +111,7 @@ extern t_xstr* xstr_cat_str(t_xstr* dst, const char* src)
 	/* need to enlarge dst ? */
 	xstr_enlarge(dst, len);
 
-	memcpy(dst->str + dst->ulen, src, len + 1);
+	std::memcpy(dst->str + dst->ulen, src, len + 1);
 	dst->ulen += len;
 
 	return dst;

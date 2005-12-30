@@ -17,27 +17,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#include "compat/strtoul.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strchr.h"
 #include "common/proginfo.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include "common/setup_after.h"
 
 
@@ -64,11 +47,11 @@ extern int verstr_to_vernum(char const * verstr, unsigned long * vernum)
     if (!vernum)
 	return -1;
 
-    if (strchr(verstr,'.'))
+    if (std::strchr(verstr,'.'))
     {
 	int count;
 
-	count = sscanf(verstr,"%lu.%lu.%lu.%lu",&v4,&v3,&v2,&v1);
+	count = std::sscanf(verstr,"%lu.%lu.%lu.%lu",&v4,&v3,&v2,&v1);
         if (count<4)
 	{
 	    v1 = 0;
@@ -102,7 +85,7 @@ extern char const * vernum_to_verstr(unsigned long vernum)
 {
     static char verstr[16];
 
-    sprintf(verstr,"%lu.%lu.%lu.%lu",
+    std::sprintf(verstr,"%lu.%lu.%lu.%lu",
             (vernum>>24)     ,
             (vernum>>16)&0xff,
             (vernum>> 8)&0xff,

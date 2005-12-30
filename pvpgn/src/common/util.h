@@ -23,28 +23,19 @@
 #define INCLUDED_UTIL_PROTOS
 
 #define JUST_NEED_TYPES
-#include <stdio.h>
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
+#include <cstdio>
+#include <ctime>
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
 {
 
 extern int strstart(char const * full, char const * part) ;
-extern char * file_get_line(FILE * fp) ;
+extern char * file_get_line(std::FILE * fp) ;
 extern char * strreverse(char * str);
 extern int str_to_uint(char const * str, unsigned int * num);
 extern int str_to_ushort(char const * str, unsigned short * num);
-extern int str_print_term(FILE * fp, char const * str, unsigned int len, int allow_nl);
+extern int str_print_term(std::FILE * fp, char const * str, unsigned int len, int allow_nl);
 extern int str_get_bool(char const * str) ;
 extern char const * seconds_to_timestr(unsigned int totsecs); /* FIXME: can this be marked pure? */
 extern int clockstr_to_seconds(char const * clockstr, unsigned int * totsecs);

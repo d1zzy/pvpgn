@@ -16,38 +16,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #define TRANS_INTERNAL_ACCESS
+#include "trans.h"
+#include <cerrno>
+#include <cstring>
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strrchr.h"
-#include <errno.h>
-#include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/addr.h"
 #include "common/util.h"
 #include "common/xalloc.h"
-#include "trans.h"
 #include "common/setup_after.h"
 
 #define DEBUG_TRANS
@@ -81,7 +58,7 @@ extern int trans_load(char const * filename, int program)
         return -1;
     }
     if (!(fp = fopen(filename,"r"))) {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",filename,std::strerror(errno));
         return -1;
     }
     trans_head = list_create();

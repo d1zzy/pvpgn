@@ -17,22 +17,8 @@
  */
 #define HASHTABLE_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "common/eventlog.h"
 #include "common/hashtable.h"
+#include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
@@ -133,10 +119,6 @@ extern int hashtable_purge(t_hashtable * hashtable)
         return -1;
     }
 
-#ifdef HASHTABLE_DEBUG
-    hashtable_check(hashtable);
-#endif
-
     for (row=0; row<hashtable->num_rows; row++)
     {
 	head = NULL;
@@ -162,78 +144,6 @@ extern int hashtable_purge(t_hashtable * hashtable)
 
     return 0;
 }
-
-
-extern int hashtable_check(t_hashtable const * hashtable)
-{
-    unsigned int          emptycnt;
-    unsigned int          validcnt;
-    unsigned int          row;
-    unsigned int          temp;
-    t_internentry const * tail;
-    t_internentry const * curr;
-
-    if (!hashtable)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashtable");
-	return -1;
-    }
-    if (hashtable->num_rows<1)
-    {
-        eventlog(eventlog_level_error,__FUNCTION__,"num_rows=%u",hashtable->num_rows);
-	return -1;
-    }
-    if (!hashtable->rows)
-    {
-        eventlog(eventlog_level_error,__FUNCTION__,"hashtable->rows is NULL");
-	return -1;
-    }
-
-    emptycnt=validcnt = 0;
-    for (row=0; row<hashtable->num_rows; row++)
-    {
-	tail = NULL;
-	for (curr=hashtable->rows[row]; curr; curr=curr->next)
-	{
-	    if (tail)
-	    {
-		if (curr==tail) /* tail is currently the previous node */
-		{
-		    eventlog(eventlog_level_error,__FUNCTION__,"row %u is circular (curr==prev==%p)",row,curr);
-		    return -1;
-		}
-		if (curr->next==tail)
-		{
-		    eventlog(eventlog_level_error,__FUNCTION__,"row %u is circular (curr->next==prev==%p)",row,curr);
-		    return -1;
-		}
-		for (temp=0; temp<hashtable->num_rows; temp++)
-		    if (curr==hashtable->rows[temp])
-		    {
-			eventlog(eventlog_level_error,__FUNCTION__,"row %u is circular (curr==rows[%u]==%p)",row,temp,curr);
-			return -1;
-		    }
-	    }
-	    if (curr->data==&nodata)
-		emptycnt++;
-	    else
-		validcnt++;
-	    tail = curr;
-	}
-    }
-
-    if (emptycnt>10 && emptycnt>validcnt+5) /* arbitrary heuristic to detect missing list_purge() cal
-ls */
-	eventlog(eventlog_level_warn,__FUNCTION__,"emptycnt=%u but validcnt=%u",emptycnt,validcnt);
-    if (hashtable->len!=validcnt)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"hashtable->len=%u but validcnt=%u",hashtable->len,validcnt);
-	return -1;
-    }
-
-    return 0;
-}
-
 
 extern unsigned int hashtable_get_length(t_hashtable const * hashtable)
 {
@@ -554,42 +464,7 @@ extern int hashtable_entry_release(t_entry * entry)
 	return -1;
     }
 
-#ifdef HASHTABLE_DEBUG
-    hashtable_check(entry->hashtable);
-#endif
     xfree(entry);
-    return 0;
-}
-
-
-extern int hashtable_stats(t_hashtable * hashtable)
-{
-    unsigned int      row;
-    t_internentry *   curr;
-    unsigned int      rcount, max, min;
-
-    if (!hashtable)
-    {
-        eventlog(eventlog_level_error, __FUNCTION__,"got NULL hashtable");
-        return -1;
-    }
-
-#ifdef HASHTABLE_DEBUG
-    hashtable_check(hashtable);
-#endif
-
-    max = 0;
-    min = hashtable->len;
-    for (row=0; row<hashtable->num_rows; row++)
-    {
-	rcount = 0;
-	for (curr=hashtable->rows[row]; curr; curr=curr->next)
-	    if (curr->data!=&nodata) rcount++;
-	if (rcount > max) max = rcount;
-	if (rcount < min) min = rcount;
-    }
-
-    eventlog(eventlog_level_info, __FUNCTION__, "hashsize: %u min: %u max: %u avg: %.2f diff: %.2f%c", hashtable->num_rows, min, max, (float)(min + max)/2, (float)(max - min)/max*100, '%');
     return 0;
 }
 

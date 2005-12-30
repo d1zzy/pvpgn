@@ -16,27 +16,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #define LIST_INTERNAL_ACCESS
+#include "common/list.h"
+#include <cassert>
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
 #include "common/eventlog.h"
 #include "common/xalloc.h"
-#include "common/list.h"
 #include "common/setup_after.h"
 
 
