@@ -171,6 +171,15 @@ extern int psock_ctl(int sd, int mode);    /* a real function in compat/psock.c 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_NETDB_H
+# include <netdb.h>
+#endif
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#endif
 #include <errno.h>
 
 /* protocol families */

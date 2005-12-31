@@ -16,61 +16,35 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define MESSAGE_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strdup.h"
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#define MESSAGE_INTERNAL_ACCESS
+#include "message.h"
+
+#include <cstring>
+#include <cerrno>
+
 #include "compat/gethostname.h"
-#include <errno.h>
 #include "compat/strerror.h"
-#include "connection.h"
-#include "common/bn_type.h"
-#include "common/queue.h"
+#include "common/xalloc.h"
+#include "common/eventlog.h"
+#include "common/addr.h"
+#include "common/tag.h"
 #include "common/packet.h"
 #include "common/bot_protocol.h"
-#include "common/bnet_protocol.h"
-#include "common/field_sizes.h"
-#include "common/eventlog.h"
+#include "common/bn_type.h"
 #include "common/list.h"
 #include "common/util.h"
-#include "common/version.h"
-#include "common/addr.h"
+
 #include "account.h"
 #include "account_wrap.h"
-#include "game.h"
 #include "channel.h"
 #include "channel_conv.h"
-#include "command.h"
-#include "irc.h"
-#include "message.h"
+#include "game.h"
 #include "mail.h"
 #include "prefs.h"
-#include "common/tag.h"
-#include "common/xalloc.h"
+#include "connection.h"
+#include "irc.h"
+#include "command.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -146,7 +120,7 @@ extern char * message_format_line(t_connection const * c, char const * in)
 
     out = (char*)xmalloc(outlen+1);
 
-    inlen = strlen(in);
+    inlen = std::strlen(in);
     out[0] = 'I';
     for (inpos=0,outpos=1; inpos<inlen; inpos++)
     {
@@ -163,74 +137,74 @@ extern char * message_format_line(t_connection const * c, char const * in)
 		break;
 
 	    case 'a':
-		sprintf(&out[outpos],"%u",accountlist_get_length());
-		outpos += strlen(&out[outpos]);
+		std::sprintf(&out[outpos],"%u",accountlist_get_length());
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'c':
-		sprintf(&out[outpos],"%d",channellist_get_length());
-		outpos += strlen(&out[outpos]);
+		std::sprintf(&out[outpos],"%d",channellist_get_length());
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'g':
-		sprintf(&out[outpos],"%d",gamelist_get_length());
-		outpos += strlen(&out[outpos]);
+		std::sprintf(&out[outpos],"%d",gamelist_get_length());
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'h':
     		if (gethostname(&out[outpos],MAX_INC)<0)
     		{
 		    eventlog(eventlog_level_error,__FUNCTION__,"could not get hostname (gethostname: %s)",pstrerror(errno));
-		    strcpy(&out[outpos],"localhost"); /* not much else you can do */
+		    std::strcpy(&out[outpos],"localhost"); /* not much else you can do */
     		}
-		outpos += strlen(&out[outpos]);
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'i':
-		sprintf(&out[outpos],UID_FORMAT,conn_get_userid(c));
-		outpos += strlen(&out[outpos]);
+		std::sprintf(&out[outpos],UID_FORMAT,conn_get_userid(c));
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'l':
 	        {
 		    char const * tname;
 
-		    strncpy(&out[outpos],(tname = (conn_get_chatname(c)?conn_get_chatname(c):conn_get_loggeduser(c))),USER_NAME_MAX-1);
+		    std::strncpy(&out[outpos],(tname = (conn_get_chatname(c)?conn_get_chatname(c):conn_get_loggeduser(c))),USER_NAME_MAX-1);
 		    conn_unget_chatname(c,tname);
 		}
 		out[outpos+USER_NAME_MAX-1] = '\0';
-		outpos += strlen(&out[outpos]);
+		outpos += std::strlen(&out[outpos]);
 		break;
 
             case 'm':
-	    	sprintf(&out[outpos],"%s",check_mail(c));
-		outpos += strlen(&out[outpos]);
+	    	std::sprintf(&out[outpos],"%s",check_mail(c));
+		outpos += std::strlen(&out[outpos]);
                 break;
 
 	    case 'r':
-		strncpy(&out[outpos],addr_num_to_ip_str(conn_get_addr(c)),MAX_INC-1);
+		std::strncpy(&out[outpos],addr_num_to_ip_str(conn_get_addr(c)),MAX_INC-1);
 		out[outpos+MAX_INC-1] = '\0';
-		outpos += strlen(&out[outpos]);
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 's':
-		sprintf(&out[outpos],"%s",prefs_get_servername());
-		outpos += strlen(&out[outpos]);
+		std::sprintf(&out[outpos],"%s",prefs_get_servername());
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 't':
-		sprintf(&out[outpos],"%s",tag_uint_to_str(clienttag_str,conn_get_clienttag(c)));
-		outpos += strlen(&out[outpos]);
+		std::sprintf(&out[outpos],"%s",tag_uint_to_str(clienttag_str,conn_get_clienttag(c)));
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'u':
-		sprintf(&out[outpos],"%d",connlist_login_get_length());
-		outpos += strlen(&out[outpos]);
+		std::sprintf(&out[outpos],"%d",connlist_login_get_length());
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'v':
-		strcpy(&out[outpos],PVPGN_SOFTWARE" "PVPGN_VERSION);
-		outpos += strlen(&out[outpos]);
+		std::strcpy(&out[outpos],PVPGN_SOFTWARE" "PVPGN_VERSION);
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'C': /* simulated command */
@@ -246,13 +220,13 @@ extern char * message_format_line(t_connection const * c, char const * in)
 		break;
 
 	    case 'G':
-	    	sprintf(&out[outpos],"%d",game_get_count_by_clienttag(conn_get_clienttag(c)));
-		outpos += strlen(&out[outpos]);
+	    	std::sprintf(&out[outpos],"%d",game_get_count_by_clienttag(conn_get_clienttag(c)));
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'H':
-		strcpy(&out[outpos],prefs_get_contact_name());
-		outpos += strlen(&out[outpos]);
+		std::strcpy(&out[outpos],prefs_get_contact_name());
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'I': /* INFO */
@@ -264,8 +238,8 @@ extern char * message_format_line(t_connection const * c, char const * in)
 		break;
 
 	    case 'N':
-	    	strcpy(&out[outpos],clienttag_get_title(conn_get_clienttag(c)));
-		outpos += strlen(&out[outpos]);
+	    	std::strcpy(&out[outpos],clienttag_get_title(conn_get_clienttag(c)));
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'T': /* EMOTE */
@@ -273,8 +247,8 @@ extern char * message_format_line(t_connection const * c, char const * in)
 		break;
 
 	    case 'U':
-	    	sprintf(&out[outpos],"%d",conn_get_user_count_by_clienttag(conn_get_clienttag(c)));
-		outpos += strlen(&out[outpos]);
+	    	std::sprintf(&out[outpos],"%d",conn_get_user_count_by_clienttag(conn_get_clienttag(c)));
+		outpos += std::strlen(&out[outpos]);
 		break;
 
 	    case 'W': /* INFO */
@@ -318,8 +292,8 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    eventlog(eventlog_level_error,__FUNCTION__,"got NULL text for %s",message_type_get_str(type));
 	    return -1;
 	}
-	msgtemp = (char*)xmalloc(strlen(text)+32);
-        sprintf(msgtemp,"Your unique name: %s\r\n",text);
+	msgtemp = (char*)xmalloc(std::strlen(text)+32);
+        std::sprintf(msgtemp,"Your unique name: %s\r\n",text);
 	break;
     case message_type_adduser:
 	if (!me)
@@ -331,8 +305,8 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    char const * tname;
 
 	    tname = conn_get_chatcharname(me, dst);
-	    msgtemp = (char*)xmalloc(strlen(tname)+32);
-	    sprintf(msgtemp,"[%s is here]\r\n",tname);
+	    msgtemp = (char*)xmalloc(std::strlen(tname)+32);
+	    std::sprintf(msgtemp,"[%s is here]\r\n",tname);
 	    conn_unget_chatcharname(me,tname);
 	}
 	break;
@@ -346,8 +320,8 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    char const * tname;
 
 	    tname = conn_get_chatcharname(me, dst);
-	    msgtemp = (char*)xmalloc(strlen(tname)+32);
-	    sprintf(msgtemp,"[%s enters]\r\n",tname);
+	    msgtemp = (char*)xmalloc(std::strlen(tname)+32);
+	    std::sprintf(msgtemp,"[%s enters]\r\n",tname);
 	    conn_unget_chatcharname(me,tname);
 	}
 	break;
@@ -361,8 +335,8 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    char const * tname;
 
 	    tname = conn_get_chatcharname(me, dst);
-	    msgtemp = (char*)xmalloc(strlen(tname)+32);
-	    sprintf(msgtemp,"[%s leaves]\r\n",tname);
+	    msgtemp = (char*)xmalloc(std::strlen(tname)+32);
+	    std::sprintf(msgtemp,"[%s leaves]\r\n",tname);
 	    conn_unget_chatcharname(me,tname);
 	}
 	break;
@@ -383,16 +357,16 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    else
 		tname = prefs_get_servername();
 
-	    if ((newtext = escape_chars(text,strlen(text))))
+	    if ((newtext = escape_chars(text,std::strlen(text))))
 	    {
-		msgtemp = (char*)xmalloc(strlen(tname)+8+strlen(newtext)+4);
-		sprintf(msgtemp,"<from %s> %s\r\n",tname,newtext);
+		msgtemp = (char*)xmalloc(std::strlen(tname)+8+std::strlen(newtext)+4);
+		std::sprintf(msgtemp,"<from %s> %s\r\n",tname,newtext);
 		xfree((void *)newtext); /* avoid warning */
 	    }
 	    else
 	    {
-		msgtemp = (char*)xmalloc(16+strlen(tname));
-		sprintf(msgtemp,"<from %s> \r\n",tname);
+		msgtemp = (char*)xmalloc(16+std::strlen(tname));
+		std::sprintf(msgtemp,"<from %s> \r\n",tname);
 	    }
 	    if (me)
 	        conn_unget_chatcharname(me,tname);
@@ -415,16 +389,16 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    else
 		tname = prefs_get_servername();
 
-	    if ((newtext = escape_chars(text,strlen(text))))
+	    if ((newtext = escape_chars(text,std::strlen(text))))
 	    {
-		msgtemp = (char*)xmalloc(strlen(tname)+4+strlen(newtext)+4);
-		sprintf(msgtemp,"<%s> %s\r\n",tname,newtext);
+		msgtemp = (char*)xmalloc(std::strlen(tname)+4+std::strlen(newtext)+4);
+		std::sprintf(msgtemp,"<%s> %s\r\n",tname,newtext);
 		xfree((void *)newtext); /* avoid warning */
 	    }
 	    else
 	    {
-		msgtemp = (char*)xmalloc(strlen(tname)+8);
-		sprintf(msgtemp,"<%s> \r\n",tname);
+		msgtemp = (char*)xmalloc(std::strlen(tname)+8);
+		std::sprintf(msgtemp,"<%s> \r\n",tname);
 	    }
 	    if (me)
 	        conn_unget_chatcharname(me,tname);
@@ -441,16 +415,16 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	{
 	    char const * newtext;
 
-	    if ((newtext = escape_chars(text,strlen(text))))
+	    if ((newtext = escape_chars(text,std::strlen(text))))
 	    {
-		msgtemp = (char*)xmalloc(16+strlen(newtext)+4);
-		sprintf(msgtemp,"Broadcast: %s\r\n",newtext); /* FIXME: show source? */
+		msgtemp = (char*)xmalloc(16+std::strlen(newtext)+4);
+		std::sprintf(msgtemp,"Broadcast: %s\r\n",newtext); /* FIXME: show source? */
 		xfree((void *)newtext); /* avoid warning */
 	    }
 	    else
 	    {
 		msgtemp = (char*)xmalloc(16);
-		sprintf(msgtemp,"Broadcast: \r\n"); /* FIXME: show source? */
+		std::sprintf(msgtemp,"Broadcast: \r\n"); /* FIXME: show source? */
 	    }
 	}
 	break;
@@ -460,8 +434,8 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    eventlog(eventlog_level_error,__FUNCTION__,"got NULL text for %s",message_type_get_str(type));
 	    return -1;
 	}
-	msgtemp = (char*)xmalloc(strlen(text)+32);
-	sprintf(msgtemp,"Joining channel: \"%s\"\r\n",text);
+	msgtemp = (char*)xmalloc(std::strlen(text)+32);
+	std::sprintf(msgtemp,"Joining channel: \"%s\"\r\n",text);
 	break;
     case message_type_userflags:
 	if (!me)
@@ -487,16 +461,16 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    char const * newtext;
 
 	    tname = conn_get_chatcharname(me, dst);
-	    if ((newtext = escape_chars(text,strlen(text))))
+	    if ((newtext = escape_chars(text,std::strlen(text))))
 	    {
-		msgtemp = (char*)xmalloc(strlen(tname)+8+strlen(newtext)+4);
-		sprintf(msgtemp,"<to %s> %s\r\n",tname,newtext);
+		msgtemp = (char*)xmalloc(std::strlen(tname)+8+std::strlen(newtext)+4);
+		std::sprintf(msgtemp,"<to %s> %s\r\n",tname,newtext);
 		xfree((void *)newtext); /* avoid warning */
 	    }
 	    else
 	    {
-		msgtemp = (char*)xmalloc(strlen(tname)+8+strlen(text)+4);
-		sprintf(msgtemp,"<to %s> %s\r\n",tname,text);
+		msgtemp = (char*)xmalloc(std::strlen(tname)+8+std::strlen(text)+4);
+		std::sprintf(msgtemp,"<to %s> %s\r\n",tname,text);
 	    }
 	    conn_unget_chatcharname(me,tname);
 	}
@@ -515,16 +489,16 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	{
 	    char const * newtext;
 
-	    if ((newtext = escape_chars(text,strlen(text))))
+	    if ((newtext = escape_chars(text,std::strlen(text))))
 	    {
-		msgtemp = (char*)xmalloc(14+8+strlen(newtext)+4);
-		sprintf(msgtemp,"<to your friends> %s\r\n",newtext);
+		msgtemp = (char*)xmalloc(14+8+std::strlen(newtext)+4);
+		std::sprintf(msgtemp,"<to your friends> %s\r\n",newtext);
 		xfree((void *)newtext); /* avoid warning */
 	    }
 	    else
 	    {
-		msgtemp = (char*)xmalloc(14+8+strlen(text)+4);
-		sprintf(msgtemp,"<to your friends> %s\r\n",text);
+		msgtemp = (char*)xmalloc(14+8+std::strlen(text)+4);
+		std::sprintf(msgtemp,"<to your friends> %s\r\n",text);
 	    }
 	}
 	break;
@@ -550,16 +524,16 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	{
 	    char const * newtext;
 
-	    if ((newtext = escape_chars(text,strlen(text))))
+	    if ((newtext = escape_chars(text,std::strlen(text))))
 	    {
-		msgtemp = (char*)xmalloc(strlen(newtext)+4);
-		sprintf(msgtemp,"%s\r\n",newtext);
+		msgtemp = (char*)xmalloc(std::strlen(newtext)+4);
+		std::sprintf(msgtemp,"%s\r\n",newtext);
 		xfree((void *)newtext); /* avoid warning */
 	    }
 	    else
 	    {
-		msgtemp = (char*)xmalloc(strlen(text)+4);
-		sprintf(msgtemp,"%s\r\n",text);
+		msgtemp = (char*)xmalloc(std::strlen(text)+4);
+		std::sprintf(msgtemp,"%s\r\n",text);
 	    }
 	}
 	break;
@@ -572,16 +546,16 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	{
 	    char const * newtext;
 
-	    if ((newtext = escape_chars(text,strlen(text))))
+	    if ((newtext = escape_chars(text,std::strlen(text))))
 	    {
-		msgtemp = (char*)xmalloc(8+strlen(newtext)+4);
-		sprintf(msgtemp,"ERROR: %s\r\n",newtext);
+		msgtemp = (char*)xmalloc(8+std::strlen(newtext)+4);
+		std::sprintf(msgtemp,"ERROR: %s\r\n",newtext);
 		xfree((void *)newtext); /* avoid warning */
 	    }
 	    else
 	    {
-		msgtemp = (char*)xmalloc(8+strlen(text)+4);
-		sprintf(msgtemp,"ERROR: %s\r\n",text);
+		msgtemp = (char*)xmalloc(8+std::strlen(text)+4);
+		std::sprintf(msgtemp,"ERROR: %s\r\n",text);
 	    }
 	}
 	break;
@@ -603,16 +577,16 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    char const * newtext;
 
 	    tname = conn_get_chatcharname(me, dst);
-	    if ((newtext = escape_chars(text,strlen(text))))
+	    if ((newtext = escape_chars(text,std::strlen(text))))
 	    {
-		msgtemp = (char*)xmalloc(strlen(tname)+4+strlen(newtext)+4);
-		sprintf(msgtemp,"<%s %s>\r\n",tname,newtext);
+		msgtemp = (char*)xmalloc(std::strlen(tname)+4+std::strlen(newtext)+4);
+		std::sprintf(msgtemp,"<%s %s>\r\n",tname,newtext);
 		xfree((void *)newtext); /* avoid warning */
 	    }
 	    else
 	    {
-		msgtemp = (char*)xmalloc(strlen(tname)+4+strlen(text)+4);
-		sprintf(msgtemp,"<%s %s>\r\n",tname,text);
+		msgtemp = (char*)xmalloc(std::strlen(tname)+4+std::strlen(text)+4);
+		std::sprintf(msgtemp,"<%s %s>\r\n",tname,text);
 	    }
 	    conn_unget_chatcharname(me,tname);
 	}
@@ -627,8 +601,8 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    char const * tname;
 
 	    tname = conn_get_chatcharname(me,dst);
-	    msgtemp = (char*)xmalloc(strlen(tname)+32);
-	    sprintf(msgtemp,"%s change mode: %s\r\n",tname,text);
+	    msgtemp = (char*)xmalloc(std::strlen(tname)+32);
+	    std::sprintf(msgtemp,"%s change mode: %s\r\n",tname,text);
 	    conn_unget_chatcharname(me,tname);
 	}
     default:
@@ -675,15 +649,15 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
             eventlog(eventlog_level_error,__FUNCTION__,"got NULL text for non-loggedin state");
             return -1;
         }
-	msgtemp = (char*)xmalloc(strlen(text)+4);
-        sprintf(msgtemp,"%s\r\n",text);
+	msgtemp = (char*)xmalloc(std::strlen(text)+4);
+        std::sprintf(msgtemp,"%s\r\n",text);
     }
     else
 	switch (type)
 	{
 	case message_type_null:
 	    msgtemp = (char*)xmalloc(32);
-	    sprintf(msgtemp,"%u %s\r\n",EID_NULL,"NULL");
+	    std::sprintf(msgtemp,"%u %s\r\n",EID_NULL,"NULL");
 	    break;
 	case message_type_uniqueid: /* FIXME: need to send this for some bots, also needed to support guest accounts */
 	    if (!text)
@@ -691,8 +665,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL text for %s",message_type_get_str(type));
 		return -1;
 	    }
-	    msgtemp = (char*)xmalloc(strlen(text)+32);
-	    sprintf(msgtemp,"%u %s %s\r\n",EID_UNIQUENAME,"NAME",text);
+	    msgtemp = (char*)xmalloc(std::strlen(text)+32);
+	    std::sprintf(msgtemp,"%u %s %s\r\n",EID_UNIQUENAME,"NAME",text);
 	    break;
 	case message_type_adduser:
 	    if (!me)
@@ -704,8 +678,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		char const * tname;
 
 		tname = conn_get_chatcharname(me, dst);
-		msgtemp = (char*)xmalloc(32+strlen(tname)+32);
-		sprintf(msgtemp,"%u %s %s %04x [%s]\r\n",EID_SHOWUSER,"USER",tname,conn_get_flags(me)|dstflags,tag_uint_to_str(clienttag_str,conn_get_fake_clienttag(me)));
+		msgtemp = (char*)xmalloc(32+std::strlen(tname)+32);
+		std::sprintf(msgtemp,"%u %s %s %04x [%s]\r\n",EID_SHOWUSER,"USER",tname,conn_get_flags(me)|dstflags,tag_uint_to_str(clienttag_str,conn_get_fake_clienttag(me)));
 		conn_unget_chatcharname(me,tname);
 	    }
 	    break;
@@ -719,8 +693,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		char const * tname;
 
 		tname = conn_get_chatcharname(me, dst);
-		msgtemp = (char*)xmalloc(32+strlen(tname)+32);
-		sprintf(msgtemp,"%u %s %s %04x [%s]\r\n",EID_JOIN,"JOIN",tname,conn_get_flags(me)|dstflags,tag_uint_to_str(clienttag_str,conn_get_fake_clienttag(me)));
+		msgtemp = (char*)xmalloc(32+std::strlen(tname)+32);
+		std::sprintf(msgtemp,"%u %s %s %04x [%s]\r\n",EID_JOIN,"JOIN",tname,conn_get_flags(me)|dstflags,tag_uint_to_str(clienttag_str,conn_get_fake_clienttag(me)));
 		conn_unget_chatcharname(me,tname);
 	    }
 	    break;
@@ -734,8 +708,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		char const * tname;
 
 		tname = conn_get_chatcharname(me, dst);
-		msgtemp = (char*)xmalloc(32+strlen(tname)+32);
-		sprintf(msgtemp,"%u %s %s %04x\r\n",EID_LEAVE,"LEAVE",tname,conn_get_flags(me)|dstflags);
+		msgtemp = (char*)xmalloc(32+std::strlen(tname)+32);
+		std::sprintf(msgtemp,"%u %s %s %04x\r\n",EID_LEAVE,"LEAVE",tname,conn_get_flags(me)|dstflags);
 		conn_unget_chatcharname(me,tname);
 	    }
 	    break;
@@ -755,8 +729,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		else
 		    tname = prefs_get_servername();
 
-		msgtemp = (char*)xmalloc(32+strlen(tname)+32+strlen(text));
-		sprintf(msgtemp,"%u %s %s %04x \"%s\"\r\n",EID_WHISPER,"WHISPER",tname,me?conn_get_flags(me)|dstflags:dstflags,text);
+		msgtemp = (char*)xmalloc(32+std::strlen(tname)+32+std::strlen(text));
+		std::sprintf(msgtemp,"%u %s %s %04x \"%s\"\r\n",EID_WHISPER,"WHISPER",tname,me?conn_get_flags(me)|dstflags:dstflags,text);
 		if (me)
 		    conn_unget_chatcharname(me,tname);
 	    }
@@ -778,8 +752,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		char const * tname;
 
 		tname = conn_get_chatcharname(me, dst);
-		msgtemp = (char*)xmalloc(32+strlen(tname)+32+strlen(text));
-		sprintf(msgtemp,"%u %s %s %04x \"%s\"\r\n",EID_TALK,"TALK",tname,conn_get_flags(me)|dstflags,text);
+		msgtemp = (char*)xmalloc(32+std::strlen(tname)+32+std::strlen(text));
+		std::sprintf(msgtemp,"%u %s %s %04x \"%s\"\r\n",EID_TALK,"TALK",tname,conn_get_flags(me)|dstflags,text);
 		conn_unget_chatcharname(me,tname);
 	    }
 	    break;
@@ -791,8 +765,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 	    }
 	    if (dstflags&MF_X)
 		return -1; /* player is ignored */
-	    msgtemp = (char*)xmalloc(32+32+strlen(text));
-	    sprintf(msgtemp,"%u %s \"%s\"\r\n",EID_BROADCAST,"_",text); /* FIXME: what does this look like on Battle.net? */
+	    msgtemp = (char*)xmalloc(32+32+std::strlen(text));
+	    std::sprintf(msgtemp,"%u %s \"%s\"\r\n",EID_BROADCAST,"_",text); /* FIXME: what does this look like on Battle.net? */
 	    break;
 	case message_type_channel:
 	    if (!text)
@@ -800,8 +774,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL text for %s",message_type_get_str(type));
 		return -1;
 	    }
-	    msgtemp = (char*)xmalloc(32+strlen(text));
-	    sprintf(msgtemp,"%u %s \"%s\"\r\n",EID_CHANNEL,"CHANNEL",text);
+	    msgtemp = (char*)xmalloc(32+std::strlen(text));
+	    std::sprintf(msgtemp,"%u %s \"%s\"\r\n",EID_CHANNEL,"CHANNEL",text);
 	    break;
 	case message_type_userflags:
 	    if (!me)
@@ -813,8 +787,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		char const * tname;
 
 		tname = conn_get_chatcharname(me, dst);
-		msgtemp = (char*)xmalloc(32+strlen(tname)+16);
-		sprintf(msgtemp,"%u %s %s %04x\r\n",EID_USERFLAGS,"USER",tname,conn_get_flags(me)|dstflags);
+		msgtemp = (char*)xmalloc(32+std::strlen(tname)+16);
+		std::sprintf(msgtemp,"%u %s %s %04x\r\n",EID_USERFLAGS,"USER",tname,conn_get_flags(me)|dstflags);
 		conn_unget_chatcharname(me,tname);
 	    }
 	    break;
@@ -833,8 +807,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		char const * tname;
 
 		tname = conn_get_chatcharname(me, dst);
-		msgtemp = (char*)xmalloc(32+strlen(tname)+32+strlen(text));
-		sprintf(msgtemp,"%u %s %s %04x \"%s\"\r\n",EID_WHISPERSENT,"WHISPER",tname,conn_get_flags(me)|dstflags,text);
+		msgtemp = (char*)xmalloc(32+std::strlen(tname)+32+std::strlen(text));
+		std::sprintf(msgtemp,"%u %s %s %04x \"%s\"\r\n",EID_WHISPERSENT,"WHISPER",tname,conn_get_flags(me)|dstflags,text);
 		conn_unget_chatcharname(me,tname);
 	    }
 	    break;
@@ -850,22 +824,22 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		return -1;
 	    }
 	    {
-		msgtemp = (char*)xmalloc(32+16+32+strlen(text));
-		sprintf(msgtemp,"%u %s \"your friends\" %04x \"%s\"\r\n",EID_WHISPERSENT,"WHISPER",conn_get_flags(me)|dstflags,text);
+		msgtemp = (char*)xmalloc(32+16+32+std::strlen(text));
+		std::sprintf(msgtemp,"%u %s \"your friends\" %04x \"%s\"\r\n",EID_WHISPERSENT,"WHISPER",conn_get_flags(me)|dstflags,text);
 	    }
 	    break;
 
 	case message_type_channelfull:
 	    msgtemp = (char*)xmalloc(32);
-	    sprintf(msgtemp,"%u \r\n",EID_CHANNELFULL); /* FIXME */
+	    std::sprintf(msgtemp,"%u \r\n",EID_CHANNELFULL); /* FIXME */
 	    break;
 	case message_type_channeldoesnotexist:
 	    msgtemp = (char*)xmalloc(32);
-	    sprintf(msgtemp,"%u \r\n",EID_CHANNELDOESNOTEXIST); /* FIXME */
+	    std::sprintf(msgtemp,"%u \r\n",EID_CHANNELDOESNOTEXIST); /* FIXME */
 	    break;
 	case message_type_channelrestricted:
 	    msgtemp = (char*)xmalloc(32);
-	    sprintf(msgtemp,"%u \r\n",EID_CHANNELRESTRICTED); /* FIXME */
+	    std::sprintf(msgtemp,"%u \r\n",EID_CHANNELRESTRICTED); /* FIXME */
 	    break;
 	case message_type_info:
 	    if (!text)
@@ -873,8 +847,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL text for %s",message_type_get_str(type));
 		return -1;
 	    }
-	    msgtemp = (char*)xmalloc(32+16+strlen(text));
-	    sprintf(msgtemp,"%u %s \"%s\"\r\n",EID_INFO,"INFO",text);
+	    msgtemp = (char*)xmalloc(32+16+std::strlen(text));
+	    std::sprintf(msgtemp,"%u %s \"%s\"\r\n",EID_INFO,"INFO",text);
 	    break;
 	case message_type_error:
 	    if (!text)
@@ -882,8 +856,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL text for %s",message_type_get_str(type));
 		return -1;
 	    }
-	    msgtemp = (char*)xmalloc(32+16+strlen(text));
-	    sprintf(msgtemp,"%u %s \"%s\"\r\n",EID_ERROR,"ERROR",text);
+	    msgtemp = (char*)xmalloc(32+16+std::strlen(text));
+	    std::sprintf(msgtemp,"%u %s \"%s\"\r\n",EID_ERROR,"ERROR",text);
 	    break;
 	case message_type_emote:
 	    if (!me)
@@ -902,8 +876,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		char const * tname;
 
 		tname = conn_get_chatcharname(me, dst);
-		msgtemp = (char*)xmalloc(32+strlen(tname)+32+strlen(text));
-		sprintf(msgtemp,"%u %s %s %04x \"%s\"\r\n",EID_EMOTE,"EMOTE",tname,conn_get_flags(me)|dstflags,text);
+		msgtemp = (char*)xmalloc(32+std::strlen(tname)+32+std::strlen(text));
+		std::sprintf(msgtemp,"%u %s %s %04x \"%s\"\r\n",EID_EMOTE,"EMOTE",tname,conn_get_flags(me)|dstflags,text);
 		conn_unget_chatcharname(me,tname);
 	    }
 	    break;
@@ -912,7 +886,7 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 	    return -1;
 	}
 
-    if (strlen(msgtemp)>MAX_MESSAGE_LEN)
+    if (std::strlen(msgtemp)>MAX_MESSAGE_LEN)
 	msgtemp[MAX_MESSAGE_LEN] = '\0'; /* now truncate to max size */
 
     {
@@ -1620,7 +1594,7 @@ extern int message_send_formatted(t_connection * dst, char const * text)
 }
 
 
-extern int message_send_file(t_connection * dst, FILE * fd)
+extern int message_send_file(t_connection * dst, std::FILE * fd)
 {
     char * buff;
 

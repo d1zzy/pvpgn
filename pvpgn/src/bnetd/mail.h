@@ -34,36 +34,11 @@
 
 #ifdef MAIL_INTERNAL_ACCESS
 
+#include <ctime>
+
 #ifdef JUST_NEED_TYPES
-# ifdef TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h>
-# else
-#  ifdef HAVE_SYS_TIME_H
-#   include <sys/time.h>
-#  else
-#   include <time.h>
-#  endif
-# endif
-# ifdef HAVE_SYS_TYPES_H
-#  include <sys/types.h>
-# endif
 # include "compat/pdir.h"
 #else
-# define JUST_NEED_TYPES
-# ifdef TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h>
-# else
-#  ifdef HAVE_SYS_TIME_H
-#   include <sys/time.h>
-#  else
-#   include <time.h>
-#  endif
-# endif
-# ifdef HAVE_SYS_TYPES_H
-#  include <sys/types.h>
-# endif
 # include "compat/pdir.h"
 # undef JUST_NEED_TYPES
 #endif
@@ -88,13 +63,13 @@ typedef struct mailbox_struct {
 typedef struct mail_struct {
    char * sender;
    char * message;
-   time_t timestamp;
+   std::time_t timestamp;
 } t_mail;
 
 typedef struct maillist_struct {
    int    idx;
    char * sender;
-   time_t timestamp;
+   std::time_t timestamp;
    struct maillist_struct * next;
 } t_maillist;
 

@@ -167,15 +167,15 @@ static void decode_character_data(t_character * ch)
 
 /*
 b1 b2 hg bg lg lw lg rw rg b3 b4 b5 b6 b7 b8 b9 bA bB cl u1 u1 u1 u1 u2 u2 u2 u2 u3 u3 u3 u3 u4 u4 u4 u4 lv st ti bC eb ef en bD \0
-amazon_qwer.log:
+amazon_qwer.std::log:
 83 80 ff ff ff ff ff 43 ff 1b ff ff ff ff ff ff ff ff 01 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 01 80 80 80 80 ff ff ff 00
-sor_Bent.log:
+sor_Bent.std::log:
 83 80 ff ff ff ff ff 53 ff ff ff ff ff ff ff ff ff ff 02 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 01 80 80 80 80 ff ff ff 00
-necro_Thorsen.log:
+necro_Thorsen.std::log:
 83 80 ff ff ff ff ff 2b ff ff ff ff ff ff ff ff ff ff 03 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 01 80 80 80 80 ff ff ff 00
-pal_QlexTEST.log:
+pal_QlexTEST.std::log:
 87 80 01 01 01 01 01 ff ff ff 01 01 ff ff ff ff ff ff 04 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 01 80 80 ff ff ff 80 80 00
-barb_Qlex.log:
+barb_Qlex.std::log:
 83 80 ff ff ff ff ff 2f ff 1b ff ff ff ff ff ff ff ff 05 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 01 80 80 80 80 ff ff ff 00
 */
 }
@@ -475,7 +475,7 @@ extern int characterlist_destroy(void)
             }
 
             if (list_remove_elem(characterlist_head,&curr)<0)
-                eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+                eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
             xfree(ch);
         }
 

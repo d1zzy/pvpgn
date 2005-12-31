@@ -19,6 +19,8 @@
 #ifndef INCLUDED_SERVER_TYPES
 #define INCLUDED_SERVER_TYPES
 
+#include <ctime>
+
 namespace pvpgn
 {
 
@@ -47,10 +49,7 @@ typedef struct
 
 #endif
 
-#ifdef HAVE_TIME_H
-# include <time.h>
-#endif
-extern time_t now;
+extern std::time_t now;
 
 }
 

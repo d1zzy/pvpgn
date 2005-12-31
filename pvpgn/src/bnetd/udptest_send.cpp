@@ -16,54 +16,23 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/memset.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h> /* FIXME: probably not needed... do some systems put types in here or something? */
-#endif
+#include "udptest_send.h"
+
+#include <cstring>
+#include <cstdio>
+
 #include "compat/psock.h"
+#include "compat/strerror.h"
 #include "common/packet.h"
+#include "common/eventlog.h"
 #include "common/bn_type.h"
-#include "common/udp_protocol.h"
-#include "connection.h"
+#include "common/hexdump.h"
 #include "common/addr.h"
 #include "common/tag.h"
-#include "common/hexdump.h"
-#include "common/eventlog.h"
-#include "udptest_send.h"
 #include "common/setup_after.h"
 
 
-extern FILE * hexstrm; /* from main.c */
+extern std::FILE * hexstrm; /* from main.c */
 
 namespace pvpgn
 {
@@ -77,7 +46,7 @@ extern int udptest_send(t_connection const * c)
     struct sockaddr_in caddr;
     unsigned int       tries,successes;
 
-    memset(&caddr,0,sizeof(caddr));
+    std::memset(&caddr,0,sizeof(caddr));
     caddr.sin_family = PSOCK_AF_INET;
     caddr.sin_port = htons(conn_get_game_port(c));
     caddr.sin_addr.s_addr = htonl(conn_get_game_addr(c));
@@ -95,15 +64,15 @@ extern int udptest_send(t_connection const * c)
 
 	if (hexstrm)
 	{
-	    fprintf(hexstrm,"%d: send class=%s[0x%02x] type=%s[0x%04x] ",
+	    std::fprintf(hexstrm,"%d: send class=%s[0x%02x] type=%s[0x%04x] ",
 		    conn_get_game_socket(c),
 		    packet_get_class_str(upacket),(unsigned int)packet_get_class(upacket),
 		    packet_get_type_str(upacket,packet_dir_from_server),packet_get_type(upacket));
-	    fprintf(hexstrm,"from=%s ",
+	    std::fprintf(hexstrm,"from=%s ",
 		    addr_num_to_addr_str(conn_get_game_addr(c),conn_get_game_port(c)));
-	    fprintf(hexstrm,"to=%s ",
+	    std::fprintf(hexstrm,"to=%s ",
 		    addr_num_to_addr_str(ntohl(caddr.sin_addr.s_addr),ntohs(caddr.sin_port)));
-	    fprintf(hexstrm,"length=%u\n",
+	    std::fprintf(hexstrm,"length=%u\n",
 		    packet_get_size(upacket));
 	    hexdump(hexstrm,packet_get_raw_data(upacket,0),packet_get_size(upacket));
 	}

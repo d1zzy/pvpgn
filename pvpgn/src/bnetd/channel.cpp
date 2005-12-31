@@ -23,26 +23,24 @@
 
 #include <cstring>
 #include <cerrno>
+#include <cstdlib>
 
-#include "compat/strrchr.h"
 #include "compat/strdup.h"
 #include "compat/strcasecmp.h"
 #include "compat/strerror.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#include "connection.h"
 #include "common/eventlog.h"
 #include "common/list.h"
+#include "common/util.h"
+#include "common/token.h"
+#include "common/tag.h"
+#include "common/xalloc.h"
+
+#include "connection.h"
 #include "message.h"
 #include "account.h"
 #include "account_wrap.h"
-#include "common/util.h"
 #include "prefs.h"
-#include "common/token.h"
 #include "irc.h"
-#include "common/tag.h"
-#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 
@@ -183,17 +181,17 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 
     if (logflag)
     {
-	time_t      now;
-	struct tm * tmnow;
+	std::time_t      now;
+	struct std::tm * tmnow;
 	char        dstr[64];
 	char        timetemp[CHANLOG_TIME_MAXLEN];
 
-	now = time(NULL);
+	now = std::time(NULL);
 
-	if (!(tmnow = localtime(&now)))
+	if (!(tmnow = std::localtime(&now)))
 	    dstr[0] = '\0';
 	else
-	    sprintf(dstr,"%04d%02d%02d%02d%02d%02d",
+	    std::sprintf(dstr,"%04d%02d%02d%02d%02d%02d",
 		    1900+tmnow->tm_year,
 		    tmnow->tm_mon+1,
 		    tmnow->tm_mday,
@@ -202,31 +200,31 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 		    tmnow->tm_sec);
 
 	channel->logname = (char*)xmalloc(std::strlen(prefs_get_chanlogdir())+9+std::strlen(dstr)+1+6+1); /* dir + "/chanlog-" + dstr + "-" + id + NUL */
-	sprintf(channel->logname,"%s/chanlog-%s-%06u",prefs_get_chanlogdir(),dstr,channel->id);
+	std::sprintf(channel->logname,"%s/chanlog-%s-%06u",prefs_get_chanlogdir(),dstr,channel->id);
 
-	if (!(channel->log = fopen(channel->logname,"w")))
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not open channel log \"%s\" for writing (fopen: %s)",channel->logname,pstrerror(errno));
+	if (!(channel->log = std::fopen(channel->logname,"w")))
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not open channel log \"%s\" for writing (std::fopen: %s)",channel->logname,pstrerror(errno));
 	else
 	{
-	    fprintf(channel->log,"name=\"%s\"\n",channel->name);
+	    std::fprintf(channel->log,"name=\"%s\"\n",channel->name);
 	    if (channel->shortname)
-		fprintf(channel->log,"shortname=\"%s\"\n",channel->shortname);
+		std::fprintf(channel->log,"shortname=\"%s\"\n",channel->shortname);
 	    else
-		fprintf(channel->log,"shortname=none\n");
-	    fprintf(channel->log,"permanent=\"%s\"\n",(channel->flags & channel_flags_permanent)?"true":"false");
-	    fprintf(channel->log,"allowbotse=\"%s\"\n",(channel->flags & channel_flags_allowbots)?"true":"false");
-	    fprintf(channel->log,"allowopers=\"%s\"\n",(channel->flags & channel_flags_allowopers)?"true":"false");
+		std::fprintf(channel->log,"shortname=none\n");
+	    std::fprintf(channel->log,"permanent=\"%s\"\n",(channel->flags & channel_flags_permanent)?"true":"false");
+	    std::fprintf(channel->log,"allowbotse=\"%s\"\n",(channel->flags & channel_flags_allowbots)?"true":"false");
+	    std::fprintf(channel->log,"allowopers=\"%s\"\n",(channel->flags & channel_flags_allowopers)?"true":"false");
 	    if (channel->clienttag)
-		fprintf(channel->log,"clienttag=\"%s\"\n",channel->clienttag);
+		std::fprintf(channel->log,"clienttag=\"%s\"\n",channel->clienttag);
 	    else
-		fprintf(channel->log,"clienttag=none\n");
+		std::fprintf(channel->log,"clienttag=none\n");
 
 	    if (tmnow)
-		strftime(timetemp,sizeof(timetemp),CHANLOG_TIME_FORMAT,tmnow);
+		std::strftime(timetemp,sizeof(timetemp),CHANLOG_TIME_FORMAT,tmnow);
 	    else
 		std::strcpy(timetemp,"?");
-	    fprintf(channel->log,"created=\"%s\"\n\n",timetemp);
-	    fflush(channel->log);
+	    std::fprintf(channel->log,"created=\"%s\"\n\n",timetemp);
+	    std::fflush(channel->log);
 	}
     }
     else
@@ -269,7 +267,7 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
 
     if (list_remove_data(channellist_head,channel,curr)<0)
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+        eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
         return -1;
     }
 
@@ -284,25 +282,25 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
 	else
 	    xfree((void *)banned); /* avoid warning */
 	if (list_remove_elem(channel->banlist,&ban)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"unable to remove item from list");
+	    eventlog(eventlog_level_error,__FUNCTION__,"unable to std::remove item from list");
     }
     list_destroy(channel->banlist);
 
     if (channel->log)
     {
-	time_t      now;
-	struct tm * tmnow;
+	std::time_t      now;
+	struct std::tm * tmnow;
 	char        timetemp[CHANLOG_TIME_MAXLEN];
 
-	now = time(NULL);
-	if ((!(tmnow = localtime(&now))))
+	now = std::time(NULL);
+	if ((!(tmnow = std::localtime(&now))))
 	    std::strcpy(timetemp,"?");
 	else
-	    strftime(timetemp,sizeof(timetemp),CHANLOG_TIME_FORMAT,tmnow);
-	fprintf(channel->log,"\ndestroyed=\"%s\"\n",timetemp);
+	    std::strftime(timetemp,sizeof(timetemp),CHANLOG_TIME_FORMAT,tmnow);
+	std::fprintf(channel->log,"\ndestroyed=\"%s\"\n",timetemp);
 
-	if (fclose(channel->log)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not close channel log \"%s\" after writing (fclose: %s)",channel->logname,pstrerror(errno));
+	if (std::fclose(channel->log)<0)
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not close channel log \"%s\" after writing (std::fclose: %s)",channel->logname,pstrerror(errno));
     }
 
     if (channel->logname)
@@ -481,7 +479,7 @@ extern int channel_add_connection(t_channel * channel, t_connection * connection
     		message_send_text(user,message_type_join,connection,NULL);
         }
 
-    /* please don't remove this notice */
+    /* please don't std::remove this notice */
     if (channel->log)
 	message_send_text(connection,message_type_info,connection,prefs_get_log_notice());
 
@@ -619,21 +617,21 @@ extern void channel_message_log(t_channel const * channel, t_connection * me, in
 
     if (channel->log)
     {
-	time_t       now;
-	struct tm *  tmnow;
+	std::time_t       now;
+	struct std::tm *  tmnow;
 	char         timetemp[CHANLOG_TIME_MAXLEN];
 
-	now = time(NULL);
-	if ((!(tmnow = localtime(&now))))
+	now = std::time(NULL);
+	if ((!(tmnow = std::localtime(&now))))
 	    std::strcpy(timetemp,"?");
 	else
-	    strftime(timetemp,sizeof(timetemp),CHANLOGLINE_TIME_FORMAT,tmnow);
+	    std::strftime(timetemp,sizeof(timetemp),CHANLOGLINE_TIME_FORMAT,tmnow);
 
 	if (fromuser)
-	    fprintf(channel->log,"%s: \"%s\" \"%s\"\n",timetemp,conn_get_username(me),text);
+	    std::fprintf(channel->log,"%s: \"%s\" \"%s\"\n",timetemp,conn_get_username(me),text);
 	else
-	    fprintf(channel->log,"%s: \"%s\" %s\n",timetemp,conn_get_username(me),text);
-	fflush(channel->log);
+	    std::fprintf(channel->log,"%s: \"%s\" %s\n",timetemp,conn_get_username(me),text);
+	std::fflush(channel->log);
     }
 }
 
@@ -767,7 +765,7 @@ extern int channel_unban_user(t_channel * channel, char const * user)
         {
             if (list_remove_elem(channel->banlist,&curr)<0)
             {
-                eventlog(eventlog_level_error,__FUNCTION__,"unable to remove item from list");
+                eventlog(eventlog_level_error,__FUNCTION__,"unable to std::remove item from list");
                 return -1;
             }
             xfree((void *)banned); /* avoid warning */
@@ -871,7 +869,7 @@ extern char const * channel_get_shortname(t_channel const * channel)
 
 static int channellist_load_permanent(char const * filename)
 {
-    FILE *       fp;
+    std::FILE *       fp;
     unsigned int line;
     unsigned int pos;
     int          botflag;
@@ -897,9 +895,9 @@ static int channellist_load_permanent(char const * filename)
 	return -1;
     }
 
-    if (!(fp = fopen(filename,"r")))
+    if (!(fp = std::fopen(filename,"r")))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open channel file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open channel file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
 	return -1;
     }
 
@@ -1026,14 +1024,14 @@ static int channellist_load_permanent(char const * filename)
 
 	if (name)
 	    {
-            channel_create(name,sname,tag,1,botflag,operflag,logflag,country,realmname,atoi(max),modflag,0,0);
+            channel_create(name,sname,tag,1,botflag,operflag,logflag,country,realmname,std::atoi(max),modflag,0,0);
 	    }
 	else
 	    {
             newname = channel_format_name(sname,country,realmname,1);
             if (newname)
 		{
-                   channel_create(newname,sname,tag,1,botflag,operflag,logflag,country,realmname,atoi(max),modflag,0,1);
+                   channel_create(newname,sname,tag,1,botflag,operflag,logflag,country,realmname,std::atoi(max),modflag,0,1);
                    xfree(newname);
 	    }
             else
@@ -1049,8 +1047,8 @@ static int channellist_load_permanent(char const * filename)
     }
 
     file_get_line(NULL); // clear file_get_line buffer
-    if (fclose(fp)<0)
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close channel file \"%s\" after reading (fclose: %s)",filename,pstrerror(errno));
+    if (std::fclose(fp)<0)
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close channel file \"%s\" after reading (std::fclose: %s)",filename,pstrerror(errno));
     return 0;
 }
 
@@ -1072,7 +1070,7 @@ static char * channel_format_name(char const * sname, char const * country, char
     len = len + 32 + 1;
 
     fullname=(char*)xmalloc(len);
-    sprintf(fullname,"%s%s%s%s%s-%d",
+    std::sprintf(fullname,"%s%s%s%s%s-%d",
             realmname?realmname:"",
             realmname?" ":"",
             sname,
@@ -1128,7 +1126,7 @@ extern int channellist_reload(void)
 	    member = member->next;
 	  }
 
-	  /* Second pass - remove connections from channel */
+	  /* Second pass - std::remove connections from channel */
 	  member = old_channel->memberlist;
 	  while (member)
 	  {
@@ -1197,7 +1195,7 @@ extern int channellist_reload(void)
 	  xfree((void*)channel->shortname);
 
 	if (list_remove_data(channellist_old,channel,&curr)<0)
-	  eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+	  eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
 	xfree((void*)channel);
 
       }

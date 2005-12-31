@@ -18,62 +18,29 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define VERSIONCHECK_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/strtoul.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef HAVE_MKTIME
-# ifdef TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h>
-# else
-#  ifdef HAVE_SYS_TIME_H
-#   include <sys/time.h>
-#  else
-#   include <time.h>
-#  endif
-# endif
-#endif
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
-#include "compat/strchr.h"
-#include "compat/strdup.h"
-#include "compat/strcasecmp.h"
-#include <ctype.h>
-#include <errno.h>
-#include "compat/strerror.h"
-#include "common/eventlog.h"
-#include "common/list.h"
-#include "common/util.h"
-#include "common/proginfo.h"
-#include "common/token.h"
-#include "common/field_sizes.h"
-#include "prefs.h"
+#define VERSIONCHECK_INTERNAL_ACCESS
 #include "versioncheck.h"
-#include "common/tag.h"
+
+#include <ctime>
+#include <cstring>
+#include <cstdio>
+#include <cassert>
+#include <cctype>
+#include <cerrno>
+#include <cstdlib>
+
+#include "compat/strcasecmp.h"
+#include "compat/strerror.h"
+#include "common/list.h"
 #include "common/xalloc.h"
+#include "common/eventlog.h"
+#include "common/util.h"
+#include "common/field_sizes.h"
+#include "common/token.h"
+#include "common/proginfo.h"
+
+#include "prefs.h"
 #include "common/setup_after.h"
 
 
@@ -214,10 +181,10 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
     parsed_exeinfo->time = 0;
     parsed_exeinfo->size = 0;
 
-    if (strcmp(prefs_get_version_exeinfo_match(),"parse")==0)
+    if (std::strcmp(prefs_get_version_exeinfo_match(),"parse")==0)
     {
 #ifdef HAVE_MKTIME
-	struct tm t1;
+	struct std::tm t1;
 	char *exe;
 	char mask[MAX_EXEINFO_STR+1];
 	char * marker;
@@ -225,7 +192,7 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
         char time_invalid = 0;
 
 	if ((exeinfo[0]=='\0') ||	   //happens when using war3-noCD and having deleted war3.org
-	    (strcmp(exeinfo,"badexe")==0)) //happens when AUTHREQ had no owner/exeinfo entry
+	    (std::strcmp(exeinfo,"badexe")==0)) //happens when AUTHREQ had no owner/exeinfo entry
 	{
           xfree((void *)parsed_exeinfo->exe);
           xfree((void *)parsed_exeinfo);
@@ -233,11 +200,11 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
           return NULL;
 	}
 
-        memset(&t1,0,sizeof(t1));
+        std::memset(&t1,0,sizeof(t1));
         t1.tm_isdst = -1;
 
         exeinfo    = strreverse((char *)exeinfo);
-        if (!(marker     = strchr(exeinfo,' ')))
+        if (!(marker     = std::strchr(exeinfo,' ')))
         {
 	  xfree((void *)parsed_exeinfo->exe);
 	  xfree((void *)parsed_exeinfo);
@@ -245,7 +212,7 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
         }
 	for (; marker[0]==' ';marker++);
 
-        if (!(marker     = strchr(marker,' ')))
+        if (!(marker     = std::strchr(marker,' ')))
         {
 	  xfree((void *)parsed_exeinfo->exe);
 	  xfree((void *)parsed_exeinfo);
@@ -253,7 +220,7 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
 	}
 	for (; marker[0]==' ';marker++);
 
-        if (!(marker     = strchr(marker,' ')))
+        if (!(marker     = std::strchr(marker,' ')))
         {
 	  xfree((void *)parsed_exeinfo->exe);
 	  xfree((void *)parsed_exeinfo);
@@ -270,10 +237,10 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
 
         exeinfo    = strreverse((char *)exeinfo);
 
-	sprintf(mask,"%%02u/%%02u/%%u %%02u:%%02u:%%02u %%u");
+	std::sprintf(mask,"%%02u/%%02u/%%u %%02u:%%02u:%%02u %%u");
 
-	if (sscanf(exeinfo,mask,&t1.tm_mon,&t1.tm_mday,&t1.tm_year,&t1.tm_hour,&t1.tm_min,&t1.tm_sec,&size)!=7) {
-            if (sscanf(exeinfo,"%*s %*s %u",&size) != 1)
+	if (std::sscanf(exeinfo,mask,&t1.tm_mon,&t1.tm_mday,&t1.tm_year,&t1.tm_hour,&t1.tm_min,&t1.tm_sec,&size)!=7) {
+            if (std::sscanf(exeinfo,"%*s %*s %u",&size) != 1)
             {
 
 	      eventlog(eventlog_level_warn,__FUNCTION__,"parser error while parsing pattern \"%s\"",exeinfo);
@@ -294,11 +261,11 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
        if (time_invalid)
          parsed_exeinfo->time = -1;
        else
-         parsed_exeinfo->time = mktime(&t1);
+         parsed_exeinfo->time = std::mktime(&t1);
        parsed_exeinfo->size = size;
 
 #else
-	eventlog(eventlog_level_error,__FUNCTION__,"Your system does not support mktime(). Please select another exeinfo matching method.");
+	eventlog(eventlog_level_error,__FUNCTION__,"Your std::system does not support std::mktime(). Please select another exeinfo matching method.");
 	return NULL;
 #endif
   }
@@ -306,7 +273,7 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
   return parsed_exeinfo;
 }
 
-#define safe_toupper(X) (islower((int)X)?toupper((int)X):(X))
+#define safe_toupper(X) (std::islower((int)X)?std::toupper((int)X):(X))
 
 /* This implements some dumb kind of pattern matching. Any '?'
  * signs in the pattern are treated as "don't care" signs. This
@@ -321,22 +288,22 @@ static int versioncheck_compare_exeinfo(t_parsed_exeinfo * pattern, t_parsed_exe
     if (!strcasecmp(prefs_get_version_exeinfo_match(),"none"))
 	return 0;	/* ignore exeinfo */
 
-    if (strlen(pattern->exe)!=strlen(match->exe))
+    if (std::strlen(pattern->exe)!=std::strlen(match->exe))
     	return 1; /* neq */
 
-    if (strcmp(prefs_get_version_exeinfo_match(),"exact")==0) {
+    if (std::strcmp(prefs_get_version_exeinfo_match(),"exact")==0) {
 	return strcasecmp(pattern->exe,match->exe);
-    } else if (strcmp(prefs_get_version_exeinfo_match(),"exactcase")==0) {
-	return strcmp(pattern->exe,match->exe);
-    } else if (strcmp(prefs_get_version_exeinfo_match(),"wildcard")==0) {
+    } else if (std::strcmp(prefs_get_version_exeinfo_match(),"exactcase")==0) {
+	return std::strcmp(pattern->exe,match->exe);
+    } else if (std::strcmp(prefs_get_version_exeinfo_match(),"wildcard")==0) {
     	unsigned int i;
 
-    	for (i=0;i<strlen(pattern->exe);i++)
+    	for (i=0;i<std::strlen(pattern->exe);i++)
     	    if ((pattern->exe[i]!='?')&& /* out "don't care" sign */
     	    	(safe_toupper(pattern->exe[i])!=safe_toupper(match->exe[i])))
     	    	return 1; /* neq */
     	return 0; /* ok */
-    } else if (strcmp(prefs_get_version_exeinfo_match(),"parse")==0) {
+    } else if (std::strcmp(prefs_get_version_exeinfo_match(),"parse")==0) {
 
        if (strcasecmp(pattern->exe,match->exe)!=0)
             {
@@ -350,7 +317,7 @@ static int versioncheck_compare_exeinfo(t_parsed_exeinfo * pattern, t_parsed_exe
             }
 	if ((pattern->time!=-1) && prefs_get_version_exeinfo_maxdiff() && (abs(pattern->time-match->time)>(signed)prefs_get_version_exeinfo_maxdiff()))
             {
-            eventlog(eventlog_level_trace,__FUNCTION__,"time differs by %i",abs(pattern->time-match->time));
+            eventlog(eventlog_level_trace,__FUNCTION__,"std::time differs by %i",abs(pattern->time-match->time));
 	    return 1;
             }
 	return 0; /* ok */
@@ -397,9 +364,9 @@ extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clien
 	    continue;
 	if (vi->clienttag != clienttag)
 	    continue;
-	if (strcmp(vi->eqn,vc->eqn)!=0)
+	if (std::strcmp(vi->eqn,vc->eqn)!=0)
 	    continue;
-	if (strcmp(vi->mpqfile,vc->mpqfile)!=0)
+	if (std::strcmp(vi->mpqfile,vc->mpqfile)!=0)
 	    continue;
 
 	if (vi->versionid && vi->versionid != versionid)
@@ -468,7 +435,7 @@ extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clien
 
 extern int versioncheck_load(char const * filename)
 {
-    FILE *	    fp;
+    std::FILE *	    fp;
     unsigned int    line;
     unsigned int    pos;
     char *	    buff;
@@ -495,9 +462,9 @@ extern int versioncheck_load(char const * filename)
 	eventlog(eventlog_level_error,__FUNCTION__,"could create list");
 	return -1;
     }
-    if (!(fp = fopen(filename,"r")))
+    if (!(fp = std::fopen(filename,"r")))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
 	list_destroy(versioninfo_head);
 	versioninfo_head = NULL;
 	return -1;
@@ -511,13 +478,13 @@ extern int versioncheck_load(char const * filename)
 	{
 	    continue;
 	}
-	if ((temp = strrchr(buff,'#')))
+	if ((temp = std::strrchr(buff,'#')))
 	{
 	    unsigned int len;
 	    unsigned int endpos;
 
 	    *temp = '\0';
-	    len = strlen(buff)+1;
+	    len = std::strlen(buff)+1;
 	    for (endpos=len-1;  buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
 	    buff[endpos+1] = '\0';
 	}
@@ -578,7 +545,7 @@ extern int versioncheck_load(char const * filename)
 	vi = (t_versioninfo*)xmalloc(sizeof(t_versioninfo));
 	vi->eqn = xstrdup(eqn);
 	vi->mpqfile = xstrdup(mpqfile);
-	if (strlen(archtag)!=4)
+	if (std::strlen(archtag)!=4)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"invalid arch tag on line %u of file \"%s\"",line,filename);
 	    xfree((void *)vi->mpqfile); /* avoid warning */
@@ -594,7 +561,7 @@ extern int versioncheck_load(char const * filename)
 	    xfree(vi);
 	    continue;
 	}
-	if (strlen(clienttag)!=4)
+	if (std::strlen(clienttag)!=4)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"invalid client tag on line %u of file \"%s\"",line,filename);
 	    xfree((void *)vi->mpqfile); /* avoid warning */
@@ -610,7 +577,7 @@ extern int versioncheck_load(char const * filename)
 	    xfree(vi);
 	    continue;
 	}
-	if (strcmp(exeinfo, "NULL") == 0)
+	if (std::strcmp(exeinfo, "NULL") == 0)
 	    vi->parsed_exeinfo = NULL;
 	else
 	{
@@ -624,7 +591,7 @@ extern int versioncheck_load(char const * filename)
 	    }
 	}
 
-	vi->versionid = strtoul(versionid,NULL,0);
+	vi->versionid = std::strtoul(versionid,NULL,0);
 	if (verstr_to_vernum(gameversion,&vi->gameversion)<0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"malformed version on line %u of file \"%s\"",line,filename);
@@ -635,7 +602,7 @@ extern int versioncheck_load(char const * filename)
 	    continue;
         }
 
-	vi->checksum = strtoul(checksum,NULL,0);
+	vi->checksum = std::strtoul(checksum,NULL,0);
 	if (versiontag)
 	    vi->versiontag = xstrdup(versiontag);
 	else
@@ -646,8 +613,8 @@ extern int versioncheck_load(char const * filename)
     }
 
     file_get_line(NULL); // clear file_get_line buffer
-    if (fclose(fp)<0)
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close versioncheck file \"%s\" after reading (fclose: %s)",filename,pstrerror(errno));
+    if (std::fclose(fp)<0)
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close versioncheck file \"%s\" after reading (std::fclose: %s)",filename,pstrerror(errno));
 
     return 0;
 }
@@ -669,7 +636,7 @@ extern int versioncheck_unload(void)
 	    }
 
 	    if (list_remove_elem(versioninfo_head,&curr)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
 
 	    if (vi->parsed_exeinfo)
             {

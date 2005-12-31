@@ -18,6 +18,10 @@
 #ifndef INCLUDED_STDFILENO_PROTOS
 #define INCLUDED_STDFILENO_PROTOS
 
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
 #ifdef STDIN_FILENO
 # define STDINFD STDIN_FILENO
 #else

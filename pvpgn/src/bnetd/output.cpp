@@ -15,41 +15,25 @@
  */
 
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include <errno.h>
 #include "output.h"
-#include "prefs.h"
-#include "connection.h"
-#include "game.h"
-#include "ladder.h"
-#include "server.h"
-#include "channel.h"
-#include "account.h"
-#include "common/util.h"
-#include "common/bnettime.h"
-#include "common/eventlog.h"
-#include "common/list.h"
-#include "common/proginfo.h"
+
+#include <cstdio>
+#include <cerrno>
+
 #include "compat/strerror.h"
+#include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/tag.h"
+#include "common/list.h"
+#include "common/util.h"
+
+#include "prefs.h"
+#include "game.h"
+#include "ladder.h"
+#include "channel.h"
+#include "connection.h"
+#include "server.h"
+#include "common/setup_after.h"
 
 namespace pvpgn
 {
@@ -59,7 +43,7 @@ namespace bnetd
 
 char * status_filename;
 
-int output_standard_writer(FILE * fp);
+int output_standard_writer(std::FILE * fp);
 
 /*
  * Initialisation Output *
@@ -85,7 +69,7 @@ static int _glist_cb_xml(t_game *game, void *data)
 {
     char clienttag_str[5];
 
-    fprintf((FILE*)data,"\t\t<game><name>%s</name><clienttag>%s</clienttag></game>\n",game_get_name(game),tag_uint_to_str(clienttag_str,game_get_clienttag(game)));
+    std::fprintf((std::FILE*)data,"\t\t<game><name>%s</name><clienttag>%s</clienttag></game>\n",game_get_name(game),tag_uint_to_str(clienttag_str,game_get_clienttag(game)));
 
     return 0;
 }
@@ -100,13 +84,13 @@ static int _glist_cb_simple(t_game *game, void *data)
 	return 0;
     }
 
-    fprintf((FILE*)data,"game%d=%s,%s\n",number,tag_uint_to_str(clienttag_str,game_get_clienttag(game)),game_get_name(game));
+    std::fprintf((std::FILE*)data,"game%d=%s,%s\n",number,tag_uint_to_str(clienttag_str,game_get_clienttag(game)),game_get_name(game));
     number++;
 
     return 0;
 }
 
-int output_standard_writer(FILE * fp)
+int output_standard_writer(std::FILE * fp)
 {
     t_elem const	*curr;
     t_connection	*conn;
@@ -117,65 +101,65 @@ int output_standard_writer(FILE * fp)
 
     if (prefs_get_XML_status_output())
     {
-	fprintf(fp,"<?xml version=\"1.0\"?>\n<status>\n");
-        fprintf(fp,"\t\t<Version>%s</Version>\n",PVPGN_VERSION);
-	fprintf(fp,"\t\t<Uptime>%s</Uptime>\n",seconds_to_timestr(server_get_uptime()));
-	fprintf(fp,"\t\t<Users>\n");
-	fprintf(fp,"\t\t<Number>%d</Number>\n",connlist_login_get_length());
+	std::fprintf(fp,"<?xml version=\"1.0\"?>\n<status>\n");
+        std::fprintf(fp,"\t\t<Version>%s</Version>\n",PVPGN_VERSION);
+	std::fprintf(fp,"\t\t<Uptime>%s</Uptime>\n",seconds_to_timestr(server_get_uptime()));
+	std::fprintf(fp,"\t\t<Users>\n");
+	std::fprintf(fp,"\t\t<Number>%d</Number>\n",connlist_login_get_length());
 
 	LIST_TRAVERSE_CONST(connlist(),curr)
 	{
 	    conn = (t_connection*)elem_get_data(curr);
 	    if (conn_get_account(conn))
-		fprintf(fp,"\t\t<user><name>%s</name><clienttag>%s</clienttag><version>%s</version></user>\n",conn_get_username(conn),tag_uint_to_str(clienttag_str,conn_get_clienttag(conn)),conn_get_clientver(conn));
+		std::fprintf(fp,"\t\t<user><name>%s</name><clienttag>%s</clienttag><version>%s</version></user>\n",conn_get_username(conn),tag_uint_to_str(clienttag_str,conn_get_clienttag(conn)),conn_get_clientver(conn));
         }
 
-	fprintf(fp,"\t\t</Users>\n");
-	fprintf(fp,"\t\t<Games>\n");
-	fprintf(fp,"\t\t<Number>%d</Number>\n",gamelist_get_length());
+	std::fprintf(fp,"\t\t</Users>\n");
+	std::fprintf(fp,"\t\t<Games>\n");
+	std::fprintf(fp,"\t\t<Number>%d</Number>\n",gamelist_get_length());
 
 	gamelist_traverse(_glist_cb_xml,fp);
 
-	fprintf(fp,"\t\t</Games>\n");
-	fprintf(fp,"\t\t<Channels>\n");
-	fprintf(fp,"\t\t<Number>%d</Number>\n",channellist_get_length());
+	std::fprintf(fp,"\t\t</Games>\n");
+	std::fprintf(fp,"\t\t<Channels>\n");
+	std::fprintf(fp,"\t\t<Number>%d</Number>\n",channellist_get_length());
 
 	LIST_TRAVERSE_CONST(channellist(),curr)
 	{
     	    channel = (t_channel*)elem_get_data(curr);
 	    channel_name = channel_get_name(channel);
-	    fprintf(fp,"\t\t<channel>%s</channel>\n",channel_name);
+	    std::fprintf(fp,"\t\t<channel>%s</channel>\n",channel_name);
 	}
 
-	fprintf(fp,"\t\t</Channels>\n");
-	fprintf(fp,"</status>\n");
+	std::fprintf(fp,"\t\t</Channels>\n");
+	std::fprintf(fp,"</status>\n");
 	return 0;
     }
     else
     {
-	fprintf(fp,"[STATUS]\nVersion=%s\nUptime=%s\nGames=%d\nUsers=%d\nChannels=%d\nUserAccounts=%d\n",PVPGN_VERSION,seconds_to_timestr(server_get_uptime()),gamelist_get_length(),connlist_login_get_length(),channellist_get_length(),accountlist_get_length()); // Status
-	fprintf(fp,"[CHANNELS]\n");
+	std::fprintf(fp,"[STATUS]\nVersion=%s\nUptime=%s\nGames=%d\nUsers=%d\nChannels=%d\nUserAccounts=%d\n",PVPGN_VERSION,seconds_to_timestr(server_get_uptime()),gamelist_get_length(),connlist_login_get_length(),channellist_get_length(),accountlist_get_length()); // Status
+	std::fprintf(fp,"[CHANNELS]\n");
 	number=1;
 	LIST_TRAVERSE_CONST(channellist(),curr)
 	{
     	    channel = (t_channel*)elem_get_data(curr);
 	    channel_name = channel_get_name(channel);
-	    fprintf(fp,"channel%d=%s\n",number,channel_name);
+	    std::fprintf(fp,"channel%d=%s\n",number,channel_name);
 	    number++;
 	}
 
-	fprintf(fp,"[GAMES]\n");
+	std::fprintf(fp,"[GAMES]\n");
 	_glist_cb_simple(NULL,NULL);	/* init number */
 	gamelist_traverse(_glist_cb_simple,fp);
 
-	fprintf(fp,"[USERS]\n");
+	std::fprintf(fp,"[USERS]\n");
 	number=1;
 	LIST_TRAVERSE_CONST(connlist(),curr)
 	{
     	    conn = (t_connection*)elem_get_data(curr);
     	    if (conn_get_account(conn))
 	    {
-		fprintf(fp,"user%d=%s,%s\n",number,tag_uint_to_str(clienttag_str,conn_get_clienttag(conn)),conn_get_username(conn));
+		std::fprintf(fp,"user%d=%s,%s\n",number,tag_uint_to_str(clienttag_str,conn_get_clienttag(conn)),conn_get_username(conn));
 		number++;
 	    }
 	}
@@ -186,7 +170,7 @@ int output_standard_writer(FILE * fp)
 
 extern int output_write_to_file(void)
 {
-    FILE * fp;
+    std::FILE * fp;
 
     if (!status_filename)
     {
@@ -194,14 +178,14 @@ extern int output_write_to_file(void)
 	return -1;
     }
 
-    if (!(fp = fopen(status_filename,"w")))
+    if (!(fp = std::fopen(status_filename,"w")))
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (fopen: %s)",status_filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)",status_filename,pstrerror(errno));
         return -1;
     }
 
     output_standard_writer(fp);
-    fclose(fp);
+    std::fclose(fp);
     return 0;
 }
 

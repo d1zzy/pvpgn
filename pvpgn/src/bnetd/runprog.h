@@ -22,9 +22,7 @@
 #ifndef INCLUDED_RUNPROG_PROTOS
 #define INCLUDED_RUNPROG_PROTOS
 
-#define JUST_NEED_TYPES
-#include <stdio.h>
-#undef JUST_NEED_TYPES
+#include <cstdio>
 
 namespace pvpgn
 {
@@ -32,8 +30,8 @@ namespace pvpgn
 namespace bnetd
 {
 
-extern FILE * runprog_open(char const * command);
-extern int runprog_close(FILE * pp);
+extern std::FILE * runprog_open(char const * command);
+extern int runprog_close(std::FILE * pp);
 
 }
 

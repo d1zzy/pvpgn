@@ -21,63 +21,19 @@
 
 #include "common/setup_before.h"
 #ifdef WITH_SQL
-#include <stdio.h>
+#include "storage_sql.h"
 
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
+#include <cstring>
+#include <cstdlib>
 
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-
-#include "compat/strdup.h"
-#include "compat/strcasecmp.h"
-#include "compat/strncasecmp.h"
-#include "compat/strtoul.h"
 #include "compat/snprintf.h"
-
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-
 #include "common/eventlog.h"
-#include "prefs.h"
 #include "common/util.h"
 
-#define CLAN_INTERNAL_ACCESS
-#define TEAM_INTERNAL_ACCESS
-#include "team.h"
-#include "account.h"
-#include "connection.h"
-#include "clan.h"
-#undef TEAM_INTERNAL_ACCESS
-#undef CLAN_INTERNAL_ACCESS
-#include "common/tag.h"
-#include "common/xalloc.h"
-#include "common/flags.h"
-#include "sql_dbcreator.h"
 #define SQL_INTERNAL
 # include "sql_common.h"
 #undef SQL_INTERNAL
-#include "storage_sql.h"
-#include "common/elist.h"
-#include "attr.h"
+#include "account.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -124,10 +80,10 @@ static const char *_db_add_tab(const char *tab, const char *key)
 {
     static char nkey[DB_MAX_ATTRKEY];
 
-    strncpy(nkey, tab, sizeof(nkey) - 1);
-    nkey[strlen(nkey) + 1] = '\0';
-    nkey[strlen(nkey)] = '_';
-    strncpy(nkey + strlen(nkey), key, sizeof(nkey) - strlen(nkey));
+    std::strncpy(nkey, tab, sizeof(nkey) - 1);
+    nkey[std::strlen(nkey) + 1] = '\0';
+    nkey[std::strlen(nkey)] = '_';
+    std::strncpy(nkey + std::strlen(nkey), key, sizeof(nkey) - std::strlen(nkey));
     return nkey;
 }
 
@@ -138,15 +94,15 @@ static int _db_get_tab(const char *key, char **ptab, char **pcol)
     static char tab[DB_MAX_ATTRKEY];
     static char col[DB_MAX_ATTRKEY];
 
-    strncpy(tab, key, DB_MAX_TAB - 1);
+    std::strncpy(tab, key, DB_MAX_TAB - 1);
     tab[DB_MAX_TAB - 1] = 0;
 
-    if (!strchr(tab, '_'))
+    if (!std::strchr(tab, '_'))
 	return -1;
 
 
-    *(strchr(tab, '_')) = 0;
-    strncpy(col, key + strlen(tab) + 1, DB_MAX_TAB - 1);
+    *(std::strchr(tab, '_')) = 0;
+    std::strncpy(col, key + std::strlen(tab) + 1, DB_MAX_TAB - 1);
     col[DB_MAX_TAB - 1] = 0;
     /* return tab and col as 2 static buffers */
     *ptab = tab;
@@ -183,7 +139,7 @@ static t_storage_info *sql_create_account(char const *username)
 	    eventlog(eventlog_level_error, __FUNCTION__, "got NULL count");
 	    goto err_dup;
 	}
-	num = atol(row[0]);
+	num = std::atol(row[0]);
 	sql->free_result(result);
 	if (num > 0)
 	{
@@ -304,7 +260,7 @@ static int sql_read_attrs(t_storage_info * info, t_read_attr_func cb, void *data
 	    {			/* we have to skip "uid" */
 		char *output;
 		/* we ignore the field used internally by sql */
-		if (strcmp(*fentry, SQL_UID_FIELD) == 0)
+		if (std::strcmp(*fentry, SQL_UID_FIELD) == 0)
 		    continue;
 
 //              eventlog(eventlog_level_trace, __FUNCTION__, "read key (step1): '%s' val: '%s'", _db_add_tab(*tab, *fentry), unescape_chars(row[i]));
@@ -448,13 +404,13 @@ int sql_write_attrs(t_storage_info * info, const t_hlist *attrs)
 	    continue;
 	}
 
-	strncpy(safeval, attr_get_val(attr), DB_MAX_ATTRVAL - 1);
+	std::strncpy(safeval, attr_get_val(attr), DB_MAX_ATTRVAL - 1);
 	safeval[DB_MAX_ATTRVAL - 1] = 0;
 	for (p = safeval; *p; p++)
 	    if (*p == '\'')	/* value shouldn't contain ' */
 		*p = '"';
 
-	sql->escape_string(escape, safeval, strlen(safeval));
+	sql->escape_string(escape, safeval, std::strlen(safeval));
 
 	snprintf(query, sizeof(query), "UPDATE %s%s SET %s = '%s' WHERE "SQL_UID_FIELD" = '%u'", tab_prefix, tab, col, escape, uid);
 //      eventlog(eventlog_level_trace, "db_set", "update query: %s", query);
@@ -532,11 +488,11 @@ static t_storage_info * sql_read_account(const char *name, unsigned uid)
     if (row[0] == NULL)
 	/* empty UID field */
 	eventlog(eventlog_level_error, __FUNCTION__, "got NULL uid from db");
-    else if ((unsigned int) atoi(row[0]) == sql_defacct);
+    else if ((unsigned int) std::atoi(row[0]) == sql_defacct);
     /* skip default account */
     else {
 	info = xmalloc(sizeof(t_sql_info));
-	*((unsigned int *) info) = atoi(row[0]);
+	*((unsigned int *) info) = std::atoi(row[0]);
 	sql->free_result(result);
 	return info;
     }

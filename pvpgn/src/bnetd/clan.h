@@ -54,7 +54,7 @@ typedef struct clan
     unsigned int clanid;
     int clantag;
     char const *clanname;
-    time_t creation_time;
+    std::time_t creation_time;
     char const *clan_motd;
     t_list *members;
     int created;
@@ -75,7 +75,7 @@ typedef struct _clanmember
 {
     t_account * memberacc;
     char status;
-    time_t join_time;
+    std::time_t join_time;
     t_clan * clan;
 #ifdef WITH_SQL
     char modified;
@@ -126,7 +126,7 @@ extern int clanmember_set_account(t_clanmember * member, t_account * memberacc);
 extern t_connection *clanmember_get_conn(t_clanmember * member);
 extern char clanmember_get_status(t_clanmember * member);
 extern int clanmember_set_status(t_clanmember * member, char status);
-extern time_t clanmember_get_join_time(t_clanmember * member);
+extern std::time_t clanmember_get_join_time(t_clanmember * member);
 extern t_clan * clanmember_get_clan(t_clanmember * member);
 extern int clanmember_set_online(t_connection * c);
 extern int clanmember_set_offline(t_connection * c);
@@ -156,8 +156,8 @@ extern int clan_get_clantag(t_clan * clan);
 extern char const *clan_get_motd(t_clan * clan);
 extern int clan_set_motd(t_clan * clan, const char *motd);
 extern unsigned int clan_get_clanid(t_clan * clan);
-extern int clan_set_creation_time(t_clan * clan, time_t c_time);
-extern time_t clan_get_creation_time(t_clan * clan);
+extern int clan_set_creation_time(t_clan * clan, std::time_t c_time);
+extern std::time_t clan_get_creation_time(t_clan * clan);
 extern unsigned clan_get_member_count(t_clan * clan);
 
 extern t_clanmember *clan_add_member(t_clan * clan, t_account * memberacc, char status);

@@ -413,7 +413,7 @@ extern int conn_get_joingamewhisper_ack(t_connection * c);
 extern int conn_set_leavegamewhisper_ack(t_connection * c, unsigned int value);
 extern int conn_get_leavegamewhisper_ack(t_connection * c);
 extern int conn_set_anongame_search_starttime(t_connection * c, std::time_t t);
-extern time_t conn_get_anongame_search_starttime(t_connection * c);
+extern std::time_t conn_get_anongame_search_starttime(t_connection * c);
 
 extern int conn_get_user_count_by_clienttag(t_clienttag ct);
 

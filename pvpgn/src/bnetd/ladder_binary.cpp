@@ -15,37 +15,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define BINARY_LADDER_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "errno.h"
-#include "compat/strerror.h"
-#include "account.h"
-#include "common/eventlog.h"
-#include "common/xalloc.h"
+#define BINARY_LADDER_INTERNAL_ACCESS
 #include "ladder_binary.h"
-#include "ladder.h"
+
+#include <cstdio>
+#include <cerrno>
+
+#include "compat/strerror.h"
+#include "common/xalloc.h"
+#include "common/eventlog.h"
+
 #include "prefs.h"
+#include "ladder.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -108,7 +90,7 @@ extern int binary_ladder_save(t_binary_ladder_types type, unsigned int paracount
   const char * filename;
   int checksum;
   unsigned count;
-  FILE * fp;
+  std::FILE * fp;
 
   if ((!(ladder_name = binary_ladder_type_to_filename(type))) ||
       (!(filename = create_filename(prefs_get_ladderdir(),ladder_name,"_LADDER"))))
@@ -117,21 +99,21 @@ extern int binary_ladder_save(t_binary_ladder_types type, unsigned int paracount
     return -1;
   }
 
-  if (!(fp = fopen(filename,"wb")))
+  if (!(fp = std::fopen(filename,"wb")))
   {
-    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (fopen: %s)",filename,pstrerror(errno));
+    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)", filename, pstrerror(errno));
     dispose_filename(filename);
     return -1;
   }
 
   results[0] = magick;
-  fwrite(results,sizeof(int),1,fp); //write the magick int as header
+  std::fwrite(results,sizeof(int),1,fp); //write the magick int as header
 
   checksum = 0;
 
   while ((*_cb_get_from_ladder)(type,rank,results)!=-1)
   {
-    fwrite(results,sizeof(int),paracount,fp);
+    std::fwrite(results,sizeof(int),paracount,fp);
     for (count=0;count<paracount;count++) checksum+=results[count];
     rank++;
   }
@@ -139,9 +121,9 @@ extern int binary_ladder_save(t_binary_ladder_types type, unsigned int paracount
   //calculate a checksum over saved data
 
   results[0] = checksum;
-  fwrite(results,sizeof(int),1,fp); // add checksum at the end
+  std::fwrite(results,sizeof(int),1,fp); // add checksum at the end
 
-  fclose(fp);
+  std::fclose(fp);
   dispose_filename(filename);
   return 0;
 }
@@ -152,12 +134,12 @@ extern t_binary_ladder_load_result binary_ladder_load(t_binary_ladder_types type
   const char * filename;
   int checksum;
   unsigned count;
-  FILE * fp;
+  std::FILE * fp;
 
   //TODO: load from file and if this fails return binary_ladder_load_failed
-  //      then make sure ladder gets loaded somehow else (form accounts)
+  //      then make sure ladder std::gets loaded somehow else (form accounts)
   //      compare checksum - and if it differs return load_invalid
-  //      then make sure ladder gets flushed and then loaded from accounts
+  //      then make sure ladder std::gets flushed and then loaded from accounts
   //      on success don't load from accounts
 
   if ((!(ladder_name = binary_ladder_type_to_filename(type))) ||
@@ -167,31 +149,31 @@ extern t_binary_ladder_load_result binary_ladder_load(t_binary_ladder_types type
     return load_failed;
   }
 
-  if (!(fp = fopen(filename,"rb")))
+  if (!(fp = std::fopen(filename,"rb")))
   {
     eventlog(eventlog_level_info,__FUNCTION__,"could not open ladder file \"%s\" - maybe ladder still empty",filename,pstrerror(errno));
     dispose_filename(filename);
     return load_failed;
   }
 
-  if ((fread(values,sizeof(int),1,fp)!=1) ||  (values[0]!=magick))
+  if ((std::fread(values,sizeof(int),1,fp)!=1) ||  (values[0]!=magick))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"ladder file not starting with the magick int");
     dispose_filename(filename);
-    fclose(fp);
+    std::fclose(fp);
     return load_failed;
   }
 
   checksum = 0;
 
-  while (fread(values,sizeof(int),paracount,fp)==paracount)
+  while (std::fread(values,sizeof(int),paracount,fp)==paracount)
   {
     (*_cb_add_to_ladder)(type,values);
     for (count=0;count<paracount;count++) checksum+=values[count];
   }
 
-  fread(values,sizeof(int),1,fp);
-  if (feof(fp)==0)
+  std::fread(values,sizeof(int),1,fp);
+  if (std::feof(fp)==0)
   {
     eventlog(eventlog_level_error,__FUNCTION__,"got data past end.. fall back to old loading mode");
     return illegal_checksum;
@@ -203,7 +185,7 @@ extern t_binary_ladder_load_result binary_ladder_load(t_binary_ladder_types type
     return illegal_checksum;
   }
 
-  fclose(fp);
+  std::fclose(fp);
   eventlog(eventlog_level_info,__FUNCTION__,"successfully loaded %s",filename);
   dispose_filename(filename);
   return load_success;

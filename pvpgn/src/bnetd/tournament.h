@@ -66,7 +66,7 @@ typedef struct
 #define INCLUDED_TOURNAMENT_PROTOS
 
 #define JUST_NEED_TYPES
-#include "account.h"
+# include "account.h"
 #undef JUST_NEED_TYPES
 
 namespace pvpgn

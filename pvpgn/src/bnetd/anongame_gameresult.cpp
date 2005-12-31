@@ -14,36 +14,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strrchr.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#include "common/list.h"
-#include "common/eventlog.h"
-#include "common/util.h"
-#include "common/packet.h"
-#include "common/tag.h"
-#include "common/bn_type.h"
-#include "common/packet.h"
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
-#include "common/xalloc.h"
 #define ANONGAME_GAMERESULT_INTERNAL_ACCESS
 #include "anongame_gameresult.h"
+
+#include <cassert>
+
+#include "common/eventlog.h"
+#include "common/xalloc.h"
+#include "common/packet.h"
+#include "common/bn_type.h"
+
+
 #include "common/setup_after.h"
 
 namespace pvpgn

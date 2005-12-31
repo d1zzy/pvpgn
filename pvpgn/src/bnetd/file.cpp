@@ -161,7 +161,7 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 {
     char const * filename;
     t_packet *   rpacket;
-    FILE *       fp;
+    std::FILE *       fp;
     unsigned int filelen;
     int          nbytes;
 
@@ -186,10 +186,10 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 
     if ((filename = file_get_info(rawname,&filelen,&rpacket->u.server_file_reply.timestamp)))
     {
-	if (!(fp = fopen(filename,"rb")))
+	if (!(fp = std::fopen(filename,"rb")))
 	{
 	    /* FIXME: check for lower-case version of filename */
-	    eventlog(eventlog_level_error,__FUNCTION__,"stat() succeeded yet could not open file \"%s\" for reading (fclose: %s)",filename,std::strerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"stat() succeeded yet could not open file \"%s\" for reading (std::fclose: %s)",filename,std::strerror(errno));
 	    filelen = 0;
 	}
 	xfree((void *)filename); /* avoid warning */
@@ -204,11 +204,11 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
     if (fp)
     {
 	if (startoffset<filelen) {
-	    fseek(fp,startoffset,SEEK_SET);
+	    std::fseek(fp,startoffset,SEEK_SET);
 	} else {
 	    eventlog(eventlog_level_warn,__FUNCTION__,"[%d] startoffset is beyond end of file (%u>%u)",conn_get_socket(c),startoffset,filelen);
 	    /* Keep the real filesize. Battle.net does it the same way ... */
-	    fclose(fp);
+	    std::fclose(fp);
 	    fp = NULL;
 	}
     }
@@ -240,11 +240,11 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 	if (!(rpacket = packet_create(packet_class_raw)))
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not create raw packet");
-	    if (fclose(fp)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (fclose: %s)",rawname,std::strerror(errno));
+	    if (std::fclose(fp)<0)
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (std::fclose: %s)",rawname,std::strerror(errno));
 	    return -1;
 	}
-	if ((nbytes = fread(packet_get_raw_data_build(rpacket,0),1,MAX_PACKET_SIZE,fp))<(int)MAX_PACKET_SIZE)
+	if ((nbytes = std::fread(packet_get_raw_data_build(rpacket,0),1,MAX_PACKET_SIZE,fp))<(int)MAX_PACKET_SIZE)
 	{
 	    if (nbytes>0) /* send out last portion */
 	    {
@@ -252,8 +252,8 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 		conn_push_outqueue(c,rpacket);
 	    }
 	    packet_del_ref(rpacket);
-	    if (ferror(fp))
-		eventlog(eventlog_level_error,__FUNCTION__,"read failed before EOF on file \"%s\" (fread: %s)",rawname,std::strerror(errno));
+	    if (std::ferror(fp))
+		eventlog(eventlog_level_error,__FUNCTION__,"read failed before EOF on file \"%s\" (std::fread: %s)",rawname,std::strerror(errno));
 	    break;
 	}
 	packet_set_size(rpacket,nbytes);
@@ -261,8 +261,8 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 	packet_del_ref(rpacket);
     }
 
-    if (fclose(fp)<0)
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (fclose: %s)",rawname,std::strerror(errno));
+    if (std::fclose(fp)<0)
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (std::fclose: %s)",rawname,std::strerror(errno));
     return 0;
 }
 

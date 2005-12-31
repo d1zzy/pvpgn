@@ -17,51 +17,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define LADDER_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include <errno.h>
-#include <compat/strerror.h>
-#include "common/field_sizes.h"
+#define LADDER_INTERNAL_ACCESS
+#include "ladder.h"
+
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+
+#include "compat/strerror.h"
+#include "common/tag.h"
+#include "common/eventlog.h"
+#include "common/list.h"
+#include "common/hashtable.h"
+#include "common/bnettime.h"
+#include "common/bnet_protocol.h"
+
 #include "account.h"
 #include "account_wrap.h"
-#include "common/eventlog.h"
-#include "common/util.h"
-#include "game.h"
-#include "common/tag.h"
-#include "common/list.h"
-#include "common/bnettime.h"
 #include "prefs.h"
-#include "common/hashtable.h"
 #include "ladder_calc.h"
-#include "ladder.h"
-#include "compat/strcasecmp.h"
-#include "compat/strncasecmp.h"
 #include "ladder_binary.h"
-#include "storage.h"
-#include "account.h"
-#include "common/bnet_protocol.h"
-#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 #define MaxRankKeptInLadder 1000
@@ -879,7 +855,7 @@ extern int war3_ladder_update(t_ladder *ladder, int uid, int xp, int level, t_ac
         }
      }
      if (xp<0)
-     // XP lost.... maybe ranking gets worse
+     // XP lost.... maybe ranking std::gets worse
      {
         newpos = search->prev;
 	while ((newpos != NULL) && (newpos->level > level))
@@ -1056,7 +1032,7 @@ extern int ladder_update_accounts(t_ladder *ladder, t_set_fct set_fct, t_get_fct
       while (pointer!=NULL)
       {
         // all accounts following now are out of the ladder range we keep track of....
-	    // so set rank to 0 and remove account from ladder
+	    // so set rank to 0 and std::remove account from ladder
         if (ladder->ladder_id == ladder_id_none) //war3/w3xp AT ladder
 		{
 		}
@@ -1066,7 +1042,7 @@ extern int ladder_update_accounts(t_ladder *ladder, t_set_fct set_fct, t_get_fct
 		    (*set_fct)(account,clienttag,ladder->ladder_id,0);
 		}
 
-	// remove account from ladder
+	// std::remove account from ladder
 	if (pointer->next!=NULL) pointer->next->prev = pointer->prev;
 	if (pointer->prev!=NULL) pointer->prev->next = pointer->next;
 	if (ladder->last == pointer)  ladder->last  = pointer->next;
@@ -1497,7 +1473,7 @@ extern void ladders_load_accounts_to_ladderlists(void)
 }
 
 
-int standard_writer(FILE * fp, t_ladder * ladder, t_clienttag clienttag)
+int standard_writer(std::FILE * fp, t_ladder * ladder, t_clienttag clienttag)
 {
     t_ladder_internal * pointer;
     unsigned int rank=0;
@@ -1519,16 +1495,16 @@ int standard_writer(FILE * fp, t_ladder * ladder, t_clienttag clienttag)
 		// other team... so write all team members names, xp and rank to file
 		else
 		{
-		    //fprintf(fp,"%s,%u,%u\n",account_get_atteammembers(pointer->account,pointer->teamcount,clienttag),pointer->xp,rank);
+		    //std::fprintf(fp,"%s,%u,%u\n",account_get_atteammembers(pointer->account,pointer->teamcount,clienttag),pointer->xp,rank);
 		}
 	    }
 	    else
 	    // write username, xp and rank to file
-		fprintf(fp,"%s,%u,%u\n",account_get_name(pointer->account),pointer->xp,rank);
+		std::fprintf(fp,"%s,%u,%u\n",account_get_name(pointer->account),pointer->xp,rank);
 	}
 	else if (clienttag==CLIENTTAG_STARCRAFT_UINT || clienttag==CLIENTTAG_BROODWARS_UINT || clienttag==CLIENTTAG_WARCIIBNE_UINT)
 	{
-	    fprintf(fp,"%u %s %u (%u / %u / %u)\n",rank, account_get_name(pointer->account),pointer->level,
+	    std::fprintf(fp,"%u %s %u (%u / %u / %u)\n",rank, account_get_name(pointer->account),pointer->level,
 		account_get_ladder_wins(pointer->account,ladder->clienttag,ladder->ladder_id),
 		account_get_ladder_losses(pointer->account,ladder->clienttag,ladder->ladder_id),
 		account_get_ladder_disconnects(pointer->account,ladder->clienttag,ladder->ladder_id));
@@ -1538,7 +1514,7 @@ int standard_writer(FILE * fp, t_ladder * ladder, t_clienttag clienttag)
   return 0;
 }
 
-int XML_writer(FILE * fp, t_ladder * ladder, t_clienttag clienttag)
+int XML_writer(std::FILE * fp, t_ladder * ladder, t_clienttag clienttag)
   /* XML Ladder files
    * added by jfro
    * 1/2/2003
@@ -1553,7 +1529,7 @@ int XML_writer(FILE * fp, t_ladder * ladder, t_clienttag clienttag)
   unsigned int orc_wins,human_wins,undead_wins,nightelf_wins,random_wins;
   unsigned int orc_losses,human_losses,undead_losses,nightelf_losses,random_losses;
 
-  fprintf(fp,"<?xml version=\"1.0\"?>\n<ladder>\n");
+  std::fprintf(fp,"<?xml version=\"1.0\"?>\n<ladder>\n");
   pointer = ladder->first;
   while (pointer != NULL)
   {
@@ -1571,7 +1547,7 @@ int XML_writer(FILE * fp, t_ladder * ladder, t_clienttag clienttag)
        else
 	 {
 	   /* other team... so write all team members names, xp and rank to file
-	   fprintf(fp,"\t<team>\n");
+	   std::fprintf(fp,"\t<team>\n");
 	   if (account_get_atteammembers(pointer->account,pointer->teamcount,clienttag)==NULL)
 	     {
 	       eventlog(eventlog_level_error,__FUNCTION__,"got invalid team, skipping");
@@ -1580,12 +1556,12 @@ int XML_writer(FILE * fp, t_ladder * ladder, t_clienttag clienttag)
 	     }
 
 	   members = xstrdup(account_get_atteammembers(pointer->account,pointer->teamcount,clienttag));
-	   for ( member = strtok(members," ");
+	   for ( member = std::strtok(members," ");
 		 member;
-		 member = strtok(NULL," "))
-	       fprintf(fp,"\t\t<member>%s</member>\n",member);
+		 member = std::strtok(NULL," "))
+	       std::fprintf(fp,"\t\t<member>%s</member>\n",member);
 	   xfree(members);
-	   fprintf(fp,"\t\t<xp>%u</xp>\n\t\t<rank>%u</rank>\n\t</team>\n",pointer->xp,rank);
+	   std::fprintf(fp,"\t\t<xp>%u</xp>\n\t\t<rank>%u</rank>\n\t</team>\n",pointer->xp,rank);
 	   */
 	 }
      }
@@ -1621,19 +1597,19 @@ int XML_writer(FILE * fp, t_ladder * ladder, t_clienttag clienttag)
          random_wins = account_get_racewins(pointer->account,W3_RACE_RANDOM,clienttag);
          random_losses = account_get_racelosses(pointer->account,W3_RACE_RANDOM,clienttag);
      // write username, xp and rank to file and everyhing else needed for nice ladder pages
-	 fprintf(fp,"\t<player>\n\t\t<name>%s</name>\n\t\t<level>%u</level>\n\t\t<xp>%u</xp>\n",
+	 std::fprintf(fp,"\t<player>\n\t\t<name>%s</name>\n\t\t<level>%u</level>\n\t\t<xp>%u</xp>\n",
                     account_get_name(pointer->account),level,pointer->xp);
-	 fprintf(fp,"\t\t<wins>%u</wins>\n\t\t<losses>%u</losses>\n\t\t<rank>%u</rank>\n",
+	 std::fprintf(fp,"\t\t<wins>%u</wins>\n\t\t<losses>%u</losses>\n\t\t<rank>%u</rank>\n",
                     wins,losses,rank);
-	 fprintf(fp,"\t\t<races>\n\t\t\t<orc>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</orc>\n",
+	 std::fprintf(fp,"\t\t<races>\n\t\t\t<orc>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</orc>\n",
                     orc_wins,orc_losses);
-	 fprintf(fp,"\t\t\t<human>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</human>\n",
+	 std::fprintf(fp,"\t\t\t<human>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</human>\n",
                     human_wins,human_losses);
-	 fprintf(fp,"\t\t\t<nightelf>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</nightelf>\n",
+	 std::fprintf(fp,"\t\t\t<nightelf>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</nightelf>\n",
 		    nightelf_wins,nightelf_losses);
-	 fprintf(fp,"\t\t\t<undead>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</undead>\n",
+	 std::fprintf(fp,"\t\t\t<undead>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</undead>\n",
 		    undead_wins,undead_losses);
-	 fprintf(fp,"\t\t\t<random>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</random>\n\t\t</races>\n\t</player>\n",
+	 std::fprintf(fp,"\t\t\t<random>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</random>\n\t\t</races>\n\t</player>\n",
                     random_wins,random_losses);
      }
 
@@ -1644,22 +1620,22 @@ int XML_writer(FILE * fp, t_ladder * ladder, t_clienttag clienttag)
 	losses = account_get_ladder_losses(pointer->account,ladder->clienttag,ladder->ladder_id);
 	discs = account_get_ladder_disconnects(pointer->account,ladder->clienttag,ladder->ladder_id);
 
-	fprintf(fp,"\t<player>\n\t\t<rank>%u</rank>\n\t\t<name>%s</name>\n\t\t<rating>%u</rating>\n",
+	std::fprintf(fp,"\t<player>\n\t\t<rank>%u</rank>\n\t\t<name>%s</name>\n\t\t<rating>%u</rating>\n",
 	    rank, account_get_name(pointer->account),pointer->level);
-	fprintf(fp,"\t\t<wins>%u</wins>\n\t\t<losses>%u</losses>\n\t\t<discs>%u</discs>\n\t</player>\n",
+	std::fprintf(fp,"\t\t<wins>%u</wins>\n\t\t<losses>%u</losses>\n\t\t<discs>%u</discs>\n\t</player>\n",
                     wins,losses,discs);
     }
 
      pointer=pointer->prev;
   }
-  fprintf(fp,"</ladder>\n");
+  std::fprintf(fp,"</ladder>\n");
   return 0;
 }
 
 
 extern int ladder_write_to_file(char const * filename, t_ladder * ladder, t_clienttag clienttag)
 {
-  FILE * fp;
+  std::FILE * fp;
 
   if (!filename)
   {
@@ -1667,9 +1643,9 @@ extern int ladder_write_to_file(char const * filename, t_ladder * ladder, t_clie
     return -1;
   }
 
-  if (!(fp = fopen(filename,"w")))
+  if (!(fp = std::fopen(filename,"w")))
   {
-     eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (fopen: %s)",filename,pstrerror(errno));
+     eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)",filename,pstrerror(errno));
      return -1;
   }
 
@@ -1678,7 +1654,7 @@ extern int ladder_write_to_file(char const * filename, t_ladder * ladder, t_clie
   else
     standard_writer(fp,ladder,clienttag);
 
-  fclose(fp);
+  std::fclose(fp);
   return 0;
 }
 
@@ -1709,8 +1685,8 @@ extern char * create_filename(const char * path, const char * filename, const ch
 {
   char * result;
 
-  result = (char*)xmalloc(strlen(path)+1+strlen(filename)+strlen(ending)+1);
-  sprintf(result,"%s/%s%s",path,filename,ending);
+  result = (char*)xmalloc(std::strlen(path)+1+std::strlen(filename)+std::strlen(ending)+1);
+  std::sprintf(result,"%s/%s%s",path,filename,ending);
 
   return result;
 }
@@ -1964,7 +1940,7 @@ extern int ladder_make_active(t_ladder *current, t_ladder *active,int set_attrib
 
 extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
 {
-   FILE *fd1, *fd2;
+   std::FILE *fd1, *fd2;
    char buffer[256];
    char *p;
    t_xpcalc_entry * newxpcalc;
@@ -1979,14 +1955,14 @@ extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
    }
 
    /* first lets open files */
-   if ((fd1 = fopen(xplevelfile, "rt")) == NULL) {
+   if ((fd1 = std::fopen(xplevelfile, "rt")) == NULL) {
       eventlog(eventlog_level_error, "ladder_createxptable", "could not open XP level file : \"%s\"", xplevelfile);
       return -1;
    }
 
-   if ((fd2 = fopen(xpcalcfile, "rt")) == NULL) {
+   if ((fd2 = std::fopen(xpcalcfile, "rt")) == NULL) {
       eventlog(eventlog_level_error, "ladder_createxptable", "could not open XP calc file : \"%s\"", xpcalcfile);
-      fclose(fd1);
+      std::fclose(fd1);
       return -1;
    }
 
@@ -1994,14 +1970,14 @@ extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
    xpcalc = (t_xpcalc_entry*)xmalloc(sizeof(t_xpcalc_entry) * W3_XPCALC_MAXLEVEL); //presume the maximal leveldiff is level number
 
    w3_xpcalc_maxleveldiff = -1;
-   memset(xpcalc, 0, sizeof(t_xpcalc_entry) * W3_XPCALC_MAXLEVEL);
+   std::memset(xpcalc, 0, sizeof(t_xpcalc_entry) * W3_XPCALC_MAXLEVEL);
    xplevels = (t_xplevel_entry*)xmalloc(sizeof(t_xplevel_entry) * W3_XPCALC_MAXLEVEL);
-   memset(xplevels, 0, sizeof(t_xplevel_entry) * W3_XPCALC_MAXLEVEL);
+   std::memset(xplevels, 0, sizeof(t_xplevel_entry) * W3_XPCALC_MAXLEVEL);
 
    /* finally, lets read from the files */
 
-   while(fgets(buffer, 256, fd1)) {
-      len = strlen(buffer);
+   while(std::fgets(buffer, 256, fd1)) {
+      len = std::strlen(buffer);
       if (len < 2) continue;
       if (buffer[len - 1] == '\n') buffer[len - 1] = '\0';
 
@@ -2009,7 +1985,7 @@ extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
       for(p=buffer; *p && *p != '#'; p++);
       if (*p == '#') *p = '\0';
 
-      if (sscanf(buffer, "%d %d %d %f %d", &level, &startxp, &neededxp, &lossfactor, &mingames) != 5)
+      if (std::sscanf(buffer, "%d %d %d %f %d", &level, &startxp, &neededxp, &lossfactor, &mingames) != 5)
 	continue;
 
       if (level < 1 || level > W3_XPCALC_MAXLEVEL) { /* invalid level */
@@ -2024,10 +2000,10 @@ extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
       xplevels[level].mingames = mingames;
       eventlog(eventlog_level_trace, "ladder_createxptable", "inserting level XP info (level: %d, startxp: %d neededxp: %d lossfactor: %d mingames: %d)", level+1, xplevels[level].startxp, xplevels[level].neededxp, xplevels[level].lossfactor, xplevels[level].mingames);
    }
-   fclose(fd1);
+   std::fclose(fd1);
 
-   while(fgets(buffer, 256, fd2)) {
-      len = strlen(buffer);
+   while(std::fgets(buffer, 256, fd2)) {
+      len = std::strlen(buffer);
       if (len < 2) continue;
       if (buffer[len - 1] == '\n') buffer[len - 1] = '\0';
 
@@ -2035,7 +2011,7 @@ extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
       for(p=buffer; *p && *p != '#'; p++);
       if (*p == '#') *p = '\0';
 
-      if (sscanf(buffer, " %d %d %d %d %d %d ", &minlevel, &leveldiff, &higher_xpgained, &higher_xplost, &lower_xpgained, &lower_xplost) != 6)
+      if (std::sscanf(buffer, " %d %d %d %d %d %d ", &minlevel, &leveldiff, &higher_xpgained, &higher_xplost, &lower_xpgained, &lower_xplost) != 6)
 	continue;
 
       eventlog(eventlog_level_trace, "ladder_createxptable", "parsed xpcalc leveldiff : %d", leveldiff);
@@ -2057,7 +2033,7 @@ extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
       xpcalc[leveldiff].lower_winxp = lower_xpgained;
       xpcalc[leveldiff].lower_lossxp = lower_xplost;
    }
-   fclose(fd2);
+   std::fclose(fd2);
 
    newxpcalc = (t_xpcalc_entry*)xrealloc(xpcalc, sizeof(t_xpcalc_entry) * (w3_xpcalc_maxleveldiff+1));
    xpcalc=newxpcalc;

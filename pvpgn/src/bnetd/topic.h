@@ -17,20 +17,6 @@
 #ifndef INCLUDED_TOPIC_TYPES
 #define INCLUDED_TOPIC_TYPES
 
-#ifdef TOPIC_INTERNAL_ACCESS
-
-#ifdef JUST_NEED_TYPES
-# include <stdio.h>
-# include "common/list.h"
-#else
-# define JUST_NEED_TYPES
-# include <stdio.h>
-# include "common/list.h"
-# undef JUST_NEED_TYPES
-#endif
-
-#endif
-
 namespace pvpgn
 {
 
@@ -59,10 +45,6 @@ t_topic;
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_TOPIC_PROTOS
 #define INCLUDED_TOPIC_PROTOS
-
-#define JUST_NEED_TYPES
-#include "common/list.h"
-#undef JUST_NEED_TYPES
 
 namespace pvpgn
 {

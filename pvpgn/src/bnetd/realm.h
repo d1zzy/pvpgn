@@ -19,13 +19,11 @@
 #define INCLUDED_REALM_TYPES
 
 #ifdef JUST_NEED_TYPES
-#include "common/addr.h"
-#include "connection.h"
+# include "connection.h"
 # include "common/rcm.h"
 #else
 #define JUST_NEED_TYPES
-#include "common/addr.h"
-#include "connection.h"
+# include "connection.h"
 # include "common/rcm.h"
 #undef JUST_NEED_TYPES
 #endif
@@ -69,10 +67,9 @@ t_realm;
 #define INCLUDED_REALM_PROTOS
 
 #define JUST_NEED_TYPES
-#include "common/list.h"
-#include "common/addr.h"
-#include "connection.h"
-#include "common/rcm.h"
+# include "common/list.h"
+# include "connection.h"
+# include "common/rcm.h"
 #undef JUST_NEED_TYPES
 
 namespace pvpgn

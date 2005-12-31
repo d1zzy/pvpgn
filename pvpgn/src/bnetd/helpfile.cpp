@@ -39,7 +39,7 @@ namespace pvpgn
 namespace bnetd
 {
 
-static FILE* hfd=NULL; /* helpfile descriptor */
+static std::FILE* hfd=NULL; /* helpfile descriptor */
 
 static int list_commands(t_connection *);
 static int describe_command(t_connection *, char const *);

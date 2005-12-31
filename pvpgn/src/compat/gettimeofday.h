@@ -18,6 +18,10 @@
 #ifndef INCLUDED_GETTIMEOFDAY_TYPES
 #define INCLUDED_GETTIMEOFDAY_TYPES
 
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+
 #ifndef HAVE_GETTIMEOFDAY
 
 namespace pvpgn

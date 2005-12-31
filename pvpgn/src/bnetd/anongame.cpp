@@ -20,25 +20,24 @@
 #include "anongame.h"
 
 #include <cstring>
-
-#ifdef WIN32
-# include "compat/socket.h"	/* is this needed */
-#endif
+#include <cstdlib>
 
 #include "compat/strdup.h"
 #include "common/packet.h"
 #include "common/eventlog.h"
 #include "common/tag.h"
-#include "team.h"
-#include "account.h"
-#include "account_wrap.h"
-#include "connection.h"
 #include "common/queue.h"
-#include "prefs.h"
 #include "common/bn_type.h"
 #include "common/list.h"
 #include "common/addr.h"
 #include "common/xalloc.h"
+#include "common/trans.h"
+
+#include "team.h"
+#include "account.h"
+#include "account_wrap.h"
+#include "connection.h"
+#include "prefs.h"
 #include "versioncheck.h"
 #include "tournament.h"
 #include "timer.h"
@@ -46,7 +45,6 @@
 #include "server.h"
 #include "anongame_maplists.h"
 #include "anongame_gameresult.h"
-#include "common/trans.h"
 #include "common/setup_after.h"
 
 #define MAX_LEVEL 100
@@ -261,7 +259,7 @@ static char *_get_map_from_prefs(int queue, t_uint32 cur_prefs, t_clienttag clie
 	cur_prefs >>= 1;
     }
 
-    i = rand() % j;
+    i = std::rand() % j;
     if (res_maps[i])
 	selected = res_maps[i];
     else
@@ -869,7 +867,7 @@ static int _anongame_match(t_connection * c, int queue)
 
 			if (players[queue] == _anongame_totalplayers(queue)) {
 			    /* first sort queue by level */
-			    qsort(player[queue], players[queue], sizeof(t_connection *), _anongame_compare_level);
+			    std::qsort(player[queue], players[queue], sizeof(t_connection *), _anongame_compare_level);
 			    /* next call reodering function */
 			    _anongame_order_queue(queue);
 			    /* unqueue players */
@@ -1058,14 +1056,14 @@ extern int anongame_unqueue(t_connection * c, int queue)
 	return -1;
     }
 
-    if (conn_get_anongame_search_starttime(c) != ((time_t) 0)) {
+    if (conn_get_anongame_search_starttime(c) != ((std::time_t) 0)) {
 	average_anongame_search_time *= anongame_search_count;
-	average_anongame_search_time += (long) difftime(time(NULL), conn_get_anongame_search_starttime(c));
+	average_anongame_search_time += (long) std::difftime(std::time(NULL), conn_get_anongame_search_starttime(c));
 	anongame_search_count++;
 	average_anongame_search_time /= anongame_search_count;
 	if (anongame_search_count > 20000)
-	    anongame_search_count = anongame_search_count / 2;	/* to prevent an overflow of the average time */
-	conn_set_anongame_search_starttime(c, ((time_t) 0));
+	    anongame_search_count = anongame_search_count / 2;	/* to prevent an overflow of the average std::time */
+	conn_set_anongame_search_starttime(c, ((std::time_t) 0));
     }
 
     for (i = 0; i < MAX_LEVEL; i++) {
@@ -1083,9 +1081,9 @@ extern int anongame_unqueue(t_connection * c, int queue)
 	}
     }
 
-    /* Output error to log for PG queues, AT players are queued with single
+    /* Output error to std::log for PG queues, AT players are queued with single
      * entry. Because anongame_unqueue() is called for each player, only the first
-     * time called will the team be removed, the rest are therefore not an error.
+     * std::time called will the team be removed, the rest are therefore not an error.
      * [Omega]
      */
     if (anongame_arranged(queue) == 0) {
@@ -1598,7 +1596,7 @@ extern int handle_w3route_packet(t_connection * c, t_packet const *const packet)
 {
 /* [smith] 20030427 fixed Big-Endian/Little-Endian conversion (Solaris bug) then
  * use  packet_append_data for append platform dependent data types - like
- * "int", cos this code was broken for BE platforms. it's rewriten in platform
+ * "int", std::cos this code was broken for BE platforms. it's rewriten in platform
  * independent style whis usege bn_int and other bn_* like datatypes and
  * fuctions for wor with datatypes - bn_int_set(), what provide right
  * byteorder, not depended on LE/BE
@@ -1765,7 +1763,7 @@ extern int handle_w3route_packet(t_connection * c, t_packet const *const packet)
 			    ac = conn_get_routeconn(anongame_get_player(a, i));
 			    if (ac) {
 				/* 300 seconds or 5 minute timer */
-				timerlist_add_timer(ac, now + (time_t) 300, conn_shutdown, data);
+				timerlist_add_timer(ac, now + (std::time_t) 300, conn_shutdown, data);
 				eventlog(eventlog_level_trace, __FUNCTION__, "[%d] started timer to close w3route", conn_get_socket(ac));
 			    }
 			}

@@ -27,6 +27,9 @@ extern char const * pstrerror(int errornum);
 }
 
 #else
+
+#include <string.h>
+
 # define pstrerror(e) strerror(e)
 #endif
 

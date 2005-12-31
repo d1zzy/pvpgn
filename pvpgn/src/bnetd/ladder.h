@@ -165,7 +165,7 @@ extern int war3_get_maxleveldiff(void);
  extern int war3_ladder_update(t_ladder *ladder, int uid, int xp, int level, t_account *account, unsigned int teamcount);
  /* this functions increases the xp of user with UID uid and corrects ranking
   * returns 0 if everything is fine
-  * if user is not yet in ladder, he gets added automatically */
+  * if user is not yet in ladder, he std::gets added automatically */
 
  extern int ladder_get_rank(t_ladder *ladder, int uid, unsigned int teamcount, t_clienttag clienttag);
  /* this function returns the rank of a user with a given uid
@@ -182,7 +182,7 @@ extern int war3_get_maxleveldiff(void);
  /* initialize the ladders */
 
  extern void ladders_destroy(void);
- /* remove all ladder data from memory */
+ /* std::remove all ladder data from memory */
 
  extern void ladders_load_accounts_to_ladderlists(void);
  /* enters all accounts from accountlist into the ladders */

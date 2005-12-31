@@ -15,46 +15,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define REALM_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strrchr.h"
-#include "compat/strdup.h"
-#include "compat/strcasecmp.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#include "common/eventlog.h"
-#include "common/list.h"
-#include "common/util.h"
-#include "common/addr.h"
-#include "common/xalloc.h"
-#include "connection.h"
-#include "common/rcm.h"
+#define REALM_INTERNAL_ACCESS
 #include "realm.h"
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
+
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+#include <cassert>
+
+#include "compat/strerror.h"
+#include "common/list.h"
+#include "common/eventlog.h"
+#include "common/xalloc.h"
+#include "common/addr.h"
+#include "common/util.h"
+
+#include "connection.h"
 #include "common/setup_after.h"
 
 
@@ -329,7 +306,7 @@ extern int realm_deactive(t_realm * realm)
 
 t_list * realmlist_load(char const * filename)
 {
-    FILE *          fp;
+    std::FILE *          fp;
     unsigned int    line;
     unsigned int    pos;
     unsigned int    len;
@@ -347,9 +324,9 @@ t_list * realmlist_load(char const * filename)
         return NULL;
     }
 
-    if (!(fp = fopen(filename,"r")))
+    if (!(fp = std::fopen(filename,"r")))
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open realm file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open realm file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
         return NULL;
     }
 
@@ -362,12 +339,12 @@ t_list * realmlist_load(char const * filename)
         {
             continue;
         }
-        if ((temp = strrchr(buff,'#')))
+        if ((temp = std::strrchr(buff,'#')))
         {
 	    unsigned int endpos;
 
             *temp = '\0';
-	    len = strlen(buff)+1;
+	    len = std::strlen(buff)+1;
             for (endpos=len-1;  buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
             buff[endpos+1] = '\0';
         }
@@ -447,8 +424,8 @@ t_list * realmlist_load(char const * filename)
 	list_prepend_data(list_head,realm);
     }
     file_get_line(NULL); // clear file_get_line buffer
-    if (fclose(fp)<0)
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close realm file \"%s\" after reading (fclose: %s)",filename,pstrerror(errno));
+    if (std::fclose(fp)<0)
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close realm file \"%s\" after reading (std::fclose: %s)",filename,pstrerror(errno));
     return list_head;
 }
 
@@ -485,7 +462,7 @@ extern int realmlist_reload(char const * filename)
 	      continue;
 	    }
 
-	    if (!strcmp(old_realm->name,new_realm->name))
+	    if (!std::strcmp(old_realm->name,new_realm->name))
 	    {
 		match = 1;
 		rcm_chref(&old_realm->rcm,new_realm);

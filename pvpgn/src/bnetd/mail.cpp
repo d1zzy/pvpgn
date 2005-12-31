@@ -16,56 +16,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define MAIL_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strcasecmp.h"
-#include <ctype.h>
-#include <errno.h>
+#define MAIL_INTERNAL_ACCESS
+#include "mail.h"
+
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <cerrno>
+
 #include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
+#include "compat/strcasecmp.h"
+#include "compat/statmacros.h"
+#include "compat/mkdir.h"
+#include "common/eventlog.h"
+#include "common/xalloc.h"
+/*
+#include "compat/statmacros.h"
+#include "compat/pdir.h"
+#include "common/util.h"
+
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#include "compat/statmacros.h"
-#include "compat/mkdir.h"
-#include "compat/pdir.h"
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
 #else
@@ -73,14 +49,12 @@
 #  include <sys/file.h>
 # endif
 #endif
-#include "message.h"
-#include "connection.h"
-#include "common/util.h"
-#include "common/eventlog.h"
-#include "common/xalloc.h"
+
+*/
 #include "account.h"
+#include "message.h"
 #include "prefs.h"
-#include "mail.h"
+#include "connection.h"
 #include "common/setup_after.h"
 
 
@@ -124,11 +98,11 @@ static t_mailbox * mailbox_open(t_account * user, t_mbox_mode mode) {
    if (mode & mbox_mode_write)
       p_mkdir(maildir,S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 
-   path=(char*)xmalloc(strlen(maildir)+1+8+1);
-   if (maildir[0]!='\0' && maildir[strlen(maildir)-1]=='/')
-      sprintf(path,"%s%06u",maildir,account_get_uid(user));
+   path=(char*)xmalloc(std::strlen(maildir)+1+8+1);
+   if (maildir[0]!='\0' && maildir[std::strlen(maildir)-1]=='/')
+      std::sprintf(path,"%s%06u",maildir,account_get_uid(user));
    else
-      sprintf(path,"%s/%06u",maildir,account_get_uid(user));
+      std::sprintf(path,"%s/%06u",maildir,account_get_uid(user));
 
    if (mode & mbox_mode_write)
       p_mkdir(path,S_IRWXU | S_IXGRP | S_IRGRP | S_IROTH | S_IXOTH);
@@ -163,7 +137,7 @@ static int mailbox_count(t_mailbox *mailbox) {
 }
 
 static int mailbox_deliver(t_mailbox * mailbox, const char * sender, const char * message) {
-   FILE * fd;
+   std::FILE * fd;
    char * filename;
 
    if (mailbox==NULL) {
@@ -178,16 +152,16 @@ static int mailbox_deliver(t_mailbox * mailbox, const char * sender, const char 
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL path");
       return -1;
    }
-   filename=(char*)xmalloc(strlen(mailbox->path)+1+15+1);
-   sprintf(filename,"%s/%015lu",mailbox->path,(unsigned long)time(NULL));
-   if ((fd=fopen(filename,"wb"))==NULL) {
+   filename=(char*)xmalloc(std::strlen(mailbox->path)+1+15+1);
+   std::sprintf(filename,"%s/%015lu",mailbox->path,(unsigned long)std::time(NULL));
+   if ((fd=std::fopen(filename,"wb"))==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL file descriptor. check permissions");
       xfree(filename);
       return -1;
    }
-   fprintf(fd,"%s\n",sender); /* write the sender on the first line of message */
-   fprintf(fd,"%s\n",message); /* then write the actual message */
-   fclose(fd);
+   std::fprintf(fd,"%s\n",sender); /* write the sender on the first line of message */
+   std::fprintf(fd,"%s\n",message); /* then write the actual message */
+   std::fclose(fd);
    xfree(filename);
    return 0;
 }
@@ -196,7 +170,7 @@ static t_mail * mailbox_read(t_mailbox * mailbox, unsigned int idx) {
    char const * dentry;
    unsigned int i;
    t_mail *     rez;
-   FILE *       fd;
+   std::FILE *       fd;
    char *       filename;
 
    if (mailbox==NULL) {
@@ -217,10 +191,10 @@ static t_mail * mailbox_read(t_mailbox * mailbox, unsigned int idx) {
       xfree(rez);
       return NULL;
    }
-   rez->timestamp=atoi(dentry);
-   filename=(char*)xmalloc(strlen(dentry)+1+strlen(mailbox->path)+1);
-   sprintf(filename,"%s/%s",mailbox->path,dentry);
-   if ((fd=fopen(filename,"rb"))==NULL) {
+   rez->timestamp=std::atoi(dentry);
+   filename=(char*)xmalloc(std::strlen(dentry)+1+std::strlen(mailbox->path)+1);
+   std::sprintf(filename,"%s/%s",mailbox->path,dentry);
+   if ((fd=std::fopen(filename,"rb"))==NULL) {
       eventlog(eventlog_level_error,__FUNCTION__,"error while opening message");
       xfree(rez);
       xfree(filename);
@@ -228,13 +202,13 @@ static t_mail * mailbox_read(t_mailbox * mailbox, unsigned int idx) {
    }
    xfree(filename);
    rez->sender=(char*)xmalloc(256);
-   fgets(rez->sender,256,fd); /* maybe 256 isnt the right value to bound a line but right now its all i have :) */
+   std::fgets(rez->sender,256,fd); /* maybe 256 isnt the right value to bound a line but right now its all i have :) */
    clean_str(rez->sender);
    rez->message=(char*)xmalloc(256);
-   fgets(rez->message,256,fd);
+   std::fgets(rez->message,256,fd);
    clean_str(rez->message);
-   fclose(fd);
-   rez->timestamp=atoi(dentry);
+   std::fclose(fd);
+   rez->timestamp=std::atoi(dentry);
    return rez;
 }
 
@@ -254,7 +228,7 @@ static void mailbox_unread(t_mail * mail) {
 
 static struct maillist_struct * mailbox_get_list(t_mailbox *mailbox) {
    char const * dentry;
-   FILE * fd;
+   std::FILE * fd;
    struct maillist_struct *rez=NULL, *p=NULL,*q;
    char *sender,*filename;
 
@@ -266,24 +240,24 @@ static struct maillist_struct * mailbox_get_list(t_mailbox *mailbox) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL maildir");
       return NULL;
    }
-   filename=(char*)xmalloc(strlen(mailbox->path)+1+15+1);
+   filename=(char*)xmalloc(std::strlen(mailbox->path)+1+15+1);
    p_rewinddir(mailbox->maildir);
    for(;(dentry=p_readdir(mailbox->maildir))!=NULL;)
      if (dentry[0]!='.') {
 	q=(struct maillist_struct*)xmalloc(sizeof(struct maillist_struct));
-	sprintf(filename,"%s/%s",mailbox->path,dentry);
-	if ((fd=fopen(filename,"rb"))==NULL) {
+	std::sprintf(filename,"%s/%s",mailbox->path,dentry);
+	if ((fd=std::fopen(filename,"rb"))==NULL) {
 	   eventlog(eventlog_level_error,__FUNCTION__,"error while opening message file");
 	   xfree(filename);
 	   xfree(q);
 	   return rez;
 	}
 	sender=(char*)xmalloc(256);
-	fgets(sender,256,fd);
+	std::fgets(sender,256,fd);
 	clean_str(sender);
-	fclose(fd);
+	std::fclose(fd);
 	q->sender=sender;
-	q->timestamp=atoi(dentry);
+	q->timestamp=std::atoi(dentry);
 	q->next=NULL;
 	if (p==NULL) rez=q;
 	else p->next=q;
@@ -325,11 +299,11 @@ static int mailbox_delete(t_mailbox * mailbox, unsigned int idx) {
       eventlog(eventlog_level_error,__FUNCTION__,"index out of range");
       return -1;
    }
-   filename=(char*)xmalloc(strlen(dentry)+1+strlen(mailbox->path)+1);
-   sprintf(filename,"%s/%s",mailbox->path,dentry);
-   rez=remove(filename);
+   filename=(char*)xmalloc(std::strlen(dentry)+1+std::strlen(mailbox->path)+1);
+   std::sprintf(filename,"%s/%s",mailbox->path,dentry);
+   rez=std::remove(filename);
    if (rez<0) {
-       eventlog(eventlog_level_info,__FUNCTION__,"could not remove file \"%s\" (remove: %s)",filename,pstrerror(errno));
+       eventlog(eventlog_level_info,__FUNCTION__,"could not std::remove file \"%s\" (std::remove: %s)",filename,pstrerror(errno));
     }
    xfree(filename);
    return rez;
@@ -348,13 +322,13 @@ static int mailbox_delete_all(t_mailbox * mailbox) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL maildir");
       return -1;
    }
-   filename=(char*)xmalloc(strlen(mailbox->path)+1+15+1);
+   filename=(char*)xmalloc(std::strlen(mailbox->path)+1+15+1);
    p_rewinddir(mailbox->maildir);
    count = 0;
    while ((dentry=p_readdir(mailbox->maildir))!=NULL)
      if (dentry[0]!='.') {
-	sprintf(filename,"%s/%s",mailbox->path,dentry);
-	if (!remove(filename)) count++;
+	std::sprintf(filename,"%s/%s",mailbox->path,dentry);
+	if (!std::remove(filename)) count++;
      }
    xfree(filename);
    return count;
@@ -443,7 +417,7 @@ static int get_mail_quota(t_account * user) {
    user_quota=account_get_strattr(user,"BNET\\auth\\mailquota");
    if (user_quota==NULL) quota=prefs_get_mail_quota();
    else {
-      quota=atoi(user_quota);
+      quota=std::atoi(user_quota);
       if (quota<1) quota=1;
       if (quota>MAX_MAIL_QUOTA) quota=MAX_MAIL_QUOTA;
    }
@@ -479,7 +453,7 @@ static void mail_func_send(t_connection * c, const char * str) {
       return;
    }
    dest=(char*)xmalloc(i+1);
-   memmove(dest,p,i); dest[i]='\0'; /* copy receiver in his separate string */
+   std::memmove(dest,p,i); dest[i]='\0'; /* copy receiver in his separate string */
    if ((recv=accountlist_find_account(dest))==NULL) { /* is dest a valid account on this server ? */
       message_send_text(c,message_type_error,c,"Receiver UNKNOWN!");
       xfree(dest);
@@ -540,13 +514,13 @@ static void mail_func_read(t_connection * c, const char * str) {
 	 mailbox_close(mailbox);
 	 return;
       }
-      sprintf(tmp,"You have %d messages. Your mail qouta is set to %d.",mailbox_count(mailbox),get_mail_quota(user));
+      std::sprintf(tmp,"You have %d messages. Your mail qouta is set to %d.",mailbox_count(mailbox),get_mail_quota(user));
       message_send_text(c,message_type_info,c,tmp);
       message_send_text(c,message_type_info,c,"ID    Sender          Date");
       message_send_text(c,message_type_info,c,"-------------------------------------");
       for(mp=maill,idx=1;mp!=NULL;mp=mp->next,idx++) {
-	 sprintf(tmp,"%02u    %-14s %s",idx,mp->sender,ctime(&mp->timestamp));
-	 clean_str(tmp); /* ctime() appends an newline that we get cleaned */
+	 std::sprintf(tmp,"%02u    %-14s %s",idx,mp->sender,std::ctime(&mp->timestamp));
+	 clean_str(tmp); /* std::ctime() appends an newline that we get cleaned */
 	 message_send_text(c,message_type_info,c,tmp);
       }
       message_send_text(c,message_type_info,c,"Use /mail read <ID> to read the content of any message");
@@ -562,7 +536,7 @@ static void mail_func_read(t_connection * c, const char * str) {
 	 mailbox_close(mailbox);
 	 return;
       }
-      idx=atoi(p);
+      idx=std::atoi(p);
       if (idx<1 || idx>mailbox_count(mailbox)) {
 	 message_send_text(c,message_type_error,c,"That index is out of range.");
 	 mailbox_close(mailbox);
@@ -573,7 +547,7 @@ static void mail_func_read(t_connection * c, const char * str) {
 	 mailbox_close(mailbox);
 	 return;
       }
-      sprintf(tmp,"Message #%d from %s on %s:",idx,mail->sender,clean_str(ctime(&mail->timestamp)));
+      std::sprintf(tmp,"Message #%d from %s on %s:",idx,mail->sender,clean_str(std::ctime(&mail->timestamp)));
       message_send_text(c,message_type_info,c,tmp);
       message_send_text(c,message_type_info,c,mail->message);
       mailbox_unread(mail);
@@ -610,7 +584,7 @@ static void mail_func_delete(t_connection * c, const char * str) {
       eventlog(eventlog_level_error,__FUNCTION__,"got NULL mailbox");
       return;
    }
-   if (strcmp(p,"all")==0) {
+   if (std::strcmp(p,"all")==0) {
       int rez;
 
       if ((rez=mailbox_delete_all(mailbox))<0) {
@@ -618,7 +592,7 @@ static void mail_func_delete(t_connection * c, const char * str) {
 	 mailbox_close(mailbox);
 	 return;
       }
-      sprintf(tmp,"Successfuly deleted %d messages.",rez);
+      std::sprintf(tmp,"Successfuly deleted %d messages.",rez);
       message_send_text(c,message_type_info,c,tmp);
    }
    else {
@@ -630,7 +604,7 @@ static void mail_func_delete(t_connection * c, const char * str) {
 	 mailbox_close(mailbox);
 	 return;
       }
-      idx=atoi(p);
+      idx=std::atoi(p);
       if (idx<1 || idx>mailbox_count(mailbox)) {
 	 message_send_text(c,message_type_error,c,"That index is out of range.");
 	 mailbox_close(mailbox);
@@ -641,7 +615,7 @@ static void mail_func_delete(t_connection * c, const char * str) {
 	 mailbox_close(mailbox);
 	 return;
       }
-      sprintf(tmp,"Succesfully deleted message #%02d.",idx);
+      std::sprintf(tmp,"Succesfully deleted message #%02d.",idx);
       message_send_text(c,message_type_info,c,tmp);
    }
    mailbox_close(mailbox);
@@ -689,7 +663,7 @@ extern char const * check_mail(t_connection const * c) {
    }
    else
    {
-      sprintf(tmp,"You have %d message(s) in your mailbox.",count);
+      std::sprintf(tmp,"You have %d message(s) in your mailbox.",count);
       return tmp;
    }
 }

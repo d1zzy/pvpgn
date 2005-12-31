@@ -303,7 +303,7 @@ static t_sql_field* sql_odbc_fetch_fields(t_sql_res *result)
 		}
 		SQLColAttribute(res->stmt, i+1, SQL_DESC_NAME, fName, fNameSz, &fNameSz, NULL);
 		tmp = fName;
-		for ( ; *tmp; ++tmp) *tmp = toupper(*tmp);
+		for ( ; *tmp; ++tmp) *tmp = std::toupper(*tmp);
 		fields[i] = fName;
 	}
 	return fields;

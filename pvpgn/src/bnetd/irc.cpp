@@ -18,61 +18,32 @@
  */
 
 #include "common/setup_before.h"
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/strdup.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
+#include "irc.h"
+
+#include <cstring>
+#include <cstdio>
+#include <ctime>
+#include <cstdlib>
+
 #include "common/irc_protocol.h"
 #include "common/packet.h"
 #include "common/eventlog.h"
-#include "connection.h"
-#include "common/bn_type.h"
 #include "common/field_sizes.h"
-#include "common/addr.h"
-#include "common/version.h"
-#include "common/queue.h"
-#include "common/list.h"
 #include "common/bnethash.h"
-#include "common/bnethashconv.h"
+#include "common/xalloc.h"
+#include "common/addr.h"
 #include "common/tag.h"
+#include "common/util.h"
+
 #include "message.h"
+#include "channel.h"
+#include "connection.h"
+#include "server.h"
 #include "account.h"
 #include "account_wrap.h"
-#include "channel.h"
-#include "irc.h"
 #include "prefs.h"
-#include "server.h"
 #include "tick.h"
-#include "message.h"
 #include "command_groups.h"
-#include "common/util.h"
-#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -119,21 +90,21 @@ extern int irc_send_cmd(t_connection * conn, char const * command, char const * 
 
     /* snprintf isn't portable -> check message length first */
     if (params) {
-        len = 1+strlen(ircname)+1+strlen(command)+1+strlen(nick)+1+strlen(params)+2;
+        len = 1+std::strlen(ircname)+1+std::strlen(command)+1+std::strlen(nick)+1+std::strlen(params)+2;
 	if (len > MAX_IRC_MESSAGE_LEN) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%d bytes)",len);
 	    return -1;
 	}
 	else
-	    sprintf(data,":%s %s %s %s\r\n",ircname,command,nick,params);
+	    std::sprintf(data,":%s %s %s %s\r\n",ircname,command,nick,params);
     } else {
-        len = 1+strlen(ircname)+1+strlen(command)+1+strlen(nick)+1+2;
+        len = 1+std::strlen(ircname)+1+std::strlen(command)+1+std::strlen(nick)+1+2;
     	if (len > MAX_IRC_MESSAGE_LEN) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%d bytes)",len);
 	    return -1;
 	}
 	else
-	sprintf(data,":%s %s %s\r\n",ircname,command,nick);
+	std::sprintf(data,":%s %s %s\r\n",ircname,command,nick);
     }
     packet_set_size(p,0);
     packet_append_data(p,data,len);
@@ -155,7 +126,7 @@ extern int irc_send(t_connection * conn, int code, char const * params)
 	eventlog(eventlog_level_error,__FUNCTION__,"invalid message code (%d)",code);
 	return -1;
     }
-    sprintf(temp,"%03u",code);
+    std::sprintf(temp,"%03u",code);
     return irc_send_cmd(conn,temp,params);
 }
 
@@ -190,21 +161,21 @@ extern int irc_send_cmd2(t_connection * conn, char const * prefix, char const * 
     }
 
     if (comment) {
-        len = 1+strlen(prefix)+1+strlen(command)+1+strlen(postfix)+2+strlen(comment)+1+2;
+        len = 1+std::strlen(prefix)+1+std::strlen(command)+1+std::strlen(postfix)+2+std::strlen(comment)+1+2;
     	if (len > MAX_IRC_MESSAGE_LEN) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%d bytes)",len);
 	    return -1;
 	}
 	else
-	    sprintf(data,":%s %s %s :%s\r\n",prefix,command,postfix,comment);
+	    std::sprintf(data,":%s %s %s :%s\r\n",prefix,command,postfix,comment);
     } else {
-        len = 1+strlen(prefix)+1+strlen(command)+1+strlen(postfix)+1+2;
+        len = 1+std::strlen(prefix)+1+std::strlen(command)+1+std::strlen(postfix)+1+2;
     	if (len > MAX_IRC_MESSAGE_LEN) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%d bytes)",len);
 	    return -1;
 	}
 	else
-	sprintf(data,":%s %s %s\r\n",prefix,command,postfix);
+	std::sprintf(data,":%s %s %s\r\n",prefix,command,postfix);
     }
     packet_set_size(p,0);
     packet_append_data(p,data,len);
@@ -233,14 +204,14 @@ extern int irc_send_ping(t_connection * conn)
 
     conn_set_ircping(conn,get_ticks());
     if (conn_get_state(conn)==conn_state_bot_username)
-    	sprintf(data,"PING :%u\r\n",conn_get_ircping(conn)); /* Undernet doesn't reveal the servername yet ... neither do we */
-    else if ((6+strlen(server_get_hostname())+2+1)<=MAX_IRC_MESSAGE_LEN)
-    	sprintf(data,"PING :%s\r\n",server_get_hostname());
+    	std::sprintf(data,"PING :%u\r\n",conn_get_ircping(conn)); /* Undernet doesn't reveal the servername yet ... neither do we */
+    else if ((6+std::strlen(server_get_hostname())+2+1)<=MAX_IRC_MESSAGE_LEN)
+    	std::sprintf(data,"PING :%s\r\n",server_get_hostname());
     else
     	eventlog(eventlog_level_error,__FUNCTION__,"maximum message length exceeded");
     eventlog(eventlog_level_debug,__FUNCTION__,"[%d] sent \"%s\"",conn_get_socket(conn),data);
     packet_set_size(p,0);
-    packet_append_data(p,data,strlen(data));
+    packet_append_data(p,data,std::strlen(data));
     conn_push_outqueue(conn,p);
     packet_del_ref(p);
     return 0;
@@ -255,7 +226,7 @@ extern int irc_send_pong(t_connection * conn, char const * params)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
 	return -1;
     }
-    if ((1+strlen(server_get_hostname())+1+4+1+strlen(server_get_hostname())+((params)?(2+strlen(params)):(0))+2+1) > MAX_IRC_MESSAGE_LEN) {
+    if ((1+std::strlen(server_get_hostname())+1+4+1+std::strlen(server_get_hostname())+((params)?(2+std::strlen(params)):(0))+2+1) > MAX_IRC_MESSAGE_LEN) {
 	eventlog(eventlog_level_error,__FUNCTION__,"max message length exceeded");
 	return -1;
     }
@@ -265,12 +236,12 @@ extern int irc_send_pong(t_connection * conn, char const * params)
     }
 
     if (params)
-    	sprintf(data,":%s PONG %s :%s\r\n",server_get_hostname(),server_get_hostname(),params);
+    	std::sprintf(data,":%s PONG %s :%s\r\n",server_get_hostname(),server_get_hostname(),params);
     else
-    	sprintf(data,":%s PONG %s\r\n",server_get_hostname(),server_get_hostname());
+    	std::sprintf(data,":%s PONG %s\r\n",server_get_hostname(),server_get_hostname());
     eventlog(eventlog_level_debug,__FUNCTION__,"[%d] sent \"%s\"",conn_get_socket(conn),data);
     packet_set_size(p,0);
-    packet_append_data(p,data,strlen(data));
+    packet_append_data(p,data,std::strlen(data));
     conn_push_outqueue(conn,p);
     packet_del_ref(p);
     return 0;
@@ -329,7 +300,7 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
                 return 0;
             }
 
-    	    if(strcmp(temphash,tempapgar) == 0) {
+    	    if(std::strcmp(temphash,tempapgar) == 0) {
                 conn_login(conn,a,username);
     	        conn_set_state(conn,conn_state_loggedin);
         	    conn_set_clienttag(conn,CLIENTTAG_WWOL_UINT); /* WWOL hope here is ok */
@@ -361,11 +332,11 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
 extern int irc_welcome(t_connection * conn)
 {
     char temp[MAX_IRC_MESSAGE_LEN];
-    time_t temptime;
+    std::time_t temptime;
     char const * tempname;
     char const * temptimestr;
     char const * filename;
-    FILE *fp;
+    std::FILE *fp;
     char * line, * formatted_line;
     char send_line[MAX_IRC_MESSAGE_LEN];
     char motd_failed = 0;
@@ -377,66 +348,66 @@ extern int irc_welcome(t_connection * conn)
 
     tempname = conn_get_loggeduser(conn);
 
-    if ((34+strlen(tempname)+1)<=MAX_IRC_MESSAGE_LEN)
-        sprintf(temp,":Welcome to the %s IRC Network %s",prefs_get_irc_network_name(), tempname);
+    if ((34+std::strlen(tempname)+1)<=MAX_IRC_MESSAGE_LEN)
+        std::sprintf(temp,":Welcome to the %s IRC Network %s",prefs_get_irc_network_name(), tempname);
     else
-        sprintf(temp,":Maximum length exceeded");
+        std::sprintf(temp,":Maximum length exceeded");
     irc_send(conn,RPL_WELCOME,temp);
 
-    if ((14+strlen(server_get_hostname())+10+strlen(PVPGN_SOFTWARE" "PVPGN_VERSION)+1)<=MAX_IRC_MESSAGE_LEN)
-        sprintf(temp,":Your host is %s, running "PVPGN_SOFTWARE" "PVPGN_VERSION,server_get_hostname());
+    if ((14+std::strlen(server_get_hostname())+10+std::strlen(PVPGN_SOFTWARE" "PVPGN_VERSION)+1)<=MAX_IRC_MESSAGE_LEN)
+        std::sprintf(temp,":Your host is %s, running "PVPGN_SOFTWARE" "PVPGN_VERSION,server_get_hostname());
     else
-        sprintf(temp,":Maximum length exceeded");
+        std::sprintf(temp,":Maximum length exceeded");
     irc_send(conn,RPL_YOURHOST,temp);
 
-    temptime = server_get_starttime(); /* FIXME: This should be build time */
-    temptimestr = ctime(&temptime);
-    if ((25+strlen(temptimestr)+1)<=MAX_IRC_MESSAGE_LEN)
-        sprintf(temp,":This server was created %s",temptimestr); /* FIXME: is ctime() portable? */
+    temptime = server_get_starttime(); /* FIXME: This should be build std::time */
+    temptimestr = std::ctime(&temptime);
+    if ((25+std::strlen(temptimestr)+1)<=MAX_IRC_MESSAGE_LEN)
+        std::sprintf(temp,":This server was created %s",temptimestr); /* FIXME: is std::ctime() portable? */
     else
-        sprintf(temp,":Maximum length exceeded");
+        std::sprintf(temp,":Maximum length exceeded");
     irc_send(conn,RPL_CREATED,temp);
 
     /* we don't give mode information on MYINFO we give it on ISUPPORT */
-    if ((strlen(server_get_hostname())+7+strlen(PVPGN_SOFTWARE" "PVPGN_VERSION)+9+1)<=MAX_IRC_MESSAGE_LEN)
-        sprintf(temp,"%s "PVPGN_SOFTWARE" "PVPGN_VERSION" - -",server_get_hostname());
+    if ((std::strlen(server_get_hostname())+7+std::strlen(PVPGN_SOFTWARE" "PVPGN_VERSION)+9+1)<=MAX_IRC_MESSAGE_LEN)
+        std::sprintf(temp,"%s "PVPGN_SOFTWARE" "PVPGN_VERSION" - -",server_get_hostname());
     else
-        sprintf(temp,":Maximum length exceeded");
+        std::sprintf(temp,":Maximum length exceeded");
     irc_send(conn,RPL_MYINFO,temp);
 
     if((conn_get_wol(conn) == 1))
-        sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
+        std::sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
         WOL_NICKNAME_LEN, MAX_TOPIC_LEN, CHANNEL_NAME_LEN, prefs_get_irc_network_name());
     else
-        sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
+        std::sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
         CHAR_NAME_LEN, MAX_TOPIC_LEN, CHANNEL_NAME_LEN, prefs_get_irc_network_name());
 
-    if((strlen(temp))<=MAX_IRC_MESSAGE_LEN)
+    if((std::strlen(temp))<=MAX_IRC_MESSAGE_LEN)
         irc_send(conn,RPL_ISUPPORT,temp);
     else {
-        sprintf(temp,":Maximum length exceeded");
+        std::sprintf(temp,":Maximum length exceeded");
         irc_send(conn,RPL_ISUPPORT,temp);
     }
 
-    if ((3+strlen(server_get_hostname())+22+1)<=MAX_IRC_MESSAGE_LEN)
-    	sprintf(temp,":- %s, "PVPGN_SOFTWARE" "PVPGN_VERSION", built on %s",server_get_hostname(),temptimestr);
+    if ((3+std::strlen(server_get_hostname())+22+1)<=MAX_IRC_MESSAGE_LEN)
+    	std::sprintf(temp,":- %s, "PVPGN_SOFTWARE" "PVPGN_VERSION", built on %s",server_get_hostname(),temptimestr);
     else
-        sprintf(temp,":Maximum length exceeded");
+        std::sprintf(temp,":Maximum length exceeded");
     irc_send(conn,RPL_MOTDSTART,temp);
 
     if ((filename = prefs_get_motdfile())) {
-	 if ((fp = fopen(filename,"r"))) {
+	 if ((fp = std::fopen(filename,"r"))) {
 	  while ((line=file_get_line(fp))) {
 		if ((formatted_line = message_format_line(conn,line))) {
 		  formatted_line[0]=' ';
-		  sprintf(send_line,":-%s",formatted_line);
+		  std::sprintf(send_line,":-%s",formatted_line);
 		  irc_send(conn,RPL_MOTD,send_line);
 		  xfree(formatted_line);
 		}
 	  }
 
 	  file_get_line(NULL); // clear file_get_line buffer
-	  fclose(fp);
+	  std::fclose(fp);
 	}
 	 else
 	 	motd_failed = 1;
@@ -489,7 +460,7 @@ extern char const * irc_convert_channel(t_channel const * channel)
     if (!channel)
 	return "*";
 
-    memset(out,0,sizeof(out));
+    std::memset(out,0,sizeof(out));
     out[0] = '#';
     outpos = 1;
     bname = channel_get_name(channel);
@@ -521,7 +492,7 @@ extern char const * irc_convert_channel(t_channel const * channel)
 	    out[outpos++] = bname[i];
 	}
 	if ((outpos+2)>=(sizeof(out))) {
-	    sprintf(out,"!%u",channel_get_channelid(channel));
+	    std::sprintf(out,"!%u",channel_get_channelid(channel));
 	    return out;
 	}
     }
@@ -542,12 +513,12 @@ extern char const * irc_convert_ircname(char const * pircname)
     }
 
     outpos = 0;
-    memset(out,0,sizeof(out));
+    std::memset(out,0,sizeof(out));
     special = 0;
     if (pircname[0]=='!') {
 	t_channel * channel;
 
-	channel = channellist_find_channel_bychannelid(atoi(ircname));
+	channel = channellist_find_channel_bychannelid(std::atoi(ircname));
 	if (channel)
 	    return channel_get_name(channel);
 	else
@@ -622,7 +593,7 @@ static char ** irc_split_elems(char * list, int separator, int ignoreblank)
     out[0] = list;
     if (count>1) {
 	for (i=1;i<count;i++) {
-	    out[i] = strchr(out[i-1],separator);
+	    out[i] = std::strchr(out[i-1],separator);
 	    if (!out[i]) {
 		eventlog(eventlog_level_error,__FUNCTION__,"BUG: wrong number of separators");
 		xfree(out);
@@ -689,8 +660,8 @@ static char * irc_message_preformat(t_irc_message_from const * from, char const 
 	    eventlog(eventlog_level_error,__FUNCTION__,"got malformed from");
 	    return NULL;
 	}
-	myfrom = (char*)xmalloc(strlen(from->nick)+1+strlen(from->user)+1+strlen(from->host)+1); /* nick + "!" + user + "@" + host + "\0" */
-	sprintf(myfrom,"%s!%s@%s",from->nick,from->user,from->host);
+	myfrom = (char*)xmalloc(std::strlen(from->nick)+1+std::strlen(from->user)+1+std::strlen(from->host)+1); /* nick + "!" + user + "@" + host + "\0" */
+	std::sprintf(myfrom,"%s!%s@%s",from->nick,from->user,from->host);
     } else
     	myfrom = xstrdup(server_get_hostname());
     if (dest)
@@ -698,14 +669,14 @@ static char * irc_message_preformat(t_irc_message_from const * from, char const 
     if (text)
     	mytext = text;
 
-    len = 1+strlen(myfrom)+1+
-    	  strlen(command)+1+
-    	  strlen(mydest)+1+
-    	  1+strlen(mytext)+1;
+    len = 1+std::strlen(myfrom)+1+
+    	  std::strlen(command)+1+
+    	  std::strlen(mydest)+1+
+    	  1+std::strlen(mytext)+1;
 
 
     msg = (char*)xmalloc(len);
-    sprintf(msg,":%s\n%s\n%s\n%s",myfrom,command,mydest,mytext);
+    std::sprintf(msg,":%s\n%s\n%s\n%s",myfrom,command,mydest,mytext);
     xfree(myfrom);
     return msg;
 }
@@ -732,19 +703,19 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
     }
 
     e1 = (char*)packet_get_raw_data(packet,0);
-    e2 = strchr(e1,'\n');
+    e2 = std::strchr(e1,'\n');
     if (!e2) {
 	eventlog(eventlog_level_warn,__FUNCTION__,"malformed message (e2 missing)");
 	return -1;
     }
     *e2++ = '\0';
-    e3 = strchr(e2,'\n');
+    e3 = std::strchr(e2,'\n');
     if (!e3) {
 	eventlog(eventlog_level_warn,__FUNCTION__,"malformed message (e3 missing)");
 	return -1;
     }
     *e3++ = '\0';
-    e4 = strchr(e3,'\n');
+    e4 = std::strchr(e3,'\n');
     if (!e4) {
 	eventlog(eventlog_level_warn,__FUNCTION__,"malformed message (e4 missing)");
 	return -1;
@@ -753,7 +724,7 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
 
     if (prefs_get_hide_addr() && !(account_get_command_groups(conn_get_account(dest)) & command_get_group("/admin-addr")))
     {
-      e1_2 = strchr(e1,'@');
+      e1_2 = std::strchr(e1,'@');
       if (e1_2)
       {
 	  *e1_2++ = '\0';
@@ -768,21 +739,21 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
     } else
     	toname = e3;
 
-    if (strcmp(toname,"\r")==0) {
+    if (std::strcmp(toname,"\r")==0) {
 	toname = ""; /* HACK: the target field is really empty */
     }
 
-    len = (strlen(e1)+1+strlen(e2)+1+strlen(toname)+1+strlen(e4)+2+1);
+    len = (std::strlen(e1)+1+std::strlen(e2)+1+std::strlen(toname)+1+std::strlen(e4)+2+1);
     if (len<=MAX_IRC_MESSAGE_LEN) {
 	char msg[MAX_IRC_MESSAGE_LEN+1];
 
 	if (e1_2)
-	    sprintf(msg,"%s@hidden %s %s %s\r\n",e1,e2,toname,e4);
+	    std::sprintf(msg,"%s@hidden %s %s %s\r\n",e1,e2,toname,e4);
 	else
-	    sprintf(msg,"%s %s %s %s\r\n",e1,e2,toname,e4);
+	    std::sprintf(msg,"%s %s %s %s\r\n",e1,e2,toname,e4);
 	eventlog(eventlog_level_debug,__FUNCTION__,"sent \"%s\"",msg);
 	packet_set_size(packet,0);
-	packet_append_data(packet,msg,strlen(msg));
+	packet_append_data(packet,msg,std::strlen(msg));
 	if (tname)
 	    conn_unget_chatname(dest,tname);
 	return 0;
@@ -827,13 +798,13 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	    if((conn_get_wol(me) == 1))
 	    {
         	char temp[MAX_IRC_MESSAGE_LEN];
-    		memset(temp,0,sizeof(temp));
+    		std::memset(temp,0,sizeof(temp));
 
     		/**
             *  For WOL the channel JOIN output must be like the following:
     		*   user!WWOL@hostname JOIN :clanID,longIP channelName
     		*/
-    		sprintf(temp,":0,%u",conn_get_addr(me));
+    		std::sprintf(temp,":0,%u",conn_get_addr(me));
     		msg = irc_message_preformat(&from,"JOIN",temp,irc_convert_channel(conn_get_channel(me)));
 	    }
 	    else
@@ -870,7 +841,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	    	dest = irc_convert_channel(conn_get_channel(me)); /* FIXME: support more channels and choose right one! */
 	    else
 	        dest = ""; /* will be replaced with username in postformat */
-	    sprintf(temp,":%s",text);
+	    std::sprintf(temp,":%s",text);
     	    msg = irc_message_preformat(&from,"PRIVMSG",dest,temp);
 	    if (me)
     	        conn_unget_chatname(me,from.nick);
@@ -882,10 +853,10 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	    char temp[MAX_IRC_MESSAGE_LEN];
 
     	    /* "\001ACTION " + text + "\001" + \0 */
-	    if ((8+strlen(text)+1+1)<=MAX_IRC_MESSAGE_LEN) {
-		sprintf(temp,":\001ACTION %s\001",text);
+	    if ((8+std::strlen(text)+1+1)<=MAX_IRC_MESSAGE_LEN) {
+		std::sprintf(temp,":\001ACTION %s\001",text);
 	    } else {
-		sprintf(temp,":\001ACTION (maximum message length exceeded)\001");
+		std::sprintf(temp,":\001ACTION (maximum message length exceeded)\001");
 	    }
     	    from.nick = conn_get_chatname(me);
             from.user = ctag;
@@ -901,7 +872,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     case message_type_error:
 	{
 	    char temp[MAX_IRC_MESSAGE_LEN];
-	    sprintf(temp,":%s",text);
+	    std::sprintf(temp,":%s",text);
 	    msg = irc_message_preformat(NULL,"NOTICE",NULL,temp);
 	}
 	break;
@@ -981,15 +952,15 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
 	return -1;
     }
-    memset(temp,0,sizeof(temp));
+    std::memset(temp,0,sizeof(temp));
     ircname = irc_convert_channel(channel);
     if (!ircname) {
 	eventlog(eventlog_level_error,__FUNCTION__,"channel has NULL ircname");
 	return -1;
     }
     /* '@' = secret; '*' = private; '=' = public */
-    if ((1+1+strlen(ircname)+2+1)<=MAX_IRC_MESSAGE_LEN) {
-	sprintf(temp,"%c %s :",((channel_get_permanent(channel))?('='):('*')),ircname);
+    if ((1+1+std::strlen(ircname)+2+1)<=MAX_IRC_MESSAGE_LEN) {
+	std::sprintf(temp,"%c %s :",((channel_get_permanent(channel))?('='):('*')),ircname);
     } else {
 	eventlog(eventlog_level_warn,__FUNCTION__,"maximum message length exceeded");
 	return -1;
@@ -1004,29 +975,29 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
 	    continue;
 	flags = conn_get_flags(m);
 	if (flags & MF_BLIZZARD)
-		strcat(flg,"@");
+		std::strcat(flg,"@");
 	else if ((flags & MF_BNET) || (flags & MF_GAVEL))
-		strcat(flg,"%");
+		std::strcat(flg,"%");
 	else if (flags & MF_VOICE)
-		strcat(flg,"+");
-	if ((strlen(temp)+((!first)?(1):(0))+strlen(flg)+strlen(name)+1)<=sizeof(temp)) {
-	    if (!first) strcat(temp," ");
+		std::strcat(flg,"+");
+	if ((std::strlen(temp)+((!first)?(1):(0))+std::strlen(flg)+std::strlen(name)+1)<=sizeof(temp)) {
+	    if (!first) std::strcat(temp," ");
 
     	    if((conn_get_wol(c) == 1))
     	    {
         		if((conn_wol_get_ingame(c) == 0))
         		{
                     if ((flags & MF_BLIZZARD))
-        			   strcat(temp,"@");
+        			   std::strcat(temp,"@");
         		    if ((flags & MF_BNET) || (flags & MF_GAVEL))
-        			   strcat(temp,"@");
+        			   std::strcat(temp,"@");
         		}
-                sprintf(temp,"%s%s,0,%u",temp,name,conn_get_addr(m));
+                std::sprintf(temp,"%s%s,0,%u",temp,name,conn_get_addr(m));
     	    }
     	    else
     	    {
-	    strcat(temp,flg);
-	    strcat(temp,name);
+	    std::strcat(temp,flg);
+	    std::strcat(temp,name);
     	    }
 
 	    first = 0;
@@ -1082,11 +1053,11 @@ static int irc_who_connection(t_connection * dest, t_connection * c)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel (tempchannel)");
 	return -1;
     }
-    if ((strlen(tempchannel)+1+strlen(tempuser)+1+strlen(tempip)+1+strlen(server_get_hostname())+1+strlen(tempname)+1+1+strlen(tempflags)+4+strlen(tempowner)+1)>MAX_IRC_MESSAGE_LEN) {
+    if ((std::strlen(tempchannel)+1+std::strlen(tempuser)+1+std::strlen(tempip)+1+std::strlen(server_get_hostname())+1+std::strlen(tempname)+1+1+std::strlen(tempflags)+4+std::strlen(tempowner)+1)>MAX_IRC_MESSAGE_LEN) {
 	eventlog(eventlog_level_info,__FUNCTION__,"WHO reply too long - skip");
 	return -1;
     } else
-        sprintf(temp,"%s %s %s %s %s %c%s :0 %s",tempchannel,tempuser,tempip,server_get_hostname(),tempname,'H',tempflags,tempowner);
+        std::sprintf(temp,"%s %s %s %s %s %c%s :0 %s",tempchannel,tempuser,tempip,server_get_hostname(),tempname,'H',tempflags,tempowner);
     irc_send(dest,RPL_WHOREPLY,temp);
     return 0;
 }
@@ -1114,8 +1085,8 @@ extern int irc_who(t_connection * c, char const * name)
 	if (!channel) {
 	    char temp[MAX_IRC_MESSAGE_LEN];
 
-	    if ((strlen(":No such channel")+1+strlen(name)+1)<=MAX_IRC_MESSAGE_LEN) {
-		sprintf(temp,":No such channel %s",name);
+	    if ((std::strlen(":No such channel")+1+std::strlen(name)+1)<=MAX_IRC_MESSAGE_LEN) {
+		std::sprintf(temp,":No such channel %s",name);
 		irc_send(c,ERR_NOSUCHCHANNEL,temp);
 	    } else {
 		irc_send(c,ERR_NOSUCHCHANNEL,":No such channel");

@@ -20,6 +20,7 @@
 #include "anongame_maplists.h"
 
 #include <cstring>
+#include <cstdio>
 
 #include "common/packet.h"
 #include "common/tag.h"
@@ -138,7 +139,7 @@ static void _maplists_add_map(t_clienttag clienttag, char * mapname, int queue)
 /**********************************************************************************/
 extern int anongame_maplists_create(void)
 {
-   FILE *mapfd;
+   std::FILE *mapfd;
    char buffer[256];
    int len, i, queue;
    char *p, *q, *r, *u;
@@ -148,7 +149,7 @@ extern int anongame_maplists_create(void)
       return -1;
    }
 
-   if ((mapfd = fopen(prefs_get_mapsfile(), "rt")) == NULL) {
+   if ((mapfd = std::fopen(prefs_get_mapsfile(), "rt")) == NULL) {
       eventlog(eventlog_level_error, "anongame_maplists_create", "could not open mapsfile : \"%s\"", prefs_get_mapsfile());
       return -1;
    }
@@ -159,7 +160,7 @@ extern int anongame_maplists_create(void)
       maplists_w3xp[i][0] = 0;
    }
 
-   while(fgets(buffer, 256, mapfd)) {
+   while(std::fgets(buffer, 256, mapfd)) {
       len = std::strlen(buffer);
       if (len < 1) continue;
       if (buffer[len-1] == '\n') {
@@ -214,7 +215,7 @@ extern int anongame_maplists_create(void)
 
       _maplists_add_map(tag_case_str_to_uint(p), r, queue);
    }
-   fclose(mapfd);
+   std::fclose(mapfd);
    return 0;
 }
 

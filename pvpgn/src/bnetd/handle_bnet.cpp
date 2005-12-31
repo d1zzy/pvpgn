@@ -352,7 +352,7 @@ static int _check_allowed_client(t_clienttag ctag)
     list = xstrdup(prefs_get_allowed_clients());
     p = list;
     do {
-	q = strchr(p, ',');
+	q = std::strchr(p, ',');
 	if (q)
 	    *q = '\0';
 	if (!strcasecmp(p, "all"))
@@ -747,7 +747,7 @@ static int _client_createaccountw3(t_connection * c, t_packet const *const packe
     std::strncpy(lpass, plainpass, 16);
     lpass[16] = 0;
     for (i = 0; i < std::strlen(lpass); i++)
-	if (isupper((int) lpass[i]))
+	if (std::isupper((int) lpass[i]))
 	    lpass[i] = std::tolower((int) lpass[i]);
 
 
@@ -1007,7 +1007,7 @@ static int _client_authreq1(t_connection * c, t_packet const *const packet)
 	conn_set_versionid(c, bn_int_get(packet->u.client_authreq1.versionid));
 	conn_set_checksum(c, bn_int_get(packet->u.client_authreq1.checksum));
 	conn_set_gameversion(c, bn_int_get(packet->u.client_authreq1.gameversion));
-	strcpy(verstr, vernum_to_verstr(bn_int_get(packet->u.client_authreq1.gameversion)));
+	std::strcpy(verstr, vernum_to_verstr(bn_int_get(packet->u.client_authreq1.gameversion)));
 	conn_set_clientver(c, verstr);
 	conn_set_clientexe(c, exeinfo);
 
@@ -1124,7 +1124,7 @@ static int _client_authreq109(t_connection * c, t_packet const *const packet)
 
 	conn_set_checksum(c, bn_int_get(packet->u.client_authreq_109.checksum));
 	conn_set_gameversion(c, bn_int_get(packet->u.client_authreq_109.gameversion));
-	strcpy(verstr, vernum_to_verstr(bn_int_get(packet->u.client_authreq_109.gameversion)));
+	std::strcpy(verstr, vernum_to_verstr(bn_int_get(packet->u.client_authreq_109.gameversion)));
 	conn_set_clientver(c, verstr);
 	conn_set_clientexe(c, exeinfo);
 
@@ -1219,9 +1219,9 @@ static int _client_iconreq(t_connection * c, t_packet const *const packet)
 	    packet_append_string(rpacket, prefs_get_war3_iconfile());
 	/* battle.net still sends "icons.bni" to sc/bw clients
 	 * clients request icons_STAR.bni seperatly */
-/*	else if (strcmp(conn_get_clienttag(c),CLIENTTAG_STARCRAFT)==0)
+/*	else if (std::strcmp(conn_get_clienttag(c),CLIENTTAG_STARCRAFT)==0)
 	    packet_append_string(rpacket,prefs_get_star_iconfile());
-	else if (strcmp(conn_get_clienttag(c),CLIENTTAG_BROODWARS)==0)
+	else if (std::strcmp(conn_get_clienttag(c),CLIENTTAG_BROODWARS)==0)
 	    packet_append_string(rpacket,prefs_get_star_iconfile());
  */
 	else
@@ -2099,7 +2099,7 @@ static int _client_atfriendscreen(t_connection * c, t_packet const *const packet
 	if (!(dest_c = connlist_find_connection_by_account(account)))
 	    continue;		// if user is offline, then continue to next friend
 	nvt = versioncheck_get_versiontag(conn_get_versioncheck(dest_c));
-	if (vt && nvt && strcmp(vt, nvt))
+	if (vt && nvt && std::strcmp(vt, nvt))
 	    continue;		/* friend is using another game/version */
 
 	if (friend_get_mutual(fr)) {
@@ -2126,7 +2126,7 @@ static int _client_atfriendscreen(t_connection * c, t_packet const *const packet
 	    if (dest_c == c)
 		continue;	// don'tlist yourself
 	    nvt = versioncheck_get_versiontag(conn_get_versioncheck(dest_c));
-	    if (vt && nvt && strcmp(vt, nvt))
+	    if (vt && nvt && std::strcmp(vt, nvt))
 		continue;	/* user is using another game/version */
 	    if (conn_get_dndstr(dest_c))
 		continue;	// user is dnd
@@ -2355,7 +2355,7 @@ typedef struct {
     unsigned fnews;
 } t_motd_data;
 
-static int _news_cb(time_t date, t_lstr * lstr, void *data)
+static int _news_cb(std::time_t date, t_lstr * lstr, void *data)
 {
     t_packet *rpacket;
     t_motd_data *motdd = (t_motd_data *) data;
@@ -3063,7 +3063,7 @@ static int _client_progident2(t_connection * c, t_packet const *const packet)
 
 	    LIST_TRAVERSE_CONST(channellist(), curr) {
 		ch = (t_channel*)elem_get_data(curr);
-		if ((!(channel_get_flags(ch) & channel_flags_clan)) && (!prefs_get_hide_temp_channels() || channel_get_permanent(ch)) && (!channel_get_clienttag(ch) || strcmp(channel_get_clienttag(ch), clienttag_uint_to_str(conn_get_clienttag(c))) == 0) && (!(channel_get_flags(ch) & channel_flags_thevoid)) &&	// don't display theVoid in channel list
+		if ((!(channel_get_flags(ch) & channel_flags_clan)) && (!prefs_get_hide_temp_channels() || channel_get_permanent(ch)) && (!channel_get_clienttag(ch) || std::strcmp(channel_get_clienttag(ch), clienttag_uint_to_str(conn_get_clienttag(c))) == 0) && (!(channel_get_flags(ch) & channel_flags_thevoid)) &&	// don't display theVoid in channel list
 		    ((channel_get_max(ch) != 0) || ((channel_get_max(ch) == 0) && (account_is_operator_or_admin(conn_get_account(c), channel_get_name(ch)) == 1))))	// don't display restricted channel for no admins/ops
 		    packet_append_string(rpacket, channel_get_name(ch));
 	    }
@@ -3225,7 +3225,7 @@ static int _glist_cb(t_game * game, void *data)
 	conn_get_versioncheck(game_get_owner(game)) &&
 	versioncheck_get_versiontag(conn_get_versioncheck(cbdata->c)) &&
 	versioncheck_get_versiontag(conn_get_versioncheck(game_get_owner(game))) &&
-	strcmp(versioncheck_get_versiontag(conn_get_versioncheck(cbdata->c)), versioncheck_get_versiontag(conn_get_versioncheck(game_get_owner(game)))) != 0) {
+	std::strcmp(versioncheck_get_versiontag(conn_get_versioncheck(cbdata->c)), versioncheck_get_versiontag(conn_get_versioncheck(game_get_owner(game)))) != 0) {
 	eventlog(eventlog_level_debug, __FUNCTION__, "[%d] not listing because game is wrong versiontag", conn_get_socket(cbdata->c));
 	return 0;
     }
@@ -3335,7 +3335,7 @@ static int _client_gamelistreq(t_connection * c, t_packet const *const packet)
 		    eventlog(eventlog_level_debug, __FUNCTION__, "[%d] GAMELISTREPLY found but done", conn_get_socket(c));
 		    break;
 		case game_status_open:
-		    if (strcmp(gamepass, game_get_pass(game))) {	/* passworded game must match password in request */
+		    if (std::strcmp(gamepass, game_get_pass(game))) {	/* passworded game must match password in request */
 			bn_int_set(&rpacket->u.server_gamelistreply.sstatus, SERVER_GAMELISTREPLY_GAME_SSTATUS_PASS);
 			eventlog(eventlog_level_debug, __FUNCTION__, "[%d] GAMELISTREPLY found but is password protected and wrong password given", conn_get_socket(c));
 			break;
@@ -3427,7 +3427,7 @@ static int _client_joingame(t_connection * c, t_packet const *const packet)
     if (conn_get_channel(c))
 	conn_set_channel(c, NULL);
 
-    if (!strcmp(gamename, "BNet") && !handle_anongame_join(c)) {
+    if (!std::strcmp(gamename, "BNet") && !handle_anongame_join(c)) {
 	gtype = game_type_anongame;
 	gamename = NULL;
 	return 0;		/* tmp: do not record any anongames as yet */
@@ -4410,7 +4410,7 @@ static int _client_w3xp_clan_createinvitereply(t_connection * c, t_packet const 
 	created++;
 	if ((created >= 0) && (rpacket = packet_create(packet_class_bnet))) {
 	    clan_set_created(clan, 1);
-	    clan_set_creation_time(clan, time(NULL));
+	    clan_set_creation_time(clan, std::time(NULL));
 	    packet_set_size(rpacket, sizeof(t_server_w3xp_clan_createinvitereply));
 	    packet_set_type(rpacket, SERVER_W3XP_CLAN_CREATEINVITEREPLY);
 	    bn_int_set(&rpacket->u.server_w3xp_clan_createinvitereply.count, bn_int_get(packet->u.client_w3xp_clan_createinvitereply.count));

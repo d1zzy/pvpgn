@@ -19,6 +19,7 @@
 
 #include <cstring>
 #include <cerrno>
+#include <cstdlib>
 
 #include "common/list.h"
 #include "common/eventlog.h"
@@ -38,7 +39,7 @@ namespace pvpgn
 namespace bnetd
 {
 
-static FILE *fp = NULL;
+static std::FILE *fp = NULL;
 
 static t_anongame_infos *anongame_infos;
 
@@ -1310,9 +1311,9 @@ extern int anongame_infos_load(char const *filename)
 	return -1;
     }
 
-    if (!(fp = fopen(filename, "r")))
+    if (!(fp = std::fopen(filename, "r")))
     {
-	eventlog(eventlog_level_error, "anongameinfo_load", "could not open file \"%s\" for reading (fopen: %s), using default values", filename, std::strerror(errno));
+	eventlog(eventlog_level_error, "anongameinfo_load", "could not open file \"%s\" for reading (std::fopen: %s), using default values", filename, std::strerror(errno));
 	goto anongame_infos_loading_failure;
     }
 
@@ -1436,7 +1437,7 @@ extern int anongame_infos_load(char const *filename)
 		    pointer++;
 		    pointer = std::strchr(pointer, '=');
 		    pointer++;
-		    int_value = atoi(pointer);
+		    int_value = std::atoi(pointer);
 		    if (int_value < 0)
 			int_value = 0;
 		    if (int_value > 127)
@@ -1463,7 +1464,7 @@ extern int anongame_infos_load(char const *filename)
 		    pointer++;
 		    pointer = std::strchr(pointer, '=');
 		    pointer++;
-		    int_value = atoi(pointer);
+		    int_value = std::atoi(pointer);
 		    if (int_value < 0)
 			int_value = 0;
 
@@ -1486,7 +1487,7 @@ extern int anongame_infos_load(char const *filename)
 		    pointer++;
 		    pointer = std::strchr(pointer, '=');
 		    pointer++;
-		    int_value = atoi(pointer);
+		    int_value = std::atoi(pointer);
 		    if (int_value < 0)
 			int_value = 0;
 
@@ -1509,7 +1510,7 @@ extern int anongame_infos_load(char const *filename)
 		    pointer++;
 		    pointer = std::strchr(pointer, '=');
 		    pointer++;
-		    int_value = atoi(pointer);
+		    int_value = std::atoi(pointer);
 		    if (int_value < 0)
 			int_value = 0;
 
@@ -1543,7 +1544,7 @@ extern int anongame_infos_load(char const *filename)
     }
 
     file_get_line(NULL); // clear file_get_line buffer
-    fclose(fp);
+    std::fclose(fp);
 
 anongame_infos_loading_failure:
     anongame_infos_set_defaults(anongame_infos);

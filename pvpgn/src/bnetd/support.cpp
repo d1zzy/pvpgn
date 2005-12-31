@@ -17,39 +17,19 @@
  */
 
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include <errno.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+#include "support.h"
+
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+
 #include "compat/access.h"
 #include "compat/strerror.h"
 #include "common/eventlog.h"
-#include "common/xalloc.h"
-#include "support.h"
-#include "prefs.h"
 #include "common/util.h"
+#include "common/xalloc.h"
+
+#include "prefs.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -61,7 +41,7 @@ namespace bnetd
 extern int support_check_files(char const * supportfile)
 {
 
-  FILE *fp;
+  std::FILE *fp;
   char *buff;
   unsigned int line;
   int filedirlen;
@@ -73,14 +53,14 @@ extern int support_check_files(char const * supportfile)
     return -1;
   }
 
-  if (!(fp = fopen(supportfile,"r")))
+  if (!(fp = std::fopen(supportfile,"r")))
   {
-    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",supportfile,pstrerror(errno));
+    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",supportfile,pstrerror(errno));
     eventlog(eventlog_level_error,__FUNCTION__,"can't guarantee that everything will run smooth");
     return 0;
   }
 
-  filedirlen = strlen(prefs_get_filedir());
+  filedirlen = std::strlen(prefs_get_filedir());
 
   for (line=1; (buff = file_get_line(fp)); line++)
   {
@@ -89,14 +69,14 @@ extern int support_check_files(char const * supportfile)
       continue;
     }
 
-    namebuff = (char*)xmalloc(filedirlen + 1 + strlen(buff) + 1);
-    sprintf(namebuff,"%s/%s",prefs_get_filedir(),buff);
+    namebuff = (char*)xmalloc(filedirlen + 1 + std::strlen(buff) + 1);
+    std::sprintf(namebuff,"%s/%s",prefs_get_filedir(),buff);
 
     if (access(namebuff, F_OK) < 0)
     {
       eventlog(eventlog_level_fatal,__FUNCTION__,"necessary file \"%s\" missing",namebuff);
       xfree((void *)namebuff);
-      fclose(fp);
+      std::fclose(fp);
       return -1;
     }
 
@@ -104,7 +84,7 @@ extern int support_check_files(char const * supportfile)
   }
 
   file_get_line(NULL); // clear file_get_line buffer
-  fclose(fp);
+  std::fclose(fp);
 
   return 0;
 }

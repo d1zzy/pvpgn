@@ -21,60 +21,34 @@
 
 #include "common/setup_before.h"
 #ifdef WITH_SQL
-#include <stdio.h>
+#define SQL_INTERNAL
+# include "sql_common.h"
+#undef SQL_INTERNAL
 
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
 
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-
-#include "compat/strdup.h"
 #include "compat/strcasecmp.h"
-#include "compat/strncasecmp.h"
-#include "compat/strtoul.h"
 #include "compat/snprintf.h"
-
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-
 #include "common/eventlog.h"
-#include "prefs.h"
+#include "common/flags.h"
+#include "common/list.h"
+#include "common/tag.h"
+/*
+#include "compat/strdup.h"
+#include "compat/strncasecmp.h"
 #include "common/util.h"
+#include "common/xalloc.h"
+#include "common/elist.h"
 
+#include "connection.h"
+*/
 #define CLAN_INTERNAL_ACCESS
 #define TEAM_INTERNAL_ACCESS
 #include "team.h"
 #include "account.h"
-#include "connection.h"
-#include "clan.h"
-#undef TEAM_INTERNAL_ACCESS
-#undef CLAN_INTERNAL_ACCESS
-#include "common/tag.h"
-#include "common/xalloc.h"
-#include "common/flags.h"
 #include "sql_dbcreator.h"
-#define SQL_INTERNAL
-# include "sql_common.h"
-#undef SQL_INTERNAL
 #ifdef WITH_SQL_MYSQL
 #include "sql_mysql.h"
 #endif
@@ -87,7 +61,10 @@
 #ifdef WITH_SQL_ODBC
 #include "sql_odbc.h"
 #endif
-#include "common/elist.h"
+#include "clan.h"
+#include "prefs.h"
+#undef CLAN_INTERNAL_ACCESS
+#undef TEAM_INTERNAL_ACCESS
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -122,10 +99,10 @@ extern int sql_init(const char *dbpath)
 
     path = xstrdup(dbpath);
     tmp = path;
-    while ((tok = strtok(tmp, ";")) != NULL)
+    while ((tok = std::strtok(tmp, ";")) != NULL)
     {
 	tmp = NULL;
-	if ((p = strchr(tok, '=')) == NULL)
+	if ((p = std::strchr(tok, '=')) == NULL)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "invalid storage_path, no '=' present in token");
 	    xfree((void *) path);
@@ -164,7 +141,7 @@ extern int sql_init(const char *dbpath)
     if (def == NULL)
 	sql_defacct = STORAGE_SQL_DEFAULT_UID;
     else
-	sql_defacct = atoi(def);
+	sql_defacct = std::atoi(def);
 
     if (pref == NULL)
     	tab_prefix = SQL_DEFAULT_PREFIX;
@@ -286,7 +263,7 @@ extern unsigned sql_read_maxuserid(void)
 	return 0;
     }
 
-    maxuid = atol(row[0]);
+    maxuid = std::atol(row[0]);
     sql->free_result(result);
     if (maxuid < 0)
     {
@@ -335,11 +312,11 @@ extern int sql_read_accounts(int flag,t_read_accounts_func cb, void *data)
 		continue;
 	    }
 
-	    if ((unsigned int) atoi(row[0]) == sql_defacct)
+	    if ((unsigned int) std::atoi(row[0]) == sql_defacct)
 		continue;	/* skip default account */
 
 	    info = xmalloc(sizeof(t_sql_info));
-	    *((unsigned int *) info) = atoi(row[0]);
+	    *((unsigned int *) info) = std::atoi(row[0]);
 	    cb(info, data);
 	}
 	sql->free_result(result);
@@ -416,18 +393,18 @@ extern int sql_load_clans(t_load_clans_func cb)
 
 	    clan = (t_clan *)xmalloc(sizeof(t_clan));
 
-	    if (!(clan->clanid = atoi(row[0])))
+	    if (!(clan->clanid = std::atoi(row[0])))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "got bad cid");
 		sql->free_result(result);
 		return -1;
 	    }
 
-	    clan->clantag = atoi(row[1]);
+	    clan->clantag = std::atoi(row[1]);
 
 	    clan->clanname = xstrdup(row[2]);
 	    clan->clan_motd = xstrdup(row[3]);
-	    clan->creation_time = atoi(row[4]);
+	    clan->creation_time = std::atoi(row[4]);
 	    clan->created = 1;
 	    clan->modified = 0;
 	    clan->channel_type = prefs_get_clan_channel_default_private();
@@ -446,7 +423,7 @@ extern int sql_load_clans(t_load_clans_func cb)
 			    eventlog(eventlog_level_error, __FUNCTION__, "got NULL uid from db");
 			    continue;
 			}
-			if (!(member_uid = atoi(row2[0])))
+			if (!(member_uid = std::atoi(row2[0])))
 			    continue;
 			if (!(member->memberacc = accountlist_find_account_by_uid(member_uid)))
 			{
@@ -454,11 +431,11 @@ extern int sql_load_clans(t_load_clans_func cb)
 			    xfree((void *) member);
 			    continue;
 			}
-			member->status = atoi(row2[1]);
-			member->join_time = atoi(row2[2]);
+			member->status = std::atoi(row2[1]);
+			member->join_time = std::atoi(row2[2]);
 			member->clan	  = clan;
 
-			if ((member->status == CLAN_NEW) && (time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
+			if ((member->status == CLAN_NEW) && (std::time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
 			{
 			    member->status = CLAN_PEON;
 			    clan->modified = 1;
@@ -510,7 +487,7 @@ extern int sql_write_clan(void *data)
 	    eventlog(eventlog_level_error, __FUNCTION__, "got NULL count");
 	    return -1;
 	}
-	num = atol(row[0]);
+	num = std::atol(row[0]);
 	sql->free_result(result);
 	if (num < 1)
 	    snprintf(query, sizeof(query), "INSERT INTO %sclan (cid, short, name, motd, creation_time) VALUES('%u', '%d', '%s', '%s', '%u')", tab_prefix, clan->clanid, clan->clantag, clan->clanname, clan->clan_motd, (unsigned) clan->creation_time);
@@ -530,7 +507,7 @@ extern int sql_write_clan(void *data)
 		eventlog(eventlog_level_error, __FUNCTION__, "got NULL elem in list");
 		continue;
 	    }
-	    if ((member->status == CLAN_NEW) && (time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
+	    if ((member->status == CLAN_NEW) && (std::time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
 	    {
 		member->status = CLAN_PEON;
 		member->modified = 1;
@@ -548,7 +525,7 @@ extern int sql_write_clan(void *data)
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL count");
 			return -1;
 		    }
-		    num = atol(row[0]);
+		    num = std::atol(row[0]);
 		    sql->free_result(result);
 		    if (num < 1)
 			snprintf(query, sizeof(query), "INSERT INTO %sclanmember (cid, "SQL_UID_FIELD", status, join_time) VALUES('%u', '%u', '%d', '%u')", tab_prefix, clan->clanid, uid, member->status, (unsigned) member->join_time);
@@ -602,7 +579,7 @@ extern int sql_remove_clan(int clantag)
 
     if ((row = sql->fetch_row(result)))
     {
-	unsigned int cid = atoi(row[0]);
+	unsigned int cid = std::atoi(row[0]);
 	snprintf(query, sizeof(query), "DELETE FROM %sclanmember WHERE cid='%u'", tab_prefix, cid);
 	if (sql->query(query) != 0)
 	    return -1;
@@ -672,20 +649,20 @@ extern int sql_load_teams(t_load_teams_func cb)
 
 	    team = (t_team *)xmalloc(sizeof(t_team));
 
-	    if (!(team->teamid = atoi(row[0])))
+	    if (!(team->teamid = std::atoi(row[0])))
 	    {
 		eventlog(eventlog_level_error, __FUNCTION__, "got bad teamid");
 		sql->free_result(result);
 		return -1;
 	    }
 
-	    team->size = atoi(row[1]);
+	    team->size = std::atoi(row[1]);
 	    team->clienttag=tag_str_to_uint(row[2]);
-	    team->lastgame = strtoul(row[3],NULL,10);
-	    team->teammembers[0] = strtoul(row[4],NULL,10);
-	    team->teammembers[1] = strtoul(row[5],NULL,10);
-	    team->teammembers[2] = strtoul(row[6],NULL,10);
-	    team->teammembers[3] = strtoul(row[7],NULL,10);
+	    team->lastgame = std::strtoul(row[3],NULL,10);
+	    team->teammembers[0] = std::strtoul(row[4],NULL,10);
+	    team->teammembers[1] = std::strtoul(row[5],NULL,10);
+	    team->teammembers[2] = std::strtoul(row[6],NULL,10);
+	    team->teammembers[3] = std::strtoul(row[7],NULL,10);
 
 	    for (i=0; i<MAX_TEAMSIZE;i++)
 	    {
@@ -711,11 +688,11 @@ extern int sql_load_teams(t_load_teams_func cb)
 	       team->members[i] = NULL;
 	    }
 
-	    team->wins = atoi(row[8]);
-	    team->losses = atoi(row[9]);
-	    team->xp = atoi(row[10]);
-	    team->level = atoi(row[11]);
-	    team->rank = atoi(row[12]);
+	    team->wins = std::atoi(row[8]);
+	    team->losses = std::atoi(row[9]);
+	    team->xp = std::atoi(row[10]);
+	    team->level = std::atoi(row[11]);
+	    team->rank = std::atoi(row[12]);
 
 	    eventlog(eventlog_level_trace,__FUNCTION__,"succesfully loaded team %u",team->teamid);
 	    cb(team);
@@ -755,7 +732,7 @@ extern int sql_write_team(void *data)
 	    eventlog(eventlog_level_error, __FUNCTION__, "got NULL count");
 	    return -1;
 	}
-	num = atol(row[0]);
+	num = std::atol(row[0]);
 	sql->free_result(result);
 	if (num < 1)
 	    snprintf(query, sizeof(query), "INSERT INTO %sarrangedteam (teamid, size, clienttag, lastgame, member1, member2, member3, member4, wins,losses, xp, level, rank) VALUES('%u', '%c', '%s', '%u', '%u', '%u', '%u', '%u', '%d', '%d', '%d', '%d', '%d')", tab_prefix,  team->teamid, team->size + '0', clienttag_uint_to_str(team->clienttag),(unsigned int)team->lastgame, team->teammembers[0], team->teammembers[1], team->teammembers[2], team->teammembers[3], team->wins, team->losses, team->xp, team->level, team->rank);

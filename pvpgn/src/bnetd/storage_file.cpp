@@ -18,83 +18,55 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strchr.h"
-#include "compat/strdup.h"
-#include "compat/strcasecmp.h"
-#include "compat/strncasecmp.h"
-#include <ctype.h>
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif
-#include "compat/char_bit.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
+#include "storage_file.h"
+
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+#include <ctime>
+#include <cstdlib>
+
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+/*
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+
+#include "compat/strncasecmp.h"
 #include "compat/access.h"
-#include "compat/rename.h"
-#include "compat/pdir.h"
-#include "common/eventlog.h"
-#include "prefs.h"
-#include "common/util.h"
 #include "common/field_sizes.h"
 #include "common/bnethash.h"
-#define CLAN_INTERNAL_ACCESS
-#define TEAM_INTERNAL_ACCESS
 #include "common/introtate.h"
-#include "team.h"
-#include "account.h"
+#include "common/xalloc.h"
+#include "common/elist.h"
+
 #include "common/hashtable.h"
 #include "storage.h"
-#include "storage_file.h"
-#include "file_plain.h"
-#include "file_cdb.h"
 #include "common/list.h"
 #include "connection.h"
 #include "watch.h"
-#include "clan.h"
 #undef ACCOUNT_INTERNAL_ACCESS
-#undef TEAM_INTERNAL_ACCESS
-#undef CLAN_INTERNAL_ACCESS
+*/
+#include "compat/strcasecmp.h"
+#include "compat/strerror.h"
+#include "compat/pdir.h"
+#include "common/eventlog.h"
+#include "common/list.h"
 #include "common/tag.h"
-#include "common/xalloc.h"
-#include "common/elist.h"
+#include "common/util.h"
+
+#define CLAN_INTERNAL_ACCESS
+#define TEAM_INTERNAL_ACCESS
+#include "team.h"
+#include "account.h"
+#include "file_plain.h"
+#include "file_cdb.h"
+#include "prefs.h"
+#include "clan.h"
+#undef CLAN_INTERNAL_ACCESS
+#undef TEAM_INTERNAL_ACCESS
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -181,10 +153,10 @@ static int file_init(const char *path)
 
     copy = xstrdup(path);
     tmp = copy;
-    while ((tok = strtok(tmp, ";")) != NULL)
+    while ((tok = std::strtok(tmp, ";")) != NULL)
     {
 	tmp = NULL;
-	if ((p = strchr(tok, '=')) == NULL)
+	if ((p = std::strchr(tok, '=')) == NULL)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "invalid storage_path, no '=' present in token");
 	    xfree((void *) copy);
@@ -273,24 +245,24 @@ static t_storage_info *file_create_account(const char *username)
     {
 	char const *safename;
 
-	if (!strcmp(username, defacct))
+	if (!std::strcmp(username, defacct))
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "username as defacct not allowed");
 	    return NULL;
 	}
 
-	if (!(safename = escape_fs_chars(username, strlen(username))))
+	if (!(safename = escape_fs_chars(username, std::strlen(username))))
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "could not escape username");
 	    return NULL;
 	}
-	temp = (char*)xmalloc(strlen(accountsdir) + 1 + strlen(safename) + 1);	/* dir + / + name + NUL */
-	sprintf(temp, "%s/%s", accountsdir, safename);
+	temp = (char*)xmalloc(std::strlen(accountsdir) + 1 + std::strlen(safename) + 1);	/* dir + / + name + NUL */
+	std::sprintf(temp, "%s/%s", accountsdir, safename);
 	xfree((void *) safename);	/* avoid warning */
     } else
     {
-	temp = (char*)xmalloc(strlen(accountsdir) + 1 + 8 + 1);	/* dir + / + uid + NUL */
-	sprintf(temp, "%s/%06u", accountsdir, maxuserid + 1);	/* FIXME: hmm, maybe up the %06 to %08... */
+	temp = (char*)xmalloc(std::strlen(accountsdir) + 1 + 8 + 1);	/* dir + / + uid + NUL */
+	std::sprintf(temp, "%s/%06u", accountsdir, maxuserid + 1);	/* FIXME: hmm, maybe up the %06 to %08... */
     }
 
     return temp;
@@ -318,8 +290,8 @@ static int file_write_attrs(t_storage_info * info, const t_hlist *attributes)
 	return -1;
     }
 
-    tempname = (char*)xmalloc(strlen(accountsdir) + 1 + strlen(BNETD_ACCOUNT_TMP) + 1);
-    sprintf(tempname, "%s/%s", accountsdir, BNETD_ACCOUNT_TMP);
+    tempname = (char*)xmalloc(std::strlen(accountsdir) + 1 + std::strlen(BNETD_ACCOUNT_TMP) + 1);
+    std::sprintf(tempname, "%s/%s", accountsdir, BNETD_ACCOUNT_TMP);
 
     if (file->write_attrs(tempname, attributes))
     {
@@ -328,9 +300,9 @@ static int file_write_attrs(t_storage_info * info, const t_hlist *attributes)
 	return -1;
     }
 
-    if (p_rename(tempname, (const char *) info) < 0)
+    if (std::rename(tempname, (const char *) info) < 0)
     {
-	eventlog(eventlog_level_error, __FUNCTION__, "could not rename account file to \"%s\" (rename: %s)", (char *) info, pstrerror(errno));
+	eventlog(eventlog_level_error, __FUNCTION__, "could not std::rename account file to \"%s\" (std::rename: %s)", (char *) info, pstrerror(errno));
 	xfree(tempname);
 	return -1;
     }
@@ -445,8 +417,8 @@ static int file_read_accounts(int flag,t_read_accounts_func cb, void *data)
 	if (dentry[0] == '.')
 	    continue;
 
-	pathname = (char*)xmalloc(strlen(accountsdir) + 1 + strlen(dentry) + 1);	/* dir + / + file + NUL */
-	sprintf(pathname, "%s/%s", accountsdir, dentry);
+	pathname = (char*)xmalloc(std::strlen(accountsdir) + 1 + std::strlen(dentry) + 1);	/* dir + / + file + NUL */
+	std::sprintf(pathname, "%s/%s", accountsdir, dentry);
 
 	cb(pathname, data);
     }
@@ -471,8 +443,8 @@ static t_storage_info *file_read_account(const char *accname, unsigned uid)
      * PS: yes its kind of a hack, we will make a proper index file
      */
     if (accname && prefs_get_savebyname()) {
-	pathname = (char*)xmalloc(strlen(accountsdir) + 1 + strlen(accname) + 1);	/* dir + / + file + NUL */
-	sprintf(pathname, "%s/%s", accountsdir, accname);
+	pathname = (char*)xmalloc(std::strlen(accountsdir) + 1 + std::strlen(accname) + 1);	/* dir + / + file + NUL */
+	std::sprintf(pathname, "%s/%s", accountsdir, accname);
 	if (access(pathname, F_OK))	/* if it doesn't exist */
 	{
 	    xfree((void *) pathname);
@@ -486,7 +458,7 @@ static t_storage_info *file_read_account(const char *accname, unsigned uid)
 
 static int file_cmp_info(t_storage_info * info1, t_storage_info * info2)
 {
-    return strcmp((const char *) info1, (const char *) info2);
+    return std::strcmp((const char *) info1, (const char *) info2);
 }
 
 static const char *file_escape_key(const char *key)
@@ -501,7 +473,7 @@ static int file_load_clans(t_load_clans_func cb)
     char *pathname;
     int clantag;
     t_clan *clan;
-    FILE *fp;
+    std::FILE *fp;
     char *clanname, *motd, *p;
     char line[1024];
     int cid, creation_time;
@@ -522,23 +494,23 @@ static int file_load_clans(t_load_clans_func cb)
     }
     eventlog(eventlog_level_trace, __FUNCTION__, "start reading clans");
 
-    pathname = (char*)xmalloc(strlen(clansdir) + 1 + 4 + 1);
+    pathname = (char*)xmalloc(std::strlen(clansdir) + 1 + 4 + 1);
     while ((dentry = p_readdir(clandir)) != NULL)
     {
 	if (dentry[0] == '.')
 	    continue;
 
-	if (strlen(dentry) > 4)
+	if (std::strlen(dentry) > 4)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "found too long clan filename in clandir \"%s\"", dentry);
 	    continue;
 	}
 
-	sprintf(pathname, "%s/%s", clansdir, dentry);
+	std::sprintf(pathname, "%s/%s", clansdir, dentry);
 
 	clantag = str_to_clantag(dentry);
 
-	if ((fp = fopen(pathname, "r")) == NULL)
+	if ((fp = std::fopen(pathname, "r")) == NULL)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "can't open clanfile \"%s\"", pathname);
 	    continue;
@@ -547,7 +519,7 @@ static int file_load_clans(t_load_clans_func cb)
 	clan = (t_clan*)xmalloc(sizeof(t_clan));
 	clan->clantag = clantag;
 
-	if (!fgets(line, 1024, fp))
+	if (!std::fgets(line, 1024, fp))
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "invalid clan file: no first line");
 	    xfree((void*)clan);
@@ -562,7 +534,7 @@ static int file_load_clans(t_load_clans_func cb)
 	    continue;
 	}
 	clanname++;
-	p = strchr(clanname, '"');
+	p = std::strchr(clanname, '"');
 	if (!p)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "invalid clan file: invalid first line");
@@ -570,7 +542,7 @@ static int file_load_clans(t_load_clans_func cb)
 	    continue;
 	}
 	*p = '\0';
-	if (strlen(clanname) >= CLAN_NAME_MAX)
+	if (std::strlen(clanname) >= CLAN_NAME_MAX)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "invalid clan file: invalid first line");
 	    xfree((void*)clan);
@@ -592,7 +564,7 @@ static int file_load_clans(t_load_clans_func cb)
 	    continue;
 	}
 	motd = p + 1;
-	p = strchr(motd, '"');
+	p = std::strchr(motd, '"');
 	if (!p)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "invalid clan file: invalid first line");
@@ -601,7 +573,7 @@ static int file_load_clans(t_load_clans_func cb)
 	}
 	*p = '\0';
 
-	if (sscanf(p + 1, ",%d,%d\n", &cid, &creation_time) != 2)
+	if (std::sscanf(p + 1, ",%d,%d\n", &cid, &creation_time) != 2)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "invalid first line in clanfile");
 	    xfree((void*)clan);
@@ -610,16 +582,16 @@ static int file_load_clans(t_load_clans_func cb)
 	clan->clanname = xstrdup(clanname);
 	clan->clan_motd = xstrdup(motd);
 	clan->clanid = cid;
-	clan->creation_time = (time_t) creation_time;
+	clan->creation_time = (std::time_t) creation_time;
 	clan->created = 1;
 	clan->modified = 0;
 	clan->channel_type = prefs_get_clan_channel_default_private();
 
-	eventlog(eventlog_level_trace, __FUNCTION__, "name: %s motd: %s clanid: %i time: %i", clanname, motd, cid, creation_time);
+	eventlog(eventlog_level_trace, __FUNCTION__, "name: %s motd: %s clanid: %i std::time: %i", clanname, motd, cid, creation_time);
 
 	clan->members = list_create();
 
-	while (fscanf(fp, "%i,%c,%i\n", &member_uid, &member_status, &member_join_time) == 3)
+	while (std::fscanf(fp, "%i,%c,%i\n", &member_uid, &member_status, &member_join_time) == 3)
 	{
 	    member = (t_clanmember*)xmalloc(sizeof(t_clanmember));
 	    if (!(member->memberacc = accountlist_find_account_by_uid(member_uid)))
@@ -632,7 +604,7 @@ static int file_load_clans(t_load_clans_func cb)
 	    member->join_time = member_join_time;
 	    member->clan = clan;
 
-	    if ((member->status == CLAN_NEW) && (time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
+	    if ((member->status == CLAN_NEW) && (std::time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
 	    {
 		member->status = CLAN_PEON;
 		clan->modified = 1;
@@ -644,7 +616,7 @@ static int file_load_clans(t_load_clans_func cb)
 	    eventlog(eventlog_level_trace, __FUNCTION__, "added member: uid: %i status: %c join_time: %i", member_uid, member_status + '0', member_join_time);
 	}
 
-	fclose(fp);
+	std::fclose(fp);
 
 	cb(clan);
 
@@ -663,23 +635,23 @@ static int file_load_clans(t_load_clans_func cb)
 
 static int file_write_clan(void *data)
 {
-    FILE *fp;
+    std::FILE *fp;
     t_elem *curr;
     t_clanmember *member;
     char *clanfile;
     t_clan *clan = (t_clan *) data;
 
-    clanfile = (char*)xmalloc(strlen(clansdir) + 1 + 4 + 1);
-    sprintf(clanfile, "%s/%c%c%c%c", clansdir, clan->clantag >> 24, (clan->clantag >> 16) & 0xff, (clan->clantag >> 8) & 0xff, clan->clantag & 0xff);
+    clanfile = (char*)xmalloc(std::strlen(clansdir) + 1 + 4 + 1);
+    std::sprintf(clanfile, "%s/%c%c%c%c", clansdir, clan->clantag >> 24, (clan->clantag >> 16) & 0xff, (clan->clantag >> 8) & 0xff, clan->clantag & 0xff);
 
-    if ((fp = fopen(clanfile, "w")) == NULL)
+    if ((fp = std::fopen(clanfile, "w")) == NULL)
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "can't open clanfile \"%s\"", clanfile);
 	xfree((void *) clanfile);
 	return -1;
     }
 
-    fprintf(fp, "\"%s\",\"%s\",%i,%i\n", clan->clanname, clan->clan_motd, clan->clanid, (int) clan->creation_time);
+    std::fprintf(fp, "\"%s\",\"%s\",%i,%i\n", clan->clanname, clan->clan_motd, clan->clanid, (int) clan->creation_time);
 
     LIST_TRAVERSE(clan->members, curr)
     {
@@ -688,12 +660,12 @@ static int file_write_clan(void *data)
 	    eventlog(eventlog_level_error, __FUNCTION__, "got NULL elem in list");
 	    continue;
 	}
-	if ((member->status == CLAN_NEW) && (time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
+	if ((member->status == CLAN_NEW) && (std::time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
 	    member->status = CLAN_PEON;
-	fprintf(fp, "%i,%c,%u\n", account_get_uid((t_account*)member->memberacc), member->status + '0', (unsigned) member->join_time);
+	std::fprintf(fp, "%i,%c,%u\n", account_get_uid((t_account*)member->memberacc), member->status + '0', (unsigned) member->join_time);
     }
 
-    fclose(fp);
+    std::fclose(fp);
     xfree((void *) clanfile);
     return 0;
 }
@@ -702,11 +674,11 @@ static int file_remove_clan(int clantag)
 {
     char *tempname;
 
-    tempname = (char*)xmalloc(strlen(clansdir) + 1 + 4 + 1);
-    sprintf(tempname, "%s/%c%c%c%c", clansdir, clantag >> 24, (clantag >> 16) & 0xff, (clantag >> 8) & 0xff, clantag & 0xff);
-    if (remove((const char *) tempname) < 0)
+    tempname = (char*)xmalloc(std::strlen(clansdir) + 1 + 4 + 1);
+    std::sprintf(tempname, "%s/%c%c%c%c", clansdir, clantag >> 24, (clantag >> 16) & 0xff, (clantag >> 8) & 0xff, clantag & 0xff);
+    if (std::remove((const char *) tempname) < 0)
     {
-	eventlog(eventlog_level_error, __FUNCTION__, "could not delete clan file \"%s\" (remove: %s)", (char *) tempname, pstrerror(errno));
+	eventlog(eventlog_level_error, __FUNCTION__, "could not delete clan file \"%s\" (std::remove: %s)", (char *) tempname, pstrerror(errno));
 	xfree(tempname);
 	return -1;
     }
@@ -726,7 +698,7 @@ static int file_load_teams(t_load_teams_func cb)
     char *pathname;
     unsigned int teamid;
     t_team *team;
-    FILE *fp;
+    std::FILE *fp;
     char * line;
     unsigned int fteamid,lastgame;
     unsigned char size;
@@ -746,23 +718,23 @@ static int file_load_teams(t_load_teams_func cb)
     }
     eventlog(eventlog_level_trace, __FUNCTION__, "start reading teams");
 
-    pathname = (char*)xmalloc(strlen(teamsdir) + 1 + 8 + 1);
+    pathname = (char*)xmalloc(std::strlen(teamsdir) + 1 + 8 + 1);
     while ((dentry = p_readdir(teamdir)) != NULL)
     {
 	if (dentry[0] == '.')
 	    continue;
 
-	if (strlen(dentry) != 8)
+	if (std::strlen(dentry) != 8)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "found invalid team filename in teamdir \"%s\"", dentry);
 	    continue;
 	}
 
-	sprintf(pathname, "%s/%s", teamsdir, dentry);
+	std::sprintf(pathname, "%s/%s", teamsdir, dentry);
 
-	teamid = (unsigned int)strtoul(dentry,NULL,16); // we use hexadecimal teamid as filename
+	teamid = (unsigned int)std::strtoul(dentry,NULL,16); // we use hexadecimal teamid as filename
 
-	if ((fp = fopen(pathname, "r")) == NULL)
+	if ((fp = std::fopen(pathname, "r")) == NULL)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "can't open teamfile \"%s\"", pathname);
 	    continue;
@@ -777,7 +749,7 @@ static int file_load_teams(t_load_teams_func cb)
 	    goto load_team_failure;
 	}
 
-	if (sscanf(line,"%u,%c,%4s,%u",&fteamid,&size,clienttag,&lastgame)!=4)
+	if (std::sscanf(line,"%u,%c,%4s,%u",&fteamid,&size,clienttag,&lastgame)!=4)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"invalid team file: invalid number of arguments on first line");
 	    goto load_team_failure;
@@ -802,7 +774,7 @@ static int file_load_teams(t_load_teams_func cb)
 	    eventlog(eventlog_level_error,__FUNCTION__,"invalid team file: invalid clienttag");
 	    goto load_team_failure;
 	}
-	team->lastgame = (time_t)lastgame;
+	team->lastgame = (std::time_t)lastgame;
 
 	if (!(line= file_get_line(fp)))
 	{
@@ -810,7 +782,7 @@ static int file_load_teams(t_load_teams_func cb)
 	    goto load_team_failure;
 	}
 
-	if (sscanf(line,"%u,%u,%u,%u",&team->teammembers[0],&team->teammembers[1],&team->teammembers[2],&team->teammembers[3])!=4)
+	if (std::sscanf(line,"%u,%u,%u,%u",&team->teammembers[0],&team->teammembers[1],&team->teammembers[2],&team->teammembers[3])!=4)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"invalid team file: invalid number of arguments on 2nd line");
 	    goto load_team_failure;
@@ -844,7 +816,7 @@ static int file_load_teams(t_load_teams_func cb)
 	    goto load_team_failure;
 	}
 
-	if (sscanf(line,"%d,%d,%d,%d,%d",&team->wins,&team->losses,&team->xp,&team->level,&team->rank)!=5)
+	if (std::sscanf(line,"%d,%d,%d,%d,%d",&team->wins,&team->losses,&team->xp,&team->level,&team->rank)!=5)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"invalid team file: invalid number of arguments on 3rd line");
 	    goto load_team_failure;
@@ -861,7 +833,7 @@ static int file_load_teams(t_load_teams_func cb)
 	load_team_success:
 
 	file_get_line(NULL); // clear file_get_line buffer
-	fclose(fp);
+	std::fclose(fp);
 
 
     }
@@ -879,25 +851,25 @@ static int file_load_teams(t_load_teams_func cb)
 
 static int file_write_team(void *data)
 {
-    FILE *fp;
+    std::FILE *fp;
     char *teamfile;
     t_team *team = (t_team *) data;
 
-    teamfile = (char*)xmalloc(strlen(teamsdir) + 1 + 8 + 1);
-    sprintf(teamfile, "%s/%08x", teamsdir, team->teamid);
+    teamfile = (char*)xmalloc(std::strlen(teamsdir) + 1 + 8 + 1);
+    std::sprintf(teamfile, "%s/%08x", teamsdir, team->teamid);
 
-    if ((fp = fopen(teamfile, "w")) == NULL)
+    if ((fp = std::fopen(teamfile, "w")) == NULL)
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "can't open teamfile \"%s\"", teamfile);
 	xfree((void *) teamfile);
 	return -1;
     }
 
-    fprintf(fp,"%u,%c,%s,%u\n",team->teamid,team->size+'0',clienttag_uint_to_str(team->clienttag),(unsigned int)team->lastgame);
-    fprintf(fp,"%u,%u,%u,%u\n",team->teammembers[0],team->teammembers[1],team->teammembers[2],team->teammembers[3]);
-    fprintf(fp,"%d,%d,%d,%d,%d\n",team->wins,team->losses,team->xp,team->level,team->rank);
+    std::fprintf(fp,"%u,%c,%s,%u\n",team->teamid,team->size+'0',clienttag_uint_to_str(team->clienttag),(unsigned int)team->lastgame);
+    std::fprintf(fp,"%u,%u,%u,%u\n",team->teammembers[0],team->teammembers[1],team->teammembers[2],team->teammembers[3]);
+    std::fprintf(fp,"%d,%d,%d,%d,%d\n",team->wins,team->losses,team->xp,team->level,team->rank);
 
-    fclose(fp);
+    std::fclose(fp);
     xfree((void *) teamfile);
 
     return 0;
@@ -908,11 +880,11 @@ static int file_remove_team(unsigned int teamid)
 
     char *tempname;
 
-    tempname = (char*)xmalloc(strlen(clansdir) + 1 + 8 + 1);
-    sprintf(tempname, "%s/%08x", clansdir, teamid);
-    if (remove((const char *) tempname) < 0)
+    tempname = (char*)xmalloc(std::strlen(clansdir) + 1 + 8 + 1);
+    std::sprintf(tempname, "%s/%08x", clansdir, teamid);
+    if (std::remove((const char *) tempname) < 0)
     {
-	eventlog(eventlog_level_error, __FUNCTION__, "could not delete team file \"%s\" (remove: %s)", (char *) tempname, pstrerror(errno));
+	eventlog(eventlog_level_error, __FUNCTION__, "could not delete team file \"%s\" (std::remove: %s)", (char *) tempname, pstrerror(errno));
 	xfree(tempname);
 	return -1;
     }

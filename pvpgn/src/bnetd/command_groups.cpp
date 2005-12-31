@@ -13,39 +13,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define COMMAND_GROUPS_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <math.h>
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include <errno.h>
+#define COMMAND_GROUPS_INTERNAL_ACCESS
+#include "command_groups.h"
+
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+
 #include "common/eventlog.h"
 #include "common/list.h"
-#include "compat/strerror.h"
-#include "prefs.h"
 #include "common/util.h"
 #include "common/xalloc.h"
-#include "command_groups.h"
+#include "compat/strerror.h"
+
 #include "common/setup_after.h"
 
 //#define COMMANDGROUPSDEBUG 1
@@ -57,7 +38,7 @@ namespace bnetd
 {
 
 static t_list * command_groups_head=NULL;
-static FILE * fp = NULL;
+static std::FILE * fp = NULL;
 
 extern int command_groups_load(char const * filename)
 {
@@ -73,8 +54,8 @@ extern int command_groups_load(char const * filename)
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
         return -1;
     }
-    if (!(fp = fopen(filename,"r"))) {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+    if (!(fp = std::fopen(filename,"r"))) {
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
         return -1;
     }
 
@@ -85,16 +66,16 @@ extern int command_groups_load(char const * filename)
 	if (buff[pos]=='\0' || buff[pos]=='#') {
             continue;
         }
-	if ((temp = strrchr(buff,'#'))) {
+	if ((temp = std::strrchr(buff,'#'))) {
 	    unsigned int len;
 	    unsigned int endpos;
 
             *temp = '\0';
-	    len = strlen(buff)+1;
+	    len = std::strlen(buff)+1;
             for (endpos=len-1; buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
             buff[endpos+1] = '\0';
         }
-	if (!(temp = strtok(buff," \t"))) { /* strtok modifies the string it is passed */
+	if (!(temp = std::strtok(buff," \t"))) { /* std::strtok modifies the string it is passed */
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing group on line %u of file \"%s\"",line,filename);
 	    continue;
 	}
@@ -106,7 +87,7 @@ extern int command_groups_load(char const * filename)
 	    eventlog(eventlog_level_error,__FUNCTION__,"group '%u' not within groups limits (1-8)",group);
 	    continue;
 	}
-	while ((command = strtok(NULL," \t"))) {
+	while ((command = std::strtok(NULL," \t"))) {
 	    entry = (t_command_groups*)xmalloc(sizeof(t_command_groups));
 	    entry->group = 1 << (group-1);
 	    entry->command = xstrdup(command);
@@ -117,7 +98,7 @@ extern int command_groups_load(char const * filename)
 	}
     }
     file_get_line(NULL); // clear file_get_line buffer
-    fclose(fp);
+    std::fclose(fp);
     return 0;
 }
 
@@ -151,7 +132,7 @@ extern unsigned int command_get_group(char const * command)
 	LIST_TRAVERSE(command_groups_head,curr) {
 	    if (!(entry = (t_command_groups*)elem_get_data(curr)))
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
-	    else if (!(strcmp(entry->command,command)))
+	    else if (!(std::strcmp(entry->command,command)))
 		return entry->group;
 	}
     }

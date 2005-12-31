@@ -18,30 +18,12 @@
 #ifndef INCLUDED_TIMER_TYPES
 #define INCLUDED_TIMER_TYPES
 
+#include <ctime>
+
 #ifdef JUST_NEED_TYPES
-# ifdef TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h>
-# else
-#  if HAVE_SYS_TIME_H
-#   include <sys/time.h>
-#  else
-#   include <time.h>
-#  endif
-# endif
 # include "connection.h"
 #else
 # define JUST_NEED_TYPES
-# ifdef TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h>
-# else
-#  if HAVE_SYS_TIME_H
-#   include <sys/time.h>
-#  else
-#   include <time.h>
-#  endif
-# endif
 # include "connection.h"
 # undef JUST_NEED_TYPES
 #endif
@@ -59,13 +41,13 @@ typedef union
     void *        p;
 } t_timer_data;
 
-typedef void (* t_timer_cb)(t_connection * owner, time_t when, t_timer_data data);
+typedef void (* t_timer_cb)(t_connection * owner, std::time_t when, t_timer_data data);
 
 typedef struct timer_struct
 #ifdef TIMER_INTERNAL_ACCESS
 {
     t_connection * owner; 	/* who to notify */
-    time_t         when;  	/* when the timer expires */
+    std::time_t         when;  	/* when the timer expires */
     t_timer_cb     cb;    	/* what to call */
     t_timer_data   data;  	/* data argument */
     t_elist	   owners;	/* list to the setup timers of same owner */
@@ -84,17 +66,9 @@ t_timer;
 #ifndef INCLUDED_TIMER_PROTOS
 #define INCLUDED_TIMER_PROTOS
 
+#include <ctime>
+
 #define JUST_NEED_TYPES
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
 #include "connection.h"
 #undef JUST_NEED_TYPES
 
@@ -106,9 +80,9 @@ namespace bnetd
 
 extern int timerlist_create(void);
 extern int timerlist_destroy(void);
-extern int timerlist_add_timer(t_connection * owner, time_t when, t_timer_cb cb, t_timer_data data);
+extern int timerlist_add_timer(t_connection * owner, std::time_t when, t_timer_cb cb, t_timer_data data);
 extern int timerlist_del_all_timers(t_connection * owner);
-extern int timerlist_check_timers(time_t when);
+extern int timerlist_check_timers(std::time_t when);
 
 }
 

@@ -73,7 +73,7 @@ AdBannerComponent::pick(t_clienttag ctag, unsigned  prev_id) const
     /* if this is the first ad, randomly choose an init sequence (if there is one) */
 	if (prev_id==0 && !adlist_init.empty())
 		return findRandom(adlist_init, ctag);
-//        return list_get_data_by_pos(adbannerlist_init_head,((unsigned int)rand())%adbannerlist_init_count);
+//        return list_get_data_by_pos(adbannerlist_init_head,((unsigned int)std::rand())%adbannerlist_init_count);
     /* eventlog(eventlog_level_debug,__FUNCTION__,"not sending init banner"); */
 
 	unsigned next_id = 0;
@@ -144,7 +144,7 @@ AdBannerComponent::findRandom(const AdCtagRefMap& where, t_clienttag ctag) const
 	AdCtagRefMap::const_iterator cit(where.find(ctag));
 	if (cit != where.end() && cit->second.size() > 0)
 	{
-		unsigned pos = (static_cast<unsigned>(rand())) % cit->second.size();
+		unsigned pos = (static_cast<unsigned>(std::rand())) % cit->second.size();
 		/* TODO: optimize this linear search ? */
 		for(AdIdRefMap::const_iterator it(cit->second.begin()); it != cit->second.end(); ++it)
 		{
@@ -230,7 +230,7 @@ AdBannerComponent::AdBannerComponent(const std::string& fname)
 	std::ifstream fp(fname.c_str());
 	if (!fp)
 	{
-		ERROR2("could not open adbanner file \"%s\" for reading (fopen: %s)", fname.c_str(), pstrerror(errno));
+		ERROR2("could not open adbanner file \"%s\" for reading (std::fopen: %s)", fname.c_str(), pstrerror(errno));
 		throw SystemError("open");
 	}
 

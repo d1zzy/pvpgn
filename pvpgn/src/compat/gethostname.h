@@ -26,7 +26,9 @@
 #ifdef WIN32
 # include <winsock2.h>
 #endif
-
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
 #ifndef HAVE_GETHOSTNAME
 # error "This program requires gethostname()"
 #endif

@@ -20,6 +20,12 @@
 
 /* Unix puts this in unistd.h, Borland/Win32 puts it in dir.h, MSVC++/Win32 puts it in direct.h */
 /* Windows and MacOS also typically take only one argument */
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
 #ifdef HAVE_DIR_H
 # include <dir.h>
 #endif
