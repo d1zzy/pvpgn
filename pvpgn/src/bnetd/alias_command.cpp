@@ -530,7 +530,7 @@ extern int aliasfile_unload(void)
 
 	    if (list_remove_elem(aliaslist_head,&elem1)<0)
 	    {
-	        eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove alias");
+	        eventlog(eventlog_level_error,__FUNCTION__,"could not remove alias");
 		continue;
 	    }
 	    if (alias->output)
@@ -545,7 +545,7 @@ extern int aliasfile_unload(void)
 
 		    if (list_remove_elem(alias->output,&elem2)<0)
 		    {
-		        eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove output");
+		        eventlog(eventlog_level_error,__FUNCTION__,"could not remove output");
 			continue;
 		    }
 		    xfree((void *)output->line); /* avoid warning */

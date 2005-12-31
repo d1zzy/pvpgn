@@ -587,7 +587,7 @@ static int file_load_clans(t_load_clans_func cb)
 	clan->modified = 0;
 	clan->channel_type = prefs_get_clan_channel_default_private();
 
-	eventlog(eventlog_level_trace, __FUNCTION__, "name: %s motd: %s clanid: %i std::time: %i", clanname, motd, cid, creation_time);
+	eventlog(eventlog_level_trace, __FUNCTION__, "name: %s motd: %s clanid: %i time: %i", clanname, motd, cid, creation_time);
 
 	clan->members = list_create();
 

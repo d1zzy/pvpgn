@@ -137,9 +137,9 @@ extern t_binary_ladder_load_result binary_ladder_load(t_binary_ladder_types type
   std::FILE * fp;
 
   //TODO: load from file and if this fails return binary_ladder_load_failed
-  //      then make sure ladder std::gets loaded somehow else (form accounts)
+  //      then make sure ladder gets loaded somehow else (form accounts)
   //      compare checksum - and if it differs return load_invalid
-  //      then make sure ladder std::gets flushed and then loaded from accounts
+  //      then make sure ladder gets flushed and then loaded from accounts
   //      on success don't load from accounts
 
   if ((!(ladder_name = binary_ladder_type_to_filename(type))) ||
