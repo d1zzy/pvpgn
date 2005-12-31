@@ -1621,11 +1621,11 @@ extern unsigned int account_get_friend( t_account * account, int friendnum)
             {
         	tmp = account_get_uid(acct);
                 account_set_friend(account,friendnum,tmp);
-                account_set_strattr(account,key,NULL); //std::remove old username-based friend now
+                account_set_strattr(account,key,NULL); //remove old username-based friend now
 
                 return tmp;
 	    }
-            account_set_strattr(account,key,NULL); //std::remove old username-based friend now
+            account_set_strattr(account,key,NULL); //remove old username-based friend now
 	    eventlog(eventlog_level_warn, __FUNCTION__, "unexistant friend name ('%s') in old storage format", name);
 	    return 0;
         }
@@ -1964,7 +1964,7 @@ extern int account_adjust_ladder_level(t_account * account, t_clienttag clientta
 
 
 //Other funcs used in profiles and PG saving
-extern void account_get_raceicon(t_account * account, char * raceicon, unsigned int * raceiconnumber, unsigned int * wins, t_clienttag clienttag) //Based of wins for each race, Race with most wins, std::gets shown in chat channel
+extern void account_get_raceicon(t_account * account, char * raceicon, unsigned int * raceiconnumber, unsigned int * wins, t_clienttag clienttag) //Based of wins for each race, Race with most wins, gets shown in chat channel
 {
 	unsigned int humans;
 	unsigned int orcs;

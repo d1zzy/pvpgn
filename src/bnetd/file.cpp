@@ -189,7 +189,7 @@ extern int file_send(t_connection * c, char const * rawname, unsigned int adid, 
 	if (!(fp = std::fopen(filename,"rb")))
 	{
 	    /* FIXME: check for lower-case version of filename */
-	    eventlog(eventlog_level_error,__FUNCTION__,"stat() succeeded yet could not open file \"%s\" for reading (std::fclose: %s)",filename,std::strerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__, "stat() succeeded yet could not open file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
 	    filelen = 0;
 	}
 	xfree((void *)filename); /* avoid warning */

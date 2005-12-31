@@ -1007,7 +1007,7 @@ Except offset 0x09, only Byte 1-7 contribute to the info data, bit 0 seems to be
 Decoding these bytes works as follows:
 If the corresponding bit is a '1' then the character is moved over directly.
 If the corresponding bit is a '0' then subtract 1 from the character.
-(We decode info data and std::remove the bitmask bytes from info data in following description)
+(We decode info data and remove the bitmask bytes from info data in following description)
     0x09 -- 5 bytes (char[5], map options)
     0x0e -- 1 bytes (0, seems to be a seperate sign)
     0x0f -- 2 bytes (short, mapsize x)

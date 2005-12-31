@@ -683,7 +683,7 @@ static int _client_anongame_infos(t_connection * c, t_packet const * const packe
 	    }
 	    //Adding a last padding null-byte
 	    if (server_tag_count == bn_byte_get(packet->u.client_findanongame_inforeq.noitems))
-		packet_append_data(rpacket, &last_packet, 1); /* only last packet in group std::gets 0x00 */
+		packet_append_data(rpacket, &last_packet, 1); /* only last packet in group gets 0x00 */
 	    else
 		packet_append_data(rpacket, &other_packet, 1); /* the rest get 0x01 */
 
@@ -696,7 +696,7 @@ static int _client_anongame_infos(t_connection * c, t_packet const * const packe
     return 0;
 }
 
-/* tournament notice disabled at this std::time, but responce is sent to cleint */
+/* tournament notice disabled at this time, but responce is sent to cleint */
 static int _client_anongame_tournament(t_connection * c, t_packet const * const packet)
 {
     t_packet * rpacket;
@@ -867,13 +867,13 @@ static int _client_anongame_tournament(t_connection * c, t_packet const * const 
 
 static unsigned int _tournament_time_convert(unsigned int time)
 {
-    /* it works, don't ask me how */ /* some std::time drift reportd by testers */
+    /* it works, don't ask me how */ /* some time drift reportd by testers */
     unsigned int tmp1, tmp2, tmp3;
 
     tmp1 = time-1059179400;	/* 0x3F21CB88  */
     tmp2 = tmp1*0.59604645;
     tmp3 = tmp2+3276999960U;
-    /*eventlog(eventlog_level_trace,__FUNCTION__,"std::time: 0x%08x, tmp1: 0x%08x, tmp2 0x%08x, tmp3 0x%08x",std::time,tmp1,tmp2,tmp3);*/
+    /*eventlog(eventlog_level_trace,__FUNCTION__,"time: 0x%08x, tmp1: 0x%08x, tmp2 0x%08x, tmp3 0x%08x",time,tmp1,tmp2,tmp3);*/
 
     return tmp3;
 }

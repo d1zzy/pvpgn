@@ -317,7 +317,7 @@ static int versioncheck_compare_exeinfo(t_parsed_exeinfo * pattern, t_parsed_exe
             }
 	if ((pattern->time!=-1) && prefs_get_version_exeinfo_maxdiff() && (abs(pattern->time-match->time)>(signed)prefs_get_version_exeinfo_maxdiff()))
             {
-            eventlog(eventlog_level_trace,__FUNCTION__,"std::time differs by %i",abs(pattern->time-match->time));
+            eventlog(eventlog_level_trace,__FUNCTION__,"time differs by %i",abs(pattern->time-match->time));
 	    return 1;
             }
 	return 0; /* ok */
@@ -636,7 +636,7 @@ extern int versioncheck_unload(void)
 	    }
 
 	    if (list_remove_elem(versioninfo_head,&curr)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
 
 	    if (vi->parsed_exeinfo)
             {

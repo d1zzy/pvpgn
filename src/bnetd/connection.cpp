@@ -523,7 +523,7 @@ extern void conn_destroy(t_connection * c, t_elem ** elem, int conn_or_dead_list
 
     if (list_remove_data(conn_head,c,(conn_or_dead_list)?&curr:elem)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
+	eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
 	return;
     }
 
@@ -748,7 +748,7 @@ extern void conn_set_class(t_connection * c, t_conn_class cclass)
 		conn_set_game_port(c,(unsigned short)prefs_get_udptest_port());
 	    udptest_send(c);
 
-	    /* std::remove any init timers */
+	    /* remove any init timers */
 	    if (oldclass == conn_class_init) timerlist_del_all_timers(c);
 	    delta = prefs_get_latency();
 	    data.n = delta;
@@ -777,7 +777,7 @@ extern void conn_set_class(t_connection * c, t_conn_class cclass)
 		}
 	    }
 
-	    /* std::remove any init timers */
+	    /* remove any init timers */
 	    if (oldclass == conn_class_init) timerlist_del_all_timers(c);
 	    conn_send_issue(c);
 
@@ -793,7 +793,7 @@ extern void conn_set_class(t_connection * c, t_conn_class cclass)
 	}
 
 	default:
-	    /* std::remove any init timers */
+	    /* remove any init timers */
 	    if (oldclass == conn_class_init)
 		timerlist_del_all_timers(c);
 	    break;
@@ -832,7 +832,7 @@ extern void conn_set_state(t_connection * c, t_conn_state state)
     }
     else if (state != conn_state_destroy && c->protocol.state == conn_state_destroy)
 	if (list_remove_data(conn_dead, c, &elem)) {
-	    eventlog(eventlog_level_error, __FUNCTION__, "could not std::remove dead connection");
+	    eventlog(eventlog_level_error, __FUNCTION__, "could not remove dead connection");
 	    return;
 	}
 
@@ -1719,7 +1719,7 @@ extern int conn_del_ignore(t_connection * c, t_account const * account)
     c->protocol.chat.ignore_list[c->protocol.chat.ignore_count-1] = c->protocol.chat.ignore_list[i];
     c->protocol.chat.ignore_list[i] = temp;
 
-    if (c->protocol.chat.ignore_count==1) /* some std::realloc()s are buggy */
+    if (c->protocol.chat.ignore_count==1) /* some realloc()s are buggy */
     {
 	xfree(c->protocol.chat.ignore_list);
 	newlist = NULL;
@@ -1902,7 +1902,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
     if(conn_set_leavegamewhisper_ack(c,0)<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"Unable to reset conn_set_leavegamewhisper_ack flag");
 
-	/* if you're entering a channel, make sure they didn't std::exit a game without telling us */
+	/* if you're entering a channel, make sure they didn't exit a game without telling us */
 	if (c->protocol.game)
 	{
             game_del_player(conn_get_game(c),c);

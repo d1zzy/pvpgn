@@ -360,10 +360,10 @@ extern int irc_welcome(t_connection * conn)
         std::sprintf(temp,":Maximum length exceeded");
     irc_send(conn,RPL_YOURHOST,temp);
 
-    temptime = server_get_starttime(); /* FIXME: This should be build std::time */
+    temptime = server_get_starttime(); /* FIXME: This should be build time */
     temptimestr = std::ctime(&temptime);
     if ((25+std::strlen(temptimestr)+1)<=MAX_IRC_MESSAGE_LEN)
-        std::sprintf(temp,":This server was created %s",temptimestr); /* FIXME: is std::ctime() portable? */
+        std::sprintf(temp,":This server was created %s",temptimestr); /* FIXME: is ctime() portable? */
     else
         std::sprintf(temp,":Maximum length exceeded");
     irc_send(conn,RPL_CREATED,temp);

@@ -108,14 +108,14 @@ static void usage(void)
 {
     std::fprintf(stderr,
             "usage: %s [<options>]\n"
-            "    -c std::FILE, --config=std::FILE   use std::FILE as configuration file (default is " BNETD_DEFAULT_CONF_FILE ")\n"
-            "    -d std::FILE, --hexdump=std::FILE  do hex dump of packets into std::FILE\n"
+            "    -c FILE, --config=FILE   use FILE as configuration file (default is " BNETD_DEFAULT_CONF_FILE ")\n"
+            "    -d FILE, --hexdump=FILE  do hex dump of packets into FILE\n"
 #ifdef DO_DAEMONIZE
             "    -f, --foreground         don't daemonize\n"
 #endif
-            "    -D, --debug              run in debug mode (run in foreground and std::log to stdout)\n"
-            "    -h, --help, --usage      show this information and std::exit\n"
-            "    -v, --version            print version number and std::exit\n"
+            "    -D, --debug              run in debug mode (run in foreground and log to stdout)\n"
+            "    -h, --help, --usage      show this information and exit\n"
+            "    -v, --version            print version number and exit\n"
 #ifdef WIN32
             "    Running as service functions:\n"
             "    --service                run as service\n"
