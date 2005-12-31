@@ -16,37 +16,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
+#include "handle_d2cs.h"
 
-#include <stddef.h>
-#include <stdlib.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include <cstring>
+#include <cstdio>
+
 #include "compat/strcasecmp.h"
-
-#include "connection.h"
-#include "realm.h"
-#include "account.h"
-#include "account_wrap.h"
-#include "game.h"
-#include "common/d2cs_bnetd_protocol.h"
+#include "common/eventlog.h"
+#include "common/bn_type.h"
+#include "common/addr.h"
 #include "common/bnethash.h"
 #include "common/bnethashconv.h"
-#include "common/eventlog.h"
-#include "common/queue.h"
-#include "common/packet.h"
-#include "common/addr.h"
-#include "common/bn_type.h"
-#include "prefs.h"
-#include "common/util.h"
-#include "common/field_sizes.h"
-#include "handle_d2cs.h"
 #include "common/tag.h"
-#include "common/xalloc.h"
+#include "common/util.h"
+
+#include "realm.h"
+#include "prefs.h"
+#include "account_wrap.h"
+#include "game.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -277,7 +264,7 @@ static int on_d2cs_charloginreq(t_connection * c, t_packet const * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad character name");
 		return -1;
 	}
-	pos+=strlen(charname)+1;
+	pos+=std::strlen(charname)+1;
 	if (!(portrait=packet_get_str_const(packet,pos,CHAR_PORTRAIT_LEN))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad character portrait");
 		return -1;
@@ -295,12 +282,12 @@ static int on_d2cs_charloginreq(t_connection * c, t_packet const * packet)
 		char revtag[8];
 
 		realmname = realm_get_name(realm);
-		temp=(char*)xmalloc(strlen(clienttag)+strlen(realmname)+1+strlen(charname)+1+
-			strlen(portrait)+1);
+		temp=(char*)xmalloc(std::strlen(clienttag)+std::strlen(realmname)+1+std::strlen(charname)+1+
+			std::strlen(portrait)+1);
 		reply = BNETD_D2CS_CHARLOGINREPLY_SUCCEED;
-		strcpy(revtag,clienttag);
+		std::strcpy(revtag,clienttag);
 		strreverse(revtag);
-		sprintf(temp,"%4s%s,%s,%s",revtag,realmname,charname,portrait);
+		std::sprintf(temp, "%4s%s,%s,%s",revtag,realmname,charname,portrait);
 		conn_set_charname(client,charname);
 		conn_set_realminfo(client,temp);
 		xfree(temp);

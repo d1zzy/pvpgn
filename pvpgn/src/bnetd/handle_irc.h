@@ -22,6 +22,9 @@
 #ifndef INCLUDED_HANDLE_IRC_PROTOS
 #define INCLUDED_HANDLE_IRC_PROTOS
 
+#include "common/packet.h"
+#include "connection.h"
+
 namespace pvpgn
 {
 

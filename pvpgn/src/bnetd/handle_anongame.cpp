@@ -16,42 +16,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include <errno.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "common/bn_type.h"
+#include "handle_anongame.h"
+
+#include <cstring>
+
 #include "common/eventlog.h"
-#include "common/packet.h"
-#include "common/queue.h"
+#include "common/bn_type.h"
+#include "common/bnettime.h"
 #include "common/tag.h"
 #include "common/list.h"
-#include "common/util.h"
-#include "common/xalloc.h"
-#include "common/bnettime.h"
-#include "connection.h"
-#include "team.h"
+
+#include "clan.h"
 #include "account.h"
 #include "account_wrap.h"
-#include "channel.h"
+#include "ladder.h"
+#include "team.h"
 #include "anongame.h"
 #include "anongame_infos.h"
-#include "anongame_maplists.h"
-#include "handle_anongame.h"
-#include "tournament.h"
 #include "server.h"
-#include "clan.h"
+#include "tournament.h"
+#include "channel.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -503,13 +487,13 @@ static int _client_anongame_get_icon(t_connection * c, t_packet const * const pa
         bn_byte_set(&rpacket->u.server_findanongame_iconreply.option, CLIENT_FINDANONGAME_GET_ICON);
         if ((uicon = account_get_user_icon(acc,clienttag)))
         {
-	    memcpy(&rpacket->u.server_findanongame_iconreply.curricon, uicon,4);
+	    std::memcpy(&rpacket->u.server_findanongame_iconreply.curricon, uicon,4);
         }
         else
         {
 	    account_get_raceicon(acc,&rico,&rlvl,&rwins,clienttag);
 	    sprintf(user_icon,"%1d%c3W",rlvl,rico);
-            memcpy(&rpacket->u.server_findanongame_iconreply.curricon,user_icon,4);
+            std::memcpy(&rpacket->u.server_findanongame_iconreply.curricon,user_icon,4);
         }
 
 	bn_byte_set(&rpacket->u.server_findanongame_iconreply.table_width, table_width);
@@ -562,10 +546,10 @@ static int _client_anongame_set_icon(t_connection * c, t_packet const * const pa
     desired_icon=bn_int_get(packet->u.client_findanongame.count);
     user_icon[4]=0;
     if (desired_icon==0){
-	strcpy(user_icon,"NULL");
+	std::strcpy(user_icon,"NULL");
 	eventlog(eventlog_level_info,__FUNCTION__,"[%d] Set icon packet to DEFAULT ICON [%4.4s]",conn_get_socket(c),user_icon);
     }else{
-	memcpy(user_icon,&desired_icon,4);
+	std::memcpy(user_icon,&desired_icon,4);
 	eventlog(eventlog_level_info,__FUNCTION__,"[%d] Set icon packet to ICON [%s]",conn_get_socket(c),user_icon);
     }
 
@@ -635,9 +619,9 @@ static int _client_anongame_infos(t_connection * c, t_packet const * const packe
 	    bn_byte_set(&rpacket->u.server_findanongame_inforeply.option, CLIENT_FINDANONGAME_INFOS);
 	    bn_int_set(&rpacket->u.server_findanongame_inforeply.count, 1);
 
-	    memcpy(&temp,(packet_get_data_const(packet,10+(i*8),4)),sizeof(int));
+	    std::memcpy(&temp,(packet_get_data_const(packet,10+(i*8),4)),sizeof(int));
 	    client_tag=bn_int_get(temp);
-	    memcpy(&temp,packet_get_data_const(packet,14+(i*8),4),sizeof(int));
+	    std::memcpy(&temp,packet_get_data_const(packet,14+(i*8),4),sizeof(int));
 	    client_tag_unk=bn_int_get(temp);
 
 	    switch (client_tag){

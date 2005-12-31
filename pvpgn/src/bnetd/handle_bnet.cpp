@@ -20,93 +20,54 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#define VERSIONCHECK_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#include <ctype.h>
-// amadeo
-#ifdef WIN32_GUI
-#include <win32/winmain.h>
-#endif
-// NonReal:
-#include <sys/stat.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS		/* FIXME: remove ? */
-# include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#ifdef WIN32
-#include "compat/socket.h"
-#endif
+#include "handle_bnet.h"
+
+#include <sstream>
+#include <string>
+#include <cstring>
+#include <cctype>
+
 #include "compat/strcasecmp.h"
-#include "compat/strncasecmp.h"
-#include "compat/strchr.h"
-#include "compat/strdup.h"
+#include "compat/snprintf.h"
 #include "common/packet.h"
-#include "common/bnet_protocol.h"
-#include "common/tag.h"
-#include "message.h"
 #include "common/eventlog.h"
-#include "command.h"
-#include "team.h"
-#include "account.h"
-#include "account_wrap.h"
-#include "realm.h"
-#include "connection.h"
-#include "channel.h"
-#include "game.h"
-#include "common/queue.h"
-#include "tick.h"
-#include "file.h"
-#include "prefs.h"
-#include "common/util.h"
+#include "common/tag.h"
+#include "common/bn_type.h"
+#include "common/addr.h"
+#include "common/bnettime.h"
+#include "common/trans.h"
+#include "common/list.h"
 #include "common/bnethash.h"
 #include "common/bnethashconv.h"
-#include "common/bn_type.h"
-#include "common/field_sizes.h"
-#include "ladder.h"
-#include "adbanner.h"
-#include "common/list.h"
-#include "common/bnettime.h"
-#include "common/addr.h"
-#include "game_conv.h"
-#include "autoupdate.h"
-#include "character.h"
-#include "versioncheck.h"
-#include "anongame.h"
-#include "handle_anongame.h"
 #include "common/proginfo.h"
-#include "clan.h"
-#include "handle_bnet.h"
+
 #include "handlers.h"
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
+#include "connection.h"
+#include "prefs.h"
+#include "versioncheck.h"
+#include "handle_anongame.h"
+#include "account.h"
+#include "account_wrap.h"
+#include "clan.h"
+#include "channel.h"
+#include "game.h"
+#include "game_conv.h"
+#include "ladder.h"
 #include "watch.h"
-#include "anongame_infos.h"
-#include "news.h"		//by Spider
-#include "friends.h"
+#include "realm.h"
+#include "adbanner.h"
+#include "character.h"
+#include "command.h"
+#include "tick.h"
+#include "message.h"
+#include "file.h"
+#include "news.h"
+#include "team.h"
 #include "server.h"
-#include "compat/uint.h"
-#include "common/trans.h"
-#include "common/xalloc.h"
-#include "common/lstr.h"
+#include "friends.h"
+#include "autoupdate.h"
+#include "anongame.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -396,7 +357,7 @@ static int _check_allowed_client(t_clienttag ctag)
 	    *q = '\0';
 	if (!strcasecmp(p, "all"))
 	    goto ok;
-	if (strlen(p) != 4)
+	if (std::strlen(p) != 4)
 	    continue;
 	if (ctag == tag_case_str_to_uint(p))
 	    goto ok;		/* client allowed */
@@ -455,7 +416,7 @@ static int _client_compinfo1(t_connection * c, t_packet const *const packet)
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad COMPINFO1 packet (missing or too long host)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(user = packet_get_str_const(packet, sizeof(t_client_compinfo1) + strlen(host) + 1, MAX_WINUSER_STR))) {
+	if (!(user = packet_get_str_const(packet, sizeof(t_client_compinfo1) + std::strlen(host) + 1, MAX_WINUSER_STR))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad COMPINFO1 packet (missing or too long user)", conn_get_socket(c));
 	    return -1;
 	}
@@ -501,7 +462,7 @@ static int _client_compinfo2(t_connection * c, t_packet const *const packet)
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad COMPINFO2 packet (missing or too long host)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(user = packet_get_str_const(packet, sizeof(t_client_compinfo2) + strlen(host) + 1, MAX_WINUSER_STR))) {
+	if (!(user = packet_get_str_const(packet, sizeof(t_client_compinfo2) + std::strlen(host) + 1, MAX_WINUSER_STR))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad COMPINFO2 packet (missing or too long user)", conn_get_socket(c));
 	    return -1;
 	}
@@ -550,17 +511,17 @@ static int _client_countryinfo1(t_connection * c, t_packet const *const packet)
 	    return -1;
 	}
 
-	if (!(countrycode = packet_get_str_const(packet, sizeof(t_client_countryinfo1) + strlen(langstr) + 1, MAX_COUNTRYCODE_STR))) {
+	if (!(countrycode = packet_get_str_const(packet, sizeof(t_client_countryinfo1) + std::strlen(langstr) + 1, MAX_COUNTRYCODE_STR))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad COUNTRYINFO1 packet (missing or too long countrycode)", conn_get_socket(c));
 	    return -1;
 	}
 
-	if (!(country = packet_get_str_const(packet, sizeof(t_client_countryinfo1) + strlen(langstr) + 1 + strlen(countrycode) + 1, MAX_COUNTRY_STR))) {
+	if (!(country = packet_get_str_const(packet, sizeof(t_client_countryinfo1) + std::strlen(langstr) + 1 + std::strlen(countrycode) + 1, MAX_COUNTRY_STR))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad COUNTRYINFO1 packet (missing or too long country)", conn_get_socket(c));
 	    return -1;
 	}
 
-	if (!(packet_get_str_const(packet, sizeof(t_client_countryinfo1) + strlen(langstr) + 1 + strlen(countrycode) + 1 + strlen(country) + 1, MAX_COUNTRYNAME_STR))) {
+	if (!(packet_get_str_const(packet, sizeof(t_client_countryinfo1) + std::strlen(langstr) + 1 + std::strlen(countrycode) + 1 + std::strlen(country) + 1, MAX_COUNTRYNAME_STR))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad COUNTRYINFO1 packet (missing or too long countryname)", conn_get_socket(c));
 	    return -1;
 	}
@@ -595,7 +556,7 @@ static int _client_countryinfo109(t_connection * c, t_packet const *const packet
 	    return -1;
 	}
 
-	if (!(countryname = packet_get_str_const(packet, sizeof(t_client_countryinfo_109) + strlen(langstr) + 1, MAX_COUNTRYNAME_STR))) {
+	if (!(countryname = packet_get_str_const(packet, sizeof(t_client_countryinfo_109) + std::strlen(langstr) + 1, MAX_COUNTRYNAME_STR))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad COUNTRYINFO_109 packet (missing or too long countryname)", conn_get_socket(c));
 	    return -1;
 	}
@@ -654,7 +615,7 @@ static int _client_countryinfo109(t_connection * c, t_packet const *const packet
 	    if ((conn_get_clienttag(c) == CLIENTTAG_WARCRAFT3_UINT)
 		|| (conn_get_clienttag(c) == CLIENTTAG_WAR3XP_UINT)) {
 		char padding[128];
-		memset(padding, 0, 128);
+		std::memset(padding, 0, 128);
 		packet_append_data(rpacket, padding, 128);
 	    }
 	    conn_push_outqueue(c, rpacket);
@@ -776,22 +737,22 @@ static int _client_createaccountw3(t_connection * c, t_packet const *const packe
     }
 
     /* convert plaintext password to uppercase */
-    strncpy(upass, plainpass, 16);
+    std::strncpy(upass, plainpass, 16);
     upass[16] = 0;
-    for (i = 0; i < strlen(upass); i++)
-	if (isascii((int) upass[i]) && islower((int) upass[i]))
-	    upass[i] = toupper((int) upass[i]);
+    for (i = 0; i < std::strlen(upass); i++)
+	if (std::islower((int) upass[i]))
+	    upass[i] = std::toupper((int) upass[i]);
 
     /* convert plaintext password to lowercase for sc etc. */
-    strncpy(lpass, plainpass, 16);
+    std::strncpy(lpass, plainpass, 16);
     lpass[16] = 0;
-    for (i = 0; i < strlen(lpass); i++)
-	if (isascii((int) lpass[i]) && isupper((int) lpass[i]))
-	    lpass[i] = tolower((int) lpass[i]);
+    for (i = 0; i < std::strlen(lpass); i++)
+	if (isupper((int) lpass[i]))
+	    lpass[i] = std::tolower((int) lpass[i]);
 
 
     //set password hash for sc etc.
-    bnet_hash(&sc_hash, strlen(lpass), lpass);
+    bnet_hash(&sc_hash, std::strlen(lpass), lpass);
     if (!accountlist_create_account(username, hash_get_str(sc_hash)))
 	bn_int_set(&rpacket->u.server_createaccount_w3.result, SERVER_CREATEACCOUNT_W3_RESULT_EXIST);
     else {
@@ -1153,7 +1114,7 @@ static int _client_authreq109(t_connection * c, t_packet const *const packet)
 	    failed = 1;
 	}
 	conn_set_clientexe(c, exeinfo);
-	pos += strlen(exeinfo) + 1;
+	pos += std::strlen(exeinfo) + 1;
 
 	if (!(owner = packet_get_str_const(packet, pos, MAX_OWNER_STR))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad AUTHREQ_109 (missing or too long owner)", conn_get_socket(c));
@@ -1290,7 +1251,7 @@ static int _client_cdkey(t_connection * c, t_packet const *const packet)
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CDKEY packet (missing or too long cdkey)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(owner = packet_get_str_const(packet, sizeof(t_client_cdkey) + strlen(cdkey) + 1, MAX_OWNER_STR))) {
+	if (!(owner = packet_get_str_const(packet, sizeof(t_client_cdkey) + std::strlen(cdkey) + 1, MAX_OWNER_STR))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CDKEY packet (missing or too long owner)", conn_get_socket(c));
 	    return -1;
 	}
@@ -1478,7 +1439,7 @@ static int _client_statsreq(t_connection * c, t_packet const *const packet)
     name_count = bn_int_get(packet->u.client_statsreq.name_count);
     key_count = bn_int_get(packet->u.client_statsreq.key_count);
 
-    for (i = 0, name_off = sizeof(t_client_statsreq); i < name_count && (name = packet_get_str_const(packet, name_off, UNCHECKED_NAME_STR)); i++, name_off += strlen(name) + 1);
+    for (i = 0, name_off = sizeof(t_client_statsreq); i < name_count && (name = packet_get_str_const(packet, name_off, UNCHECKED_NAME_STR)); i++, name_off += std::strlen(name) + 1);
 
     if (i < name_count) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STATSREQ packet (only %u names of %u)", conn_get_socket(c), i, name_count);
@@ -1497,12 +1458,12 @@ static int _client_statsreq(t_connection * c, t_packet const *const packet)
 
     myacc = conn_get_account(c);
 
-    for (i = 0, name_off = sizeof(t_client_statsreq); i < name_count && (name = packet_get_str_const(packet, name_off, UNCHECKED_NAME_STR)); i++, name_off += strlen(name) + 1) {
+    for (i = 0, name_off = sizeof(t_client_statsreq); i < name_count && (name = packet_get_str_const(packet, name_off, UNCHECKED_NAME_STR)); i++, name_off += std::strlen(name) + 1) {
 	reqacc = accountlist_find_account(name);
 	if (!reqacc)
 	    reqacc = myacc;
 
-	for (j = 0, key_off = keys_off; j < key_count && (key = packet_get_str_const(packet, key_off, MAX_ATTRKEY_STR)); j++, key_off += strlen(key) + 1) {
+	for (j = 0, key_off = keys_off; j < key_count && (key = packet_get_str_const(packet, key_off, MAX_ATTRKEY_STR)); j++, key_off += std::strlen(key) + 1) {
 	    if (*key == '\0')
 		continue;
 	    packet_append_string(rpacket, _attribute_req(reqacc, myacc, key));
@@ -2230,7 +2191,7 @@ static int _client_atinvitefriend(t_connection * c, t_packet const *const packet
 		eventlog(eventlog_level_error, "handle_bnet", "Could not get username from invite packet");
 		return -1;
 	    } else {
-		offset += strlen(invited_usernames[i]) + 1;
+		offset += std::strlen(invited_usernames[i]) + 1;
 		eventlog(eventlog_level_debug, "handle_bnet", "Added user %s to invite array.", invited_usernames[i]);
 	    }
 	}
@@ -2466,7 +2427,7 @@ static int _client_motdw3(t_connection * c, t_packet const *const packet)
     bn_int_set(&rpacket->u.server_motd_w3.timestamp, motdd.fnews + 1);
     bn_int_set(&rpacket->u.server_motd_w3.timestamp2, SERVER_MOTD_W3_WELCOME);
 
-    sprintf(serverinfo, "Welcome to the " PVPGN_SOFTWARE " Version " PVPGN_VERSION "\r\n\r\nThere are currently %u user(s) in %u games of %s, and %u user(s) playing %u games and chatting in %u channels in %s.\r\n%s", conn_get_user_count_by_clienttag(conn_get_clienttag(c)), game_get_count_by_clienttag(ctag), clienttag_get_title(conn_get_clienttag(c)), connlist_login_get_length(), gamelist_get_length(), channellist_get_length(), prefs_get_servername(),prefs_get_server_info());
+    snprintf(serverinfo, sizeof(serverinfo), "Welcome to the " PVPGN_SOFTWARE " Version " PVPGN_VERSION "\r\n\r\nThere are currently %u user(s) in %u games of %s, and %u user(s) playing %u games and chatting in %u channels in %s.\r\n%s", conn_get_user_count_by_clienttag(conn_get_clienttag(c)), game_get_count_by_clienttag(ctag), clienttag_get_title(conn_get_clienttag(c)), connlist_login_get_length(), gamelist_get_length(), channellist_get_length(), prefs_get_servername(),prefs_get_server_info());
 
     packet_append_string(rpacket, serverinfo);
 
@@ -2830,8 +2791,8 @@ static int _client_charlistreq(t_connection * c, t_packet const *const packet)
 	    unsigned int count;
 
 	    count = 0;
-	    tok1 = (char const *) strtok(temp, ",");	/* strtok modifies the string it is passed */
-	    tok2 = strtok(NULL, ",");
+	    tok1 = (char const *) std::strtok(temp, ",");	/* std::strtok modifies the string it is passed */
+	    tok2 = std::strtok(NULL, ",");
 	    while (tok1) {
 		if (!tok2) {
 		    eventlog(eventlog_level_error, __FUNCTION__, "[%d] account \"%s\" has bad character list \"%s\"", conn_get_socket(c), conn_get_username(c), temp);
@@ -2847,8 +2808,8 @@ static int _client_charlistreq(t_connection * c, t_packet const *const packet)
 		    count++;
 		} else
 		    eventlog(eventlog_level_error, __FUNCTION__, "[%d] character \"%s\" is missing", conn_get_socket(c), tok2);
-		tok1 = strtok(NULL, ",");
-		tok2 = strtok(NULL, ",");
+		tok1 = std::strtok(NULL, ",");
+		tok2 = std::strtok(NULL, ",");
 	    }
 	    xfree(temp);
 
@@ -2987,14 +2948,14 @@ static int _client_statsupdate(t_connection * c, t_packet const *const packet)
 	if (name_count != 1)
 	    eventlog(eventlog_level_warn, __FUNCTION__, "[%d] got suspicious STATSUPDATE packet (name_count=%u)", conn_get_socket(c), name_count);
 
-	for (i = 0, name_off = sizeof(t_client_statsupdate); i < name_count && (name = packet_get_str_const(packet, name_off, UNCHECKED_NAME_STR)); i++, name_off += strlen(name) + 1);
+	for (i = 0, name_off = sizeof(t_client_statsupdate); i < name_count && (name = packet_get_str_const(packet, name_off, UNCHECKED_NAME_STR)); i++, name_off += std::strlen(name) + 1);
 	if (i < name_count) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STATSUPDATE packet (only %u names of %u)", conn_get_socket(c), i, name_count);
 	    return -1;
 	}
 	keys_off = name_off;
 
-	for (i = 0, key_off = keys_off; i < key_count && (key = packet_get_str_const(packet, key_off, MAX_ATTRKEY_STR)); i++, key_off += strlen(key) + 1);
+	for (i = 0, key_off = keys_off; i < key_count && (key = packet_get_str_const(packet, key_off, MAX_ATTRKEY_STR)); i++, key_off += std::strlen(key) + 1);
 	if (i < key_count) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STATSUPDATE packet (only %u keys of %u)", conn_get_socket(c), i, key_count);
 	    return -1;
@@ -3008,9 +2969,9 @@ static int _client_statsupdate(t_connection * c, t_packet const *const packet)
 	    }
 	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] updating player profile for \"%s\"", conn_get_socket(c), conn_get_username(c));
 
-	    for (i = 0, name_off = sizeof(t_client_statsupdate); i < name_count && (name = packet_get_str_const(packet, name_off, UNCHECKED_NAME_STR)); i++, name_off += strlen(name) + 1)
-		for (j = 0, key_off = keys_off, val_off = vals_off; j < key_count && (key = packet_get_str_const(packet, key_off, MAX_ATTRKEY_STR)) && (val = packet_get_str_const(packet, val_off, MAX_ATTRVAL_STR)); j++, key_off += strlen(key) + 1, val_off += strlen(val) + 1)
-		    if (strlen(key) < 9 || strncasecmp(key, "profile\\", 8) != 0)
+	    for (i = 0, name_off = sizeof(t_client_statsupdate); i < name_count && (name = packet_get_str_const(packet, name_off, UNCHECKED_NAME_STR)); i++, name_off += std::strlen(name) + 1)
+		for (j = 0, key_off = keys_off, val_off = vals_off; j < key_count && (key = packet_get_str_const(packet, key_off, MAX_ATTRKEY_STR)) && (val = packet_get_str_const(packet, val_off, MAX_ATTRVAL_STR)); j++, key_off += std::strlen(key) + 1, val_off += std::strlen(val) + 1)
+		    if (std::strlen(key) < 9 || strncasecmp(key, "profile\\", 8) != 0)
 			eventlog(eventlog_level_error, __FUNCTION__, "[%d] got STATSUPDATE with suspicious key \"%s\" value \"%s\"", conn_get_socket(c), key, val);
 		    else
 			account_set_strattr(account, key, val);
@@ -3038,7 +2999,7 @@ static int _client_playerinforeq(t_connection * c, t_packet const *const packet)
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad PLAYERINFOREQ (missing or too long username)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(info = packet_get_str_const(packet, sizeof(t_client_playerinforeq) + strlen(username) + 1, MAX_PLAYERINFO_STR))) {
+	if (!(info = packet_get_str_const(packet, sizeof(t_client_playerinforeq) + std::strlen(username) + 1, MAX_PLAYERINFO_STR))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad PLAYERINFOREQ (missing or too long info)", conn_get_socket(c));
 	    return -1;
 	}
@@ -3140,6 +3101,7 @@ static int _client_joinchannel(t_connection * c, t_packet const *const packet)
     if ((channel = conn_get_channel(c)) && (strcasecmp(channel_get_name(channel), cname) == 0))
 	return 0;		//we are allready in this channel
 
+	std::string tmpstr;
     clienttag = conn_get_clienttag(c);
     if ((clienttag == CLIENTTAG_WARCRAFT3_UINT) || (clienttag == CLIENTTAG_WAR3XP_UINT)) {
 	conn_update_w3_playerinfo(c);
@@ -3156,7 +3118,15 @@ static int _client_joinchannel(t_connection * c, t_packet const *const packet)
 	    case CLIENT_JOINCHANNEL_GENERIC:
 
 		if ((user_clan = account_get_clan(account)) && (clantag = clan_get_clantag(user_clan)))
-		    sprintf((char *) cname, "Clan %c%c%c%c", (clantag >> 24), (clantag >> 16) & 0xff, (clantag >> 8) & 0xff, clantag & 0xff);
+		{
+			std::ostringstream ostr;
+			ostr << "Clan " << static_cast<char>(clantag >> 24)
+			                << static_cast<char>((clantag >> 16) & 0xff)
+			                << static_cast<char>((clantag >> 8) & 0xff)
+			                << static_cast<char>(clantag & 0xff);
+			tmpstr = ostr.str();
+			cname = tmpstr.c_str();
+		}
 		eventlog(eventlog_level_info, __FUNCTION__, "[%d] CLIENT_JOINCHANNEL_GENERIC channel \"%s\"", conn_get_socket(c), cname);
 
 		/* don't have to do anything here */
@@ -3288,7 +3258,7 @@ static int _glist_cb(t_game * game, void *data)
     }
     bn_int_set(&glgame.unknown6, SERVER_GAMELISTREPLY_GAME_UNKNOWN6);
 
-    if (packet_get_size(cbdata->rpacket) + sizeof(glgame) + strlen(game_get_name(game)) + 1 + strlen(game_get_pass(game)) + 1 + strlen(game_get_info(game)) + 1 > MAX_PACKET_SIZE) {
+    if (packet_get_size(cbdata->rpacket) + sizeof(glgame) + std::strlen(game_get_name(game)) + 1 + std::strlen(game_get_pass(game)) + 1 + std::strlen(game_get_info(game)) + 1 > MAX_PACKET_SIZE) {
 	eventlog(eventlog_level_debug, __FUNCTION__, "[%d] out of room for games", conn_get_socket(cbdata->c));
 	return -1;			/* no more room */
     }
@@ -3330,7 +3300,7 @@ static int _client_gamelistreq(t_connection * c, t_packet const *const packet)
 	return -1;
     }
 
-    if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_gamelistreq) + strlen(gamename) + 1, GAME_PASS_LEN))) {
+    if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_gamelistreq) + std::strlen(gamename) + 1, GAME_PASS_LEN))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad GAMELISTREQ (missing or too long password)", conn_get_socket(c));
 	return -1;
     }
@@ -3441,7 +3411,7 @@ static int _client_joingame(t_connection * c, t_packet const *const packet)
 	return -1;
     }
 
-    if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_join_game) + strlen(gamename) + 1, GAME_PASS_LEN))) {
+    if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_join_game) + std::strlen(gamename) + 1, GAME_PASS_LEN))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLIENT_JOIN_GAME packet (missing or too long gamepass)", conn_get_socket(c));
 	return -1;
     }
@@ -3506,11 +3476,11 @@ static int _client_startgame1(t_connection * c, t_packet const *const packet)
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME1 packet (missing or too long gamename)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame1) + strlen(gamename) + 1, GAME_PASS_LEN))) {
+	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame1) + std::strlen(gamename) + 1, GAME_PASS_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME1 packet (missing or too long gamepass)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame1) + strlen(gamename) + 1 + strlen(gamepass) + 1, GAME_INFO_LEN))) {
+	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame1) + std::strlen(gamename) + 1 + std::strlen(gamepass) + 1, GAME_INFO_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME1 packet (missing or too long gameinfo)", conn_get_socket(c));
 	    return -1;
 	}
@@ -3592,11 +3562,11 @@ static int _client_startgame3(t_connection * c, t_packet const *const packet)
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME3 packet (missing or too long gamename)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame3) + strlen(gamename) + 1, GAME_PASS_LEN))) {
+	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame3) + std::strlen(gamename) + 1, GAME_PASS_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME3 packet (missing or too long gamepass)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame3) + strlen(gamename) + 1 + strlen(gamepass) + 1, GAME_INFO_LEN))) {
+	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame3) + std::strlen(gamename) + 1 + std::strlen(gamepass) + 1, GAME_INFO_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME3 packet (missing or too long gameinfo)", conn_get_socket(c));
 	    return -1;
 	}
@@ -3681,11 +3651,11 @@ static int _client_startgame4(t_connection * c, t_packet const *const packet)
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME4 packet (missing or too long gamename)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame4) + strlen(gamename) + 1, GAME_PASS_LEN))) {
+	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame4) + std::strlen(gamename) + 1, GAME_PASS_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME4 packet (missing or too long gamepass)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame4) + strlen(gamename) + 1 + strlen(gamepass) + 1, GAME_INFO_LEN))) {
+	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame4) + std::strlen(gamename) + 1 + std::strlen(gamepass) + 1, GAME_INFO_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME4 packet (missing or too long gameinfo)", conn_get_socket(c));
 	    return -1;
 	}
@@ -3806,7 +3776,7 @@ static int _client_gamereport(t_connection * c, t_packet const *const packet)
 	for (i = 0; i < game_get_count(game); i++)
 	    results[i] = game_result_none;
 
-	for (i = 0, result_off = sizeof(t_client_game_report), player_off = sizeof(t_client_game_report) + player_count * sizeof(t_client_game_report_result); i < player_count; i++, result_off += sizeof(t_client_game_report_result), player_off += strlen(player) + 1) {
+	for (i = 0, result_off = sizeof(t_client_game_report), player_off = sizeof(t_client_game_report) + player_count * sizeof(t_client_game_report_result); i < player_count; i++, result_off += sizeof(t_client_game_report_result), player_off += std::strlen(player) + 1) {
 	    if (!(result_data = (const t_client_game_report_result*)packet_get_data_const(packet, result_off, sizeof(t_client_game_report_result)))) {
 		eventlog(eventlog_level_error, __FUNCTION__, "[%d] got corrupt GAME_REPORT packet (missing results %u-%u)", conn_get_socket(c), i + 1, player_count);
 		break;
@@ -3857,7 +3827,7 @@ static int _client_gamereport(t_connection * c, t_packet const *const packet)
 	    if (!(head = packet_get_str_const(packet, player_off, MAX_GAMEREP_HEAD_STR)))
 		eventlog(eventlog_level_error, __FUNCTION__, "[%d] got GAME_REPORT with missing or too long report head", conn_get_socket(c));
 	    else {
-		player_off += strlen(head) + 1;
+		player_off += std::strlen(head) + 1;
 		if (!(body = packet_get_str_const(packet, player_off, MAX_GAMEREP_BODY_STR)))
 		    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got GAME_REPORT with missing or too ling report body", conn_get_socket(c));
 		else
@@ -4358,7 +4328,7 @@ static int _client_w3xp_clan_createinvitereq(t_connection * c, t_packet const *c
 	unsigned offset = sizeof(t_client_w3xp_clan_createinvitereq);
 	t_clan *clan;
 	clanname = packet_get_str_const(packet, offset, CLAN_NAME_MAX);
-	offset += (strlen(clanname) + 1);
+	offset += (std::strlen(clanname) + 1);
 	clantag = *((int *) packet_get_data_const(packet, offset, 4));
 	offset += 4;
 	if ((clan = clan_create(conn_get_account(c), clantag, clanname, NULL)) && clanlist_add_clan(clan)) {
@@ -4376,7 +4346,7 @@ static int _client_w3xp_clan_createinvitereq(t_connection * c, t_packet const *c
 		username = packet_get_str_const(packet, offset, USER_NAME_MAX);
 		if (username) {
 		    t_connection *conn;
-		    offset += (strlen(username) + 1);
+		    offset += (std::strlen(username) + 1);
 		    if ((conn = connlist_find_connection_by_accountname(username)) != NULL) {
 			if (prefs_get_clan_newer_time() > 0)
 			    clan_add_member(clan, conn_get_account(conn), CLAN_NEW);
@@ -4413,7 +4383,7 @@ static int _client_w3xp_clan_createinvitereply(t_connection * c, t_packet const 
     }
     offset = sizeof(t_client_w3xp_clan_createinvitereply);
     username = packet_get_str_const(packet, offset, USER_NAME_MAX);
-    offset += (strlen(username) + 1);
+    offset += (std::strlen(username) + 1);
     status = *((char *) packet_get_data_const(packet, offset, 1));
     if ((conn = connlist_find_connection_by_accountname(username)) == NULL)
 	return -1;
@@ -4477,7 +4447,7 @@ static int _client_w3xp_clanmember_rankupdatereq(t_connection * c, t_packet cons
 	bn_int_set(&rpacket->u.server_w3xp_clanmember_rankupdate_reply.count,
 	           bn_int_get(packet->u.client_w3xp_clanmember_rankupdate_req.count));
 	username = packet_get_str_const(packet, offset, USER_NAME_MAX);
-	offset += (strlen(username) + 1);
+	offset += (std::strlen(username) + 1);
 	status = *((char *) packet_get_data_const(packet, offset, 1));
 
 	clan = account_get_clan(conn_get_account(c));
@@ -4639,7 +4609,7 @@ static int _client_w3xp_clan_invitereply(t_connection * c, t_packet const *const
 
     offset = sizeof(t_client_w3xp_clan_invitereply);
     username = packet_get_str_const(packet, offset, USER_NAME_MAX);
-    offset += (strlen(username) + 1);
+    offset += (std::strlen(username) + 1);
     status = *((char *) packet_get_data_const(packet, offset, 1));
     if ((conn = connlist_find_connection_by_accountname(username)) != NULL) {
 	if ((status == W3XP_CLAN_INVITEREPLY_ACCEPT) && (clan = account_get_clan(conn_get_account(conn)))) {
@@ -4648,7 +4618,7 @@ static int _client_w3xp_clan_invitereply(t_connection * c, t_packet const *const
 	    if (clan_get_member_count(clan) < prefs_get_clan_max_members()) {
 		t_clanmember *member = clan_add_member(clan, conn_get_account(c), 1);
 		if ((member != NULL) && (clantag = clan_get_clantag(clan))) {
-		    sprintf(channelname, "Clan %c%c%c%c", (clantag >> 24), (clantag >> 16) & 0xff, (clantag >> 8) & 0xff, clantag & 0xff);
+		    snprintf(channelname, sizeof(channelname), "Clan %c%c%c%c", (clantag >> 24), (clantag >> 16) & 0xff, (clantag >> 8) & 0xff, clantag & 0xff);
 		    if (conn_get_channel(c)) {
 			conn_update_w3_playerinfo(c);
 			channel_set_userflags(c);
@@ -4731,12 +4701,12 @@ static int _client_changeemailreq(t_connection * c, t_packet const *const packet
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad username in CHANGEEMAILREQ packet", conn_get_socket(c));
 	return -1;
     }
-    pos += (strlen(username) + 1);
+    pos += (std::strlen(username) + 1);
     if (!(oldaddr = packet_get_str_const(packet, pos, MAX_EMAIL_STR))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad old email in CHANGEEMAILREQ packet", conn_get_socket(c));
 	return -1;
     }
-    pos += (strlen(oldaddr) + 1);
+    pos += (std::strlen(oldaddr) + 1);
     if (!(newaddr = packet_get_str_const(packet, pos, MAX_EMAIL_STR))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad new email in CHANGEEMAILREQ packet", conn_get_socket(c));
 	return -1;
@@ -4774,7 +4744,7 @@ static int _client_getpasswordreq(t_connection * c, t_packet const *const packet
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad username in GETPASSWORDREQ packet", conn_get_socket(c));
 	return -1;
     }
-    pos += (strlen(username) + 1);
+    pos += (std::strlen(username) + 1);
     if (!(try_email = packet_get_str_const(packet, pos, MAX_EMAIL_STR))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad email in GETPASSWORDREQ packet", conn_get_socket(c));
 	return -1;

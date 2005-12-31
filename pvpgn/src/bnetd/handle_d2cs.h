@@ -18,6 +18,9 @@
 #ifndef INCLUDED_HANDLE_D2CS_H
 #define INCLUDED_HANDLE_D2CS_H
 
+#include "common/packet.h"
+#include "connection.h"
+
 namespace pvpgn
 {
 

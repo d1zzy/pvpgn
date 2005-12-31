@@ -150,6 +150,29 @@ extern int psock_ctl(int sd, int mode);    /* a real function in compat/psock.c 
 
 #else /* assume POSIX */
 
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#ifdef HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+#ifdef HAVE_NETINET_IN_H
+# include <netinet/in.h>
+#endif
+#ifdef HAVE_NETINET_IP_H
+# include <netinet/ip.h>
+#endif
+#ifdef HAVE_SYS_SELECT_H
+# include <sys/select.h>
+#endif
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+#include <errno.h>
+
 /* protocol families */
 #define PSOCK_PF_INET PF_INET
 

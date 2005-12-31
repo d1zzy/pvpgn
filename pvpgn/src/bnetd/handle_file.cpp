@@ -17,31 +17,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <compat/socket.h>
-#include "common/packet.h"
-#include "common/file_protocol.h"
-#include "common/eventlog.h"
-#include "connection.h"
-#include "common/queue.h"
-#include "file.h"
-#include "common/bn_type.h"
-#include "common/field_sizes.h"
 #include "handle_file.h"
-/* ADDED BY UNDYING SOULZZ 4/3/02 */
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
+
 #include "compat/psock.h"
+#include "common/eventlog.h"
+#include "common/packet.h"
+#include "common/bn_type.h"
+
+#include "connection.h"
+#include "file.h"
 #include "common/setup_after.h"
 
 

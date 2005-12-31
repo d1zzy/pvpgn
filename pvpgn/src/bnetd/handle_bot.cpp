@@ -17,46 +17,22 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/strdup.h"
-#include <ctype.h>
-#include "common/packet.h"
-#include "common/bot_protocol.h"
-#include "common/tag.h"
-#include "message.h"
+#include "handle_bot.h"
+
+#include <cstring>
+#include <cctype>
+
 #include "common/eventlog.h"
-#include "command.h"
+#include "common/packet.h"
+#include "common/bnethash.h"
+#include "common/tag.h"
+
+#include "connection.h"
 #include "account.h"
 #include "account_wrap.h"
-#include "connection.h"
+#include "message.h"
 #include "channel.h"
-#include "common/queue.h"
-#include "common/bnethash.h"
-#include "common/bnethashconv.h"
-#include "common/bn_type.h"
-#include "common/field_sizes.h"
-#include "common/list.h"
-#include "common/xalloc.h"
-#include "handle_bot.h"
+#include "command.h"
 #include "common/setup_after.h"
 
 
@@ -243,11 +219,11 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		    {
 			unsigned int i;
 
-			for (i=0; i<strlen(testpass); i++)
-			    if (isupper((int)testpass[i]))
-				testpass[i] = tolower((int)testpass[i]);
+			for (i=0; i<std::strlen(testpass); i++)
+			    if (std::isupper((int)testpass[i]))
+				testpass[i] = std::tolower((int)testpass[i]);
 		    }
-		    if (bnet_hash(&trypasshash1,strlen(testpass),testpass)<0) /* FIXME: force to lowercase */
+		    if (bnet_hash(&trypasshash1,std::strlen(testpass),testpass)<0) /* FIXME: force to lowercase */
 		    {
 			eventlog(eventlog_level_info,__FUNCTION__,"[%d] bot login for \"%s\" refused (unable to hash password)",conn_get_socket(c), loggeduser);
 			conn_set_state(c,conn_state_bot_username);

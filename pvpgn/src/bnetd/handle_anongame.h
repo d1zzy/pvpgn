@@ -13,13 +13,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef INCLUDED_HANDLE_ANONGAME_TYPES
-#define INCLUDED_HANDLE_ANONGAME_TYPES
-
-#endif
-
 #ifndef INCLUDED_HANDLE_ANONGAME_PROTOS
 #define INCLUDED_HANDLE_ANONGAME_PROTOS
+
+#include "common/packet.h"
+#include "connection.h"
 
 namespace pvpgn
 {
