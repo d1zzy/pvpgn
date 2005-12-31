@@ -16,15 +16,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include "common/packet.h"
-#include "common/udp_protocol.h"
-#include "common/eventlog.h"
-#include "connection.h"
-#include "common/queue.h"
-#include "common/bn_type.h"
-#include "common/addr.h"
-#include "udptest_send.h"
 #include "handle_udp.h"
+
+#include "common/eventlog.h"
+#include "common/packet.h"
+#include "common/addr.h"
+#include "common/bn_type.h"
+
+#include "connection.h"
+#include "udptest_send.h"
 #include "common/setup_after.h"
 
 namespace pvpgn

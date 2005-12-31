@@ -16,23 +16,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include "common/packet.h"
+#include "handle_init.h"
+
 #include "common/init_protocol.h"
 #include "common/eventlog.h"
-#include "common/queue.h"
+#include "common/packet.h"
 #include "common/bn_type.h"
+#include "common/addr.h"
+
 #include "connection.h"
 #include "realm.h"
-#include "prefs.h"
-#include "common/addr.h"
-#include "handle_init.h"
 #include "handle_d2cs.h"
 #include "common/setup_after.h"
 

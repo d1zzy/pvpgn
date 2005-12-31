@@ -16,41 +16,22 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strcasecmp.h"
-#include <ctype.h>
-#include <errno.h>
-#include "compat/strerror.h"
-#include "message.h"
-#include "connection.h"
-#include "common/util.h"
-#include "common/eventlog.h"
-#include "common/xalloc.h"
 #include "helpfile.h"
-#include "common/setup_after.h"
-#include "account_wrap.h"
+
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+
+#include "compat/strcasecmp.h"
+#include "common/eventlog.h"
+#include "common/util.h"
+#include "common/xalloc.h"
+
+#include "message.h"
 #include "command_groups.h"
+#include "account_wrap.h"
+#include "connection.h"
+#include "common/setup_after.h"
 
 namespace pvpgn
 {
@@ -71,9 +52,9 @@ extern int helpfile_init(char const *filename)
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
 	return -1;
     }
-    if (!(hfd = fopen(filename,"r")))
+    if (!(hfd = std::fopen(filename,"r")))
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open help file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open help file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno));
         return -1;
     }
     return 0;
@@ -84,8 +65,8 @@ extern int helpfile_unload(void)
 {
     if (hfd!=NULL)
     {
-	if (fclose(hfd)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not close help file after reading (fclose: %s)",pstrerror(errno));
+	if (std::fclose(hfd)<0)
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not close help file after reading (std::fclose: %s)",std::strerror(errno));
 	hfd = NULL;
     }
     return 0;
@@ -103,7 +84,7 @@ extern int handle_help_command(t_connection * c, char const * text)
         return 0;
     }
 
-    rewind(hfd);
+    std::rewind(hfd);
     for (i=0; text[i]!=' ' && text[i]!='\0'; i++); /* skip command */
     for (; text[i]==' '; i++);
     if (text[i]=='/') /* skip / in front of command (if present) */
@@ -155,13 +136,13 @@ static int list_commands(t_connection * c)
                 p[i]='\0'; /* end the string at the end of the command */
                 p[0]='/'; /* change the leading character (% or space) read from the help file to / */
 		if (!(command_get_group(p) & account_get_command_groups(conn_get_account(c)))) skip=1;
-                if (length<strlen(p)+position+1)
+                if (length<std::strlen(p)+position+1)
                 /* if we don't have enough space in the buffer then get some */
-                length=strlen(p)+position+1; /* the new length */
+                length=std::strlen(p)+position+1; /* the new length */
                 buffer=(char*)xrealloc(buffer,length+1);
                 buffer[position++]=' '; /* put a space before each alias */
                 /* add the alias to the output string */
-                strcpy(buffer+position,p); position+=strlen(p);
+                std::strcpy(buffer+position,p); position+=std::strlen(p);
                 if (al)
 		{
                     for (;p[i+1]==' ' && p[i+1]!='\0' && p[i+1]!='#';i++); /* skip spaces */
