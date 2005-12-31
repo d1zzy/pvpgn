@@ -65,7 +65,7 @@ static int list_aliases(t_connection * c)
 	if (!(alias = (t_alias*)elem_get_data(elem1)))
 	    continue;
 
-	sprintf(temp,"@%.128s",alias->alias);
+	std::sprintf(temp,"@%.128s",alias->alias);
 	message_send_text(c,message_type_info,c,temp);
 	LIST_TRAVERSE_CONST(alias->output,elem2)
 	{
@@ -77,13 +77,13 @@ static int list_aliases(t_connection * c)
              * add a help line to the file format?
 	     */
 	    if (output->min==-1)
-		    sprintf(temp,"[*]%.128s",output->line);
+		    std::sprintf(temp,"[*]%.128s",output->line);
 	    else if (output->max==-1)
-		    sprintf(temp,"[%d+]%.128s",output->min,output->line);
+		    std::sprintf(temp,"[%d+]%.128s",output->min,output->line);
 	    else if (output->min == output->max)
-		    sprintf(temp,"[%d]%.128s",output->min,output->line);
+		    std::sprintf(temp,"[%d]%.128s",output->min,output->line);
 	    else
-		    sprintf(temp,"[%d-%d]%.128s",output->min,output->max,output->line);
+		    std::sprintf(temp,"[%d-%d]%.128s",output->min,output->max,output->line);
 	    message_send_text(c,message_type_info,c,temp);
 	}
     }
@@ -126,9 +126,9 @@ static char * replace_args(char const * in, unsigned int * offsets, int numargs,
 	    int arg1, arg2;
 	    char symbol;
 
-	    if (sscanf(&in[inpos],"{%d-%d}",&arg1,&arg2)!=2)
+	    if (std::sscanf(&in[inpos],"{%d-%d}",&arg1,&arg2)!=2)
 	    {
-		if (sscanf(&in[inpos],"{%d%c",&arg2,&symbol)!=2)
+		if (std::sscanf(&in[inpos],"{%d%c",&arg2,&symbol)!=2)
 		{
 		    while (in[inpos]!='\0' && in[inpos]!='}')
 		      inpos++;
@@ -301,7 +301,7 @@ static int do_alias(t_connection * c, char const * cmd, char const * text)
 		    if ((msgtmp[0]=='/')&&(msgtmp[1]!='/')) // to make sure we don't get endless aliasing loop
 		    {
 		      tmp2 = (char*)xmalloc(std::strlen(msgtmp)+3);
-		      sprintf(tmp2,"%s%s",cmd,msgtmp);
+		      std::sprintf(tmp2,"%s%s",cmd,msgtmp);
 		      xfree((void *)msgtmp);
 		      msgtmp=tmp2;
 
@@ -327,7 +327,7 @@ static int do_alias(t_connection * c, char const * cmd, char const * text)
 
 extern int aliasfile_load(char const * filename)
 {
-    FILE *       afp;
+    std::FILE *       afp;
     char *       buff;
     char *       temp;
     unsigned int line;
@@ -341,9 +341,9 @@ extern int aliasfile_load(char const * filename)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
 	return -1;
     }
-    if (!(afp = fopen(filename,"r")))
+    if (!(afp = std::fopen(filename,"r")))
     {
-	eventlog(eventlog_level_error, __FUNCTION__, "unable to open alias file \"%s\" for reading (fopen: %s)", filename, std::strerror(errno));
+	eventlog(eventlog_level_error, __FUNCTION__, "unable to open alias file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
 	return -1;
     }
 
@@ -420,7 +420,7 @@ extern int aliasfile_load(char const * filename)
 		min =  1;
 		max = -1;
 	      }
-	      else if (sscanf(&buff[pos],"[%u",&min)==1)
+	      else if (std::sscanf(&buff[pos],"[%u",&min)==1)
 	      {
 		if (*(dummy-1)=='+')
 		  max = -1;
@@ -475,7 +475,7 @@ extern int aliasfile_load(char const * filename)
 		min =  1;
 		max = -1;
 	      }
-	      else if (sscanf(&buff[pos],"[%u",&min)==1)
+	      else if (std::sscanf(&buff[pos],"[%u",&min)==1)
 	      {
 		if (*(dummy-1)=='+')
 		  max = -1;
@@ -505,7 +505,7 @@ extern int aliasfile_load(char const * filename)
     if (alias!=NULL) list_append_data(aliaslist_head,alias);
 
     file_get_line(NULL); // clear file_get_line buffer
-    fclose(afp);
+    std::fclose(afp);
     eventlog(eventlog_level_info,__FUNCTION__,"done loading aliases");
     return 0;
 }
@@ -530,7 +530,7 @@ extern int aliasfile_unload(void)
 
 	    if (list_remove_elem(aliaslist_head,&elem1)<0)
 	    {
-	        eventlog(eventlog_level_error,__FUNCTION__,"could not remove alias");
+	        eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove alias");
 		continue;
 	    }
 	    if (alias->output)
@@ -545,7 +545,7 @@ extern int aliasfile_unload(void)
 
 		    if (list_remove_elem(alias->output,&elem2)<0)
 		    {
-		        eventlog(eventlog_level_error,__FUNCTION__,"could not remove output");
+		        eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove output");
 			continue;
 		    }
 		    xfree((void *)output->line); /* avoid warning */

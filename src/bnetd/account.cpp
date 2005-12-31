@@ -19,23 +19,24 @@
  */
 #define ACCOUNT_INTERNAL_ACCESS
 #include "common/setup_before.h"
+#include "account.h"
+
 #include <cstddef>
-#include "compat/strchr.h"
+
 #include "compat/strdup.h"
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
-#include "compat/char_bit.h"
 #include "compat/strerror.h"
 #include "compat/pdir.h"
 #include "common/list.h"
 #include "common/elist.h"
 #include "common/eventlog.h"
-#include "prefs.h"
 #include "common/util.h"
 #include "common/field_sizes.h"
 #include "common/bnethash.h"
 #include "common/introtate.h"
-#include "account.h"
+
+#include "prefs.h"
 #include "account_wrap.h"
 #include "common/hashtable.h"
 #include "connection.h"
@@ -77,14 +78,14 @@ static t_account * accountlist_add_account(t_account * account);
 static unsigned int account_hash(char const *username)
 {
     register unsigned int h;
-    register unsigned int len = strlen(username);
+    register unsigned int len = std::strlen(username);
 
     for (h = 5381; len > 0; --len, ++username) {
         h += h << 5;
-	if (isupper((int) *username) == 0)
+	if (std::isupper((int) *username) == 0)
 	    h ^= *username;
 	else
-	    h ^= tolower((int) *username);
+	    h ^= std::tolower((int) *username);
     }
     return h;
 }
@@ -149,8 +150,8 @@ static t_account * account_create(char const * username, char const * passhash1)
             goto err;
         }
 
-        if (account_set_numattr(account,"BNET\\acct\\ctime",(unsigned int)now)) {
-            eventlog(eventlog_level_error,__FUNCTION__,"could not set ctime");
+        if (account_set_numattr(account,"BNET\\acct\\std::ctime",(unsigned int)now)) {
+            eventlog(eventlog_level_error,__FUNCTION__,"could not set std::ctime");
             goto err;
         }
     }
@@ -360,7 +361,7 @@ static int _cb_read_accounts(t_attrgroup *attrgroup, void *data)
 extern int accountlist_load_all(int flag)
 {
     unsigned int count;
-    int starttime = time(NULL);
+    int starttime = std::time(NULL);
     static int loaded = 0; /* all accounts already loaded ? */
     int res;
 
@@ -378,7 +379,7 @@ extern int accountlist_load_all(int flag)
 	    break;
 	case 0:
 	    loaded = 1;
-	    eventlog(eventlog_level_info, __FUNCTION__, "loaded %u user accounts in %ld seconds",count,time(NULL) - starttime);
+	    eventlog(eventlog_level_info, __FUNCTION__, "loaded %u user accounts in %ld seconds",count,std::time(NULL) - starttime);
 	    break;
 	default:
 	    break;
@@ -499,7 +500,7 @@ extern t_account * accountlist_find_account(char const * username)
         if (account) return account;
     }
 
-    if ((!(userid)) || (userid && ((username[0]=='#') || (isdigit((int)username[0])))))
+    if ((!(userid)) || (userid && ((username[0]=='#') || (std::isdigit((int)username[0])))))
     {
 	unsigned int namehash;
 	char const * tname;
@@ -569,7 +570,7 @@ static t_account * accountlist_add_account(t_account * account)
     username = account_get_name(account);
     uid = account_get_numattr(account,"BNET\\acct\\userid");
 
-    if (!username || strlen(username)<1) {
+    if (!username || std::strlen(username)<1) {
         eventlog(eventlog_level_error,__FUNCTION__,"got bad account (empty username)");
         return NULL;
     }
@@ -588,7 +589,7 @@ static t_account * accountlist_add_account(t_account * account)
     account->namehash = account_hash(username);
     account->uid = uid;
 
-    /* FIXME: this check actually (with the new attr system) happens too late
+    /* FIXME: this check actually (with the new attr std::system) happens too late
      * we already have created the attrgroup here which is "dirty" and refusing
      * an account here will trigger attrgroup_destroy which will "sync" the
      * bad data to the storage! The codes should make sure we don't fail here */
@@ -673,7 +674,7 @@ extern int account_check_name(char const * name)
 	return -1;
     }
 
-    for (i=0; i<strlen(name); i++)
+    for (i=0; i<std::strlen(name); i++)
     {
         /* These are the Battle.net rules but they are too strict.
          * We want to allow any characters that wouldn't cause
@@ -683,8 +684,8 @@ extern int account_check_name(char const * name)
         ch = name[i];
 	/* hardcoded safety checks */
 	if (ch == '/' || ch == '\\') return -1;
-        if (isalnum((int)ch)) continue;
-	if (strchr(prefs_get_account_allowed_symbols(),ch)) continue;
+        if (std::isalnum((int)ch)) continue;
+	if (std::strchr(prefs_get_account_allowed_symbols(),ch)) continue;
         return -1;
     }
     if (i<USER_NAME_MIN || i>=USER_NAME_MAX)

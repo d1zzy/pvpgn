@@ -22,76 +22,14 @@
 #include <exception>
 #include <iostream>
 
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
+#include <cerrno>
+
+#ifdef HAVE_SYS_TYPES_h
+# include <sys/types.h>
 #endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/exitstatus.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strdup.h"
-#include <errno.h>
-#include "compat/strerror.h"
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#include "compat/stdfileno.h"
-#include "compat/psock.h"
-#include "common/hexdump.h"
-#include "channel.h"
-#include "game.h"
-#include "server.h"
-#include "common/eventlog.h"
-#include "account.h"
-#include "connection.h"
-#include "game.h"
-#include "common/version.h"
-#include "prefs.h"
-#include "ladder.h"
-#include "adbanner.h"
-#include "ipban.h"
-#include "autoupdate.h"
-#include "helpfile.h"
-#include "timer.h"
-#include "watch.h"
-#include "tracker.h"
-#include "realm.h"
-#include "character.h"
-#include "common/give_up_root_privileges.h"
-#include "versioncheck.h"
-#include "storage.h"
-#include "anongame.h"
-#include "command_groups.h"
-#include "output.h"
-#include "alias_command.h"
-#include "anongame_infos.h"
-#include "anongame_maplists.h"
-#include "tournament.h"
-#include "news.h"
-#include "clan.h"
-#include "team.h"
-#include "topic.h"
-#include "support.h"
-#include "common/trans.h"
-#include "common/xalloc.h"
-#include "common/fdwatch.h"
-#include "attrlayer.h"
 #ifdef WIN32
 # include "win32/service.h"
 #endif
@@ -99,7 +37,50 @@
 # include "win32/winmain.h"
 # define printf gui_printf
 #endif
+
+#include "compat/strerror.h"
+#include "compat/stdfileno.h"
+#include "compat/psock.h"
+#include "common/eventlog.h"
+#include "common/xalloc.h"
+#include "common/fdwatch.h"
+#include "common/trans.h"
+#include "common/give_up_root_privileges.h"
+#include "common/version.h"
+#include "common/hexdump.h"
+
+#include "server.h"
+#include "prefs.h"
 #include "cmdline.h"
+#include "storage.h"
+#include "support.h"
+#include "anongame_maplists.h"
+#include "anongame.h"
+#include "connection.h"
+#include "game.h"
+#include "timer.h"
+#include "channel.h"
+#include "helpfile.h"
+#include "ipban.h"
+#include "adbanner.h"
+#include "autoupdate.h"
+#include "versioncheck.h"
+#include "news.h"
+#include "watch.h"
+#include "output.h"
+#include "attrlayer.h"
+#include "account.h"
+#include "ladder.h"
+#include "character.h"
+#include "tracker.h"
+#include "command_groups.h"
+#include "alias_command.h"
+#include "tournament.h"
+#include "anongame_infos.h"
+#include "clan.h"
+#include "team.h"
+#include "realm.h"
+#include "topic.h"
 #include "common/setup_after.h"
 
 /* out of memory safety */
@@ -160,7 +141,7 @@ char serviceDescription[] = "Player vs. Player Gaming Network - Server";
  */
 int g_ServiceStatus = -1;
 
-/* added some more exit status --> put in "compat/exitstatus.h" ??? */
+/* added some more std::exit status --> put in "compat/exitstatus.h" ??? */
 #define STATUS_OOM_FAILURE		20
 #define STATUS_STORAGE_FAILURE		30
 #define STATUS_PSOCK_FAILURE		35
@@ -187,11 +168,11 @@ int eventlog_startup(void)
     eventlog_clear_level();
     if ((levels = prefs_get_loglevels())) {
 	temp = xstrdup(levels);
-	tok = strtok(temp,","); /* strtok modifies the string it is passed */
+	tok = std::strtok(temp,","); /* std::strtok modifies the string it is passed */
 	while (tok) {
 	    if (eventlog_add_level(tok)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not add log level \"%s\"",tok);
-	    tok = strtok(NULL,",");
+		eventlog(eventlog_level_error,__FUNCTION__,"could not add std::log level \"%s\"",tok);
+	    tok = std::strtok(NULL,",");
 	}
 	xfree(temp);
     }
@@ -277,19 +258,19 @@ char * write_to_pidfile(void)
     }
     if (pidfile) {
 #ifdef HAVE_GETPID
-    FILE * fp;
+    std::FILE * fp;
 
-    if (!(fp = fopen(pidfile,"w"))) {
-	eventlog(eventlog_level_error,__FUNCTION__,"unable to open pid file \"%s\" for writing (fopen: %s)",pidfile,pstrerror(errno));
+    if (!(fp = std::fopen(pidfile,"w"))) {
+	eventlog(eventlog_level_error,__FUNCTION__,"unable to open pid file \"%s\" for writing (std::fopen: %s)",pidfile,pstrerror(errno));
 	xfree((void *)pidfile); /* avoid warning */
 	return NULL;
     } else {
-	fprintf(fp,"%u",(unsigned int)getpid());
-	if (fclose(fp)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (fclose: %s)",pidfile,pstrerror(errno));
+	std::fprintf(fp,"%u",(unsigned int)getpid());
+	if (std::fclose(fp)<0)
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (std::fclose: %s)",pidfile,pstrerror(errno));
     }
 #else
-    eventlog(eventlog_level_warn,__FUNCTION__,"no getpid() system call, disable pid file in bnetd.conf");
+    eventlog(eventlog_level_warn,__FUNCTION__,"no getpid() std::system call, disable pid file in bnetd.conf");
     xfree((void *)pidfile); /* avoid warning */
     return NULL;
 #endif
@@ -484,10 +465,10 @@ try {
         return -1;
     }
 
-    /* Start logging to log file */
+    /* Start logging to std::log file */
     if (eventlog_startup() == -1)
 	return -1;
-    /* eventlog goes to log file from here on... */
+    /* eventlog goes to std::log file from here on... */
 
     /* Give up root privileges */
     /* Hakan: That's way too late to give up root privileges... Have to look for a better place */
@@ -500,10 +481,10 @@ try {
     pidfile = write_to_pidfile();
 
     if (cmdline_get_hexfile()) {
-	if (!(hexstrm = fopen(cmdline_get_hexfile(),"w")))
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing the hexdump (fopen: %s)",cmdline_get_hexfile(),pstrerror(errno));
+	if (!(hexstrm = std::fopen(cmdline_get_hexfile(),"w")))
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing the hexdump (std::fopen: %s)",cmdline_get_hexfile(),pstrerror(errno));
 	else
-	    fprintf(hexstrm,"# dump generated by "PVPGN_SOFTWARE" version "PVPGN_VERSION"\n");
+	    std::fprintf(hexstrm,"# dump generated by "PVPGN_SOFTWARE" version "PVPGN_VERSION"\n");
     }
 
     /* Run the pre server stuff */
@@ -520,15 +501,15 @@ try {
 
 // Close hexfile
     if (hexstrm) {
-	fprintf(hexstrm,"# end of dump\n");
-	if (fclose(hexstrm)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not close hexdump file \"%s\" after writing (fclose: %s)",cmdline_get_hexfile(),pstrerror(errno));
+	std::fprintf(hexstrm,"# end of dump\n");
+	if (std::fclose(hexstrm)<0)
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not close hexdump file \"%s\" after writing (std::fclose: %s)",cmdline_get_hexfile(),pstrerror(errno));
     }
 
 // Delete pidfile
     if (pidfile) {
-	if (remove(pidfile)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not remove pid file \"%s\" (remove: %s)",pidfile,pstrerror(errno));
+	if (std::remove(pidfile)<0)
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove pid file \"%s\" (std::remove: %s)",pidfile,pstrerror(errno));
 	xfree((void *)pidfile); /* avoid warning */
     }
 

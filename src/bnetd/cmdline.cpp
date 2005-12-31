@@ -20,6 +20,8 @@
 #include "common/setup_before.h"
 #include "cmdline.h"
 
+#include <cstdio>
+
 #include "common/xalloc.h"
 #ifdef WIN32
 # include "win32/service.h"
@@ -104,16 +106,16 @@ static t_conf_entry conftab[] = {
 
 static void usage(void)
 {
-    fprintf(stderr,
+    std::fprintf(stderr,
             "usage: %s [<options>]\n"
-            "    -c FILE, --config=FILE   use FILE as configuration file (default is " BNETD_DEFAULT_CONF_FILE ")\n"
-            "    -d FILE, --hexdump=FILE  do hex dump of packets into FILE\n"
+            "    -c std::FILE, --config=std::FILE   use std::FILE as configuration file (default is " BNETD_DEFAULT_CONF_FILE ")\n"
+            "    -d std::FILE, --hexdump=std::FILE  do hex dump of packets into std::FILE\n"
 #ifdef DO_DAEMONIZE
             "    -f, --foreground         don't daemonize\n"
 #endif
-            "    -D, --debug              run in debug mode (run in foreground and log to stdout)\n"
-            "    -h, --help, --usage      show this information and exit\n"
-            "    -v, --version            print version number and exit\n"
+            "    -D, --debug              run in debug mode (run in foreground and std::log to stdout)\n"
+            "    -h, --help, --usage      show this information and std::exit\n"
+            "    -v, --version            print version number and std::exit\n"
 #ifdef WIN32
             "    Running as service functions:\n"
             "    --service                run as service\n"
@@ -128,7 +130,7 @@ extern int cmdline_load(int argc, char** argv)
     int res;
 
     if (argc<1 || !argv || !argv[0]) {
-	fprintf(stderr,"bad arguments\n");
+	std::fprintf(stderr,"bad arguments\n");
         return -1;
     }
 
@@ -274,13 +276,13 @@ static int conf_set_servaction(const char *valstr)
 
     if (tmp) {
 	if (!strcasecmp(tmp, "install")) {
-	    fprintf(stderr, "Installing service");
+	    std::fprintf(stderr, "Installing service");
 	    Win32_ServiceInstall();
 	} else if (!strcasecmp(tmp, "uninstall")) {
-	    fprintf(stderr, "Uninstalling service");
+	    std::fprintf(stderr, "Uninstalling service");
 	    Win32_ServiceUninstall();
 	} else {
-	    fprintf(stderr, "Unknown service action '%s'\n", tmp);
+	    std::fprintf(stderr, "Unknown service action '%s'\n", tmp);
 	}
 
 	exitflag = 1;

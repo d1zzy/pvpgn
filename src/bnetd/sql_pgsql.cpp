@@ -143,7 +143,7 @@ static t_sql_res * sql_pgsql_query_res(const char * query)
 static void _pgsql_update_arows (const char *str)
 {
     if (!str || str[0] == '\0') lastarows = 0;
-    lastarows = (unsigned int)atoi(str);
+    lastarows = (unsigned int)std::atoi(str);
 }
 
 static int sql_pgsql_query(const char * query)

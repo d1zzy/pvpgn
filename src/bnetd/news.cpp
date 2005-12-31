@@ -16,49 +16,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define NEWS_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/strtoul.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef HAVE_ERRNO_H
-# include <errno.h>
-#endif
-#ifdef HAVE_TIME_H
-# include <time.h>
-#endif
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
-#include "compat/strchr.h"
-#include "compat/strdup.h"
+#define NEWS_INTERNAL_ACCESS
+#include "news.h"
+
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
+#include <cassert>
+
 #include "compat/strerror.h"
 #include "common/eventlog.h"
-#include "common/elist.h"
-#include "common/util.h"
-#include "common/proginfo.h"
 #include "common/xalloc.h"
-#include "news.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -69,7 +38,7 @@ namespace bnetd
 
 static t_elist news_head;
 
-static int _news_parsetime(char *buff, struct tm *date, unsigned line)
+static int _news_parsetime(char *buff, struct std::tm *date, unsigned line)
 {
     char *p;
 
@@ -78,29 +47,29 @@ static int _news_parsetime(char *buff, struct tm *date, unsigned line)
     date->tm_sec = 6;
     date->tm_isdst=-1;
 
-    if (!(p = strchr(buff,'/'))) return -1;
+    if (!(p = std::strchr(buff,'/'))) return -1;
     *p = '\0';
 
-    date->tm_mon = atoi(buff) - 1;
+    date->tm_mon = std::atoi(buff) - 1;
     if ((date->tm_mon<0) || (date->tm_mon>11)) {
 	eventlog(eventlog_level_error,__FUNCTION__,"found invalid month (%i) in news date. (format: {MM/DD/YYYY}) on line %u",date->tm_mon,line);
     }
 
     buff = p + 1;
-    if (!(p = strchr(buff,'/'))) return -1;
+    if (!(p = std::strchr(buff,'/'))) return -1;
     *p = '\0';
 
-    date->tm_mday = atoi(buff);
+    date->tm_mday = std::atoi(buff);
     if ((date->tm_mday<1) || (date->tm_mday>31)) {
 	eventlog(eventlog_level_error,__FUNCTION__,"found invalid month day (%i) in news date. (format: {MM/DD/YYYY}) on line %u",date->tm_mday,line);
 	return -1;
     }
 
     buff = p + 1;
-    if (!(p = strchr(buff,'}'))) return -1;
+    if (!(p = std::strchr(buff,'}'))) return -1;
     *p = '\0';
 
-    date->tm_year=atoi(buff)-1900;
+    date->tm_year=std::atoi(buff)-1900;
     if (date->tm_year>137) //limited due to 32bit t_time
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"found invalid year (%i) (>2037) in news date.  on line %u",date->tm_year+1900,line);
@@ -128,7 +97,7 @@ static void _news_insert_index(t_news_index *ni, const char *buff, unsigned len,
 	    eventlog(eventlog_level_error,__FUNCTION__,"failed in joining news, cause news too long - skipping");
 	else {
 	    lstr_set_str(&cni->body,(char*)xrealloc(lstr_get_str(&cni->body),lstr_get_len(&cni->body) + len + 1 + 1));
-	    strcpy(lstr_get_str(&cni->body) + lstr_get_len(&cni->body), buff);
+	    std::strcpy(lstr_get_str(&cni->body) + lstr_get_len(&cni->body), buff);
 	    *(lstr_get_str(&cni->body) + lstr_get_len(&cni->body) + len) = '\n';
 	    *(lstr_get_str(&cni->body) + lstr_get_len(&cni->body) + len + 1) = '\0';
 	    lstr_set_len(&cni->body,lstr_get_len(&cni->body) + len + 1);
@@ -137,8 +106,8 @@ static void _news_insert_index(t_news_index *ni, const char *buff, unsigned len,
     } else {
 	/* adding new index entry */
 	lstr_set_str(&ni->body,(char*)xmalloc(len + 2));
-	strcpy(lstr_get_str(&ni->body),buff);
-	strcat(lstr_get_str(&ni->body),"\n");
+	std::strcpy(lstr_get_str(&ni->body),buff);
+	std::strcat(lstr_get_str(&ni->body),"\n");
 	lstr_set_len(&ni->body,len + 1);
 	elist_add_tail(curr,&ni->list);
     }
@@ -150,17 +119,17 @@ static void _news_insert_default(void)
     t_news_index	*ni;
 
     ni = (t_news_index*)xmalloc(sizeof(t_news_index));
-    ni->date = time(NULL);
-    _news_insert_index(ni, deftext, strlen(deftext), 1);
+    ni->date = std::time(NULL);
+    _news_insert_index(ni, deftext, std::strlen(deftext), 1);
 }
 
 extern int news_load(const char *filename)
 {
-    FILE * 		fp;
+    std::FILE * 		fp;
     unsigned int	line;
     unsigned int	len;
     char		buff[256];
-    struct tm		date;
+    struct std::tm		date;
     char		date_set;
     t_news_index	*ni;
 
@@ -173,14 +142,14 @@ extern int news_load(const char *filename)
 	return -1;
     }
 
-    if ((fp = fopen(filename,"rt"))==NULL) {
+    if ((fp = std::fopen(filename,"rt"))==NULL) {
 	eventlog(eventlog_level_warn, __FUNCTION__,"can't open news file");
 	_news_insert_default();
 	return 0;
     }
 
-    for (line=1; fgets(buff,sizeof(buff),fp); line++) {
-	len = strlen(buff);
+    for (line=1; std::fgets(buff,sizeof(buff),fp); line++) {
+	len = std::strlen(buff);
 	while(len && (buff[len - 1] == '\n' || buff[len - 1] == '\r')) len--;
 	if (!len) continue; /* empty line */
 	buff[len] = '\0';
@@ -194,16 +163,16 @@ extern int news_load(const char *filename)
 	} else {
 	    ni = (t_news_index*)xmalloc(sizeof(t_news_index));
 	    if (date_set)
-		ni->date = mktime(&date);
+		ni->date = std::mktime(&date);
 	    else {
-		ni->date = time(NULL);
+		ni->date = std::time(NULL);
 		eventlog(eventlog_level_warn,__FUNCTION__,"(first) news entry seems to be missing a timestamp, please check your news file on line %u",line);
 	    }
 	    _news_insert_index(ni,buff,len,date_set);
 	    date_set = 2;
 	}
     }
-    fclose(fp);
+    std::fclose(fp);
 
     if (elist_empty(&news_head)) {
 	eventlog(eventlog_level_warn,__FUNCTION__,"no news configured");

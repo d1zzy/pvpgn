@@ -65,16 +65,16 @@ extern int storage_init(const char *spath)
     }
 
     temp = xstrdup(spath);
-    if ((p = strchr(spath, ':')) == NULL) {
+    if ((p = std::strchr(spath, ':')) == NULL) {
 	eventlog(eventlog_level_error, __FUNCTION__, "malformed storage_path , driver not found");
 	xfree((void*)temp);
 	return -1;
     }
 
-    strcpy(dstr, "file");
+    std::strcpy(dstr, "file");
 #ifdef WITH_SQL
-    strcat(dstr, ", sql");
-    strcat(dstr, ", sql2");
+    std::strcat(dstr, ", sql");
+    std::strcat(dstr, ", sql2");
 #endif
     eventlog(eventlog_level_info, __FUNCTION__, "initializing storage layer (available drivers: %s)", dstr);
 

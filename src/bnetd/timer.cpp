@@ -41,7 +41,7 @@ namespace bnetd
 static t_elist timerlist_head;
 
 
-extern int timerlist_add_timer(t_connection * owner, time_t when, t_timer_cb cb, t_timer_data data)
+extern int timerlist_add_timer(t_connection * owner, std::time_t when, t_timer_cb cb, t_timer_data data)
 {
     t_timer * timer, *ctimer;
     t_elist * curr;
@@ -88,7 +88,7 @@ extern int timerlist_del_all_timers(t_connection * owner)
     {
 	timer = elist_entry(curr, t_timer, owners);
 	if (timer->cb)
-	    timer->cb(timer->owner,(time_t)0,timer->data);
+	    timer->cb(timer->owner,(std::time_t)0,timer->data);
 	elist_del(&timer->owners);
 	elist_del(&timer->timers);
 	xfree((void*)timer);
@@ -98,7 +98,7 @@ extern int timerlist_del_all_timers(t_connection * owner)
 }
 
 
-extern int timerlist_check_timers(time_t when)
+extern int timerlist_check_timers(std::time_t when)
 {
     t_elist * curr, *save;
     t_timer * timer;

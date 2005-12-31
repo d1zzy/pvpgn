@@ -18,22 +18,14 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <math.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include "ladder_calc.h"
+
+#include <cmath>
+
+#include "common/eventlog.h"
+
 #include "account.h"
 #include "account_wrap.h"
-#include "common/eventlog.h"
-#include "game.h"
-#include "common/tag.h"
-#include "ladder.h"
-#include "ladder_calc.h"
-#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 
@@ -88,7 +80,7 @@ static double probability(unsigned int a, unsigned int b)
 
     i = (((double)a) - ((double)b)) / 400.0;
 
-    j = pow(10.0,-i);
+    j = std::pow(10.0,-i);
 
     return (1.0 / (1.0+j));
 }
@@ -96,7 +88,7 @@ static double probability(unsigned int a, unsigned int b)
 
 /*
  *  This is the coefficient k which is meant to enhance the
- *  effect of the Elo system where more experienced players
+ *  effect of the Elo std::system where more experienced players
  *  will gain fewer points when playing against newbies, and
  *  newbies will gain massive points if they win against an
  *  experienced player. It also helps stabilize a player's
@@ -123,7 +115,7 @@ static int coefficient(t_account * account, t_clienttag clienttag, t_ladder_id i
 
 
 /*
- * The Elo system only handles 2 players, these functions extend
+ * The Elo std::system only handles 2 players, these functions extend
  * the calculation to different numbers of players as if they were
  * in a tournament. It turns out the math for this is really ugly,
  * so we have hardcoded the equations for every number of players.
@@ -621,9 +613,9 @@ extern int ladder_calc_info(t_clienttag clienttag, t_ladder_id id, unsigned int 
 	}
 
 	if (results[curr]==game_result_win)
-	    delta = fabs(k * (1.0 - prob) / team_members); /* better the chance of winning -> fewer points added */
+	    delta = std::fabs(k * (1.0 - prob) / team_members); /* better the chance of winning -> fewer points added */
 	else
-	    delta = -fabs(k * prob); /* better the chance of winning -> more points subtracted */
+	    delta = -std::fabs(k * prob); /* better the chance of winning -> more points subtracted */
 
 	eventlog(eventlog_level_debug,__FUNCTION__,"computed probability=%g, k=%g, deltar=%+g",prob,k,delta);
 

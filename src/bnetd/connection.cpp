@@ -24,22 +24,11 @@
 #include <cerrno>
 #include <cstring>
 
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
 #ifdef WIN32_GUI
 #include <win32/winmain.h>
 #endif
-#include "compat/strtoul.h"
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
-#include "compat/difftime.h"
 #include "compat/socket.h"
 #include "compat/psock.h"
 #include "common/eventlog.h"
@@ -57,6 +46,7 @@
 #include "common/fdwatch.h"
 #include "common/elist.h"
 #include "common/xalloc.h"
+
 #include "account.h"
 #include "account_wrap.h"
 #include "realm.h"
@@ -113,7 +103,7 @@ static void connarray_del_conn(unsigned index);
 static void conn_send_welcome(t_connection * c)
 {
     char const * filename;
-    FILE *       fp;
+    std::FILE *       fp;
 
     if (!c)
     {
@@ -131,14 +121,14 @@ static void conn_send_welcome(t_connection * c)
     }
     if ((filename = prefs_get_motdfile()))
     {
-	if ((fp = fopen(filename,"r")))
+	if ((fp = std::fopen(filename,"r")))
 	{
 	    message_send_file(c,fp);
-	    if (fclose(fp)<0)
-	      { eventlog(eventlog_level_error,__FUNCTION__,"could not close MOTD file \"%s\" after reading (fopen: %s)",filename,std::strerror(errno)); }
+	    if (std::fclose(fp)<0)
+	      { eventlog(eventlog_level_error,__FUNCTION__,"could not close MOTD file \"%s\" after reading (std::fopen: %s)",filename,std::strerror(errno)); }
 	}
 	else
-	  { eventlog(eventlog_level_error,__FUNCTION__,"could not open MOTD file \"%s\" for reading (fopen: %s)",filename,std::strerror(errno)); }
+	  { eventlog(eventlog_level_error,__FUNCTION__,"could not open MOTD file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno)); }
     }
     c->protocol.cflags|= conn_flags_welcomed;
 }
@@ -147,7 +137,7 @@ static void conn_send_welcome(t_connection * c)
 static void conn_send_issue(t_connection * c)
 {
     char const * filename;
-    FILE *       fp;
+    std::FILE *       fp;
 
     if (!c)
     {
@@ -156,20 +146,20 @@ static void conn_send_issue(t_connection * c)
     }
 
     if ((filename = prefs_get_issuefile()))
-	if ((fp = fopen(filename,"r")))
+	if ((fp = std::fopen(filename,"r")))
 	{
 	    message_send_file(c,fp);
-	    if (fclose(fp)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close issue file \"%s\" after reading (fopen: %s)",filename,std::strerror(errno));
+	    if (std::fclose(fp)<0)
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close issue file \"%s\" after reading (std::fopen: %s)",filename,std::strerror(errno));
 	}
 	else
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not open issue file \"%s\" for reading (fopen: %s)",filename,std::strerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not open issue file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno));
     else
 	eventlog(eventlog_level_debug,__FUNCTION__,"no issue file");
 }
 
 // [zap-zero] 20020629
-extern void conn_shutdown(t_connection * c, time_t now, t_timer_data foo)
+extern void conn_shutdown(t_connection * c, std::time_t now, t_timer_data foo)
 {
     if (!c)
     {
@@ -177,7 +167,7 @@ extern void conn_shutdown(t_connection * c, time_t now, t_timer_data foo)
         return;
     }
 
-    if (now==(time_t)0) /* zero means user logged out before expiration */
+    if (now==(std::time_t)0) /* zero means user logged out before expiration */
     {
 	eventlog(eventlog_level_trace,__FUNCTION__,"[%d] connection allready closed",conn_get_socket(c));
 	return;
@@ -188,7 +178,7 @@ extern void conn_shutdown(t_connection * c, time_t now, t_timer_data foo)
     conn_set_state(c, conn_state_destroy);
 }
 
-extern void conn_test_latency(t_connection * c, time_t now, t_timer_data delta)
+extern void conn_test_latency(t_connection * c, std::time_t now, t_timer_data delta)
 {
     t_packet * packet;
 
@@ -199,7 +189,7 @@ extern void conn_test_latency(t_connection * c, time_t now, t_timer_data delta)
     }
 
 
-    if (now==(time_t)0) /* zero means user logged out before expiration */
+    if (now==(std::time_t)0) /* zero means user logged out before expiration */
 	return;
 
     if (conn_get_state(c)==conn_state_destroy)	// [zap-zero] 20020910
@@ -248,12 +238,12 @@ extern void conn_test_latency(t_connection * c, time_t now, t_timer_data delta)
 	}
     }
 
-    if (timerlist_add_timer(c,now+(time_t)delta.n,conn_test_latency,delta)<0)
+    if (timerlist_add_timer(c,now+(std::time_t)delta.n,conn_test_latency,delta)<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not add timer");
 }
 
 
-static void conn_send_nullmsg(t_connection * c, time_t now, t_timer_data delta)
+static void conn_send_nullmsg(t_connection * c, std::time_t now, t_timer_data delta)
 {
     if (!c)
     {
@@ -261,12 +251,12 @@ static void conn_send_nullmsg(t_connection * c, time_t now, t_timer_data delta)
         return;
     }
 
-    if (now==(time_t)0) /* zero means user logged out before expiration */
+    if (now==(std::time_t)0) /* zero means user logged out before expiration */
         return;
 
     message_send_text(c,message_type_null,c,NULL);
 
-    if (timerlist_add_timer(c,now+(time_t)delta.n,conn_send_nullmsg,delta)<0)
+    if (timerlist_add_timer(c,now+(std::time_t)delta.n,conn_send_nullmsg,delta)<0)
         eventlog(eventlog_level_error,__FUNCTION__,"could not add timer");
 }
 
@@ -360,9 +350,9 @@ extern t_connection * conn_create(int tsock, int usock, unsigned int real_local_
     temp->socket.fdw_idx		= -1;
     temp->protocol.cclass               = conn_class_init;
     temp->protocol.state                = conn_state_initial;
-    temp->protocol.sessionkey           = ((unsigned int)rand())^((unsigned int)now+(unsigned int)real_local_port);
+    temp->protocol.sessionkey           = ((unsigned int)std::rand())^((unsigned int)now+(unsigned int)real_local_port);
     temp->protocol.sessionnum           = connarray_add_conn(temp);
-    temp->protocol.secret               = ((unsigned int)rand())^(totalcount+((unsigned int)now));
+    temp->protocol.secret               = ((unsigned int)std::rand())^(totalcount+((unsigned int)now));
     temp->protocol.flags                = MF_PLUG;
     temp->protocol.latency              = 0;
     temp->protocol.chat.dnd                      = NULL;
@@ -533,7 +523,7 @@ extern void conn_destroy(t_connection * c, t_elem ** elem, int conn_or_dead_list
 
     if (list_remove_data(conn_head,c,(conn_or_dead_list)?&curr:elem)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+	eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
 	return;
     }
 
@@ -758,11 +748,11 @@ extern void conn_set_class(t_connection * c, t_conn_class cclass)
 		conn_set_game_port(c,(unsigned short)prefs_get_udptest_port());
 	    udptest_send(c);
 
-	    /* remove any init timers */
+	    /* std::remove any init timers */
 	    if (oldclass == conn_class_init) timerlist_del_all_timers(c);
 	    delta = prefs_get_latency();
 	    data.n = delta;
-	    if (timerlist_add_timer(c,now+(time_t)delta,conn_test_latency,data)<0)
+	    if (timerlist_add_timer(c,now+(std::time_t)delta,conn_test_latency,data)<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not add timer");
 
     	    eventlog(eventlog_level_debug,__FUNCTION__,"added latency check timer");
@@ -771,7 +761,7 @@ extern void conn_set_class(t_connection * c, t_conn_class cclass)
 	case conn_class_w3route:
 	    delta = prefs_get_latency();
 	    data.n = delta;
-	    if (timerlist_add_timer(c,now+(time_t)delta,conn_test_latency,data)<0)
+	    if (timerlist_add_timer(c,now+(std::time_t)delta,conn_test_latency,data)<0)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not add timer");
 	    break;
 
@@ -782,12 +772,12 @@ extern void conn_set_class(t_connection * c, t_conn_class cclass)
 	    if (cclass==conn_class_bot) {
 		if ((delta = prefs_get_nullmsg())>0) {
 		    data.n = delta;
-		    if (timerlist_add_timer(c,now+(time_t)delta,conn_send_nullmsg,data)<0)
+		    if (timerlist_add_timer(c,now+(std::time_t)delta,conn_send_nullmsg,data)<0)
 		    eventlog(eventlog_level_error,__FUNCTION__,"could not add timer");
 		}
 	    }
 
-	    /* remove any init timers */
+	    /* std::remove any init timers */
 	    if (oldclass == conn_class_init) timerlist_del_all_timers(c);
 	    conn_send_issue(c);
 
@@ -803,7 +793,7 @@ extern void conn_set_class(t_connection * c, t_conn_class cclass)
 	}
 
 	default:
-	    /* remove any init timers */
+	    /* std::remove any init timers */
 	    if (oldclass == conn_class_init)
 		timerlist_del_all_timers(c);
 	    break;
@@ -842,7 +832,7 @@ extern void conn_set_state(t_connection * c, t_conn_state state)
     }
     else if (state != conn_state_destroy && c->protocol.state == conn_state_destroy)
 	if (list_remove_data(conn_dead, c, &elem)) {
-	    eventlog(eventlog_level_error, __FUNCTION__, "could not remove dead connection");
+	    eventlog(eventlog_level_error, __FUNCTION__, "could not std::remove dead connection");
 	    return;
 	}
 
@@ -1419,7 +1409,7 @@ static void conn_set_account(t_connection * c, t_account * account)
 	char const * flagstr;
 
 	if ((flagstr = account_get_strattr(account,"BNET\\flags\\initial")))
-	    conn_add_flags(c,strtoul(flagstr,NULL,0));
+	    conn_add_flags(c,std::strtoul(flagstr,NULL,0));
     }
 
     account_set_ll_time(c->protocol.account,(unsigned int)now);
@@ -1470,7 +1460,7 @@ extern void conn_login(t_connection *c, t_account *a, const char *loggeduser)
     assert(loggeduser != NULL);
 
     conn_set_account(c,a);
-    if (strcmp(conn_get_loggeduser(c),loggeduser))
+    if (std::strcmp(conn_get_loggeduser(c),loggeduser))
 	conn_set_loggeduser(c,loggeduser);
 }
 
@@ -1729,7 +1719,7 @@ extern int conn_del_ignore(t_connection * c, t_account const * account)
     c->protocol.chat.ignore_list[c->protocol.chat.ignore_count-1] = c->protocol.chat.ignore_list[i];
     c->protocol.chat.ignore_list[i] = temp;
 
-    if (c->protocol.chat.ignore_count==1) /* some realloc()s are buggy */
+    if (c->protocol.chat.ignore_count==1) /* some std::realloc()s are buggy */
     {
 	xfree(c->protocol.chat.ignore_list);
 	newlist = NULL;
@@ -1852,7 +1842,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
 	if(channel && (channel == oldchannel))
 		return 0;
 
-	if((strncasecmp(channelname, "clan ", 5)==0)&&(strlen(channelname)<10))
+	if((strncasecmp(channelname, "clan ", 5)==0)&&(std::strlen(channelname)<10))
 		clantag = str_to_clantag(&channelname[5]);
 
     if(clantag && ((!(clan = account_get_clan(acc))) || (clan_get_clantag(clan) != clantag)))
@@ -1860,7 +1850,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
         if (!channel)
         {
             char msgtemp[MAX_MESSAGE_LEN];
-            sprintf(msgtemp, "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
+            std::sprintf(msgtemp, "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
             message_send_text(c, message_type_error, c, msgtemp);
             return 0;
         }
@@ -1912,7 +1902,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
     if(conn_set_leavegamewhisper_ack(c,0)<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"Unable to reset conn_set_leavegamewhisper_ack flag");
 
-	/* if you're entering a channel, make sure they didn't exit a game without telling us */
+	/* if you're entering a channel, make sure they didn't std::exit a game without telling us */
 	if (c->protocol.game)
 	{
             game_del_player(conn_get_game(c),c);
@@ -1953,7 +1943,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
     if (clantag && clan && (clan_get_clantag(clan)==clantag))
     {
       char msgtemp[MAX_MESSAGE_LEN];
-      sprintf(msgtemp,"%s",clan_get_motd(clan));
+      std::sprintf(msgtemp,"%s",clan_get_motd(clan));
       message_send_text(c,message_type_info,c,msgtemp);
     }
 
@@ -1962,7 +1952,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
     {
       char msgtemp[MAX_MESSAGE_LEN];
 
-      sprintf(msgtemp,"%s topic: %s",channel_get_name(c->protocol.chat.channel),channel_get_topic(channel_get_name(c->protocol.chat.channel)));
+      std::sprintf(msgtemp,"%s topic: %s",channel_get_name(c->protocol.chat.channel),channel_get_topic(channel_get_name(c->protocol.chat.channel)));
       message_send_text(c,message_type_info,c,msgtemp);
     }
 
@@ -2256,8 +2246,8 @@ extern char const * conn_get_chatcharname(t_connection const * c, t_connection c
 
 	if (c->protocol.d2.charname) mychar = c->protocol.d2.charname;
 	else mychar = "";
-    	chatcharname = (char*)xmalloc(strlen(accname) + 2 + strlen(mychar));
-    	sprintf(chatcharname, "%s*%s", mychar, accname);
+    	chatcharname = (char*)xmalloc(std::strlen(accname) + 2 + std::strlen(mychar));
+    	std::sprintf(chatcharname, "%s*%s", mychar, accname);
     } else chatcharname = xstrdup(accname);
 
     return chatcharname;
@@ -2373,13 +2363,13 @@ extern char const * conn_get_playerinfo(t_connection const * c)
 
     if (clienttag==CLIENTTAG_BNCHATBOT_UINT)
     {
-	strcpy(playerinfo,revtag); /* FIXME: what to return here? */
+	std::strcpy(playerinfo,revtag); /* FIXME: what to return here? */
     }
     else if ((clienttag==CLIENTTAG_STARCRAFT_UINT) || (clienttag==CLIENTTAG_BROODWARS_UINT))
     {
         if (conn_get_versionid(c)<=0x000000c7)
 	{
-	  sprintf(playerinfo,"%s %u %u %u %u %u",
+	  std::sprintf(playerinfo,"%s %u %u %u %u %u",
 		  revtag,
 		  account_get_ladder_rating(account,clienttag,ladder_id_normal),
 		  account_get_ladder_rank(account,clienttag,ladder_id_normal),
@@ -2388,7 +2378,7 @@ extern char const * conn_get_playerinfo(t_connection const * c)
 	}
 	else
 	{
-	  sprintf(playerinfo,"%s %u %u %u %u %u %u %u %u %s",
+	  std::sprintf(playerinfo,"%s %u %u %u %u %u %u %u %u %s",
 		  revtag,
 		  account_get_ladder_rating(account,clienttag,ladder_id_normal),
 		  account_get_ladder_rank(account,clienttag,ladder_id_normal),
@@ -2401,7 +2391,7 @@ extern char const * conn_get_playerinfo(t_connection const * c)
     }
     else if (clienttag==CLIENTTAG_SHAREWARE_UINT)
     {
-	sprintf(playerinfo,"%s %u %u %u %u %u",
+	std::sprintf(playerinfo,"%s %u %u %u %u %u",
 		revtag,
 		account_get_ladder_rating(account,clienttag,ladder_id_normal),
 		account_get_ladder_rank(account,clienttag,ladder_id_normal),
@@ -2410,7 +2400,7 @@ extern char const * conn_get_playerinfo(t_connection const * c)
     }
     else if (clienttag==CLIENTTAG_DIABLORTL_UINT)
     {
-	sprintf(playerinfo,"%s %u %u %u %u %u %u %u %u %u",
+	std::sprintf(playerinfo,"%s %u %u %u %u %u %u %u %u %u",
 		revtag,
 		account_get_normal_level(account,clienttag),
 		account_get_normal_class(account,clienttag),
@@ -2424,7 +2414,7 @@ extern char const * conn_get_playerinfo(t_connection const * c)
     }
     else if (clienttag==CLIENTTAG_DIABLOSHR_UINT)
     {
-	sprintf(playerinfo,"%s %u %u %u %u %u %u %u %u %u",
+	std::sprintf(playerinfo,"%s %u %u %u %u %u %u %u %u %u",
 		revtag,
 		account_get_normal_level(account,clienttag),
 		account_get_normal_class(account,clienttag),
@@ -2443,7 +2433,7 @@ extern char const * conn_get_playerinfo(t_connection const * c)
 	a = account_get_ladder_rating(account,clienttag,ladder_id_normal);
 	b = account_get_ladder_rating(account,clienttag,ladder_id_ironman);
 
-	sprintf(playerinfo,"%s %u %u %u %u %u %u %u %u",
+	std::sprintf(playerinfo,"%s %u %u %u %u %u %u %u %u",
 		revtag,
 		a,
 		account_get_ladder_rank(account,clienttag,ladder_id_normal),
@@ -2471,16 +2461,16 @@ extern char const * conn_get_playerinfo(t_connection const * c)
 		ch = NULL;
 
 	if (ch)
-	    sprintf(playerinfo,"%s%s,%s,%s",
+	    std::sprintf(playerinfo,"%s%s,%s,%s",
 		    revtag,
 		    character_get_realmname(ch),
 		    character_get_name(ch),
 		    character_get_playerinfo(ch));
 	else
-	    strcpy(playerinfo,revtag); /* open char */
+	    std::strcpy(playerinfo,revtag); /* open char */
     }
     else /* FIXME: this used to return the empty string... do some formats actually use that or not? */
-	strcpy(playerinfo,revtag); /* best guess... */
+	std::strcpy(playerinfo,revtag); /* best guess... */
    }
 #endif
    {
@@ -2489,15 +2479,15 @@ extern char const * conn_get_playerinfo(t_connection const * c)
        {
            tag_uint_to_str(playerinfo,clienttag);
            //bn_int_tag_set((bn_int *)playerinfo,clienttag); /* FIXME: Is this attempting to reverse the tag?  This isn't really correct... why not use the revtag stuff like above or below? */
-           //playerinfo[strlen(clienttag)]='\0';
+           //playerinfo[std::strlen(clienttag)]='\0';
        }
        else
        {
-           strcpy(playerinfo,conn_get_realminfo(c));
+           std::strcpy(playerinfo,conn_get_realminfo(c));
        }
     }
     else
-        strcpy(playerinfo,revtag); /* open char */
+        std::strcpy(playerinfo,revtag); /* open char */
 
     return playerinfo;
 }
@@ -2531,7 +2521,7 @@ extern int conn_set_playerinfo(t_connection const * c, char const * playerinfo)
 	unsigned int vitality;
 	unsigned int gold;
 
-	if (sscanf(playerinfo,"LTRD %u %u %u %u %u %u %u %u %*u",
+	if (std::sscanf(playerinfo,"LTRD %u %u %u %u %u %u %u %u %*u",
 		   &level,
 		   &chclass,
 		   &diablo_kills,
@@ -2565,7 +2555,7 @@ extern int conn_set_playerinfo(t_connection const * c, char const * playerinfo)
 	unsigned int vitality;
 	unsigned int gold;
 
-	if (sscanf(playerinfo,"RHSD %u %u %u %u %u %u %u %u %*u",
+	if (std::sscanf(playerinfo,"RHSD %u %u %u %u %u %u %u %u %*u",
 		   &level,
 		   &chclass,
 		   &diablo_kills,
@@ -2695,7 +2685,7 @@ extern unsigned int conn_get_idletime(t_connection const * c)
         return 0;
     }
 
-    return (unsigned int)difftime(now,c->protocol.chat.last_message);
+    return (unsigned int)std::difftime(now,c->protocol.chat.last_message);
 }
 
 
@@ -2964,7 +2954,7 @@ extern int conn_quota_exceeded(t_connection * con, char const * text)
 	!conn_get_account(con) ||
 	(account_get_command_groups(conn_get_account(con)) & command_get_group("/admin-con"))) return 0;
 
-    if (strlen(text)>prefs_get_quota_maxline())
+    if (std::strlen(text)>prefs_get_quota_maxline())
     {
 	message_send_text(con,message_type_error,con,"Your line length quota has been exceeded!");
 	return 1;
@@ -2973,7 +2963,7 @@ extern int conn_quota_exceeded(t_connection * con, char const * text)
     LIST_TRAVERSE(con->protocol.chat.quota.list,curr)
     {
 	qline = (t_qline*)elem_get_data(curr);
-        if (now>=qline->inf+(time_t)prefs_get_quota_time())
+        if (now>=qline->inf+(std::time_t)prefs_get_quota_time())
 	{
 	    /* these lines are at least quota_time old */
 	    list_remove_elem(con->protocol.chat.quota.list,&curr);
@@ -2988,8 +2978,8 @@ extern int conn_quota_exceeded(t_connection * con, char const * text)
 
     qline = (t_qline*)xmalloc(sizeof(t_qline));
     qline->inf = now; /* set the moment */
-    if (strlen(text)>prefs_get_quota_wrapline()) /* round up on the divide */
-	qline->count = (strlen(text)+prefs_get_quota_wrapline()-1)/prefs_get_quota_wrapline();
+    if (std::strlen(text)>prefs_get_quota_wrapline()) /* round up on the divide */
+	qline->count = (std::strlen(text)+prefs_get_quota_wrapline()-1)/prefs_get_quota_wrapline();
     else
 	qline->count = 1;
 
@@ -3197,7 +3187,7 @@ extern int conn_get_leavegamewhisper_ack(t_connection * c)
 	return (c->protocol.cflags & conn_flags_leavegamewhisper);
 }
 
-extern int conn_set_anongame_search_starttime(t_connection * c, time_t t)
+extern int conn_set_anongame_search_starttime(t_connection * c, std::time_t t)
 {
    if (c == NULL) {
       eventlog(eventlog_level_error, "conn_set_anongame_search_starttime", "got NULL connection");
@@ -3207,11 +3197,11 @@ extern int conn_set_anongame_search_starttime(t_connection * c, time_t t)
    return 0;
 }
 
-extern time_t conn_get_anongame_search_starttime(t_connection * c)
+extern std::time_t conn_get_anongame_search_starttime(t_connection * c)
 {
 	if (c == NULL) {
 	  eventlog(eventlog_level_error, "conn_set_anongame_search_starttime", "got NULL connection");
-      return ((time_t) 0);
+      return ((std::time_t) 0);
     }
   return c->protocol.w3.anongame_search_starttime;
 }
@@ -3383,7 +3373,7 @@ extern t_connection * connlist_find_connection_by_name(char const * name, t_real
     }
 
     /* If is charname@otherrealm or ch@rname@realm */
-    if ((temp=strrchr(name,'@'))) /* search from the right */
+    if ((temp=std::strrchr(name,'@'))) /* search from the right */
     {
 	unsigned int n;
 
@@ -3393,13 +3383,13 @@ extern t_connection * connlist_find_connection_by_name(char const * name, t_real
 	    eventlog(eventlog_level_info,__FUNCTION__,"character name too long in \"%s\" (charname@otherrealm format)",name);
 	    return NULL;
 	}
-	strncpy(charname,name,n);
+	std::strncpy(charname,name,n);
 	charname[n] = '\0';
 	return connlist_find_connection_by_charname(name,temp + 1);
     }
 
     /* format: charname*username */
-    if ((temp=strchr(name,'*')))
+    if ((temp=std::strchr(name,'*')))
     {
 	unsigned int n;
 
@@ -3537,7 +3527,7 @@ extern int conn_update_w3_playerinfo(t_connection * c)
 	return -1;
     }
 
-    strncpy(revtag, tag_uint_to_str(clienttag_str,conn_get_fake_clienttag(c)),5); revtag[4] = '\0';
+    std::strncpy(revtag, tag_uint_to_str(clienttag_str,conn_get_fake_clienttag(c)),5); revtag[4] = '\0';
     strreverse(revtag);
 
     clienttag = c->protocol.client.clienttag;
@@ -3549,30 +3539,30 @@ extern int conn_update_w3_playerinfo(t_connection * c)
 	clantag = clan_get_clantag(user_clan);
 
     if(clantag) {
-	sprintf(clantag_str_tmp, "%c%c%c%c", clantag&0xff, (clantag>>8)&0xff, (clantag>>16)&0xff, clantag>>24);
+	std::sprintf(clantag_str_tmp, "%c%c%c%c", clantag&0xff, (clantag>>8)&0xff, (clantag>>16)&0xff, clantag>>24);
         clantag_str=clantag_str_tmp;
         while((* clantag_str) == 0) clantag_str++;
     }
 
     if(acctlevel == 0) {
 	if(clantag)
-	    sprintf(tempplayerinfo, "%s %s 0 %s", revtag, revtag, clantag_str);
+	    std::sprintf(tempplayerinfo, "%s %s 0 %s", revtag, revtag, clantag_str);
 	else
-	    strcpy(tempplayerinfo, revtag);
+	    std::strcpy(tempplayerinfo, revtag);
 	eventlog(eventlog_level_info,__FUNCTION__,"[%d] %s",conn_get_socket(c), revtag);
     } else {
 	usericon = account_get_user_icon(account,clienttag);
 	if (!usericon) {
     	    if(clantag)
-		sprintf(tempplayerinfo, "%s %1u%c3W %u %s", revtag, raceiconnumber, raceicon, acctlevel, clantag_str);
+		std::sprintf(tempplayerinfo, "%s %1u%c3W %u %s", revtag, raceiconnumber, raceicon, acctlevel, clantag_str);
             else
-		sprintf(tempplayerinfo, "%s %1u%c3W %u", revtag, raceiconnumber, raceicon, acctlevel);
+		std::sprintf(tempplayerinfo, "%s %1u%c3W %u", revtag, raceiconnumber, raceicon, acctlevel);
 	    eventlog(eventlog_level_info,__FUNCTION__,"[%d] %s using generated icon [%1u%c3W]",conn_get_socket(c), revtag, raceiconnumber, raceicon);
 	} else {
             if(clantag)
-		sprintf(tempplayerinfo, "%s %s %u %s",revtag, usericon, acctlevel, clantag_str);
+		std::sprintf(tempplayerinfo, "%s %s %u %s",revtag, usericon, acctlevel, clantag_str);
             else
-		sprintf(tempplayerinfo, "%s %s %u",revtag, usericon, acctlevel);
+		std::sprintf(tempplayerinfo, "%s %s %u",revtag, usericon, acctlevel);
 	    eventlog(eventlog_level_info,__FUNCTION__,"[%d] %s using user-selected icon [%s]",conn_get_socket(c),revtag,usericon);
 	}
     }
@@ -3615,7 +3605,7 @@ extern int conn_increment_passfail_count (t_connection * c)
 	count = conn_get_passfail_count(c) + 1;
 	if (count == prefs_get_passfail_count())
 	{
-	    ipbanlist_add(NULL, addr_num_to_ip_str(conn_get_addr(c)), now+(time_t)prefs_get_passfail_bantime());
+	    ipbanlist_add(NULL, addr_num_to_ip_str(conn_get_addr(c)), now+(std::time_t)prefs_get_passfail_bantime());
 	    eventlog(eventlog_level_info,__FUNCTION__,"[%d] failed password tries: %d (banned ip)",conn_get_socket(c), count);
 	    conn_set_state(c, conn_state_destroy);
 	    return -1;

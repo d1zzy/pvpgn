@@ -24,7 +24,6 @@
 #include <cerrno>
 #include <cstring>
 
-#include "compat/strtoul.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/util.h"
@@ -40,7 +39,7 @@ namespace bnetd
 {
 
 static t_list * autoupdate_head=NULL;
-static FILE * fp = NULL;
+static std::FILE * fp = NULL;
 
 
 /*
@@ -72,8 +71,8 @@ extern int autoupdate_load(char const * filename)
 	return -1;
     }
 
-    if (!(fp = fopen(filename,"r"))) {
-	eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (fopen: %s)", filename, std::strerror(errno));
+    if (!(fp = std::fopen(filename,"r"))) {
+	eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
 	return -1;
     }
 
@@ -134,7 +133,7 @@ extern int autoupdate_load(char const * filename)
 	list_append_data(autoupdate_head,entry);
     }
     file_get_line(NULL); // clear file_get_line buffer
-    fclose(fp);
+    std::fclose(fp);
     return 0;
 }
 
@@ -208,7 +207,7 @@ extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, c
 		*extention = '\0';
 		extention++;
 
-		sprintf(temp, "%s_%s.%s", tempmpq, gltag, extention);
+		std::sprintf(temp, "%s_%s.%s", tempmpq, gltag, extention);
 
 		xfree((void *)tempmpq);
 		return temp;

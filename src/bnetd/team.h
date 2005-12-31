@@ -19,17 +19,18 @@
 #ifndef INCLUDED_TEAM_TYPES
 #define INCLUDED_TEAM_TYPES
 
-# include "common/list.h"
+#include <ctime>
+
 #ifndef JUST_NEED_TYPES
 # define JUST_NEED_TYPES
+# include "common/list.h"
+# include "common/tag.h"
 # include "account.h"
 # undef JUST_NEED_TYPES
 #else
+# include "common/list.h"
+# include "common/tag.h"
 # include "account.h"
-#endif
-#include "common/tag.h"
-#ifdef HAVE_TIME_H
-# include <time.h>
 #endif
 
 #define MAX_TEAMSIZE 4
@@ -53,7 +54,7 @@ typedef struct team
 	unsigned int	teammembers[MAX_TEAMSIZE];
 	t_account *     members[MAX_TEAMSIZE];
 	t_clienttag	clienttag;
-	time_t		lastgame;
+	std::time_t	lastgame;
 }
 #endif
 t_team;
@@ -100,7 +101,7 @@ extern int team_get_losses(t_team * team);
 extern int team_get_xp(t_team * team);
 extern int team_get_level(t_team * team);
 extern int team_get_rank(t_team * team);
-extern time_t team_get_lastgame(t_team * team);
+extern std::time_t team_get_lastgame(t_team * team);
 
 extern int team_inc_wins(t_team * team);
 extern int team_inc_losses(t_team * team);

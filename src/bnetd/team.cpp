@@ -15,60 +15,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define TEAM_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strdup.h"
-#include "compat/pdir.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#include "common/eventlog.h"
-#include "common/packet.h"
-#include "common/tag.h"
-#include "common/util.h"
-#include "common/xalloc.h"
-#include "common/list.h"
-#include "storage.h"
+#define TEAM_INTERNAL_ACCESS
 #include "team.h"
+
+#include <cstring>
+#include <cassert>
+
+#include "common/eventlog.h"
+#include "common/list.h"
+#include "common/bnet_protocol.h"
+
 #include "account.h"
 #include "account_wrap.h"
+#include "storage.h"
 #include "ladder.h"
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
 #include "server.h"
 #include "common/setup_after.h"
 
@@ -203,7 +164,7 @@ t_team* create_team(t_account **accounts, t_clienttag clienttag)
     unsigned char size;
 
     team = (t_team*)xmalloc(sizeof(t_team));
-    memset(team,0,sizeof(t_team));
+    std::memset(team,0,sizeof(t_team));
     size = 0;
 
     for (i=0; i<MAX_TEAMSIZE;i++)

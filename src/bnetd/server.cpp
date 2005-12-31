@@ -17,91 +17,44 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define SERVER_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
+#define SERVER_INTERNAL_ACCESS
+#include "server.h"
+
+#include <cctype>
+#include <cerrno>
+#include <cstring>
+#include <cstdio>
+
 #ifdef WIN32
 # include <conio.h> /* for kbhit() and getch() */
 #endif
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
-# ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/memset.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#include "compat/difftime.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
 #ifdef DO_POSIXSIG
 # include <signal.h>
-# include "compat/signal.h"
 #endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
 #endif
-#include "compat/socket.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
-#include "compat/inet_ntoa.h"
+#include "compat/strerror.h"
 #include "compat/psock.h"
-#include "common/packet.h"
-#include "connection.h"
-#include "common/hexdump.h"
+#include "common/fdwatch.h"
+#include "common/addr.h"
 #include "common/eventlog.h"
-#include "message.h"
+#include "common/xalloc.h"
+#include "common/packet.h"
+#include "common/hexdump.h"
+#include "common/network.h"
+#include "common/list.h"
+#include "common/trans.h"
+#ifdef WIN32
+# include "win32/service.h"
+#endif
+#include "common/util.h"
+
+#include "prefs.h"
+#include "connection.h"
+#include "ipban.h"
+#include "timer.h"
 #include "handle_bnet.h"
 #include "handle_bot.h"
 #include "handle_telnet.h"
@@ -110,46 +63,31 @@
 #include "handle_d2cs.h"
 #include "handle_irc.h"
 #include "handle_udp.h"
-#include "common/network.h"
-#include "prefs.h"
-#include "account.h"
-#include "tracker.h"
-#include "common/list.h"
-#include "adbanner.h"
-#include "timer.h"
-#include "common/addr.h"
-#include "common/util.h"
-#include "common/rlimit.h"
-#include "ipban.h"
-#include "helpfile.h"
-#include "autoupdate.h"
-#include "versioncheck.h"
-#include "realm.h"
-#include "channel.h"
-#include "game.h"
 #include "anongame.h"
-#include "server.h"
-#include "command_groups.h"
-#ifdef WIN32
-# include "win32/service.h"
-#endif
+#include "clan.h"
+#include "attrlayer.h"
+#include "account.h"
+#include "message.h"
+#include "game.h"
+#include "cmdline.h"
+#include "tracker.h"
 #include "ladder.h"
 #include "output.h"
-#include "alias_command.h"
-#include "anongame_infos.h"
+#include "channel.h"
+#include "realm.h"
+#include "autoupdate.h"
 #include "news.h"
-#include "common/fdwatch.h"
-#include "clan.h"
-#include "common/trans.h"
-#include "common/xalloc.h"
+#include "versioncheck.h"
+#include "helpfile.h"
+#include "adbanner.h"
+#include "command_groups.h"
+#include "alias_command.h"
 #include "tournament.h"
-#include <ctype.h>
+#include "anongame_infos.h"
 #include "topic.h"
-#include "attrlayer.h"
-#include "cmdline.h"
 #include "common/setup_after.h"
 
-extern FILE * hexstrm; /* from main.c */
+extern std::FILE * hexstrm; /* from main.c */
 extern int g_ServiceStatus;
 
 namespace pvpgn
@@ -169,9 +107,9 @@ static void timer_sig_handle(int unused);
 
 
 time_t now;
-static time_t starttime;
-static time_t curr_exittime;
-static volatile time_t sigexittime=0;
+static std::time_t starttime;
+static std::time_t curr_exittime;
+static volatile std::time_t sigexittime=0;
 static volatile int do_restart=0;
 static volatile int do_save=0;
 static volatile int got_epipe=0;
@@ -182,7 +120,7 @@ extern void server_quit_delay(int delay)
     /* getting negative delay is ok too because it will force immediate
      * shutdown */
     if (delay)
-	sigexittime = time(NULL)+delay;
+	sigexittime = std::time(NULL)+delay;
     else
 	sigexittime = 0;
 }
@@ -193,7 +131,7 @@ extern void server_quit_wraper(void)
     if (sigexittime)
 	sigexittime -= prefs_get_shutdown_decr();
     else
-	sigexittime = time(NULL)+(time_t)prefs_get_shutdown_delay();
+	sigexittime = std::time(NULL)+(std::time_t)prefs_get_shutdown_delay();
 }
 
 extern void server_restart_wraper(void){
@@ -230,7 +168,7 @@ static void pipe_sig_handle(int unused)
 #ifdef HAVE_SETITIMER
 static void timer_sig_handle(int unused)
 {
-    time(&now);
+    std::time(&now);
 }
 #endif
 
@@ -243,7 +181,7 @@ static void forced_quit_sig_handle(int unused)
 
 extern unsigned int server_get_uptime(void)
 {
-    return (unsigned int)difftime(time(NULL),starttime);
+    return (unsigned int)std::difftime(std::time(NULL),starttime);
 }
 
 
@@ -288,10 +226,10 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
     unsigned short     rport;
 
     if (!addr_get_addr_str(curr_laddr,tempa,sizeof(tempa)))
-	strcpy(tempa,"x.x.x.x:x");
+	std::strcpy(tempa,"x.x.x.x:x");
 
     /* accept the connection */
-    memset(&caddr,0,sizeof(caddr)); /* not sure if this is needed... modern systems are ok anyway */
+    std::memset(&caddr,0,sizeof(caddr)); /* not sure if this is needed... modern systems are ok anyway */
     caddr_len = sizeof(caddr);
     if ((csocket = psock_accept(ssocket,(struct sockaddr *)&caddr,&caddr_len))<0)
     {
@@ -355,7 +293,7 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 	struct sockaddr_in rsaddr;
 	psock_t_socklen    rlen;
 
-	memset(&rsaddr,0,sizeof(rsaddr)); /* not sure if this is needed... modern systems are ok anyway */
+	std::memset(&rsaddr,0,sizeof(rsaddr)); /* not sure if this is needed... modern systems are ok anyway */
 	rlen = sizeof(rsaddr);
 	if (psock_getsockname(csocket,(struct sockaddr *)&rsaddr,&rlen)<0)
 	{
@@ -430,7 +368,7 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 
 		data.p = NULL;
 		delay = prefs_get_initkill_timer();
-		if (delay) timerlist_add_timer(c,time(NULL)+delay,conn_shutdown,data);
+		if (delay) timerlist_add_timer(c,std::time(NULL)+delay,conn_shutdown,data);
 	    }
 	default:
 	    /* We have to wait for an initial "magic" byte on bnet connections to
@@ -512,8 +450,8 @@ static int sd_udpinput(t_addr * const curr_laddr, t_laddr_info const * laddr_inf
 	    char tempa[32];
 
 	    if (!addr_get_addr_str(curr_laddr,tempa,sizeof(tempa)))
-		strcpy(tempa,"x.x.x.x:x");
-	    fprintf(hexstrm,"%d: recv class=%s[0x%02x] type=%s[0x%04x] from=%s to=%s length=%u\n",
+		std::strcpy(tempa,"x.x.x.x:x");
+	    std::fprintf(hexstrm,"%d: recv class=%s[0x%02x] type=%s[0x%04x] from=%s to=%s length=%u\n",
 		    usocket,
 		    packet_get_class_str(upacket),(unsigned int)packet_get_class(upacket),
 		    packet_get_type_str(upacket,packet_dir_from_client),packet_get_type(upacket),
@@ -658,7 +596,7 @@ static int sd_tcpinput(t_connection * c)
 
 	    if (hexstrm)
 	    {
-		fprintf(hexstrm,"%d: recv class=%s[0x%02x] type=%s[0x%04x] length=%u\n",
+		std::fprintf(hexstrm,"%d: recv class=%s[0x%02x] type=%s[0x%04x] length=%u\n",
 			csocket,
 			packet_get_class_str(packet),(unsigned int)packet_get_class(packet),
 			packet_get_type_str(packet,packet_dir_from_client),packet_get_type(packet),
@@ -756,7 +694,7 @@ static int sd_tcpoutput(t_connection * c)
 	case 1: /* done sending */
 	    if (hexstrm)
 	    {
-		fprintf(hexstrm,"%d: send class=%s[0x%02x] type=%s[0x%04x] length=%u\n",
+		std::fprintf(hexstrm,"%d: send class=%s[0x%02x] type=%s[0x%04x] length=%u\n",
 			csocket,
 			packet_get_class_str(packet),(unsigned int)packet_get_class(packet),
 			packet_get_type_str(packet,packet_dir_from_server),packet_get_type(packet),
@@ -785,7 +723,7 @@ void server_check_and_fix_hostname(char const * sname)
     char * tn = (char *)sname;
     char * sn = (char *)sname;
 
-    if (!isalnum((int)*sn))
+    if (!std::isalnum((int)*sn))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"hostname contains invalid first symbol (must be alphanumeric)");
 	*tn='a';
@@ -795,7 +733,7 @@ void server_check_and_fix_hostname(char const * sname)
 
     for (;*sn!='\0';sn++)
     {
-	if (isalnum((int)*sn) || *sn=='-' || *sn=='.')
+	if (std::isalnum((int)*sn) || *sn=='-' || *sn=='.')
 	{
 	   *tn=*sn;
 	   tn++;
@@ -826,7 +764,7 @@ extern void server_set_hostname(void)
     if ((!hn)||(hn[0]=='\0')) {
     	if (gethostname(temp,sizeof(temp))<0) {
 #ifdef WIN32
-	    sprintf(temp,"localhost");
+	    std::sprintf(temp,"localhost");
 #else
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not get hostname: %s",pstrerror(errno));
 	    return;
@@ -841,12 +779,12 @@ extern void server_set_hostname(void)
     	} else {
 	    int i=0;
 
-	    if (strchr(hp->h_name,'.'))
+	    if (std::strchr(hp->h_name,'.'))
 	    	/* Default name is already a FQDN */
 	    	server_hostname = xstrdup(hp->h_name);
 	    /* ... if not we have to examine the aliases */
 	    while (!server_hostname && hp->h_aliases && hp->h_aliases[i]) {
-		if (strchr(hp->h_aliases[i],'.'))
+		if (std::strchr(hp->h_aliases[i],'.'))
 		    server_hostname = xstrdup(hp->h_aliases[i]);
 	    	i++;
 	    }
@@ -961,7 +899,7 @@ static int _bind_socket(int sock, unsigned addr, short port)
 {
     struct sockaddr_in saddr;
 
-    memset(&saddr,0,sizeof(saddr));
+    std::memset(&saddr,0,sizeof(saddr));
     saddr.sin_family = PSOCK_AF_INET;
     saddr.sin_port = htons(port);
     saddr.sin_addr.s_addr = htonl(addr);
@@ -986,7 +924,7 @@ static int _setup_listensock(t_addrlist *laddrs)
 	}
 
 	if (!addr_get_addr_str(curr_laddr,tempa,sizeof(tempa)))
-	    strcpy(tempa,"x.x.x.x:x");
+	    std::strcpy(tempa,"x.x.x.x:x");
 
 	laddr_info->ssocket = psock_socket(PSOCK_PF_INET,PSOCK_SOCK_STREAM,PSOCK_IPPROTO_TCP);
 	if (laddr_info->ssocket<0)
@@ -1076,42 +1014,42 @@ static int _setup_posixsig(void)
 {
     if (sigemptyset(&save_set)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not initialize signal set (sigemptyset: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not initialize std::signal set (sigemptyset: %s)",pstrerror(errno));
 	return -1;
     }
     if (sigemptyset(&block_set)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not initialize signal set (sigemptyset: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not initialize std::signal set (sigemptyset: %s)",pstrerror(errno));
 	return -1;
     }
     if (sigaddset(&block_set,SIGINT)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not add signal to set (sigemptyset: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not add std::signal to set (sigemptyset: %s)",pstrerror(errno));
 	return -1;
     }
     if (sigaddset(&block_set,SIGHUP)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not add signal to set (sigemptyset: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not add std::signal to set (sigemptyset: %s)",pstrerror(errno));
 	return -1;
     }
     if (sigaddset(&block_set,SIGTERM)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not add signal to set (sigemptyset: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not add std::signal to set (sigemptyset: %s)",pstrerror(errno));
 	return -1;
     }
     if (sigaddset(&block_set,SIGUSR1)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not add signal to set (sigemptyset: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not add std::signal to set (sigemptyset: %s)",pstrerror(errno));
 	return -1;
     }
     if (sigaddset(&block_set,SIGUSR2)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not add signal to set (sigemptyset: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not add std::signal to set (sigemptyset: %s)",pstrerror(errno));
 	return -1;
     }
     if (sigaddset(&block_set,SIGALRM)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not add signal to set (sigemptyset: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not add std::signal to set (sigemptyset: %s)",pstrerror(errno));
 	return -1;
     }
 
@@ -1127,48 +1065,48 @@ static int _setup_posixsig(void)
 
 	quit_action.sa_handler = quit_sig_handle;
 	if (sigemptyset(&quit_action.sa_mask)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize signal set (sigemptyset: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize std::signal set (sigemptyset: %s)",pstrerror(errno));
 	quit_action.sa_flags = SA_RESTART;
 
 	restart_action.sa_handler = restart_sig_handle;
 	if (sigemptyset(&restart_action.sa_mask)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize signal set (sigemptyset: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize std::signal set (sigemptyset: %s)",pstrerror(errno));
 	restart_action.sa_flags = SA_RESTART;
 
 	save_action.sa_handler = save_sig_handle;
 	if (sigemptyset(&save_action.sa_mask)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize signal set (sigemptyset: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize std::signal set (sigemptyset: %s)",pstrerror(errno));
 	save_action.sa_flags = SA_RESTART;
 
 	pipe_action.sa_handler = pipe_sig_handle;
 	if (sigemptyset(&pipe_action.sa_mask)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize signal set (sigemptyset: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize std::signal set (sigemptyset: %s)",pstrerror(errno));
 	pipe_action.sa_flags = SA_RESTART;
 #ifdef HAVE_SETITIMER
 	timer_action.sa_handler = timer_sig_handle;
 	if (sigemptyset(&timer_action.sa_mask)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize signal set (sigemptyset: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize std::signal set (sigemptyset: %s)",pstrerror(errno));
 	timer_action.sa_flags = SA_RESTART;
 #endif /* HAVE_SETITIMER */
 	forced_quit_action.sa_handler = forced_quit_sig_handle;
 	if (sigemptyset(&forced_quit_action.sa_mask)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize signal set (sigemptyset: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not initialize std::signal set (sigemptyset: %s)",pstrerror(errno));
 	forced_quit_action.sa_flags = SA_RESTART;
 
 	if (sigaction(SIGINT,&quit_action,NULL)<0) /* control-c */
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGINT signal handler (sigaction: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGINT std::signal handler (sigaction: %s)",pstrerror(errno));
 	if (sigaction(SIGHUP,&restart_action,NULL)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGHUP signal handler (sigaction: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGHUP std::signal handler (sigaction: %s)",pstrerror(errno));
 	if (sigaction(SIGTERM,&quit_action,NULL)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGTERM signal handler (sigaction: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGTERM std::signal handler (sigaction: %s)",pstrerror(errno));
 	if (sigaction(SIGUSR1,&save_action,NULL)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGUSR1 signal handler (sigaction: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGUSR1 std::signal handler (sigaction: %s)",pstrerror(errno));
 	if (sigaction(SIGPIPE,&pipe_action,NULL)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGPIPE signal handler (sigaction: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGPIPE std::signal handler (sigaction: %s)",pstrerror(errno));
 #ifdef HAVE_SETITIMER
 	/* setup asynchronus timestamp update timer */
 	if (sigaction(SIGALRM,&timer_action,NULL)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGALRM signal handler (sigaction: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGALRM std::signal handler (sigaction: %s)",pstrerror(errno));
 
 	{
 	    struct itimerval it;
@@ -1185,24 +1123,24 @@ static int _setup_posixsig(void)
 	}
 #endif
 	if (sigaction(SIGQUIT,&forced_quit_action,NULL)<0) /* immediate shutdown */
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGQUIT signal handler (sigaction: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not set SIGQUIT std::signal handler (sigaction: %s)",pstrerror(errno));
     }
 
     return 0;
 }
 #endif
 
-static time_t prev_exittime;
+static std::time_t prev_exittime;
 
 static void _server_mainloop(t_addrlist *laddrs)
 {
-    time_t          next_savetime, next_flushtime, track_time;
-    time_t          war3_ladder_updatetime;
-    time_t          output_updatetime;
+    std::time_t          next_savetime, next_flushtime, track_time;
+    std::time_t          war3_ladder_updatetime;
+    std::time_t          output_updatetime;
     unsigned int    count;
     int             savestep, flushstep;
 
-    starttime = time(NULL);
+    starttime = std::time(NULL);
     track_time = starttime - prefs_get_track();
     next_savetime = starttime + prefs_get_user_sync_timer();
     next_flushtime = starttime + prefs_get_user_flush_timer();
@@ -1239,7 +1177,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 
 #if !defined(DO_POSIXSIG) || !defined(HAVE_SETITIMER)
 /* if no DO_POSIXSIG or no HAVE_SETITIMER so we must read timestamp each loop */
-	time(&now);
+	std::time(&now);
 #endif
 	curr_exittime = sigexittime;
 	if (curr_exittime && (curr_exittime<=now || connlist_login_get_length()<1))
@@ -1258,10 +1196,10 @@ static void _server_mainloop(t_addrlist *laddrs)
 
 	    if (curr_exittime!=0)
 	    {
-		char text[29+256+2+32+24+1]; /* "The ... in " + time + " (" num + " connection ...)." + NUL */
+		char text[29+256+2+32+24+1]; /* "The ... in " + std::time + " (" num + " connection ...)." + NUL */
 
 		tstr = seconds_to_timestr(curr_exittime-now);
-		sprintf(text,"The server will shut down in %s (%d connections remaining).",tstr,connlist_get_length());
+		std::sprintf(text,"The server will shut down in %s (%d connections remaining).",tstr,connlist_get_length());
         	if ((message = message_create(message_type_error,NULL,NULL,text)))
 		{
 		    message_send_all(message);
@@ -1305,19 +1243,19 @@ static void _server_mainloop(t_addrlist *laddrs)
 		next_flushtime += prefs_get_user_flush_timer();
 	}
 
-	if (prefs_get_track() && track_time+(time_t)prefs_get_track()<=now)
+	if (prefs_get_track() && track_time+(std::time_t)prefs_get_track()<=now)
 	{
 	    track_time = now;
 	    tracker_send_report(laddrs);
 	}
 
-	if (prefs_get_war3_ladder_update_secs() && war3_ladder_updatetime+(time_t)prefs_get_war3_ladder_update_secs()<=now)
+	if (prefs_get_war3_ladder_update_secs() && war3_ladder_updatetime+(std::time_t)prefs_get_war3_ladder_update_secs()<=now)
 	{
            war3_ladder_updatetime = now;
 	       ladders_write_to_file();
 	}
 
-	if (prefs_get_output_update_secs() && output_updatetime+(time_t)prefs_get_output_update_secs()<=now)
+	if (prefs_get_output_update_secs() && output_updatetime+(std::time_t)prefs_get_output_update_secs()<=now)
 	{
            output_updatetime = now;
 	   output_write_to_file();
@@ -1326,7 +1264,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 
 	if (do_save)
 	{
-	    eventlog(eventlog_level_info,__FUNCTION__,"saving accounts due to signal");
+	    eventlog(eventlog_level_info,__FUNCTION__,"saving accounts due to std::signal");
     	    clanlist_save();
 
 	    savestep = accountlist_save(FS_NONE);
@@ -1530,7 +1468,7 @@ extern int server_process(void)
 	return -1;
     }
 
-    /* setup signal handlers */
+    /* setup std::signal handlers */
     prev_exittime = sigexittime;
 #ifdef DO_POSIXSIG
     _setup_posixsig();

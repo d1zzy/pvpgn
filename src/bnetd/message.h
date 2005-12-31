@@ -104,8 +104,8 @@ t_message;
 #ifndef INCLUDED_MESSAGE_PROTOS
 #define INCLUDED_MESSAGE_PROTOS
 
+#include <cstdio>
 #define JUST_NEED_TYPES
-#include <stdio.h>
 #include "connection.h"
 #undef JUST_NEED_TYPES
 
@@ -125,7 +125,7 @@ extern int message_send_admins(t_connection * src, t_message_type type, char con
 /* the following are "shortcuts" to avoid calling message_create(), message_send(), message_destroy() */
 extern int message_send_text(t_connection * dst, t_message_type type, t_connection * src, char const * text);
 extern int message_send_formatted(t_connection * dst, char const * text);
-extern int message_send_file(t_connection * dst, FILE * fd);
+extern int message_send_file(t_connection * dst, std::FILE * fd);
 
 }
 

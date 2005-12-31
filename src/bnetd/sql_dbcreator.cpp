@@ -16,36 +16,17 @@
 
 #include "common/setup_before.h"
 #ifdef WITH_SQL
-#include <stdio.h>
-
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-
 #define  SQL_DBCREATOR_INTERNAL_ACCESS
 #include "sql_dbcreator.h"
 #undef   SQL_DBCREATOR_INTERNAL_ACCESS
-#include "storage_sql.h"
+
+#include <cstdio>
+#include <cstring>
 
 #include "common/eventlog.h"
+#include "common/xstr.h"
 #include "common/util.h"
 
-#include "compat/strdup.h"
-#include "common/list.h"
-#include "common/xalloc.h"
-#include "common/xstr.h"
 #include "prefs.h"
 #include "common/setup_after.h"
 
@@ -435,7 +416,7 @@ t_sqlcommand * table_get_next_sql_command(t_table * table)
 
 int load_db_layout(char const * filename)
 {
-  FILE * fp;
+  std::FILE * fp;
   int    lineno;
   char * line                = NULL;
   char * tmp                 = NULL;
@@ -459,7 +440,7 @@ int load_db_layout(char const * filename)
     return -1;
   }
 
-  if (!(fp = fopen(filename,"r")))
+  if (!(fp = std::fopen(filename,"r")))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"can't open sql_DB_layout file");
     return -1;
@@ -468,7 +449,7 @@ int load_db_layout(char const * filename)
   if (!(db_layout = create_db_layout()))
   {
     eventlog(eventlog_level_error,__FUNCTION__,"failed to create db_layout");
-    fclose(fp);
+    std::fclose(fp);
     return -1;
   }
 
@@ -476,7 +457,7 @@ int load_db_layout(char const * filename)
   {
     /* convert ${prefix} replacement variable */
     prefix = 0;
-    for(tmp = line;(tmp = strstr(line, "${prefix}")); line = tmp + 9 /* strlen("${prefix}") */)
+    for(tmp = line;(tmp = std::strstr(line, "${prefix}")); line = tmp + 9 /* std::strlen("${prefix}") */)
     {
 	*tmp = '\0';
 
@@ -501,7 +482,7 @@ int load_db_layout(char const * filename)
     {
       case '[':
         table = &line[1];
-        if (!(tmp = strchr(table,']')))
+        if (!(tmp = std::strchr(table,']')))
         {
           eventlog(eventlog_level_error,__FUNCTION__,"missing ']' in line %i",lineno);
           continue;
@@ -519,20 +500,20 @@ int load_db_layout(char const * filename)
           continue;
         }
         column = &line[1];
-        if (!(tmp = strchr(column,'"')))
+        if (!(tmp = std::strchr(column,'"')))
         {
           eventlog(eventlog_level_error,__FUNCTION__,"missing '\"' at the end of column definition in line %i",lineno);
           continue;
         }
         tmp[0]='\0';
         tmp++;
-        if (!(tmp = strchr(tmp,'"')))
+        if (!(tmp = std::strchr(tmp,'"')))
         {
           eventlog(eventlog_level_error,__FUNCTION__,"missing default value in line %i",lineno);
           continue;
         }
         value = ++tmp;
-        if (!(tmp = strchr(value,'"')))
+        if (!(tmp = std::strchr(value,'"')))
         {
           eventlog(eventlog_level_error,__FUNCTION__,"missing '\"' at the end of default value in line %i",lineno);
           continue;
@@ -542,19 +523,19 @@ int load_db_layout(char const * filename)
 	mode = NULL;
 	extra_cmd = NULL;
 	extra_cmd_escaped = NULL;
-	if ((mode = strchr(tmp,'&')) || (mode = strchr(tmp,'|')))
+	if ((mode = std::strchr(tmp,'&')) || (mode = std::strchr(tmp,'|')))
 	{
 	  if (mode[0] == mode[1])
 	  {
 		mode[2]='\0';
 		tmp=mode+3;
-		if (!(tmp = strchr(tmp,'"')))
+		if (!(tmp = std::strchr(tmp,'"')))
 		{
 			eventlog(eventlog_level_error,__FUNCTION__,"missing starting '\"' in extra sql_command on line %i",lineno);
 			continue;
 		}
 		extra_cmd = ++tmp;
-		if (!(tmp = strchr(extra_cmd,'"')))
+		if (!(tmp = std::strchr(extra_cmd,'"')))
 		{
 			eventlog(eventlog_level_error,__FUNCTION__,"missing ending '\"' in extra sql_command on line %i",lineno);
 			continue;
@@ -569,8 +550,8 @@ int load_db_layout(char const * filename)
 	}
 	if (extra_cmd)
 	{
-		extra_cmd_escaped = (char *)xmalloc(strlen(extra_cmd) * 2);
-		sql_escape_command(extra_cmd_escaped, extra_cmd, strlen(extra_cmd));
+		extra_cmd_escaped = (char *)xmalloc(std::strlen(extra_cmd) * 2);
+		sql_escape_command(extra_cmd_escaped, extra_cmd, std::strlen(extra_cmd));
 	}
 	_column = create_column(column,value,mode,extra_cmd_escaped);
 	if (extra_cmd_escaped) xfree(extra_cmd_escaped);
@@ -589,7 +570,7 @@ int load_db_layout(char const * filename)
 	  continue;
 	}
 	sqlcmd = &line[2];
-        if (!(tmp = strchr(sqlcmd,'"')))
+        if (!(tmp = std::strchr(sqlcmd,'"')))
         {
           eventlog(eventlog_level_error,__FUNCTION__,"missing ending '\"' in sql_command definition on line %i",lineno);
           continue;
@@ -599,19 +580,19 @@ int load_db_layout(char const * filename)
 	mode = NULL;
 	extra_cmd = NULL;
 	extra_cmd_escaped = NULL;
-	if ((mode = strchr(tmp,'&')) || (mode = strchr(tmp,'|')))
+	if ((mode = std::strchr(tmp,'&')) || (mode = std::strchr(tmp,'|')))
 	{
 	  if (mode[0] == mode[1])
 	  {
 		mode[2]='\0';
 		tmp=mode+3;
-		if (!(tmp = strchr(tmp,'"')))
+		if (!(tmp = std::strchr(tmp,'"')))
 		{
 			eventlog(eventlog_level_error,__FUNCTION__,"missing starting '\"' in extra sql_command on line %i",lineno);
 			continue;
 		}
 		extra_cmd = ++tmp;
-		if (!(tmp = strchr(extra_cmd,'"')))
+		if (!(tmp = std::strchr(extra_cmd,'"')))
 		{
 			eventlog(eventlog_level_error,__FUNCTION__,"missing ending '\"' in extra sql_command on line %i",lineno);
 			continue;
@@ -624,12 +605,12 @@ int load_db_layout(char const * filename)
 	    continue;
 	  }
 	}
-	sqlcmd_escaped = (char *)xmalloc(strlen(sqlcmd) * 2);
-	sql_escape_command(sqlcmd_escaped, sqlcmd, strlen(sqlcmd));
+	sqlcmd_escaped = (char *)xmalloc(std::strlen(sqlcmd) * 2);
+	sql_escape_command(sqlcmd_escaped, sqlcmd, std::strlen(sqlcmd));
 	if (extra_cmd)
 	{
-		extra_cmd_escaped = (char *)xmalloc(strlen(extra_cmd) * 2);
-		sql_escape_command(extra_cmd_escaped, extra_cmd, strlen(extra_cmd));
+		extra_cmd_escaped = (char *)xmalloc(std::strlen(extra_cmd) * 2);
+		sql_escape_command(extra_cmd_escaped, extra_cmd, std::strlen(extra_cmd));
 	}
 	_sqlcommand = create_sqlcommand(sqlcmd_escaped,mode,extra_cmd_escaped);
 	xfree(sqlcmd_escaped);
@@ -648,7 +629,7 @@ int load_db_layout(char const * filename)
 
   if (xstr) xstr_free(xstr);
   file_get_line(NULL); // clear file_get_line buffer
-  fclose(fp);
+  std::fclose(fp);
   return 0;
 }
 
@@ -667,7 +648,7 @@ int sql_dbcreator(t_sql_engine * sql)
   for (table = db_layout_get_first_table(db_layout);table;table = db_layout_get_next_table(db_layout))
   {
      column = table_get_first_column(table);
-     sprintf(query,"CREATE TABLE %s (%s default %s)",table->name,column->name,column->value);
+     std::sprintf(query,"CREATE TABLE %s (%s default %s)",table->name,column->name,column->value);
      //create table if missing
      if (!(sql->query(query)))
      {
@@ -677,11 +658,11 @@ int sql_dbcreator(t_sql_engine * sql)
 
     for (;column;column = table_get_next_column(table))
     {
-      sprintf(query,"ALTER TABLE %s ADD %s DEFAULT %s",table->name,column->name,column->value);
+      std::sprintf(query,"ALTER TABLE %s ADD %s DEFAULT %s",table->name,column->name,column->value);
       if (!(sql->query(query)))
       {
         eventlog(eventlog_level_info,__FUNCTION__,"added missing column %s to table %s",column->name,table->name);
-	if ((column->mode != NULL) && (strcmp(column->mode,"&&") == 0))
+	if ((column->mode != NULL) && (std::strcmp(column->mode,"&&") == 0))
 	{
           if (!(sql->query(column->extra_cmd)))
 	  {
@@ -689,12 +670,12 @@ int sql_dbcreator(t_sql_engine * sql)
 	  }
 	}
 /*
-	sscanf(column->name,"%s",_column);
-	sprintf(query,"ALTER TABLE %s ALTER %s SET DEFAULT %s",table->name,_column,column->value);
+	std::sscanf(column->name,"%s",_column);
+	std::sprintf(query,"ALTER TABLE %s ALTER %s SET DEFAULT %s",table->name,_column,column->value);
 
 	// If failed, try alternate language.  (From ZSoft for sql_odbc.)
 	if(sql->query(query)) {
-	    sprintf(query,"ALTER TABLE %s ADD DEFAULT %s FOR %s",table->name,column->value,_column);
+	    std::sprintf(query,"ALTER TABLE %s ADD DEFAULT %s FOR %s",table->name,column->value,_column);
 	    sql->query(query);
 	}
 	// ALTER TABLE BNET add default 'false' for auth_admin;
@@ -702,7 +683,7 @@ int sql_dbcreator(t_sql_engine * sql)
       }
       else
       {
-	if ((column->mode != NULL) && (strcmp(column->mode,"||") == 0))
+	if ((column->mode != NULL) && (std::strcmp(column->mode,"||") == 0))
 	{
           if (!(sql->query(column->extra_cmd)))
 	  {
@@ -718,7 +699,7 @@ int sql_dbcreator(t_sql_engine * sql)
         if (!(sql->query(sqlcmd->sql_command)))
         {
            eventlog(eventlog_level_info,__FUNCTION__,"sucessfully issued: %s",sqlcmd->sql_command);
-	   if ((sqlcmd->mode != NULL) && (strcmp(sqlcmd->mode,"&&") == 0))
+	   if ((sqlcmd->mode != NULL) && (std::strcmp(sqlcmd->mode,"&&") == 0))
 	   {
 	      if (!(sql->query(sqlcmd->extra_cmd)))
 	      {
@@ -728,7 +709,7 @@ int sql_dbcreator(t_sql_engine * sql)
         }
 	else
 	{
-	   if ((sqlcmd->mode != NULL) && (strcmp(sqlcmd->mode,"||") == 0))
+	   if ((sqlcmd->mode != NULL) && (std::strcmp(sqlcmd->mode,"||") == 0))
 	   {
 	      if (!(sql->query(sqlcmd->extra_cmd)))
 	      {
@@ -740,8 +721,8 @@ int sql_dbcreator(t_sql_engine * sql)
     }
 
     column = table_get_first_column(table);
-    sscanf(column->name,"%s",_column); //get column name without format infos
-    sprintf(query,"INSERT INTO %s (%s) VALUES (%s)",table->name,_column,column->value);
+    std::sscanf(column->name,"%s",_column); //get column name without format infos
+    std::sprintf(query,"INSERT INTO %s (%s) VALUES (%s)",table->name,_column,column->value);
     if (!(sql->query(query)))
     {
       eventlog(eventlog_level_info,__FUNCTION__,"added missing default account to table %s",table->name);
@@ -762,7 +743,7 @@ static void sql_escape_command(char *escape, const char *from, int len)
 		char * tmp1 = xstrdup(from);			/* copy of 'from' */
 		char * tmp2 = escape;
 		char * tmp3 = NULL;				/* begining of string to be escaped */
-		char * tmp4 = (char *)xmalloc(strlen(tmp1) * 2);	/* escaped string */
+		char * tmp4 = (char *)xmalloc(std::strlen(tmp1) * 2);	/* escaped string */
 		unsigned int i,j;
 
 /*		eventlog(eventlog_level_trace,__FUNCTION__,"COMMAND: %s",tmp1); */
@@ -780,7 +761,7 @@ static void sql_escape_command(char *escape, const char *from, int len)
 				tmp1[i] = '\0'; /* set end of string with null terminator */
 /*				eventlog(eventlog_level_trace,__FUNCTION__,"STRING: %s",tmp3); */
 
-				sql->escape_string(tmp4, tmp3, strlen(tmp3)); /* escape the string */
+				sql->escape_string(tmp4, tmp3, std::strlen(tmp3)); /* escape the string */
 /*				eventlog(eventlog_level_trace,__FUNCTION__,"ESCAPE STRING: %s",tmp4); */
 
 				for (j=0, tmp2++; tmp4[j]; j++, tmp2++) *tmp2 = tmp4[j]; /* add 'escaped string' to 'escape' */

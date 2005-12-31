@@ -51,14 +51,14 @@ t_file_engine file_plain = {
 
 static int plain_write_attrs(const char *filename, const t_hlist *attributes)
 {
-    FILE       *  accountfile;
+    std::FILE       *  accountfile;
     t_hlist    *  curr;
     t_attr     *  attr;
     char const *  key;
     char const *  val;
 
-    if (!(accountfile = fopen(filename,"w"))) {
-	eventlog(eventlog_level_error, __FUNCTION__, "unable to open file \"%s\" for writing (fopen: %s)",filename,std::strerror(errno));
+    if (!(accountfile = std::fopen(filename,"w"))) {
+	eventlog(eventlog_level_error, __FUNCTION__, "unable to open file \"%s\" for writing (std::fopen: %s)",filename,std::strerror(errno));
 	return -1;
     }
 
@@ -84,7 +84,7 @@ static int plain_write_attrs(const char *filename, const t_hlist *attributes)
 		eventlog(eventlog_level_debug, __FUNCTION__, "skipping attribute key=\"%s\"",attr->key);
 	    } else {
 		eventlog(eventlog_level_debug, __FUNCTION__, "saving attribute key=\"%s\" val=\"%s\"",attr->key,attr->val);
-		fprintf(accountfile,"\"%s\"=\"%s\"\n",key,val);
+		std::fprintf(accountfile,"\"%s\"=\"%s\"\n",key,val);
 	    }
 	} else eventlog(eventlog_level_error, __FUNCTION__,"could not save attribute key=\"%s\"",attr->key);
 
@@ -94,8 +94,8 @@ static int plain_write_attrs(const char *filename, const t_hlist *attributes)
 	attr_clear_dirty(attr);
     }
 
-    if (fclose(accountfile)<0) {
-	eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"%s\" after writing (fclose: %s)",filename,std::strerror(errno));
+    if (std::fclose(accountfile)<0) {
+	eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"%s\" after writing (std::fclose: %s)",filename,std::strerror(errno));
 	return -1;
     }
 
@@ -104,7 +104,7 @@ static int plain_write_attrs(const char *filename, const t_hlist *attributes)
 
 static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *data)
 {
-    FILE *       accountfile;
+    std::FILE *       accountfile;
     unsigned int line;
     char const * buff;
     unsigned int len;
@@ -113,8 +113,8 @@ static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *dat
     char * key;
     char * val;
 
-    if (!(accountfile = fopen(filename,"r"))) {
-	eventlog(eventlog_level_error, __FUNCTION__,"could not open account file \"%s\" for reading (fopen: %s)", filename, std::strerror(errno));
+    if (!(accountfile = std::fopen(filename,"r"))) {
+	eventlog(eventlog_level_error, __FUNCTION__,"could not open account file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
 	return -1;
     }
 
@@ -132,8 +132,8 @@ static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *dat
 	esckey = (char*)xmalloc(len);
 	escval = (char*)xmalloc(len);
 
-	if (sscanf(buff,"\"%[^\"]\" = \"%[^\"]\"",esckey,escval)!=2) {
-	    if (sscanf(buff,"\"%[^\"]\" = \"\"",esckey)!=1) /* hack for an empty value field */ {
+	if (std::sscanf(buff,"\"%[^\"]\" = \"%[^\"]\"",esckey,escval)!=2) {
+	    if (std::sscanf(buff,"\"%[^\"]\" = \"\"",esckey)!=1) /* hack for an empty value field */ {
 		eventlog(eventlog_level_error, __FUNCTION__,"malformed entry on line %d of account file \"%s\"", line, filename);
 		xfree(escval);
 		xfree(esckey);
@@ -158,8 +158,8 @@ static int plain_read_attrs(const char *filename, t_read_attr_func cb, void *dat
 
     file_get_line(NULL); // clear file_get_line buffer
 
-    if (fclose(accountfile)<0)
-	eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"%s\" after reading (fclose: %s)", filename, std::strerror(errno));
+    if (std::fclose(accountfile)<0)
+	eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"%s\" after reading (std::fclose: %s)", filename, std::strerror(errno));
 
     return 0;
 }

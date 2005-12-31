@@ -16,34 +16,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
+#include "runprog.h"
+
+#include <cerrno>
+#include <cstdlib>
+
+#ifdef HAVE_SYS_TYPES_h
+# include <sys/types.h>
 #endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#endif
-#include <errno.h>
-#include "compat/strerror.h"
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
-#endif
-#include "compat/stdfileno.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
 #endif
 #ifdef HAVE_SYS_WAIT_H
 # include <sys/wait.h>
 #endif
+
+#include "compat/stdfileno.h"
+#include "compat/strerror.h"
 #include "common/eventlog.h"
-#include "runprog.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -58,13 +48,13 @@ static pid_t currpid=0;
 #endif
 
 
-extern FILE * runprog_open(char const * command)
+extern std::FILE * runprog_open(char const * command)
 {
 #ifndef DO_SUBPROC
     return NULL; /* always fail */
 #else
     int    fds[2];
-    FILE * pp;
+    std::FILE * pp;
 
     if (!command)
     {
@@ -101,7 +91,7 @@ extern FILE * runprog_open(char const * command)
 	if (execlp(command,command,(char *)NULL)<0)
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not execute \"%s\" (execlp: %s)",command,pstrerror(errno));
 
-	exit(127); /* popen exec failure code */
+	std::exit(127); /* popen exec failure code */
 
     case -1:
 	eventlog(eventlog_level_error,__FUNCTION__,"could not fork (fork: %s)",pstrerror(errno));
@@ -125,7 +115,7 @@ extern FILE * runprog_open(char const * command)
 }
 
 
-extern int runprog_close(FILE * pp)
+extern int runprog_close(std::FILE * pp)
 {
 #ifndef DO_SUBPROC
     return -1; /* always fail */
@@ -139,9 +129,9 @@ extern int runprog_close(FILE * pp)
 	return -1;
     }
 
-    if (fclose(pp)<0)
+    if (std::fclose(pp)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close process (fclose: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close process (std::fclose: %s)",pstrerror(errno));
 	return -1;
     }
 

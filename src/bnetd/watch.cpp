@@ -152,18 +152,18 @@ WatchComponent::dispatch_whisper(t_account *account, char const *gamename, t_cli
 		{
 		case Watch::ET_joingame:
 			if (gamename)
-				sprintf(msg,"Your friend %s has entered a %s game named \"%s\".", myusername, game_title, gamename);
+				std::sprintf(msg,"Your friend %s has entered a %s game named \"%s\".", myusername, game_title, gamename);
 			else
-				sprintf(msg,"Your friend %s has entered a %s game", myusername, game_title);
+				std::sprintf(msg,"Your friend %s has entered a %s game", myusername, game_title);
 			break;
 		case Watch::ET_leavegame:
-			sprintf(msg,"Your friend %s has left a %s game.", myusername, game_title);
+			std::sprintf(msg,"Your friend %s has left a %s game.", myusername, game_title);
 			break;
 		case Watch::ET_login:
-			sprintf(msg,"Your friend %s has entered %s.", myusername, prefs_get_servername());
+			std::sprintf(msg,"Your friend %s has entered %s.", myusername, prefs_get_servername());
 			break;
 		case Watch::ET_logout:
-			sprintf(msg,"Your friend %s has left %s.", myusername, prefs_get_servername());
+			std::sprintf(msg,"Your friend %s has left %s.", myusername, prefs_get_servername());
 			break;
 		}
 		LIST_TRAVERSE(flist,curr)
@@ -193,18 +193,18 @@ WatchComponent::dispatch_whisper(t_account *account, char const *gamename, t_cli
 	{
 	case Watch::ET_joingame:
 		if (gamename)
-			sprintf(msg,"Watched user %s has entered a %s game named \"%s\".",myusername,game_title,gamename);
+			std::sprintf(msg,"Watched user %s has entered a %s game named \"%s\".",myusername,game_title,gamename);
 		else
-			sprintf(msg,"Watched user %s has entered a %s game",myusername,game_title);
+			std::sprintf(msg,"Watched user %s has entered a %s game",myusername,game_title);
 		break;
 	case Watch::ET_leavegame:
-		sprintf(msg,"Watched user %s has left a %s game.",myusername,game_title);
+		std::sprintf(msg,"Watched user %s has left a %s game.",myusername,game_title);
 		break;
 	case Watch::ET_login:
-		sprintf(msg,"Watched user %s has entered %s.",myusername,prefs_get_servername());
+		std::sprintf(msg,"Watched user %s has entered %s.",myusername,prefs_get_servername());
 		break;
 	case Watch::ET_logout:
-		sprintf(msg,"Watched user %s has left %s",myusername,prefs_get_servername());
+		std::sprintf(msg,"Watched user %s has left %s",myusername,prefs_get_servername());
 		break;
 	}
 

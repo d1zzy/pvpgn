@@ -150,7 +150,7 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 
 		if (!loggeduser) /* error earlier in login */
 		{
-		    /* no log message... */
+		    /* no std::log message... */
 		    conn_set_state(c,conn_state_bot_username);
 
 		    if (!(rpacket = packet_create(packet_class_raw)))
@@ -299,7 +299,7 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 		{
 		    eventlog(eventlog_level_info,__FUNCTION__,"[%d] \"%s\" bot logged in (no password)",conn_get_socket(c), loggeduser);
 		}
-		    if (!(rpacket = packet_create(packet_class_raw))) /* if we got this far, let them log in even if this fails */
+		    if (!(rpacket = packet_create(packet_class_raw))) /* if we got this far, let them std::log in even if this fails */
 			eventlog(eventlog_level_error,__FUNCTION__,"[%d] could not create rpacket",conn_get_socket(c));
 		    else
 		    {
@@ -325,7 +325,7 @@ extern int handle_bot_packet(t_connection * c, t_packet const * const packet)
 
 		if ((channel = conn_get_channel(c)))
 		    channel_message_log(channel,c,1,linestr);
-		/* we don't log game commands currently */
+		/* we don't std::log game commands currently */
 
 		if (linestr[0]=='/')
 		    handle_command(c,linestr);

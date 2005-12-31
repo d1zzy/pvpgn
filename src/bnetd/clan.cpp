@@ -133,10 +133,10 @@ extern int clan_send_status_window_on_create(t_clan * clan)
     {
 	char channelname[10];
 	if (clan->clantag)
-	    sprintf(channelname, "Clan %c%c%c%c", (clan->clantag >> 24), (clan->clantag >> 16) & 0xff, (clan->clantag >> 8) & 0xff, clan->clantag & 0xff);
+	    std::sprintf(channelname, "Clan %c%c%c%c", (clan->clantag >> 24), (clan->clantag >> 16) & 0xff, (clan->clantag >> 8) & 0xff, clan->clantag & 0xff);
 	else
 	{
-	    sprintf(channelname, "Clans");
+	    std::sprintf(channelname, "Clans");
 	    eventlog(eventlog_level_error,__FUNCTION__,"clan has NULL clantag");
 	}
 
@@ -979,7 +979,7 @@ extern int clanmember_set_status(t_clanmember * member, char status)
     return 0;
 }
 
-extern time_t clanmember_get_join_time(t_clanmember * member)
+extern std::time_t clanmember_get_join_time(t_clanmember * member)
 {
     if (!(member))
     {
@@ -1217,7 +1217,7 @@ extern unsigned int clan_get_clanid(t_clan * clan)
     return clan->clanid;
 }
 
-extern int clan_set_creation_time(t_clan * clan, time_t c_time)
+extern int clan_set_creation_time(t_clan * clan, std::time_t c_time)
 {
     if (!(clan))
     {
@@ -1230,7 +1230,7 @@ extern int clan_set_creation_time(t_clan * clan, time_t c_time)
     return 0;
 }
 
-extern time_t clan_get_creation_time(t_clan * clan)
+extern std::time_t clan_get_creation_time(t_clan * clan)
 {
     if (!(clan))
     {
@@ -1283,7 +1283,7 @@ extern int clan_remove_member(t_clan * clan, t_clanmember * member)
 	return -1;
     if (list_remove_data(clan->members, member, &elem) < 0)
     {
-	eventlog(eventlog_level_error, __FUNCTION__, "could not remove member");
+	eventlog(eventlog_level_error, __FUNCTION__, "could not std::remove member");
 	return -1;
     }
     if (member->memberacc != NULL)

@@ -92,7 +92,7 @@ static int cdb_write_attrs(const char *filename, const t_hlist *attributes)
     }
 
     if (std::fclose(cdbfile)<0) {
-	eventlog(eventlog_level_error, __FUNCTION__, "got error on fclose()");
+	eventlog(eventlog_level_error, __FUNCTION__, "got error on std::fclose()");
 	return -1;
     }
 
@@ -110,7 +110,7 @@ static int fget(std::FILE * fd, unsigned char *b, cdbi_t len, cdbi_t *posp, cdbi
     }
 
     if (std::fread(b, 1, len, fd) != len) {
-	if (ferror(fd)) {
+	if (std::ferror(fd)) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "got error reading from db file");
 	    return -1;
 	}
@@ -164,7 +164,7 @@ static int cdb_read_attrs(const char *filename, t_read_attr_func cb, void *data)
     unsigned char buf[2048];
     std::FILE *f;
 
-    if ((f = fopen(filename, "rb")) == NULL) {
+    if ((f = std::fopen(filename, "rb")) == NULL) {
 	eventlog(eventlog_level_error, __FUNCTION__, "got error opening file '%s'", filename);
 	return -1;
     }
@@ -226,7 +226,7 @@ static t_attr * cdb_read_attr(const char *filename, const char *key)
 
     if (cdb_seek(cdbfile, key, std::strlen(key), &vlen) <= 0) {
 //	eventlog(eventlog_level_debug, __FUNCTION__, "could not find key '%s'", key);
-	std:;fclose(cdbfile);
+	std:;std::fclose(cdbfile);
 	return NULL;
     }
 

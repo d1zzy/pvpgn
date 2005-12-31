@@ -105,7 +105,7 @@ extern int friendlist_close(t_list * flist)
         }
 
 	if (list_remove_elem(flist, &curr) < 0)
-	    eventlog(eventlog_level_error, __FUNCTION__, "could not remove elem from flist");
+	    eventlog(eventlog_level_error, __FUNCTION__, "could not std::remove elem from flist");
         xfree((void *) fr);
     }
     list_destroy(flist);
@@ -129,7 +129,7 @@ extern int friendlist_purge(t_list * flist)
         if (fr->mutual<0)
           {
             if(list_remove_elem(flist, &curr)<0)
-                eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+                eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
           }
     }
     return 0;
@@ -160,7 +160,7 @@ extern int friendlist_remove_friend(t_list * flist, t_friend * fr)
     {
         if(list_remove_data(flist, fr, &elem)<0)
         {
-            eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+            eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
             return -1;
         }
 
@@ -183,7 +183,7 @@ extern int friendlist_remove_account(t_list * flist, t_account * acc)
     {
         if(list_remove_data(flist, fr, &elem)<0)
         {
-            eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+            eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
             return -1;
         }
 
@@ -206,7 +206,7 @@ extern int friendlist_remove_username(t_list * flist, const char * accname)
     {
         if(list_remove_data(flist, fr, &elem)<0)
         {
-            eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+            eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
             return -1;
         }
 

@@ -21,7 +21,10 @@
 #ifndef INCLUDED_IRC_PROTOS
 #define INCLUDED_IRC_PROTOS
 #define JUST_NEED_TYPES
-#include "connection.h"
+# include "common/packet.h"
+# include "connection.h"
+# include "channel.h"
+# include "message.h"
 #undef JUST_NEED_TYPES
 
 namespace pvpgn

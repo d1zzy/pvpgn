@@ -14,44 +14,26 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-
-#include <errno.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "common/eventlog.h"
-#include "common/packet.h"
-#include "common/tag.h"
-#include "common/list.h"
-#include "common/util.h"
-#include "common/xalloc.h"
-#include "compat/strerror.h"
-#include "account.h"
-#include "anongame_maplists.h"
 #include "tournament.h"
+
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+#include <ctime>
+#include <cstdlib>
+
+#include "compat/strerror.h"
+#include "common/list.h"
+#include "common/eventlog.h"
+#include "common/xalloc.h"
+#include "common/util.h"
+#include "common/tag.h"
+/*
+#include "common/packet.h"
+
+*/
+#include "anongame_maplists.h"
+#include "account.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -89,7 +71,7 @@ static int gamelist_destroy(void)
 	    }
 
 	    if (list_remove_elem(tournament_head,&curr)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
 
 	    if (user->name)
 		xfree((void *)user->name); /* avoid warning */
@@ -151,7 +133,7 @@ static t_tournament_user * tournament_get_user(t_account * account)
 	LIST_TRAVERSE(tournament_head,curr)
 	{
 	    user = (t_tournament_user*)elem_get_data(curr);
-	    if (strcmp(user->name, account_get_name(account)) == 0)
+	    if (std::strcmp(user->name, account_get_name(account)) == 0)
 		return user;
 	}
 
@@ -311,7 +293,7 @@ void tournament_check_date(unsigned int *mon, unsigned int *mday, unsigned int *
 /*****/
 extern int tournament_init(char const * filename)
 {
-    FILE * fp;
+    std::FILE * fp;
     unsigned int line,pos,mon,day,year,hour,min,sec;
     char *buff,*temp,*pointer,*value;
     char format[30];
@@ -319,9 +301,9 @@ extern int tournament_init(char const * filename)
     char *sponsor = NULL;
     char *have_sponsor = NULL;
     char *have_icon = NULL;
-    struct tm * timestamp = (struct tm*)xmalloc(sizeof(struct tm));
+    struct std::tm * timestamp = (struct std::tm*)xmalloc(sizeof(struct std::tm));
 
-    sprintf(format,"%%02u/%%02u/%%04u %%02u:%%02u:%%02u");
+    std::sprintf(format,"%%02u/%%02u/%%04u %%02u:%%02u:%%02u");
 
     tournament_info = (t_tournament_info*)xmalloc(sizeof(t_tournament_info));
     tournament_info->start_preliminary	= 0;
@@ -348,8 +330,8 @@ extern int tournament_init(char const * filename)
 	return -1;
     }
 
-    if (!(fp = fopen(filename,"r"))) {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+    if (!(fp = std::fopen(filename,"r"))) {
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
 	xfree((void *)timestamp);
 	return -1;
     }
@@ -359,17 +341,17 @@ extern int tournament_init(char const * filename)
 	if (buff[pos]=='\0' || buff[pos]=='#') {
 	    continue;
 	}
-	if ((temp = strrchr(buff,'#'))) {
+	if ((temp = std::strrchr(buff,'#'))) {
 	    unsigned int len;
 	    unsigned int endpos;
 
 	    *temp = '\0';
-	    len = strlen(buff)+1;
+	    len = std::strlen(buff)+1;
 	    for (endpos=len-1; buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
 	    buff[endpos+1] = '\0';
 	}
 
-	if (strcmp(buff,"[MAPS]") == 0) {
+	if (std::strcmp(buff,"[MAPS]") == 0) {
 	    char *clienttag, *mapname, *mname;
 	    t_clienttag ctag;
 
@@ -378,26 +360,26 @@ extern int tournament_init(char const * filename)
 		if (buff[pos]=='\0' || buff[pos]=='#') {
 		    continue;
 		}
-		if ((temp = strrchr(buff,'#'))) {
+		if ((temp = std::strrchr(buff,'#'))) {
 		    unsigned int len;
 		    unsigned int endpos;
 
 		    *temp = '\0';
-		    len = strlen(buff)+1;
+		    len = std::strlen(buff)+1;
 		    for (endpos=len-1; buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
 		    buff[endpos+1] = '\0';
 		}
 		/* FIXME: use next_token() */
-		if (!(clienttag = strtok(buff, " \t"))) { /* strtok modifies the string it is passed */
+		if (!(clienttag = std::strtok(buff, " \t"))) { /* std::strtok modifies the string it is passed */
 		    continue;
 		}
-		if (strlen(clienttag) != 4) {
+		if (std::strlen(clienttag) != 4) {
 		    continue;
 		}
-		if (strcmp(buff,"[ENDMAPS]") == 0) {
+		if (std::strcmp(buff,"[ENDMAPS]") == 0) {
 		    break;
 		}
-		if (!(mapname = strtok(NULL," \t"))) {
+		if (!(mapname = std::strtok(NULL," \t"))) {
 		    continue;
 		}
 		if (!tag_check_client((ctag = tag_case_str_to_uint(clienttag)))) {
@@ -411,22 +393,22 @@ extern int tournament_init(char const * filename)
 	    }
 	} else {
 	    variable = buff;
-	    pointer = strchr(variable,'=');
+	    pointer = std::strchr(variable,'=');
 	    for(pointer--;pointer[0]==' ' || pointer[0]=='\t';pointer--);
 	    pointer[1]='\0';
 	    pointer++;
 	    pointer++;
-	    pointer = strchr(pointer,'=');
+	    pointer = std::strchr(pointer,'=');
 	    pointer++;
 
-	    if (strcmp(variable,"start_preliminary") == 0) {
-	        pointer = strchr(pointer,'\"');
+	    if (std::strcmp(variable,"start_preliminary") == 0) {
+	        pointer = std::strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
-	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
+	        std::sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
 
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
@@ -438,16 +420,16 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
 
-	        tournament_info->start_preliminary = mktime(timestamp);
+	        tournament_info->start_preliminary = std::mktime(timestamp);
 	    }
-	    else if (strcmp(variable,"end_signup") == 0) {
-	        pointer = strchr(pointer,'\"');
+	    else if (std::strcmp(variable,"end_signup") == 0) {
+	        pointer = std::strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
-	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
+	        std::sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
 
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
@@ -459,16 +441,16 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
 
-		tournament_info->end_signup = mktime(timestamp);
+		tournament_info->end_signup = std::mktime(timestamp);
 	    }
-	    else if (strcmp(variable,"end_preliminary") == 0) {
-	        pointer = strchr(pointer,'\"');
+	    else if (std::strcmp(variable,"end_preliminary") == 0) {
+	        pointer = std::strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
-	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
+	        std::sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
 
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
@@ -480,16 +462,16 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
 
-	        tournament_info->end_preliminary = mktime(timestamp);
+	        tournament_info->end_preliminary = std::mktime(timestamp);
 	    }
-	    else if (strcmp(variable,"start_round_1") == 0) {
-		pointer = strchr(pointer,'\"');
+	    else if (std::strcmp(variable,"start_round_1") == 0) {
+		pointer = std::strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
-	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
+	        std::sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
 
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
@@ -501,16 +483,16 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
 
-	        tournament_info->start_round_1 = mktime(timestamp);
+	        tournament_info->start_round_1 = std::mktime(timestamp);
 	    }
-	    else if (strcmp(variable,"start_round_2") == 0) {
-	        pointer = strchr(pointer,'\"');
+	    else if (std::strcmp(variable,"start_round_2") == 0) {
+	        pointer = std::strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
-	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
+	        std::sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
 
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
@@ -522,16 +504,16 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
 
-	        tournament_info->start_round_2 = mktime(timestamp);
+	        tournament_info->start_round_2 = std::mktime(timestamp);
 	    }
-	    else if (strcmp(variable,"start_round_3") == 0) {
-		pointer = strchr(pointer,'\"');
+	    else if (std::strcmp(variable,"start_round_3") == 0) {
+		pointer = std::strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
-	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
+	        std::sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
 
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
@@ -543,16 +525,16 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
 
-	        tournament_info->start_round_3 = mktime(timestamp);
+	        tournament_info->start_round_3 = std::mktime(timestamp);
 	    }
-	    else if (strcmp(variable,"start_round_4") == 0) {
-	        pointer = strchr(pointer,'\"');
+	    else if (std::strcmp(variable,"start_round_4") == 0) {
+	        pointer = std::strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
-	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
+	        std::sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
 
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
@@ -564,16 +546,16 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
 
-	        tournament_info->start_round_4 = mktime(timestamp);
+	        tournament_info->start_round_4 = std::mktime(timestamp);
 	    }
-	    else if (strcmp(variable,"tournament_end") == 0) {
-		pointer = strchr(pointer,'\"');
+	    else if (std::strcmp(variable,"tournament_end") == 0) {
+		pointer = std::strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
-	        sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
+	        std::sscanf(value,format,&mon,&day,&year,&hour,&min,&sec);
 
 		tournament_check_date(&mon,&day,&year,&hour,&min,&sec,variable);
 
@@ -585,41 +567,41 @@ extern int tournament_init(char const * filename)
 	        timestamp->tm_sec	= sec;
 	        timestamp->tm_isdst	= -1;
 
-	        tournament_info->tournament_end = mktime(timestamp);
+	        tournament_info->tournament_end = std::mktime(timestamp);
 	    }
-	    else if (strcmp(variable,"game_selection") == 0) {
-		if (atoi(pointer) >= 1 && atoi(pointer) <= 2)
-		    tournament_info->game_selection = atoi(pointer);
+	    else if (std::strcmp(variable,"game_selection") == 0) {
+		if (std::atoi(pointer) >= 1 && std::atoi(pointer) <= 2)
+		    tournament_info->game_selection = std::atoi(pointer);
 	    }
-	    else if (strcmp(variable,"game_type") == 0) {
-		if (atoi(pointer) >= 1 && atoi(pointer) <= 4)
-		    tournament_info->game_type = atoi(pointer);
+	    else if (std::strcmp(variable,"game_type") == 0) {
+		if (std::atoi(pointer) >= 1 && std::atoi(pointer) <= 4)
+		    tournament_info->game_type = std::atoi(pointer);
 	    }
-	    else if (strcmp(variable,"game_client") == 0) {
-		if (atoi(pointer) >= 1 && atoi(pointer) <= 2)
-		    tournament_info->game_client = atoi(pointer);
+	    else if (std::strcmp(variable,"game_client") == 0) {
+		if (std::atoi(pointer) >= 1 && std::atoi(pointer) <= 2)
+		    tournament_info->game_client = std::atoi(pointer);
 	    }
-	    else if (strcmp(variable,"format") == 0) {
-	        pointer = strchr(pointer,'\"');
+	    else if (std::strcmp(variable,"format") == 0) {
+	        pointer = std::strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
 	        if (tournament_info->format) xfree((void *)tournament_info->format);
 	        tournament_info->format = xstrdup(value);
 	    }
-	    else if (strcmp(variable,"races") == 0) {
+	    else if (std::strcmp(variable,"races") == 0) {
 	        unsigned int intvalue = 0;
 	        unsigned int i;
 
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
-	        for(i=0;i<strlen(value);i++) {
+	        for(i=0;i<std::strlen(value);i++) {
 		    if (value[i] == 'H') intvalue = intvalue | 0x01;
 		    if (value[i] == 'O') intvalue = intvalue | 0x02;
 		    if (value[i] == 'N') intvalue = intvalue | 0x04;
@@ -632,39 +614,39 @@ extern int tournament_init(char const * filename)
 
 	        tournament_info->races = intvalue;
 	    }
-	    else if (strcmp(variable,"sponsor") == 0) {
-		pointer = strchr(pointer,'\"');
+	    else if (std::strcmp(variable,"sponsor") == 0) {
+		pointer = std::strchr(pointer,'\"');
 		pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
 	        have_sponsor = xstrdup(value);
 	    }
-	    else if (strcmp(variable,"icon") == 0) {
-	        pointer = strchr(pointer,'\"');
+	    else if (std::strcmp(variable,"icon") == 0) {
+	        pointer = std::strchr(pointer,'\"');
 	        pointer++;
 	        value = pointer;
-	        pointer = strchr(pointer,'\"');
+	        pointer = std::strchr(pointer,'\"');
 	        pointer[0]='\0';
 
 	        have_icon = xstrdup(value);
 	    }
-	    else if (strcmp(variable,"thumbs_down") == 0) {
-	        tournament_info->thumbs_down = atoi(pointer);
+	    else if (std::strcmp(variable,"thumbs_down") == 0) {
+	        tournament_info->thumbs_down = std::atoi(pointer);
 	    }
 	    else
 	        eventlog(eventlog_level_error,__FUNCTION__,"bad option \"%s\" in \"%s\"",variable,filename);
 
 	    if (have_sponsor && have_icon) {
-	        sponsor = (char*)xmalloc(strlen(have_sponsor)+6);
+	        sponsor = (char*)xmalloc(std::strlen(have_sponsor)+6);
 
-		if (strlen(have_icon) == 4)
-		    sprintf(sponsor, "%c%c%c%c,%s",have_icon[3],have_icon[2],have_icon[1],have_icon[0],have_sponsor);
-		else if (strlen(have_icon) == 2)
-		    sprintf(sponsor, "%c%c3W,%s",have_icon[1],have_icon[0],have_sponsor);
+		if (std::strlen(have_icon) == 4)
+		    std::sprintf(sponsor, "%c%c%c%c,%s",have_icon[3],have_icon[2],have_icon[1],have_icon[0],have_sponsor);
+		else if (std::strlen(have_icon) == 2)
+		    std::sprintf(sponsor, "%c%c3W,%s",have_icon[1],have_icon[0],have_sponsor);
 		else {
-		    sprintf(sponsor, "PX3W,%s",have_sponsor); /* default to standard FT icon */
+		    std::sprintf(sponsor, "PX3W,%s",have_sponsor); /* default to standard FT icon */
 		    eventlog(eventlog_level_warn,__FUNCTION__,"bad icon length, using W3XP");
 		}
 
@@ -684,7 +666,7 @@ extern int tournament_init(char const * filename)
     if (have_icon) xfree((void *)have_icon);
     xfree((void *)timestamp);
     file_get_line(NULL); // clear file_get_line buffer
-    fclose(fp);
+    std::fclose(fp);
 
     /* check if we have timestamps for all the times */
     /* if not disable tournament by setting "start_preliminary" to 0 */
@@ -713,8 +695,8 @@ extern int tournament_destroy(void)
 
 extern int tournament_reload(char const * filename)
 {
-	time_t tm;
-	time(&tm);
+	std::time_t tm;
+	std::time(&tm);
 	if((tm >= tournament_info->start_preliminary) && (tm <= tournament_info->tournament_end))
 	{
 		eventlog(eventlog_level_info,__FUNCTION__,"unable to reload tournament, tournament is in process");

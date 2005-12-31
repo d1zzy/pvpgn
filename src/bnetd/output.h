@@ -17,10 +17,6 @@
 #ifndef __OUTPUT_H_INCLUDED__
 #define __OUTPUT_H_INCLUDED__
 
-#ifndef NULL
-# define NULL ((void *)0)
-#endif
-
 namespace pvpgn
 {
 

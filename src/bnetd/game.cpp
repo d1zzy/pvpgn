@@ -23,7 +23,6 @@
 #include <cerrno>
 #include <cstring>
 
-#include "compat/rename.h"
 #include "common/eventlog.h"
 #include "common/addr.h"
 #include "common/bnettime.h"
@@ -431,7 +430,7 @@ extern t_game * game_create(char const * name, char const * pass, char const * i
     game->report_heads  = NULL;
     game->report_bodies = NULL;
     game->create_time   = now;
-    game->start_time    = (time_t)0;
+    game->start_time    = (std::time_t)0;
     game->lastaccess_time = now;
     game->option        = game_option_none;
     game->maptype       = game_maptype_none;
@@ -442,7 +441,7 @@ extern t_game * game_create(char const * name, char const * pass, char const * i
     game->maxplayers    = 0;
     game->bad           = 0;
     game->description   = NULL;
-    game->flag  	= strcmp(pass,"") ? game_flag_private : game_flag_none;
+    game->flag  	= std::strcmp(pass,"") ? game_flag_private : game_flag_none;
     game->difficulty    = game_difficulty_none;
 
     game_parse_info(game,info);
@@ -609,7 +608,7 @@ static int game_match_type(t_game_type type,const char *gametypes)
     gametypes = p = xstrdup(gametypes);
     res = 0;
     do {
-	q = strchr(p,',');
+	q = std::strchr(p,',');
 	if (q) *q = '\0';
 	if (!strcasecmp(p,"topvbot")) {
 	    if (type == game_type_topvbot) { res = 1; break; }
@@ -629,7 +628,7 @@ static int game_match_type(t_game_type type,const char *gametypes)
 
 static int game_report(t_game * game)
 {
-    FILE *          fp;
+    std::FILE *          fp;
     char *          realname;
     char *          tempname;
     unsigned int    i;
@@ -853,13 +852,13 @@ static int game_report(t_game * game)
     }
 
     {
-	struct tm * tmval;
+	struct std::tm * tmval;
 	char        dstr[64];
 
-	if (!(tmval = localtime(&now)))
+	if (!(tmval = std::localtime(&now)))
 	    dstr[0] = '\0';
 	else
-	    sprintf(dstr,"%04d%02d%02d%02d%02d%02d",
+	    std::sprintf(dstr,"%04d%02d%02d%02d%02d%02d",
 		    1900+tmval->tm_year,
 		    tmval->tm_mon+1,
 		    tmval->tm_mday,
@@ -867,15 +866,15 @@ static int game_report(t_game * game)
 		    tmval->tm_min,
 		    tmval->tm_sec);
 
-	tempname = (char*)xmalloc(strlen(prefs_get_reportdir())+1+1+5+1+2+1+strlen(dstr)+1+6+1);
-	sprintf(tempname,"%s/_bnetd-gr_%s_%06u",prefs_get_reportdir(),dstr,game->id);
-	realname = (char*)xmalloc(strlen(prefs_get_reportdir())+1+2+1+strlen(dstr)+1+6+1);
-	sprintf(realname,"%s/gr_%s_%06u",prefs_get_reportdir(),dstr,game->id);
+	tempname = (char*)xmalloc(std::strlen(prefs_get_reportdir())+1+1+5+1+2+1+std::strlen(dstr)+1+6+1);
+	std::sprintf(tempname,"%s/_bnetd-gr_%s_%06u",prefs_get_reportdir(),dstr,game->id);
+	realname = (char*)xmalloc(std::strlen(prefs_get_reportdir())+1+2+1+std::strlen(dstr)+1+6+1);
+	std::sprintf(realname,"%s/gr_%s_%06u",prefs_get_reportdir(),dstr,game->id);
     }
 
-    if (!(fp = fopen(tempname,"w")))
+    if (!(fp = std::fopen(tempname,"w")))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open report file \"%s\" for writing (fopen: %s)",tempname,std::strerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open report file \"%s\" for writing (std::fopen: %s)",tempname,std::strerror(errno));
 	if (ladder_info)
 	    xfree(ladder_info);
 	xfree(realname);
@@ -884,35 +883,35 @@ static int game_report(t_game * game)
     }
 
     if (game->bad)
-	fprintf(fp,"[ game results ignored due to inconsistencies ]\n\n");
-    fprintf(fp,"name=\"%s\" id="GAMEID_FORMAT"\n",
+	std::fprintf(fp,"[ game results ignored due to inconsistencies ]\n\n");
+    std::fprintf(fp,"name=\"%s\" id="GAMEID_FORMAT"\n",
 	    game_get_name(game),
 	    game->id);
-    fprintf(fp,"clienttag=%4s type=\"%s\" option=\"%s\"\n",
+    std::fprintf(fp,"clienttag=%4s type=\"%s\" option=\"%s\"\n",
 	    tag_uint_to_str(clienttag_str,game->clienttag),
 	    game_type_get_str(game->type),
 	    game_option_get_str(game->option));
     {
-	struct tm * gametime;
+	struct std::tm * gametime;
 	char        timetemp[GAME_TIME_MAXLEN];
 
-	if (!(gametime = localtime(&game->create_time)))
-	    strcpy(timetemp,"?");
+	if (!(gametime = std::localtime(&game->create_time)))
+	    std::strcpy(timetemp,"?");
 	else
-	    strftime(timetemp,sizeof(timetemp),GAME_TIME_FORMAT,gametime);
-	fprintf(fp,"created=\"%s\" ",timetemp);
+	    std::strftime(timetemp,sizeof(timetemp),GAME_TIME_FORMAT,gametime);
+	std::fprintf(fp,"created=\"%s\" ",timetemp);
 
-	if (!(gametime = localtime(&game->start_time)))
-	    strcpy(timetemp,"?");
+	if (!(gametime = std::localtime(&game->start_time)))
+	    std::strcpy(timetemp,"?");
 	else
-	    strftime(timetemp,sizeof(timetemp),GAME_TIME_FORMAT,gametime);
-	fprintf(fp,"started=\"%s\" ",timetemp);
+	    std::strftime(timetemp,sizeof(timetemp),GAME_TIME_FORMAT,gametime);
+	std::fprintf(fp,"started=\"%s\" ",timetemp);
 
-	if (!(gametime = localtime(&now)))
-	    strcpy(timetemp,"?");
+	if (!(gametime = std::localtime(&now)))
+	    std::strcpy(timetemp,"?");
 	else
-	    strftime(timetemp,sizeof(timetemp),GAME_TIME_FORMAT,gametime);
-	fprintf(fp,"ended=\"%s\"\n",timetemp);
+	    std::strftime(timetemp,sizeof(timetemp),GAME_TIME_FORMAT,gametime);
+	std::fprintf(fp,"ended=\"%s\"\n",timetemp);
     }
     {
 	char const * mapname;
@@ -920,28 +919,28 @@ static int game_report(t_game * game)
 	if (!(mapname = game_get_mapname(game)))
 	    mapname = "?";
 
-	fprintf(fp,"mapfile=\"%s\" mapauth=\"%s\" mapsize=%ux%u tileset=\"%s\"\n",
+	std::fprintf(fp,"mapfile=\"%s\" mapauth=\"%s\" mapsize=%ux%u tileset=\"%s\"\n",
 		mapname,
 		game_maptype_get_str(game_get_maptype(game)),
 		game_get_mapsize_x(game),game_get_mapsize_y(game),
 		game_tileset_get_str(game_get_tileset(game)));
     }
-    fprintf(fp,"joins=%u maxplayers=%u\n",
+    std::fprintf(fp,"joins=%u maxplayers=%u\n",
 	    game_get_count(game),
 	    game_get_maxplayers(game));
 
     if (!prefs_get_hide_addr())
-	fprintf(fp,"host=%s\n",addr_num_to_addr_str(game_get_addr(game),game_get_port(game)));
+	std::fprintf(fp,"host=%s\n",addr_num_to_addr_str(game_get_addr(game),game_get_port(game)));
 
-    fprintf(fp,"\n\n");
+    std::fprintf(fp,"\n\n");
 
     if (game->clienttag==CLIENTTAG_DIABLORTL_UINT)
 	for (i=0; i<game->count; i++)
-	    fprintf(fp,"%-16s JOINED\n",account_get_name(game->players[i]));
+	    std::fprintf(fp,"%-16s JOINED\n",account_get_name(game->players[i]));
     else
 	if (ladder_info)
 	    for (i=0; i<realcount; i++)
-		fprintf(fp,"%-16s %-8s rating=%u [#%05u]  prob=%4.1f%%  K=%2u  adj=%+d\n",
+		std::fprintf(fp,"%-16s %-8s rating=%u [#%05u]  prob=%4.1f%%  K=%2u  adj=%+d\n",
 			account_get_name(game->players[i]),
 			game_result_get_str(game->results[i]),
 			ladder_info[i].oldrating,
@@ -951,10 +950,10 @@ static int game_report(t_game * game)
 			ladder_info[i].adj);
 	else
 	    for (i=0; i<realcount; i++)
-		fprintf(fp,"%-16s %-8s\n",
+		std::fprintf(fp,"%-16s %-8s\n",
 			account_get_name(game->players[i]),
 			game_result_get_str(game->results[i]));
-    fprintf(fp,"\n\n");
+    std::fprintf(fp,"\n\n");
 
     if (ladder_info)
 	xfree(ladder_info);
@@ -962,15 +961,15 @@ static int game_report(t_game * game)
     for (i=0; i<realcount; i++)
     {
 	if (game->report_heads[i])
-	    fprintf(fp,"%s\n",game->report_heads[i]);
+	    std::fprintf(fp,"%s\n",game->report_heads[i]);
 	else
-	    fprintf(fp,"[ game report header not available for player %u (\"%s\") ]\n",i+1,account_get_name(game->players[i]));
+	    std::fprintf(fp,"[ game report header not available for player %u (\"%s\") ]\n",i+1,account_get_name(game->players[i]));
 	if (game->report_bodies[i])
-	    fprintf(fp,"%s\n",game->report_bodies[i]);
+	    std::fprintf(fp,"%s\n",game->report_bodies[i]);
 	else
-	    fprintf(fp,"[ game report body not available for player %u (\"%s\") ]\n\n",i+1,account_get_name(game->players[i]));
+	    std::fprintf(fp,"[ game report body not available for player %u (\"%s\") ]\n\n",i+1,account_get_name(game->players[i]));
     }
-    fprintf(fp,"\n\n");
+    std::fprintf(fp,"\n\n");
 
     if (game->clienttag==CLIENTTAG_STARCRAFT_UINT ||
 	game->clienttag==CLIENTTAG_SHAREWARE_UINT ||
@@ -978,7 +977,7 @@ static int game_report(t_game * game)
         game->clienttag==CLIENTTAG_WARCIIBNE_UINT)
     {
 	for (i=0; i<realcount; i++)
-	    fprintf(fp,"%s's normal record is now %u/%u/%u (%u draws)\n",
+	    std::fprintf(fp,"%s's normal record is now %u/%u/%u (%u draws)\n",
 		    account_get_name(game->players[i]),
 		    account_get_normal_wins(game->players[i],game->clienttag),
 		    account_get_normal_losses(game->players[i],game->clienttag),
@@ -989,9 +988,9 @@ static int game_report(t_game * game)
         game->clienttag==CLIENTTAG_BROODWARS_UINT ||
         game->clienttag==CLIENTTAG_WARCIIBNE_UINT)
     {
-	fprintf(fp,"\n");
+	std::fprintf(fp,"\n");
 	for (i=0; i<realcount; i++)
-	    fprintf(fp,"%s's standard ladder record is now %u/%u/%u (rating %u [#%05u]) (%u draws)\n",
+	    std::fprintf(fp,"%s's standard ladder record is now %u/%u/%u (rating %u [#%05u]) (%u draws)\n",
 		    account_get_name(game->players[i]),
 		    account_get_ladder_wins(game->players[i],game->clienttag,ladder_id_normal),
 		    account_get_ladder_losses(game->players[i],game->clienttag,ladder_id_normal),
@@ -1002,9 +1001,9 @@ static int game_report(t_game * game)
     }
     if (game->clienttag==CLIENTTAG_WARCIIBNE_UINT)
     {
-	fprintf(fp,"\n");
+	std::fprintf(fp,"\n");
 	for (i=0; i<realcount; i++)
-	    fprintf(fp,"%s's ironman ladder record is now %u/%u/%u (rating %u [#%05u]) (%u draws)\n",
+	    std::fprintf(fp,"%s's ironman ladder record is now %u/%u/%u (rating %u [#%05u]) (%u draws)\n",
 		    account_get_name(game->players[i]),
 		    account_get_ladder_wins(game->players[i],game->clienttag,ladder_id_ironman),
 		    account_get_ladder_losses(game->players[i],game->clienttag,ladder_id_ironman),
@@ -1014,19 +1013,19 @@ static int game_report(t_game * game)
 		    account_get_ladder_draws(game->players[i],game->clienttag,ladder_id_ironman));
     }
 
-    fprintf(fp,"\nThis game lasted %lu minutes (elapsed).\n",((unsigned long int)difftime(now,game->start_time))/60);
+    std::fprintf(fp,"\nThis game lasted %lu minutes (elapsed).\n",((unsigned long int)std::difftime(now,game->start_time))/60);
 
-    if (fclose(fp)<0)
+    if (std::fclose(fp)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close report file \"%s\" after writing (fclose: %s)",tempname,std::strerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close report file \"%s\" after writing (std::fclose: %s)",tempname,std::strerror(errno));
 	xfree(realname);
 	xfree(tempname);
 	return -1;
     }
 
-    if (p_rename(tempname,realname)<0)
+    if (std::rename(tempname,realname)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not rename report file to \"%s\" (rename: %s)",realname,std::strerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not std::rename report file to \"%s\" (std::rename: %s)",realname,std::strerror(errno));
 	xfree(realname);
 	xfree(tempname);
 	return -1;
@@ -1351,7 +1350,7 @@ extern void game_set_status(t_game * game, t_game_status status)
 		return;
 	}
 
-    if (status==game_status_started && game->start_time==(time_t)0)
+    if (status==game_status_started && game->start_time==(std::time_t)0)
 	game->start_time = now;
     game->status = status;
 }
@@ -1531,18 +1530,18 @@ extern int game_add_player(t_game * game, char const * pass, int startver, t_con
     if ((i == game->count) || (game->count == 0))
     {
 
-        if (!game->connections) /* some realloc()s are broken */
+        if (!game->connections) /* some std::realloc()s are broken */
 	    tempc = (t_connection**)xmalloc((game->count+1)*sizeof(t_connection *));
         else
 	    tempc = (t_connection**)xrealloc(game->connections,(game->count+1)*sizeof(t_connection *));
         game->connections = tempc;
-        if (!game->players) /* some realloc()s are broken */
+        if (!game->players) /* some std::realloc()s are broken */
 	    tempp = (t_account**)xmalloc((game->count+1)*sizeof(t_account *));
         else
 	    tempp = (t_account**)xrealloc(game->players,(game->count+1)*sizeof(t_account *));
         game->players = tempp;
 
-        if (!game->results) /* some realloc()s are broken */
+        if (!game->results) /* some std::realloc()s are broken */
 	    tempr = (t_game_result*)xmalloc((game->count+1)*sizeof(t_game_result));
         else
 	    tempr = (t_game_result*)xrealloc(game->results,(game->count+1)*sizeof(t_game_result));
@@ -1618,10 +1617,10 @@ extern int game_del_player(t_game * game, t_connection * c)
    if(conn_get_leavegamewhisper_ack(c)==0)
      {
        watchlist->dispatch(conn_get_account(c), NULL, conn_get_clienttag(c), Watch::ET_leavegame);
-       conn_set_leavegamewhisper_ack(c,1); //1 = already whispered. We reset this each time user joins a channel
+       conn_set_leavegamewhisper_ack(c,1); //1 = already whispered. We reset this each std::time user joins a channel
      }
 
-    eventlog(eventlog_level_debug,__FUNCTION__,"game \"%s\" has ref=%u, count=%u; trying to remove player \"%s\"",game_get_name(game),game->ref,game->count,account_get_name(account));
+    eventlog(eventlog_level_debug,__FUNCTION__,"game \"%s\" has ref=%u, count=%u; trying to std::remove player \"%s\"",game_get_name(game),game->ref,game->count,account_get_name(account));
 
     for (i=0; i<game->count; i++)
 	if (game->players[i]==account && game->connections[i])
@@ -1952,24 +1951,24 @@ extern t_connection * game_get_owner(t_game const * game)
 }
 
 
-extern time_t game_get_create_time(t_game const * game)
+extern std::time_t game_get_create_time(t_game const * game)
 {
     if (!game)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL game");
-	return (time_t)0;
+	return (std::time_t)0;
     }
 
     return game->create_time;
 }
 
 
-extern time_t game_get_start_time(t_game const * game)
+extern std::time_t game_get_start_time(t_game const * game)
 {
     if (!game)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL game");
-	return (time_t)0;
+	return (std::time_t)0;
     }
 
     return game->start_time;
@@ -2194,7 +2193,7 @@ static int game_match_name(const char *name, const char *prefix)
     if (!name || !*name) return 1;
     if (!prefix || !*prefix) return 1;
 
-    if (!strncmp(name,prefix,strlen(prefix))) return 1;
+    if (!std::strncmp(name,prefix,std::strlen(prefix))) return 1;
 
     return 0;
 }

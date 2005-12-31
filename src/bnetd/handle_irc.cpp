@@ -22,6 +22,7 @@
 
 #include <cstring>
 #include <cctype>
+#include <cstdlib>
 
 #include "compat/strcasecmp.h"
 #include "common/irc_protocol.h"
@@ -276,7 +277,7 @@ static int handle_irc_line(t_connection * conn, char const * ircline)
 
 	conn_set_state(conn,conn_state_bot_username);
 	temp.n = prefs_get_irc_latency();
-	conn_test_latency(conn,time(NULL),temp);
+	conn_test_latency(conn,std::time(NULL),temp);
     }
 
 	if (handle_irc_con_command(conn, command, numparams, params, text)!=-1) {}
@@ -301,7 +302,7 @@ static int handle_irc_line(t_connection * conn, char const * ircline)
 			linelen = std::strlen (ircline);
 			bnet_command = (char*)xmalloc(linelen + 2);
 			bnet_command[0]='/';
-			strcpy(bnet_command + 1, ircline);
+			std::strcpy(bnet_command + 1, ircline);
 			handle_command(conn,bnet_command);
 			xfree((void*)bnet_command);
 		}
@@ -334,7 +335,7 @@ extern int handle_irc_packet(t_connection * conn, t_packet const * const packet)
     std::memset(ircline,0,sizeof(ircline));
     data = conn_get_ircline(conn); /* fetch current status */
     if (data)
-	strcpy(ircline,data);
+	std::strcpy(ircline,data);
     ircpos = std::strlen(ircline);
     data = (const char *)packet_get_raw_data_const(packet,0);
     for (i=0; i < packet_get_size(packet); i++) {
@@ -491,11 +492,11 @@ static int _handle_pong_command(t_connection * conn, int numparams, char ** para
 	    char * sname;
 
 	    if (numparams>=1) {
-	        val =  strtoul(params[0],NULL,10);
+	        val =  std::strtoul(params[0],NULL,10);
 		sname = params[0];
 	    }
 	    else if (text) {
-	    	val = strtoul(text,NULL,10);
+	    	val = std::strtoul(text,NULL,10);
 		sname = text;
 	    }
 	    else {
@@ -730,7 +731,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 
 	    if(std::strcmp(params[0], "0") == 0) {
 			/* HACK: Currently, this is the best way to set the game type... */
-			conn_wol_set_game_type(conn,atoi(params[1]));
+			conn_wol_set_game_type(conn,std::atoi(params[1]));
 
 			eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Channel]");
    	    LIST_TRAVERSE_CONST(channellist(),curr)
@@ -740,7 +741,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 
 	        	tempname = irc_convert_channel(channel);
 
-				if(strstr(tempname,"Lob") != NULL) {
+				if(std::strstr(tempname,"Lob") != NULL) {
 					eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Channel: \"Lob\"] (%s)",tempname);
 					if (std::strlen(tempname)+1+20+1+1<MAX_IRC_MESSAGE_LEN)
 						snprintf(temp, sizeof(temp), "%s %u 0 388",tempname,channel_get_length(channel));
@@ -768,7 +769,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 				char * topic = channel_get_topic(channel_get_name(channel));
 
         	    tempname = irc_convert_channel(channel);
-				if(strstr(tempname,"_game") != NULL) {
+				if(std::strstr(tempname,"_game") != NULL) {
 					m = channel_get_first(channel);
 					if(channel_wol_get_game_type(channel) == conn_wol_get_game_type(conn)) {
 						eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] List [Channel: \"_game\"] (%s)",tempname);
@@ -1228,7 +1229,7 @@ static int _handle_setcodepage_command(t_connection * conn, int numparams, char 
 
 	if((numparams>=1)&&params[0]) {
 	    codepage = params[0];
-	    conn_wol_set_codepage(conn,atoi(codepage));
+	    conn_wol_set_codepage(conn,std::atoi(codepage));
 	}
 	irc_send(conn,RPL_SET_CODEPAGE,codepage);
 	return 0;
@@ -1240,7 +1241,7 @@ static int _handle_setlocale_command(t_connection * conn, int numparams, char **
 
 	if((numparams>=1)&&params[0]) {
 	    locale = params[0];
-	    conn_wol_set_locale(conn,atoi(locale));
+	    conn_wol_set_locale(conn,std::atoi(locale));
 	}
 	irc_send(conn,RPL_SET_LOCALE,locale);
 	return 0;
@@ -1422,7 +1423,7 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 					channel_wol_set_game_owner(channel,conn_get_chatname(conn));
 					channel_wol_set_game_ownerip(channel,conn_get_addr(conn));
 					channel_wol_set_game_type(channel,conn_wol_get_game_type(conn));
-					channel_wol_set_game_tournament(channel,atoi(params[6]));
+					channel_wol_set_game_tournament(channel,std::atoi(params[6]));
 
 					message_send_text(conn,message_wol_joingame,conn,_temp); /* we have to send the JOINGAME acknowledgement */
 					ircname=irc_convert_channel(channel);
@@ -1552,7 +1553,7 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
 	char _temp_a[MAX_IRC_MESSAGE_LEN];
 	t_channel * channel;
 
-	time_t now;
+	std::time_t now;
 
  	/**
  	*  Heres the output expected (this can have up-to 8 entries (ie 8 players):
@@ -1587,7 +1588,7 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
         std::strcat(temp," ");
 
         now = std::time(NULL);
-        std::strcat(temp,ctime(&now));
+        std::strcat(temp,std::ctime(&now));
 
 	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] STARTG: (%s)",temp);
 

@@ -211,9 +211,9 @@ typedef struct game
     char const * *    report_heads;
     char const * *    report_bodies;
 
-    time_t            create_time;
-    time_t            start_time;
-    time_t            lastaccess_time;
+    std::time_t            create_time;
+    std::time_t            start_time;
+    std::time_t            lastaccess_time;
     int               bad; /* if 1, then the results will be ignored */
     unsigned          difficulty;
     char const *      description;
@@ -307,8 +307,8 @@ extern t_game_result * game_get_reported_results(t_game * game, t_account * acco
 extern char const * game_get_mapname(t_game const * game);
 extern int game_set_mapname(t_game * game, char const * mapname);
 extern t_connection * game_get_owner(t_game const * game);
-extern time_t game_get_create_time(t_game const * game);
-extern time_t game_get_start_time(t_game const * game);
+extern std::time_t game_get_create_time(t_game const * game);
+extern std::time_t game_get_start_time(t_game const * game);
 extern int game_set_option(t_game * game, t_game_option option);
 extern t_game_option game_get_option(t_game const * game);
 extern int gamelist_create(void);

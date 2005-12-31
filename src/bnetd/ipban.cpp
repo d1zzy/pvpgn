@@ -16,56 +16,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define IPBAN_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include <ctype.h>
-#include "compat/strchr.h"
-#include "compat/strdup.h"
-#include "compat/strcasecmp.h"
-#include "compat/strsep.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#include "common/eventlog.h"
-#include "common/util.h"
-#include "connection.h"
-#include "message.h"
-#include "prefs.h"
-#include "common/list.h"
-#include "common/xalloc.h"
-#include "server.h"
+#define IPBAN_INTERNAL_ACCESS
 #include "ipban.h"
+
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+#include <cstdlib>
+#include <cctype>
+
+#include "compat/strsep.h"
+#include "common/list.h"
+#include "common/util.h"
+#include "common/eventlog.h"
+#include "compat/strerror.h"
+#include "common/xalloc.h"
+#include "common/field_sizes.h"
+
+#include "message.h"
+#include "server.h"
+#include "prefs.h"
+#include "connection.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -88,7 +60,7 @@ static int ipban_could_be_ip_str(char const * ipstr);
 static void ipban_usage(t_connection * c);
 
 static t_list * ipbanlist_head = NULL;
-static time_t lastchecktime = 0;
+static std::time_t lastchecktime = 0;
 
 extern int ipbanlist_create(void)
 {
@@ -113,7 +85,7 @@ extern int ipbanlist_destroy(void)
 		continue;
 	    }
 	    if (list_remove_elem(ipbanlist_head,&curr)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
 	    ipban_unload_entry(entry);
 	}
 	if (list_destroy(ipbanlist_head)<0)
@@ -127,7 +99,7 @@ extern int ipbanlist_destroy(void)
 
 extern int ipbanlist_load(char const * filename)
 {
-    FILE *		fp;
+    std::FILE *		fp;
     char *		buff;
     char *		ip;
     char *		timestr;
@@ -140,9 +112,9 @@ extern int ipbanlist_load(char const * filename)
 	return -1;
     }
 
-    if (!(fp = fopen(filename,"r")))
+    if (!(fp = std::fopen(filename,"r")))
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open banlist file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open banlist file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
 	return -1;
     }
 
@@ -158,10 +130,10 @@ extern int ipbanlist_load(char const * filename)
 	}
 
 	/* eat whitespace in back */
-	while (ip[strlen(ip)-1]==' ' || ip[strlen(ip)-1]=='\t')
-	    ip[strlen(ip)-1] = '\0';
+	while (ip[std::strlen(ip)-1]==' ' || ip[std::strlen(ip)-1]=='\t')
+	    ip[std::strlen(ip)-1] = '\0';
 
-	if (strchr(ip,' ') || strchr(ip,'\t'))
+	if (std::strchr(ip,' ') || std::strchr(ip,'\t'))
 	{
 	    timestr = ip;
 	    while (*timestr!=' ' && *timestr!='\t') timestr++;
@@ -190,8 +162,8 @@ extern int ipbanlist_load(char const * filename)
     }
 
     file_get_line(NULL); // clear file_get_line buffer
-    if (fclose(fp)<0)
-        eventlog(eventlog_level_error,__FUNCTION__,"could not close banlist file \"%s\" after reading (fclose: %s)",filename,pstrerror(errno));
+    if (std::fclose(fp)<0)
+        eventlog(eventlog_level_error,__FUNCTION__,"could not close banlist file \"%s\" after reading (std::fclose: %s)",filename,pstrerror(errno));
 
     return 0;
 }
@@ -201,7 +173,7 @@ extern int ipbanlist_save(char const * filename)
 {
     t_elem const *	curr;
     t_ipban_entry *	entry;
-    FILE *		fp;
+    std::FILE *		fp;
     char *		ipstr;
     char		line[1024];
 
@@ -211,9 +183,9 @@ extern int ipbanlist_save(char const * filename)
 	return -1;
     }
 
-    if (!(fp = fopen(filename,"w")))
+    if (!(fp = std::fopen(filename,"w")))
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open banlist file \"%s\" for writing (fopen: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open banlist file \"%s\" for writing (std::fopen: %s)",filename,pstrerror(errno));
 	return -1;
     }
 /*    if (ftruncate(fp,0)<0)
@@ -236,17 +208,17 @@ extern int ipbanlist_save(char const * filename)
 	    continue;
 	}
 	if (entry->endtime == 0)
-	    sprintf(line,"%s\n",ipstr);
+	    std::sprintf(line,"%s\n",ipstr);
 	else
-	    sprintf(line,"%s %ld\n",ipstr,entry->endtime);
-	if (!(fwrite(line,strlen(line),1,fp)))
+	    std::sprintf(line,"%s %ld\n",ipstr,entry->endtime);
+	if (!(std::fwrite(line,std::strlen(line),1,fp)))
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not write to banlist file (write: %s)",pstrerror(errno));
 	xfree(ipstr);
     }
 
-    if (fclose(fp)<0)
+    if (std::fclose(fp)<0)
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not close banlist file \"%s\" after writing (fclose: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not close banlist file \"%s\" after writing (std::fclose: %s)",filename,pstrerror(errno));
 	return -1;
     }
 
@@ -281,10 +253,10 @@ extern int ipbanlist_check(char const * ipaddr)
 	lastchecktime = now;
     }
 
-    ip1 = strtok(whole,".");
-    ip2 = strtok(NULL,".");
-    ip3 = strtok(NULL,".");
-    ip4 = strtok(NULL,".");
+    ip1 = std::strtok(whole,".");
+    ip2 = std::strtok(NULL,".");
+    ip3 = std::strtok(NULL,".");
+    ip4 = std::strtok(NULL,".");
 
     if (!ip1 || !ip2 || !ip3 || !ip4)
     {
@@ -308,7 +280,7 @@ extern int ipbanlist_check(char const * ipaddr)
 	switch (entry->type)
 	{
 	case ipban_type_exact:
-	    if (strcmp(entry->info1,ipaddr)==0)
+	    if (std::strcmp(entry->info1,ipaddr)==0)
 	    {
 		eventlog(eventlog_level_debug,__FUNCTION__,"address %s matched exact %s",ipaddr,entry->info1);
 		xfree(whole);
@@ -318,22 +290,22 @@ extern int ipbanlist_check(char const * ipaddr)
 	    continue;
 
 	case ipban_type_wildcard:
-	    if (strcmp(entry->info1,"*")!=0 && strcmp(ip1,entry->info1)!=0)
+	    if (std::strcmp(entry->info1,"*")!=0 && std::strcmp(ip1,entry->info1)!=0)
 	    {
 		eventlog(eventlog_level_debug,__FUNCTION__,"address %s does not match part 1 of wildcard %s.%s.%s.%s",ipaddr,entry->info1,entry->info2,entry->info3,entry->info4);
 		continue;
 	    }
-	    if (strcmp(entry->info2,"*")!=0 && strcmp(ip2,entry->info2)!=0)
+	    if (std::strcmp(entry->info2,"*")!=0 && std::strcmp(ip2,entry->info2)!=0)
 	    {
 		eventlog(eventlog_level_debug,__FUNCTION__,"address %s does not match part 2 of wildcard %s.%s.%s.%s",ipaddr,entry->info1,entry->info2,entry->info3,entry->info4);
 		continue;
 	    }
-	    if (strcmp(entry->info3,"*")!=0 && strcmp(ip3,entry->info3)!=0)
+	    if (std::strcmp(entry->info3,"*")!=0 && std::strcmp(ip3,entry->info3)!=0)
 	    {
 		eventlog(eventlog_level_debug,__FUNCTION__,"address %s does not match part 3 of wildcard %s.%s.%s.%s",ipaddr,entry->info1,entry->info2,entry->info3,entry->info4);
 		continue;
 	    }
-	    if (strcmp(entry->info4,"*")!=0 && strcmp(ip4,entry->info4)!=0)
+	    if (std::strcmp(entry->info4,"*")!=0 && std::strcmp(ip4,entry->info4)!=0)
 	    {
 		eventlog(eventlog_level_debug,__FUNCTION__,"address %s does not match part 4 of wildcard %s.%s.%s.%s",ipaddr,entry->info1,entry->info2,entry->info3,entry->info4);
 		continue;
@@ -389,7 +361,7 @@ extern int ipbanlist_check(char const * ipaddr)
 		    return -1;
 		if (!(lip2 = ipban_str_to_ulong(entry->info1)))
 		    return -1;
-		prefix = atoi(entry->info2);
+		prefix = std::atoi(entry->info2);
 
 		lip1 = lip1 >> (32 - prefix);
 		lip2 = lip2 >> (32 - prefix);
@@ -413,7 +385,7 @@ extern int ipbanlist_check(char const * ipaddr)
 }
 
 
-extern int ipbanlist_add(t_connection * c, char const * cp, time_t endtime)
+extern int ipbanlist_add(t_connection * c, char const * cp, std::time_t endtime)
 {
     t_ipban_entry *	entry;
     char		tstr[MAX_MESSAGE_LEN];
@@ -434,18 +406,18 @@ extern int ipbanlist_add(t_connection * c, char const * cp, time_t endtime)
 
 	if (endtime == 0)
 	{
-            sprintf(tstr,"%s banned permamently by %s.",cp,conn_get_username(c));
+            std::sprintf(tstr,"%s banned permamently by %s.",cp,conn_get_username(c));
             eventlog(eventlog_level_info,__FUNCTION__,tstr);
             message_send_admins(c,message_type_info,tstr);
-	    sprintf(tstr,"%s banned permamently.",cp);
+	    std::sprintf(tstr,"%s banned permamently.",cp);
 	    message_send_text(c,message_type_info,c,tstr);
 	}
 	else
 	{
-            sprintf(tstr,"%s banned for %.48s by %s.",cp,seconds_to_timestr(entry->endtime - now),conn_get_username(c));
+            std::sprintf(tstr,"%s banned for %.48s by %s.",cp,seconds_to_timestr(entry->endtime - now),conn_get_username(c));
             eventlog(eventlog_level_info,__FUNCTION__,tstr);
             message_send_admins(c,message_type_info,tstr);
-	    sprintf(tstr,"%s banned for %.48s.",cp,seconds_to_timestr(entry->endtime - now));
+	    std::sprintf(tstr,"%s banned for %.48s.",cp,seconds_to_timestr(entry->endtime - now));
 	    message_send_text(c,message_type_info,c,tstr);
 	}
     }
@@ -474,7 +446,7 @@ extern int ipbanlist_unload_expired(void)
 	    eventlog(eventlog_level_debug,__FUNCTION__,"removing item: %s",entry->info1);
 	    removed = 1;
 	    if (list_remove_elem(ipbanlist_head,&curr)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not remove item");
+		eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item");
 	    else
 		ipban_unload_entry(entry);
 	}
@@ -483,7 +455,7 @@ extern int ipbanlist_unload_expired(void)
     return 0;
 }
 
-extern time_t ipbanlist_str_to_time_t(t_connection * c, char const * timestr)
+extern std::time_t ipbanlist_str_to_time_t(t_connection * c, char const * timestr)
 {
 
     unsigned int	bmin;
@@ -491,7 +463,7 @@ extern time_t ipbanlist_str_to_time_t(t_connection * c, char const * timestr)
     unsigned int	i;
     char		tstr[MAX_MESSAGE_LEN];
 
-    for (i=0; isdigit((int)timestr[i]) && i<sizeof(minstr)-1; i++)
+    for (i=0; std::isdigit((int)timestr[i]) && i<sizeof(minstr)-1; i++)
 	minstr[i] = timestr[i];
     minstr[i] = '\0';
 
@@ -499,11 +471,11 @@ extern time_t ipbanlist_str_to_time_t(t_connection * c, char const * timestr)
     {
 	if (c)
 	{
-	    if (strlen(minstr)<1)
-		message_send_text(c,message_type_info,c,"There was an error in time.");
+	    if (std::strlen(minstr)<1)
+		message_send_text(c,message_type_info,c,"There was an error in std::time.");
 	    else
 	    {
-		sprintf(tstr,"There was an error in time. Banning only for: %s minutes.",minstr);
+		std::sprintf(tstr,"There was an error in std::time. Banning only for: %s minutes.",minstr);
 	        message_send_text(c,message_type_info,c,tstr);
 	    }
 	}
@@ -577,7 +549,7 @@ static int identify_ipban_function(const char * funcstr)
 	return IPBAN_FUNC_ADD;
     if (strcasecmp(funcstr,"del")==0 || strcasecmp(funcstr,"d")==0)
 	return IPBAN_FUNC_DEL;
-    if (strcasecmp(funcstr,"list")==0 || strcasecmp(funcstr,"l")==0 || strcmp(funcstr,"")==0)
+    if (strcasecmp(funcstr,"list")==0 || strcasecmp(funcstr,"l")==0 || std::strcmp(funcstr,"")==0)
 	return IPBAN_FUNC_LIST;
     if (strcasecmp(funcstr,"check")==0 || strcasecmp(funcstr,"c")==0)
 	return IPBAN_FUNC_CHECK;
@@ -598,7 +570,7 @@ static int ipban_func_del(t_connection * c, char const * cp)
     char		tstr[MAX_MESSAGE_LEN];
 
     counter = 0;
-    if (strchr(cp,'.') || strchr(cp,'/') || strchr(cp,'*'))
+    if (std::strchr(cp,'.') || std::strchr(cp,'/') || std::strchr(cp,'*'))
     {
 	if (!(to_delete = ipban_str_to_ipban_entry(cp)))
 	{
@@ -617,7 +589,7 @@ static int ipban_func_del(t_connection * c, char const * cp)
 	    {
 		counter++;
 		if (list_remove_elem(ipbanlist_head,&curr)<0)
-		    eventlog(eventlog_level_error,__FUNCTION__,"could not remove item");
+		    eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item");
 		else
 		    ipban_unload_entry(entry);
 	    }
@@ -632,15 +604,15 @@ static int ipban_func_del(t_connection * c, char const * cp)
 	else
 	{
 	    if (counter == 1)
-		sprintf(tstr,"Entry deleted.");
+		std::sprintf(tstr,"Entry deleted.");
 	    else
-		sprintf(tstr,"Deleted %u entries.",counter);
+		std::sprintf(tstr,"Deleted %u entries.",counter);
 	    message_send_text(c,message_type_info,c,tstr);
 	    return 0;
 	}
     }
 
-    to_delete_nmbr = atoi(cp);
+    to_delete_nmbr = std::atoi(cp);
     if (to_delete_nmbr <= 0)
     {
 	message_send_text(c,message_type_error,c,"Wrong entry number.");
@@ -657,7 +629,7 @@ static int ipban_func_del(t_connection * c, char const * cp)
 		return -1;
 	    }
 	    if (list_remove_elem(ipbanlist_head,&curr)<0)
-	        eventlog(eventlog_level_error,__FUNCTION__,"could not remove item");
+	        eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item");
 	    else
 	    {
 	        ipban_unload_entry(entry);
@@ -668,7 +640,7 @@ static int ipban_func_del(t_connection * c, char const * cp)
 
     if (to_delete_nmbr > counter)
     {
-	sprintf(tstr,"There are only %u entries.",counter);
+	std::sprintf(tstr,"There are only %u entries.",counter);
 	message_send_text(c,message_type_error,c,tstr);
 	return -1;
     }
@@ -698,16 +670,16 @@ static int ipban_func_list(t_connection * c)
 	}
 	counter++;
 	if (entry->endtime == 0)
-	    sprintf(timestr,"(perm)");
+	    std::sprintf(timestr,"(perm)");
 	else
-	    sprintf(timestr,"(%.48s)",seconds_to_timestr(entry->endtime - now));
+	    std::sprintf(timestr,"(%.48s)",seconds_to_timestr(entry->endtime - now));
 
 	if (!(ipstr = ipban_entry_to_str(entry)))
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not convert entry to string");
 	    continue;
 	}
-	sprintf(tstr,"%u: %s %s",counter,ipstr,timestr);
+	std::sprintf(tstr,"%u: %s %s",counter,ipstr,timestr);
 	message_send_text(c,message_type_info,c,tstr);
 	xfree(ipstr);
     }
@@ -733,7 +705,7 @@ static int ipban_func_check(t_connection * c, char const * cp)
 	    message_send_text(c,message_type_error,c,"Error occured.");
 	    break;
 	default:
-	    sprintf(entry,"IP banned by rule #%i.",res);
+	    std::sprintf(entry,"IP banned by rule #%i.",res);
 	    message_send_text(c,message_type_info,c,entry);
     }
 
@@ -746,29 +718,29 @@ static int ipban_identical_entry(t_ipban_entry * e1, t_ipban_entry * e2)
     switch (e2->type)
     {
 	case ipban_type_exact:
-	    if (strcmp(e1->info1,e2->info1)==0)
+	    if (std::strcmp(e1->info1,e2->info1)==0)
 		return 1;
 	    break;
 	case ipban_type_range:
-	    if (strcmp(e1->info1,e2->info1)==0 &&
-		strcmp(e1->info2,e2->info2)==0)
+	    if (std::strcmp(e1->info1,e2->info1)==0 &&
+		std::strcmp(e1->info2,e2->info2)==0)
 		return 1;
 	    break;
 	case ipban_type_wildcard:
-	    if (strcmp(e1->info1,e2->info1)==0 &&
-		strcmp(e1->info2,e2->info2)==0 &&
-		strcmp(e1->info3,e2->info3)==0 &&
-		strcmp(e1->info4,e2->info4)==0)
+	    if (std::strcmp(e1->info1,e2->info1)==0 &&
+		std::strcmp(e1->info2,e2->info2)==0 &&
+		std::strcmp(e1->info3,e2->info3)==0 &&
+		std::strcmp(e1->info4,e2->info4)==0)
 		return 1;
 	    break;
 	case ipban_type_netmask:
-	    if (strcmp(e1->info1,e2->info1)==0 &&
-		strcmp(e1->info2,e2->info2)==0)
+	    if (std::strcmp(e1->info1,e2->info1)==0 &&
+		std::strcmp(e1->info2,e2->info2)==0)
 		return 1;
 	    break;
 	case ipban_type_prefix:
-	    if (strcmp(e1->info1,e2->info1)==0 &&
-		strcmp(e1->info2,e2->info2)==0)
+	    if (std::strcmp(e1->info1,e2->info1)==0 &&
+		std::strcmp(e1->info2,e2->info2)==0)
 		return 1;
 	    break;
         default:  /* unknown type */
@@ -833,7 +805,7 @@ static t_ipban_entry * ipban_str_to_ipban_entry(char const * ipstr)
 	xfree(entry);
 	return NULL;
     }
-    if ((matched = strchr(cp,'-'))) /* range */
+    if ((matched = std::strchr(cp,'-'))) /* range */
     {
         entry->type = ipban_type_range;
 	eventlog(eventlog_level_debug,__FUNCTION__,"entry: %s matched as ipban_type_range",cp);
@@ -844,17 +816,17 @@ static t_ipban_entry * ipban_str_to_ipban_entry(char const * ipstr)
 	entry->info4 = NULL;
     }
     else
-        if (strchr(cp,'*')) /* wildcard */
+        if (std::strchr(cp,'*')) /* wildcard */
         {
 	    entry->type = ipban_type_wildcard;
 	    eventlog(eventlog_level_debug,__FUNCTION__,"entry: %s matched as ipban_type_wildcard",cp);
 
 	    /* only xfree() info1! */
 	    whole = xstrdup(cp);
-	    entry->info1 = strtok(whole,".");
-	    entry->info2 = strtok(NULL,".");
-	    entry->info3 = strtok(NULL,".");
-	    entry->info4 = strtok(NULL,".");
+	    entry->info1 = std::strtok(whole,".");
+	    entry->info2 = std::strtok(NULL,".");
+	    entry->info3 = std::strtok(NULL,".");
+	    entry->info4 = std::strtok(NULL,".");
 	    if (!entry->info4) /* not enough dots */
 	    {
 	        eventlog(eventlog_level_error,__FUNCTION__,"wildcard entry \"%s\" does not contain all four octets",cp);
@@ -865,9 +837,9 @@ static t_ipban_entry * ipban_str_to_ipban_entry(char const * ipstr)
 	    }
 	}
 	else
-	    if ((matched = strchr(cp,'/'))) /* netmask or prefix */
+	    if ((matched = std::strchr(cp,'/'))) /* netmask or prefix */
 	    {
-		if (strchr(&matched[1],'.'))
+		if (std::strchr(&matched[1],'.'))
 		{
 		    entry->type = ipban_type_netmask;
 		    eventlog(eventlog_level_debug,__FUNCTION__,"entry: %s matched as ipban_type_netmask",cp);
@@ -908,17 +880,17 @@ static char * ipban_entry_to_str(t_ipban_entry const * entry)
     switch (entry->type)
     {
         case ipban_type_exact:
-    	    sprintf(tstr,"%s",entry->info1);
+    	    std::sprintf(tstr,"%s",entry->info1);
 	    break;
 	case ipban_type_wildcard:
-	    sprintf(tstr,"%s.%s.%s.%s",entry->info1,entry->info2,entry->info3,entry->info4);
+	    std::sprintf(tstr,"%s.%s.%s.%s",entry->info1,entry->info2,entry->info3,entry->info4);
 	    break;
 	 case ipban_type_range:
-	    sprintf(tstr,"%s-%s",entry->info1,entry->info2);
+	    std::sprintf(tstr,"%s-%s",entry->info1,entry->info2);
 	    break;
 	 case ipban_type_netmask:
 	 case ipban_type_prefix:
-	    sprintf(tstr,"%s/%s",entry->info1,entry->info2);
+	    std::sprintf(tstr,"%s/%s",entry->info1,entry->info2);
 	    break;
 
 	default: /* unknown type */
@@ -940,11 +912,11 @@ static unsigned long ipban_str_to_ulong(char const * ipaddr)
     char *		tipaddr;
 
     tipaddr = xstrdup(ipaddr);
-    ip1 = strtok(tipaddr,".");
-    ip2 = strtok(NULL,".");
-    ip3 = strtok(NULL,".");
-    ip4 = strtok(NULL,".");
-    lip = (atoi(ip1) << 24) + (atoi(ip2) << 16) + (atoi(ip3) << 8) + (atoi(ip4));
+    ip1 = std::strtok(tipaddr,".");
+    ip2 = std::strtok(NULL,".");
+    ip3 = std::strtok(NULL,".");
+    ip4 = std::strtok(NULL,".");
+    lip = (std::atoi(ip1) << 24) + (std::atoi(ip2) << 16) + (std::atoi(ip3) << 8) + (std::atoi(ip4));
 
     xfree(tipaddr);
 
@@ -965,7 +937,7 @@ static int ipban_could_be_exact_ip_str(char const * str)
     for (i=0; i<4; i++)
     {
 	ttok = (char *)strsep(&ipstr, ".");
-	if (!ttok || strlen(ttok)<1 || strlen(ttok)>3)
+	if (!ttok || std::strlen(ttok)<1 || std::strlen(ttok)>3)
 	{
 	    xfree(s);
 	    return 0;
@@ -983,20 +955,20 @@ static int ipban_could_be_ip_str(char const * str)
     char *	ipstr;
     unsigned int 	i;
 
-    if (strlen(str)<7)
+    if (std::strlen(str)<7)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"string too short");
 	return 0;
     }
-    for (i=0; i<strlen(str); i++)
-	if (!isdigit((int)str[i]) && str[i]!='.' && str[i]!='*' && str[i]!='/' && str[i]!='-')
+    for (i=0; i<std::strlen(str); i++)
+	if (!std::isdigit((int)str[i]) && str[i]!='.' && str[i]!='*' && str[i]!='/' && str[i]!='-')
 	{
 	    eventlog(eventlog_level_debug,__FUNCTION__,"illegal character on position %i",i);
 	    return 0;
 	}
 
     ipstr = xstrdup(str);
-    if ((matched = strchr(ipstr,'-')))
+    if ((matched = std::strchr(ipstr,'-')))
     {
 	matched[0] = '\0';
 	if ((ipban_could_be_exact_ip_str(ipstr)==0) ||
@@ -1006,7 +978,7 @@ static int ipban_could_be_ip_str(char const * str)
 	    return 0;
 	}
     }
-    else if ((matched = strchr(ipstr,'*')))
+    else if ((matched = std::strchr(ipstr,'*')))
     {
 	if (ipban_could_be_exact_ip_str(ipstr)==0) /* FIXME: 123.123.1*.123 allowed */
 	{
@@ -1014,10 +986,10 @@ static int ipban_could_be_ip_str(char const * str)
 	    return 0;
 	}
     }
-    else if ((matched = strchr(ipstr,'/')))
+    else if ((matched = std::strchr(ipstr,'/')))
     {
 	matched[0] = '\0';
-	if (strchr(&matched[1],'.'))
+	if (std::strchr(&matched[1],'.'))
 	{
 	    if ((ipban_could_be_exact_ip_str(ipstr)==0) ||
 		(ipban_could_be_exact_ip_str(&matched[1])==0))
@@ -1033,13 +1005,13 @@ static int ipban_could_be_ip_str(char const * str)
 		xfree(ipstr);
 		return 0;
 	    }
-	    for (i=1; i<strlen(&matched[1]); i++)
-		if (!isdigit((int)matched[i]))
+	    for (i=1; i<std::strlen(&matched[1]); i++)
+		if (!std::isdigit((int)matched[i]))
 		{
 		    xfree(ipstr);
 		    return 0;
 		}
-	    if (atoi(&matched[1])>32) /* can not be less than 0 because IP/-24 is matched as range */
+	    if (std::atoi(&matched[1])>32) /* can not be less than 0 because IP/-24 is matched as range */
 	    {
 		xfree(ipstr);
 		return 0;
