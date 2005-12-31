@@ -266,7 +266,17 @@ letter and then all words composing it with uppercase. Accessor methods should
 start with get/set and then the name of the member accessed with the case 
 rules already mentioned.
 
-c. Code Flow
+g. Include order
+
+In .cpp files the first include should be "common/setup_before.h" followed by 
+the coresponding header of the cpp file (ie in clan.cpp after setup_before.h 
+you include clan.h).
+
+Then you include (this applies to headers too not only .cpp now) the headers 
+of standard C++ lib, then the headers from C90 as offered by standard C++ 
+(ex. <cstring> etc), then the POSIX/win32/system dependant headers.
+
+h. Code Flow
 
 <to be written, not sure how it will be after the complete C++ conversion>
 
