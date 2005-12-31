@@ -341,7 +341,7 @@ static t_attr *attrgroup_find_attr(t_attrgroup *attrgroup, const char *pkey[], i
 
 	if (!strcasecmp(attr_get_key(attr),*pkey)) {
 	    val = attr_get_val(attr);
-	    /* key found, promote it so it's found faster next std::time */
+	    /* key found, promote it so it's found faster next time */
 	    hlist_promote(curr, last, last2);
 	    break;
 	}

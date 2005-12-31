@@ -1062,7 +1062,7 @@ extern int anongame_unqueue(t_connection * c, int queue)
 	anongame_search_count++;
 	average_anongame_search_time /= anongame_search_count;
 	if (anongame_search_count > 20000)
-	    anongame_search_count = anongame_search_count / 2;	/* to prevent an overflow of the average std::time */
+	    anongame_search_count = anongame_search_count / 2;	/* to prevent an overflow of the average time */
 	conn_set_anongame_search_starttime(c, ((std::time_t) 0));
     }
 
@@ -1083,7 +1083,7 @@ extern int anongame_unqueue(t_connection * c, int queue)
 
     /* Output error to std::log for PG queues, AT players are queued with single
      * entry. Because anongame_unqueue() is called for each player, only the first
-     * std::time called will the team be removed, the rest are therefore not an error.
+     * time called will the team be removed, the rest are therefore not an error.
      * [Omega]
      */
     if (anongame_arranged(queue) == 0) {
@@ -1596,7 +1596,7 @@ extern int handle_w3route_packet(t_connection * c, t_packet const *const packet)
 {
 /* [smith] 20030427 fixed Big-Endian/Little-Endian conversion (Solaris bug) then
  * use  packet_append_data for append platform dependent data types - like
- * "int", std::cos this code was broken for BE platforms. it's rewriten in platform
+ * "int", cos this code was broken for BE platforms. it's rewriten in platform
  * independent style whis usege bn_int and other bn_* like datatypes and
  * fuctions for wor with datatypes - bn_int_set(), what provide right
  * byteorder, not depended on LE/BE
