@@ -24,7 +24,7 @@
 #else
 #include <mysql.h>
 #endif
-#include <stdlib.h>
+#include <cstdlib>
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "storage_sql.h"

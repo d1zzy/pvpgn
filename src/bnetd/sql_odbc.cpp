@@ -21,8 +21,7 @@
 # include <windows.h>
 #endif
 #include <sqlext.h>
-#include <stdlib.h>
-#include <ctype.h>
+#include <cctype>
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "storage_sql.h"
