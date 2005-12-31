@@ -150,8 +150,8 @@ static t_account * account_create(char const * username, char const * passhash1)
             goto err;
         }
 
-        if (account_set_numattr(account,"BNET\\acct\\std::ctime",(unsigned int)now)) {
-            eventlog(eventlog_level_error,__FUNCTION__,"could not set std::ctime");
+        if (account_set_numattr(account,"BNET\\acct\\ctime",(unsigned int)now)) {
+            eventlog(eventlog_level_error,__FUNCTION__,"could not set ctime");
             goto err;
         }
     }
@@ -589,7 +589,7 @@ static t_account * accountlist_add_account(t_account * account)
     account->namehash = account_hash(username);
     account->uid = uid;
 
-    /* FIXME: this check actually (with the new attr std::system) happens too late
+    /* FIXME: this check actually (with the new attr system) happens too late
      * we already have created the attrgroup here which is "dirty" and refusing
      * an account here will trigger attrgroup_destroy which will "sync" the
      * bad data to the storage! The codes should make sure we don't fail here */

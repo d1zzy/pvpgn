@@ -24,7 +24,7 @@
 
 /* flags controlling flush/save operations */
 #define	FS_NONE		0
-#define FS_FORCE	1	/* force save/flush no matter of std::time */
+#define FS_FORCE	1	/* force save/flush no matter of time */
 #define FS_ALL		2	/* save/flush all, not in steps */
 
 namespace pvpgn
