@@ -48,7 +48,7 @@ namespace pvpgn
 {
 
 FDWSelectBackend::FDWSelectBackend(int nfds_)
-:FDWBackend(nfds), sr(0), smaxfd(0)
+:FDWBackend(nfds_), sr(0), smaxfd(0)
 {
 	 /* this should not happen */
 	if (nfds > FD_SETSIZE)
