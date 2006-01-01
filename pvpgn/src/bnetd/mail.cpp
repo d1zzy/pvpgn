@@ -27,8 +27,8 @@
 
 #include "compat/strerror.h"
 #include "compat/strcasecmp.h"
-#include "compat/statmacros.h"
 #include "compat/mkdir.h"
+#include "compat/statmacros.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 /*
