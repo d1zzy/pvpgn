@@ -25,6 +25,7 @@
 #include <cassert>
 
 #include "compat/psock.h"
+#include "compat/inet_aton.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/util.h"
