@@ -30,6 +30,7 @@
 
 #include "compat/psock.h"
 #include "compat/strerror.h"
+#include "compat/uname.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/addr.h"
