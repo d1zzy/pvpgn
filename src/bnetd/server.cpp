@@ -26,9 +26,6 @@
 #include <cstring>
 #include <cstdio>
 
-#ifdef WIN32
-# include <conio.h> /* for kbhit() and getch() */
-#endif
 #ifdef DO_POSIXSIG
 # include <signal.h>
 #endif
@@ -48,6 +45,7 @@
 #include "common/trans.h"
 #ifdef WIN32
 # include "win32/service.h"
+# include "windows.h"
 #endif
 #include "common/util.h"
 
@@ -1130,6 +1128,41 @@ static int _setup_posixsig(void)
 }
 #endif
 
+#ifdef WIN32
+# ifndef WIN32_GUI
+BOOL CtrlHandler( DWORD fdwCtrlType ) 
+{ 
+  switch( fdwCtrlType ) 
+  { 
+    // Handle the CTRL-C signal. 
+    case CTRL_C_EVENT: 
+      server_quit_wraper();
+      return( TRUE );
+ 
+    // CTRL-CLOSE: confirm that the user wants to exit. 
+      server_quit_wraper();
+      return( TRUE ); 
+ 
+    // Pass other signals to the next handler. 
+    case CTRL_BREAK_EVENT: 
+      server_quit_wraper();
+      return FALSE; 
+ 
+    case CTRL_LOGOFF_EVENT: 
+      server_quit_wraper();
+      return FALSE; 
+ 
+    case CTRL_SHUTDOWN_EVENT: 
+      server_quit_wraper();
+      return FALSE; 
+ 
+    default: 
+      return FALSE; 
+  } 
+} 
+# endif
+#endif
+
 static std::time_t prev_exittime;
 
 static void _server_mainloop(t_addrlist *laddrs)
@@ -1153,10 +1186,6 @@ static void _server_mainloop(t_addrlist *laddrs)
     for (;;)
     {
 #ifdef WIN32
-# ifndef WIN32_GUI
-	if (g_ServiceStatus<0 && kbhit() && getch()=='q')
-	    server_quit_wraper();
-# endif
 	if (g_ServiceStatus == 0) server_quit_wraper();
 
 	while (g_ServiceStatus == 2) Sleep(1000);
@@ -1474,7 +1503,20 @@ extern int server_process(void)
     _setup_posixsig();
 #endif
 
+#ifdef WIN32
+# ifndef WIN32_GUI
+    SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, TRUE );
+# endif
+#endif
+
     _server_mainloop(laddrs);
+
+#ifdef WIN32
+# ifndef WIN32_GUI
+    SetConsoleCtrlHandler( (PHANDLER_ROUTINE) CtrlHandler, FALSE );
+# endif
+#endif
+
 
     /* cleanup for server shutdown */
     _shutdown_conns();
