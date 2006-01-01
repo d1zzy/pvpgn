@@ -126,23 +126,6 @@ int fprintf(FILE *stream, const char *format, ...)
 		return vfprintf(stream, format, args);
 }
 
-int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE reserved, LPSTR lpCmdLine, int nCmdShow)
-{
-	int result;
-	gui.main_finished = FALSE;
-	gui.event_ready = CreateEvent(NULL, FALSE, FALSE, NULL);
-	_beginthread( guiThread, 0, (void*)hInstance);
-	WaitForSingleObject(gui.event_ready, INFINITE);
-
-	result = server_main(__argc ,__argv);
-    
-	gui.main_finished = TRUE;
-	eventlog(eventlog_level_debug,__FUNCTION__,"server exited ( return : %i )", result);
-	WaitForSingleObject(gui.event_ready, INFINITE);
-	
-	return 0;
-}
-
 static void guiThread(void *param)
 {
 	WNDCLASSEX wc;
@@ -861,6 +844,27 @@ BOOL CALLBACK KickDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 
 }
 
+}
+
+#ifdef WIN32_GUI
+extern int server_main(int argc, char *argv[]);
+#endif
+
+int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE reserved, LPSTR lpCmdLine, int nCmdShow)
+{
+	int result;
+	pvpgn::bnetd::gui.main_finished = FALSE;
+	pvpgn::bnetd::gui.event_ready = CreateEvent(NULL, FALSE, FALSE, NULL);
+	_beginthread( pvpgn::bnetd::guiThread, 0, (void*)hInstance);
+	WaitForSingleObject(pvpgn::bnetd::gui.event_ready, INFINITE);
+
+	result = server_main(__argc ,__argv);
+    
+	pvpgn::bnetd::gui.main_finished = TRUE;
+	eventlog(pvpgn::eventlog_level_debug,__FUNCTION__,"server exited ( return : %i )", result);
+	WaitForSingleObject(pvpgn::bnetd::gui.event_ready, INFINITE);
+	
+	return 0;
 }
 
 #endif

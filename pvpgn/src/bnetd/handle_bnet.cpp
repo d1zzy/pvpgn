@@ -68,6 +68,9 @@
 #include "friends.h"
 #include "autoupdate.h"
 #include "anongame.h"
+#ifdef WIN32_GUI
+#include <win32/winmain.h>
+#endif
 #include "common/setup_after.h"
 
 namespace pvpgn
