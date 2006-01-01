@@ -19,14 +19,13 @@
 #define BNETTIME_INTERNAL_ACCESS
 #include "common/setup_before.h"
 #include "common/bnettime.h"
+
 #include <cstdio>
 #include <cstring>
 #include <cerrno>
 #include <ctime>
+
 #include "compat/gettimeofday.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
 #include "common/eventlog.h"
 #include "common/bn_type.h"
 #include "common/setup_after.h"
@@ -106,15 +105,15 @@ extern double bnettime_to_secs(t_bnettime bntime)
 }
 
 
-extern t_bnettime time_to_bnettime(time_t stdtime, unsigned int usec)
+extern t_bnettime time_to_bnettime(std::time_t stdtime, unsigned int usec)
 {
     return secs_to_bnettime((double)stdtime+(double)usec*SEC_PER_USEC+UNIX_EPOCH);
 }
 
 
-extern time_t bnettime_to_time(t_bnettime bntime)
+extern std::time_t bnettime_to_time(t_bnettime bntime)
 {
-    return (time_t)(bnettime_to_secs(bntime)-UNIX_EPOCH);
+    return (std::time_t)(bnettime_to_secs(bntime)-UNIX_EPOCH);
 }
 
 
@@ -126,9 +125,9 @@ extern t_bnettime bnettime(void)
     if (gettimeofday(&tv,NULL)<0)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"could not get time (gettimeofday: %s)",std::strerror(errno));
-        return time_to_bnettime(time(NULL),0);
+        return time_to_bnettime(std::time(NULL),0);
     }
-    return time_to_bnettime((time_t)tv.tv_sec,tv.tv_usec);
+    return time_to_bnettime((std::time_t)tv.tv_sec,tv.tv_usec);
 }
 
 
@@ -156,7 +155,7 @@ extern int bnettime_set_str(t_bnettime * bntime, char const * timestr)
 	return -1;
     }
 
-    if (sscanf(timestr,"%u %u",&bntime->u,&bntime->l)!=2)
+    if (std::sscanf(timestr,"%u %u",&bntime->u,&bntime->l)!=2)
 	return -1;
 
     return 0;
@@ -207,7 +206,7 @@ extern int local_tzbias(void) /* in minutes */
     if ((testloc = std::mktime(temp))==(std::time_t)(-1))
 	return 0;
 
-    if (testloc>test) /* time_t is probably unsigned... */
+    if (testloc>test) /* std::time_t is probably unsigned... */
 	return -(int)(testloc-test)/60;
     return (int)(test-testloc)/60;
 }

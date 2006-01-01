@@ -15,14 +15,18 @@
  */
 
 #include "common/setup_before.h"
+#include "rlimit.h"
+
 #include <cerrno>
 #include <cstring>
+
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
 #ifdef HAVE_SYS_RESOURCE_H
 # include <sys/resource.h>
 #endif
+
 #include "common/eventlog.h"
 #include "common/bn_type.h"
 #include "common/setup_after.h"

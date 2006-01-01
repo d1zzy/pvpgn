@@ -19,7 +19,8 @@
 #ifndef ASNPRINTF_H
 #define ASNPRINTF_H
 
-#include "compat/vargs.h"
+#include <cstdarg>
+#include <cstddef>
 
 #define ZEROPAD	1		/* pad with zero */
 #define SIGN	2		/* unsigned/signed long */
@@ -44,8 +45,8 @@ typedef struct {
  * contain the starting position of each seperate string afterwards.
  * The function returns the number of vargs that have been printed.
  */
-int asnprintf(char * buffer, size_t size, t_fmtentry *entries, unsigned entlen, const char *fmt, ...);
-int vasnprintf(char * buffer, size_t size, t_fmtentry *entries, unsigned entlen, const char *fmt, va_list args);
+int asnprintf(char * buffer, std::size_t size, t_fmtentry *entries, unsigned entlen, const char *fmt, ...);
+int vasnprintf(char * buffer, std::size_t size, t_fmtentry *entries, unsigned entlen, const char *fmt, std::va_list args);
 
 }
 

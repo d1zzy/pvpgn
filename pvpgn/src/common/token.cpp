@@ -19,7 +19,9 @@
 //#define PREFS_INTERNAL_ACCESS
 #include "common/setup_before.h"
 #include "token.h"
+
 #include <cctype>
+
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
@@ -64,7 +66,7 @@ extern char * next_token(char * ptr, unsigned int * pos)
 		break;
         }
 	else
-	    if (isspace((int)ptr[i]))
+	    if (std::isspace((int)ptr[i]))
 		break;
 	i++;
     }

@@ -40,7 +40,7 @@ typedef struct {
 #define INCLUDED_XSTR_PROTOS
 
 /* for NULL */
-#include <stdio.h>
+#include <cstddef>
 
 namespace pvpgn
 {

@@ -18,6 +18,7 @@
  */
 #include "common/setup_before.h"
 #include "common/proginfo.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -67,7 +68,7 @@ extern int verstr_to_vernum(char const * verstr, unsigned long * vernum)
     {
 	unsigned long temp;
 
-	temp = strtoul(verstr,NULL,10);
+	temp = std::strtoul(verstr,NULL,10);
 	v4 = (temp/100);
         v3 = (temp/ 10)%10;
         v2 = (temp    )%10;

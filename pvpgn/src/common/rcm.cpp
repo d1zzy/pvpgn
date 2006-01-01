@@ -17,10 +17,12 @@
  */
 
 #include "common/setup_before.h"
+#include "common/rcm.h"
+
 #include <cassert>
+
 #include "common/xalloc.h"
 #include "common/elist.h"
-#include "common/rcm.h"
 #include "common/setup_after.h"
 
 namespace pvpgn

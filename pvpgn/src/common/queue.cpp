@@ -15,10 +15,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define QUEUE_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <cstring>
+#define QUEUE_INTERNAL_ACCESS
 #include "common/queue.h"
+
+#include <cstring>
+
 #include "common/packet.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
@@ -134,7 +136,7 @@ extern void queue_push_packet(t_queue * * queue, t_packet * packet)
 	    moved = (QUEUE_QUANTUM <= temp->head) ? QUEUE_QUANTUM : temp->head;
 	    std::memmove(temp->ring + temp->ulen, temp->ring, sizeof(t_packet *) * moved);
 	    if (temp->head > QUEUE_QUANTUM) {
-		memmove(temp->ring, temp->ring + moved, sizeof(t_packet *) * (temp->head - moved));
+		std::memmove(temp->ring, temp->ring + moved, sizeof(t_packet *) * (temp->head - moved));
 		temp->head -= moved;
 	    } else if (temp->head < QUEUE_QUANTUM)
 		temp->head = temp->ulen + moved;

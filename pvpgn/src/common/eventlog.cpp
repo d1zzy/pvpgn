@@ -17,24 +17,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
+#include "common/eventlog.h"
 #include <cstdio>
 #include <cerrno>
 #include <cstring>
-#include "compat/strcasecmp.h"
-#include "compat/vargs.h"
 #include <ctime>
-#include "common/eventlog.h"
-#include "common/hexdump.h"
-#include "common/setup_after.h"
+#include <cstdarg>
 
+#include "compat/strcasecmp.h"
+#include "common/hexdump.h"
 #ifdef WIN32_GUI
 # include "win32/winmain.h"
 #endif
+#include "common/setup_after.h"
 
 namespace pvpgn
 {
 
-static FILE *           eventstrm=NULL;
+static std::FILE *           eventstrm=NULL;
 static unsigned currlevel=eventlog_level_debug|
                           eventlog_level_info|
                           eventlog_level_warn|
@@ -48,25 +48,25 @@ extern void eventlog_set_debugmode(int debugmode)
     eventlog_debugmode = debugmode;
 }
 
-extern void eventlog_set(FILE * fp)
+extern void eventlog_set(std::FILE * fp)
 {
     eventstrm = fp;
 }
 
-extern FILE * eventlog_get(void)
+extern std::FILE * eventlog_get(void)
 {
   return eventstrm;
 }
 
 extern int eventlog_close(void)
 {
-   fclose(eventstrm);
+   std::fclose(eventstrm);
    return 0;
 }
 
 extern int eventlog_open(char const * filename)
 {
-    FILE * temp;
+    std::FILE * temp;
 
     if (!filename)
     {
@@ -74,17 +74,17 @@ extern int eventlog_open(char const * filename)
 	return -1;
     }
 
-    if (!(temp = fopen(filename,"a")))
+    if (!(temp = std::fopen(filename,"a")))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for appending (fopen: %s)",filename,std::strerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for appending (std::fopen: %s)",filename,std::strerror(errno));
 	return -1;
     }
 
     if (eventstrm && eventstrm!=stderr) /* close old one */
-	if (fclose(eventstrm)<0)
+	if (std::fclose(eventstrm)<0)
 	{
 	    eventstrm = temp;
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not close previous logfile after writing (fclose: %s)",std::strerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not close previous logfile after writing (std::fclose: %s)",std::strerror(errno));
 	    return 0;
 	}
     eventstrm = temp;
@@ -232,13 +232,13 @@ extern void eventlog_hexdump_data(void const * data, unsigned int len)
        }
 
     }
-    if (eventlog_debugmode) fflush(stdout);
-    fflush(eventstrm);
+    if (eventlog_debugmode) std::fflush(stdout);
+    std::fflush(eventstrm);
 }
 
 extern void eventlog(t_eventlog_level level, char const * module, char const * fmt, ...)
 {
-    va_list     args;
+    std::va_list     args;
     char        time_string[EVENT_TIME_MAXLEN];
     struct std::tm * tmnow;
     std::time_t      now;
@@ -261,7 +261,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 #ifdef WIN32_GUI
         bnetd::gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL module\n",time_string);
 #endif
-	fflush(eventstrm);
+	std::fflush(eventstrm);
 	return;
     }
 
@@ -271,7 +271,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 #ifdef WIN32_GUI
         bnetd::gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL fmt\n",time_string);
 #endif
-	fflush(eventstrm);
+	std::fflush(eventstrm);
 	return;
     }
 
@@ -280,7 +280,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
     bnetd::gui_lprintf(level,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
 #endif
 
-    VA_START(args,fmt);
+    va_start(args,fmt);
 
 #ifdef HAVE_VPRINTF
     std::vfprintf(eventstrm,fmt,args);
@@ -314,26 +314,26 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 #endif
     	va_end(args);
 	std::printf("\n");
-	fflush(stdout);
+	std::fflush(stdout);
     }
-    fflush(eventstrm);
+    std::fflush(eventstrm);
 }
 
 
 extern void eventlog_step(char const * filename, t_eventlog_level level, char const * module, char const * fmt, ...)
 {
-    va_list args;
+    std::va_list args;
     char        time_string[EVENT_TIME_MAXLEN];
     struct std::tm * tmnow;
     std::time_t      now;
-    FILE *      fp;
+    std::FILE *      fp;
 
     if (!(level&currlevel))
 	return;
     if (!eventstrm)
 	return;
 
-    if (!(fp = fopen(filename, "a")))
+    if (!(fp = std::fopen(filename, "a")))
 	return;
 
     /* get the time before parsing args */
@@ -346,13 +346,13 @@ extern void eventlog_step(char const * filename, t_eventlog_level level, char co
     if (!module)
     {
 	    std::fprintf(fp,"%s [error] eventlog_step: got NULL module\n",time_string);
-	fclose(fp);
+	std::fclose(fp);
 	return;
     }
     if (!fmt)
     {
 	    std::fprintf(fp,"%s [error] eventlog_step: got NULL fmt\n",time_string);
-	fclose(fp);
+	std::fclose(fp);
 	return;
     }
 
@@ -369,7 +369,7 @@ extern void eventlog_step(char const * filename, t_eventlog_level level, char co
 #endif
     va_end(args);
     std::fprintf(fp,"\n");
-    fclose(fp);
+    std::fclose(fp);
 }
 
 }

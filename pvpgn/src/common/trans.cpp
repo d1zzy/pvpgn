@@ -17,8 +17,10 @@
  */
 #define TRANS_INTERNAL_ACCESS
 #include "trans.h"
+
 #include <cerrno>
 #include <cstring>
+
 #include "common/setup_before.h"
 #include "common/eventlog.h"
 #include "common/list.h"
@@ -36,7 +38,7 @@ static t_list * trans_head=NULL;
 
 extern int trans_load(char const * filename, int program)
 {
-    FILE		*fp;
+    std::FILE		*fp;
     unsigned int	line;
     unsigned int	pos;
     char		*buff;
@@ -57,8 +59,8 @@ extern int trans_load(char const * filename, int program)
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
         return -1;
     }
-    if (!(fp = fopen(filename,"r"))) {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",filename,std::strerror(errno));
+    if (!(fp = std::fopen(filename,"r"))) {
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno));
         return -1;
     }
     trans_head = list_create();
@@ -67,48 +69,48 @@ extern int trans_load(char const * filename, int program)
 	if (buff[pos]=='\0' || buff[pos]=='#') {
             continue;
         }
-        if ((temp = strrchr(buff,'#'))) {
+        if ((temp = std::strrchr(buff,'#'))) {
 	    unsigned int len;
 	    unsigned int endpos;
 
             *temp = '\0';
-	    len = strlen(buff)+1;
+	    len = std::strlen(buff)+1;
             for (endpos=len-1; buff[endpos]=='\t' || buff[endpos]==' '; endpos--);
             buff[endpos+1] = '\0';
         }
-	if (!(input = strtok(buff," \t"))) { /* strtok modifies the string it is passed */
+	if (!(input = std::strtok(buff," \t"))) { /* std::strtok modifies the string it is passed */
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing input line %u of file \"%s\"",line,filename);
 	    continue;
 	}
 	/* check for port number - this tells us what programs will use this entry */
-	if (!(temp = strrchr(input,':'))) {
+	if (!(temp = std::strrchr(input,':'))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing port # on input line %u of file \"%s\"",line,filename);
 	    continue;
 	}
 	temp++;
 	/* bnetd doesn't want the port 4000 entries */
-	if (program==TRANS_BNETD  && strcmp(temp,"4000")==0) {
+	if (program==TRANS_BNETD  && std::strcmp(temp,"4000")==0) {
 #ifdef DEBUG_TRANS
 	    eventlog(eventlog_level_debug,__FUNCTION__,"d2gs input (ignoring) \"%s\"",input);
 #endif
 	    continue;
 	}
 	/* d2cs only wants the port 4000 entries */
-	if (program==TRANS_D2CS && strcmp(temp,"4000")!=0) {
+	if (program==TRANS_D2CS && std::strcmp(temp,"4000")!=0) {
 #ifdef DEBUG_TRANS
 	    eventlog(eventlog_level_debug,__FUNCTION__,"non d2gs input (ignoring) \"%s\"",input);
 #endif
 	    continue;
 	}
-	if (!(output = strtok(NULL," \t"))) {
+	if (!(output = std::strtok(NULL," \t"))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing output on line %u of file \"%s\"",line,filename);
 	    continue;
 	}
-	if (!(exclude = strtok(NULL," \t"))) {
+	if (!(exclude = std::strtok(NULL," \t"))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing exclude on line %u of file \"%s\"",line,filename);
 	    continue;
 	}
-	if (!(include = strtok(NULL," \t"))) {
+	if (!(include = std::strtok(NULL," \t"))) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing include on line %u of file \"%s\"",line,filename);
 	    continue;
 	}
@@ -122,7 +124,7 @@ extern int trans_load(char const * filename, int program)
 		npos--;
 	    else
 		tmp[npos]='\0';
-	    if (strcmp(network,"NONE")==0) {
+	    if (std::strcmp(network,"NONE")==0) {
 		npos++;
 		continue;
 	    }
@@ -140,7 +142,7 @@ extern int trans_load(char const * filename, int program)
 		npos++;
 		continue;
 	    }
-	    if (strcmp(network,"ANY")==0) {
+	    if (std::strcmp(network,"ANY")==0) {
 		if (!(entry->network = netaddr_create_str("0.0.0.0/0"))) {
 		    eventlog(eventlog_level_error,__FUNCTION__,"could not allocate memory for network address");
 		    addr_destroy(entry->output);
@@ -180,7 +182,7 @@ extern int trans_load(char const * filename, int program)
 		npos--;
 	    else
 		tmp[npos]='\0';
-	    if (strcmp(network,"NONE")==0) {
+	    if (std::strcmp(network,"NONE")==0) {
 		npos++;
 		continue;
 	    }
@@ -198,7 +200,7 @@ extern int trans_load(char const * filename, int program)
 		npos++;
 		continue;
 	    }
-	    if (strcmp(network,"ANY")==0) {
+	    if (std::strcmp(network,"ANY")==0) {
 		if (!(entry->network = netaddr_create_str("0.0.0.0/0"))) {
 		    eventlog(eventlog_level_error,__FUNCTION__,"could not allocate memory for network address");
 		    addr_destroy(entry->output);
@@ -230,7 +232,7 @@ extern int trans_load(char const * filename, int program)
 	xfree(tmp);
     }
     file_get_line(NULL); // clear file_get_line buffer
-    fclose(fp);
+    std::fclose(fp);
     eventlog(eventlog_level_info,__FUNCTION__,"trans file loaded");
     return 0;
 }

@@ -18,8 +18,10 @@
  */
 #include "common/setup_before.h"
 #include "common/tag.h"
+
 #include <cstring>
 #include <cctype>
+
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 

@@ -17,22 +17,15 @@
  */
 
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include "common/conf.h"
+
+#include <cassert>
+#include <cstring>
+
+#include "compat/snprintf.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/util.h"
-#include "common/conf.h"
-#include "compat/snprintf.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -82,7 +75,7 @@ extern int conf_set_str(const char **pstr, const char *valstr, const char *def)
     return 0;
 }
 
-extern int conf_set_timestr(time_t* ptime, const char *valstr, time_t def)
+extern int conf_set_timestr(std::time_t* ptime, const char *valstr, std::time_t def)
 {
     if (!valstr) *ptime = def;
     else if (timestr_to_time(valstr,ptime)<0) {
@@ -167,7 +160,7 @@ static void _process_option(const char *key, const char *val, t_conf_entry *conf
     t_conf_entry *curr;
 
     for(curr = conftab; curr->name; curr++)
-	if (!strcmp(key,curr->name)) {
+	if (!std::strcmp(key,curr->name)) {
 	    curr->set(val);
 	    return;
 	}
@@ -175,7 +168,7 @@ static void _process_option(const char *key, const char *val, t_conf_entry *conf
     eventlog(eventlog_level_error,__FUNCTION__,"option '%s' unknown",key);
 }
 
-extern int conf_load_file(FILE *fd, t_conf_entry *conftab)
+extern int conf_load_file(std::FILE *fd, t_conf_entry *conftab)
 {
     char *buff, *directive, *value, *cp;
     unsigned cflag, lineno;
@@ -277,10 +270,10 @@ extern int conf_load_cmdline(int argc, char **argv, t_conf_entry *conftab)
 
 	if (*key == '-') key++;	/* allow both - and -- options */
 
-	if ((val = strchr(key, '='))) {	/* we got option=value format */
+	if ((val = std::strchr(key, '='))) {	/* we got option=value format */
 	    newkey = xstrdup(key);
 	    key = newkey;
-	    val = strchr(key, '=');
+	    val = std::strchr(key, '=');
 	    *(val++) = '\0';
 	} else if (i + 1 < argc && argv[i + 1][0] != '-') {
 	    val = argv[++i];

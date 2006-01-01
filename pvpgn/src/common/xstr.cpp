@@ -20,9 +20,10 @@
 
 #include "common/setup_before.h"
 #include "common/xstr.h"
+
 #include <cstring>
 #include <cassert>
-#include <assert.h>
+
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
@@ -72,7 +73,7 @@ extern t_xstr * xstr_cpy_str(t_xstr * dst, const char * src)
 	/* so if we cpy a NULL string we delete the old one :) */
 	if (!src) return dst;
 
-	len = strlen(src);
+	len = std::strlen(src);
 
 	/* need to enlarge dst ? */
 	xstr_enlarge(dst, len);
@@ -106,7 +107,7 @@ extern t_xstr* xstr_cat_str(t_xstr* dst, const char* src)
 
 	if (!src) return dst;
 
-	len = strlen(src);
+	len = std::strlen(src);
 
 	/* need to enlarge dst ? */
 	xstr_enlarge(dst, len);

@@ -17,39 +17,18 @@
  */
 #define ADDR_INTERNAL_ACCESS
 #include "common/setup_before.h"
+#include "common/addr.h"
 
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#include "compat/inet_aton.h"
-#include "compat/inet_ntoa.h"
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
 #include <cstdio>
 #include <cstring>
 #include <cerrno>
 #include <cassert>
+
 #include "compat/psock.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/util.h"
 #include "common/xalloc.h"
-#include "common/addr.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -310,7 +289,7 @@ extern char * addr_get_host_str(t_addr const * addr, char * str, unsigned int le
 	return NULL;
     }
 
-    strncpy(str,addr->str,len-1);
+    std::strncpy(str,addr->str,len-1);
     str[len-1] = '\0';
 
     return str;
@@ -411,12 +390,12 @@ extern t_netaddr * netaddr_create_str(char const * netstr)
     }
 
     temp = xstrdup(netstr);
-    if (!(netipstr = strtok(temp,"/")))
+    if (!(netipstr = std::strtok(temp,"/")))
     {
 	xfree(temp);
 	return NULL;
     }
-    if (!(netmaskstr = strtok(NULL,"/")))
+    if (!(netmaskstr = std::strtok(NULL,"/")))
     {
 	xfree(temp);
 	return NULL;
@@ -501,7 +480,7 @@ extern char * netaddr_get_addr_str(t_netaddr const * netaddr, char * str, unsign
 	return NULL;
     }
 
-    strncpy(str,netaddr_num_to_addr_str(netaddr->ip,netaddr->mask),len-1); /* FIXME: format nicely with x.x.x.x/bitcount */
+    std::strncpy(str,netaddr_num_to_addr_str(netaddr->ip,netaddr->mask),len-1); /* FIXME: format nicely with x.x.x.x/bitcount */
     str[len-1] = '\0';
 
     return str;
@@ -535,7 +514,7 @@ extern int addrlist_append(t_addrlist * addrlist, char const * str, unsigned int
     }
 
     tstr = xstrdup(str);
-    for (tok=strtok(tstr,","); tok; tok=strtok(NULL,",")) /* strtok modifies the string it is passed */
+    for (tok=std::strtok(tstr,","); tok; tok=std::strtok(NULL,",")) /* std::strtok modifies the string it is passed */
     {
 	if (!(addr = addr_create_str(tok,defipaddr,defport)))
 	{

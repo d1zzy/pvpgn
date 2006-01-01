@@ -17,9 +17,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
+#include "common/bnethash.h"
+
 #include <cstdio>
 #include <cstring>
-#include "common/bnethash.h"
+
 #include "compat/uint.h"
 #include "common/introtate.h"
 #include "common/eventlog.h"
@@ -230,7 +232,7 @@ extern int hash_set_str(t_hash * hash, char const * str)
     }
     if (std::strlen(str)!=5*8)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"got string with length %u (should be %u)",strlen(str),5*8);
+	eventlog(eventlog_level_error,__FUNCTION__,"got string with length %u (should be %u)",std::strlen(str),5*8);
         return -1;
     }
 

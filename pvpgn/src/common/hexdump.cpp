@@ -19,7 +19,7 @@
  */
 #include "common/setup_before.h"
 #include "common/hexdump.h"
-#include <cstdio>
+
 #include "common/packet.h"
 #include "common/eventlog.h"
 #include "common/setup_after.h"
@@ -27,7 +27,7 @@
 namespace pvpgn
 {
 
-extern void hexdump(FILE * stream, void const * data, unsigned int len)
+extern void hexdump(std::FILE * stream, void const * data, unsigned int len)
 {
     unsigned int i;
     char dst[100];
@@ -47,7 +47,7 @@ extern void hexdump(FILE * stream, void const * data, unsigned int len)
     {
 	hexdump_string(datac, (len - i < 16) ? (len - i) : 16, dst, i);
 	std::fprintf(stream, "%s\n", dst);
-	fflush(stream);
+	std::fflush(stream);
     }
 }
 

@@ -17,7 +17,9 @@
  */
 #include "common/setup_before.h"
 #include "common/bn_type.h"
+
 #include <cstring>
+
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
