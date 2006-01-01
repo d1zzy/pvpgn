@@ -17,31 +17,14 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef TIME_WITH_SYS_TIME
-# include <time.h>
-# include <sys/time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-
 #include "bnetd.h"
+
+#include <ctime>
+
+#include "common/eventlog.h"
 #include "prefs.h"
 #include "s2s.h"
 #include "handle_bnetd.h"
-#include "connection.h"
-#include "common/eventlog.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -63,7 +46,7 @@ extern int bnetd_check(void)
 
 	if (bnetd_connection) {
 		if (d2cs_conn_get_state(bnetd_connection)==conn_state_connecting) {
-			if (time(NULL) - prev_connecting_checktime > prefs_get_s2s_timeout()) {
+			if (std::time(NULL) - prev_connecting_checktime > prefs_get_s2s_timeout()) {
 				eventlog(eventlog_level_warn,__FUNCTION__,"connection to bnetd s2s timeout");
 				d2cs_conn_set_state(bnetd_connection,conn_state_destroy);
 				return -1;
@@ -77,7 +60,7 @@ extern int bnetd_check(void)
 	if (d2cs_conn_get_state(bnetd_connection)==conn_state_init) {
 		handle_bnetd_init(bnetd_connection);
 	} else {
-		prev_connecting_checktime=time(NULL);
+		prev_connecting_checktime=std::time(NULL);
 	}
 	return 0;
 }

@@ -19,34 +19,15 @@
 #include "common/setup_before.h"
 #include "setup.h"
 
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <stdio.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/memset.h"
+#include <cstdio>
+
 #ifdef WIN32
 # include "win32/service.h"
 #endif
+
 #include "common/conf.h"
-#include "common/xalloc.h"
-#include "version.h"
-#include "cmdline.h"
-#include "compat/strcasecmp.h"
 #include "common/eventlog.h"
+#include "version.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -100,7 +81,7 @@ static t_conf_entry conftab[]={
 	{ "c",          conf_set_preffile,      NULL, conf_setdef_preffile},
 	{ "config",     conf_set_preffile,      NULL, conf_setdef_preffile},
 	{ "l",          conf_set_logfile,       NULL, conf_setdef_logfile   },
-	{ "log",        conf_set_logfile,       NULL, conf_setdef_logfile   },
+	{ "std::log",        conf_set_logfile,       NULL, conf_setdef_logfile   },
 	{ "h",          conf_set_help,          NULL, conf_setdef_help      },
 	{ "help",       conf_set_help,          NULL, conf_setdef_help      },
 	{ "usage",      conf_set_help,          NULL, conf_setdef_help      },
@@ -125,7 +106,7 @@ extern int cmdline_load(int argc, char** argv)
 	int res;
 
 	if (argc<1 || !argv || !argv[0]) {
-		fprintf(stderr,"bad arguments\n");
+		std::fprintf(stderr,"bad arguments\n");
 		return -1;
 	}
 
@@ -146,16 +127,16 @@ extern void cmdline_unload(void)
 
 static void usage(void)
 {
-	fprintf(stderr,
+	std::fprintf(stderr,
 		"Usage: %s [<options>]\n"
-		"    -c FILE, --config=FILE   use FILE as configuration file (default is " D2CS_DEFAULT_CONF_FILE ")\n"
-		"    -l FILE, --log=FILE      set log to FILE\n"
+		"    -c std::FILE, --config=std::FILE   use std::FILE as configuration file (default is " D2CS_DEFAULT_CONF_FILE ")\n"
+		"    -l std::FILE, --std::log=std::FILE      set std::log to std::FILE\n"
 #ifdef DO_DAEMONIZE
 		"    -f, --foreground:        don't daemonize\n"
 #endif
-		"    -D, --debug:             run in debug mode (run in foreground and log to stdout)\n"
-		"    -h, --help, --usage      show this information and exit\n"
-		"    -v, --version:           print version number and exit\n"
+		"    -D, --debug:             run in debug mode (run in foreground and std::log to stdout)\n"
+		"    -h, --help, --usage      show this information and std::exit\n"
+		"    -v, --version:           print version number and std::exit\n"
 #ifdef WIN32
 		"    Running as service functions:\n"
 		"    --service                run as service\n"
@@ -164,7 +145,7 @@ static void usage(void)
 #endif
 		"\n"
 		"Notes:\n"
-		"	1.You should always use absolute path here for all FILE names\n\n",
+		"	1.You should always use absolute path here for all std::FILE names\n\n",
 		progname);
 }
 
@@ -259,7 +240,7 @@ static int conf_set_version(const char *valstr)
 
 	conf_set_bool(&tmp, valstr, 0);
 	if (tmp) {
-		printf(D2CS_VERSION"\n");
+		std::printf(D2CS_VERSION"\n");
 		exitflag = 1;
 	}
 
@@ -300,13 +281,13 @@ static int conf_set_servaction(const char *valstr)
 
 	if (tmp) {
 		if (!strcasecmp(tmp, "install")) {
-			fprintf(stderr, "Installing service");
+			std::fprintf(stderr, "Installing service");
 			Win32_ServiceInstall();
 		} else if (!strcasecmp(tmp, "uninstall")) {
-			fprintf(stderr, "Uninstalling service");
+			std::fprintf(stderr, "Uninstalling service");
 			Win32_ServiceUninstall();
 		} else {
-			fprintf(stderr, "Unknown service action '%s'\n", tmp);
+			std::fprintf(stderr, "Unknown service action '%s'\n", tmp);
 		}
 
 		exitflag = 1;

@@ -18,7 +18,7 @@
 #ifndef INCLUDED_BNETD_H
 #define INCLUDED_BNETD_H
 
-#include "s2s.h"
+#include "connection.h"
 
 namespace pvpgn
 {

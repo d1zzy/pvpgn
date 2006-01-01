@@ -17,83 +17,30 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
+#include "server.h"
 
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
+#include <cstring>
+#include <ctime>
+
+#ifdef WIN32
+# include <conio.h>
 #endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/memset.h"
-#include <errno.h>
+
+#include "compat/psock.h"
 #include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <time.h>
-# include <sys/time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
-# ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/psock.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#include "compat/inet_ntoa.h"
-#include "compat/psock.h"
-
-#include "d2gs.h"
+#include "common/addr.h"
+#include "common/eventlog.h"
+#include "common/list.h"
+#include "prefs.h"
 #include "net.h"
-#include "s2s.h"
-#include "gamequeue.h"
-#include "game.h"
 #include "connection.h"
 #include "serverqueue.h"
-#include "common/fdwatch.h"
-#include "server.h"
-#include "prefs.h"
-#include "d2ladder.h"
+#include "gamequeue.h"
+#include "d2gs.h"
+#include "s2s.h"
 #include "handle_signal.h"
-#include "common/addr.h"
-#include "common/list.h"
-#include "common/hashtable.h"
-#include "common/eventlog.h"
-#ifdef WIN32
-# include <conio.h> /* for kbhit() and getch() */
-#endif
+#include "game.h"
+#include "d2ladder.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -160,7 +107,7 @@ static int server_accept(int sock)
 	t_connection	       *cc;
 
 	caddr_len=sizeof(caddr);
-	memset(&caddr,0,sizeof(caddr));
+	std::memset(&caddr,0,sizeof(caddr));
 	csock=psock_accept(sock,(struct sockaddr *)&caddr,&caddr_len);
 	if (csock<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error accept new connection");
@@ -178,7 +125,7 @@ static int server_accept(int sock)
 	}
 
 	raddr_len=sizeof(raddr);
-	memset(&raddr,0,sizeof(raddr));
+	std::memset(&raddr,0,sizeof(raddr));
 	ip=port=0;
 	if (psock_getsockname(csock,(struct sockaddr *)&raddr,&raddr_len)<0) {
 		eventlog(eventlog_level_warn,__FUNCTION__,"unable to get local socket info");
@@ -206,16 +153,16 @@ static int server_accept(int sock)
 
 static int server_handle_timed_event(void)
 {
-	static  time_t	prev_list_purgetime=0;
-	static  time_t	prev_gamequeue_checktime=0;
-	static	time_t	prev_s2s_checktime=0;
-	static	time_t	prev_sq_checktime=0;
-	static  time_t	prev_d2ladder_refresh_time=0;
-	static  time_t	prev_s2s_keepalive_time=0;
-	static  time_t	prev_timeout_checktime;
-	time_t		now;
+	static  std::time_t	prev_list_purgetime=0;
+	static  std::time_t	prev_gamequeue_checktime=0;
+	static	std::time_t	prev_s2s_checktime=0;
+	static	std::time_t	prev_sq_checktime=0;
+	static  std::time_t	prev_d2ladder_refresh_time=0;
+	static  std::time_t	prev_s2s_keepalive_time=0;
+	static  std::time_t	prev_timeout_checktime;
+	std::time_t		now;
 
-	now=time(NULL);
+	now=std::time(NULL);
 	if (now-prev_list_purgetime>(signed)prefs_get_list_purgeinterval()) {
 		hashtable_purge(d2cs_connlist());
 		d2cs_gamelist_check_voidgame();
@@ -354,7 +301,7 @@ extern int d2cs_server_process(void)
 	}
 	eventlog(eventlog_level_info,__FUNCTION__,"entering server loop");
 	server_loop();
-	eventlog(eventlog_level_info,__FUNCTION__,"exit from server loop,cleanup");
+	eventlog(eventlog_level_info,__FUNCTION__,"std::exit from server loop,cleanup");
 	server_cleanup();
 	return 0;
 }

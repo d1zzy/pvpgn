@@ -18,34 +18,14 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-
-#include "connection.h"
-#include "prefs.h"
-#include "common/eventlog.h"
-#include "compat/strcasecmp.h"
-#include "compat/strncasecmp.h"
-#include "compat/strdup.h"
-#include "common/xalloc.h"
-#include "common/elist.h"
 #include "d2charlist.h"
+
+#include <cstring>
+
+#include "compat/strcasecmp.h"
+#include "common/eventlog.h"
+#include "common/xalloc.h"
+#include "prefs.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -74,7 +54,7 @@ extern int d2charlist_add_char(t_elist * list_head, t_d2charinfo_file * charinfo
 	    elist_for_each(curr,list_head)
 	    {
 	       ccharlist = elist_entry(curr,t_d2charlist,list);
-               if (strncasecmp((char*)charinfo->header.charname,(char*)ccharlist->charinfo->header.charname,strlen((char*)charinfo->header.charname))<0)
+               if (strncasecmp((char*)charinfo->header.charname,(char*)ccharlist->charinfo->header.charname,std::strlen((char*)charinfo->header.charname))<0)
 	           break;
 	    }
             elist_add_tail(curr,&charlist->list);

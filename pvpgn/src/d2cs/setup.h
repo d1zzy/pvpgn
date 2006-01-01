@@ -112,9 +112,9 @@
 # define D2CS_DEFAULT_CONF_FILE       "conf/d2cs.conf"
 #endif
 
-#define DEFAULT_LOG_FILE	"/usr/local/var/d2cs.log"
+#define DEFAULT_LOG_FILE	"/usr/local/var/d2cs.std::log"
 #define DEFAULT_LOG_LEVELS	"info,warn,error"
-#define DEFAULT_MEMLOG_FILE	"/tmp/d2cs-mem.log"
+#define DEFAULT_MEMLOG_FILE	"/tmp/d2cs-mem.std::log"
 
 #define D2CS_SERVER_ADDRS	"0.0.0.0"
 #define D2GS_SERVER_LIST	"192.168.0.1"

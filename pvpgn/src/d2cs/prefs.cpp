@@ -18,28 +18,11 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
+#include "prefs.h"
 
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/memset.h"
+#include <cstdio>
 
 #include "common/conf.h"
-#include "prefs.h"
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
@@ -95,7 +78,7 @@ static struct
         unsigned int    lod_realm;
         unsigned int    allow_convert;
         unsigned int    d2gs_restart_delay;
-        time_t          ladder_start_time;
+        std::time_t          ladder_start_time;
         unsigned int    char_expire_day;
         char const      * charlist_sort;
         char const      * charlist_sort_order;
@@ -304,14 +287,14 @@ static t_conf_entry prefs_conf_table[]={
 
 extern int d2cs_prefs_load(char const * filename)
 {
-    FILE *fd;
+    std::FILE *fd;
 
     if (!filename) {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
         return -1;
     }
 
-    fd = fopen(filename,"rt");
+    fd = std::fopen(filename,"rt");
     if (!fd) {
         eventlog(eventlog_level_error,__FUNCTION__,"could not open file '%s'",filename);
         return -1;
@@ -319,11 +302,11 @@ extern int d2cs_prefs_load(char const * filename)
 
     if (conf_load_file(fd,prefs_conf_table)) {
         eventlog(eventlog_level_error,__FUNCTION__,"error loading config file '%s'",filename);
-        fclose(fd);
+        std::fclose(fd);
         return -1;
     }
 
-    fclose(fd);
+    std::fclose(fd);
 
     return 0;
 }

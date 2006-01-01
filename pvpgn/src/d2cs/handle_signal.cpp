@@ -17,60 +17,19 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include <errno.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/strdup.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <time.h>
-# include <sys/time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef DO_POSIXSIG
-# include <signal.h>
-# include "compat/signal.h"
-#endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
-# ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#include "d2gs.h"
-#include "game.h"
-#include "prefs.h"
-#include "d2ladder.h"
-#include "cmdline.h"
 #include "handle_signal.h"
-#include "common/trans.h"
+
+#include <ctime>
+#include <cstring>
+#include <csignal>
+
 #include "common/eventlog.h"
+#include "common/trans.h"
 #include "common/xalloc.h"
+#include "prefs.h"
+#include "cmdline.h"
+#include "d2gs.h"
+#include "d2ladder.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -93,7 +52,7 @@ static volatile struct
 
 extern int handle_signal(void)
 {
-	time_t		now;
+	std::time_t		now;
     char const * levels;
     char *       temp;
     char const * tok;
@@ -105,12 +64,12 @@ extern int handle_signal(void)
 			eventlog(eventlog_level_info,__FUNCTION__,"there is no previous shutdown to be canceled");
 		} else {
 			signal_data.exit_time=0;
-			eventlog(eventlog_level_info,__FUNCTION__,"shutdown was canceled due to signal");
+			eventlog(eventlog_level_info,__FUNCTION__,"shutdown was canceled due to std::signal");
 		}
 	}
 	if (signal_data.do_quit) {
 		signal_data.do_quit=0;
-		now=time(NULL);
+		now=std::time(NULL);
 		if (!signal_data.exit_time) {
 			signal_data.exit_time=now+d2cs_prefs_get_shutdown_delay();
 		} else {
@@ -119,16 +78,16 @@ extern int handle_signal(void)
 		eventlog(eventlog_level_info,__FUNCTION__,"the server is going to shutdown in %lu minutes",(signal_data.exit_time-now)/60);
 	}
 	if (signal_data.exit_time) {
-		now=time(NULL);
+		now=std::time(NULL);
 		if (now >= (signed)signal_data.exit_time) {
 			signal_data.exit_time=0;
-			eventlog(eventlog_level_info,__FUNCTION__,"shutdown server due to signal");
+			eventlog(eventlog_level_info,__FUNCTION__,"shutdown server due to std::signal");
 			return -1;
 		}
 	}
 	if (signal_data.reload_config) {
 		signal_data.reload_config=0;
-		eventlog(eventlog_level_info,__FUNCTION__,"reloading configuartion file due to signal");
+		eventlog(eventlog_level_info,__FUNCTION__,"reloading configuartion file due to std::signal");
 		if (prefs_reload(cmdline_get_preffile())<0) {
 			eventlog(eventlog_level_error,__FUNCTION__,"error reload configuration file,exitting");
 			return -1;
@@ -145,13 +104,13 @@ extern int handle_signal(void)
         if ((levels = d2cs_prefs_get_loglevels()))
         {
             temp = xstrdup(levels);
-            tok = strtok(temp,","); /* strtok modifies the string it is passed */
+            tok = std::strtok(temp,","); /* std::strtok modifies the string it is passed */
 
             while (tok)
             {
               if (eventlog_add_level(tok)<0)
-              eventlog(eventlog_level_error,__FUNCTION__,"could not add log level \"%s\"",tok);
-              tok = strtok(NULL,",");
+              eventlog(eventlog_level_error,__FUNCTION__,"could not add std::log level \"%s\"",tok);
+              tok = std::strtok(NULL,",");
             }
 
             xfree(temp);
@@ -163,13 +122,13 @@ extern int handle_signal(void)
 	}
 	if (signal_data.reload_ladder) {
 		signal_data.reload_ladder=0;
-		eventlog(eventlog_level_info,__FUNCTION__,"reloading ladder data due to signal");
+		eventlog(eventlog_level_info,__FUNCTION__,"reloading ladder data due to std::signal");
 		d2ladder_refresh();
 	}
 
 	if (signal_data.restart_d2gs) {
 		signal_data.restart_d2gs=0;
-		eventlog(eventlog_level_info,__FUNCTION__,"restarting all game servers due to signal");
+		eventlog(eventlog_level_info,__FUNCTION__,"restarting all game servers due to std::signal");
 		d2gs_restart_all_gs();
 	}
 
@@ -203,13 +162,13 @@ extern void signal_restart_d2gs_wrapper(void)
 #else
 extern int handle_signal_init(void)
 {
-	signal(SIGINT,on_signal);
-	signal(SIGTERM,on_signal);
-	signal(SIGABRT,on_signal);
-	signal(SIGHUP,on_signal);
-	signal(SIGUSR1,on_signal);
-	signal(SIGUSR2,on_signal);
-	signal(SIGPIPE,on_signal);
+	std::signal(SIGINT,on_signal);
+	std::signal(SIGTERM,on_signal);
+	std::signal(SIGABRT,on_signal);
+	std::signal(SIGHUP,on_signal);
+	std::signal(SIGUSR1,on_signal);
+	std::signal(SIGUSR2,on_signal);
+	std::signal(SIGPIPE,on_signal);
 	return 0;
 }
 
@@ -244,7 +203,7 @@ static void on_signal(int s)
 			eventlog(eventlog_level_debug,__FUNCTION__,"sigpipe received");
 			break;
 	}
-	signal(s,on_signal);
+	std::signal(s,on_signal);
 }
 #endif
 

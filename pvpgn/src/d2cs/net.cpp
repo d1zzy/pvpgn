@@ -17,69 +17,14 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <ctype.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/memset.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
-# ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-# endif
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
-#include "compat/psock.h"
-
 #include "net.h"
+
+#include <cctype>
+#include <cstring>
+
+#include "compat/strerror.h"
 #include "common/eventlog.h"
+#include "compat/psock.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -96,7 +41,7 @@ extern unsigned long int net_inet_addr(char const * host)
 {
 	struct hostent	* hp;
 
-	if (isdigit((int)host[0])) {
+	if (std::isdigit((int)host[0])) {
 		return inet_addr(host);
 	} else {
 		hp=gethostbyname(host);
@@ -171,7 +116,7 @@ extern int net_listen(unsigned int ip, unsigned int port, int type)
 	if (psock_setsockopt(sock,PSOCK_SOL_SOCKET,PSOCK_SO_REUSEADDR,&val,sizeof(int))<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error set socket option SO_REUSEADDR");
 	}
-	memset(&addr,0,sizeof(addr));
+	std::memset(&addr,0,sizeof(addr));
 	addr.sin_family=PSOCK_AF_INET;
 	addr.sin_port=htons(port);
 	addr.sin_addr.s_addr=htonl(ip);
@@ -249,7 +194,7 @@ extern int net_recv_data(int sock, char * buff, int buffsize, int * pos, int * c
 		return -1;
 	}
 	if (*pos==buffsize) {
-		memmove(buff,buff+*pos,*currsize);
+		std::memmove(buff,buff+*pos,*currsize);
 		*pos=0;
 	}
 	nrecv=psock_recv(sock,buff+*pos,buffsize-*pos,0);

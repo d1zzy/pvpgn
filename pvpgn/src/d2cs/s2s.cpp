@@ -17,62 +17,18 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <ctype.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/memset.h"
-#include "compat/strdup.h"
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/psock.h"
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#include <ctype.h>
-
-#include "compat/psock.h"
-#include "compat/strtoul.h"
-#include "connection.h"
-#include "bnetd.h"
-#include "net.h"
 #include "s2s.h"
-#include "common/fdwatch.h"
-#include "server.h"
+
+#include <cstring>
+#include <cstdlib>
+
+#include "compat/psock.h"
+#include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+#include "bnetd.h"
+#include "net.h"
+#include "server.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -105,9 +61,9 @@ extern t_connection * s2s_create(char const * server, unsigned short def_port, t
 
 	ASSERT(server,NULL);
 	tserver=xstrdup(server);
-	p=strchr(tserver,':');
+	p=std::strchr(tserver,':');
 	if (p) {
-		port=(unsigned short)strtoul(p+1,NULL,10);
+		port=(unsigned short)std::strtoul(p+1,NULL,10);
 		*p='\0';
 	} else {
 		port=def_port;
@@ -119,7 +75,7 @@ extern t_connection * s2s_create(char const * server, unsigned short def_port, t
 		return NULL;
 	}
 
-	memset(&addr,0,sizeof(addr));
+	std::memset(&addr,0,sizeof(addr));
 	addr.sin_family = PSOCK_AF_INET;
 	addr.sin_port = htons(port);
 	addr.sin_addr.s_addr= net_inet_addr(tserver);
@@ -139,7 +95,7 @@ extern t_connection * s2s_create(char const * server, unsigned short def_port, t
 		eventlog(eventlog_level_info,__FUNCTION__,"connected to s2s server %s",server);
 	}
 	laddr_len=sizeof(laddr);
-	memset(&laddr,0,sizeof(laddr));
+	std::memset(&laddr,0,sizeof(laddr));
 	ip=port=0;
 	if (psock_getsockname(sock,(struct sockaddr *)&laddr,&laddr_len)<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"unable to get local socket info");

@@ -18,56 +18,41 @@
 #include "common/setup_before.h"
 #include "setup.h"
 
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+
+#ifdef HAVE_SYS_TYPES_h
+# include <sys/types.h>
 #endif
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/strdup.h"
-#include <errno.h>
-#include "compat/strerror.h"
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-
-#include "server.h"
-#include "game.h"
-#include "connection.h"
-#include "serverqueue.h"
-#include "d2gs.h"
-#include "prefs.h"
-#include "cmdline.h"
-#include "d2ladder.h"
-#include "version.h"
-#include "common/trans.h"
-#include "common/fdwatch.h"
-#include "common/eventlog.h"
 #ifdef WIN32
 # include "win32/service.h"
 #endif
-#include "common/xalloc.h"
 #ifdef WIN32_GUI
 # include "win32/winmain.h"
 #endif
+
+#include "compat/strerror.h"
+#include "compat/stdfileno.h"
+#include "common/eventlog.h"
+#include "common/xalloc.h"
+#include "common/trans.h"
+#include "common/fdwatch.h"
+#include "prefs.h"
+#include "connection.h"
+#include "d2gs.h"
+#include "serverqueue.h"
+#include "d2ladder.h"
+#include "cmdline.h"
+#include "game.h"
+#include "server.h"
+#include "version.h"
 #include "common/setup_after.h"
 
 using namespace pvpgn::d2cs;
@@ -128,20 +113,20 @@ static char * write_to_pidfile(void)
 
 	if (pidfile) {
 #ifdef HAVE_GETPID
-		FILE * fp;
+		std::FILE * fp;
 
-		if (!(fp = fopen(pidfile,"w"))) {
-			eventlog(eventlog_level_error,__FUNCTION__,"unable to open pid file \"%s\" for writing (fopen: %s)",pidfile,pstrerror(errno));
+		if (!(fp = std::fopen(pidfile,"w"))) {
+			eventlog(eventlog_level_error,__FUNCTION__,"unable to open pid file \"%s\" for writing (std::fopen: %s)",pidfile,pstrerror(errno));
 			xfree((void *)pidfile); /* avoid warning */
 			return NULL;
 		} else {
-			fprintf(fp,"%u",(unsigned int)getpid());
-			if (fclose(fp)<0)
-				eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (fclose: %s)",pidfile,pstrerror(errno));
+			std::fprintf(fp,"%u",(unsigned int)getpid());
+			if (std::fclose(fp)<0)
+				eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (std::fclose: %s)",pidfile,pstrerror(errno));
 		}
 
 #else
-		eventlog(eventlog_level_warn,__FUNCTION__,"no getpid() system call, disable pid file in d2cs.conf");
+		eventlog(eventlog_level_warn,__FUNCTION__,"no getpid() std::system call, disable pid file in d2cs.conf");
 		xfree((void *)pidfile); /* avoid warning */
 		return NULL;
 #endif
@@ -208,13 +193,13 @@ static int config_init(int argc, char * * argv)
     if ((levels = d2cs_prefs_get_loglevels()))
     {
         temp = xstrdup(levels);
-        tok = strtok(temp,","); /* strtok modifies the string it is passed */
+        tok = std::strtok(temp,","); /* std::strtok modifies the string it is passed */
 
         while (tok)
         {
         if (eventlog_add_level(tok)<0)
-            eventlog(eventlog_level_error,__FUNCTION__,"could not add log level \"%s\"",tok);
-        tok = strtok(NULL,",");
+            eventlog(eventlog_level_error,__FUNCTION__,"could not add std::log level \"%s\"",tok);
+        tok = std::strtok(NULL,",");
         }
 
         xfree(temp);
@@ -277,8 +262,8 @@ extern int main(int argc, char * * argv)
 	}
 	cleanup();
 	if (pidfile) {
-		if (remove(pidfile)<0)
-			eventlog(eventlog_level_error,__FUNCTION__,"could not remove pid file \"%s\" (remove: %s)",pidfile,pstrerror(errno));
+		if (std::remove(pidfile)<0)
+			eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove pid file \"%s\" (std::remove: %s)",pidfile,pstrerror(errno));
 		xfree((void *)pidfile); /* avoid warning */
 	}
 	config_cleanup();

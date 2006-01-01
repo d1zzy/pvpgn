@@ -17,16 +17,12 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
+#include "handle_d2gs.h"
 
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
+#include <ctime>
+
 #ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h> /* needed to include netinet/in.h */
+# include <sys/types.h>
 #endif
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
@@ -34,33 +30,14 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h> /* FIXME: probably not needed... do some systems put types in here or something? */
-#endif
-#include "compat/psock.h"
 
+#include "common/eventlog.h"
+#include "common/addr.h"
+#include "common/trans.h"
 #include "d2gs.h"
-#include "handle_d2gs.h"
 #include "serverqueue.h"
 #include "game.h"
-#include "connection.h"
 #include "prefs.h"
-#include "common/d2cs_d2gs_protocol.h"
-#include "common/trans.h"
-#include "common/addr.h"
-#include "common/eventlog.h"
-#include "common/queue.h"
-#include "common/bn_type.h"
-#include "common/packet.h"
-#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -125,7 +102,7 @@ static void d2gs_send_init_info(t_d2gs * gs, t_connection * c)
 		packet_set_size(rpacket,sizeof(t_d2cs_d2gs_setinitinfo));
 		packet_set_type(rpacket,D2CS_D2GS_SETINITINFO);
 		bn_int_set(&rpacket->u.d2cs_d2gs_setinitinfo.h.seqno,0);
-		bn_int_set(&rpacket->u.d2cs_d2gs_setinitinfo.time, time(NULL));
+		bn_int_set(&rpacket->u.d2cs_d2gs_setinitinfo.time, std::time(NULL));
 		bn_int_set(&rpacket->u.d2cs_d2gs_setinitinfo.gs_id, d2gs_get_id(gs));
 		bn_int_set(&rpacket->u.d2cs_d2gs_setinitinfo.ac_version, 0);
 //		packet_append_string(rpacket,prefs_get_d2gs_ac_checksum());
@@ -141,13 +118,13 @@ static void d2gs_send_init_info(t_d2gs * gs, t_connection * c)
 static void d2gs_send_server_conffile(t_d2gs *gs, t_connection *c)
 {
 	t_packet	*rpacket;
-	FILE		*fp;
+	std::FILE		*fp;
 	char		buff[256];
 	int		rno;
 	struct stat	sfile;
 
 	/* open d2gs server config file */
-	fp = fopen(prefs_get_d2gsconffile(), "rb");
+	fp = std::fopen(prefs_get_d2gsconffile(), "rb");
 	if (!fp) goto err;
 
 	/* get file size */
@@ -161,9 +138,9 @@ static void d2gs_send_server_conffile(t_d2gs *gs, t_connection *c)
 	packet_set_type(rpacket,D2CS_D2GS_SETCONFFILE);
 	bn_int_set(&rpacket->u.d2cs_d2gs_setconffile.h.seqno,0);
 	bn_int_set(&rpacket->u.d2cs_d2gs_setconffile.size, sfile.st_size);
-	bn_int_set(&rpacket->u.d2cs_d2gs_setconffile.reserved1, time(NULL));
+	bn_int_set(&rpacket->u.d2cs_d2gs_setconffile.reserved1, std::time(NULL));
 
-	while((rno = fread(buff,1,sizeof(buff),fp)) > 0) {
+	while((rno = std::fread(buff,1,sizeof(buff),fp)) > 0) {
 		if (packet_append_data(rpacket,buff,rno) < 0) { /* file too big */
 		    eventlog(eventlog_level_debug,__FUNCTION__,"conffile too big for a single packet");
 		    goto err_packet;
@@ -172,7 +149,7 @@ static void d2gs_send_server_conffile(t_d2gs *gs, t_connection *c)
 
 	conn_push_outqueue(c,rpacket);
 	packet_del_ref(rpacket);
-	fclose(fp);
+	std::fclose(fp);
 
 	return;
 
@@ -180,7 +157,7 @@ err_packet:
 	packet_del_ref(rpacket);
 
 err_fp:
-	fclose(fp);
+	std::fclose(fp);
 
 err:
 	return;
@@ -221,7 +198,7 @@ static int on_d2gs_authreply(t_connection * c, t_packet * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"game server %d checksum mismach 0x%X - 0x%X",conn_get_d2gs_id(c),try_checksum,checksum);
 		reply=D2CS_D2GS_AUTHREPLY_BAD_CHECKSUM;
 //	} else if (license_verify_reply(c, randnum, sign, signlen)) {
-//		eventlog(eventlog_level_error,__FUNCTION__,"game server %d signal mismach", conn_get_d2gs_id(c));
+//		eventlog(eventlog_level_error,__FUNCTION__,"game server %d std::signal mismach", conn_get_d2gs_id(c));
 //		reply=D2CS_D2GS_AUTHREPLY_BAD_CHECKSUM;
 	} else {
 		reply=D2CS_D2GS_AUTHREPLY_SUCCEED;

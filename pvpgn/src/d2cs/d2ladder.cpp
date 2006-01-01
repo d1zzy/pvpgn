@@ -18,44 +18,19 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <stdio.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/strcasecmp.h"
-#include "compat/memset.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-
-#include "prefs.h"
-#include "d2charfile.h"
 #include "d2ladder.h"
-#include "common/d2cs_protocol.h"
-#include "common/tag.h"
+
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+
+#include "compat/strerror.h"
+#include "compat/strcasecmp.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+#include "common/tag.h"
+#include "prefs.h"
+#include "d2charfile.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -84,39 +59,39 @@ extern int d2ladder_init(void)
 
 static int d2ladder_readladder(void)
 {
-	FILE				* fp;
+	std::FILE				* fp;
 	t_d2ladderfile_ladderindex	* ladderheader;
 	t_d2ladderfile_ladderinfo	* ladderinfo;
 	char				* ladderfile;
 	t_d2ladderfile_header		header;
 	unsigned int			i, n, temp, count, type, number;
 
-	ladderfile=(char*)xmalloc(strlen(prefs_get_ladder_dir())+1+strlen(LADDER_FILE_PREFIX)+1+
-			strlen(CLIENTTAG_DIABLO2DV)+1);
-	sprintf(ladderfile,"%s/%s.%s",prefs_get_ladder_dir(),LADDER_FILE_PREFIX,CLIENTTAG_DIABLO2DV);
-	if (!(fp=fopen(ladderfile,"rb"))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error opening ladder file \"%s\" for reading (fopen: %s)",ladderfile,pstrerror(errno));
+	ladderfile=(char*)xmalloc(std::strlen(prefs_get_ladder_dir())+1+std::strlen(LADDER_FILE_PREFIX)+1+
+			std::strlen(CLIENTTAG_DIABLO2DV)+1);
+	std::sprintf(ladderfile,"%s/%s.%s",prefs_get_ladder_dir(),LADDER_FILE_PREFIX,CLIENTTAG_DIABLO2DV);
+	if (!(fp=std::fopen(ladderfile,"rb"))) {
+		eventlog(eventlog_level_error,__FUNCTION__,"error opening ladder file \"%s\" for reading (std::fopen: %s)",ladderfile,pstrerror(errno));
 		xfree(ladderfile);
 		return -1;
 	}
 	xfree(ladderfile);
-	if (fread(&header,1,sizeof(header),fp)!=sizeof(header)) {
+	if (std::fread(&header,1,sizeof(header),fp)!=sizeof(header)) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error reading ladder file");
-		fclose(fp);
+		std::fclose(fp);
 		return -1;
 	}
 	max_ladder_type= bn_int_get(header.maxtype);
 	if (d2ladderlist_create(max_ladder_type)<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error create ladder list");
-		fclose(fp);
+		std::fclose(fp);
 		return -1;
 	}
 	temp= max_ladder_type * sizeof(*ladderheader);
 	ladderheader=(t_d2ladderfile_ladderindex*)xmalloc(temp);
-	if (fread(ladderheader,1,temp,fp)!=temp) {
+	if (std::fread(ladderheader,1,temp,fp)!=temp) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error read ladder file");
 		xfree(ladderheader);
-		fclose(fp);
+		std::fclose(fp);
 		return -1;
 	}
 	for (i=0, count=0; i< max_ladder_type ; i++) {
@@ -126,10 +101,10 @@ static int d2ladder_readladder(void)
 			eventlog(eventlog_level_error,__FUNCTION__,"error create ladder %d",type);
 			continue;
 		}
-		fseek(fp,bn_int_get(ladderheader[i].offset),SEEK_SET);
+		std::fseek(fp,bn_int_get(ladderheader[i].offset),SEEK_SET);
 		temp=number * sizeof(*ladderinfo);
 		ladderinfo=(t_d2ladderfile_ladderinfo*)xmalloc(temp);
-		if (fread(ladderinfo,1,temp,fp)!=temp) {
+		if (std::fread(ladderinfo,1,temp,fp)!=temp) {
 			eventlog(eventlog_level_error,__FUNCTION__,"error read ladder file");
 			xfree(ladderinfo);
 			continue;
@@ -141,7 +116,7 @@ static int d2ladder_readladder(void)
 		if (number) count++;
 	}
 	xfree(ladderheader);
-	fclose(fp);
+	std::fclose(fp);
 	eventlog(eventlog_level_info,__FUNCTION__,"ladder file loaded successfully (%d types %d maxtype)",count,max_ladder_type);
 	return 0;
 }
@@ -149,7 +124,7 @@ static int d2ladder_readladder(void)
 static int d2ladderlist_create(unsigned int maxtype)
 {
 	ladder_data=(t_d2ladder*)xmalloc(maxtype * sizeof(*ladder_data));
-	memset(ladder_data,0, maxtype * sizeof(*ladder_data));
+	std::memset(ladder_data,0, maxtype * sizeof(*ladder_data));
 	return 0;
 }
 
@@ -216,7 +191,7 @@ static int d2ladder_append_ladder(unsigned int type, t_d2ladderfile_ladderinfo *
 	bn_short_set(&ladderinfo->status,ladderstatus);
 	bn_byte_set(&ladderinfo->level, bn_int_get(info->level));
 	bn_byte_set(&ladderinfo->u1, 0);
-	strncpy(ladderinfo->charname, info->charname, MAX_CHARNAME_LEN);
+	std::strncpy(ladderinfo->charname, info->charname, MAX_CHARNAME_LEN);
 	ladder_data[type].curr_len++;
 	return 0;
 }

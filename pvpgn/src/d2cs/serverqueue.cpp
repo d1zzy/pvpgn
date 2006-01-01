@@ -17,31 +17,17 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef TIME_WITH_SYS_TIME
-# include <time.h>
-# include <sys/time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-
-#include "prefs.h"
 #include "serverqueue.h"
-#include "common/packet.h"
-#include "common/list.h"
+
+#include <ctime>
+
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+/*
+#include "common/packet.h"
+#include "common/list.h"
+*/
+#include "prefs.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -85,9 +71,9 @@ extern int sqlist_destroy(void)
 extern int sqlist_check_timeout(void)
 {
 	t_sq	* sq;
-	time_t	now;
+	std::time_t	now;
 
-	now=time(NULL);
+	now=std::time(NULL);
 	BEGIN_LIST_TRAVERSE_DATA(sqlist_head, sq, t_sq)
 	{
 		if (now - sq->ctime > prefs_get_sq_timeout()) {
@@ -117,7 +103,7 @@ extern t_sq * sq_create(unsigned int clientid, t_packet * packet,unsigned int ga
 
 	sq=(t_sq*)xmalloc(sizeof(t_sq));
 	sq->seqno=++sqlist_seqno;
-	sq->ctime=time(NULL);
+	sq->ctime=std::time(NULL);
 	sq->clientid=clientid;
 	sq->gameid=gameid;
 	sq->packet=packet;
@@ -131,7 +117,7 @@ extern int sq_destroy(t_sq * sq,t_elem ** curr)
 {
 	ASSERT(sq,-1);
 	if (list_remove_data(sqlist_head,sq,curr)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error remove server queue from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove server queue from list");
 		return -1;
 	}
 	if (sq->packet) packet_del_ref(sq->packet);
