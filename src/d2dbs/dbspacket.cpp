@@ -17,97 +17,38 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
+#include "dbspacket.h"
 
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+#include <ctime>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
 #endif
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
-# ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-# endif
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
 #endif
-#include "compat/statmacros.h"
-#include "compat/mkdir.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/memcpy.h"
-#include "compat/memmove.h"
-#include "compat/strdup.h"
+
 #include "compat/strsep.h"
-#include <errno.h>
 #include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <time.h>
-# include <sys/time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#include "compat/inet_ntoa.h"
-#include "compat/psock.h"
+#include "compat/mkdir.h"
 #include "compat/access.h"
-#include "compat/rename.h"
-#include "dbserver.h"
-#include "dbspacket.h"
-#include "d2ladder.h"
-#include "charlock.h"
-#include "prefs.h"
-#include "common/bn_type.h"
-#include "common/d2char_checksum.h"
+#include "compat/statmacros.h"
+#include "compat/psock.h"
 #include "common/xstring.h"
-#include "common/d2cs_d2gs_character.h"
-#include "common/list.h"
 #include "common/eventlog.h"
-#include "common/addr.h"
+#include "common/d2cs_d2gs_character.h"
+#include "common/d2char_checksum.h"
 #include "common/xalloc.h"
+#include "common/addr.h"
+#include "prefs.h"
+#include "charlock.h"
+#include "d2ladder.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -136,7 +77,7 @@ static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn, char 
 	char savefile[MAX_PATH];
 	char bakfile[MAX_PATH];
 	unsigned short curlen,readlen,leftlen,writelen;
-	FILE * fd;
+	std::FILE * fd;
 	int checksum_header;
 	int checksum_calc;
 
@@ -154,8 +95,8 @@ static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn, char 
 	}
 
 
-	sprintf(filename,"%s/.%s.tmp",d2dbs_prefs_get_charsave_dir(),CharName);
-	fd = fopen(filename, "wb");
+	std::sprintf(filename,"%s/.%s.tmp",d2dbs_prefs_get_charsave_dir(),CharName);
+	fd = std::fopen(filename, "wb");
 	if (!fd) {
 		eventlog(eventlog_level_error,__FUNCTION__,"open() failed : %s",filename);
 		return 0;
@@ -165,24 +106,24 @@ static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn, char 
 	while(curlen<datalen) {
 		if (leftlen>2000) writelen=2000;
 		else writelen=leftlen;
-		readlen=fwrite(data+curlen,1,writelen,fd);
+		readlen=std::fwrite(data+curlen,1,writelen,fd);
 		if (readlen<=0) {
-			fclose(fd);
+			std::fclose(fd);
 			eventlog(eventlog_level_error,__FUNCTION__,"write() failed error : %s",pstrerror(errno));
 			return 0;
 		}
 		curlen+=readlen;
 		leftlen-=readlen;
 	}
-	fclose(fd);
+	std::fclose(fd);
 
-	sprintf(bakfile,"%s/%s",prefs_get_charsave_bak_dir(),CharName);
-	sprintf(savefile,"%s/%s",d2dbs_prefs_get_charsave_dir(),CharName);
-	if (p_rename(savefile, bakfile)==-1) {
-		eventlog(eventlog_level_warn,__FUNCTION__,"error rename %s to %s", savefile, bakfile);
+	std::sprintf(bakfile,"%s/%s",prefs_get_charsave_bak_dir(),CharName);
+	std::sprintf(savefile,"%s/%s",d2dbs_prefs_get_charsave_dir(),CharName);
+	if (std::rename(savefile, bakfile)==-1) {
+		eventlog(eventlog_level_warn,__FUNCTION__,"error std::rename %s to %s", savefile, bakfile);
 	}
-	if (p_rename(filename, savefile)==-1) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error rename %s to %s", filename, savefile);
+	if (std::rename(filename, savefile)==-1) {
+		eventlog(eventlog_level_error,__FUNCTION__,"error std::rename %s to %s", filename, savefile);
 		return 0;
 	}
 	eventlog(eventlog_level_info,__FUNCTION__,"saved charsave %s(*%s) for gs %s(%d)", CharName, AccountName, conn->serverip, conn->serverid);
@@ -195,21 +136,21 @@ static unsigned int dbs_packet_savedata_charinfo(t_d2dbs_connection* conn,char *
 	char bakfile[MAX_PATH];
 	char filepath[MAX_PATH];
 	char filename[MAX_PATH];
-	FILE * fd;
+	std::FILE * fd;
 	unsigned short curlen,readlen,leftlen,writelen;
 	struct stat statbuf;
 
 	strtolower(AccountName);
 	strtolower(CharName);
 
-	sprintf(filepath,"%s/%s",prefs_get_charinfo_bak_dir(),AccountName);
+	std::sprintf(filepath,"%s/%s",prefs_get_charinfo_bak_dir(),AccountName);
 	if (stat(filepath,&statbuf)==-1) {
 		p_mkdir(filepath,S_IRWXU|S_IRWXG|S_IRWXO );
 		eventlog(eventlog_level_info,__FUNCTION__,"created charinfo directory: %s",filepath);
 	}
 
-	sprintf(filename,"%s/%s/.%s.tmp",d2dbs_prefs_get_charinfo_dir(),AccountName,CharName);
-	fd = fopen(filename, "wb");
+	std::sprintf(filename,"%s/%s/.%s.tmp",d2dbs_prefs_get_charinfo_dir(),AccountName,CharName);
+	fd = std::fopen(filename, "wb");
 	if (!fd) {
 		eventlog(eventlog_level_error,__FUNCTION__,"open() failed : %s",filename);
 		return 0;
@@ -220,24 +161,24 @@ static unsigned int dbs_packet_savedata_charinfo(t_d2dbs_connection* conn,char *
 	while(curlen<datalen) {
 		if (leftlen>2000) writelen=2000;
 		else writelen=leftlen;
-		readlen=fwrite(data+curlen,1,writelen,fd);
+		readlen=std::fwrite(data+curlen,1,writelen,fd);
 		if (readlen<=0) {
-			fclose(fd);
+			std::fclose(fd);
 			eventlog(eventlog_level_error,__FUNCTION__,"write() failed error : %s",pstrerror(errno));
 			return 0;
 		}
 		curlen+=readlen;
 		leftlen-=readlen;
 	}
-	fclose(fd);
+	std::fclose(fd);
 
-	sprintf(bakfile,"%s/%s/%s",prefs_get_charinfo_bak_dir(),AccountName,CharName);
-	sprintf(savefile,"%s/%s/%s",d2dbs_prefs_get_charinfo_dir(),AccountName,CharName);
-	if (p_rename(savefile, bakfile)==-1) {
-		eventlog(eventlog_level_info,__FUNCTION__,"error rename %s to %s", savefile, bakfile);
+	std::sprintf(bakfile,"%s/%s/%s",prefs_get_charinfo_bak_dir(),AccountName,CharName);
+	std::sprintf(savefile,"%s/%s/%s",d2dbs_prefs_get_charinfo_dir(),AccountName,CharName);
+	if (std::rename(savefile, bakfile)==-1) {
+		eventlog(eventlog_level_info,__FUNCTION__,"error std::rename %s to %s", savefile, bakfile);
 	}
-	if (p_rename(filename, savefile)==-1) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error rename %s to %s", filename, savefile);
+	if (std::rename(filename, savefile)==-1) {
+		eventlog(eventlog_level_error,__FUNCTION__,"error std::rename %s to %s", filename, savefile);
 		return 0;
 	}
 	eventlog(eventlog_level_info,__FUNCTION__,"saved charinfo %s(*%s) for gs %s(%d)", CharName, AccountName, conn->serverip, conn->serverid);
@@ -248,34 +189,34 @@ static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn,char * 
 {
 	char filename[MAX_PATH];
 	char filename_d2closed[MAX_PATH];
-	FILE * fd;
+	std::FILE * fd;
 	unsigned short curlen,readlen,leftlen,writelen;
 	long filesize;
 
 	strtolower(AccountName);
 	strtolower(CharName);
 
-	sprintf(filename,"%s/%s",d2dbs_prefs_get_charsave_dir(),CharName);
-	sprintf(filename_d2closed,"%s/%s.d2s",d2dbs_prefs_get_charsave_dir(),CharName);
+	std::sprintf(filename,"%s/%s",d2dbs_prefs_get_charsave_dir(),CharName);
+	std::sprintf(filename_d2closed,"%s/%s.d2s",d2dbs_prefs_get_charsave_dir(),CharName);
 	if ((access(filename, F_OK) < 0) && (access(filename_d2closed, F_OK) == 0))
 	{
-		rename(filename_d2closed, filename);
+		std::rename(filename_d2closed, filename);
 	}
-	fd = fopen(filename, "rb");
+	fd = std::fopen(filename, "rb");
 	if (!fd) {
 		eventlog(eventlog_level_error,__FUNCTION__,"open() failed : %s",filename);
 		return 0;
 	}
-	fseek(fd,0,SEEK_END);
-	filesize=ftell(fd);
-	rewind(fd);
+	std::fseek(fd,0,SEEK_END);
+	filesize=std::ftell(fd);
+	std::rewind(fd);
 	if (filesize==-1) {
-		fclose(fd);
+		std::fclose(fd);
 		eventlog(eventlog_level_error,__FUNCTION__,"lseek() failed");
 		return 0;
 	}
 	if ((signed)bufsize < filesize) {
-		fclose(fd);
+		std::fclose(fd);
 		eventlog(eventlog_level_error,__FUNCTION__,"not enough buffer");
 		return 0;
 	}
@@ -285,16 +226,16 @@ static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn,char * 
 	while(curlen < filesize) {
 		if (leftlen>2000) writelen=2000;
 		else writelen=leftlen;
-		readlen=fread(data+curlen,1,writelen,fd);
+		readlen=std::fread(data+curlen,1,writelen,fd);
 		if (readlen<=0) {
-			fclose(fd);
+			std::fclose(fd);
 			eventlog(eventlog_level_error,__FUNCTION__,"read() failed error : %s",pstrerror(errno));
 			return 0;
 		}
 		leftlen-=readlen;
 		curlen+=readlen;
 	}
-	fclose(fd);
+	std::fclose(fd);
 	eventlog(eventlog_level_info,__FUNCTION__,"loaded charsave %s(*%s) for gs %s(%d)", CharName, AccountName, conn->serverip, conn->serverid);
 	return filesize;
 }
@@ -302,29 +243,29 @@ static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn,char * 
 static unsigned int dbs_packet_getdata_charinfo(t_d2dbs_connection* conn,char * AccountName,char * CharName,char * data,unsigned int bufsize)
 {
 	char filename[MAX_PATH];
-	FILE * fd;
+	std::FILE * fd;
 	unsigned short curlen,readlen,leftlen,writelen;
 	long filesize;
 
 	strtolower(AccountName);
 	strtolower(CharName);
 
-	sprintf(filename,"%s/%s/%s",d2dbs_prefs_get_charinfo_dir(),AccountName,CharName);
-	fd = fopen(filename, "rb");
+	std::sprintf(filename,"%s/%s/%s",d2dbs_prefs_get_charinfo_dir(),AccountName,CharName);
+	fd = std::fopen(filename, "rb");
 	if (!fd) {
 		eventlog(eventlog_level_error,__FUNCTION__,"open() failed : %s",filename);
 		return 0;
 	}
-	fseek(fd,0,SEEK_END);
-	filesize=ftell(fd);
-	rewind(fd);
+	std::fseek(fd,0,SEEK_END);
+	filesize=std::ftell(fd);
+	std::rewind(fd);
 	if (filesize==-1) {
-		fclose(fd);
+		std::fclose(fd);
 		eventlog(eventlog_level_error,__FUNCTION__,"lseek() failed");
 		return 0;
 	}
 	if ((signed)bufsize < filesize) {
-		fclose(fd);
+		std::fclose(fd);
 		eventlog(eventlog_level_error,__FUNCTION__,"not enough buffer");
 		return 0;
 	}
@@ -336,17 +277,17 @@ static unsigned int dbs_packet_getdata_charinfo(t_d2dbs_connection* conn,char * 
 			writelen=2000;
 		else
 			writelen=leftlen;
-		readlen=fread(data+curlen,1,writelen,fd);
+		readlen=std::fread(data+curlen,1,writelen,fd);
 	    if (readlen<=0)
 		{
-			fclose(fd);
+			std::fclose(fd);
 			eventlog(eventlog_level_error,__FUNCTION__,"read() failed error : %s",pstrerror(errno));
 			return 0;
 		}
 		leftlen-=readlen;
 		curlen+=readlen;
 	}
-	fclose(fd);
+	std::fclose(fd);
 	eventlog(eventlog_level_info,__FUNCTION__,"loaded charinfo %s(*%s) for gs %s(%d)", CharName, AccountName, conn->serverip, conn->serverid);
 	return filesize;
 }
@@ -371,27 +312,27 @@ static int dbs_packet_savedata(t_d2dbs_connection * conn)
 	datalen=bn_short_get(savecom->datalen);
 
 	readpos+=sizeof(*savecom);
-	strncpy(AccountName,readpos,MAX_ACCTNAME_LEN);
+	std::strncpy(AccountName,readpos,MAX_ACCTNAME_LEN);
 	if (AccountName[MAX_ACCTNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max acccount name length exceeded");
 	    return -1;
 	}
-	readpos+=strlen(AccountName)+1;
-	strncpy(CharName,readpos,MAX_CHARNAME_LEN);
+	readpos+=std::strlen(AccountName)+1;
+	std::strncpy(CharName,readpos,MAX_CHARNAME_LEN);
 	if (CharName[MAX_CHARNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max char name length exceeded");
 	    return -1;
 	}
-	readpos+=strlen(CharName)+1;
-	strncpy(RealmName,readpos,MAX_REALMNAME_LEN);
+	readpos+=std::strlen(CharName)+1;
+	std::strncpy(RealmName,readpos,MAX_REALMNAME_LEN);
 	if (RealmName[MAX_REALMNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max realm name length exceeded");
 	    return -1;
 	}
-	readpos+=strlen(RealmName)+1;
+	readpos+=std::strlen(RealmName)+1;
 
 	if (readpos+datalen!=conn->ReadBuf+bn_short_get(savecom->h.size)) {
 		eventlog(eventlog_level_error,__FUNCTION__,"request packet size error");
@@ -419,7 +360,7 @@ static int dbs_packet_savedata(t_d2dbs_connection * conn)
 		eventlog(eventlog_level_error,__FUNCTION__,"unknown data type %d",datatype);
 		return -1;
 	}
-	writelen=sizeof(*saveret)+strlen(CharName)+1;
+	writelen=sizeof(*saveret)+std::strlen(CharName)+1;
 	if (writelen > kBufferSize-conn->nCharsInWriteBuffer) return 0;
 	writepos=(unsigned char*)(conn->WriteBuf+conn->nCharsInWriteBuffer);
 	saveret=(t_d2dbs_d2gs_save_data_reply *)writepos;
@@ -429,14 +370,14 @@ static int dbs_packet_savedata(t_d2dbs_connection * conn)
 	bn_short_set(&saveret->datatype,bn_short_get(savecom->datatype));
 	bn_int_set(&saveret->result,result);
 	writepos+=sizeof(*saveret);
-	strncpy((char*)writepos,CharName,MAX_CHARNAME_LEN);
+	std::strncpy((char*)writepos,CharName,MAX_CHARNAME_LEN);
 	conn->nCharsInWriteBuffer += writelen;
 	return 1;
 }
 
 static unsigned int dbs_packet_echoreply(t_d2dbs_connection * conn)
 {
-	conn->last_active=time(NULL);
+	conn->last_active=std::time(NULL);
 	return 1;
 }
 
@@ -463,27 +404,27 @@ static int dbs_packet_getdata(t_d2dbs_connection * conn)
 	datatype=bn_short_get(getcom->datatype);
 
 	readpos+=sizeof(*getcom);
-	strncpy(AccountName,readpos,MAX_ACCTNAME_LEN);
+	std::strncpy(AccountName,readpos,MAX_ACCTNAME_LEN);
 	if (AccountName[MAX_ACCTNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max account name length exceeded");
 	    return -1;
 	}
-	readpos+=strlen(AccountName)+1;
-	strncpy(CharName,readpos,MAX_CHARNAME_LEN);
+	readpos+=std::strlen(AccountName)+1;
+	std::strncpy(CharName,readpos,MAX_CHARNAME_LEN);
 	if (CharName[MAX_CHARNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max char name length exceeded");
 	    return -1;
 	}
-	readpos+=strlen(CharName)+1;
-	strncpy(RealmName,readpos,MAX_REALMNAME_LEN);
+	readpos+=std::strlen(CharName)+1;
+	std::strncpy(RealmName,readpos,MAX_REALMNAME_LEN);
 	if (RealmName[MAX_REALMNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max realm name length exceeded");
 	    return -1;
 	}
-	readpos+=strlen(RealmName)+1;
+	readpos+=std::strlen(RealmName)+1;
 
 	if (readpos != conn->ReadBuf+bn_short_get(getcom->h.size)) {
 		eventlog(eventlog_level_error,__FUNCTION__,"request packet size error");
@@ -532,7 +473,7 @@ static int dbs_packet_getdata(t_d2dbs_connection * conn)
 		}
 		if (result==D2DBS_GET_DATA_SUCCESS) {
 			bn_int_set(&getret->charcreatetime,bn_int_get(charinfo.header.create_time));
-			/* FIXME: this should be rewritten to support string formatted time */
+			/* FIXME: this should be rewritten to support string formatted std::time */
 			if (bn_int_get(charinfo.header.create_time)>=prefs_get_ladderinit_time()) {
 				bn_int_set(&getret->allowladder,1);
 			} else {
@@ -553,7 +494,7 @@ static int dbs_packet_getdata(t_d2dbs_connection * conn)
 		eventlog(eventlog_level_error,__FUNCTION__,"unknown data type %d",datatype);
 		return -1;
 	}
-	writelen=datalen+sizeof(*getret)+strlen(CharName)+1;
+	writelen=datalen+sizeof(*getret)+std::strlen(CharName)+1;
 	if (writelen > kBufferSize-conn->nCharsInWriteBuffer) return 0;
 	bn_short_set(&getret->h.type,D2DBS_D2GS_GET_DATA_REPLY);
 	bn_short_set(&getret->h.size,writelen);
@@ -562,9 +503,9 @@ static int dbs_packet_getdata(t_d2dbs_connection * conn)
 	bn_int_set(&getret->result,result);
 	bn_short_set(&getret->datalen,datalen);
 	writepos+=sizeof(*getret);
-	strncpy(writepos,CharName,MAX_CHARNAME_LEN);
-	writepos+=strlen(CharName)+1;
-	if (datalen) memcpy(writepos,databuf,datalen);
+	std::strncpy(writepos,CharName,MAX_CHARNAME_LEN);
+	writepos+=std::strlen(CharName)+1;
+	if (datalen) std::memcpy(writepos,databuf,datalen);
 	conn->nCharsInWriteBuffer += writelen;
 	return 1;
 }
@@ -581,26 +522,26 @@ static int dbs_packet_updateladder(t_d2dbs_connection * conn)
 	updateladder=(t_d2gs_d2dbs_update_ladder *)readpos;
 
 	readpos+=sizeof(*updateladder);
-	strncpy(CharName,readpos,MAX_CHARNAME_LEN);
+	std::strncpy(CharName,readpos,MAX_CHARNAME_LEN);
 	if (CharName[MAX_CHARNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max char name length exceeded");
 	    return -1;
 	}
-	readpos+=strlen(CharName)+1;
-	strncpy(RealmName,readpos,MAX_REALMNAME_LEN);
+	readpos+=std::strlen(CharName)+1;
+	std::strncpy(RealmName,readpos,MAX_REALMNAME_LEN);
 	if (RealmName[MAX_REALMNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max realm name length exceeded");
 	    return -1;
 	}
-	readpos+=strlen(RealmName)+1;
+	readpos+=std::strlen(RealmName)+1;
 	if (readpos != conn->ReadBuf+bn_short_get(updateladder->h.size)) {
 		eventlog(eventlog_level_error,__FUNCTION__,"request packet size error");
 		return -1;
 	}
 
-	strcpy(charladderinfo.charname,CharName);
+	std::strcpy(charladderinfo.charname,CharName);
 	charladderinfo.experience=bn_int_get(updateladder->charexplow);
 	charladderinfo.level=bn_int_get(updateladder->charlevel);
 	charladderinfo.status=bn_short_get(updateladder->charstatus);
@@ -622,27 +563,27 @@ static int dbs_packet_charlock(t_d2dbs_connection * conn)
 	charlock=(t_d2gs_d2dbs_char_lock*)readpos;
 
 	readpos+=sizeof(*charlock);
-	strncpy(AccountName,readpos,MAX_ACCTNAME_LEN);
+	std::strncpy(AccountName,readpos,MAX_ACCTNAME_LEN);
 	if (AccountName[MAX_ACCTNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max account name length exceeded");
 	    return -1;
 	}
-	readpos+=strlen(AccountName)+1;
-	strncpy(CharName,readpos,MAX_CHARNAME_LEN);
+	readpos+=std::strlen(AccountName)+1;
+	std::strncpy(CharName,readpos,MAX_CHARNAME_LEN);
 	if (CharName[MAX_CHARNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max char name length exceeded");
 	    return -1;
 	}
-	readpos+=strlen(CharName)+1;
-	strncpy(RealmName,readpos,MAX_REALMNAME_LEN);
+	readpos+=std::strlen(CharName)+1;
+	std::strncpy(RealmName,readpos,MAX_REALMNAME_LEN);
 	if (RealmName[MAX_REALMNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max realm name length exceeded");
 	    return -1;
 	}
-	readpos+=strlen(RealmName)+1;
+	readpos+=std::strlen(RealmName)+1;
 
 	if (readpos != conn->ReadBuf+ bn_short_get(charlock->h.size)) {
 		eventlog(eventlog_level_error,__FUNCTION__,"request packet size error");
@@ -698,7 +639,7 @@ extern int dbs_packet_handle(t_d2dbs_connection* conn)
 			return -1;
 		}
 		conn->nCharsInReadBuffer -= readlen;
-		memmove(conn->ReadBuf,conn->ReadBuf+readlen,conn->nCharsInReadBuffer);
+		std::memmove(conn->ReadBuf,conn->ReadBuf+readlen,conn->nCharsInReadBuffer);
 	} else if (conn->stats==1) {
 		if (conn->type==CONNECT_CLASS_D2GS_TO_D2DBS) {
 			while (conn->nCharsInReadBuffer >= (signed)sizeof(*readhead)) {
@@ -728,7 +669,7 @@ extern int dbs_packet_handle(t_d2dbs_connection* conn)
 				}
 				if (retval!=1) return retval;
 				conn->nCharsInReadBuffer -= readlen;
-				memmove(conn->ReadBuf,conn->ReadBuf+readlen,conn->nCharsInReadBuffer);
+				std::memmove(conn->ReadBuf,conn->ReadBuf+readlen,conn->nCharsInReadBuffer);
 			}
 		} else {
 			eventlog(eventlog_level_error,__FUNCTION__,"unknown connection type %d",conn->type);
@@ -762,7 +703,7 @@ static int dbs_verify_ipaddr(char const * addrlist,t_d2dbs_connection * c)
 		host_lookup(s, &resolveipaddr);
 		if(resolveipaddr == 0) continue;
 
-		if (!strcmp(ipaddr, (const char *)addr_num_to_ip_str(resolveipaddr))) {
+		if (!std::strcmp(ipaddr, (const char *)addr_num_to_ip_str(resolveipaddr))) {
 			valid=1;
 			break;
 		}
@@ -791,10 +732,10 @@ int dbs_check_timeout(void)
 {
 	t_elem				*elem;
 	t_d2dbs_connection		*tempc;
-	time_t				now;
+	std::time_t				now;
 	int				timeout;
 
-	now=time(NULL);
+	now=std::time(NULL);
 	timeout=d2dbs_prefs_get_idletime();
 	LIST_TRAVERSE(dbs_server_connection_list,elem)
 	{
@@ -816,10 +757,10 @@ int dbs_keepalive(void)
 	t_d2dbs_d2gs_echorequest	*echoreq;
 	unsigned short			writelen;
 	unsigned char			*writepos;
-	time_t				now;
+	std::time_t				now;
 
 	writelen = sizeof(t_d2dbs_d2gs_echorequest);
-	now=time(NULL);
+	now=std::time(NULL);
 	LIST_TRAVERSE(dbs_server_connection_list,elem)
 	{
 		if (!(tempc=(t_d2dbs_connection*)elem_get_data(elem))) continue;
@@ -888,7 +829,7 @@ static int dbs_packet_fix_charinfo(t_d2dbs_connection * conn,char * AccountName,
 	    level = 255;
 
 	if (level < 100)
-	    return 1; /* d2gs will send charinfo - level will be set to 255 at that time if needed */
+	    return 1; /* d2gs will send charinfo - level will be set to 255 at that std::time if needed */
 
 	eventlog(eventlog_level_info,__FUNCTION__,"level %u > 99 for %s",level,CharName);
 

@@ -17,62 +17,18 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include <stdio.h>
-#include <errno.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_STAT_H
-# include <sys/stat.h>
-#endif
-#ifdef HAVE_SYS_FILE_H
-#include <sys/file.h>
-#endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
-# ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#include "compat/rename.h"
 #include "d2ladder.h"
-#include "prefs.h"
-#include "common/tag.h"
-#include "common/list.h"
-#include "common/eventlog.h"
+
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+
 #include "compat/strncasecmp.h"
 #include "compat/strerror.h"
-#include "d2cs/d2charfile.h"
+#include "common/eventlog.h"
 #include "common/xalloc.h"
+#include "common/tag.h"
+#include "prefs.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -155,7 +111,7 @@ extern int d2ladder_update(t_d2ladder_info * pcharladderinfo)
 
 int d2ladder_initladderfile(void)
 {
-	FILE * fdladder;
+	std::FILE * fdladder;
 	t_d2ladderfile_ladderindex lhead[D2LADDER_MAXTYPE];
 	t_d2ladderfile_header fileheader;
 	int start;
@@ -184,20 +140,20 @@ int d2ladder_initladderfile(void)
 		bn_int_set(&lhead[i].number,number);
 		start += number*sizeof(emptydata);
 	}
-	memset(&emptydata,0,sizeof(emptydata));
+	std::memset(&emptydata,0,sizeof(emptydata));
 	if (!d2ladder_ladder_file) return -1;
-	fdladder=fopen(d2ladder_ladder_file,"wb");
+	fdladder=std::fopen(d2ladder_ladder_file,"wb");
 	if(fdladder) {
 		bn_int_set(&fileheader.maxtype,maxtype);
 		bn_int_set(&fileheader.checksum,0);
-		fwrite(&fileheader,1,sizeof(fileheader),fdladder);
-		fwrite(lhead,1,sizeof(lhead),fdladder);
+		std::fwrite(&fileheader,1,sizeof(fileheader),fdladder);
+		std::fwrite(lhead,1,sizeof(lhead),fdladder);
 		for(i=0;i<maxtype;i++) {
 			for(j=0;j<bn_int_get(lhead[i].number);j++) {
-				fwrite(&emptydata,1,sizeof(emptydata),fdladder);
+				std::fwrite(&emptydata,1,sizeof(emptydata),fdladder);
 			}
 		}
-		fclose(fdladder);
+		std::fclose(fdladder);
 		d2ladder_checksum_set();
 	}
 	else {
@@ -304,8 +260,8 @@ int d2ladder_check(void)
 	if (!d2ladder_backup_file) return -1;
 	if(d2ladder_checksum_check()!=1) {
 		eventlog(eventlog_level_error,__FUNCTION__,"ladder file checksum error,try to use backup file");
-		if (p_rename(d2ladder_backup_file,d2ladder_ladder_file)==-1) {
-			eventlog(eventlog_level_error,__FUNCTION__,"error rename %s to %s", d2ladder_backup_file,d2ladder_ladder_file);
+		if (std::rename(d2ladder_backup_file,d2ladder_ladder_file)==-1) {
+			eventlog(eventlog_level_error,__FUNCTION__,"error std::rename %s to %s", d2ladder_backup_file,d2ladder_ladder_file);
 		}
 		if(d2ladder_checksum_check()!=1) {
 			eventlog(eventlog_level_error,__FUNCTION__,"ladder backup file checksum error,rebuild ladder");
@@ -343,14 +299,14 @@ extern int d2dbs_d2ladder_init(void)
 {
 	d2ladder_change_count=0;
 	d2ladder_maxtype=0;
-	d2ladder_ladder_file=(char*)xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+
-			  strlen(LADDER_FILE_PREFIX)+1+strlen(CLIENTTAG_DIABLO2DV)+1+10);
-	d2ladder_backup_file=(char*)xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+
-			  strlen(LADDER_BACKUP_PREFIX)+1+strlen(CLIENTTAG_DIABLO2DV)+1+10);
-	sprintf(d2ladder_ladder_file,"%s/%s.%s",d2dbs_prefs_get_ladder_dir(),\
+	d2ladder_ladder_file=(char*)xmalloc(std::strlen(d2dbs_prefs_get_ladder_dir())+1+
+			  std::strlen(LADDER_FILE_PREFIX)+1+std::strlen(CLIENTTAG_DIABLO2DV)+1+10);
+	d2ladder_backup_file=(char*)xmalloc(std::strlen(d2dbs_prefs_get_ladder_dir())+1+
+			  std::strlen(LADDER_BACKUP_PREFIX)+1+std::strlen(CLIENTTAG_DIABLO2DV)+1+10);
+	std::sprintf(d2ladder_ladder_file,"%s/%s.%s",d2dbs_prefs_get_ladder_dir(),\
 		LADDER_FILE_PREFIX,CLIENTTAG_DIABLO2DV);
 
-	sprintf(d2ladder_backup_file,"%s/%s.%s",d2dbs_prefs_get_ladder_dir(),\
+	std::sprintf(d2ladder_backup_file,"%s/%s.%s",d2dbs_prefs_get_ladder_dir(),\
 		LADDER_BACKUP_PREFIX,CLIENTTAG_DIABLO2DV);
 
 	if (d2ladderlist_init()<0) {
@@ -391,7 +347,7 @@ int d2ladder_readladder(void)
 {
 	t_d2ladder 		* d2ladder;
 	t_d2ladderfile_header fileheader;
-	FILE * 			fdladder;
+	std::FILE * 			fdladder;
 	t_d2ladderfile_ladderindex 	* lhead;
 	t_d2ladderfile_ladderinfo 	* ldata;
 	t_d2ladder_info			* info;
@@ -403,27 +359,27 @@ int d2ladder_readladder(void)
 	unsigned int			i, number;
 
 	if (!d2ladder_ladder_file) return -1;
-	fdladder=fopen(d2ladder_ladder_file,"rb");
+	fdladder=std::fopen(d2ladder_ladder_file,"rb");
 	if(!fdladder) {
 		eventlog(eventlog_level_error,__FUNCTION__,"canot open ladder file");
 		return -1;
 	}
 
-	fseek(fdladder,0,SEEK_END);
-	leftsize=ftell(fdladder);
-	rewind(fdladder);
+	std::fseek(fdladder,0,SEEK_END);
+	leftsize=std::ftell(fdladder);
+	std::rewind(fdladder);
 
 	blocksize=sizeof(fileheader) ;
 	if (leftsize<blocksize) {
 		eventlog(eventlog_level_error,__FUNCTION__,"file size error");
-		fclose(fdladder);
+		std::fclose(fdladder);
 		return -1;
 	}
 
-	readlen=fread(&fileheader,1,sizeof(fileheader),fdladder);
+	readlen=std::fread(&fileheader,1,sizeof(fileheader),fdladder);
 	if (readlen<=0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,pstrerror(errno));
-		fclose(fdladder);
+		std::fclose(fdladder);
 		return -1;
 	}
 	tempmaxtype=bn_int_get(fileheader.maxtype);
@@ -431,7 +387,7 @@ int d2ladder_readladder(void)
 
 	if(tempmaxtype>D2LADDER_MAXTYPE) {
 		eventlog(eventlog_level_error,__FUNCTION__,"ladder type > D2LADDER_MAXTYPE error");
-		fclose(fdladder);
+		std::fclose(fdladder);
 		return -1;
 	}
 	d2ladder_maxtype=tempmaxtype;
@@ -439,16 +395,16 @@ int d2ladder_readladder(void)
 	blocksize=d2ladder_maxtype*sizeof(*lhead);
 	if (leftsize < blocksize ) {
 		eventlog(eventlog_level_error,__FUNCTION__,"file size error");
-		fclose(fdladder);
+		std::fclose(fdladder);
 		return -1;
 	}
 
 	lhead=(t_d2ladderfile_ladderindex*)xmalloc(blocksize);
-	readlen=fread(lhead,1,d2ladder_maxtype*sizeof(*lhead),fdladder);
+	readlen=std::fread(lhead,1,d2ladder_maxtype*sizeof(*lhead),fdladder);
 	if (readlen<=0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,pstrerror(errno));
 		xfree(lhead);
-		fclose(fdladder);
+		std::fclose(fdladder);
 		return -1;
 	}
 	leftsize-=blocksize;
@@ -460,7 +416,7 @@ int d2ladder_readladder(void)
 	if (leftsize < blocksize ) {
 		eventlog(eventlog_level_error,__FUNCTION__,"file size error");
 		xfree(lhead);
-		fclose(fdladder);
+		std::fclose(fdladder);
 		return -1;
 	}
 
@@ -474,9 +430,9 @@ int d2ladder_readladder(void)
 		}
 		ldata=(t_d2ladderfile_ladderinfo*)xmalloc(number*sizeof(*ldata));
 		info=(t_d2ladder_info*)xmalloc(number * sizeof(*info));
-		memset(info,0,number * sizeof(*info));
-		fseek(fdladder,bn_int_get(lhead[laddertype].offset),SEEK_SET);
-		readlen=fread(ldata,1,number*sizeof(*ldata),fdladder);
+		std::memset(info,0,number * sizeof(*info));
+		std::fseek(fdladder,bn_int_get(lhead[laddertype].offset),SEEK_SET);
+		readlen=std::fread(ldata,1,number*sizeof(*ldata),fdladder);
 		if (readlen<=0) {
 			eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,pstrerror(errno));
 			xfree(ldata);
@@ -491,7 +447,7 @@ int d2ladder_readladder(void)
 			temp.status=bn_short_get(ldata[i].status);
 			temp.level=bn_byte_get(ldata[i].level);
 			temp.chclass=bn_byte_get(ldata[i].chclass);
-			strncpy(temp.charname,ldata[i].charname,sizeof(info[i].charname));
+			std::strncpy(temp.charname,ldata[i].charname,sizeof(info[i].charname));
 			if (d2ladder_update_info_and_pos(d2ladder,&temp,
 				d2ladder_find_char_all(d2ladder,&temp),
 				d2ladder_find_pos(d2ladder,&temp))==1) {
@@ -503,7 +459,7 @@ int d2ladder_readladder(void)
 	leftsize-=blocksize;
 
 	xfree(lhead);
-	fclose(fdladder);
+	std::fclose(fdladder);
 	return 0;
 }
 
@@ -559,7 +515,7 @@ int d2ladder_empty(void)
 	for (i=0;i<d2ladder_maxtype;i++) {
 		d2ladder=d2ladderlist_find_type(i);
 		if(d2ladder) {
-			memset(d2ladder->info,0,d2ladder->len * sizeof(*d2ladder->info));
+			std::memset(d2ladder->info,0,d2ladder->len * sizeof(*d2ladder->info));
 		}
 	}
 	return 0;
@@ -588,7 +544,7 @@ const char * get_prefix(int type, int status, int chclass)
   return prefix[difficulty][type][sex[chclass]];
 }
 
-int d2ladder_print_XML(FILE *ladderstrm)
+int d2ladder_print_XML(std::FILE *ladderstrm)
 {
   // modified version of d2ladder_print - changes done by jfro with a little help of aaron
   t_d2ladder * d2ladder;
@@ -599,7 +555,7 @@ int d2ladder_print_XML(FILE *ladderstrm)
   char charclass[11][12]={"OverAll", "Amazon", "Sorceress", "Necromancer", "Paladin",\
 			  "Barbarian", "Druid", "Assassin", "","",""} ;
 
-  fprintf(ladderstrm,"<?xml version=\"1.0\"?>\n<D2_ladders>\n");
+  std::fprintf(ladderstrm,"<?xml version=\"1.0\"?>\n<D2_ladders>\n");
   for(type=0; type <d2ladder_maxtype; type++) {
     d2ladder=d2ladderlist_find_type(type);
     if (!d2ladder)
@@ -632,29 +588,29 @@ int d2ladder_print_XML(FILE *ladderstrm)
 	classtype=type-D2LADDER_EXP_STD_OVERALL ;
       }
 
-    fprintf(ladderstrm,"<ladder>\n\t<type>%d</type>\n\t<mode>%s</mode>\n\t<class>%s</class>\n",
+    std::fprintf(ladderstrm,"<ladder>\n\t<type>%d</type>\n\t<mode>%s</mode>\n\t<class>%s</class>\n",
                        type,laddermode[overalltype],charclass[classtype]);
     for(i=0; i<d2ladder->len; i++)
       {
       	if ((ldata[i].charname != NULL) && (ldata[i].charname[0] != '\0'))
       	{
-	  fprintf(ladderstrm,"\t<char>\n\t\t<rank>%2d</rank>\n\t\t<name>%s</name>\n\t\t<level>%2d</level>\n",
+	  std::fprintf(ladderstrm,"\t<char>\n\t\t<rank>%2d</rank>\n\t\t<name>%s</name>\n\t\t<level>%2d</level>\n",
 		             i+1,ldata[i].charname,ldata[i].level);
-	  fprintf(ladderstrm,"\t\t<experience>%u</experience>\n\t\t<class>%s</class>\n",
+	  std::fprintf(ladderstrm,"\t\t<experience>%u</experience>\n\t\t<class>%s</class>\n",
 		             ldata[i].experience,charclass[ldata[i].chclass+1]);
-	  fprintf(ladderstrm,"\t\t<prefix>%s</prefix>\n",
+	  std::fprintf(ladderstrm,"\t\t<prefix>%s</prefix>\n",
 		             get_prefix(overalltype,ldata[i].status,ldata[i].chclass+1));
           if (((ldata[i].status) & (D2CHARINFO_STATUS_FLAG_DEAD | D2CHARINFO_STATUS_FLAG_HARDCORE)) ==
 				   (D2CHARINFO_STATUS_FLAG_DEAD | D2CHARINFO_STATUS_FLAG_HARDCORE))
-	    fprintf(ladderstrm,"\t\t<status>dead</status>\n\t</char>\n");
+	    std::fprintf(ladderstrm,"\t\t<status>dead</status>\n\t</char>\n");
 	  else
-	    fprintf(ladderstrm,"\t\t<status>alive</status>\n\t</char>\n");
+	    std::fprintf(ladderstrm,"\t\t<status>alive</status>\n\t</char>\n");
 	}
       }
-    fprintf(ladderstrm,"</ladder>\n");
-    fflush(ladderstrm);
+    std::fprintf(ladderstrm,"</ladder>\n");
+    std::fflush(ladderstrm);
   }
-  fprintf(ladderstrm,"</D2_ladders>\n");
+  std::fprintf(ladderstrm,"</D2_ladders>\n");
   return 0;
 }
 
@@ -662,13 +618,13 @@ extern int d2ladder_saveladder(void)
 {
 	t_d2ladderfile_ladderindex	lhead[D2LADDER_MAXTYPE];
 	t_d2ladderfile_header		fileheader;
-	FILE				* fdladder;
+	std::FILE				* fdladder;
 	int				start;
 	unsigned int			i,j, number;
 	t_d2ladder			* d2ladder;
 	t_d2ladderfile_ladderinfo	* ldata;
 	char                            * XMLfilename;
-        FILE                            * XMLfile;
+        std::FILE                            * XMLfile;
 
 /*
 	if(!d2ladder_change_count) {
@@ -691,12 +647,12 @@ extern int d2ladder_saveladder(void)
 
 	if(d2ladder_checksum_check()==1) {
 		eventlog(eventlog_level_info,__FUNCTION__,"backup ladder file");
-		if (p_rename(d2ladder_ladder_file,d2ladder_backup_file)==-1) {
-			eventlog(eventlog_level_warn,__FUNCTION__,"error rename %s to %s", d2ladder_ladder_file, d2ladder_backup_file);
+		if (std::rename(d2ladder_ladder_file,d2ladder_backup_file)==-1) {
+			eventlog(eventlog_level_warn,__FUNCTION__,"error std::rename %s to %s", d2ladder_ladder_file, d2ladder_backup_file);
 		}
 	}
 
-	fdladder=fopen(d2ladder_ladder_file,"wb");
+	fdladder=std::fopen(d2ladder_ladder_file,"wb");
 	if(!fdladder) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error open ladder file %s",d2ladder_ladder_file);
 		return -1;
@@ -705,16 +661,16 @@ extern int d2ladder_saveladder(void)
 	// aaron: add extra output for XML ladder here --->
 	if (d2dbs_prefs_get_XML_output_ladder())
 	{
-	  XMLfilename = (char*)xmalloc(strlen(d2dbs_prefs_get_ladder_dir())+1+strlen(XMLname)+1);
-	  sprintf(XMLfilename,"%s/%s",d2dbs_prefs_get_ladder_dir(),XMLname);
-	  if (!(XMLfile = fopen(XMLfilename,"w")))
+	  XMLfilename = (char*)xmalloc(std::strlen(d2dbs_prefs_get_ladder_dir())+1+std::strlen(XMLname)+1);
+	  std::sprintf(XMLfilename,"%s/%s",d2dbs_prefs_get_ladder_dir(),XMLname);
+	  if (!(XMLfile = std::fopen(XMLfilename,"w")))
 	  {
 	      eventlog(eventlog_level_error,__FUNCTION__,"could not open XML ladder file for output");
 	  }
 	  else
 	  {
              d2ladder_print_XML(XMLfile);
-	     fclose(XMLfile);
+	     std::fclose(XMLfile);
 	     xfree(XMLfilename);
 	  }
 	}
@@ -723,32 +679,32 @@ extern int d2ladder_saveladder(void)
 
 	bn_int_set(&fileheader.maxtype,d2ladder_maxtype);
 	bn_int_set(&fileheader.checksum,0);
-	fwrite(&fileheader,1,sizeof(fileheader),fdladder);
-	fwrite(lhead,1,sizeof(lhead),fdladder);
+	std::fwrite(&fileheader,1,sizeof(fileheader),fdladder);
+	std::fwrite(lhead,1,sizeof(lhead),fdladder);
 	for(i=0;i<d2ladder_maxtype;i++) {
 		number=bn_int_get(lhead[i].number);
 		if(number<=0) continue;
 		d2ladder=d2ladderlist_find_type(i);
 		ldata=(t_d2ladderfile_ladderinfo*)xmalloc(number * sizeof(*ldata));
-		memset(ldata,0,number * sizeof(*ldata));
+		std::memset(ldata,0,number * sizeof(*ldata));
 		for (j=0; j< number; j++) {
 			bn_int_set(&ldata[j].experience,d2ladder->info[j].experience);
 			bn_short_set(&ldata[j].status, d2ladder->info[j].status);
 			bn_byte_set(&ldata[j].level, d2ladder->info[j].level);
 			bn_byte_set(&ldata[j].chclass, d2ladder->info[j].chclass);
-			strncpy(ldata[j].charname,d2ladder->info[j].charname,sizeof(ldata[j].charname));
+			std::strncpy(ldata[j].charname,d2ladder->info[j].charname,sizeof(ldata[j].charname));
 		}
-		fwrite(ldata,1,number*sizeof(*ldata),fdladder);
+		std::fwrite(ldata,1,number*sizeof(*ldata),fdladder);
 		xfree(ldata);
 	}
-	fclose(fdladder);
+	std::fclose(fdladder);
 	d2ladder_checksum_set();
 	eventlog(eventlog_level_info,__FUNCTION__,"ladder file saved (%d changes)",d2ladder_change_count);
 	d2ladder_change_count=0;
 	return 0;
 }
 
-int d2ladder_print(FILE *ladderstrm)
+int d2ladder_print(std::FILE *ladderstrm)
 {
 	t_d2ladder * d2ladder;
 	t_d2ladder_info * ldata;
@@ -790,12 +746,12 @@ int d2ladder_print(FILE *ladderstrm)
 			classtype=type-	D2LADDER_EXP_STD_OVERALL ;
 		}
 
-		fprintf(ladderstrm,"ladder type %d  %s %s\n",type,laddermode[overalltype],charclass[classtype]);
-		fprintf(ladderstrm,"************************************************************************\n");
-		fprintf(ladderstrm,"No    character name    level      exp       status   title   class     \n");
+		std::fprintf(ladderstrm,"ladder type %d  %s %s\n",type,laddermode[overalltype],charclass[classtype]);
+		std::fprintf(ladderstrm,"************************************************************************\n");
+		std::fprintf(ladderstrm,"No    character name    level      std::exp       status   title   class     \n");
 		for(i=0; i<d2ladder->len; i++)
 		{
-			fprintf(ladderstrm,"NO.%2d  %-16s    %2d   %10d       %2X       %1X    %s\n",
+			std::fprintf(ladderstrm,"NO.%2d  %-16s    %2d   %10d       %2X       %1X    %s\n",
 				i+1,
 				ldata[i].charname,
 				ldata[i].level,
@@ -804,8 +760,8 @@ int d2ladder_print(FILE *ladderstrm)
 				1,
 				charclass[ldata[i].chclass+1]);
 		}
-		fprintf(ladderstrm,"************************************************************************\n");
-		fflush(ladderstrm);
+		std::fprintf(ladderstrm,"************************************************************************\n");
+		std::fflush(ladderstrm);
 	}
 	return 0;
 }
@@ -829,29 +785,29 @@ int d2ladder_checksum(unsigned char const * data, unsigned int len,unsigned int 
 
 int d2ladder_checksum_set(void)
 {
-	FILE		* fdladder;
+	std::FILE		* fdladder;
 	off_t		filesize;
 	int		curlen,readlen,len;
 	unsigned char * buffer;
 	bn_int		checksum;
 
 	if (!d2ladder_ladder_file) return -1;
-	fdladder=fopen(d2ladder_ladder_file,"r+b");
+	fdladder=std::fopen(d2ladder_ladder_file,"r+b");
 	if(!fdladder) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error open ladder file %s",d2ladder_ladder_file);
 		return -1;
 	}
-	fseek(fdladder,0,SEEK_END);
-	filesize=ftell(fdladder);
-	rewind(fdladder);
+	std::fseek(fdladder,0,SEEK_END);
+	filesize=std::ftell(fdladder);
+	std::rewind(fdladder);
 	if(filesize==(off_t)-1) {
 		eventlog(eventlog_level_error,__FUNCTION__,"lseek() error in ladder file %s",d2ladder_ladder_file);
-		fclose(fdladder);
+		std::fclose(fdladder);
 		return -1;
 	}
 	if(filesize<(signed)sizeof(t_d2ladderfile_header)) {
 		eventlog(eventlog_level_error,__FUNCTION__,"ladder file size error :%s",d2ladder_ladder_file);
-		fclose(fdladder);
+		std::fclose(fdladder);
 		return -1;
 	}
 	buffer=(unsigned char*)xmalloc(filesize);
@@ -862,10 +818,10 @@ int d2ladder_checksum_set(void)
 		    len = 2000;
 		else
 		    len = filesize-curlen;
-		readlen=fread(buffer+curlen,1,len,fdladder);
+		readlen=std::fread(buffer+curlen,1,len,fdladder);
 		if (readlen<=0) {
 			xfree(buffer);
-			fclose(fdladder);
+			std::fclose(fdladder);
 			eventlog(eventlog_level_error,__FUNCTION__,"got bad save file or read error(read:%s)",pstrerror(errno));
 			return -1;
 		}
@@ -873,16 +829,16 @@ int d2ladder_checksum_set(void)
 	}
 
 	bn_int_set(&checksum,d2ladder_checksum(buffer,filesize,LADDERFILE_CHECKSUM_OFFSET));
-	fseek(fdladder,LADDERFILE_CHECKSUM_OFFSET,SEEK_SET);
-	fwrite(&checksum,1,sizeof(checksum),fdladder);
+	std::fseek(fdladder,LADDERFILE_CHECKSUM_OFFSET,SEEK_SET);
+	std::fwrite(&checksum,1,sizeof(checksum),fdladder);
 	xfree(buffer);
-	fclose(fdladder);
+	std::fclose(fdladder);
 	return 0;
 }
 
 int d2ladder_checksum_check(void)
 {
-	FILE		* fdladder;
+	std::FILE		* fdladder;
 	off_t		filesize;
 	int		curlen,readlen,len;
 	unsigned char	* buffer;
@@ -890,22 +846,22 @@ int d2ladder_checksum_check(void)
 	t_d2ladderfile_header	* header;
 
 	if (!d2ladder_ladder_file) return -1;
-	fdladder=fopen(d2ladder_ladder_file,"rb");
+	fdladder=std::fopen(d2ladder_ladder_file,"rb");
 	if(!fdladder) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error open ladder file %s",d2ladder_ladder_file);
 		return -1;
 	}
-	fseek(fdladder,0,SEEK_END);
-	filesize=ftell(fdladder);
-	rewind(fdladder);
+	std::fseek(fdladder,0,SEEK_END);
+	filesize=std::ftell(fdladder);
+	std::rewind(fdladder);
 	if(filesize==(off_t)-1) {
 		eventlog(eventlog_level_error,__FUNCTION__,"lseek() error in  ladder file %s",d2ladder_ladder_file);
-		fclose(fdladder);
+		std::fclose(fdladder);
 		return -1;
 	}
 	if(filesize<(signed)sizeof(t_d2ladderfile_header)) {
 		eventlog(eventlog_level_error,__FUNCTION__,"ladder file size error :%s",d2ladder_ladder_file);
-		fclose(fdladder);
+		std::fclose(fdladder);
 		return -1;
 	}
 	buffer=(unsigned char*)xmalloc(filesize);
@@ -916,16 +872,16 @@ int d2ladder_checksum_check(void)
 		    len = 2000;
 		else
 		    len = filesize-curlen;
-		readlen=fread(buffer+curlen,1,len,fdladder);
+		readlen=std::fread(buffer+curlen,1,len,fdladder);
 		if (readlen<=0) {
 			xfree(buffer);
-			fclose(fdladder);
+			std::fclose(fdladder);
 			eventlog(eventlog_level_error,__FUNCTION__,"got bad save file or read error(read:%s)",pstrerror(errno));
 			return -1;
 		}
 		curlen+=readlen;
 	}
-	fclose(fdladder);
+	std::fclose(fdladder);
 
 	oldchecksum=bn_int_get(header->checksum);
 	checksum=d2ladder_checksum(buffer,filesize,LADDERFILE_CHECKSUM_OFFSET);

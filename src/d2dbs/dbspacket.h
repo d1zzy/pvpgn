@@ -19,10 +19,8 @@
 #ifndef INCLUDED_DBSPACKET_H
 #define INCLUDED_DBSPACKET_H
 
-#include "dbserver.h"
 #include "common/bn_type.h"
-
-/* #pragma pack(1) */
+#include "dbserver.h"
 
 namespace pvpgn
 {

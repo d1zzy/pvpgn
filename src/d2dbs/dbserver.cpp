@@ -17,89 +17,26 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
-# ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/memset.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <time.h>
-# include <sys/time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#include "compat/inet_ntoa.h"
-#include "compat/psock.h"
-#include "common/network.h"
-
 #include "dbserver.h"
-#include "charlock.h"
-#include "d2ladder.h"
-#include "dbspacket.h"
-#include "prefs.h"
-#include "handle_signal.h"
-#include "common/list.h"
-#include "common/eventlog.h"
+
+#include <cstring>
+#include <ctime>
+
 #ifdef WIN32
-# include <conio.h> /* for kbhit() and getch() */
+# include <conio.h>
 #endif
+
+#include "compat/psock.h"
+#include "compat/strerror.h"
+#include "common/eventlog.h"
 #include "common/addr.h"
 #include "common/xalloc.h"
+#include "common/network.h"
+#include "d2ladder.h"
+#include "prefs.h"
+#include "charlock.h"
+#include "dbspacket.h"
+#include "handle_signal.h"
 #include "common/setup_after.h"
 
 
@@ -234,7 +171,7 @@ int dbs_server_setup_fdsets(t_psock_fd_set * pReadFDs, t_psock_fd_set * pWriteFD
 
 	PSOCK_FD_ZERO(pReadFDs);
 	PSOCK_FD_ZERO(pWriteFDs);
-	PSOCK_FD_ZERO(pExceptFDs); /* FIXME: don't check these... remove this code */
+	PSOCK_FD_ZERO(pExceptFDs); /* FIXME: don't check these... std::remove this code */
 	/* Add the listener socket to the read and except FD sets, if there is one. */
 	if (lsocket >= 0) {
 		PSOCK_FD_SET(lsocket, pReadFDs);
@@ -291,7 +228,7 @@ BOOL dbs_server_write_data(t_d2dbs_connection* conn)
 
 	conn->nCharsInWriteBuffer -= nBytes;
 	if (conn->nCharsInWriteBuffer)
-		memmove(conn->WriteBuf, conn->WriteBuf + nBytes, conn->nCharsInWriteBuffer);
+		std::memmove(conn->WriteBuf, conn->WriteBuf + nBytes, conn->nCharsInWriteBuffer);
 
 	return TRUE;
 }
@@ -302,7 +239,7 @@ int dbs_server_list_add_socket(int sd, unsigned int ipaddr)
 	struct in_addr		in;
 
 	it=(t_d2dbs_connection*)xmalloc(sizeof(t_d2dbs_connection));
-	memset(it, 0, sizeof(t_d2dbs_connection));
+	std::memset(it, 0, sizeof(t_d2dbs_connection));
 	it->sd=sd;
 	it->ipaddr=ipaddr;
 	it->major=0;
@@ -311,24 +248,24 @@ int dbs_server_list_add_socket(int sd, unsigned int ipaddr)
 	it->stats=0;
 	it->verified=0;
 	it->serverid=get_preset_d2gsid(ipaddr);
-	it->last_active=time(NULL);
+	it->last_active=std::time(NULL);
 	it->nCharsInReadBuffer=0;
 	it->nCharsInWriteBuffer=0;
 	list_append_data(dbs_server_connection_list,it);
 	in.s_addr = htonl(ipaddr);
-	strncpy((char*)it->serverip, inet_ntoa(in), sizeof(it->serverip)-1);
+	std::strncpy((char*)it->serverip, inet_ntoa(in), sizeof(it->serverip)-1);
 
 	return 1;
 }
 
 static int dbs_handle_timed_events(void)
 {
-	static	time_t		prev_ladder_save_time=0;
-	static	time_t		prev_keepalive_save_time=0;
-	static  time_t		prev_timeout_checktime=0;
-	time_t			now;
+	static	std::time_t		prev_ladder_save_time=0;
+	static	std::time_t		prev_keepalive_save_time=0;
+	static  std::time_t		prev_timeout_checktime=0;
+	std::time_t			now;
 
-	now=time(NULL);
+	now=std::time(NULL);
 	if (now-prev_ladder_save_time>(signed)prefs_get_laddersave_interval()) {
 		d2ladder_saveladder();
 		prev_ladder_save_time=now;

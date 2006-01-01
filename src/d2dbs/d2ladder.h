@@ -18,7 +18,7 @@
 #ifndef INCLUDED_D2LADDER_H
 #define INCLUDED_D2LADDER_H
 
-#include <stdio.h>
+#include <cstdio>
 #include "common/list.h"
 #include "common/d2cs_d2dbs_ladder.h"
 #define JUST_NEED_TYPES
@@ -61,7 +61,7 @@ extern int d2dbs_d2ladder_init(void);
 extern int d2dbs_d2ladder_destroy(void);
 extern int d2ladder_rebuild(void);
 extern int d2ladder_update(t_d2ladder_info * pcharladderinfo);
-extern int d2ladder_print(FILE * ladderstrm);
+extern int d2ladder_print(std::FILE * ladderstrm);
 extern int d2ladder_saveladder(void);
 
 }
