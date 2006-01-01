@@ -17,70 +17,21 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strsep.h"
-#include "compat/char_bit.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h> /* needed to include netinet/in.h */
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h> /* FIXME: probably not needed... do some systems put types in here or something? */
-#endif
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#include "compat/psock.h"
-
 #include "d2gs.h"
-#include "game.h"
-#include "net.h"
-#include "bit.h"
-#include "prefs.h"
-#include "connection.h"
-#include "common/introtate.h"
+
+#include <cstdlib>
+#include <ctime>
+#include <climits>
+#include <cstring>
+
+#include "compat/psock.h"
 #include "common/addr.h"
-#include "common/list.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+#include "common/introtate.h"
+#include "prefs.h"
+#include "game.h"
+#include "net.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -226,7 +177,7 @@ extern int d2gs_destroy(t_d2gs * gs, t_elem ** curr)
 {
 	ASSERT(gs,-1);
 	if (list_remove_data(d2gslist_head,gs,curr)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error remove gs from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove gs from list");
 		return -1;
 	}
 	if (gs->active && gs->connection) {
@@ -334,7 +285,7 @@ extern unsigned int d2gs_get_token(t_d2gs const * gs)
 
 extern unsigned int d2gs_make_token(t_d2gs * gs)
 {
-	return ((unsigned int)rand())^((++(gs->token))+((unsigned int)time(NULL)));
+	return ((unsigned int)std::rand())^((++(gs->token))+((unsigned int)std::time(NULL)));
 }
 
 extern t_connection * d2gs_get_connection(t_d2gs const * gs)
@@ -410,13 +361,13 @@ extern unsigned int d2gs_calc_checksum(t_connection * c)
 	realmname=prefs_get_realmname();
 	password=prefs_get_d2gs_password();
 
-	len=strlen(realmname);
+	len=std::strlen(realmname);
 	for (i=0; i<len ; i++) {
 		ch = (unsigned int)(unsigned char) realmname[i];
 		checksum ^= ROTL(sessionnum,i, sizeof(unsigned int) * CHAR_BIT);
 		checksum ^= ROTL(port , ch, sizeof(unsigned int) * CHAR_BIT);
 	}
-	len=strlen(password);
+	len=std::strlen(password);
 	for (i=0; i<len ; i++) {
 		ch = (unsigned int)(unsigned char) password[i];
 		checksum ^= ROTL(sessionnum,i, sizeof(unsigned int) * CHAR_BIT);

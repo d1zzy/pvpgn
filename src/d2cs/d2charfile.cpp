@@ -17,62 +17,21 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <stdio.h>
-#include <ctype.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/memset.h"
-#include "compat/memcpy.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#include "compat/access.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <time.h>
-# include <sys/time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_SYS_STAT_H
-# include <sys/stat.h>
-#endif
-
 #include "d2charfile.h"
-#include "prefs.h"
-#include "common/xstring.h"
-#include "common/bn_type.h"
+
+#include <cstring>
+#include <ctime>
+#include <cstdio>
+#include <cctype>
+#include <cerrno>
+
+#include "compat/strerror.h"
+#include "compat/access.h"
 #include "common/eventlog.h"
-#include "common/d2char_checksum.h"
 #include "common/xalloc.h"
+#include "common/d2char_checksum.h"
+#include "common/xstring.h"
+#include "prefs.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -91,7 +50,7 @@ static int d2charsave_init(void * buffer,char const * charname,unsigned char chc
 	ASSERT(charname,-1);
 	bn_byte_set((bn_byte *)((char *)buffer+D2CHARSAVE_CLASS_OFFSET), chclass);
 	bn_short_set((bn_short *)((char *)buffer+D2CHARSAVE_STATUS_OFFSET),status);
-	strncpy((char *)buffer+D2CHARSAVE_CHARNAME_OFFSET,charname,MAX_CHARNAME_LEN);
+	std::strncpy((char *)buffer+D2CHARSAVE_CHARNAME_OFFSET,charname,MAX_CHARNAME_LEN);
 	return 0;
 }
 
@@ -100,21 +59,21 @@ static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, c
 			   unsigned char chclass, unsigned short status)
 {
 	unsigned int		i;
-	time_t		now;
+	std::time_t		now;
 
-	now=time(NULL);
+	now=std::time(NULL);
 	bn_int_set(&chardata->header.magicword,D2CHARINFO_MAGICWORD);
 	bn_int_set(&chardata->header.version,D2CHARINFO_VERSION);
 	bn_int_set(&chardata->header.create_time,now);
 	bn_int_set(&chardata->header.last_time,now);
 	bn_int_set(&chardata->header.total_play_time,0);
 
-	memset(chardata->header.charname, 0,MAX_CHARNAME_LEN);
-	strncpy((char*)chardata->header.charname,charname,MAX_CHARNAME_LEN);
-	memset(chardata->header.account, 0,MAX_ACCTNAME_LEN);
-	strncpy((char*)chardata->header.account,account,MAX_ACCTNAME_LEN);
-	memset(chardata->header.realmname, 0,MAX_REALMNAME_LEN);
-	strncpy((char*)chardata->header.realmname,prefs_get_realmname(),MAX_REALMNAME_LEN);
+	std::memset(chardata->header.charname, 0,MAX_CHARNAME_LEN);
+	std::strncpy((char*)chardata->header.charname,charname,MAX_CHARNAME_LEN);
+	std::memset(chardata->header.account, 0,MAX_ACCTNAME_LEN);
+	std::strncpy((char*)chardata->header.account,account,MAX_ACCTNAME_LEN);
+	std::memset(chardata->header.realmname, 0,MAX_REALMNAME_LEN);
+	std::strncpy((char*)chardata->header.realmname,prefs_get_realmname(),MAX_REALMNAME_LEN);
 	bn_int_set(&chardata->header.checksum,0);
 	for (i=0; i<NELEMS(chardata->header.reserved); i++) {
 		bn_int_set(&chardata->header.reserved[i],0);
@@ -124,11 +83,11 @@ static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, c
 	bn_int_set(&chardata->summary.charclass,chclass);
 	bn_int_set(&chardata->summary.charstatus,status);
 
-	memset(chardata->portrait.gfx,D2CHARINFO_PORTRAIT_PADBYTE,sizeof(chardata->portrait.gfx));
-	memset(chardata->portrait.color,D2CHARINFO_PORTRAIT_PADBYTE,sizeof(chardata->portrait.color));
-	memset(chardata->portrait.u2,D2CHARINFO_PORTRAIT_PADBYTE,sizeof(chardata->portrait.u2));
-	memset(chardata->portrait.u1,D2CHARINFO_PORTRAIT_MASK,sizeof(chardata->portrait.u1));
-	memset(chardata->pad,0,sizeof(chardata->pad));
+	std::memset(chardata->portrait.gfx,D2CHARINFO_PORTRAIT_PADBYTE,sizeof(chardata->portrait.gfx));
+	std::memset(chardata->portrait.color,D2CHARINFO_PORTRAIT_PADBYTE,sizeof(chardata->portrait.color));
+	std::memset(chardata->portrait.u2,D2CHARINFO_PORTRAIT_PADBYTE,sizeof(chardata->portrait.u2));
+	std::memset(chardata->portrait.u1,D2CHARINFO_PORTRAIT_MASK,sizeof(chardata->portrait.u1));
+	std::memset(chardata->pad,0,sizeof(chardata->pad));
 
 	bn_short_set(&chardata->portrait.header,D2CHARINFO_PORTRAIT_HEADER);
 	bn_byte_set(&chardata->portrait.status,status|D2CHARINFO_PORTRAIT_MASK);
@@ -140,7 +99,7 @@ static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, c
 		bn_byte_set(&chardata->portrait.ladder, D2CHARINFO_PORTRAIT_PADBYTE);
 	bn_byte_set(&chardata->portrait.end,'\0');
 
-	memset(chardata->pad,0,sizeof(chardata->pad));
+	std::memset(chardata->pad,0,sizeof(chardata->pad));
 
 	return 0;
 }
@@ -153,7 +112,7 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 	char			buffer[1024];
 	unsigned int		size;
 	int			ladder_time, now;
-	FILE			* fp;
+	std::FILE			* fp;
 
 
 	ASSERT(account,-1);
@@ -202,19 +161,19 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 		return -1;
 	}
 
-	savefile=(char*)xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
+	savefile=(char*)xmalloc(std::strlen(prefs_get_charsave_dir())+1+std::strlen(charname)+1);
 	d2char_get_savefile_name(savefile,charname);
-	if ((fp=fopen(savefile,"rb"))) {
+	if ((fp=std::fopen(savefile,"rb"))) {
 		eventlog(eventlog_level_warn,__FUNCTION__,"character save file \"%s\" for \"%s\" already exist",savefile,charname);
-		fclose(fp);
+		std::fclose(fp);
 		xfree(savefile);
 		return -1;
 	}
 
-	infofile=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	infofile=(char*)xmalloc(std::strlen(prefs_get_charinfo_dir())+1+std::strlen(account)+1+std::strlen(charname)+1);
 	d2char_get_infofile_name(infofile,account,charname);
 
-	now = time(NULL);
+	now = std::time(NULL);
 	ladder_time = prefs_get_ladder_start_time();
 	if ((ladder_time > 0) && (now < ladder_time))
 		charstatus_set_ladder(status, 0);
@@ -224,7 +183,7 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 
 	if (file_write(infofile,&chardata,sizeof(chardata))<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error writing info file \"%s\"",infofile);
-		remove(infofile);
+		std::remove(infofile);
 		xfree(infofile);
 		xfree(savefile);
 		return -1;
@@ -232,8 +191,8 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 
 	if (file_write(savefile,buffer,size)<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error writing save file \"%s\"",savefile);
-		remove(infofile);
-		remove(savefile);
+		std::remove(infofile);
+		std::remove(savefile);
 		xfree(savefile);
 		xfree(infofile);
 		return -1;
@@ -248,16 +207,16 @@ extern int d2char_create(char const * account, char const * charname, unsigned c
 extern int d2char_find(char const * account, char const * charname)
 {
 	char		* file;
-	FILE		* fp;
+	std::FILE		* fp;
 
 	ASSERT(account,-1);
 	ASSERT(charname,-1);
-	file=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	file=(char*)xmalloc(std::strlen(prefs_get_charinfo_dir())+1+std::strlen(account)+1+std::strlen(charname)+1);
 	d2char_get_infofile_name(file,account,charname);
-	fp=fopen(file,"rb");
+	fp=std::fopen(file,"rb");
 	xfree(file);
 	if (fp) {
-		fclose(fp);
+		std::fclose(fp);
 		return 0;
 	}
 	return -1;
@@ -266,7 +225,7 @@ extern int d2char_find(char const * account, char const * charname)
 
 extern int d2char_convert(char const * account, char const * charname)
 {
-	FILE			* fp;
+	std::FILE			* fp;
 	char			* file;
 	unsigned char		buffer[MAX_SAVEFILE_SIZE];
 	unsigned int		status_offset;
@@ -303,17 +262,17 @@ extern int d2char_convert(char const * account, char const * charname)
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad account name \"%s\"",account);
 		return -1;
 	}
-	file=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	file=(char*)xmalloc(std::strlen(prefs_get_charinfo_dir())+1+std::strlen(account)+1+std::strlen(charname)+1);
 	d2char_get_infofile_name(file,account,charname);
-	if (!(fp=fopen(file,"rb+"))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"unable to open charinfo file \"%s\" for reading and writing (fopen: %s)",file,pstrerror(errno));
+	if (!(fp=std::fopen(file,"rb+"))) {
+		eventlog(eventlog_level_error,__FUNCTION__,"unable to open charinfo file \"%s\" for reading and writing (std::fopen: %s)",file,pstrerror(errno));
 		xfree(file);
 		return -1;
 	}
 	xfree(file);
-	if (fread(&charinfo,1,sizeof(charinfo),fp)!=sizeof(charinfo)) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error reading charinfo file for character \"%s\" (fread: %s)",charname,pstrerror(errno));
-		fclose(fp);
+	if (std::fread(&charinfo,1,sizeof(charinfo),fp)!=sizeof(charinfo)) {
+		eventlog(eventlog_level_error,__FUNCTION__,"error reading charinfo file for character \"%s\" (std::fread: %s)",charname,pstrerror(errno));
+		std::fclose(fp);
 		return -1;
 	}
 	charstatus=bn_int_get(charinfo.summary.charstatus);
@@ -324,29 +283,29 @@ extern int d2char_convert(char const * account, char const * charname)
 	charstatus_set_expansion(status,1);
 	bn_byte_set(&charinfo.portrait.status,status);
 
-	fseek(fp,0,SEEK_SET); /* FIXME: check return */
-	if (fwrite(&charinfo,1,sizeof(charinfo),fp)!=sizeof(charinfo)) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error writing charinfo file for character \"%s\" (fwrite: %s)",charname,pstrerror(errno));
-		fclose(fp);
+	std::fseek(fp,0,SEEK_SET); /* FIXME: check return */
+	if (std::fwrite(&charinfo,1,sizeof(charinfo),fp)!=sizeof(charinfo)) {
+		eventlog(eventlog_level_error,__FUNCTION__,"error writing charinfo file for character \"%s\" (std::fwrite: %s)",charname,pstrerror(errno));
+		std::fclose(fp);
 		return -1;
 	}
-	if (fclose(fp)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close charinfo file for character \"%s\" after writing (fclose: %s)",charname,pstrerror(errno));
+	if (std::fclose(fp)<0) {
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close charinfo file for character \"%s\" after writing (std::fclose: %s)",charname,pstrerror(errno));
 		return -1;
 	}
 
-	file=(char*)xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
+	file=(char*)xmalloc(std::strlen(prefs_get_charsave_dir())+1+std::strlen(charname)+1);
 	d2char_get_savefile_name(file,charname);
-	if (!(fp=fopen(file,"rb+"))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not open charsave file \"%s\" for reading and writing (fopen: %s)",file,pstrerror(errno));
+	if (!(fp=std::fopen(file,"rb+"))) {
+		eventlog(eventlog_level_error,__FUNCTION__,"could not open charsave file \"%s\" for reading and writing (std::fopen: %s)",file,pstrerror(errno));
 		xfree(file);
 		return -1;
 	}
 	xfree(file);
-	size=fread(buffer,1,sizeof(buffer),fp);
-	if (!feof(fp)) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error reading charsave file for character \"%s\" (fread: %s)",charname,pstrerror(errno));
-		fclose(fp);
+	size=std::fread(buffer,1,sizeof(buffer),fp);
+	if (!std::feof(fp)) {
+		eventlog(eventlog_level_error,__FUNCTION__,"error reading charsave file for character \"%s\" (std::fread: %s)",charname,pstrerror(errno));
+		std::fclose(fp);
 		return -1;
 	}
 	version=bn_int_get(buffer+D2CHARSAVE_VERSION_OFFSET);
@@ -362,14 +321,14 @@ extern int d2char_convert(char const * account, char const * charname)
 		checksum=d2charsave_checksum(buffer,size,D2CHARSAVE_CHECKSUM_OFFSET);
 		bn_int_set((bn_int *)(buffer+D2CHARSAVE_CHECKSUM_OFFSET),checksum); /* FIXME: shouldn't abuse bn_*_set()... what's the best way to do this? */
 	}
-	fseek(fp,0,SEEK_SET); /* FIXME: check return */
-	if (fwrite(buffer,1,size,fp)!=size) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error writing charsave file for character %s (fwrite: %s)",charname,pstrerror(errno));
-		fclose(fp);
+	std::fseek(fp,0,SEEK_SET); /* FIXME: check return */
+	if (std::fwrite(buffer,1,size,fp)!=size) {
+		eventlog(eventlog_level_error,__FUNCTION__,"error writing charsave file for character %s (std::fwrite: %s)",charname,pstrerror(errno));
+		std::fclose(fp);
 		return -1;
 	}
-	if (fclose(fp)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close charsave file for character \"%s\" after writing (fclose: %s)",charname,pstrerror(errno));
+	if (std::fclose(fp)<0) {
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close charsave file for character \"%s\" after writing (std::fclose: %s)",charname,pstrerror(errno));
 		return -1;
 	}
 	eventlog(eventlog_level_info,__FUNCTION__,"character %s(*%s) converted to expansion",charname,account);
@@ -393,39 +352,39 @@ extern int d2char_delete(char const * account, char const * charname)
 	}
 
 	/* charsave file */
-	file=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	file=(char*)xmalloc(std::strlen(prefs_get_charinfo_dir())+1+std::strlen(account)+1+std::strlen(charname)+1);
 	d2char_get_infofile_name(file,account,charname);
-	if (remove(file)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete charinfo file \"%s\" (remove: %s)",file,pstrerror(errno));
+	if (std::remove(file)<0) {
+		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete charinfo file \"%s\" (std::remove: %s)",file,pstrerror(errno));
 		xfree(file);
 		return -1;
 	}
 	xfree(file);
 
 	/* charinfo file */
-	file=(char*)xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
+	file=(char*)xmalloc(std::strlen(prefs_get_charsave_dir())+1+std::strlen(charname)+1);
 	d2char_get_savefile_name(file,charname);
-	if (remove(file)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete charsave file \"%s\" (remove: %s)",file,pstrerror(errno));
+	if (std::remove(file)<0) {
+		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete charsave file \"%s\" (std::remove: %s)",file,pstrerror(errno));
 	}
 	xfree(file);
 
 	/* bak charsave file */
-	file=(char*)xmalloc(strlen(prefs_get_bak_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	file=(char*)xmalloc(std::strlen(prefs_get_bak_charinfo_dir())+1+std::strlen(account)+1+std::strlen(charname)+1);
 	d2char_get_bak_infofile_name(file,account,charname);
 	if (access(file, F_OK) == 0) {
-	    if (remove(file)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete bak charinfo file \"%s\" (remove: %s)",file,pstrerror(errno));
+	    if (std::remove(file)<0) {
+		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete bak charinfo file \"%s\" (std::remove: %s)",file,pstrerror(errno));
 	    }
 	}
 	xfree(file);
 
 	/* bak charinfo file */
-	file=(char*)xmalloc(strlen(prefs_get_bak_charsave_dir())+1+strlen(charname)+1);
+	file=(char*)xmalloc(std::strlen(prefs_get_bak_charsave_dir())+1+std::strlen(charname)+1);
 	d2char_get_bak_savefile_name(file,charname);
 	if (access(file, F_OK) == 0) {
-	    if (remove(file)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete bak charsave file \"%s\" (remove: %s)",file,pstrerror(errno));
+	    if (std::remove(file)<0) {
+		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete bak charsave file \"%s\" (std::remove: %s)",file,pstrerror(errno));
 	    }
 	}
 	xfree(file);
@@ -446,7 +405,7 @@ extern int d2char_get_summary(char const * account, char const * charname,t_d2ch
 		eventlog(eventlog_level_error,__FUNCTION__,"error loading character %s(*%s)",charname,account);
 		return -1;
 	}
-	memcpy(charinfo,&data.summary,sizeof(data.summary));
+	std::memcpy(charinfo,&data.summary,sizeof(data.summary));
 	eventlog(eventlog_level_info,__FUNCTION__,"character %s difficulty %d expansion %d hardcore %d dead %d loaded",charname,
 		d2charinfo_get_difficulty(charinfo), d2charinfo_get_expansion(charinfo),
 		d2charinfo_get_hardcore(charinfo),d2charinfo_get_dead(charinfo));
@@ -467,7 +426,7 @@ extern int d2charinfo_load(char const * account, char const * charname, t_d2char
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad account name \"%s\"",account);
 		return -1;
 	}
-	file=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1+strlen(charname)+1);
+	file=(char*)xmalloc(std::strlen(prefs_get_charinfo_dir())+1+std::strlen(account)+1+std::strlen(charname)+1);
 	d2char_get_infofile_name(file,account,charname);
 	size=sizeof(t_d2charinfo_file);
 	if (file_read(file,data,(unsigned int*)&size)<0) {
@@ -499,10 +458,10 @@ extern int d2charinfo_load(char const * account, char const * charname, t_d2char
 		unsigned int		size;
 		unsigned int		version;
 		unsigned int		checksum;
-		FILE			* fp;
+		std::FILE			* fp;
 
 		eventlog(eventlog_level_info,__FUNCTION__,"%s(*%s) was created in old ladder season, set to non-ladder", charname, account);
-		if (!(fp=fopen(file,"wb"))) {
+		if (!(fp=std::fopen(file,"wb"))) {
 			eventlog(eventlog_level_error,__FUNCTION__,"charinfo file \"%s\" does not exist for account \"%s\"",file,account);
 			xfree(file);
 			return 0;
@@ -517,26 +476,26 @@ extern int d2charinfo_load(char const * account, char const * charname, t_d2char
 		bn_byte_set(&data->portrait.status,status);
 		bn_byte_set(&data->portrait.ladder, D2CHARINFO_PORTRAIT_PADBYTE);
 
-		if (fwrite(data,1,sizeof(*data),fp)!=sizeof(*data)) {
-			eventlog(eventlog_level_error,__FUNCTION__,"error writing charinfo file for character \"%s\" (fwrite: %s)",charname,pstrerror(errno));
-			fclose(fp);
+		if (std::fwrite(data,1,sizeof(*data),fp)!=sizeof(*data)) {
+			eventlog(eventlog_level_error,__FUNCTION__,"error writing charinfo file for character \"%s\" (std::fwrite: %s)",charname,pstrerror(errno));
+			std::fclose(fp);
 			return 0;
 }
-		fclose(fp);
+		std::fclose(fp);
 
-		file=(char*)xmalloc(strlen(prefs_get_charsave_dir())+1+strlen(charname)+1);
+		file=(char*)xmalloc(std::strlen(prefs_get_charsave_dir())+1+std::strlen(charname)+1);
 		d2char_get_savefile_name(file,charname);
 
-		if (!(fp=fopen(file,"rb+"))) {
-			eventlog(eventlog_level_error,__FUNCTION__,"could not open charsave file \"%s\" for reading and writing (fopen: %s)",file,pstrerror(errno));
+		if (!(fp=std::fopen(file,"rb+"))) {
+			eventlog(eventlog_level_error,__FUNCTION__,"could not open charsave file \"%s\" for reading and writing (std::fopen: %s)",file,pstrerror(errno));
 			xfree(file);
 			return 0;
 		}
 		xfree(file);
-		size=fread(buffer,1,sizeof(buffer),fp);
-		if (!feof(fp)) {
-			eventlog(eventlog_level_error,__FUNCTION__,"error reading charsave file for character \"%s\" (fread: %s)",charname,pstrerror(errno));
-			fclose(fp);
+		size=std::fread(buffer,1,sizeof(buffer),fp);
+		if (!std::feof(fp)) {
+			eventlog(eventlog_level_error,__FUNCTION__,"error reading charsave file for character \"%s\" (std::fread: %s)",charname,pstrerror(errno));
+			std::fclose(fp);
 			return 0;
 		}
 		version=bn_int_get((bn_basic*)(buffer+D2CHARSAVE_VERSION_OFFSET));
@@ -553,13 +512,13 @@ extern int d2charinfo_load(char const * account, char const * charname, t_d2char
 			checksum=d2charsave_checksum((unsigned char*)buffer,size,D2CHARSAVE_CHECKSUM_OFFSET);
 			bn_int_set((bn_int *)(buffer+D2CHARSAVE_CHECKSUM_OFFSET),checksum);
 		}
-		fseek(fp,0,SEEK_SET);
-		if (fwrite(buffer,1,size,fp)!=size) {
-			eventlog(eventlog_level_error,__FUNCTION__,"error writing charsave file for character %s (fwrite: %s)",charname,pstrerror(errno));
-			fclose(fp);
+		std::fseek(fp,0,SEEK_SET);
+		if (std::fwrite(buffer,1,size,fp)!=size) {
+			eventlog(eventlog_level_error,__FUNCTION__,"error writing charsave file for character %s (std::fwrite: %s)",charname,pstrerror(errno));
+			std::fclose(fp);
 			return 0;
 		}
-		fclose(fp);
+		std::fclose(fp);
 	} else {
 		bn_byte_set(&data->portrait.ladder, 1);
 		xfree(file);
@@ -607,7 +566,7 @@ extern int d2char_get_portrait(char const * account,char const * charname, t_d2c
 		eventlog(eventlog_level_error,__FUNCTION__,"error loading character %s(*%s)",charname,account);
 		return -1;
 	}
-	strcpy((char *)portrait,(char *)&data.portrait);
+	std::strcpy((char *)portrait,(char *)&data.portrait);
 	return 0;
 }
 
@@ -618,12 +577,12 @@ extern int d2char_check_charname(char const * name)
 	unsigned char	ch;
 
 	if (!name) return -1;
-	if (!isalpha((int)name[0])) return -1;
+	if (!std::isalpha((int)name[0])) return -1;
 
 	for (i=1; i<=MAX_CHARNAME_LEN; i++) {
 		ch=name[i];
 		if (ch=='\0') break;
-		if (isalpha(ch)) continue;
+		if (std::isalpha(ch)) continue;
 		if (ch=='-') continue;
 		if (ch=='_') continue;
 		if (ch=='.') continue;
@@ -640,13 +599,13 @@ extern int d2char_check_acctname(char const * name)
 	unsigned char	ch;
 
 	if (!name) return -1;
-	if (!isalnum((int)name[0])) return -1;
+	if (!std::isalnum((int)name[0])) return -1;
 
 	for (i=1; i<=MAX_CHARNAME_LEN; i++) {
 		ch=name[i];
 		if (ch=='\0') break;
-		if (isalnum(ch)) continue;
-		if (strchr(prefs_get_d2cs_account_allowed_symbols(),ch)) continue;
+		if (std::isalnum(ch)) continue;
+		if (std::strchr(prefs_get_d2cs_account_allowed_symbols(),ch)) continue;
 		return -1;
 	}
 	if (i >= MIN_NAME_LEN || i<= MAX_ACCTNAME_LEN) return 0;
@@ -660,10 +619,10 @@ extern int d2char_get_savefile_name(char * filename, char const * charname)
 
 	ASSERT(filename,-1);
 	ASSERT(charname,-1);
-	strncpy(tmpchar,charname,sizeof(tmpchar));
+	std::strncpy(tmpchar,charname,sizeof(tmpchar));
 	tmpchar[sizeof(tmpchar)-1]='\0';
 	strtolower(tmpchar);
-	sprintf(filename,"%s/%s",prefs_get_charsave_dir(),tmpchar);
+	std::sprintf(filename,"%s/%s",prefs_get_charsave_dir(),tmpchar);
 	return 0;
 }
 
@@ -674,10 +633,10 @@ extern int d2char_get_bak_savefile_name(char * filename, char const * charname)
 
 	ASSERT(filename,-1);
 	ASSERT(charname,-1);
-	strncpy(tmpchar,charname,sizeof(tmpchar));
+	std::strncpy(tmpchar,charname,sizeof(tmpchar));
 	tmpchar[sizeof(tmpchar)-1]='\0';
 	strtolower(tmpchar);
-	sprintf(filename,"%s/%s",prefs_get_bak_charsave_dir(),tmpchar);
+	std::sprintf(filename,"%s/%s",prefs_get_bak_charsave_dir(),tmpchar);
 	return 0;
 }
 
@@ -689,10 +648,10 @@ extern int d2char_get_infodir_name(char * filename, char const * account)
 	ASSERT(filename,-1);
 	ASSERT(account,-1);
 
-	strncpy(tmpacct,account,sizeof(tmpacct));
+	std::strncpy(tmpacct,account,sizeof(tmpacct));
 	tmpacct[sizeof(tmpacct)-1]='\0';
 	strtolower(tmpacct);
-	sprintf(filename,"%s/%s",prefs_get_charinfo_dir(),tmpacct);
+	std::sprintf(filename,"%s/%s",prefs_get_charinfo_dir(),tmpacct);
 	return 0;
 }
 
@@ -705,14 +664,14 @@ extern int d2char_get_infofile_name(char * filename, char const * account, char 
 	ASSERT(filename,-1);
 	ASSERT(account,-1);
 	ASSERT(charname,-1);
-	strncpy(tmpchar,charname,sizeof(tmpchar));
+	std::strncpy(tmpchar,charname,sizeof(tmpchar));
 	tmpchar[sizeof(tmpchar)-1]='\0';
 	strtolower(tmpchar);
 
-	strncpy(tmpacct,account,sizeof(tmpacct));
+	std::strncpy(tmpacct,account,sizeof(tmpacct));
 	tmpchar[sizeof(tmpacct)-1]='\0';
 	strtolower(tmpacct);
-	sprintf(filename,"%s/%s/%s",prefs_get_charinfo_dir(),tmpacct,tmpchar);
+	std::sprintf(filename,"%s/%s/%s",prefs_get_charinfo_dir(),tmpacct,tmpchar);
 	return 0;
 }
 
@@ -725,14 +684,14 @@ extern int d2char_get_bak_infofile_name(char * filename, char const * account, c
 	ASSERT(filename,-1);
 	ASSERT(account,-1);
 	ASSERT(charname,-1);
-	strncpy(tmpchar,charname,sizeof(tmpchar));
+	std::strncpy(tmpchar,charname,sizeof(tmpchar));
 	tmpchar[sizeof(tmpchar)-1]='\0';
 	strtolower(tmpchar);
 
-	strncpy(tmpacct,account,sizeof(tmpacct));
+	std::strncpy(tmpacct,account,sizeof(tmpacct));
 	tmpchar[sizeof(tmpacct)-1]='\0';
 	strtolower(tmpacct);
-	sprintf(filename,"%s/%s/%s",prefs_get_bak_charinfo_dir(),tmpacct,tmpchar);
+	std::sprintf(filename,"%s/%s/%s",prefs_get_bak_charinfo_dir(),tmpacct,tmpchar);
 	return 0;
 }
 
@@ -795,29 +754,29 @@ extern unsigned int d2charinfo_get_difficulty(t_d2charinfo_summary const * chari
 /* those functions should move to util.c */
 extern int file_read(char const * filename, void * data, unsigned int * size)
 {
-	FILE		* fp;
+	std::FILE		* fp;
 	unsigned int	n;
 
 	ASSERT(filename,-1);
 	ASSERT(data,-1);
 	ASSERT(size,-1);
-	if (!(fp=fopen(filename,"rb"))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (fopen: %s)",filename,pstrerror(errno));
+	if (!(fp=std::fopen(filename,"rb"))) {
+		eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
 		return -1;
 	}
 
-	fseek(fp,0,SEEK_END); /* FIXME: check return value */
-	n=ftell(fp);
+	std::fseek(fp,0,SEEK_END); /* FIXME: check return value */
+	n=std::ftell(fp);
 	n=min(*size,n);
-	rewind(fp); /* FIXME: check return value */
+	std::rewind(fp); /* FIXME: check return value */
 
-	if (fread(data,1,n,fp)!=n) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error reading file \"%s\" (fread: %s)",filename,pstrerror(errno));
-		fclose(fp);
+	if (std::fread(data,1,n,fp)!=n) {
+		eventlog(eventlog_level_error,__FUNCTION__,"error reading file \"%s\" (std::fread: %s)",filename,pstrerror(errno));
+		std::fclose(fp);
 		return -1;
 	}
-	if (fclose(fp)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (fclose: %s)",filename,pstrerror(errno));
+	if (std::fclose(fp)<0) {
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (std::fclose: %s)",filename,pstrerror(errno));
 		return -1;
 	}
 	*size=n;
@@ -827,22 +786,22 @@ extern int file_read(char const * filename, void * data, unsigned int * size)
 
 extern int file_write(char const * filename, void * data, unsigned int size)
 {
-	FILE		* fp;
+	std::FILE		* fp;
 
 	ASSERT(filename,-1);
 	ASSERT(data,-1);
 	ASSERT(size,-1);
-	if (!(fp=fopen(filename,"wb"))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (fopen: %s)",filename,pstrerror(errno));
+	if (!(fp=std::fopen(filename,"wb"))) {
+		eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)",filename,pstrerror(errno));
 		return -1;
 	}
-	if (fwrite(data,1,size,fp)!=size) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error writing file \"%s\" (fwrite: %s)",filename,pstrerror(errno));
-		fclose(fp);
+	if (std::fwrite(data,1,size,fp)!=size) {
+		eventlog(eventlog_level_error,__FUNCTION__,"error writing file \"%s\" (std::fwrite: %s)",filename,pstrerror(errno));
+		std::fclose(fp);
 		return -1;
 	}
-	if (fclose(fp)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after writing (fclose: %s)",filename,pstrerror(errno));
+	if (std::fclose(fp)<0) {
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after writing (std::fclose: %s)",filename,pstrerror(errno));
 		return -1;
 	}
 	return 0;

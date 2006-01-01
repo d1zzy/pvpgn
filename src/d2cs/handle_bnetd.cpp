@@ -17,26 +17,20 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-
-#include "connection.h"
 #include "handle_bnetd.h"
-#include "serverqueue.h"
+
+#include "common/init_protocol.h"
+#include "common/eventlog.h"
+/*
 #include "common/d2cs_bnetd_protocol.h"
 #include "common/d2cs_protocol.h"
+#include "common/packet.h"
+#include "connection.h"
+*/
 #include "version.h"
 #include "prefs.h"
+#include "serverqueue.h"
 #include "game.h"
-#include "common/init_protocol.h"
-#include "common/packet.h"
-#include "common/eventlog.h"
 #include "common/setup_after.h"
 
 namespace pvpgn

@@ -17,26 +17,14 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-
-#include "connection.h"
 #include "handle_init.h"
-#include "handle_d2gs.h"
-#include "d2gs.h"
-#include "prefs.h"
-#include "common/init_protocol.h"
-#include "common/addr.h"
-#include "common/packet.h"
-#include "common/queue.h"
+
 #include "common/eventlog.h"
-#include "common/bn_type.h"
+#include "common/addr.h"
+#include "common/init_protocol.h"
+#include "d2gs.h"
+#include "handle_d2gs.h"
+#include "prefs.h"
 #include "common/setup_after.h"
 
 namespace pvpgn

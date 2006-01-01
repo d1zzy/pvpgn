@@ -17,43 +17,14 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/strcasecmp.h"
-#include "compat/strdup.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <time.h>
-# include <sys/time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-
-#include "bit.h"
-#include "prefs.h"
 #include "game.h"
-#include "common/list.h"
+
+#include <ctime>
+
+#include "compat/strcasecmp.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+#include "prefs.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -164,17 +135,17 @@ extern t_game * gamelist_find_character(char const * charname)
 extern void d2cs_gamelist_check_voidgame(void)
 {
 	t_game	* game;
-	time_t	now;
+	std::time_t	now;
 	int timeout;
 
 	timeout=prefs_get_max_game_idletime();
 	if (!timeout) return;
-	now=time(NULL);
+	now=std::time(NULL);
 	BEGIN_LIST_TRAVERSE_DATA(gamelist_head, game, t_game)
 	{
 		if (!game->currchar) {
 			if ((now-game->lastaccess_time)>timeout) {
-				eventlog(eventlog_level_info,__FUNCTION__,"game %s is empty too long time,destroying it",game->name);
+				eventlog(eventlog_level_info,__FUNCTION__,"game %s is empty too long std::time,destroying it",game->name);
 				game_destroy(game,&curr_elem_);
 			}
 		}
@@ -186,7 +157,7 @@ extern t_game * d2cs_game_create(char const * gamename, char const * gamepass, c
 			unsigned int gameflag)
 {
 	t_game	* game;
-	time_t	now;
+	std::time_t	now;
 
 	ASSERT(gamename,NULL);
 	ASSERT(gamepass,NULL);
@@ -200,7 +171,7 @@ extern t_game * d2cs_game_create(char const * gamename, char const * gamepass, c
 	game->pass=xstrdup(gamepass);
 	game->desc=xstrdup(gamedesc);
 	game->charlist=list_create();
-	now=time(NULL);
+	now=std::time(NULL);
 	game_id++;
 	if (game_id==0) game_id=1;
 	game->id=game_id;
@@ -231,7 +202,7 @@ extern int game_destroy(t_game * game, t_elem ** elem)
 		gamelist_curr_elem=elem_get_next_const(gamelist_head,gamelist_curr_elem);
 	}
 	if (list_remove_data(gamelist_head,game,elem)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error remove game %s on game list",game->name);
+		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove game %s on game list",game->name);
 		return -1;
 	}
 	total_game--;
@@ -296,7 +267,7 @@ extern int game_add_character(t_game * game, char const * charname, unsigned cha
 	charinfo->level=level;
 	list_append_data(game->charlist,charinfo);
 	game->currchar++;
-	game->lastaccess_time=time(NULL);
+	game->lastaccess_time=std::time(NULL);
 	eventlog(eventlog_level_info,__FUNCTION__,"added character %s to game %s (%d total)",charname,game->name,game->currchar);
 	return 0;
 }
@@ -313,13 +284,13 @@ extern int game_del_character(t_game * game, char const * charname)
 		return -1;
 	}
 	if (list_remove_data(game->charlist,charinfo,&elem)) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error remove character %s from game %s",charname,game->name);
+		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove character %s from game %s",charname,game->name);
 		return -1;
 	}
 	if (charinfo->charname) xfree((void *)charinfo->charname);
 	xfree(charinfo);
 	game->currchar--;
-	game->lastaccess_time=time(NULL);
+	game->lastaccess_time=std::time(NULL);
 	eventlog(eventlog_level_info,__FUNCTION__,"removed character %s from game %s (%d left)",charname,game->name,game->currchar);
 	return 0;
 }

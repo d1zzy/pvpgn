@@ -17,82 +17,30 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
+#include "connection.h"
 
-#include <ctype.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/memcpy.h"
-#include "compat/strdup.h"
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/psock.h"
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif
-#include "compat/char_bit.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <time.h>
-# include <sys/time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_ASSERT_H
-# include <assert.h>
-#endif
+#include <cctype>
+#include <cstring>
+#include <climits>
+#include <ctime>
+#include <cassert>
 
 #include "compat/psock.h"
 #include "compat/strcasecmp.h"
-#include "connection.h"
-#include "game.h"
-#include "gamequeue.h"
+#include "common/eventlog.h"
+#include "common/introtate.h"
+#include "common/addr.h"
+#include "common/xalloc.h"
+#include "common/network.h"
 #include "prefs.h"
-#include "d2gs.h"
+#include "game.h"
 #include "net.h"
-#include "s2s.h"
-#include "handle_d2gs.h"
-#include "handle_d2cs.h"
 #include "handle_init.h"
 #include "handle_bnetd.h"
-#include "d2charfile.h"
-#include "common/fdwatch.h"
-#include "common/addr.h"
-#include "common/introtate.h"
-#include "common/network.h"
-#include "common/packet.h"
-#include "common/hashtable.h"
-#include "common/queue.h"
-#include "common/eventlog.h"
-#include "common/xalloc.h"
+#include "handle_d2cs.h"
+#include "handle_d2gs.h"
+#include "d2gs.h"
+#include "s2s.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -126,10 +74,10 @@ static unsigned int conn_charname_hash(char const * charname)
 	unsigned int ch;
 
 	ASSERT(charname,0);
-	len=strlen(charname);
+	len=std::strlen(charname);
 	for (hash=0, i=0, pos=0; i<len; i++) {
 		if (isascii((int)charname[i])) {
-			ch=(unsigned int)(unsigned char)tolower((int)charname[i]);
+			ch=(unsigned int)(unsigned char)std::tolower((int)charname[i]);
 		} else {
 			ch=(unsigned int)(unsigned char)charname[i];
 		}
@@ -383,10 +331,10 @@ static int conn_handle_write(t_connection * c)
 
 extern int conn_handle_socket(t_connection * c)
 {
-	time_t	now;
+	std::time_t	now;
 
 	ASSERT(c,-1);
-	now=time(NULL);
+	now=std::time(NULL);
 	if (c->socket_flag & SOCKET_FLAG_READ) {
 		if (conn_handle_read(c)<0) return -1;
 		c->last_active=now;
@@ -402,15 +350,15 @@ extern int conn_handle_socket(t_connection * c)
 extern int connlist_check_timeout(void)
 {
 	t_connection	* c;
-	time_t		now;
+	std::time_t		now;
 
-	now=time(NULL);
+	now=std::time(NULL);
 	BEGIN_HASHTABLE_TRAVERSE_DATA(connlist_head, c, t_connection)
 	{
 		switch (c->cclass) {
 			case conn_class_d2cs:
 				if (prefs_get_idletime() && (now - c->last_active > prefs_get_idletime())) {
-					eventlog(eventlog_level_info,__FUNCTION__,"client %d idled too long time, destroy it",c->sessionnum);
+					eventlog(eventlog_level_info,__FUNCTION__,"client %d idled too long std::time, destroy it",c->sessionnum);
 					d2cs_conn_set_state(c,conn_state_destroy);
 				}
 				break;
@@ -461,7 +409,7 @@ extern t_connection * d2cs_conn_create(int sock, unsigned int local_addr, unsign
 	c->charinfo=NULL;
 	c->d2gs_id=0;
 	c->gamequeue=NULL;
-	c->last_active=time(NULL);
+	c->last_active=std::time(NULL);
 	c->sessionnum_hash=conn_sessionnum_hash(c->sessionnum);
 	c->bnetd_sessionnum=0;
 	c->charname_hash=0;
@@ -482,7 +430,7 @@ extern int d2cs_conn_destroy(t_connection * c, t_elem ** curr)
 	ASSERT(c,-1);
 	if (c->state==conn_state_destroying) return 0;
 	if (hashtable_remove_data(connlist_head,c,c->sessionnum_hash)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error remove connection from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove connection from list");
 		return -1;
 	}
 	c->state=conn_state_destroying;
@@ -536,7 +484,7 @@ extern int d2cs_conn_set_state(t_connection * c, t_conn_state state)
 	    list_append_data(connlist_dead, c);
 	} else if (state != conn_state_destroy && c->state == conn_state_destroy) {
 	    if (list_remove_data(connlist_dead, c, &curr)) {
-		eventlog(eventlog_level_error, __FUNCTION__, "could not remove dead connection");
+		eventlog(eventlog_level_error, __FUNCTION__, "could not std::remove dead connection");
 		return -1;
 	    }
 	}
@@ -701,7 +649,7 @@ extern int d2cs_conn_set_charname(t_connection * c, char const * charname)
 	if (charname) temp=xstrdup(charname);
 	if (c->charname) {
 		if (hashtable_remove_data(conn_charname_list_head,c,c->charname_hash) <0) {
-			eventlog(eventlog_level_error,__FUNCTION__,"error remove charname %s from list",charname);
+			eventlog(eventlog_level_error,__FUNCTION__,"error std::remove charname %s from list",charname);
 			if (temp) xfree((void *)temp);
 			return -1;
 		}
@@ -788,7 +736,7 @@ extern int conn_set_charinfo(t_connection * c, t_d2charinfo_summary const * char
 	}
 	if (c->charinfo) xfree((void *)c->charinfo);
 	c->charinfo=(t_d2charinfo_summary*)xmalloc(sizeof(t_d2charinfo_summary));
-	memcpy((void*)c->charinfo,charinfo,sizeof(t_d2charinfo_summary));
+	std::memcpy((void*)c->charinfo,charinfo,sizeof(t_d2charinfo_summary));
 	return 0;
 }
 

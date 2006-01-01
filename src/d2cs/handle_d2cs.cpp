@@ -18,76 +18,24 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
+#include "handle_d2cs.h"
 
-#include <stdio.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/memcpy.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <time.h>
-# include <sys/time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_SYS_STAT_H
-# include <sys/stat.h>
-#endif
+#include <cstring>
+#include <ctime>
 
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/socket.h"
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#include "compat/inet_ntoa.h"
-
-#include "compat/pdir.h"
 #include "compat/mkdir.h"
-#include "d2charfile.h"
-#include "connection.h"
+#include "compat/pdir.h"
+#include "compat/psock.h"
+#include "common/eventlog.h"
+#include "common/xalloc.h"
+#include "common/d2cs_d2dbs_ladder.h"
 #include "game.h"
 #include "bnetd.h"
-#include "common/d2cs_protocol.h"
-#include "common/d2cs_bnetd_protocol.h"
-#include "handle_d2cs.h"
-#include "d2ladder.h"
-#include "gamequeue.h"
 #include "serverqueue.h"
 #include "prefs.h"
-#include "common/bn_type.h"
-#include "common/queue.h"
-#include "common/packet.h"
-#include "common/eventlog.h"
+#include "d2ladder.h"
+#include "d2charfile.h"
 #include "d2charlist.h"
-#include "common/elist.h"
-#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 
@@ -184,7 +132,7 @@ static int on_client_loginreq(t_connection * c, t_packet * packet)
 			bn_int_set(&bnpacket->u.d2cs_bnetd_accountloginreq.sessionkey,
 				bn_int_get(packet->u.client_d2cs_loginreq.sessionkey));
 			bn_int_set(&bnpacket->u.d2cs_bnetd_accountloginreq.sessionnum,sessionnum);
-			memcpy(bnpacket->u.d2cs_bnetd_accountloginreq.secret_hash,
+			std::memcpy(bnpacket->u.d2cs_bnetd_accountloginreq.secret_hash,
 				packet->u.client_d2cs_loginreq.secret_hash,
 				sizeof(bnpacket->u.d2cs_bnetd_accountloginreq.secret_hash));
 			packet_append_string(bnpacket,account);
@@ -218,7 +166,7 @@ static int on_client_createcharreq(t_connection * c, t_packet * packet)
 	chclass=bn_short_get(packet->u.client_d2cs_createcharreq.chclass);
 	status=bn_short_get(packet->u.client_d2cs_createcharreq.status);
 
-	path=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
+	path=(char*)xmalloc(std::strlen(prefs_get_charinfo_dir())+1+std::strlen(account)+1);
 	d2char_get_infodir_name(path,account);
 	if (!(dir=p_opendir(path))) {
 	        eventlog(eventlog_level_info,__FUNCTION__,"(*%s) charinfo directory do not exist, building it",account);
@@ -282,12 +230,12 @@ static int on_client_creategamereq(t_connection * c, t_packet * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad game name");
 		return -1;
 	}
-	pos+=strlen(gamename)+1;
+	pos+=std::strlen(gamename)+1;
 	if (!(gamepass=packet_get_str_const(packet,pos,MAX_GAMEPASS_LEN))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad game pass");
 		return -1;
 	}
-	pos+=strlen(gamepass)+1;
+	pos+=std::strlen(gamepass)+1;
 	if (!(gamedesc=packet_get_str_const(packet,pos,MAX_GAMEDESC_LEN))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad game desc");
 		return -1;
@@ -407,7 +355,7 @@ static int on_client_joingamereq(t_connection * c, t_packet * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad game name");
 		return -1;
 	}
-	pos+=strlen(gamename)+1;
+	pos+=std::strlen(gamename)+1;
 	if (!(gamepass=packet_get_str_const(packet,pos,MAX_GAMEPASS_LEN))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad game pass");
 		return -1;
@@ -484,7 +432,7 @@ static int on_client_gamelistreq(t_connection * c, t_packet * packet)
 	t_game		* game;
 	unsigned int	count;
 	unsigned int	seqno;
-	time_t		now;
+	std::time_t		now;
 	unsigned int	maxlifetime;
 	t_elem const	* start_elem;
 	t_elem const	* elem;
@@ -492,7 +440,7 @@ static int on_client_gamelistreq(t_connection * c, t_packet * packet)
 	seqno=bn_short_get(packet->u.client_d2cs_gamelistreq.seqno);
 	/* if (seqno%2) return 0; */
 	count=0;
-	now=time(NULL);
+	now=std::time(NULL);
 	maxlifetime=prefs_get_game_maxlifetime();
 
 	elem=start_elem=gamelist_get_curr_elem();
@@ -570,7 +518,7 @@ static int on_client_gameinforeq(t_connection * c, t_packet * packet)
 		packet_set_type(rpacket,D2CS_CLIENT_GAMEINFOREPLY);
 		bn_short_set(&rpacket->u.d2cs_client_gameinforeply.seqno,seqno);
 		bn_int_set(&rpacket->u.d2cs_client_gameinforeply.gameflag,game_get_gameflag(game));
-		bn_int_set(&rpacket->u.d2cs_client_gameinforeply.etime,time(NULL)-d2cs_game_get_create_time(game));
+		bn_int_set(&rpacket->u.d2cs_client_gameinforeply.etime,std::time(NULL)-d2cs_game_get_create_time(game));
 		bn_byte_set(&rpacket->u.d2cs_client_gameinforeply.charlevel,game_get_charlevel(game));
 		bn_byte_set(&rpacket->u.d2cs_client_gameinforeply.leveldiff,game_get_leveldiff(game));
 		bn_byte_set(&rpacket->u.d2cs_client_gameinforeply.maxchar,game_get_maxchar(game));
@@ -625,7 +573,7 @@ static int on_client_charloginreq(t_connection * c, t_packet * packet)
 		return -1;
 	}
 	expire_time = prefs_get_char_expire_time();
-	if (expire_time && (time(NULL) > bn_int_get(data.header.last_time) + expire_time)) {
+	if (expire_time && (std::time(NULL) > bn_int_get(data.header.last_time) + expire_time)) {
 		t_packet * rpacket;
 
 		if ((rpacket=packet_create(packet_class_d2cs))) {
@@ -779,7 +727,7 @@ static int on_client_motdreq(t_connection * c, t_packet * packet)
 
 	/* client will crash if motd is too long */
 	motd = xstrdup(prefs_get_motd());
-	motd_len = strlen(motd);
+	motd_len = std::strlen(motd);
 	if (motd_len > MAX_MOTD_LENGTH) {
 		WARN2("motd length (%i) exceeds maximun value (%i)",motd_len,MAX_MOTD_LENGTH);
 		motd[MAX_MOTD_LENGTH]='\0';
@@ -873,7 +821,7 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"missing account for connection");
 		return -1;
 	}
-	path=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
+	path=(char*)xmalloc(std::strlen(prefs_get_charinfo_dir())+1+std::strlen(account)+1);
 	charlist_sort_order = prefs_get_charlist_sort_order();
 
 	elist_init(&charlist_head);
@@ -908,7 +856,7 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 				bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar,0);
 			}
 			p_closedir(dir);
-			if (!strcmp(charlist_sort_order, "ASC"))
+			if (!std::strcmp(charlist_sort_order, "ASC"))
 			{
 			    t_elist * curr, * safe;
 			    t_d2charlist * ccharlist;
@@ -970,7 +918,7 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"missing account for connection");
 		return -1;
 	}
-	path=(char*)xmalloc(strlen(prefs_get_charinfo_dir())+1+strlen(account)+1);
+	path=(char*)xmalloc(std::strlen(prefs_get_charinfo_dir())+1+std::strlen(account)+1);
 	charlist_sort_order = prefs_get_charlist_sort_order();
 
 	elist_init(&charlist_head);
@@ -1013,7 +961,7 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 				maxchar = 0;
 
 			p_closedir(dir);
-			if (!strcmp(charlist_sort_order, "ASC"))
+			if (!std::strcmp(charlist_sort_order, "ASC"))
 			{
 			    t_elist * curr, *safe;
 			    t_d2charlist * ccharlist;
@@ -1138,7 +1086,7 @@ static unsigned int d2cs_try_joingame(t_connection const * c, t_game const * gam
 			reply=D2CS_CLIENT_JOINGAMEREPLY_LEVEL_LIMIT;
 		} else if (conn_get_charinfo_level(c) < game_get_minlevel(game)) {
 			reply=D2CS_CLIENT_JOINGAMEREPLY_LEVEL_LIMIT;
-		} else if (strcmp(d2cs_game_get_pass(game),gamepass)) {
+		} else if (std::strcmp(d2cs_game_get_pass(game),gamepass)) {
 			reply=D2CS_CLIENT_JOINGAMEREPLY_BAD_PASS;
 		} else {
 			reply=D2CS_CLIENT_JOINGAMEREPLY_SUCCEED;

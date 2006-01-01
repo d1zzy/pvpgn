@@ -17,33 +17,15 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/strcasecmp.h"
-
-#include "connection.h"
 #include "gamequeue.h"
-#include "handle_d2cs.h"
-#include "common/packet.h"
-#include "common/list.h"
+
+#include <cstring>
+
+#include "compat/strcasecmp.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+#include "connection.h"
+#include "handle_d2cs.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -92,7 +74,7 @@ extern t_gq * gq_create(unsigned int clientid, t_packet * packet, char const * g
 	gq->seqno=++gqlist_seqno;
 	gq->clientid=clientid;
 	gq->packet=packet;
-	strncpy(gq->gamename, gamename, MAX_GAMENAME_LEN);
+	std::strncpy(gq->gamename, gamename, MAX_GAMENAME_LEN);
 	if (packet) packet_add_ref(packet);
 	list_append_data(gqlist_head,gq);
 	return gq;
@@ -102,7 +84,7 @@ extern int gq_destroy(t_gq * gq, t_elem ** elem)
 {
 	ASSERT(gq,-1);
 	if (list_remove_data(gqlist_head,gq,elem)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error remove game queue from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove game queue from list");
 		return -1;
 	}
 	if (gq->packet) packet_del_ref(gq->packet);

@@ -18,8 +18,8 @@
 #ifndef INCLUDED_HANDLE_BNETD_H
 #define INCLUDED_HANDLE_BNETD_H
 
-#include "connection.h"
 #include "common/packet.h"
+#include "connection.h"
 
 namespace pvpgn
 {
