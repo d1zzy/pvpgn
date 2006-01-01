@@ -25,8 +25,8 @@
 
 #ifdef HAVE_SELECT
 
-#include "scoped_ptr.h"
 #include "compat/psock.h"
+#include "common/scoped_ptr.h"
 #include "fdwatch.h"
 #include "fdwbackend.h"
 

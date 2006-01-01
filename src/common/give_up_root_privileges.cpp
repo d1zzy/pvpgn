@@ -21,6 +21,7 @@
 #include <cerrno>
 #include <cstring>
 #include <cstdlib>
+
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
@@ -33,6 +34,7 @@
 #ifdef HAVE_GRP_H
 # include <grp.h>
 #endif
+
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 

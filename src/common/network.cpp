@@ -18,23 +18,13 @@
  */
 #include "common/setup_before.h"
 #include "common/network.h"
+
 #include <cerrno>
 #include <cstring>
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
+
 #include "compat/socket.h"
 #include "compat/recv.h"
 #include "compat/send.h"
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
 #include "compat/netinet_in.h"
 #include "compat/psock.h"
 #include "common/packet.h"

@@ -16,6 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
+#include "d2char_checksum.h"
 #include "common/setup_after.h"
 
 namespace pvpgn

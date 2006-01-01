@@ -38,17 +38,8 @@ typedef struct {
 #ifndef __CONF_H_PROTOS__
 #define __CONF_H_PROTOS__
 
-#include <stdio.h>
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
+#include <cstdio>
+#include <ctime>
 
 namespace pvpgn
 {
@@ -57,12 +48,12 @@ namespace pvpgn
 extern int conf_set_bool(unsigned *pbool, const char *valstr, unsigned def);
 extern int conf_set_int(unsigned *pint, const char *valstr, unsigned def);
 extern int conf_set_str(const char **pstr, const char *valstr, const char *def);
-extern int conf_set_timestr(time_t* ptime, const char *valstr, time_t def);
+extern int conf_set_timestr(std::time_t* ptime, const char *valstr, std::time_t def);
 extern const char* conf_get_int(unsigned ival);
 extern const char* conf_get_bool(unsigned ival);
 
 /* loading/unloading functions */
-extern int conf_load_file(FILE *fd, t_conf_entry *conftab);
+extern int conf_load_file(std::FILE *fd, t_conf_entry *conftab);
 extern int conf_load_cmdline(int argc, char **argv, t_conf_entry *conftab);
 extern void conf_unload(t_conf_entry *conftab);
 

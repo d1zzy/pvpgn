@@ -33,27 +33,19 @@ typedef int (*t_oom_cb)(void);
 #ifndef INCLUDED_XALLOC_PROTOS
 #define INCLUDED_XALLOC_PROTOS
 
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-
 #ifndef XALLOC_SKIP
+#include <cstdlib>
+
 namespace pvpgn
 {
 
+
 #define xmalloc(size) xmalloc_real(size,__FILE__,__LINE__)
-void *xmalloc_real(size_t size, const char *fn, unsigned ln);
+void *xmalloc_real(std::size_t size, const char *fn, unsigned ln);
 #define xcalloc(no,size) xcalloc_real(no,size,__FILE__,__LINE__)
-void *xcalloc_real(size_t nmemb, size_t size, const char *fn, unsigned ln);
+void *xcalloc_real(std::size_t nmemb, std::size_t size, const char *fn, unsigned ln);
 #define xrealloc(ptr,size) xrealloc_real(ptr,size,__FILE__,__LINE__)
-void *xrealloc_real(void *ptr, size_t size, const char *fn, unsigned ln);
+void *xrealloc_real(void *ptr, std::size_t size, const char *fn, unsigned ln);
 #define xstrdup(str) xstrdup_real(str,__FILE__,__LINE__)
 char *xstrdup_real(const char *str, const char *fn, unsigned ln);
 #define xfree(ptr) xfree_real(ptr,__FILE__,__LINE__)
@@ -66,7 +58,7 @@ void xalloc_setcb(t_oom_cb cb);
 
 #define xmalloc(size) malloc(size)
 #define xcalloc(no,size) calloc(no,size)
-#define xrealloc(ptr,size) realloc(ptr,size)
+#define xrealloc(ptr,size) std::realloc(ptr,size)
 #define xstrdup(str) strdup(str)
 #define xfree(ptr) free(ptr)
 #define xalloc_setcb(cb)

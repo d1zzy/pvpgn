@@ -24,21 +24,9 @@
 #define FDWATCH_BACKEND
 #include "common/setup_before.h"
 #include "fdwatch_select.h"
+
 #include <cstring>
-/* According to earlier standards */
-#ifdef HAVE_SYS_TIME_H
-# include <sys/time.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-/* According to POSIX 1003.1-2001 */
-#ifdef HAVE_SYS_SELECT_H
-# include <sys/select.h>
-#endif
+
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 

@@ -18,6 +18,7 @@
 #define HASHTABLE_INTERNAL_ACCESS
 #include "common/setup_before.h"
 #include "common/hashtable.h"
+
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/setup_after.h"

@@ -22,9 +22,11 @@
   */
 
 #include "common/setup_before.h"
-#include "fdwatch_epoll.h"
-#include <cstring>
 #ifdef HAVE_EPOLL
+#include "fdwatch_epoll.h"
+
+#include <cstring>
+
 #include "common/eventlog.h"
 #include "fdwatch.h"
 #include "common/setup_after.h"

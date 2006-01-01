@@ -18,9 +18,11 @@
  */
 #include "common/setup_before.h"
 #include "common/util.h"
+
 #include <cstdlib>
 #include <cctype>
 #include <cstdio>
+
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
 #include "common/xalloc.h"
@@ -32,7 +34,7 @@ namespace pvpgn
 
 extern int strstart(char const * full, char const * part)
 {
-    size_t strlen_part;
+    std::size_t strlen_part;
     int compare_result;
 
     if (!full || !part)
@@ -577,7 +579,7 @@ extern char * buildpath(char const *root, const char *suffix)
 {
     char *result;
 
-    result = (char*) xmalloc(strlen(root) + 1 + std::strlen(suffix) + 1);
+    result = (char*) xmalloc(std::strlen(root) + 1 + std::strlen(suffix) + 1);
 
     std::strcpy(result,root); std::strcat(result,"/"); std::strcat(result,suffix);
     return result;
@@ -669,7 +671,7 @@ extern int timestr_to_time(char const * timestr, std::time_t* ptime)
                 if (!ch) break;
         }
 
-	*ptime = mktime(&when);
+	*ptime = std::mktime(&when);
 	return 0;
 }
 

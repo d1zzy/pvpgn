@@ -16,11 +16,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-
 #include "xstring.h"
+
 #include <cstdio>
 #include <cctype>
 #include <cstring>
+
 #include "compat/strdup.h"
 #include "common/xalloc.h"
 #include "common/setup_after.h"
@@ -68,7 +69,7 @@ extern char * str_strip_affix(char * str, char const * affix)
 		}
 		if (!match) break;
 	}
-	for (j=strlen(str)-1; j>=i; j--) {
+	for (j=std::strlen(str)-1; j>=i; j--) {
 		match=0;
 		for (n=0; affix[n]; n++) {
 			if (str[j]==affix[n]) {
@@ -94,7 +95,7 @@ extern char * hexstrdup(unsigned char const * src)
 
 	if (!src) return NULL;
 	dest=xstrdup((const char*)src);
-	len=hexstrtoraw(src,dest,strlen(dest)+1);
+	len=hexstrtoraw(src,dest,std::strlen(dest)+1);
 	dest[len]='\0';
 	return dest;
 }
@@ -116,7 +117,7 @@ extern unsigned int hexstrtoraw(unsigned char const * src, char * data, unsigned
 				data[j++]=ch;
 			} else if (ch=='x') {
 				if (std::isxdigit(src[i+1])) {
-					if (isxdigit(src[i+2])) {
+					if (std::isxdigit(src[i+2])) {
 						data[j++]=xtoi(src[i+1]) * 0x10 + xtoi(src[i+2]);
 						i+=2;
 					} else {
@@ -164,7 +165,7 @@ extern char * * strtoargv(char const * str, unsigned int * count)
 	char		* result;
 
 	if (!str || !count) return NULL;
-	temp=(char*)xmalloc(strlen(str)+1);
+	temp=(char*)xmalloc(std::strlen(str)+1);
 	n = SPLIT_STRING_INIT_COUNT;
 	pindex=(int*)xmalloc(n * sizeof (int));
 
@@ -246,7 +247,7 @@ extern char * arraytostr(char * * array, char const * delim, int count)
 		std::strcat(result,array[i]);
 		need_delim=1;
 	}
-	result=(char*)xrealloc(result,strlen(result)+1);
+	result=(char*)xrealloc(result,std::strlen(result)+1);
 	return result;
 }
 

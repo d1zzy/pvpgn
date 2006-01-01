@@ -17,13 +17,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
+#include "common/packet.h"
+
 #include <cstring>
+
 #include "common/eventlog.h"
 #include "common/bn_type.h"
 #include "common/field_sizes.h"
 #include "common/xalloc.h"
 #include "common/lstr.h"
-#include "common/packet.h"
 #include "common/setup_after.h"
 
 
@@ -1140,7 +1142,7 @@ extern int packet_append_ntstring(t_packet * packet, char const * str)
     if (addlen<1)
 	return -1;
 
-    memcpy(packet->u.data+size,str,addlen);
+    std::memcpy(packet->u.data+size,str,addlen);
     packet_set_size(packet,size+addlen);
 
     return (int)addlen;

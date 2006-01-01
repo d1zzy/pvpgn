@@ -24,7 +24,7 @@ namespace pvpgn
 
 typedef unsigned int t_cdbhash;
 
-static inline t_cdbhash cdb_hash(const void* data, size_t len)
+static inline t_cdbhash cdb_hash(const void* data, std::size_t len)
 {
 	t_cdbhash h;
 	const char* p = (const char*)data;

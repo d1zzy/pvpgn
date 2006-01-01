@@ -25,17 +25,12 @@
 
 
 #include "common/setup_before.h"
-#include <ctype.h>
-#include <stdio.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/uint.h"
 #include "asnprintf.h"
+
+#include <cctype>
+#include <cstring>
+
+#include "compat/uint.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -45,7 +40,7 @@ static int skip_atoi(const char **s)
 {
 	int i=0;
 
-	while (isdigit(**s))
+	while (std::isdigit(**s))
 		i = i*10 + *((*s)++) - '0';
 	return i;
 }
@@ -150,7 +145,7 @@ static char * number(char * buf, char * end, t_uint64 num, int base, int size, i
 	return buf;
 }
 
-int vasnprintf(char *buf, size_t size, t_fmtentry *entries, unsigned entlen, const char *fmt, va_list args)
+int vasnprintf(char *buf, std::size_t size, t_fmtentry *entries, unsigned entlen, const char *fmt, std::va_list args)
 {
 	int len;
 	t_uint64 num;
@@ -206,7 +201,7 @@ int vasnprintf(char *buf, size_t size, t_fmtentry *entries, unsigned entlen, con
 
 		/* get field width */
 		field_width = -1;
-		if (isdigit(*fmt))
+		if (std::isdigit(*fmt))
 			field_width = skip_atoi(&fmt);
 		else if (*fmt == '*') {
 			++fmt;
@@ -222,7 +217,7 @@ int vasnprintf(char *buf, size_t size, t_fmtentry *entries, unsigned entlen, con
 		precision = -1;
 		if (*fmt == '.') {
 			++fmt;
-			if (isdigit(*fmt))
+			if (std::isdigit(*fmt))
 				precision = skip_atoi(&fmt);
 			else if (*fmt == '*') {
 				++fmt;
@@ -278,7 +273,7 @@ int vasnprintf(char *buf, size_t size, t_fmtentry *entries, unsigned entlen, con
 				if (!s)
 					s = "<NULL>";
 
-				len = strlen(s);
+				len = std::strlen(s);
 				if (len>precision)
 					len=precision;
 
@@ -327,7 +322,7 @@ int vasnprintf(char *buf, size_t size, t_fmtentry *entries, unsigned entlen, con
 					long * ip = va_arg(args, long *);
 					*ip = (str - buf);
 				} else if (qualifier == 'Z' || qualifier == 'z') {
-					size_t * ip = va_arg(args, size_t *);
+					std::size_t * ip = va_arg(args, std::size_t *);
 					*ip = (str - buf);
 				} else {
 					int * ip = va_arg(args, int *);
@@ -388,7 +383,7 @@ int vasnprintf(char *buf, size_t size, t_fmtentry *entries, unsigned entlen, con
 			if (flags & SIGN)
 				num = (signed long) num;
 		} else if (qualifier == 'Z' || qualifier == 'z') {
-			num = va_arg(args, size_t);
+			num = va_arg(args, std::size_t);
 		} else if (qualifier == 'h') {
 			num = (unsigned short) va_arg(args, int);
 			if (flags & SIGN)
@@ -412,12 +407,12 @@ int vasnprintf(char *buf, size_t size, t_fmtentry *entries, unsigned entlen, con
 	return str - buf;
 }
 
-int asnprintf(char * buf, size_t size, t_fmtentry *entries, unsigned entlen, const char *fmt, ...)
+int asnprintf(char * buf, std::size_t size, t_fmtentry *entries, unsigned entlen, const char *fmt, ...)
 {
-	va_list args;
+	std::va_list args;
 	int i;
 
-	VA_START(args, fmt);
+	va_start(args, fmt);
 	i=vasnprintf(buf,size,entries,entlen,fmt,args);
 	va_end(args);
 	return i;

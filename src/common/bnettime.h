@@ -44,17 +44,8 @@ typedef struct
 #ifndef INCLUDED_BNETTIME_PROTOS
 #define INCLUDED_BNETTIME_PROTOS
 
+#include <ctime>
 #define JUST_NEED_TYPES
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
 #include "common/bn_type.h"
 #undef JUST_NEED_TYPES
 
@@ -63,8 +54,8 @@ namespace pvpgn
 
 extern t_bnettime secs_to_bnettime(double secs) ;
 extern double bnettime_to_secs(t_bnettime bntime) ;
-extern t_bnettime time_to_bnettime(time_t stdtime, unsigned int usec) ;
-extern time_t bnettime_to_time(t_bnettime bntime) ;
+extern t_bnettime time_to_bnettime(std::time_t stdtime, unsigned int usec) ;
+extern std::time_t bnettime_to_time(t_bnettime bntime) ;
 extern t_bnettime bnettime(void);
 extern char const * bnettime_get_str(t_bnettime bntime);
 extern int bnettime_set_str(t_bnettime * bntime, char const * timestr);

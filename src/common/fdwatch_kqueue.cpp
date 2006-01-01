@@ -24,7 +24,9 @@
 #include "common/setup_before.h"
 #ifdef HAVE_KQUEUE
 #include "fdwatch_kqueue.h"
+
 #include <cstring>
+
 #include "common/eventlog.h"
 #include "fdwatch.h"
 #include "common/setup_after.h"
