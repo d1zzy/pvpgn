@@ -30,7 +30,6 @@
 #include "common/list.h"
 #include "common/util.h"
 #include "common/eventlog.h"
-#include "compat/strerror.h"
 #include "common/xalloc.h"
 #include "common/field_sizes.h"
 
@@ -114,7 +113,7 @@ extern int ipbanlist_load(char const * filename)
 
     if (!(fp = std::fopen(filename,"r")))
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open banlist file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open banlist file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno));
 	return -1;
     }
 
@@ -163,7 +162,7 @@ extern int ipbanlist_load(char const * filename)
 
     file_get_line(NULL); // clear file_get_line buffer
     if (std::fclose(fp)<0)
-        eventlog(eventlog_level_error,__FUNCTION__,"could not close banlist file \"%s\" after reading (std::fclose: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not close banlist file \"%s\" after reading (std::fclose: %s)",filename,std::strerror(errno));
 
     return 0;
 }
@@ -185,12 +184,12 @@ extern int ipbanlist_save(char const * filename)
 
     if (!(fp = std::fopen(filename,"w")))
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open banlist file \"%s\" for writing (std::fopen: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open banlist file \"%s\" for writing (std::fopen: %s)",filename,std::strerror(errno));
 	return -1;
     }
 /*    if (ftruncate(fp,0)<0)
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not truncate banlist file \"%s\" (ftruncate: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not truncate banlist file \"%s\" (ftruncate: %s)",filename,std::strerror(errno));
 	return -1;
     }*/
 
@@ -212,13 +211,13 @@ extern int ipbanlist_save(char const * filename)
 	else
 	    std::sprintf(line,"%s %ld\n",ipstr,entry->endtime);
 	if (!(std::fwrite(line,std::strlen(line),1,fp)))
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not write to banlist file (write: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not write to banlist file (write: %s)",std::strerror(errno));
 	xfree(ipstr);
     }
 
     if (std::fclose(fp)<0)
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not close banlist file \"%s\" after writing (std::fclose: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not close banlist file \"%s\" after writing (std::fclose: %s)",filename,std::strerror(errno));
 	return -1;
     }
 

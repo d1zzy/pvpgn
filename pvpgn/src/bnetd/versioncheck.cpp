@@ -31,7 +31,6 @@
 #include <cstdlib>
 
 #include "compat/strcasecmp.h"
-#include "compat/strerror.h"
 #include "common/list.h"
 #include "common/xalloc.h"
 #include "common/eventlog.h"
@@ -464,7 +463,7 @@ extern int versioncheck_load(char const * filename)
     }
     if (!(fp = std::fopen(filename,"r")))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno));
 	list_destroy(versioninfo_head);
 	versioninfo_head = NULL;
 	return -1;
@@ -614,7 +613,7 @@ extern int versioncheck_load(char const * filename)
 
     file_get_line(NULL); // clear file_get_line buffer
     if (std::fclose(fp)<0)
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close versioncheck file \"%s\" after reading (std::fclose: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close versioncheck file \"%s\" after reading (std::fclose: %s)",filename,std::strerror(errno));
 
     return 0;
 }

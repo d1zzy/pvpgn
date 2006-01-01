@@ -21,8 +21,8 @@
 
 #include <cstdio>
 #include <cerrno>
+#include <cstring>
 
-#include "compat/strerror.h"
 #include "common/xalloc.h"
 #include "common/eventlog.h"
 
@@ -101,7 +101,7 @@ extern int binary_ladder_save(t_binary_ladder_types type, unsigned int paracount
 
   if (!(fp = std::fopen(filename,"wb")))
   {
-    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)", filename, pstrerror(errno));
+    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)", filename, std::strerror(errno));
     dispose_filename(filename);
     return -1;
   }
@@ -151,7 +151,7 @@ extern t_binary_ladder_load_result binary_ladder_load(t_binary_ladder_types type
 
   if (!(fp = std::fopen(filename,"rb")))
   {
-    eventlog(eventlog_level_info,__FUNCTION__,"could not open ladder file \"%s\" - maybe ladder still empty",filename,pstrerror(errno));
+    eventlog(eventlog_level_info,__FUNCTION__,"could not open ladder file \"%s\" - maybe ladder still empty",filename,std::strerror(errno));
     dispose_filename(filename);
     return load_failed;
   }

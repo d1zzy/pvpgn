@@ -19,8 +19,8 @@
 
 #include <cstdio>
 #include <cerrno>
+#include <cstring>
 
-#include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/tag.h"
@@ -180,7 +180,7 @@ extern int output_write_to_file(void)
 
     if (!(fp = std::fopen(status_filename,"w")))
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)",status_filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)",status_filename,std::strerror(errno));
         return -1;
     }
 

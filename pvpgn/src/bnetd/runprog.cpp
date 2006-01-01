@@ -20,6 +20,7 @@
 
 #include <cerrno>
 #include <cstdlib>
+#include <cstring>
 
 #ifdef HAVE_SYS_TYPES_h
 # include <sys/types.h>
@@ -32,7 +33,6 @@
 #endif
 
 #include "compat/stdfileno.h"
-#include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 
@@ -64,7 +64,7 @@ extern std::FILE * runprog_open(char const * command)
 
     if (pipe(fds)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not create pipe (pipe: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not create pipe (pipe: %s)",std::strerror(errno));
 	return NULL;
     }
 
@@ -89,12 +89,12 @@ extern std::FILE * runprog_open(char const * command)
 	    close(fds[1]);
 
 	if (execlp(command,command,(char *)NULL)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not execute \"%s\" (execlp: %s)",command,pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not execute \"%s\" (execlp: %s)",command,std::strerror(errno));
 
 	std::exit(127); /* popen exec failure code */
 
     case -1:
-	eventlog(eventlog_level_error,__FUNCTION__,"could not fork (fork: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not fork (fork: %s)",std::strerror(errno));
 	close(fds[0]);
 	close(fds[1]);
 	return NULL;
@@ -104,7 +104,7 @@ extern std::FILE * runprog_open(char const * command)
 
 	if (!(pp = fdopen(fds[0],"r")))
 	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not streamify output (fdopen: %s)",pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not streamify output (fdopen: %s)",std::strerror(errno));
 	    close(fds[0]);
 	    return NULL;
 	}
@@ -131,7 +131,7 @@ extern int runprog_close(std::FILE * pp)
 
     if (std::fclose(pp)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close process (std::fclose: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close process (std::fclose: %s)",std::strerror(errno));
 	return -1;
     }
 

@@ -27,7 +27,6 @@
 
 #include "compat/strdup.h"
 #include "compat/strcasecmp.h"
-#include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/util.h"
@@ -203,7 +202,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 	std::sprintf(channel->logname,"%s/chanlog-%s-%06u",prefs_get_chanlogdir(),dstr,channel->id);
 
 	if (!(channel->log = std::fopen(channel->logname,"w")))
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not open channel log \"%s\" for writing (std::fopen: %s)",channel->logname,pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not open channel log \"%s\" for writing (std::fopen: %s)",channel->logname,std::strerror(errno));
 	else
 	{
 	    std::fprintf(channel->log,"name=\"%s\"\n",channel->name);
@@ -300,7 +299,7 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
 	std::fprintf(channel->log,"\ndestroyed=\"%s\"\n",timetemp);
 
 	if (std::fclose(channel->log)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not close channel log \"%s\" after writing (std::fclose: %s)",channel->logname,pstrerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not close channel log \"%s\" after writing (std::fclose: %s)",channel->logname,std::strerror(errno));
     }
 
     if (channel->logname)
@@ -897,7 +896,7 @@ static int channellist_load_permanent(char const * filename)
 
     if (!(fp = std::fopen(filename,"r")))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open channel file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open channel file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno));
 	return -1;
     }
 
@@ -1048,7 +1047,7 @@ static int channellist_load_permanent(char const * filename)
 
     file_get_line(NULL); // clear file_get_line buffer
     if (std::fclose(fp)<0)
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close channel file \"%s\" after reading (std::fclose: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close channel file \"%s\" after reading (std::fclose: %s)",filename,std::strerror(errno));
     return 0;
 }
 

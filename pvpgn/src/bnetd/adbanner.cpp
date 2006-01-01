@@ -22,9 +22,9 @@
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
+#include <cstring>
 
 #include "compat/strcasecmp.h"
-#include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/systemerror.h"
 #include "connection.h"
@@ -230,7 +230,7 @@ AdBannerComponent::AdBannerComponent(const std::string& fname)
 	std::ifstream fp(fname.c_str());
 	if (!fp)
 	{
-		ERROR2("could not open adbanner file \"%s\" for reading (std::fopen: %s)", fname.c_str(), pstrerror(errno));
+		ERROR2("could not open adbanner file \"%s\" for reading (std::fopen: %s)", fname.c_str(), std::strerror(errno));
 		throw SystemError("open");
 	}
 

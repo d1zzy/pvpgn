@@ -20,9 +20,9 @@
 
 #include <cerrno>
 #include <cstddef>
+#include <cstring>
 
 #include "compat/gettimeofday.h"
-#include "compat/strerror.h"
 #include "common/eventlog.h"
 
 #include "common/setup_after.h"
@@ -46,7 +46,7 @@ extern unsigned int get_ticks(void)
 
     if (gettimeofday(&tv,NULL)<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not get std::time (gettimeofday: %s)",pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not get std::time (gettimeofday: %s)",std::strerror(errno));
 	return 0;
     }
     if (first)

@@ -26,7 +26,6 @@
 #include "compat/strdup.h"
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
-#include "compat/strerror.h"
 #include "compat/pdir.h"
 #include "common/list.h"
 #include "common/elist.h"

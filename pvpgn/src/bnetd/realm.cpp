@@ -24,7 +24,6 @@
 #include <cstring>
 #include <cassert>
 
-#include "compat/strerror.h"
 #include "common/list.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
@@ -326,7 +325,7 @@ t_list * realmlist_load(char const * filename)
 
     if (!(fp = std::fopen(filename,"r")))
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open realm file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open realm file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno));
         return NULL;
     }
 
@@ -425,7 +424,7 @@ t_list * realmlist_load(char const * filename)
     }
     file_get_line(NULL); // clear file_get_line buffer
     if (std::fclose(fp)<0)
-	eventlog(eventlog_level_error,__FUNCTION__,"could not close realm file \"%s\" after reading (std::fclose: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not close realm file \"%s\" after reading (std::fclose: %s)",filename,std::strerror(errno));
     return list_head;
 }
 
