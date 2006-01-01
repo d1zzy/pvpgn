@@ -17,34 +17,15 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/strcasecmp.h"
-#include <ctype.h>
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif
-
 #include "charlock.h"
-#include "common/introtate.h"
+
+#include <cstring>
+#include <cctype>
+#include <climits>
+
+#include "compat/strcasecmp.h"
 #include "common/xalloc.h"
+#include "common/introtate.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -75,8 +56,8 @@ int cl_init(unsigned int tbllen, unsigned int maxgs)
 
 	clitbl = (t_charlockinfo**)xmalloc(tbllen*sizeof(t_charlockinfo**));
 	gsqtbl = (t_charlockinfo**)xmalloc(maxgs*sizeof(t_charlockinfo**));
-	memset(clitbl, 0, tbllen*sizeof(t_charlockinfo**));
-	memset(gsqtbl, 0, maxgs*sizeof(t_charlockinfo**));
+	std::memset(clitbl, 0, tbllen*sizeof(t_charlockinfo**));
+	std::memset(gsqtbl, 0, maxgs*sizeof(t_charlockinfo**));
 	clitbl_len = tbllen;
 	gsqtbl_len = maxgs;
 	return 0;
@@ -114,7 +95,7 @@ int cl_query_charlock_status(unsigned char *charname,
 
 	if (!charname || !realmname) return -1;
 	if (!clitbl_len || !gsqtbl) return -1;
-	if (strlen((char*)charname)>=MAX_CHARNAME_LEN) return -1;
+	if (std::strlen((char*)charname)>=MAX_CHARNAME_LEN) return -1;
 
 	hashval = string_hash((char*)charname) % clitbl_len;
 	pcl = clitbl[hashval];
@@ -138,7 +119,7 @@ int cl_lock_char(unsigned char *charname,
 
 	if (!charname || !realmname) return -1;
 	if (!clitbl_len || !gsqtbl) return -1;
-	if (strlen((char*)charname)>=MAX_CHARNAME_LEN) return -1;
+	if (std::strlen((char*)charname)>=MAX_CHARNAME_LEN) return -1;
 
 	hashval = string_hash((char*)charname) % clitbl_len;
 	pcl = clitbl[hashval];
@@ -153,9 +134,9 @@ int cl_lock_char(unsigned char *charname,
 
 	/* not found, locked it */
 	pcl = (t_charlockinfo*)xmalloc(sizeof(t_charlockinfo));
-	memset(pcl, 0, sizeof(t_charlockinfo));
-	strncpy((char*)pcl->charname, (char*)charname, MAX_CHARNAME_LEN-1);
-	strncpy((char*)pcl->realmname, (char*)realmname, MAX_REALMNAME_LEN-1);
+	std::memset(pcl, 0, sizeof(t_charlockinfo));
+	std::strncpy((char*)pcl->charname, (char*)charname, MAX_CHARNAME_LEN-1);
+	std::strncpy((char*)pcl->realmname, (char*)realmname, MAX_REALMNAME_LEN-1);
 	pcl->gsid = gsid;
 
 	/* add to hash table link list */
@@ -175,7 +156,7 @@ int cl_unlock_char(unsigned char *charname, unsigned char *realmname, unsigned i
 
 	if (!charname || !realmname) return -1;
 	if (!clitbl_len || !gsqtbl) return 0;
-	if (strlen((char*)charname)>=MAX_CHARNAME_LEN) return -1;
+	if (std::strlen((char*)charname)>=MAX_CHARNAME_LEN) return -1;
 
 	hashval = string_hash((char*)charname) % clitbl_len;
 	pcl = clitbl[hashval];
@@ -258,10 +239,10 @@ static unsigned int string_hash(char const *string)
 
 	if (!string) return 0;
 
-	for (hash=0,pos=0,i=0; i<strlen(string); i++)
+	for (hash=0,pos=0,i=0; i<std::strlen(string); i++)
 	{
 		if (isascii((int)string[i]))
-			ch = (unsigned int)(unsigned char)tolower((int)string[i]);
+			ch = (unsigned int)(unsigned char)std::tolower((int)string[i]);
 		else
 			ch = (unsigned int)(unsigned char)string[i];
 		hash ^= ROTL(ch,pos,sizeof(unsigned int)*CHAR_BIT);

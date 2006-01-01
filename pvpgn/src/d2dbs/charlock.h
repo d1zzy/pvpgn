@@ -20,6 +20,8 @@
 
 #define DEFAULT_HASHTBL_LEN		65000
 
+#include "setup.h"
+
 namespace pvpgn
 {
 

@@ -17,34 +17,11 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
-
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "compat/strcasecmp.h"
-#include <ctype.h>
-#ifdef HAVE_LIMITS_H
-# include <limits.h>
-#endif
 #include "dbsdupecheck.h"
-#include "common/setup_after.h"
+
 #include "common/bn_type.h"
 #include "common/eventlog.h"
+#include "common/setup_after.h"
 
 namespace pvpgn
 {
