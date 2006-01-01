@@ -25,7 +25,6 @@
 #include "common/list.h"
 #include "common/util.h"
 #include "common/xalloc.h"
-#include "compat/strerror.h"
 
 #include "common/setup_after.h"
 
@@ -55,7 +54,7 @@ extern int command_groups_load(char const * filename)
         return -1;
     }
     if (!(fp = std::fopen(filename,"r"))) {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
+        eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno));
         return -1;
     }
 

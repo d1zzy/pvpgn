@@ -24,7 +24,6 @@
 #include <cstring>
 
 #include "compat/access.h"
-#include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/util.h"
 #include "common/xalloc.h"
@@ -55,7 +54,7 @@ extern int support_check_files(char const * supportfile)
 
   if (!(fp = std::fopen(supportfile,"r")))
   {
-    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",supportfile,pstrerror(errno));
+    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",supportfile,std::strerror(errno));
     eventlog(eventlog_level_error,__FUNCTION__,"can't guarantee that everything will run smooth");
     return 0;
   }

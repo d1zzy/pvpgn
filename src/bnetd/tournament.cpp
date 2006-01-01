@@ -22,7 +22,6 @@
 #include <ctime>
 #include <cstdlib>
 
-#include "compat/strerror.h"
 #include "common/list.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
@@ -331,7 +330,7 @@ extern int tournament_init(char const * filename)
     }
 
     if (!(fp = std::fopen(filename,"r"))) {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
+	eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno));
 	xfree((void *)timestamp);
 	return -1;
     }

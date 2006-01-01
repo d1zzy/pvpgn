@@ -25,7 +25,6 @@
 #include <cstdio>
 #include <cassert>
 
-#include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/setup_after.h"

@@ -24,7 +24,6 @@
 #include <cerrno>
 
 #include "compat/gethostname.h"
-#include "compat/strerror.h"
 #include "common/xalloc.h"
 #include "common/eventlog.h"
 #include "common/addr.h"
@@ -154,7 +153,7 @@ extern char * message_format_line(t_connection const * c, char const * in)
 	    case 'h':
     		if (gethostname(&out[outpos],MAX_INC)<0)
     		{
-		    eventlog(eventlog_level_error,__FUNCTION__,"could not get hostname (gethostname: %s)",pstrerror(errno));
+		    eventlog(eventlog_level_error,__FUNCTION__,"could not get hostname (gethostname: %s)",std::strerror(errno));
 		    std::strcpy(&out[outpos],"localhost"); /* not much else you can do */
     		}
 		outpos += std::strlen(&out[outpos]);

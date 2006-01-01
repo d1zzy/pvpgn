@@ -25,7 +25,6 @@
 #include <cstdlib>
 #include <cerrno>
 
-#include "compat/strerror.h"
 #include "compat/strcasecmp.h"
 #include "compat/mkdir.h"
 #include "compat/statmacros.h"
@@ -303,7 +302,7 @@ static int mailbox_delete(t_mailbox * mailbox, unsigned int idx) {
    std::sprintf(filename,"%s/%s",mailbox->path,dentry);
    rez=std::remove(filename);
    if (rez<0) {
-       eventlog(eventlog_level_info,__FUNCTION__,"could not std::remove file \"%s\" (std::remove: %s)",filename,pstrerror(errno));
+       eventlog(eventlog_level_info,__FUNCTION__,"could not std::remove file \"%s\" (std::remove: %s)",filename,std::strerror(errno));
     }
    xfree(filename);
    return rez;
