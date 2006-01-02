@@ -1,7 +1,7 @@
 [Project]
 FileName=bncdb.dev
 Name=bncdb
-UnitCount=26
+UnitCount=22
 Type=1
 Ver=1
 ObjFiles=
@@ -12,7 +12,7 @@ MakeIncludes=
 Compiler=
 CppCompiler=
 Linker=_@@_
-IsCpp=0
+IsCpp=1
 Icon=
 ExeOutput=..\bin
 ObjectOutput=
@@ -30,7 +30,7 @@ CustomMakefile=
 PrivateResource=
 
 [Unit1]
-FileName=..\src\tinycdb\cdb_unpack.c
+FileName=..\src\tinycdb\cdb_unpack.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -40,7 +40,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=..\src\tinycdb\cdb.c
+FileName=..\src\tinycdb\cdb.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -60,7 +60,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit4]
-FileName=..\src\tinycdb\cdb_find.c
+FileName=..\src\tinycdb\cdb_find.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -70,7 +70,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit5]
-FileName=..\src\tinycdb\cdb_findnext.c
+FileName=..\src\tinycdb\cdb_findnext.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -80,7 +80,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit6]
-FileName=..\src\tinycdb\cdb_hash.c
+FileName=..\src\tinycdb\cdb_hash.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -90,7 +90,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit7]
-FileName=..\src\tinycdb\cdb_init.c
+FileName=..\src\tinycdb\cdb_init.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -110,7 +110,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit9]
-FileName=..\src\tinycdb\cdb_make.c
+FileName=..\src\tinycdb\cdb_make.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -120,7 +120,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit10]
-FileName=..\src\tinycdb\cdb_make_add.c
+FileName=..\src\tinycdb\cdb_make_add.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -130,7 +130,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit11]
-FileName=..\src\tinycdb\cdb_make_find.c
+FileName=..\src\tinycdb\cdb_make_find.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -140,7 +140,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit12]
-FileName=..\src\tinycdb\cdb_make_put.c
+FileName=..\src\tinycdb\cdb_make_put.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -150,7 +150,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit13]
-FileName=..\src\tinycdb\cdb_seek.c
+FileName=..\src\tinycdb\cdb_seek.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -160,7 +160,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit14]
-FileName=..\src\tinycdb\cdb_seq.c
+FileName=..\src\tinycdb\cdb_seq.cpp
 CompileCpp=0
 Folder=bncdb/Source Files
 Compile=1
@@ -170,7 +170,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit15]
-FileName=..\src\common\xalloc.c
+FileName=..\src\common\xalloc.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -180,7 +180,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit16]
-FileName=..\src\common\eventlog.c
+FileName=..\src\common\eventlog.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -190,7 +190,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit17]
-FileName=..\src\common\hexdump.c
+FileName=..\src\common\hexdump.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -200,7 +200,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit18]
-FileName=..\src\compat\mmap.c
+FileName=..\src\compat\mmap.cpp
 CompileCpp=0
 Folder=compat/Source Files
 Compile=1
@@ -210,16 +210,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit19]
-FileName=..\src\compat\getopt.c
-CompileCpp=0
-Folder=compat/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit20]
 FileName=..\src\common\xalloc.h
 CompileCpp=0
 Folder=common/Header Files
@@ -229,7 +219,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit21]
+[Unit20]
 FileName=..\src\common\eventlog.h
 CompileCpp=0
 Folder=common/Header Files
@@ -239,7 +229,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit22]
+[Unit21]
 FileName=..\src\common\hexdump.h
 CompileCpp=0
 Folder=common/Header Files
@@ -249,7 +239,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit23]
+[Unit22]
 FileName=..\src\compat\mmap.h
 CompileCpp=0
 Folder=compat/Header Files
@@ -260,9 +250,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit24]
-FileName=..\src\compat\getopt.h
+FileName=..\src\compat\strerror.cpp
 CompileCpp=0
-Folder=compat/Header Files
+Folder=compat/Source Files
 Compile=1
 Link=1
 Priority=1000
@@ -298,7 +288,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit26]
-FileName=..\src\compat\strerror.c
+FileName=..\src\compat\strerror.cpp
 CompileCpp=0
 Folder=compat/Source Files
 Compile=1
