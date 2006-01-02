@@ -16,26 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#include <stdio.h>
-#include "compat/exitstatus.h"
-#include <ctype.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+
 #include "common/eventlog.h"
 #include "common/bnethash.h"
 #include "common/version.h"
@@ -48,12 +32,12 @@ namespace
 
 void usage(char const * progname)
 {
-    fprintf(stderr,
+    std::fprintf(stderr,
             "usage: %s [<options>] [--] [<cleartextpassword>]\n"
             "    -h, --help, --usage  show this information and exit\n"
             "    -v, --version        print version number and exit\n",progname);
 
-    exit(STATUS_FAILURE);
+    std::exit(EXIT_FAILURE);
 }
 
 }
@@ -67,35 +51,35 @@ extern int main(int argc, char * argv[])
 
     if (argc<1 || !argv || !argv[0])
     {
-        fprintf(stderr,"bad arguments\n");
-        return STATUS_FAILURE;
+        std::fprintf(stderr,"bad arguments\n");
+        return EXIT_FAILURE;
     }
 
     for (a=1; a<argc; a++)
         if (forcepass && !pass)
             pass = argv[a];
-        else if (strcmp(argv[a],"-")==0 && !pass)
+        else if (std::strcmp(argv[a],"-")==0 && !pass)
             pass = argv[a];
         else if (argv[a][0]!='-' && !pass)
             pass = argv[a];
-        else if (forcepass || argv[a][0]!='-' || strcmp(argv[a],"-")==0)
+        else if (forcepass || argv[a][0]!='-' || std::strcmp(argv[a],"-")==0)
         {
-            fprintf(stderr,"%s: extra password argument \"%s\"\n",argv[0],argv[a]);
+            std::fprintf(stderr,"%s: extra password argument \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
-        else if (strcmp(argv[a],"--")==0)
+        else if (std::strcmp(argv[a],"--")==0)
             forcepass = 1;
-        else if (strcmp(argv[a],"-v")==0 || strcmp(argv[a],"--version")==0)
+        else if (std::strcmp(argv[a],"-v")==0 || std::strcmp(argv[a],"--version")==0)
         {
-            printf("version "PVPGN_VERSION"\n");
-            return STATUS_SUCCESS;
+            std::printf("version "PVPGN_VERSION"\n");
+            return EXIT_SUCCESS;
         }
-        else if (strcmp(argv[a],"-h")==0 || strcmp(argv[a],"--help")==0 || strcmp(argv[a],"--usage")
+        else if (std::strcmp(argv[a],"-h")==0 || std::strcmp(argv[a],"--help")==0 || std::strcmp(argv[a],"--usage")
 ==0)
             usage(argv[0]);
         else
         {
-            fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
+            std::fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
 
@@ -108,26 +92,26 @@ extern int main(int argc, char * argv[])
 
 	if (!pass)
 	{
-	    printf("Enter password to hash: ");
-	    fflush(stdout);
-	    fgets(buff,256,stdin);
+	    std::printf("Enter password to hash: ");
+	    std::fflush(stdout);
+	    std::fgets(buff,256,stdin);
 	    if (buff[0]!='\0')
-	        buff[strlen(buff)-1] = '\0';
+	        buff[std::strlen(buff)-1] = '\0';
 	}
 	else
 	{
-	    strncpy(buff,pass,sizeof(buff));
+	    std::strncpy(buff,pass,sizeof(buff));
 	    buff[sizeof(buff)-1] = '\0';
 	}
 
 	/* FIXME: what is the max password length? */
-	for (i=0; i<strlen(buff); i++)
-	    if (isascii((int)buff[i]) && isupper((int)buff[i])) /* some tolower()'s are broken */
-		buff[i] = tolower((int)buff[i]);
+	for (i=0; i<std::strlen(buff); i++)
+	    if (isascii((int)buff[i]) && std::isupper((int)buff[i])) /* some std::tolower()'s are broken */
+		buff[i] = std::tolower((int)buff[i]);
 
-	bnet_hash(&hash,strlen(buff),buff);
-	printf("\"BNET\\\\acct\\\\passhash1\"=\"%s\"\n",hash_get_str(hash));
+	bnet_hash(&hash,std::strlen(buff),buff);
+	std::printf("\"BNET\\\\acct\\\\passhash1\"=\"%s\"\n",hash_get_str(hash));
     }
 
-    return STATUS_SUCCESS;
+    return EXIT_SUCCESS;
 }
