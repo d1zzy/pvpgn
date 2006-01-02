@@ -39,6 +39,9 @@
 #include "handle_signal.h"
 #include "common/setup_after.h"
 
+#ifdef WIN32
+extern int g_ServiceStatus;
+#endif
 
 namespace pvpgn
 {
@@ -50,7 +53,6 @@ static int		dbs_packet_gs_id = 0;
 static t_preset_d2gsid	*preset_d2gsid_head = NULL;
 t_list * dbs_server_connection_list = NULL;
 int dbs_server_listen_socket=-1;
-extern int g_ServiceStatus;
 
 /* dbs_server_main
  * The module's driver function -- we just call other functions and
