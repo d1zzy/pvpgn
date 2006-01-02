@@ -240,7 +240,7 @@ static void d2cs(void * dummy)
 
 }
 
-using namespace d2cs;
+using namespace pvpgn::d2cs;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                    LPSTR lpszCmdLine, int nCmdShow)
@@ -292,7 +292,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         
         if(!d2cs_running && d2cs_run && gui_run) {
             d2cs_running = TRUE;
-            _beginthread(d2cs::d2cs, 0, NULL);
+            _beginthread(pvpgn::d2cs::d2cs, 0, NULL);
         }
         
         if(!gui_run && !d2cs_running) {
