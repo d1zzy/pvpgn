@@ -17,16 +17,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/uint.h"
 #include "fileio.h"
+
+#include "compat/uint.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -36,7 +30,7 @@ namespace bni
 {
 
 typedef struct t_file {
-	FILE *f;
+	std::FILE *f;
 	struct t_file *next;
 } t_file;
 
@@ -50,8 +44,8 @@ t_file *w_file = NULL;
 
 /* ----------------------------------------------------------------- */
 
-extern void file_rpush(FILE *f) {
-	t_file *tf = (t_file*)malloc(sizeof(t_file));
+extern void file_rpush(std::FILE *f) {
+	t_file *tf = (t_file*)xmalloc(sizeof(t_file));
 	tf->next = r_file;
 	tf->f = f;
 	r_file = tf;
@@ -62,14 +56,14 @@ extern void file_rpop(void) {
 	t_file *tf;
 	tf = r_file;
 	r_file = tf->next;
-	free(tf);
+	xfree(tf);
 	return;
 }
 
 /* ----------------------------------------------------------------- */
 
-extern void file_wpush(FILE *f) {
-	t_file *tf = (t_file*)malloc(sizeof(t_file));
+extern void file_wpush(std::FILE *f) {
+	t_file *tf = (t_file*)xmalloc(sizeof(t_file));
 	tf->next = w_file;
 	tf->f = f;
 	w_file = tf;
@@ -80,7 +74,7 @@ extern void file_wpop(void) {
 	t_file *tf;
 	tf = w_file;
 	w_file = tf->next;
-	free(tf);
+	xfree(tf);
 	return;
 }
 
@@ -88,8 +82,8 @@ extern void file_wpop(void) {
 
 extern t_uint8 file_readb(void) {
 	unsigned char buff[1];
-	if (fread(buff,1,sizeof(buff),r_file->f) < sizeof(buff)) {
-		if (ferror(r_file->f)) perror("file_readb: fread");
+	if (std::fread(buff,1,sizeof(buff),r_file->f) < sizeof(buff)) {
+		if (std::ferror(r_file->f)) std::perror("file_readb: std::fread");
 		return 0;
 	}
 	return (((t_uint8)buff[0])    );
@@ -98,8 +92,8 @@ extern t_uint8 file_readb(void) {
 
 extern t_uint16 file_readw_le(void) {
 	unsigned char buff[2];
-	if (fread(buff,1,sizeof(buff),r_file->f) < sizeof(buff)) {
-		if (ferror(r_file->f)) perror("file_readw_le: fread");
+	if (std::fread(buff,1,sizeof(buff),r_file->f) < sizeof(buff)) {
+		if (std::ferror(r_file->f)) std::perror("file_readw_le: std::fread");
 		return 0;
 	}
 	return (((t_uint16)buff[0])    )|
@@ -109,8 +103,8 @@ extern t_uint16 file_readw_le(void) {
 
 extern t_uint16 file_readw_be(void) {
 	unsigned char buff[2];
-	if (fread(buff,1,sizeof(buff),r_file->f) < sizeof(buff)) {
-		if (ferror(r_file->f)) perror("file_readw_be: fread");
+	if (std::fread(buff,1,sizeof(buff),r_file->f) < sizeof(buff)) {
+		if (std::ferror(r_file->f)) std::perror("file_readw_be: std::fread");
 		return 0;
 	}
 	return (((t_uint16)buff[0])<< 8)|
@@ -120,8 +114,8 @@ extern t_uint16 file_readw_be(void) {
 
 extern t_uint32 file_readd_le(void) {
 	unsigned char buff[4];
-	if (fread(buff,1,sizeof(buff),r_file->f) < sizeof(buff)) {
-		if (ferror(r_file->f)) perror("file_readd_le: fread");
+	if (std::fread(buff,1,sizeof(buff),r_file->f) < sizeof(buff)) {
+		if (std::ferror(r_file->f)) std::perror("file_readd_le: std::fread");
 		return 0;
 	}
 	return (((t_uint32)buff[0])    )|
@@ -133,8 +127,8 @@ extern t_uint32 file_readd_le(void) {
 
 extern t_uint32 file_readd_be(void) {
 	unsigned char buff[4];
-	if (fread(buff,1,sizeof(buff),r_file->f) < sizeof(buff)) {
-		if (ferror(r_file->f)) perror("file_readd_be: fread");
+	if (std::fread(buff,1,sizeof(buff),r_file->f) < sizeof(buff)) {
+		if (std::ferror(r_file->f)) std::perror("file_readd_be: std::fread");
 		return 0;
 	}
 	return (((t_uint32)buff[0])<<24)|
@@ -147,8 +141,8 @@ extern t_uint32 file_readd_be(void) {
 extern int file_writeb(t_uint8 u) {
 	unsigned char buff[1];
 	buff[0] = (u   );
-	if (fwrite(buff,1,sizeof(buff),w_file->f) < sizeof(buff)) {
-		if (ferror(w_file->f)) perror("file_writeb: fwrite");
+	if (std::fwrite(buff,1,sizeof(buff),w_file->f) < sizeof(buff)) {
+		if (std::ferror(w_file->f)) std::perror("file_writeb: std::fwrite");
 		return -1;
 	}
 	return 0;
@@ -159,8 +153,8 @@ extern int file_writew_le(t_uint16 u) {
 	unsigned char buff[2];
 	buff[0] = (u    );
 	buff[1] = (u>> 8);
-	if (fwrite(buff,1,sizeof(buff),w_file->f) < sizeof(buff)) {
-		if (ferror(w_file->f)) perror("file_writew_le: fwrite");
+	if (std::fwrite(buff,1,sizeof(buff),w_file->f) < sizeof(buff)) {
+		if (std::ferror(w_file->f)) std::perror("file_writew_le: std::fwrite");
 		return -1;
 	}
 	return 0;
@@ -171,8 +165,8 @@ extern int file_writew_be(t_uint16 u) {
 	unsigned char buff[2];
 	buff[0] = (u>> 8);
 	buff[1] = (u    );
-	if (fwrite(buff,1,sizeof(buff),w_file->f) < sizeof(buff)) {
-		if (ferror(w_file->f)) perror("file_writew_be: fwrite");
+	if (std::fwrite(buff,1,sizeof(buff),w_file->f) < sizeof(buff)) {
+		if (std::ferror(w_file->f)) std::perror("file_writew_be: std::fwrite");
 		return -1;
 	}
 	return 0;
@@ -185,8 +179,8 @@ extern int file_writed_le(t_uint32 u) {
 	buff[1] = (u>> 8);
 	buff[2] = (u>>16);
 	buff[3] = (u>>24);
-	if (fwrite(buff,1,sizeof(buff),w_file->f) < sizeof(buff)) {
-		if (ferror(w_file->f)) perror("file_writed_le: fwrite");
+	if (std::fwrite(buff,1,sizeof(buff),w_file->f) < sizeof(buff)) {
+		if (std::ferror(w_file->f)) std::perror("file_writed_le: std::fwrite");
 		return -1;
 	}
 	return 0;
@@ -199,8 +193,8 @@ extern int file_writed_be(t_uint32 u) {
 	buff[1] = (u>>16);
 	buff[2] = (u>> 8);
 	buff[3] = (u    );
-	if (fwrite(buff,1,sizeof(buff),w_file->f) < sizeof(buff)) {
-		if (ferror(w_file->f)) perror("file_writed_be: fwrite");
+	if (std::fwrite(buff,1,sizeof(buff),w_file->f) < sizeof(buff)) {
+		if (std::ferror(w_file->f)) std::perror("file_writed_be: std::fwrite");
 		return -1;
 	}
 	return 0;

@@ -20,9 +20,9 @@
 #ifndef INCLUDED_FILEIO_PROTOS
 #define INCLUDED_FILEIO_PROTOS
 
+#include <cstdio>
 #define JUST_NEED_TYPES
-#include <stdio.h>
-#include "compat/uint.h"
+# include "compat/uint.h"
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
@@ -31,9 +31,9 @@ namespace pvpgn
 namespace bni
 {
 
-extern void file_rpush(FILE *f);
+extern void file_rpush(std::FILE *f);
 extern void file_rpop(void);
-extern void file_wpush(FILE *f);
+extern void file_wpush(std::FILE *f);
 extern void file_wpop(void);
 
 extern t_uint8 file_readb(void);

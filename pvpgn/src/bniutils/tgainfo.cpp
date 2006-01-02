@@ -17,30 +17,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#include "compat/exitstatus.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include <errno.h>
-#include "compat/strerror.h"
+#include <cstdlib>
+#include <cstring>
+#include <cerrno>
+
+#include "common/version.h"
 #include "tga.h"
 #include "fileio.h"
-#include "common/version.h"
 #include "common/setup_after.h"
 
 using namespace pvpgn::bni;
@@ -50,12 +33,12 @@ namespace
 
 void usage(char const * progname)
 {
-    fprintf(stderr,
+    std::fprintf(stderr,
             "usage: %s [<options>] [--] [<TGA file>]\n"
             "    -h, --help, --usage  show this information and exit\n"
             "    -v, --version        print version number and exit\n",progname);
 
-    exit(STATUS_FAILURE);
+    std::exit(EXIT_FAILURE);
 }
 
 }
@@ -63,42 +46,42 @@ void usage(char const * progname)
 extern int main(int argc, char * argv[])
 {
     char const * tgafile=NULL;
-    FILE *       fp;
+    std::FILE *       fp;
     int          a;
     int          forcefile=0;
     char         dash[]="-"; /* unique address used as flag */
 
     if (argc<1 || !argv || !argv[0])
     {
-        fprintf(stderr,"bad arguments\n");
-        return STATUS_FAILURE;
+        std::fprintf(stderr,"bad arguments\n");
+        return EXIT_FAILURE;
     }
 
     for (a=1; a<argc; a++)
         if (forcefile && !tgafile)
             tgafile = argv[a];
-        else if (strcmp(argv[a],"-")==0 && !tgafile)
+        else if (std::strcmp(argv[a],"-")==0 && !tgafile)
             tgafile = dash;
         else if (argv[a][0]!='-' && !tgafile)
             tgafile = argv[a];
-        else if (forcefile || argv[a][0]!='-' || strcmp(argv[a],"-")==0)
+        else if (forcefile || argv[a][0]!='-' || std::strcmp(argv[a],"-")==0)
         {
-            fprintf(stderr,"%s: extra file argument \"%s\"\n",argv[0],argv[a]);
+            std::fprintf(stderr,"%s: extra file argument \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
-        else if (strcmp(argv[a],"--")==0)
+        else if (std::strcmp(argv[a],"--")==0)
             forcefile = 1;
-        else if (strcmp(argv[a],"-v")==0 || strcmp(argv[a],"--version")==0)
+        else if (std::strcmp(argv[a],"-v")==0 || std::strcmp(argv[a],"--version")==0)
         {
-            printf("version "PVPGN_VERSION"\n");
-            return STATUS_SUCCESS;
+            std::printf("version "PVPGN_VERSION"\n");
+            return EXIT_SUCCESS;
         }
-        else if (strcmp(argv[a],"-h")==0 || strcmp(argv[a],"--help")==0 || strcmp(argv[a],"--usage")
+        else if (std::strcmp(argv[a],"-h")==0 || std::strcmp(argv[a],"--help")==0 || std::strcmp(argv[a],"--usage")
 ==0)
             usage(argv[0]);
         else
         {
-            fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
+            std::fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
 
@@ -108,10 +91,10 @@ extern int main(int argc, char * argv[])
     if (tgafile==dash)
 	fp = stdin;
     else
-	if (!(fp = fopen(tgafile,"r")))
+	if (!(fp = std::fopen(tgafile,"r")))
 	{
-	    fprintf(stderr,"%s: could not open TGA file \"%s\" for reading (fopen: %s)\n",argv[0],tgafile,pstrerror(errno));
-	    return STATUS_FAILURE;
+	    std::fprintf(stderr,"%s: could not open TGA file \"%s\" for reading (std::fopen: %s)\n",argv[0],tgafile,std::strerror(errno));
+	    return EXIT_FAILURE;
 	}
 
     {
@@ -120,16 +103,16 @@ extern int main(int argc, char * argv[])
 	file_rpush(fp);
 	if (!(tgaimg = load_tgaheader()))
 	{
-	    fprintf(stderr,"%s: could not load TGA header\n",argv[0]);
-	    if (tgafile!=dash && fclose(fp)<0)
-		fprintf(stderr,"%s: could not close file \"%s\" after reading (fclose: %s)\n",argv[0],tgafile,pstrerror(errno));
-	    return STATUS_FAILURE;
+	    std::fprintf(stderr,"%s: could not load TGA header\n",argv[0]);
+	    if (tgafile!=dash && std::fclose(fp)<0)
+		std::fprintf(stderr,"%s: could not close file \"%s\" after reading (std::fclose: %s)\n",argv[0],tgafile,std::strerror(errno));
+	    return EXIT_FAILURE;
 	}
 	print_tga_info(tgaimg,stdout);
 	file_rpop();
     }
 
-    if (tgafile!=dash && fclose(fp)<0)
-	fprintf(stderr,"%s: could not close file \"%s\" after reading (fclose: %s)\n",argv[0],tgafile,pstrerror(errno));
-    return STATUS_SUCCESS;
+    if (tgafile!=dash && std::fclose(fp)<0)
+	std::fprintf(stderr,"%s: could not close file \"%s\" after reading (std::fclose: %s)\n",argv[0],tgafile,std::strerror(errno));
+    return EXIT_SUCCESS;
 }
