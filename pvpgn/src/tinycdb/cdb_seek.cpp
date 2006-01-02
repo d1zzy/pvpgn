@@ -5,13 +5,12 @@
  */
 
 #include "common/setup_before.h"
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+
 #include "cdb_int.h"
 #include "common/setup_after.h"
-
-#ifndef SEEK_SET
-# define SEEK_SET 0
-#endif
 
 /* read a chunk from file, ignoring interrupts (EINTR) */
 
@@ -19,11 +18,11 @@ namespace pvpgn
 {
 
 int
-cdb_bread(FILE *fd, void *buf, int len)
+cdb_bread(std::FILE *fd, void *buf, int len)
 {
   int l;
   while(len > 0) {
-    do l = fread(buf, 1, len, fd);
+    do l = std::fread(buf, 1, len, fd);
     while(l < 0 && errno == EINTR);
     if (l <= 0) {
       if (!l)
@@ -40,7 +39,7 @@ cdb_bread(FILE *fd, void *buf, int len)
    place data length to *dlenp. */
 
 int
-cdb_seek(FILE *fd, const void *key, unsigned klen, unsigned *dlenp)
+cdb_seek(std::FILE *fd, const void *key, unsigned klen, unsigned *dlenp)
 {
   unsigned htstart;		/* hash table start position */
   unsigned htsize;		/* number of elements in a hash table */
@@ -54,7 +53,7 @@ cdb_seek(FILE *fd, const void *key, unsigned klen, unsigned *dlenp)
   hval = cdb_hash(key, klen);
   pos = (hval & 0xff) << 3; /* position in TOC */
   /* read the hash table parameters */
-  if (fseek(fd, pos, SEEK_SET) || cdb_bread(fd, rbuf, 8) < 0)
+  if (std::fseek(fd, pos, SEEK_SET) || cdb_bread(fd, rbuf, 8) < 0)
     return -1;
   if ((htsize = cdb_unpack(rbuf + 4)) == 0)
     return 0;
@@ -63,7 +62,7 @@ cdb_seek(FILE *fd, const void *key, unsigned klen, unsigned *dlenp)
   htstart = cdb_unpack(rbuf);
 
   for(;;) {
-    if (needseek && fseek(fd, htstart + (hti << 3), SEEK_SET))
+    if (needseek && std::fseek(fd, htstart + (hti << 3), SEEK_SET))
       return -1;
     if (cdb_bread(fd, rbuf, 8) < 0)
       return -1;
@@ -73,7 +72,7 @@ cdb_seek(FILE *fd, const void *key, unsigned klen, unsigned *dlenp)
     if (cdb_unpack(rbuf) != hval) /* hash value not matched */
       needseek = 0;
     else { /* hash value matched */
-      if (fseek(fd, pos, SEEK_SET) || cdb_bread(fd, rbuf, 8) < 0)
+      if (std::fseek(fd, pos, SEEK_SET) || cdb_bread(fd, rbuf, 8) < 0)
 	return -1;
       if (cdb_unpack(rbuf) == klen) { /* key length matches */
 	/* read the key from file and compare with wanted */
@@ -87,7 +86,7 @@ cdb_seek(FILE *fd, const void *key, unsigned klen, unsigned *dlenp)
 	  c = l > sizeof(rbuf) ? sizeof(rbuf) : l;
 	  if (cdb_bread(fd, rbuf, c) < 0)
 	    return -1;
-	  if (memcmp(rbuf, k, c) != 0) /* no, it differs, stop here */
+	  if (std::memcmp(rbuf, k, c) != 0) /* no, it differs, stop here */
 	    break;
 	  k += c; l -= c;
 	}
