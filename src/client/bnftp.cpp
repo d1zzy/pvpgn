@@ -21,7 +21,7 @@
 #include <ctime>
 #include <cstring>
 #include <cctype>
-
+#include <sys/stat.h>
 #ifdef HAVE_TERMIOS_H
 # include <termios.h>
 #endif
@@ -111,14 +111,14 @@ extern int main(int argc, char * argv[])
 #define EXIST_ACTION_OVERWRITE  1
 #define EXIST_ACTION_BACKUP     2
 #define EXIST_ACTION_RESUME     3
-    int		       exist_action=EXIST_ACTION_UNSPEC;
+    int		           exist_action=EXIST_ACTION_UNSPEC;
     struct stat        exist_buf;
     char const *       filename;
-    std::FILE *             fp;
-    std::FILE *             hexstrm=NULL;
+    std::FILE *        fp;
+    std::FILE *        hexstrm=NULL;
     int                fd_stdin;
     t_bnettime         bntime;
-    std::time_t             tm;
+    std::time_t        tm;
     char               timestr[FILE_TIME_MAXLEN];
     unsigned int       screen_width,screen_height;
     int                munged;
