@@ -12,7 +12,7 @@ MakeIncludes=
 Compiler=
 CppCompiler=
 Linker=-lws2_32_@@_
-IsCpp=0
+IsCpp=1
 Icon=
 ExeOutput=..\bin
 ObjectOutput=
@@ -30,7 +30,7 @@ CustomMakefile=
 PrivateResource=
 
 [Unit1]
-FileName=..\src\client\client.c
+FileName=..\src\client\client.cpp
 CompileCpp=0
 Folder=bnftp/Source Files
 Compile=1
@@ -40,7 +40,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=..\src\client\bnftp.c
+FileName=..\src\client\bnftp.cpp
 CompileCpp=0
 Folder=bnftp/Source Files
 Compile=1
@@ -50,7 +50,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit3]
-FileName=..\src\common\xalloc.c
+FileName=..\src\common\xalloc.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -60,7 +60,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit4]
-FileName=..\src\common\bn_type.c
+FileName=..\src\common\bn_type.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -70,7 +70,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit5]
-FileName=..\src\common\bnettime.c
+FileName=..\src\common\bnettime.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -80,7 +80,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit6]
-FileName=..\src\common\eventlog.c
+FileName=..\src\common\eventlog.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -90,7 +90,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit7]
-FileName=..\src\common\hexdump.c
+FileName=..\src\common\hexdump.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -100,7 +100,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit8]
-FileName=..\src\common\network.c
+FileName=..\src\common\network.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -110,7 +110,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit9]
-FileName=..\src\common\packet.c
+FileName=..\src\common\packet.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -120,7 +120,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit10]
-FileName=..\src\common\queue.c
+FileName=..\src\common\queue.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -130,7 +130,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit11]
-FileName=..\src\common\util.c
+FileName=..\src\common\util.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -140,7 +140,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit12]
-FileName=..\src\compat\strftime.c
+FileName=..\src\compat\strftime.cpp
 CompileCpp=0
 Folder=compat/Source Files
 Compile=1
@@ -150,7 +150,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit13]
-FileName=..\src\compat\gettimeofday.c
+FileName=..\src\compat\gettimeofday.cpp
 CompileCpp=0
 Folder=compat/Source Files
 Compile=1
@@ -160,7 +160,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit14]
-FileName=..\src\compat\inet_ntoa.c
+FileName=..\src\compat\inet_ntoa.cpp
 CompileCpp=0
 Folder=compat/Source Files
 Compile=1
@@ -170,7 +170,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit15]
-FileName=..\src\compat\psock.c
+FileName=..\src\compat\psock.cpp
 CompileCpp=0
 Folder=compat/Source Files
 Compile=1
@@ -180,7 +180,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit16]
-FileName=..\src\compat\strerror.c
+FileName=..\src\compat\strerror.cpp
 CompileCpp=0
 Folder=compat/Source Files
 Compile=1
