@@ -1,7 +1,7 @@
 [Project]
 FileName=PvPGN.dev
 Name=PvPGN
-UnitCount=287
+UnitCount=289
 Type=0
 Ver=1
 ObjFiles=
@@ -2911,6 +2911,26 @@ BuildCmd=
 FileName=..\src\zlib\pvpgn_trees.c
 CompileCpp=1
 Folder=zlib/Source Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit288]
+FileName=..\src\win32\gui_printf.cpp
+CompileCpp=1
+Folder=win32/Source Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit289]
+FileName=..\src\win32\gui_printf.h
+CompileCpp=1
+Folder=win32/Header Files
 Compile=1
 Link=1
 Priority=1000

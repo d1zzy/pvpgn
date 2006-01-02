@@ -27,7 +27,7 @@
 #include "compat/strcasecmp.h"
 #include "common/hexdump.h"
 #ifdef WIN32_GUI
-# include "win32/winmain.h"
+# include "win32/gui_printf.h"
 #endif
 #include "common/setup_after.h"
 
@@ -224,7 +224,7 @@ extern void eventlog_hexdump_data(void const * data, unsigned int len)
 	hexdump_string(datac, (len - i < 16) ? (len - i) : 16, dst, i);
 	std::fprintf(eventstrm,"%s\n",dst);
 #ifdef WIN32_GUI
-        bnetd::gui_lprintf(eventlog_level_info,"%s\n",dst);
+        gui_lprintf(eventlog_level_info,"%s\n",dst);
 #endif
        if (eventlog_debugmode)
        {
@@ -259,7 +259,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
     {
 	    std::fprintf(eventstrm,"%s [error] eventlog: got NULL module\n",time_string);
 #ifdef WIN32_GUI
-        bnetd::gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL module\n",time_string);
+        gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL module\n",time_string);
 #endif
 	std::fflush(eventstrm);
 	return;
@@ -269,7 +269,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
     {
 	    std::fprintf(eventstrm,"%s [error] eventlog: got NULL fmt\n",time_string);
 #ifdef WIN32_GUI
-        bnetd::gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL fmt\n",time_string);
+        gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL fmt\n",time_string);
 #endif
 	std::fflush(eventstrm);
 	return;
@@ -277,7 +277,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 
     std::fprintf(eventstrm,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
 #ifdef WIN32_GUI
-    bnetd::gui_lprintf(level,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
+    gui_lprintf(level,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
 #endif
 
     va_start(args,fmt);
@@ -285,7 +285,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 #ifdef HAVE_VPRINTF
     std::vfprintf(eventstrm,fmt,args);
 #ifdef WIN32_GUI
-    bnetd::gui_lvprintf(level,fmt,args);
+    gui_lvprintf(level,fmt,args);
 #endif
 #else
 # if HAVE__DOPRNT
@@ -297,7 +297,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
     va_end(args);
     std::fprintf(eventstrm,"\n");
 #ifdef WIN32_GUI
-    bnetd::gui_lprintf(level,"\n");
+    gui_lprintf(level,"\n");
 #endif
 
     if (eventlog_debugmode) {
