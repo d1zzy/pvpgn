@@ -19,54 +19,52 @@
 #ifndef INCLUDED_ANSI_TERM_PROTOS
 #define INCLUDED_ANSI_TERM_PROTOS
 
-#define JUST_NEED_TYPES
-#include <stdio.h>
-#undef JUST_NEED_TYPES
+#include <cstdio>
 
 #define ansi_beep()\
-  printf("\007");
+  std::printf("\007");
 
 #define ansi_screen_clear()\
-  printf("\033[2J");
+  std::printf("\033[2J");
 
 #define ansi_line_clear()\
-  printf("\033[K");
+  std::printf("\033[K");
 
 #define ansi_cursor_move_up(lines)\
-  printf("\033[%dA",lines);
+  std::printf("\033[%dA",lines);
 
 #define ansi_cursor_move_down(lines)\
-  printf("\033[%dB",lines);
+  std::printf("\033[%dB",lines);
 
 #define ansi_cursor_move_left(chars)\
-  printf("\033[%dD",chars);
+  std::printf("\033[%dD",chars);
 
 #define ansi_cursor_move_right(chars)\
-  printf("\033[%dC",chars);
+  std::printf("\033[%dC",chars);
 
 #define ansi_cursor_move_home()\
-  printf("\033[1;0H");
+  std::printf("\033[1;0H");
 
 #define ansi_cursor_move(y,x)\
-  printf("\033[%d;%dH",x+1,y);
+  std::printf("\033[%d;%dH",x+1,y);
 
 #define ansi_cursor_save()\
-  printf("\033[u");
+  std::printf("\033[u");
 
 #define ansi_cursor_load()\
-  printf("\033[s");
+  std::printf("\033[s");
 
 #define ansi_text_reset()\
-  printf("\033[0m");
+  std::printf("\033[0m");
 
 #define ansi_text_style(style)\
-  printf("\033[%dm",style);
+  std::printf("\033[%dm",style);
 
 #define ansi_text_color_fore(color)\
-  printf("\033[3%dm",color);
+  std::printf("\033[3%dm",color);
 
 #define ansi_text_color_back(color)\
-  printf("\033[4%dm",color);
+  std::printf("\033[4%dm",color);
 
 #define ansi_text_style_bold      1
 #define ansi_text_style_underline 4

@@ -17,105 +17,46 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include "compat/exitstatus.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strchr.h"
-#include "compat/strdup.h"
-#include "compat/strcasecmp.h"
-#include "compat/vargs.h"
-#include <ctype.h>
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
-# ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-# endif
+#include <cstring>
+#include <cstdio>
+#include <cctype>
+#include <cstdarg>
+#include <cstdlib>
+
+#ifdef WIN32
+# include <conio.h>
 #endif
 #ifdef HAVE_TERMIOS_H
 # include <termios.h>
 #endif
-#include "compat/termios.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
 #ifdef HAVE_SIGACTION
 # include <signal.h>
-# include "compat/signal.h"
 #endif
-#ifdef HAVE_SYS_SELECT_H
-# include <sys/select.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#include "compat/inet_ntoa.h"
+
 #include "compat/psock.h"
-#include "common/packet.h"
-#include "common/init_protocol.h"
-#include "common/udp_protocol.h"
-#include "common/bnet_protocol.h"
-#include "common/file_protocol.h"
-#include "common/tag.h"
-#include "common/bn_type.h"
+#include "compat/vsnprintf.h"
+#include "compat/termios.h"
+#include "compat/strcasecmp.h"
 #include "common/field_sizes.h"
-#include "common/network.h"
+#include "common/bnet_protocol.h"
+#include "common/packet.h"
+#include "common/tag.h"
+#include "common/file_protocol.h"
+#include "common/bn_type.h"
+#include "common/util.h"
+#include "common/init_protocol.h"
 #include "common/bnethash.h"
 #include "common/bnethashconv.h"
-#include "ansi_term.h"
-#include "common/version.h"
-#include "common/util.h"
 #include "common/xalloc.h"
+#include "common/network.h"
 #include "common/hexdump.h"
+#include "common/version.h"
 #ifdef CLIENTDEBUG
 # include "common/eventlog.h"
 #endif
-#include "client.h"
-#include "udptest.h"
+#include "ansi_term.h"
 #include "client_connect.h"
-#ifdef WIN32
-# include <conio.h> /* for kbhit() and getch() */
-#endif
-#include "compat/vsnprintf.h"
+#include "client.h"
 #include "common/setup_after.h"
 
 
@@ -218,25 +159,25 @@ char const * mflags_get_str(unsigned int flags)
 
     buffer[0]=buffer[1] = '\0';
     if (flags&MF_BLIZZARD)
-	strcat(buffer,",Blizzard");
+	std::strcat(buffer,",Blizzard");
     if (flags&MF_GAVEL)
-	strcat(buffer,",Gavel");
+	std::strcat(buffer,",Gavel");
     if (flags&MF_VOICE)
-	strcat(buffer,",Megaphone");
+	std::strcat(buffer,",Megaphone");
     if (flags&MF_BNET)
-	strcat(buffer,",BNET");
+	std::strcat(buffer,",BNET");
     if (flags&MF_PLUG)
-	strcat(buffer,",Plug");
+	std::strcat(buffer,",Plug");
     if (flags&MF_X)
-	strcat(buffer,",X");
+	std::strcat(buffer,",X");
     if (flags&MF_SHADES)
-	strcat(buffer,",Shades");
+	std::strcat(buffer,",Shades");
     if (flags&MF_PGLPLAY)
-	strcat(buffer,",PGL_Player");
+	std::strcat(buffer,",PGL_Player");
     if (flags&MF_PGLOFFL)
-	strcat(buffer,",PGL_Official");
+	std::strcat(buffer,",PGL_Official");
     buffer[0] = '[';
-    strcat(buffer,"]");
+    std::strcat(buffer,"]");
 
     return buffer;
 }
@@ -248,19 +189,19 @@ char const * cflags_get_str(unsigned int flags)
 
     buffer[0]=buffer[1] = '\0';
     if (flags&CF_PUBLIC)
-	strcat(buffer,",Public");
+	std::strcat(buffer,",Public");
     if (flags&CF_MODERATED)
-	strcat(buffer,",Moderated");
+	std::strcat(buffer,",Moderated");
     if (flags&CF_RESTRICTED)
-	strcat(buffer,",Restricted");
+	std::strcat(buffer,",Restricted");
     if (flags&CF_THEVOID)
-	strcat(buffer,",The Void");
+	std::strcat(buffer,",The Void");
     if (flags&CF_SYSTEM)
-	strcat(buffer,",System");
+	std::strcat(buffer,",System");
     if (flags&CF_OFFICIAL)
-	strcat(buffer,",Official");
+	std::strcat(buffer,",Official");
     buffer[0] = '[';
-    strcat(buffer,"]");
+    std::strcat(buffer,"]");
 
     return buffer;
 }
@@ -306,19 +247,19 @@ int print_file(struct sockaddr_in * saddr, char const * filename, char const * p
 
     if ((sd = psock_socket(PSOCK_PF_INET,PSOCK_SOCK_STREAM,PSOCK_IPPROTO_TCP))<0)
     {
-	fprintf(stderr,"%s: could not create socket (psock_socket: %s)\n",progname,pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not create socket (psock_socket: %s)\n",progname,std::strerror(psock_errno()));
 	return -1;
     }
 
     if (psock_connect(sd,(struct sockaddr *)saddr,sizeof(*saddr))<0)
     {
-	fprintf(stderr,"%s: could not connect to server (psock_connect: %s)\n",progname,pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not connect to server (psock_connect: %s)\n",progname,std::strerror(psock_errno()));
 	return -1;
     }
 
     if (!(ipacket = packet_create(packet_class_init)))
     {
-	fprintf(stderr,"%s: could not create packet\n",progname);
+	std::fprintf(stderr,"%s: could not create packet\n",progname);
 	return -1;
     }
     bn_byte_set(&ipacket->u.client_initconn.cclass,CLIENT_INITCONN_CLASS_FILE);
@@ -327,19 +268,19 @@ int print_file(struct sockaddr_in * saddr, char const * filename, char const * p
 
     if (!(rpacket = packet_create(packet_class_file)))
     {
-	fprintf(stderr,"%s: could not create packet\n",progname);
+	std::fprintf(stderr,"%s: could not create packet\n",progname);
 	return -1;
     }
 
     if (!(fpacket = packet_create(packet_class_raw)))
     {
-	fprintf(stderr,"%s: could not create packet\n",progname);
+	std::fprintf(stderr,"%s: could not create packet\n",progname);
 	return -1;
     }
 
     if (!(packet = packet_create(packet_class_file)))
     {
-	fprintf(stderr,"%s: could not create packet\n",progname);
+	std::fprintf(stderr,"%s: could not create packet\n",progname);
 	return -1;
     }
     packet_set_size(packet,sizeof(t_client_file_req));
@@ -357,7 +298,7 @@ int print_file(struct sockaddr_in * saddr, char const * filename, char const * p
     do
 	if (client_blockrecv_packet(sd,rpacket)<0)
 	{
-	    fprintf(stderr,"%s: server closed file connection\n",progname);
+	    std::fprintf(stderr,"%s: server closed file connection\n",progname);
 	    packet_del_ref(fpacket);
 	    packet_del_ref(rpacket);
 	    return -1;
@@ -371,8 +312,8 @@ int print_file(struct sockaddr_in * saddr, char const * filename, char const * p
     {
 	if (client_blockrecv_raw_packet(sd,fpacket,MAX_PACKET_SIZE)<0)
 	{
-	    fflush(stdout);
-	    fprintf(stderr,"%s: server closed file connection\n",progname);
+	    std::fflush(stdout);
+	    std::fprintf(stderr,"%s: server closed file connection\n",progname);
 	    packet_del_ref(fpacket);
 	    return -1;
 	}
@@ -383,14 +324,14 @@ int print_file(struct sockaddr_in * saddr, char const * filename, char const * p
     {
 	if (client_blockrecv_raw_packet(sd,fpacket,filelen)<0)
 	{
-	    fflush(stdout);
-	    fprintf(stderr,"%s: server closed file connection\n",progname);
+	    std::fflush(stdout);
+	    std::fprintf(stderr,"%s: server closed file connection\n",progname);
 	    packet_del_ref(fpacket);
 	    return -1;
 	}
 	str_print_term(stdout,(const char*)packet_get_raw_data_const(fpacket,0),filelen,1);
     }
-    fflush(stdout);
+    std::fflush(stdout);
 
     psock_close(sd);
 
@@ -402,8 +343,8 @@ int print_file(struct sockaddr_in * saddr, char const * filename, char const * p
 
 void usage(char const * progname)
 {
-    fprintf(stderr,"usage: %s [<options>] [<servername> [<TCP portnumber>]]\n",progname);
-    fprintf(stderr,
+    std::fprintf(stderr,"usage: %s [<options>] [<servername> [<TCP portnumber>]]\n",progname);
+    std::fprintf(stderr,
 	    "    -a, --ansi-color            use ANSI colors\n"
             "    -n, --new-account           create a new account\n"
             "    -c, --change-password       change account password\n"
@@ -411,7 +352,7 @@ void usage(char const * progname)
             "    -b, --client=SEXP           report client as Brood Wars\n"
             "    -d, --client=DRTL           report client as Diablo Retail\n"
             "    --client=DSHR               report client as Diablo Shareware\n");
-    fprintf(stderr,
+    std::fprintf(stderr,
             "    -s, --client=STAR           report client as Starcraft (default)\n"
             "    --client=SSHR               report client as Starcraft Shareware\n"
             "    -w, --client=W2BN           report client as Warcraft II BNE\n"
@@ -422,13 +363,13 @@ void usage(char const * progname)
             "    --arch=IX86                 report architecture as Intel x86 (default)\n"
             "    --arch=PMAC                 report architecture as PowerPC MacOS\n"
             "    --arch=XMAC                 report architecture as PowerPC MacOSX\n");
-    fprintf(stderr,
+    std::fprintf(stderr,
 	    "    -o NAME, --owner=NAME       report CD owner as NAME\n"
 	    "    -k KEY, --cdkey=KEY         report CD key as KEY\n"
 	    "    -l LANG --lang=LANG         report language as LANG (default \"enUS\")\n"
             "    -h, --help, --usage         show this information and exit\n"
             "    -v, --version               print version number and exit\n");
-    exit(STATUS_FAILURE);
+    std::exit(EXIT_FAILURE);
 }
 
 int read_commandline(int argc, char * * argv,
@@ -446,257 +387,257 @@ int read_commandline(int argc, char * * argv,
 
     if (argc<1 || !argv || !argv[0])
     {
-	fprintf(stderr,"bad arguments\n");
-	return STATUS_FAILURE;
+	std::fprintf(stderr,"bad arguments\n");
+	return EXIT_FAILURE;
     }
 
     for (a=1; a<argc; a++)
-	if (*servname && isdigit((int)argv[a][0]) && a+1>=argc)
+	if (*servname && std::isdigit((int)argv[a][0]) && a+1>=argc)
 	{
             if (str_to_ushort(argv[a],servport)<0)
             {
-                fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
+                std::fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
                 usage(argv[0]);
             }
 	}
 	else if (!(*servname) && argv[a][0]!='-' && a+2>=argc)
 	    *servname = argv[a];
-        else if (strcmp(argv[a],"-a")==0 || strcmp(argv[a],"--use-ansi")==0)
+        else if (std::strcmp(argv[a],"-a")==0 || std::strcmp(argv[a],"--use-ansi")==0)
 	    *useansi = 1;
-        else if (strcmp(argv[a],"-n")==0 || strcmp(argv[a],"--new-account")==0)
+        else if (std::strcmp(argv[a],"-n")==0 || std::strcmp(argv[a],"--new-account")==0)
 	{
 	    if (*changepass)
 	    {
-		fprintf(stderr,"%s: can not create new account when changing passwords\n",argv[0]);
+		std::fprintf(stderr,"%s: can not create new account when changing passwords\n",argv[0]);
 		usage(argv[0]);
 	    }
 	    *newacct = 1;
 	}
-        else if (strcmp(argv[a],"-c")==0 || strcmp(argv[a],"--change-password")==0)
+        else if (std::strcmp(argv[a],"-c")==0 || std::strcmp(argv[a],"--change-password")==0)
 	{
 	    if (*newacct)
 	    {
-		fprintf(stderr,"%s: can not change passwords when creating a new account\n",argv[0]);
+		std::fprintf(stderr,"%s: can not change passwords when creating a new account\n",argv[0]);
 		usage(argv[0]);
 	    }
 	    *changepass = 1;
 	}
-        else if (strcmp(argv[a],"--client=CHAT")==0)
+        else if (std::strcmp(argv[a],"--client=CHAT")==0)
 	{
 	    if (*clienttag)
 	    {
-		fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
+		std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
 		usage(argv[0]);
 	    }
 	    *clienttag = CLIENTTAG_BNCHATBOT;
 	    *channel = CHANNEL_BNCHATBOT;
 	}
-        else if (strcmp(argv[a],"-b")==0 || strcmp(argv[a],"--client=SEXP")==0)
+        else if (std::strcmp(argv[a],"-b")==0 || std::strcmp(argv[a],"--client=SEXP")==0)
 	{
 	    if (*clienttag)
 	    {
-		fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
+		std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
 		usage(argv[0]);
 	    }
 	    *clienttag = CLIENTTAG_BROODWARS;
 	    *channel = CHANNEL_BROODWARS;
 	}
-        else if (strcmp(argv[a],"-d")==0 || strcmp(argv[a],"--client=DRTL")==0)
+        else if (std::strcmp(argv[a],"-d")==0 || std::strcmp(argv[a],"--client=DRTL")==0)
 	{
 	    if (*clienttag)
 	    {
-		fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
+		std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
 		usage(argv[0]);
 	    }
 	    *clienttag = CLIENTTAG_DIABLORTL;
 	    *channel = CHANNEL_DIABLORTL;
 	}
-        else if (strcmp(argv[a],"--client=DSHR")==0)
+        else if (std::strcmp(argv[a],"--client=DSHR")==0)
 	{
 	    if (*clienttag)
 	    {
-		fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
+		std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
 		usage(argv[0]);
 	    }
 	    *clienttag = CLIENTTAG_DIABLOSHR;
 	    *channel = CHANNEL_DIABLOSHR;
 	}
-        else if (strcmp(argv[a],"-s")==0 || strcmp(argv[a],"--client=STAR")==0)
+        else if (std::strcmp(argv[a],"-s")==0 || std::strcmp(argv[a],"--client=STAR")==0)
 	{
 	    if (*clienttag)
 	    {
-		fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
+		std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
 		usage(argv[0]);
 	    }
 	    *clienttag = CLIENTTAG_STARCRAFT;
 	    *channel = CHANNEL_STARCRAFT;
 	}
-        else if (strcmp(argv[a],"--client=SSHR")==0)
+        else if (std::strcmp(argv[a],"--client=SSHR")==0)
 	{
 	    if (*clienttag)
 	    {
-		fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
+		std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
 		usage(argv[0]);
 	    }
 	    *clienttag = CLIENTTAG_SHAREWARE;
 	    *channel = CHANNEL_SHAREWARE;
 	}
-        else if (strcmp(argv[a],"-w")==0 || strcmp(argv[a],"--client=W2BN")==0)
+        else if (std::strcmp(argv[a],"-w")==0 || std::strcmp(argv[a],"--client=W2BN")==0)
 	{
 	    if (*clienttag)
 	    {
-		fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
+		std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
 		usage(argv[0]);
 	    }
 	    *clienttag = CLIENTTAG_WARCIIBNE;
 	    *channel = CHANNEL_WARCIIBNE;
 	}
-        else if (strcmp(argv[a],"--client=D2DV")==0)
+        else if (std::strcmp(argv[a],"--client=D2DV")==0)
 	{
 	    if (*clienttag)
 	    {
-		fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
+		std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
 		usage(argv[0]);
 	    }
 	    *clienttag = CLIENTTAG_DIABLO2DV;
 	    *channel = CHANNEL_DIABLO2DV;
 	}
-        else if (strcmp(argv[a],"--client=D2XP")==0)
+        else if (std::strcmp(argv[a],"--client=D2XP")==0)
 	{
 	    if (*clienttag)
 	    {
-		fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
+		std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
 		usage(argv[0]);
 	    }
 	    *clienttag = CLIENTTAG_DIABLO2XP;
 	    *channel = CHANNEL_DIABLO2XP;
 	}
-        else if (strcmp(argv[a],"--client=WAR3")==0)
+        else if (std::strcmp(argv[a],"--client=WAR3")==0)
 	{
 	    if (*clienttag)
 	    {
-		fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
+		std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
 		usage(argv[0]);
 	    }
 	    *clienttag = CLIENTTAG_WARCRAFT3;
 	    *channel = CHANNEL_WARCRAFT3;
 	}
-        else if (strcmp(argv[a],"--client=W3XP")==0)
+        else if (std::strcmp(argv[a],"--client=W3XP")==0)
 	{
 	    if (*clienttag)
 	    {
-		fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
+		std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],*clienttag);
 		usage(argv[0]);
 	    }
 	    *clienttag = CLIENTTAG_WAR3XP;
 	    *channel = CHANNEL_WAR3XP;
 	}
-	else if (strncmp(argv[a],"--client=",9)==0)
+	else if (std::strncmp(argv[a],"--client=",9)==0)
 	{
-	    fprintf(stderr,"%s: unknown client tag \"%s\"\n",argv[0],&argv[a][9]);
+	    std::fprintf(stderr,"%s: unknown client tag \"%s\"\n",argv[0],&argv[a][9]);
 	    usage(argv[0]);
 	}
-        else if (strcmp(argv[a],"--arch=IX86")==0)
+        else if (std::strcmp(argv[a],"--arch=IX86")==0)
 	{
 	    *archtag = ARCHTAG_WINX86;
 	}
-        else if (strcmp(argv[a],"--arch=PMAC")==0)
+        else if (std::strcmp(argv[a],"--arch=PMAC")==0)
 	{
 	    *archtag = ARCHTAG_MACPPC;
 	}
-        else if (strcmp(argv[a],"--arch=XMAC")==0)
+        else if (std::strcmp(argv[a],"--arch=XMAC")==0)
 	{
 	    *archtag = ARCHTAG_OSXPPC;
 	}
-	else if (strncmp(argv[a],"--arch=",7)==0)
+	else if (std::strncmp(argv[a],"--arch=",7)==0)
 	{
-	    fprintf(stderr,"%s: unknown architecture tag \"%s\"\n",argv[0],&argv[a][7]);
+	    std::fprintf(stderr,"%s: unknown architecture tag \"%s\"\n",argv[0],&argv[a][7]);
 	    usage(argv[0]);
 	}
-	else if (strcmp(argv[a],"-o")==0)
+	else if (std::strcmp(argv[a],"-o")==0)
 	{
 	    if (a+1>=argc)
             {
-                fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+                std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
                 usage(argv[0]);
             }
 	    if (*cdowner)
 	    {
-		fprintf(stderr,"%s: CD owner was already specified as \"%s\"\n",argv[0],*cdowner);
+		std::fprintf(stderr,"%s: CD owner was already specified as \"%s\"\n",argv[0],*cdowner);
 		usage(argv[0]);
 	    }
 	    *cdowner = argv[++a];
 	}
-	else if (strncmp(argv[a],"--owner=",8)==0)
+	else if (std::strncmp(argv[a],"--owner=",8)==0)
 	{
 	    if (*cdowner)
 	    {
-		fprintf(stderr,"%s: CD owner was already specified as \"%s\"\n",argv[0],*cdowner);
+		std::fprintf(stderr,"%s: CD owner was already specified as \"%s\"\n",argv[0],*cdowner);
 		usage(argv[0]);
 	    }
 	    *cdowner = &argv[a][8];
 	}
-	else if (strcmp(argv[a],"-k")==0)
+	else if (std::strcmp(argv[a],"-k")==0)
 	{
 	    if (a+1>=argc)
             {
-                fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+                std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
                 usage(argv[0]);
             }
 	    if (*cdkey)
 	    {
-		fprintf(stderr,"%s: CD key was already specified as \"%s\"\n",argv[0],*cdkey);
+		std::fprintf(stderr,"%s: CD key was already specified as \"%s\"\n",argv[0],*cdkey);
 		usage(argv[0]);
 	    }
 	    *cdkey = argv[++a];
 	}
-	else if (strncmp(argv[a],"--cdkey=",8)==0)
+	else if (std::strncmp(argv[a],"--cdkey=",8)==0)
 	{
 	    if (*cdkey)
 	    {
-		fprintf(stderr,"%s: CD key was already specified as \"%s\"\n",argv[0],*cdkey);
+		std::fprintf(stderr,"%s: CD key was already specified as \"%s\"\n",argv[0],*cdkey);
 		usage(argv[0]);
 	    }
 	    *cdkey = &argv[a][8];
 	}
-	else if (strcmp(argv[a],"-l")==0)
+	else if (std::strcmp(argv[a],"-l")==0)
 	{
 	    if (a+1>=argc)
             {
-                fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+                std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
                 usage(argv[0]);
             }
-	    if (strlen(argv[a + 1]) != 4)
+	    if (std::strlen(argv[a + 1]) != 4)
 	    {
-		fprintf(stderr,"%s: language has to be 4 characters long\n",argv[0]);
+		std::fprintf(stderr,"%s: language has to be 4 characters long\n",argv[0]);
 		usage(argv[0]);
 	    }
 	    *gamelang = argv[++a];
 	}
-	else if (strncmp(argv[a],"--lang=",7)==0)
+	else if (std::strncmp(argv[a],"--lang=",7)==0)
 	{
-	    if (strlen(argv[a] + 7) != 4)
+	    if (std::strlen(argv[a] + 7) != 4)
 	    {
-		fprintf(stderr,"%s: language has to be 4 characters long\n",argv[0]);
+		std::fprintf(stderr,"%s: language has to be 4 characters long\n",argv[0]);
 		usage(argv[0]);
 	    }
 	    *gamelang = &argv[a][7];
 	}
-	else if (strcmp(argv[a],"-v")==0 || strcmp(argv[a],"--version")==0)
+	else if (std::strcmp(argv[a],"-v")==0 || std::strcmp(argv[a],"--version")==0)
 	{
-            printf("version "PVPGN_VERSION"\n");
-            return STATUS_SUCCESS;
+            std::printf("version "PVPGN_VERSION"\n");
+            return EXIT_SUCCESS;
 	}
-	else if (strcmp(argv[a],"-h")==0 || strcmp(argv[a],"--help")==0 || strcmp(argv[a],"--usage")==0)
+	else if (std::strcmp(argv[a],"-h")==0 || std::strcmp(argv[a],"--help")==0 || std::strcmp(argv[a],"--usage")==0)
             usage(argv[0]);
-        else if (strcmp(argv[a],"--client")==0 || strcmp(argv[a],"--owner")==0 || strcmp(argv[a],"--cdkey")==0)
+        else if (std::strcmp(argv[a],"--client")==0 || std::strcmp(argv[a],"--owner")==0 || std::strcmp(argv[a],"--cdkey")==0)
 	{
-	    fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+	    std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
 	    usage(argv[0]);
 	}
 	else
 	{
-	    fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
+	    std::fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
 	    usage(argv[0]);
 	}
 
@@ -723,19 +664,19 @@ void munge(t_client_state * client)
 
     if (!client->munged)
     {
-	printf("\r");
-	for (i=0; i<strlen(mode_get_prompt(client->mode)); i++)
-	    printf(" ");
-	for (i=0; i<strlen(client->text) && i<client->screen_width-strlen(mode_get_prompt(client->mode)); i++)
-	    printf(" ");
-	printf("\r");
+	std::printf("\r");
+	for (i=0; i<std::strlen(mode_get_prompt(client->mode)); i++)
+	    std::printf(" ");
+	for (i=0; i<std::strlen(client->text) && i<client->screen_width-std::strlen(mode_get_prompt(client->mode)); i++)
+	    std::printf(" ");
+	std::printf("\r");
 	client->munged = 1;
     }
 }
 
 void ansi_printf(t_client_state * client,int color, char const * fmt, ...)
 {
-    va_list		args;
+    std::va_list		args;
     char		buffer[2048];
 
     if (!(client))
@@ -747,7 +688,7 @@ void ansi_printf(t_client_state * client,int color, char const * fmt, ...)
     if (client->useansi)
         ansi_text_color_fore(color);
 
-    VA_START(args,fmt);
+    va_start(args,fmt);
     vsnprintf(buffer,2048,fmt,args);
     va_end(args);
 
@@ -756,7 +697,7 @@ void ansi_printf(t_client_state * client,int color, char const * fmt, ...)
     if (client->useansi)
         ansi_text_reset();
 
-    fflush(stdout);
+    std::fflush(stdout);
 
 }
 
@@ -775,8 +716,8 @@ extern int main(int argc, char * argv[])
     char const * *     channellist;
     unsigned int       statsmatch=24; /* any random number that is rare in uninitialized fields */
 
-    memset(&user,0,sizeof(t_user_info));
-    memset(&client,0,sizeof(t_client_state));
+    std::memset(&user,0,sizeof(t_user_info));
+    std::memset(&client,0,sizeof(t_client_state));
 
     /* default values */
     user.archtag = ARCHTAG_WINX86;
@@ -797,7 +738,7 @@ extern int main(int argc, char * argv[])
     }
     else
     {
-	fprintf(stderr,"%s: could not set terminal attributes for stdin\n",argv[0]);
+	std::fprintf(stderr,"%s: could not set terminal attributes for stdin\n",argv[0]);
 	client.changed_in = 0;
     }
 
@@ -816,10 +757,10 @@ extern int main(int argc, char * argv[])
 
     if (client_get_termsize(client.fd_stdin,&client.screen_width,&client.screen_height)<0)
     {
-	fprintf(stderr,"%s: could not determine screen size\n",argv[0]);
+	std::fprintf(stderr,"%s: could not determine screen size\n",argv[0]);
 	if (client.changed_in)
 	    tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
     if (client.useansi)
@@ -827,36 +768,36 @@ extern int main(int argc, char * argv[])
 	ansi_text_reset();
 	ansi_screen_clear();
 	ansi_cursor_move_home();
-	fflush(stdout);
+	std::fflush(stdout);
     }
 
     if ((client.sd = client_connect(argv[0],
 			     servname,servport,user.cdowner,user.cdkey,user.clienttag,
 			     &client.saddr,&client.sessionkey,&client.sessionnum,user.archtag,user.gamelang))<0)
     {
-	fprintf(stderr,"%s: fatal error during handshake\n",argv[0]);
+	std::fprintf(stderr,"%s: fatal error during handshake\n",argv[0]);
 	if (client.changed_in)
 	    tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
     /* reuse this same packet over and over */
     if (!(rpacket = packet_create(packet_class_bnet)))
     {
-	fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	psock_close(client.sd);
 	if (client.changed_in)
 	    tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
     if (!(packet = packet_create(packet_class_bnet)))
     {
-	fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	psock_close(client.sd);
 	if (client.changed_in)
 	    tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
     packet_set_size(packet,sizeof(t_client_fileinforeq));
     packet_set_type(packet,CLIENT_FILEINFOREQ);
@@ -873,24 +814,24 @@ extern int main(int argc, char * argv[])
     do
         if (client_blockrecv_packet(client.sd,rpacket)<0)
 	{
-	   fprintf(stderr,"%s: server closed connection\n",argv[0]);
+	   std::fprintf(stderr,"%s: server closed connection\n",argv[0]);
 	   psock_close(client.sd);
 	   if (client.changed_in)
 	       tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-	   return STATUS_FAILURE;
+	   return EXIT_FAILURE;
 	}
     while (packet_get_type(rpacket)!=SERVER_FILEINFOREPLY);
 
     /* real client would also send statsreq on past logins here */
 
-    printf("----\n");
+    std::printf("----\n");
     if (newacct)
     {
 	if (client.useansi)
 	    ansi_text_color_fore(ansi_text_color_red);
-	printf("###### Terms Of Service ######\n");
+	std::printf("###### Terms Of Service ######\n");
 	print_file(&client.saddr,packet_get_str_const(rpacket,sizeof(t_server_fileinforeply),1024),argv[0],user.clienttag);
-	printf("##############################\n\n");
+	std::printf("##############################\n\n");
 	if (client.useansi)
 	    ansi_text_reset();
     }
@@ -906,7 +847,7 @@ extern int main(int argc, char * argv[])
 	    char   passwordvrfy[MAX_MESSAGE_LEN];
             t_hash passhash1;
 
-	    printf("Enter information for your new account\n");
+	    std::printf("Enter information for your new account\n");
 	    client.munged = 1;
 	    client.commpos = 0;
 	    user.player[0] = '\0';
@@ -915,39 +856,39 @@ extern int main(int argc, char * argv[])
 		if (handle_winch)
 		{
 		    client_get_termsize(client.fd_stdin,&client.screen_width,&client.screen_height);
-		    printf(" \r");
+		    std::printf(" \r");
 		    client.munged = 1;
 		    handle_winch = 0;
 		}
 		else
 		    client.munged = 0;
-	    printf("\n");
+	    std::printf("\n");
 	    if (status<0)
 		continue;
-	    if (strchr(user.player,' ')  || strchr(user.player,'\t') ||
-		strchr(user.player,'\r') || strchr(user.player,'\n') )
+	    if (std::strchr(user.player,' ')  || std::strchr(user.player,'\t') ||
+		std::strchr(user.player,'\r') || std::strchr(user.player,'\n') )
 	    {
-		printf("Spaces are not allowed in usernames. Try again.\n");
+		std::printf("Spaces are not allowed in usernames. Try again.\n");
 		continue;
 	    }
-	    /* we could use strcspn() but it doesn't exist everywhere */
-	    if (strchr(user.player,'#')  ||
-		strchr(user.player,'%')  ||
-		strchr(user.player,'&')  ||
-		strchr(user.player,'*')  ||
-		strchr(user.player,'\\') ||
-		strchr(user.player,'"')  ||
-		strchr(user.player,',')  ||
-		strchr(user.player,'<')  ||
-		strchr(user.player,'/')  ||
-		strchr(user.player,'>')  ||
-		strchr(user.player,'?'))
+	    /* we could use std::strcspn() but it doesn't exist everywhere */
+	    if (std::strchr(user.player,'#')  ||
+		std::strchr(user.player,'%')  ||
+		std::strchr(user.player,'&')  ||
+		std::strchr(user.player,'*')  ||
+		std::strchr(user.player,'\\') ||
+		std::strchr(user.player,'"')  ||
+		std::strchr(user.player,',')  ||
+		std::strchr(user.player,'<')  ||
+		std::strchr(user.player,'/')  ||
+		std::strchr(user.player,'>')  ||
+		std::strchr(user.player,'?'))
 	    {
-		printf("The special characters #%%&*\\\",</>? are allowed in usernames. Try again.\n");
+		std::printf("The special characters #%%&*\\\",</>? are allowed in usernames. Try again.\n");
 	    }
-	    if (strlen(user.player)>=USER_NAME_MAX)
+	    if (std::strlen(user.player)>=USER_NAME_MAX)
 	    {
-		printf("Usernames must not be more than %u characters long. Try again.\n",USER_NAME_MAX-1);
+		std::printf("Usernames must not be more than %u characters long. Try again.\n",USER_NAME_MAX-1);
 		continue;
 	    }
 
@@ -959,23 +900,23 @@ extern int main(int argc, char * argv[])
 		if (handle_winch)
 		{
 		    client_get_termsize(client.fd_stdin,&client.screen_width,&client.screen_height);
-		    printf(" \r");
+		    std::printf(" \r");
 		    client.munged = 1;
 		    handle_winch = 0;
 		}
 		else
 		    client.munged = 0;
-	    printf("\n");
+	    std::printf("\n");
 	    if (status<0)
 		continue;
-	    if (strlen(password)>USER_PASS_MAX)
+	    if (std::strlen(password)>USER_PASS_MAX)
 	    {
-		printf("password must not be more than %u characters long. Try again.\n",USER_PASS_MAX);
+		std::printf("password must not be more than %u characters long. Try again.\n",USER_PASS_MAX);
 		continue;
 	    }
-	    for (i=0; i<strlen(password); i++)
-		if (isupper((int)password[i]))
-		    password[i] = tolower((int)password[i]);
+	    for (i=0; i<std::strlen(password); i++)
+		if (std::isupper((int)password[i]))
+		    password[i] = std::tolower((int)password[i]);
 
 	    client.munged = 1;
 	    client.commpos = 0;
@@ -985,33 +926,33 @@ extern int main(int argc, char * argv[])
 		if (handle_winch)
 		{
 		    client_get_termsize(client.fd_stdin,&client.screen_width,&client.screen_height);
-		    printf(" \r");
+		    std::printf(" \r");
 		    client.munged = 1;
 		    handle_winch = 0;
 		}
 		else
 		    client.munged = 0;
-	    printf("\n");
+	    std::printf("\n");
 	    if (status<0)
 		continue;
-	    for (i=0; i<strlen(passwordvrfy); i++)
-		passwordvrfy[i] = tolower((int)passwordvrfy[i]);
+	    for (i=0; i<std::strlen(passwordvrfy); i++)
+		passwordvrfy[i] = std::tolower((int)passwordvrfy[i]);
 
-	    if (strcmp(password,passwordvrfy)!=0)
+	    if (std::strcmp(password,passwordvrfy)!=0)
 	    {
-		printf("Passwords do not match. Try again.\n");
+		std::printf("Passwords do not match. Try again.\n");
 		continue;
 	    }
 
-	    bnet_hash(&passhash1,strlen(password),password); /* do the single hash */
+	    bnet_hash(&passhash1,std::strlen(password),password); /* do the single hash */
 
 	    if (!(packet = packet_create(packet_class_bnet)))
 	    {
-		fprintf(stderr,"%s: could not create packet\n",argv[0]);
+		std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 		psock_close(client.sd);
 		if (client.changed_in)
 		    tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-		return STATUS_FAILURE;
+		return EXIT_FAILURE;
 	    }
 	    packet_set_size(packet,sizeof(t_client_createacctreq1));
 	    packet_set_type(packet,CLIENT_CREATEACCTREQ1);
@@ -1023,20 +964,20 @@ extern int main(int argc, char * argv[])
 	    do
 		if (client_blockrecv_packet(client.sd,rpacket)<0)
 		{
-		   fprintf(stderr,"%s: server closed connection\n",argv[0]);
+		   std::fprintf(stderr,"%s: server closed connection\n",argv[0]);
 		   psock_close(client.sd);
 		   if (client.changed_in)
 		       tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-		   return STATUS_FAILURE;
+		   return EXIT_FAILURE;
 		}
 	    while (packet_get_type(rpacket)!=SERVER_CREATEACCTREPLY1);
 	    dprintf("Got CREATEACCTREPLY1\n");
 	    if (bn_int_get(rpacket->u.server_createacctreply1.result)==SERVER_CREATEACCTREPLY1_RESULT_NO)
 	    {
-		printf("Could not create an account under that name. Try another one.\n");
+		std::printf("Could not create an account under that name. Try another one.\n");
 		continue;
 	    }
-	    printf("Account created.\n");
+	    std::printf("Account created.\n");
 	}
 	else if (changepass)
 	{
@@ -1053,7 +994,7 @@ extern int main(int argc, char * argv[])
             t_hash       newpasshash1;
 	    unsigned int ticks;
 
-            printf("Enter your old and new login information\n");
+            std::printf("Enter your old and new login information\n");
 
 	    client.munged = 1;
 	    client.commpos = 0;
@@ -1063,23 +1004,23 @@ extern int main(int argc, char * argv[])
 		if (handle_winch)
 		{
 		    client_get_termsize(client.fd_stdin,&client.screen_width,&client.screen_height);
-		    printf(" \r");
+		    std::printf(" \r");
 		    client.munged = 1;
 		    handle_winch = 0;
 		}
 		else
 		    client.munged = 0;
-	    printf("\n");
+	    std::printf("\n");
 	    if (status<0)
 		continue;
-	    if (strchr(user.player,' '))
+	    if (std::strchr(user.player,' '))
 	    {
-		printf("Spaces not allowed in username. Try again.\n");
+		std::printf("Spaces not allowed in username. Try again.\n");
 		continue;
 	    }
-	    if (strlen(user.player)>=USER_NAME_MAX)
+	    if (std::strlen(user.player)>=USER_NAME_MAX)
 	    {
-		printf("Usernames must not be more than %u characters long. Try again.\n",USER_NAME_MAX-1);
+		std::printf("Usernames must not be more than %u characters long. Try again.\n",USER_NAME_MAX-1);
 		continue;
 	    }
 
@@ -1091,17 +1032,17 @@ extern int main(int argc, char * argv[])
 		if (handle_winch)
 		{
 		    client_get_termsize(client.fd_stdin,&client.screen_width,&client.screen_height);
-		    printf(" \r");
+		    std::printf(" \r");
 		    client.munged = 1;
 		    handle_winch = 0;
 		}
 		else
 		    client.munged = 0;
-	    printf("\n");
+	    std::printf("\n");
 	    if (status<0)
 		continue;
-	    for (i=0; i<strlen(passwordprev); i++)
-		passwordprev[i] = tolower((int)passwordprev[i]);
+	    for (i=0; i<std::strlen(passwordprev); i++)
+		passwordprev[i] = std::tolower((int)passwordprev[i]);
 
 	    client.munged = 1;
 	    client.commpos = 0;
@@ -1111,17 +1052,17 @@ extern int main(int argc, char * argv[])
 		if (handle_winch)
 		{
 		    client_get_termsize(client.fd_stdin,&client.screen_width,&client.screen_height);
-		    printf(" \r");
+		    std::printf(" \r");
 		    client.munged = 1;
 		    handle_winch = 0;
 		}
 		else
 		    client.munged = 0;
-	    printf("\n");
+	    std::printf("\n");
 	    if (status<0)
 		continue;
-	    for (i=0; i<strlen(password); i++)
-		password[i] = tolower((int)password[i]);
+	    for (i=0; i<std::strlen(password); i++)
+		password[i] = std::tolower((int)password[i]);
 
 	    client.munged = 1;
 	    client.commpos = 0;
@@ -1131,39 +1072,39 @@ extern int main(int argc, char * argv[])
 		if (handle_winch)
 		{
 		    client_get_termsize(client.fd_stdin,&client.screen_width,&client.screen_height);
-		    printf(" \r");
+		    std::printf(" \r");
 		    client.munged = 1;
 		    handle_winch = 0;
 		}
 		else
 		    client.munged = 0;
-	    printf("\n");
+	    std::printf("\n");
 	    if (status<0)
 		continue;
-	    for (i=0; i<strlen(passwordvrfy); i++)
-		passwordvrfy[i] = tolower((int)passwordvrfy[i]);
+	    for (i=0; i<std::strlen(passwordvrfy); i++)
+		passwordvrfy[i] = std::tolower((int)passwordvrfy[i]);
 
-	    if (strcmp(password,passwordvrfy)!=0)
+	    if (std::strcmp(password,passwordvrfy)!=0)
 	    {
-		printf("New passwords do not match. Try again.\n");
+		std::printf("New passwords do not match. Try again.\n");
 		continue;
 	    }
 
             ticks = 0; /* FIXME: what to use here? */
             bn_int_set(&temp.ticks,ticks);
             bn_int_set(&temp.sessionkey,client.sessionkey);
-            bnet_hash(&oldpasshash1,strlen(passwordprev),passwordprev); /* do the single hash for old */
+            bnet_hash(&oldpasshash1,std::strlen(passwordprev),passwordprev); /* do the single hash for old */
             hash_to_bnhash((t_hash const *)&oldpasshash1,temp.passhash1); /* avoid warning */
             bnet_hash(&oldpasshash2,sizeof(temp),&temp); /* do the double hash for old */
-	    bnet_hash(&newpasshash1,strlen(password),password); /* do the single hash for new */
+	    bnet_hash(&newpasshash1,std::strlen(password),password); /* do the single hash for new */
 
 	    if (!(packet = packet_create(packet_class_bnet)))
 	    {
-		fprintf(stderr,"%s: could not create packet\n",argv[0]);
+		std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 		psock_close(client.sd);
 		if (client.changed_in)
 		    tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-		return STATUS_FAILURE;
+		return EXIT_FAILURE;
 	    }
 	    packet_set_size(packet,sizeof(t_client_changepassreq));
 	    packet_set_type(packet,CLIENT_CHANGEPASSREQ);
@@ -1178,24 +1119,24 @@ extern int main(int argc, char * argv[])
 	    do
 		if (client_blockrecv_packet(client.sd,rpacket)<0)
 		{
-		   fprintf(stderr,"%s: server closed connection\n",argv[0]);
+		   std::fprintf(stderr,"%s: server closed connection\n",argv[0]);
 		   psock_close(client.sd);
 		   if (client.changed_in)
 		       tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-		   return STATUS_FAILURE;
+		   return EXIT_FAILURE;
 		}
 	    while (packet_get_type(rpacket)!=SERVER_CHANGEPASSACK);
 	    dprintf("Got CHANGEPASSACK\n");
 	    if (bn_int_get(rpacket->u.server_changepassack.message)==SERVER_CHANGEPASSACK_MESSAGE_FAIL)
 	    {
-		printf("Could not change password. Try again.\n");
+		std::printf("Could not change password. Try again.\n");
 		continue;
 	    }
-	    printf("Password changed.\n");
+	    std::printf("Password changed.\n");
 	}
 	else
 	{
-            printf("Enter your login information\n");
+            std::printf("Enter your login information\n");
 
 	    client.munged = 1;
 	    client.commpos = 0;
@@ -1205,23 +1146,23 @@ extern int main(int argc, char * argv[])
 		if (handle_winch)
 		{
 		    client_get_termsize(client.fd_stdin,&client.screen_width,&client.screen_height);
-		    printf(" \r");
+		    std::printf(" \r");
 		    client.munged = 1;
 		    handle_winch = 0;
 		}
 		else
 		    client.munged = 0;
-	    printf("\n");
+	    std::printf("\n");
 	    if (status<0)
 		continue;
-	    if (strchr(user.player,' '))
+	    if (std::strchr(user.player,' '))
 	    {
-		printf("Spaces not allowed in username. Try again.\n");
+		std::printf("Spaces not allowed in username. Try again.\n");
 		continue;
 	    }
-	    if (strlen(user.player)>=USER_NAME_MAX)
+	    if (std::strlen(user.player)>=USER_NAME_MAX)
 	    {
-		printf("Usernames must not be more than %u characters long. Try again.\n",USER_NAME_MAX-1);
+		std::printf("Usernames must not be more than %u characters long. Try again.\n",USER_NAME_MAX-1);
 		continue;
 	    }
 
@@ -1233,17 +1174,17 @@ extern int main(int argc, char * argv[])
 		if (handle_winch)
 		{
 		    client_get_termsize(client.fd_stdin,&client.screen_width,&client.screen_height);
-		    printf(" \r");
+		    std::printf(" \r");
 		    client.munged = 1;
 		    handle_winch = 0;
 		}
 		else
 		    client.munged = 0;
-	    printf("\n");
+	    std::printf("\n");
 	    if (status<0)
 		continue;
-	    for (i=0; i<strlen(password); i++)
-		password[i] = tolower((int)password[i]);
+	    for (i=0; i<std::strlen(password); i++)
+		password[i] = std::tolower((int)password[i]);
 	}
 
 	/* now login */
@@ -1261,17 +1202,17 @@ extern int main(int argc, char * argv[])
             ticks = 0; /* FIXME: what to use here? */
             bn_int_set(&temp.ticks,ticks);
             bn_int_set(&temp.sessionkey,client.sessionkey);
-            bnet_hash(&passhash1,strlen(password),password); /* do the single hash */
+            bnet_hash(&passhash1,std::strlen(password),password); /* do the single hash */
             hash_to_bnhash((t_hash const *)&passhash1,temp.passhash1); /* avoid warning */
             bnet_hash(&passhash2,sizeof(temp),&temp); /* do the double hash */
 
 	    if (!(packet = packet_create(packet_class_bnet)))
 	    {
-		fprintf(stderr,"%s: could not create packet\n",argv[0]);
+		std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 		psock_close(client.sd);
 		if (client.changed_in)
 		    tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-		return STATUS_FAILURE;
+		return EXIT_FAILURE;
 	    }
 	    packet_set_size(packet,sizeof(t_client_loginreq1));
 	    packet_set_type(packet,CLIENT_LOGINREQ1);
@@ -1286,27 +1227,27 @@ extern int main(int argc, char * argv[])
         do
             if (client_blockrecv_packet(client.sd,rpacket)<0)
 	    {
-	       fprintf(stderr,"%s: server closed connection\n",argv[0]);
+	       std::fprintf(stderr,"%s: server closed connection\n",argv[0]);
 	       psock_close(client.sd);
 	       if (client.changed_in)
 	           tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-	       return STATUS_FAILURE;
+	       return EXIT_FAILURE;
 	    }
         while (packet_get_type(rpacket)!=SERVER_LOGINREPLY1);
 	if (bn_int_get(rpacket->u.server_loginreply1.message)==SERVER_LOGINREPLY1_MESSAGE_SUCCESS)
 	    break;
-	fprintf(stderr,"Login incorrect.\n");
+	std::fprintf(stderr,"Login incorrect.\n");
     }
 
-    fprintf(stderr,"Logged in.\n");
-    printf("----\n");
+    std::fprintf(stderr,"Logged in.\n");
+    std::printf("----\n");
 
-    if (newacct && (strcmp(user.clienttag,CLIENTTAG_DIABLORTL)==0 ||
-		    strcmp(user.clienttag,CLIENTTAG_DIABLOSHR)==0))
+    if (newacct && (std::strcmp(user.clienttag,CLIENTTAG_DIABLORTL)==0 ||
+		    std::strcmp(user.clienttag,CLIENTTAG_DIABLOSHR)==0))
     {
 	if (!(packet = packet_create(packet_class_bnet)))
 	{
-	    fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	    std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	    if (client.changed_in)
 		tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
 	}
@@ -1323,11 +1264,11 @@ extern int main(int argc, char * argv[])
 
     if (!(packet = packet_create(packet_class_bnet)))
     {
-	fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	psock_close(client.sd);
 	if (client.changed_in)
 	    tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
     packet_set_size(packet,sizeof(t_client_progident2));
     packet_set_type(packet,CLIENT_PROGIDENT2);
@@ -1338,11 +1279,11 @@ extern int main(int argc, char * argv[])
     do
         if (client_blockrecv_packet(client.sd,rpacket)<0)
 	{
-	    fprintf(stderr,"%s: server closed connection\n",argv[0]);
+	    std::fprintf(stderr,"%s: server closed connection\n",argv[0]);
 	    psock_close(client.sd);
 	    if (client.changed_in)
 		tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-	    return STATUS_FAILURE;
+	    return EXIT_FAILURE;
 	}
     while (packet_get_type(rpacket)!=SERVER_CHANNELLIST);
 
@@ -1354,7 +1295,7 @@ extern int main(int argc, char * argv[])
 	channellist = (const char**)xmalloc(sizeof(char*)*1);
 	for (i=0,chann_off=sizeof(t_server_channellist);
 	     (chann = packet_get_str_const(rpacket,chann_off,128));
-	     i++,chann_off+=strlen(chann)+1)
+	     i++,chann_off+=std::strlen(chann)+1)
         {
 	    if (chann[0] == '\0') break;  /* channel list ends with a "" */
 
@@ -1366,11 +1307,11 @@ extern int main(int argc, char * argv[])
 
     if (!(packet = packet_create(packet_class_bnet)))
     {
-	fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	psock_close(client.sd);
 	if (client.changed_in)
 	    tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
     packet_set_size(packet,sizeof(t_client_joinchannel));
     packet_set_type(packet,CLIENT_JOINCHANNEL);
@@ -1380,7 +1321,7 @@ extern int main(int argc, char * argv[])
     packet_del_ref(packet);
 
     if (psock_ctl(client.sd,PSOCK_NONBLOCK)<0)
-	fprintf(stderr,"%s: could not set TCP socket to non-blocking mode (psock_ctl: %s)\n",argv[0],pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not set TCP socket to non-blocking mode (psock_ctl: %s)\n",argv[0],std::strerror(psock_errno()));
 
     client.mode = mode_chat;
 
@@ -1417,14 +1358,14 @@ extern int main(int argc, char * argv[])
 	    {
 		client_get_termsize(client.fd_stdin,&client.screen_width,&client.screen_height);
 		handle_winch = 0;
-		printf(" \r");
+		std::printf(" \r");
 		client.munged = 1;
 	    }
 
 	    if (client.munged)
 	    {
-		printf("%s%s",mode_get_prompt(client.mode),client.text + ((client.screen_width <= strlen(mode_get_prompt(client.mode)) + client.commpos ) ? strlen(mode_get_prompt(client.mode)) + client.commpos + 1 - client.screen_width : 0));
-		fflush(stdout);
+		std::printf("%s%s",mode_get_prompt(client.mode),client.text + ((client.screen_width <= std::strlen(mode_get_prompt(client.mode)) + client.commpos ) ? std::strlen(mode_get_prompt(client.mode)) + client.commpos + 1 - client.screen_width : 0));
+		std::fflush(stdout);
 		client.munged = 0;
 	    }
 	    	PSOCK_FD_ZERO(&rfds);
@@ -1443,7 +1384,7 @@ extern int main(int argc, char * argv[])
 			if (psock_errno()!=PSOCK_EINTR)
 			{
 				munge(&client);
-				printf("Select failed (select: %s)\n",pstrerror(psock_errno()));
+				std::printf("Select failed (select: %s)\n",std::strerror(psock_errno()));
 			}
 			continue;
 	    }
@@ -1476,18 +1417,18 @@ extern int main(int argc, char * argv[])
 		    {
 		    case mode_claninvite:
 
-		        printf("\n");
+		        std::printf("\n");
 			client.munged = 1;
 
 			if ((client.text[0]!='\0') && strcasecmp(client.text,"yes") && strcasecmp(client.text,"no"))
 			{
-			    printf("Do you want to accept invitation (yes/no) ? [yes] ");
+			    std::printf("Do you want to accept invitation (yes/no) ? [yes] ");
 			    break;
 			}
 
 			if (!(packet = packet_create(packet_class_bnet)))
 			{
-			    printf("Packet creation failed.\n");
+			    std::printf("Packet creation failed.\n");
 			}
 			else
 			{
@@ -1523,24 +1464,24 @@ extern int main(int argc, char * argv[])
 			if (client.text[0]=='\0')
 			{
 		            munge(&client);
-			    printf("Games must have a name.\n");
+			    std::printf("Games must have a name.\n");
 			    break;
 			}
-			printf("\n");
+			std::printf("\n");
 			client.munged = 1;
-			strncpy(user.curr_gamename,client.text,sizeof(user.curr_gamename));
+			std::strncpy(user.curr_gamename,client.text,sizeof(user.curr_gamename));
 			user.curr_gamename[sizeof(user.curr_gamename)-1] = '\0';
 			client.mode = mode_gamepass;
 			break;
 		    case mode_gamepass:
-			printf("\n");
+			std::printf("\n");
 			client.munged = 1;
-			strncpy(user.curr_gamepass,client.text,sizeof(user.curr_gamepass));
+			std::strncpy(user.curr_gamepass,client.text,sizeof(user.curr_gamepass));
 			user.curr_gamepass[sizeof(user.curr_gamepass)-1] = '\0';
 
 			if (!(packet = packet_create(packet_class_bnet)))
 			{
-			    printf("Packet creation failed.\n");
+			    std::printf("Packet creation failed.\n");
 			    client.mode = mode_command;
 			}
 			else
@@ -1563,56 +1504,56 @@ extern int main(int argc, char * argv[])
 			}
 			break;
 		    case mode_gamestop:
-			printf("\n");
+			std::printf("\n");
 			client.munged = 1;
 
 			if (!(packet = packet_create(packet_class_bnet)))
-			    printf("Packet creation failed.\n");
+			    std::printf("Packet creation failed.\n");
 			else
 			{
 			    packet_set_size(packet,sizeof(t_client_closegame));
 			    packet_set_type(packet,CLIENT_CLOSEGAME);
 			    client_blocksend_packet(client.sd,packet);
 			    packet_del_ref(packet);
-			    printf("Game closed.\n");
+			    std::printf("Game closed.\n");
 			    client.mode = mode_command;
 			}
 			break;
 		    case mode_command:
 			if (client.text[0]=='\0')
 			    break;
-			printf("\n");
+			std::printf("\n");
 			client.munged = 1;
 			if (strstart(client.text,"channel")==0)
 			{
-			    printf("Available channels:\n");
+			    std::printf("Available channels:\n");
 			    if (client.useansi)
 				ansi_text_color_fore(ansi_text_color_yellow);
 			    for (i=0; channellist[i]; i++)
-				printf(" %s\n",channellist[i]);
+				std::printf(" %s\n",channellist[i]);
 			    if (client.useansi)
 				ansi_text_reset();
 			}
 			else if (strstart(client.text,"create")==0)
 			{
-			    printf("Enter new game information\n");
+			    std::printf("Enter new game information\n");
 			    client.mode = mode_gamename;
 			}
 			else if (strstart(client.text,"join")==0)
 			{
-			    printf("Not implemented yet.\n");
+			    std::printf("Not implemented yet.\n");
 			}
 			else if (strstart(client.text,"ladder")==0)
 			{
-			    printf("Not implemented yet.\n");
+			    std::printf("Not implemented yet.\n");
 			}
 			else if (strstart(client.text,"stats")==0)
 			{
-			    printf("Not implemented yet.\n");
+			    std::printf("Not implemented yet.\n");
 			}
-			else if (strstart(client.text,"help")==0 || strcmp(client.text,"?")==0)
+			else if (strstart(client.text,"help")==0 || std::strcmp(client.text,"?")==0)
 			{
-			    printf("Available commands:\n"
+			    std::printf("Available commands:\n"
 				   " channel        - join or create a channel\n"
 				   " create         - create a new game\n"
 				   " join           - list current games\n"
@@ -1634,15 +1575,15 @@ extern int main(int argc, char * argv[])
 			    else
 			    {
 				if (!(packet = packet_create(packet_class_bnet)))
-				    fprintf(stderr,"%s: could not create packet\n",argv[0]);
+				    std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 				else
 				{
-				    printf("Profile info for %s:\n",&client.text[i]);
+				    std::printf("Profile info for %s:\n",&client.text[i]);
 				    packet_set_size(packet,sizeof(t_client_statsreq));
 				    packet_set_type(packet,CLIENT_STATSREQ);
 				    bn_int_set(&packet->u.client_statsreq.name_count,1);
 				    bn_int_set(&packet->u.client_statsreq.key_count,4);
-				    statsmatch = (unsigned int)time(NULL);
+				    statsmatch = (unsigned int)std::time(NULL);
 				    bn_int_set(&packet->u.client_statsreq.requestid,statsmatch);
 				    packet_append_string(packet,&client.text[i]);
 #if 0
@@ -1662,14 +1603,14 @@ extern int main(int argc, char * argv[])
 			}
 			else if (strstart(client.text,"chinfo")==0)
 			{
-			    printf("Not implemented yet.\n");
+			    std::printf("Not implemented yet.\n");
 			}
 			else if (strstart(client.text,"quit")==0)
 			{
 			    psock_close(client.sd);
 			    if (client.changed_in)
 				tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-			    return STATUS_SUCCESS;
+			    return EXIT_SUCCESS;
 			}
 			else
 			{
@@ -1687,19 +1628,19 @@ extern int main(int argc, char * argv[])
 			else
 			{
 			    ansi_printf(&client,ansi_text_color_blue,"\r<%s>",user.player);
-			    printf(" ");
+			    std::printf(" ");
 			    str_print_term(stdout,client.text,0,0);
-			    printf("\n");
+			    std::printf("\n");
 			    client.munged = 1;
 			}
 
 			if (!(packet = packet_create(packet_class_bnet)))
 			{
-			    fprintf(stderr,"%s: could not create packet\n",argv[0]);
+			    std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 			    psock_close(client.sd);
 			    if (client.changed_in)
 				tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-			    return STATUS_FAILURE;
+			    return EXIT_FAILURE;
 			}
 			packet_set_size(packet,sizeof(t_client_message));
 			packet_set_type(packet,CLIENT_MESSAGE);
@@ -1735,18 +1676,18 @@ extern int main(int argc, char * argv[])
 			if (packet_get_size(rpacket)<sizeof(t_server_echoreq))
 			{
 		            munge(&client);
-			    printf("Got bad SERVER_ECHOREQ packet (expected %u bytes, got %u)\n",sizeof(t_server_echoreq),packet_get_size(rpacket));
+			    std::printf("Got bad SERVER_ECHOREQ packet (expected %u bytes, got %u)\n",sizeof(t_server_echoreq),packet_get_size(rpacket));
 			    break;
 			}
 
 			if (!(packet = packet_create(packet_class_bnet)))
 			{
 		            munge(&client);
-			    fprintf(stderr,"%s: could not create packet\n",argv[0]);
+			    std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 			    psock_close(client.sd);
 			    if (client.changed_in)
 				tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-			    return STATUS_FAILURE;
+			    return EXIT_FAILURE;
 			}
 			packet_set_size(packet,sizeof(t_client_echoreply));
 			packet_set_type(packet,CLIENT_ECHOREPLY);
@@ -1763,12 +1704,12 @@ extern int main(int argc, char * argv[])
 
 			    if (bn_int_get(rpacket->u.server_startgame4_ack.reply)==SERVER_STARTGAME4_ACK_OK)
 			    {
-				printf("Game created.\n");
+				std::printf("Game created.\n");
 				client.mode = mode_gamestop;
 			    }
 			    else
 			    {
-				printf("Game could not be created, try another name.\n");
+				std::printf("Game could not be created, try another name.\n");
 				client.mode = mode_gamename;
 			    }
 			}
@@ -1778,7 +1719,7 @@ extern int main(int argc, char * argv[])
 			if (packet_get_size(rpacket)<sizeof(t_server_w3xp_clan_invitereq))
 			{
 		            munge(&client);
-			    printf("Got bad SERVER_W3XP_CLAN_INVITEREQ packet (expected %u bytes, got %u)\n",sizeof(t_server_w3xp_clan_invitereq),packet_get_size(rpacket));
+			    std::printf("Got bad SERVER_W3XP_CLAN_INVITEREQ packet (expected %u bytes, got %u)\n",sizeof(t_server_w3xp_clan_invitereq),packet_get_size(rpacket));
 			    break;
 			}
 
@@ -1791,14 +1732,14 @@ extern int main(int argc, char * argv[])
 			    if (!(clan = packet_get_str_const(rpacket,offset,MAX_CLANNAME_LEN)))
 			    {
 				munge(&client);
-				printf("Got SERVER_W3XP_CLAN_INVITEREQ with bad or missing clanname\n");
+				std::printf("Got SERVER_W3XP_CLAN_INVITEREQ with bad or missing clanname\n");
 				break;
 			    }
-			    offset+=strlen(clan)+1;
+			    offset+=std::strlen(clan)+1;
 			    if (!(inviter = packet_get_str_const(rpacket,offset,USER_NAME_MAX)))
 			    {
 				munge(&client);
-				printf("Got SERVER_W3XP_CLAN_INVITEREQ with bad or missing inviter\n");
+				std::printf("Got SERVER_W3XP_CLAN_INVITEREQ with bad or missing inviter\n");
 				break;
 			    }
 			    user.count   = bn_int_get(rpacket->u.server_w3xp_clan_invitereq.count);
@@ -1808,8 +1749,8 @@ extern int main(int argc, char * argv[])
 			    user.inviter = xstrdup(inviter);
 
 			    munge(&client);
-			    printf("%s invited you to Clan %s\n",inviter,clan);
-			    printf("Do you want to accept invitation (yes/no) ? [yes] ");
+			    std::printf("%s invited you to Clan %s\n",inviter,clan);
+			    std::printf("Do you want to accept invitation (yes/no) ? [yes] ");
 
 			    client.mode = mode_claninvite;
 			}
@@ -1820,7 +1761,7 @@ extern int main(int argc, char * argv[])
 			if (packet_get_size(rpacket)<sizeof(t_server_w3xp_clanmemberupdate))
 			{
 		            munge(&client);
-			    printf("Got bad SERVER_W3XP_CLANMEMBERUPDATE packet (expected %u bytes, got %u)\n",sizeof(t_server_w3xp_clanmemberupdate),packet_get_size(rpacket));
+			    std::printf("Got bad SERVER_W3XP_CLANMEMBERUPDATE packet (expected %u bytes, got %u)\n",sizeof(t_server_w3xp_clanmemberupdate),packet_get_size(rpacket));
 			    break;
 			}
 
@@ -1841,14 +1782,14 @@ extern int main(int argc, char * argv[])
 			    if (!(member = packet_get_str_const(rpacket,offset,USER_NAME_MAX)))
 			    {
 				munge(&client);
-				printf("Got SERVER_W3XP_CLANMEMBERUPDATE with bad or missing member\n");
+				std::printf("Got SERVER_W3XP_CLANMEMBERUPDATE with bad or missing member\n");
 				break;
 			    }
-			    offset+=strlen(member)+1;
+			    offset+=std::strlen(member)+1;
 			    if (!(rank_p = (char *)packet_get_data_const(rpacket,offset,1)))
 			    {
 				munge(&client);
-				printf("Got SERVER_W3XP_CLANMEMBERUPDATE with bad or missing rank\n");
+				std::printf("Got SERVER_W3XP_CLANMEMBERUPDATE with bad or missing rank\n");
 				break;
 			    }
 			    rank = *rank_p;
@@ -1856,7 +1797,7 @@ extern int main(int argc, char * argv[])
 			    if (!(online_p = (char *)packet_get_data_const(rpacket,offset,1)))
 			    {
 				munge(&client);
-				printf("Got SERVER_W3XP_CLAN_MEMBERUPDATE with bad or missing online status\n");
+				std::printf("Got SERVER_W3XP_CLAN_MEMBERUPDATE with bad or missing online status\n");
 				break;
 			    }
 			    online = *online_p;
@@ -1864,7 +1805,7 @@ extern int main(int argc, char * argv[])
 			    if (!(append_str = packet_get_str_const(rpacket,offset,USER_NAME_MAX)))
 			    {
 				munge(&client);
-				printf("Got SERVER_W3XP_CLANMEMBERUPDATE with bad or missing append_str\n");
+				std::printf("Got SERVER_W3XP_CLANMEMBERUPDATE with bad or missing append_str\n");
 				break;
 			    }
 
@@ -1912,7 +1853,7 @@ extern int main(int argc, char * argv[])
 			    }
 
 			    munge(&client);
-			    printf("%s %s  is now %s %s\n",rank_str,member,online_str,append_str);
+			    std::printf("%s %s  is now %s %s\n",rank_str,member,online_str,append_str);
 			}
 
 
@@ -1931,43 +1872,43 @@ extern int main(int argc, char * argv[])
 			    match = bn_int_get(rpacket->u.server_statsreply.requestid);
 
 			    if (names!=1 || keys!=4 || match!=statsmatch)
-				printf("mangled reply (name_count=%u key_count=%u unknown1=%u)\n",
+				std::printf("mangled reply (name_count=%u key_count=%u unknown1=%u)\n",
 				       names,keys,match);
 
 			    strpos = sizeof(t_server_statsreply);
 			    if ((temp = packet_get_str_const(rpacket,strpos,256)))
 			    {
-				printf(" Sex: ");
+				std::printf(" Sex: ");
 				ansi_printf(&client,ansi_text_color_yellow,"%s\n",temp);
-				strpos += strlen(temp)+1;
+				strpos += std::strlen(temp)+1;
 			    }
 			    if ((temp = packet_get_str_const(rpacket,strpos,256)))
 			    {
-				printf(" Age: ");
+				std::printf(" Age: ");
 				ansi_printf(&client,ansi_text_color_yellow,"%s\n",temp);
-				strpos += strlen(temp)+1;
+				strpos += std::strlen(temp)+1;
 			    }
 			    if ((temp = packet_get_str_const(rpacket,strpos,256)))
 			    {
-				printf(" Location: ");
+				std::printf(" Location: ");
 				ansi_printf(&client,ansi_text_color_yellow,"%s\n",temp);
-				strpos += strlen(temp)+1;
+				strpos += std::strlen(temp)+1;
 			    }
 			    if ((temp = packet_get_str_const(rpacket,strpos,256)))
 			    {
 				char   msgtemp[1024];
 				char * tok;
 
-				printf(" Description: \n");
+				std::printf(" Description: \n");
 				if (client.useansi)
 				    ansi_text_color_fore(ansi_text_color_yellow);
-				strncpy(msgtemp,temp,sizeof(msgtemp));
+				std::strncpy(msgtemp,temp,sizeof(msgtemp));
 				msgtemp[sizeof(msgtemp)-1] = '\0';
-				for (tok=strtok(msgtemp,"\r\n"); tok; tok=strtok(NULL,"\r\n"))
-				    printf("  %s\n",tok);
+				for (tok=std::strtok(msgtemp,"\r\n"); tok; tok=std::strtok(NULL,"\r\n"))
+				    std::printf("  %s\n",tok);
 				if (client.useansi)
 				    ansi_text_reset();
-				strpos += strlen(temp)+1;
+				strpos += std::strlen(temp)+1;
 			    }
 
 			    if (match==statsmatch)
@@ -1982,7 +1923,7 @@ extern int main(int argc, char * argv[])
 			if (packet_get_size(rpacket)<sizeof(t_server_message))
 			{
 		            munge(&client);
-			    printf("Got bad SERVER_MESSAGE packet (expected %u bytes, got %u)",sizeof(t_server_message),packet_get_size(rpacket));
+			    std::printf("Got bad SERVER_MESSAGE packet (expected %u bytes, got %u)",sizeof(t_server_message),packet_get_size(rpacket));
 			    break;
 			}
 
@@ -1993,13 +1934,13 @@ extern int main(int argc, char * argv[])
 			    if (!(speaker = packet_get_str_const(rpacket,sizeof(t_server_message),32)))
 			    {
 		                munge(&client);
-				printf("Got SERVER_MESSAGE packet with bad or missing speaker\n");
+				std::printf("Got SERVER_MESSAGE packet with bad or missing speaker\n");
 				break;
 			    }
-			    if (!(message = packet_get_str_const(rpacket,sizeof(t_server_message)+strlen(speaker)+1,1024)))
+			    if (!(message = packet_get_str_const(rpacket,sizeof(t_server_message)+std::strlen(speaker)+1,1024)))
 			    {
 		                munge(&client);
-				printf("Got SERVER_MESSAGE packet with bad or missing message (speaker=\"%s\" start=%u len=%u)\n",speaker,sizeof(t_server_message)+strlen(speaker)+1,packet_get_size(rpacket));
+				std::printf("Got SERVER_MESSAGE packet with bad or missing message (speaker=\"%s\" start=%u len=%u)\n",speaker,sizeof(t_server_message)+std::strlen(speaker)+1,packet_get_size(rpacket));
 				break;
 			    }
 
@@ -2030,16 +1971,16 @@ extern int main(int argc, char * argv[])
 			    case SERVER_MESSAGE_TYPE_WHISPER:
 		                munge(&client);
 				ansi_printf(&client,ansi_text_color_blue,"<From: %s>",speaker);
-				printf(" ");
+				std::printf(" ");
 				str_print_term(stdout,message,0,0);
-				printf("\n");
+				std::printf("\n");
 				break;
 			    case SERVER_MESSAGE_TYPE_WHISPERACK:
 		                munge(&client);
 				ansi_printf(&client,ansi_text_color_blue,"<To: %s>",speaker);
-				printf(" ");
+				std::printf(" ");
 				str_print_term(stdout,message,0,0);
-				printf("\n");
+				std::printf("\n");
 				break;
 			    case SERVER_MESSAGE_TYPE_BROADCAST:
 		                munge(&client);
@@ -2061,18 +2002,18 @@ extern int main(int argc, char * argv[])
 			    case SERVER_MESSAGE_TYPE_TALK:
 		                munge(&client);
 				ansi_printf(&client,ansi_text_color_yellow,"<%s>",speaker);
-				printf(" ");
+				std::printf(" ");
 				str_print_term(stdout,message,0,0);
-				printf("\n");
+				std::printf("\n");
 			    }
 			}
 			break;
 
 		    default:
 		        munge(&client);
-			printf("Unsupported server packet type 0x%04x\n",packet_get_type(rpacket));
+			std::printf("Unsupported server packet type 0x%04x\n",packet_get_type(rpacket));
 			hexdump(stdout,packet_get_data_const(rpacket,0,packet_get_size(rpacket)),packet_get_size(rpacket));
-			printf("\n");
+			std::printf("\n");
 		    }
 
 		    client.currsize = 0;
@@ -2081,11 +2022,11 @@ extern int main(int argc, char * argv[])
 		case -1: /* error (probably connection closed) */
 		default:
 		    munge(&client);
-		    printf("----\nConnection closed by server.\n");
+		    std::printf("----\nConnection closed by server.\n");
 		    psock_close(client.sd);
 		    if (client.changed_in)
 			tcsetattr(client.fd_stdin,TCSAFLUSH,&client.in_attr_old);
-		    return STATUS_SUCCESS;
+		    return EXIT_SUCCESS;
 		}
 	    }
 	}

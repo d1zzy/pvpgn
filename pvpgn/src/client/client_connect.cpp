@@ -16,76 +16,28 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#ifdef HAVE_MEMORY_H
-# include <memory.h>
-#endif
-#include "compat/memset.h"
-#include "compat/memcpy.h"
-#include <ctype.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#endif
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include "client_connect.h"
+
+#include <cstring>
+#include <cstdio>
+#include <cerrno>
+#include <ctime>
+
 #include "compat/gethostname.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
 #include "compat/inet_ntoa.h"
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
-#include "compat/psock.h"
+#include "common/tag.h"
 #include "common/packet.h"
 #include "common/init_protocol.h"
-#include "common/udp_protocol.h"
 #include "common/bnet_protocol.h"
-#include "common/file_protocol.h"
-#include "common/tag.h"
 #include "common/bn_type.h"
-#include "common/field_sizes.h"
 #include "common/bnethash.h"
 #include "common/bnethashconv.h"
-#include "common/util.h"
+#include "common/bnettime.h"
 #ifdef CLIENTDEBUG
 # include "common/eventlog.h"
 #endif
-#include "client.h"
 #include "udptest.h"
-#include "common/bnettime.h"
-#include "common/proginfo.h"
-#include "client_connect.h"
+#include "client.h"
 #include "common/setup_after.h"
 
 
@@ -112,7 +64,7 @@ int key_interpret(char const * cdkey, unsigned int * productid, unsigned int * k
 
 int get_defversioninfo(char const * progname, char const * clienttag, unsigned int * versionid, unsigned int * gameversion, char const * * exeinfo, unsigned int * checksum)
 {
-    if (strcmp(clienttag,CLIENTTAG_DIABLORTL)==0)
+    if (std::strcmp(clienttag,CLIENTTAG_DIABLORTL)==0)
     {
 	*versionid = CLIENT_VERSIONID_DRTL;
 	*gameversion = CLIENT_GAMEVERSION_DRTL;
@@ -121,7 +73,7 @@ int get_defversioninfo(char const * progname, char const * clienttag, unsigned i
 	return 0;
     }
 
-    if (strcmp(clienttag,CLIENTTAG_STARCRAFT)==0)
+    if (std::strcmp(clienttag,CLIENTTAG_STARCRAFT)==0)
     {
 	*versionid = CLIENT_VERSIONID_STAR;
 	*gameversion = CLIENT_GAMEVERSION_STAR;
@@ -130,7 +82,7 @@ int get_defversioninfo(char const * progname, char const * clienttag, unsigned i
 	return 0;
     }
 
-    if (strcmp(clienttag,CLIENTTAG_SHAREWARE)==0)
+    if (std::strcmp(clienttag,CLIENTTAG_SHAREWARE)==0)
     {
 	*versionid = CLIENT_VERSIONID_SSHR;
 	*gameversion = CLIENT_GAMEVERSION_SSHR;
@@ -139,7 +91,7 @@ int get_defversioninfo(char const * progname, char const * clienttag, unsigned i
 	return 0;
     }
 
-    if (strcmp(clienttag,CLIENTTAG_BROODWARS)==0)
+    if (std::strcmp(clienttag,CLIENTTAG_BROODWARS)==0)
     {
 	*versionid = CLIENT_VERSIONID_SEXP;
 	*gameversion = CLIENT_GAMEVERSION_SEXP;
@@ -148,7 +100,7 @@ int get_defversioninfo(char const * progname, char const * clienttag, unsigned i
 	return 0;
     }
 
-    if (strcmp(clienttag,CLIENTTAG_WARCIIBNE)==0)
+    if (std::strcmp(clienttag,CLIENTTAG_WARCIIBNE)==0)
     {
 	*versionid = CLIENT_VERSIONID_W2BN;
 	*gameversion = CLIENT_GAMEVERSION_W2BN;
@@ -157,7 +109,7 @@ int get_defversioninfo(char const * progname, char const * clienttag, unsigned i
 	return 0;
     }
 
-    if (strcmp(clienttag,CLIENTTAG_DIABLO2DV)==0)
+    if (std::strcmp(clienttag,CLIENTTAG_DIABLO2DV)==0)
     {
 	*versionid = CLIENT_VERSIONID_D2DV;
 	*gameversion = CLIENT_GAMEVERSION_D2DV;
@@ -166,7 +118,7 @@ int get_defversioninfo(char const * progname, char const * clienttag, unsigned i
 	return 0;
     }
 
-    if (strcmp(clienttag,CLIENTTAG_DIABLO2XP)==0)
+    if (std::strcmp(clienttag,CLIENTTAG_DIABLO2XP)==0)
     {
 	*versionid = CLIENT_VERSIONID_D2XP;
 	*gameversion = CLIENT_GAMEVERSION_D2XP;
@@ -175,8 +127,8 @@ int get_defversioninfo(char const * progname, char const * clienttag, unsigned i
 	return 0;
     }
 
-    if (strcmp(clienttag,CLIENTTAG_WARCRAFT3)==0 ||
-	strcmp(clienttag,CLIENTTAG_WAR3XP)==0)
+    if (std::strcmp(clienttag,CLIENTTAG_WARCRAFT3)==0 ||
+	std::strcmp(clienttag,CLIENTTAG_WAR3XP)==0)
     {
 	*versionid = CLIENT_VERSIONID_WAR3;
 	*gameversion = CLIENT_GAMEVERSION_WAR3;
@@ -190,7 +142,7 @@ int get_defversioninfo(char const * progname, char const * clienttag, unsigned i
     *exeinfo = "";
     *checksum = 0;
 
-    fprintf(stderr,"%s: unsupported clienttag \"%s\"\n",progname,clienttag);
+    std::fprintf(stderr,"%s: unsupported clienttag \"%s\"\n",progname,clienttag);
     // aaron: dunno what we should return in case of this.. but returning nothing was definetly wrong
     return -1;
 }
@@ -220,42 +172,42 @@ extern int client_connect(char const * progname, char const * servname, unsigned
 
     if (!progname)
     {
-	fprintf(stderr,"got NULL progname\n");
+	std::fprintf(stderr,"got NULL progname\n");
 	return -1;
     }
     if (!saddr)
     {
-	fprintf(stderr,"%s: got NULL saddr\n",progname);
+	std::fprintf(stderr,"%s: got NULL saddr\n",progname);
 	return -1;
     }
     if (!sessionkey)
     {
-	fprintf(stderr,"%s: got NULL sessionkey\n",progname);
+	std::fprintf(stderr,"%s: got NULL sessionkey\n",progname);
 	return -1;
     }
     if (!sessionnum)
     {
-	fprintf(stderr,"%s: got NULL sessionnum\n",progname);
+	std::fprintf(stderr,"%s: got NULL sessionnum\n",progname);
 	return -1;
     }
 
     if (psock_init()<0)
     {
-	fprintf(stderr,"%s: could not inialialize socket functions\n",progname);
+	std::fprintf(stderr,"%s: could not inialialize socket functions\n",progname);
 	return -1;
     }
 
     if (!(host = gethostbyname(servname)))
     {
-	fprintf(stderr,"%s: unknown host \"%s\"\n",progname,servname);
+	std::fprintf(stderr,"%s: unknown host \"%s\"\n",progname,servname);
 	return -1;
     }
     if (host->h_addrtype!=PSOCK_AF_INET)
-	fprintf(stderr,"%s: host \"%s\" is not in IPv4 address family\n",progname,servname);
+	std::fprintf(stderr,"%s: host \"%s\" is not in IPv4 address family\n",progname,servname);
 
     if (gethostname(compname,COMPNAMELEN)<0)
     {
-	fprintf(stderr,"%s: could not get host name (gethostname: %s)\n",progname,pstrerror(errno));
+	std::fprintf(stderr,"%s: could not get host name (gethostname: %s)\n",progname,std::strerror(errno));
 	return -1;
     }
 #ifdef HAVE_GETLOGIN
@@ -263,26 +215,26 @@ extern int client_connect(char const * progname, char const * servname, unsigned
 #endif
     {
 	username = "unknown";
-	dprintf("%s: could not get login name, using \"%s\" (getlogin: %s)\n",progname,username,pstrerror(errno));
+	dprintf("%s: could not get login name, using \"%s\" (getlogin: %s)\n",progname,username,std::strerror(errno));
     }
 
     if ((sd = psock_socket(PSOCK_PF_INET,PSOCK_SOCK_STREAM,PSOCK_IPPROTO_TCP))<0)
     {
-	fprintf(stderr,"%s: could not create socket (psock_socket: %s)\n",progname,pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not create socket (psock_socket: %s)\n",progname,std::strerror(psock_errno()));
 	return -1;
     }
 
-    memset(saddr,0,sizeof(*saddr));
+    std::memset(saddr,0,sizeof(*saddr));
     saddr->sin_family = PSOCK_AF_INET;
     saddr->sin_port   = htons(servport);
-    memcpy(&saddr->sin_addr.s_addr,host->h_addr_list[0],host->h_length);
+    std::memcpy(&saddr->sin_addr.s_addr,host->h_addr_list[0],host->h_length);
     if (psock_connect(sd,(struct sockaddr *)saddr,sizeof(*saddr))<0)
     {
-	fprintf(stderr,"%s: could not connect to server \"%s\" port %hu (psock_connect: %s)\n",progname,servname,servport,pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not connect to server \"%s\" port %hu (psock_connect: %s)\n",progname,servname,servport,std::strerror(psock_errno()));
 	goto error_sd;
     }
 
-    printf("Connected to %s:%hu.\n",inet_ntoa(saddr->sin_addr),servport);
+    std::printf("Connected to %s:%hu.\n",inet_ntoa(saddr->sin_addr),servport);
 
 #ifdef CLIENTDEBUG
     eventlog_set(stderr);
@@ -293,7 +245,7 @@ extern int client_connect(char const * progname, char const * servname, unsigned
 
     if (!(packet = packet_create(packet_class_init)))
     {
-	fprintf(stderr,"%s: could not create packet\n",progname);
+	std::fprintf(stderr,"%s: could not create packet\n",progname);
 	goto error_lsock;
     }
     bn_byte_set(&packet->u.client_initconn.cclass,CLIENT_INITCONN_CLASS_BNET);
@@ -303,18 +255,18 @@ extern int client_connect(char const * progname, char const * servname, unsigned
     /* reuse this same packet over and over */
     if (!(rpacket = packet_create(packet_class_bnet)))
     {
-	fprintf(stderr,"%s: could not create packet\n",progname);
+	std::fprintf(stderr,"%s: could not create packet\n",progname);
 	goto error_lsock;
     }
 
     get_defversioninfo(progname,clienttag,&versionid,&gameversion,&exeinfo,&checksum);
 
-    if (strcmp(clienttag,CLIENTTAG_DIABLOSHR)==0 ||
-        strcmp(clienttag,CLIENTTAG_DIABLORTL)==0)
+    if (std::strcmp(clienttag,CLIENTTAG_DIABLOSHR)==0 ||
+        std::strcmp(clienttag,CLIENTTAG_DIABLORTL)==0)
     {
 	if (!(packet = packet_create(packet_class_bnet)))
 	{
-	    fprintf(stderr,"%s: could not create packet\n",progname);
+	    std::fprintf(stderr,"%s: could not create packet\n",progname);
 	    goto error_rpacket;
 	}
 	packet_set_size(packet,sizeof(t_client_unknown_1b));
@@ -330,7 +282,7 @@ extern int client_connect(char const * progname, char const * servname, unsigned
 
     if (!(packet = packet_create(packet_class_bnet)))
     {
-	fprintf(stderr,"%s: could not create packet\n",progname);
+	std::fprintf(stderr,"%s: could not create packet\n",progname);
 	goto error_rpacket;
     }
     packet_set_size(packet,sizeof(t_client_countryinfo_109));
@@ -364,7 +316,7 @@ extern int client_connect(char const * progname, char const * servname, unsigned
     do
         if (client_blockrecv_packet(sd,rpacket)<0)
 	{
-	    fprintf(stderr,"%s: server closed connection\n",progname);
+	    std::fprintf(stderr,"%s: server closed connection\n",progname);
 	    goto error_rpacket;
 	}
     while (packet_get_type(rpacket)!=SERVER_AUTHREQ_109 &&
@@ -379,12 +331,12 @@ extern int client_connect(char const * progname, char const * servname, unsigned
 
 	if (!(packet = packet_create(packet_class_bnet)))
 	{
-	    fprintf(stderr,"%s: could not create packet\n",progname);
+	    std::fprintf(stderr,"%s: could not create packet\n",progname);
 	    goto error_rpacket;
 	}
 	packet_set_size(packet,sizeof(t_client_authreq_109));
 	packet_set_type(packet,CLIENT_AUTHREQ_109);
-	bn_int_set(&packet->u.client_authreq_109.ticks,time(NULL));
+	bn_int_set(&packet->u.client_authreq_109.ticks,std::time(NULL));
 
 	{
             t_cdkey_info cdkey_info;
@@ -392,7 +344,7 @@ extern int client_connect(char const * progname, char const * servname, unsigned
 	    bn_int_set(&packet->u.client_authreq_109.gameversion,gameversion);
 
 	    bn_int_set(&packet->u.client_authreq_109.cdkey_number,1); /* only one */
-	    memset(&cdkey_info,'0',sizeof(cdkey_info));
+	    std::memset(&cdkey_info,'0',sizeof(cdkey_info));
 	    /* FIXME: put the input cdkey here */
 	    packet_append_data(packet,&cdkey_info,sizeof(cdkey_info));
 	    packet_append_string(packet,exeinfo);
@@ -407,24 +359,24 @@ extern int client_connect(char const * progname, char const * servname, unsigned
 	do
 	    if (client_blockrecv_packet(sd,rpacket)<0)
 	    {
-		fprintf(stderr,"%s: server closed connection\n",progname);
+		std::fprintf(stderr,"%s: server closed connection\n",progname);
 		goto error_rpacket;
 	    }
 	while (packet_get_type(rpacket)!=SERVER_AUTHREPLY_109);
       //FIXME: check if AUTHREPLY_109 is success or fail
       if (bn_int_get(rpacket->u.server_authreply_109.message)!=SERVER_AUTHREPLY_109_MESSAGE_OK)
       {
-         fprintf(stderr,"AUTHREPLY_109 failed - closing connection\n");
+         std::fprintf(stderr,"AUTHREPLY_109 failed - closing connection\n");
          goto error_rpacket;
       }
     }
     else
-	fprintf(stderr,"We didn't get a sessionkey, don't expect login to work!");
+	std::fprintf(stderr,"We didn't get a sessionkey, don't expect login to work!");
     dprintf("Got AUTHREPLY_109\n");
 
     if (!(packet = packet_create(packet_class_bnet)))
     {
-	fprintf(stderr,"%s: could not create packet\n",progname);
+	std::fprintf(stderr,"%s: could not create packet\n",progname);
 	goto error_rpacket;
     }
     packet_set_size(packet,sizeof(t_client_iconreq));
@@ -435,19 +387,19 @@ extern int client_connect(char const * progname, char const * servname, unsigned
     do
         if (client_blockrecv_packet(sd,rpacket)<0)
 	{
-	    fprintf(stderr,"%s: server closed connection\n",progname);
+	    std::fprintf(stderr,"%s: server closed connection\n",progname);
 	    goto error_rpacket;
 	}
     while (packet_get_type(rpacket)!=SERVER_ICONREPLY);
     dprintf("Got ICONREPLY\n");
 
-    if (strcmp(clienttag,CLIENTTAG_STARCRAFT)==0 ||
-	strcmp(clienttag,CLIENTTAG_BROODWARS)==0 ||
-	strcmp(clienttag,CLIENTTAG_WARCIIBNE)==0)
+    if (std::strcmp(clienttag,CLIENTTAG_STARCRAFT)==0 ||
+	std::strcmp(clienttag,CLIENTTAG_BROODWARS)==0 ||
+	std::strcmp(clienttag,CLIENTTAG_WARCIIBNE)==0)
     {
 	if (!(packet = packet_create(packet_class_bnet)))
 	{
-	    fprintf(stderr,"%s: could not create packet\n",progname);
+	    std::fprintf(stderr,"%s: could not create packet\n",progname);
 	    goto error_rpacket;
 	}
 
@@ -466,7 +418,7 @@ extern int client_connect(char const * progname, char const * servname, unsigned
 
             if (key_interpret(cdkey,&productid,&keyvalue1,&keyvalue2)<0)
 	    {
-                fprintf(stderr,"%s: specified key is not valid, sending junk\n",progname);
+                std::fprintf(stderr,"%s: specified key is not valid, sending junk\n",progname);
                 productid = 0;
                 keyvalue1 = 0;
                 keyvalue2 = 0;
@@ -483,7 +435,7 @@ extern int client_connect(char const * progname, char const * servname, unsigned
 	    packet_set_size(packet,sizeof(t_client_cdkey2));
 	    packet_set_type(packet,CLIENT_CDKEY2);
 	    bn_int_set(&packet->u.client_cdkey2.spawn,CLIENT_CDKEY2_SPAWN_FALSE); /* FIXME: add option */
-	    bn_int_set(&packet->u.client_cdkey2.keylen,strlen(cdkey));
+	    bn_int_set(&packet->u.client_cdkey2.keylen,std::strlen(cdkey));
 	    bn_int_set(&packet->u.client_cdkey2.productid,productid);
 	    bn_int_set(&packet->u.client_cdkey2.keyvalue1,keyvalue1);
 	    bn_int_set(&packet->u.client_cdkey2.sessionkey,*sessionkey);
@@ -497,7 +449,7 @@ extern int client_connect(char const * progname, char const * servname, unsigned
         do
             if (client_blockrecv_packet(sd,rpacket)<0)
             {
-                fprintf(stderr,"%s: server closed connection\n",progname);
+                std::fprintf(stderr,"%s: server closed connection\n",progname);
 		goto error_rpacket;
             }
         while (packet_get_type(rpacket)!=SERVER_CDKEYREPLY2);

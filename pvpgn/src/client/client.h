@@ -19,6 +19,8 @@
 #ifndef INCLUDED_CLIENT_PROTOS
 #define INCLUDED_CLIENT_PROTOS
 
+#include "common/packet.h"
+
 namespace pvpgn
 {
 
