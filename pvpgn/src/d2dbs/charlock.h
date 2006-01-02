@@ -20,7 +20,7 @@
 
 #define DEFAULT_HASHTBL_LEN		65000
 
-#include "setup.h"
+#include "common/field_sizes.h"
 
 namespace pvpgn
 {

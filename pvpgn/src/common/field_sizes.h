@@ -25,19 +25,22 @@
 #define MAX_GAMES_LIST         20
 #define MAX_MESSAGE_LEN       255
 #define MAX_COMMAND_LEN        32
-#define USER_NAME_MAX          16 /* including terminating NUL char */
-#define USER_NAME_MIN           2
-#define USER_PASS_MAX          12 /* max password length as allowed by clients */
+#define MAX_USERNAME_LEN       16 /* including terminating NUL char */
+#define MIN_USERNAME_LEN        2
+#define MAX_USERPASS_LEN       12 /* max password length as allowed by clients */
 #define UNCHECKED_NAME_STR     32 /* including terminating NUL char */
                                   /* (longer than USER_NAME_MAX and CHAR_NAME_LEN so that
                                    *  proper error packets can be returned) */
-#define MAX_CLANNAME_LEN       64
-#define CHANNEL_NAME_LEN       64
-#define CHAR_NAME_LEN          16 /* including terminating NUL char */
-#define REALM_NAME_LEN         32
-#define GAME_NAME_LEN          32
-#define GAME_PASS_LEN          32
-#define GAME_INFO_LEN         256
+#define CLANSHORT_NAME_MAX	4
+#define CLAN_NAME_MAX		25 /* including terminating NUL char */
+#define MAX_CLANNAME_LEN	64
+#define MAX_CHANNELNAME_LEN	64
+#define MAX_CHARNAME_LEN	16
+#define MIN_CHARNAME_LEN	2
+#define MAX_GAMENAME_LEN	16
+#define MAX_GAMEPASS_LEN	16
+#define MAX_GAMEINFO_LEN	256
+#define MAX_GAMEDESC_LEN	32
 #define MAP_NAME_LEN           64
 #define BNETHASH_LEN           20 /* uint32*5, see bnethash.h */
 #define MAX_EXEINFO_STR       256 /* including terminating NUL char */
@@ -58,7 +61,6 @@
 #define MAX_ATTRVAL_STR      4096 /* including terminating NUL char */
 #define MAX_IRC_MESSAGE_LEN 512 /* including CRLF (according to RFC 2812) */
 #define MAX_TOPIC_LEN         201 /* including terminating NUL char */
-#define CLANSHORT_NAME_MAX          4
-#define CLAN_NAME_MAX          25 /* including terminating NUL char */
+#define MAX_REALMNAME_LEN	32
 
 #endif

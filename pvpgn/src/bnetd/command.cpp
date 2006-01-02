@@ -133,9 +133,9 @@ static void do_whisper(t_connection * user_c, char const * dest, char const * te
 
     if ((tname = conn_get_username(user_c)))
     {
-        char username[1+USER_NAME_MAX]; /* '*' + username (including NUL) */
+        char username[1+MAX_USERNAME_LEN]; /* '*' + username (including NUL) */
 
-	if (std::strlen(tname)<USER_NAME_MAX)
+	if (std::strlen(tname)<MAX_USERNAME_LEN)
 	{
             std::sprintf(username,"*%s",tname);
 	    conn_set_lastsender(dest_c,username);
@@ -1582,7 +1582,7 @@ static int _handle_me_command(t_connection * c, char const * text)
 
 static int _handle_whisper_command(t_connection * c, char const *text)
 {
-  char         dest[USER_NAME_MAX+REALM_NAME_LEN]; /* both include NUL, so no need to add one for middle @ or * */
+  char         dest[MAX_USERNAME_LEN+MAX_REALMNAME_LEN]; /* both include NUL, so no need to add one for middle @ or * */
   unsigned int i,j;
 
   for (i=0; text[i]!=' ' && text[i]!='\0'; i++); /* skip command */
@@ -1867,7 +1867,7 @@ static int _handle_uptime_command(t_connection * c, char const *text)
 
 static int _handle_stats_command(t_connection * c, char const *text)
 {
-    char         dest[USER_NAME_MAX];
+    char         dest[MAX_USERNAME_LEN];
     unsigned int i,j;
     t_account *  account;
     char const * clienttag=NULL;
@@ -2268,7 +2268,7 @@ static int _handle_unsquelch_command(t_connection * c, char const *text)
 
 static int _handle_kick_command(t_connection * c, char const *text)
 {
-  char              dest[USER_NAME_MAX];
+  char              dest[MAX_USERNAME_LEN];
   unsigned int      i,j;
   t_channel const * channel;
   t_connection *    kuc;
@@ -2350,7 +2350,7 @@ static int _handle_kick_command(t_connection * c, char const *text)
 
 static int _handle_ban_command(t_connection * c, char const *text)
 {
-  char           dest[USER_NAME_MAX];
+  char           dest[MAX_USERNAME_LEN];
   unsigned int   i,j;
   t_channel *    channel;
   t_connection * buc;
@@ -2893,7 +2893,7 @@ static int _handle_addacct_command(t_connection * c, char const *text)
     unsigned int i,j;
     t_account  * temp;
     t_hash       passhash;
-    char         username[USER_NAME_MAX];
+    char         username[MAX_USERNAME_LEN];
     char         pass[256];
 
     for (i=0; text[i]!=' ' && text[i]!='\0'; i++);
@@ -3002,9 +3002,9 @@ static int _handle_chpass_command(t_connection * c, char const *text)
       return 0;
     }
 
-  if (std::strlen(pass) > USER_PASS_MAX)
+  if (std::strlen(pass) > MAX_USERPASS_LEN)
   {
-    std::sprintf(msgtemp,"Maximum password length allowed is %d",USER_PASS_MAX);
+    std::sprintf(msgtemp,"Maximum password length allowed is %d",MAX_USERPASS_LEN);
     message_send_text(c,message_type_error,c,msgtemp);
     return 0;
   }
@@ -3139,7 +3139,7 @@ static int _handle_connections_command(t_connection *c, char const *text)
 
 static int _handle_finger_command(t_connection * c, char const *text)
 {
-  char           dest[USER_NAME_MAX];
+  char           dest[MAX_USERNAME_LEN];
   unsigned int   i,j;
   t_account *    account;
   t_connection * conn;
@@ -3350,7 +3350,7 @@ static int _handle_kill_command(t_connection * c, char const *text)
 {
   unsigned int	i,j;
   t_connection *	user;
-  char		usrnick[USER_NAME_MAX]; /* max length of nick + \0 */  /* FIXME: Is it somewhere defined? */
+  char		usrnick[MAX_USERNAME_LEN]; /* max length of nick + \0 */  /* FIXME: Is it somewhere defined? */
 
   for (i=0; text[i]!=' ' && text[i]!='\0'; i++); /* skip command */
   for (; text[i]==' '; i++);
@@ -3897,7 +3897,7 @@ static int _handle_timer_command(t_connection * c, char const *text)
 
 static int _handle_serverban_command(t_connection *c, char const *text)
 {
-  char dest[USER_NAME_MAX];
+  char dest[MAX_USERNAME_LEN];
   char messagetemp[MAX_MESSAGE_LEN];
   t_connection * dest_c;
   unsigned int i,j;
@@ -3936,7 +3936,7 @@ static int _handle_serverban_command(t_connection *c, char const *text)
 
 static int _handle_netinfo_command(t_connection * c, char const *text)
 {
-  char           dest[USER_NAME_MAX];
+  char           dest[MAX_USERNAME_LEN];
   unsigned int   i,j;
   t_connection * conn;
   t_game const * game;
@@ -4627,7 +4627,7 @@ static void _reset_w3_stats(t_account *account, t_clienttag ctag, t_connection *
 
 static int _handle_clearstats_command(t_connection *c, char const *text)
 {
-    char         dest[USER_NAME_MAX];
+    char         dest[MAX_USERNAME_LEN];
     unsigned int i,j,all;
     t_account *  account;
     t_clienttag  ctag = 0;

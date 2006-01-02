@@ -20,6 +20,7 @@
 #define INCLUDED_D2CS_D2DBS_LADDER_H
 
 #include "common/bn_type.h"
+#include "common/field_sizes.h"
 
 namespace pvpgn
 {

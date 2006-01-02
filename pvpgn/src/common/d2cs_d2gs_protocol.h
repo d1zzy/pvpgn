@@ -24,9 +24,7 @@
 */
 
 /* include your own header files here */
-#ifdef D2CS
-# include "common/bn_type.h"
-#endif
+#include "common/bn_type.h"
 
 #ifdef D2GS
 # include "bn_types.h"

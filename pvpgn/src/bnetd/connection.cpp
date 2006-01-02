@@ -3351,7 +3351,7 @@ extern t_connection * connlist_find_connection_by_socket(int socket)
 
 extern t_connection * connlist_find_connection_by_name(char const * name, t_realm * realm)
 {
-    char         charname[CHAR_NAME_LEN];
+    char         charname[MAX_CHARNAME_LEN];
     char const * temp;
 
     if (!name)
@@ -3378,7 +3378,7 @@ extern t_connection * connlist_find_connection_by_name(char const * name, t_real
 	unsigned int n;
 
 	n = temp - name;
-	if (n>=CHAR_NAME_LEN)
+	if (n>=MAX_CHARNAME_LEN)
 	{
 	    eventlog(eventlog_level_info,__FUNCTION__,"character name too long in \"%s\" (charname@otherrealm format)",name);
 	    return NULL;
@@ -3394,7 +3394,7 @@ extern t_connection * connlist_find_connection_by_name(char const * name, t_real
 	unsigned int n;
 
 	n = temp - name;
-	if (n>=CHAR_NAME_LEN)
+	if (n>=MAX_CHARNAME_LEN)
 	{
 	    eventlog(eventlog_level_info,__FUNCTION__,"character name too long in \"%s\" (charname*username format)",name);
 	    return NULL;
