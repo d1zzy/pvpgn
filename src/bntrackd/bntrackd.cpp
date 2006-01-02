@@ -16,77 +16,27 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#define TRACKER_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/exitstatus.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef HAVE_MEMORY_H
-# include <memory.h>
-#endif
-#include "compat/memset.h"
+#define TRACKER_INTERNAL_ACCESS
+
+#include <cstdio>
+#include <cstring>
+#include <ctime>
+#include <cstdlib>
+
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
+
 #include "compat/stdfileno.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#include "compat/send.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#include "compat/inet_ntoa.h"
 #include "compat/psock.h"
-#include "common/list.h"
-#include "common/version.h"
-#include "common/eventlog.h"
-#include "common/util.h"
+#include "compat/inet_ntoa.h"
 #include "common/tracker.h"
+#include "common/eventlog.h"
+#include "common/list.h"
 #include "common/xalloc.h"
+#include "common/util.h"
+#include "common/version.h"
 #include "common/setup_after.h"
 
 using namespace pvpgn;
@@ -99,7 +49,7 @@ namespace {
 typedef struct
 {
     struct in_addr address;
-    time_t         updated;
+    std::time_t         updated;
     t_trackpacket  info;
 } t_server;
 
@@ -140,8 +90,8 @@ extern int main(int argc, char * argv[])
 
     if (argc<1 || !argv || !argv[0])
     {
-        fprintf(stderr,"bad arguments\n");
-        return STATUS_FAILURE;
+        std::fprintf(stderr,"bad arguments\n");
+        return EXIT_FAILURE;
     }
 
     getprefs(argc,argv);
@@ -154,7 +104,7 @@ extern int main(int argc, char * argv[])
         if (eventlog_open(prefs.logfile)<0)
 	{
             eventlog(eventlog_level_fatal,__FUNCTION__,"could not use file \"%s\" for the eventlog (exiting)",prefs.logfile);
-	    return STATUS_FAILURE;
+	    return EXIT_FAILURE;
 	}
     }
 
@@ -164,12 +114,12 @@ extern int main(int argc, char * argv[])
 	switch (fork())
 	{
 	case -1:
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not fork (fork: %s)\n",pstrerror(errno));
-	    return STATUS_FAILURE;
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not fork (fork: %s)\n",std::strerror(errno));
+	    return EXIT_FAILURE;
 	case 0: /* child */
 	    break;
 	default: /* parent */
-	    return STATUS_SUCCESS;
+	    return EXIT_SUCCESS;
 	}
 
 	close(STDINFD);
@@ -179,30 +129,30 @@ extern int main(int argc, char * argv[])
 # ifdef HAVE_SETPGID
 	if (setpgid(0,0)<0)
 	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not create new process group (setpgid: %s)\n",pstrerror(errno));
-	    return STATUS_FAILURE;
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not create new process group (setpgid: %s)\n",std::strerror(errno));
+	    return EXIT_FAILURE;
 	}
 # else
 #  ifdef HAVE_SETPGRP
 #   ifdef SETPGRP_VOID
 	if (setpgrp()<0)
 	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not create new process group (setpgrp: %s)\n",pstrerror(errno));
-	    return STATUS_FAILURE;
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not create new process group (setpgrp: %s)\n",std::strerror(errno));
+	    return EXIT_FAILURE;
 	}
 #   else
 	if (setpgrp(0,0)<0)
 	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not create new process group (setpgrp: %s)\n",pstrerror(errno));
-	    return STATUS_FAILURE;
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not create new process group (setpgrp: %s)\n",std::strerror(errno));
+	    return EXIT_FAILURE;
 	}
 #   endif
 #  else
 #   ifdef HAVE_SETSID
 	if (setsid()<0)
 	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not create new process group (setsid: %s)\n",pstrerror(errno));
-	    return STATUS_FAILURE;
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not create new process group (setsid: %s)\n",std::strerror(errno));
+	    return EXIT_FAILURE;
 	}
 #   else
 #    error "One of setpgid(), setpgrp(), or setsid() is required"
@@ -215,18 +165,18 @@ extern int main(int argc, char * argv[])
     if (prefs.pidfile)
     {
 #ifdef HAVE_GETPID
-        FILE * fp;
+        std::FILE * fp;
 
-        if (!(fp = fopen(prefs.pidfile,"w")))
+        if (!(fp = std::fopen(prefs.pidfile,"w")))
         {
-            eventlog(eventlog_level_error,__FUNCTION__,"unable to open pid file \"%s\" for writing (fopen: %s)",prefs.pidfile,pstrerror(errno));
+            eventlog(eventlog_level_error,__FUNCTION__,"unable to open pid file \"%s\" for writing (std::fopen: %s)",prefs.pidfile,std::strerror(errno));
             prefs.pidfile = NULL;
         }
         else
         {
-            fprintf(fp,"%u",(unsigned int)getpid());
-            if (fclose(fp)<0)
-                eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (fclose: %s)",prefs.pidfile,pstrerror(errno));
+            std::fprintf(fp,"%u",(unsigned int)getpid());
+            if (std::fclose(fp)<0)
+                eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (std::fclose: %s)",prefs.pidfile,std::strerror(errno));
         }
 #else
         eventlog(eventlog_level_warn,__FUNCTION__,"no getpid() system call, do not use the -P or the --pidfile option");
@@ -243,34 +193,34 @@ extern int main(int argc, char * argv[])
     if (psock_init()<0)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"could not initialize socket functions");
-        return STATUS_FAILURE;
+        return EXIT_FAILURE;
     }
 
     /* create the socket */
     if ((sockfd = psock_socket(PSOCK_PF_INET,PSOCK_SOCK_DGRAM,PSOCK_IPPROTO_UDP))<0)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not create UDP listen socket (psock_socket: %s)\n",pstrerror(psock_errno()));
-	return STATUS_FAILURE;
+	eventlog(eventlog_level_error,__FUNCTION__,"could not create UDP listen socket (psock_socket: %s)\n",std::strerror(psock_errno()));
+	return EXIT_FAILURE;
     }
 
     {
 	struct sockaddr_in servaddr;
 
 	/* bind the socket to correct port and interface */
-	memset(&servaddr,0,sizeof(servaddr));
+	std::memset(&servaddr,0,sizeof(servaddr));
 	servaddr.sin_family = PSOCK_AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(prefs.port);
 	if (psock_bind(sockfd,(struct sockaddr *)&servaddr,sizeof(servaddr))<0)
 	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not bind to UDP port %hu (psock_bind: %s)\n",prefs.port,pstrerror(psock_errno()));
-	    return STATUS_FAILURE;
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not bind to UDP port %hu (psock_bind: %s)\n",prefs.port,std::strerror(psock_errno()));
+	    return EXIT_FAILURE;
 	}
     }
 
     if (server_process(sockfd)<0)
-	return STATUS_FAILURE;
-    return STATUS_SUCCESS;
+	return EXIT_FAILURE;
+    return EXIT_SUCCESS;
 }
 
 namespace {
@@ -283,8 +233,8 @@ int server_process(int sockfd)
     struct sockaddr_in cliaddr;
     t_psock_fd_set     rfds;
     struct timeval     tv;
-    time_t             last;
-    FILE *             outfile;
+    std::time_t             last;
+    std::FILE *             outfile;
     psock_t_socklen    len;
     t_trackpacket      packet;
 
@@ -295,18 +245,18 @@ int server_process(int sockfd)
     }
 
     /* the main loop */
-    last = time(NULL) - prefs.update;
+    last = std::time(NULL) - prefs.update;
     for (;;)
     {
 	/* time to dump our list to disk and call the process command */
 	/* (I'm making the assumption that this won't take very long.) */
-	if (last+(signed)prefs.update<time(NULL))
+	if (last+(signed)prefs.update<std::time(NULL))
 	{
-	    last = time(NULL);
+	    last = std::time(NULL);
 
-	    if (!(outfile = fopen(prefs.outfile,"w")))
+	    if (!(outfile = std::fopen(prefs.outfile,"w")))
 	    {
-		eventlog(eventlog_level_error,__FUNCTION__,"unable to open file \"%s\" for writing (fopen: %s)",prefs.outfile,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"unable to open file \"%s\" for writing (std::fopen: %s)",prefs.outfile,std::strerror(errno));
 		continue;
 	    }
 
@@ -323,51 +273,51 @@ int server_process(int sockfd)
 		{
 		   if (prefs.XML_mode == 1)
 		  {
-		    fprintf(outfile,"<server>\n\t<address>%s</address>\n",inet_ntoa(server->address));
-		    fprintf(outfile,"\t<port>%hu</port>\n",(unsigned short)ntohs(server->info.port));
-		    fprintf(outfile,"\t<location>%s</location>\n",server->info.server_location);
-		    fprintf(outfile,"\t<software>%s</software>\n",server->info.software);
-		    fprintf(outfile,"\t<version>%s</version>\n",server->info.version);
-		    fprintf(outfile,"\t<users>%lu</users>\n",(unsigned long)ntohl(server->info.users));
-		    fprintf(outfile,"\t<channels>%lu</channels>\n",(unsigned long)ntohl(server->info.channels));
-		    fprintf(outfile,"\t<games>%lu</games>\n",(unsigned long)ntohl(server->info.games));
-		    fprintf(outfile,"\t<description>%s</description>\n",server->info.server_desc);
-		    fprintf(outfile,"\t<platform>%s</platform>\n",server->info.platform);
-		    fprintf(outfile,"\t<url>%s</url>\n",server->info.server_url);
-		    fprintf(outfile,"\t<contact_name>%s</contact_name>\n",server->info.contact_name);
-		    fprintf(outfile,"\t<contact_email>%s</contact_email>\n",server->info.contact_email);
-		    fprintf(outfile,"\t<uptime>%lu</uptime>\n",(unsigned long)ntohl(server->info.uptime));
-		    fprintf(outfile,"\t<total_games>%lu</total_games>\n",(unsigned long)ntohl(server->info.total_games));
-		    fprintf(outfile,"\t<logins>%lu</logins>\n",(unsigned long)ntohl(server->info.total_logins));
-		    fprintf(outfile,"</server>\n");
+		    std::fprintf(outfile,"<server>\n\t<address>%s</address>\n",inet_ntoa(server->address));
+		    std::fprintf(outfile,"\t<port>%hu</port>\n",(unsigned short)ntohs(server->info.port));
+		    std::fprintf(outfile,"\t<location>%s</location>\n",server->info.server_location);
+		    std::fprintf(outfile,"\t<software>%s</software>\n",server->info.software);
+		    std::fprintf(outfile,"\t<version>%s</version>\n",server->info.version);
+		    std::fprintf(outfile,"\t<users>%lu</users>\n",(unsigned long)ntohl(server->info.users));
+		    std::fprintf(outfile,"\t<channels>%lu</channels>\n",(unsigned long)ntohl(server->info.channels));
+		    std::fprintf(outfile,"\t<games>%lu</games>\n",(unsigned long)ntohl(server->info.games));
+		    std::fprintf(outfile,"\t<description>%s</description>\n",server->info.server_desc);
+		    std::fprintf(outfile,"\t<platform>%s</platform>\n",server->info.platform);
+		    std::fprintf(outfile,"\t<url>%s</url>\n",server->info.server_url);
+		    std::fprintf(outfile,"\t<contact_name>%s</contact_name>\n",server->info.contact_name);
+		    std::fprintf(outfile,"\t<contact_email>%s</contact_email>\n",server->info.contact_email);
+		    std::fprintf(outfile,"\t<uptime>%lu</uptime>\n",(unsigned long)ntohl(server->info.uptime));
+		    std::fprintf(outfile,"\t<total_games>%lu</total_games>\n",(unsigned long)ntohl(server->info.total_games));
+		    std::fprintf(outfile,"\t<logins>%lu</logins>\n",(unsigned long)ntohl(server->info.total_logins));
+		    std::fprintf(outfile,"</server>\n");
 		  }
 		  else
 		  {
-		    fprintf(outfile,"%s\n##\n",inet_ntoa(server->address));
-		    fprintf(outfile,"%hu\n##\n",(unsigned short)ntohs(server->info.port));
-		    fprintf(outfile,"%s\n##\n",server->info.server_location);
-		    fprintf(outfile,"%s\n##\n",server->info.software);
-		    fprintf(outfile,"%s\n##\n",server->info.version);
-		    fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.users));
-		    fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.channels));
-		    fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.games));
-		    fprintf(outfile,"%s\n##\n",server->info.server_desc);
-		    fprintf(outfile,"%s\n##\n",server->info.platform);
-		    fprintf(outfile,"%s\n##\n",server->info.server_url);
-		    fprintf(outfile,"%s\n##\n",server->info.contact_name);
-		    fprintf(outfile,"%s\n##\n",server->info.contact_email);
-		    fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.uptime));
-		    fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.total_games));
-		    fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.total_logins));
-		    fprintf(outfile,"###\n");
+		    std::fprintf(outfile,"%s\n##\n",inet_ntoa(server->address));
+		    std::fprintf(outfile,"%hu\n##\n",(unsigned short)ntohs(server->info.port));
+		    std::fprintf(outfile,"%s\n##\n",server->info.server_location);
+		    std::fprintf(outfile,"%s\n##\n",server->info.software);
+		    std::fprintf(outfile,"%s\n##\n",server->info.version);
+		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.users));
+		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.channels));
+		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.games));
+		    std::fprintf(outfile,"%s\n##\n",server->info.server_desc);
+		    std::fprintf(outfile,"%s\n##\n",server->info.platform);
+		    std::fprintf(outfile,"%s\n##\n",server->info.server_url);
+		    std::fprintf(outfile,"%s\n##\n",server->info.contact_name);
+		    std::fprintf(outfile,"%s\n##\n",server->info.contact_email);
+		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.uptime));
+		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.total_games));
+		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.total_logins));
+		    std::fprintf(outfile,"###\n");
 		  }
 		}
 	    }
-            if (fclose(outfile)<0)
-                eventlog(eventlog_level_error,__FUNCTION__,"could not close output file \"%s\" after writing (fclose: %s)",prefs.outfile,pstrerror(errno));
+            if (std::fclose(outfile)<0)
+                eventlog(eventlog_level_error,__FUNCTION__,"could not close output file \"%s\" after writing (std::fclose: %s)",prefs.outfile,std::strerror(errno));
 
 	    if (prefs.process[0]!='\0')
-		system(prefs.process);
+		std::system(prefs.process);
 	}
 
 	/* select socket to operate on */
@@ -383,7 +333,7 @@ int server_process(int sockfd)
                 errno!=PSOCK_EINTR &&
 #endif
                 1)
-                eventlog(eventlog_level_error,__FUNCTION__,"select failed (select: %s)",pstrerror(errno));
+                eventlog(eventlog_level_error,__FUNCTION__,"select failed (select: %s)",std::strerror(errno));
         case 0: /* timeout and no sockets ready */
             continue;
         }
@@ -399,28 +349,28 @@ int server_process(int sockfd)
 		if (ntohs(packet.packet_version)>=TRACK_VERSION)
 		{
 		    packet.software[sizeof(packet.software)-1] = '\0';
-		    if (strstr(packet.software,"##"))
+		    if (std::strstr(packet.software,"##"))
 			fixup_str(packet.software);
 		    packet.version[sizeof(packet.version)-1] = '\0';
-		    if (strstr(packet.version,"##"))
+		    if (std::strstr(packet.version,"##"))
 			fixup_str(packet.version);
 		    packet.platform[sizeof(packet.platform)-1] = '\0';
-		    if (strstr(packet.platform,"##"))
+		    if (std::strstr(packet.platform,"##"))
 			fixup_str(packet.platform);
 		    packet.server_desc[sizeof(packet.server_desc)-1] = '\0';
-		    if (strstr(packet.server_desc,"##"))
+		    if (std::strstr(packet.server_desc,"##"))
 			fixup_str(packet.server_desc);
 		    packet.server_location[sizeof(packet.server_location)-1] = '\0';
-		    if (strstr(packet.server_location,"##"))
+		    if (std::strstr(packet.server_location,"##"))
 			fixup_str(packet.server_location);
 		    packet.server_url[sizeof(packet.server_url)-1] = '\0';
-		    if (strstr(packet.server_url,"##"))
+		    if (std::strstr(packet.server_url,"##"))
 			fixup_str(packet.server_url);
 		    packet.contact_name[sizeof(packet.contact_name)-1] = '\0';
-		    if (strstr(packet.contact_name,"##"))
+		    if (std::strstr(packet.contact_name,"##"))
 			fixup_str(packet.contact_name);
 		    packet.contact_email[sizeof(packet.contact_email)-1] = '\0';
-		    if (strstr(packet.contact_email,"##"))
+		    if (std::strstr(packet.contact_email,"##"))
 			fixup_str(packet.contact_email);
 
 		    /* Find this server's slot */
@@ -428,7 +378,7 @@ int server_process(int sockfd)
 		    {
 			server = (t_server*)elem_get_data(curr);
 
-			if (!memcmp(&server->address,&cliaddr.sin_addr,sizeof(struct in_addr)))
+			if (!std::memcmp(&server->address,&cliaddr.sin_addr,sizeof(struct in_addr)))
 			{
 			    if (ntohl(packet.flags)&TF_SHUTDOWN)
 			    {
@@ -439,7 +389,7 @@ int server_process(int sockfd)
 			    {
 				/* update in place */
 				server->info = packet;
-				server->updated = time(NULL);
+				server->updated = std::time(NULL);
 			    }
 			    break;
 			}
@@ -451,7 +401,7 @@ int server_process(int sockfd)
 			server = (t_server*)xmalloc(sizeof(t_server));
 			server->address = cliaddr.sin_addr;
 			server->info = packet;
-			server->updated = time(NULL);
+			server->updated = std::time(NULL);
 
 			list_append_data(serverlist_head,server);
 		    }
@@ -498,8 +448,8 @@ int server_process(int sockfd)
 
 void usage(char const * progname)
 {
-    fprintf(stderr,"usage: %s [<options>]\n",progname);
-    fprintf(stderr,
+    std::fprintf(stderr,"usage: %s [<options>]\n",progname);
+    std::fprintf(stderr,
 	   "  -c COMMAND, --command=COMMAND  execute COMMAND update\n"
            "  -d, --debug                    turn on debug mode\n"
            "  -e SECS, --expire SECS         forget a list entry after SEC seconds\n"
@@ -510,14 +460,14 @@ void usage(char const * progname)
 #endif
            "  -l FILE, --logfile=FILE        write event messages to FILE\n"
            "  -o FILE, --outfile=FILE        write server list to FILE\n");
-    fprintf(stderr,
+    std::fprintf(stderr,
            "  -p PORT, --port=PORT           listen for announcments on UDP port PORT\n"
            "  -P FILE, --pidfile=FILE        write pid to FILE\n"
            "  -u SECS, --update SECS         write output file every SEC seconds\n"
 	   "  -x, --XML                      write output file in XML format\n"
            "  -h, --help, --usage            show this information and exit\n"
            "  -v, --version                  print version number and exit\n");
-    exit(STATUS_FAILURE);
+    std::exit(EXIT_FAILURE);
 }
 
 
@@ -537,223 +487,223 @@ void getprefs(int argc, char * argv[])
     prefs.logfile    = NULL;
 
     for (a=1; a<argc; a++)
-	if (strncmp(argv[a],"--command=",10)==0)
+	if (std::strncmp(argv[a],"--command=",10)==0)
 	{
 	    if (prefs.process)
 	    {
-		fprintf(stderr,"%s: processing command was already specified as \"%s\"\n",argv[0],prefs.process);
+		std::fprintf(stderr,"%s: processing command was already specified as \"%s\"\n",argv[0],prefs.process);
 		usage(argv[0]);
 	    }
 	    prefs.process = &argv[a][10];
 	}
-	else if (strcmp(argv[a],"-c")==0)
+	else if (std::strcmp(argv[a],"-c")==0)
 	{
 	    if (a+1>=argc)
 	    {
-		fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+		std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
 		usage(argv[0]);
 	    }
 	    if (prefs.process)
 	    {
-		fprintf(stderr,"%s: processing command was already specified as \"%s\"\n",argv[0],prefs.process);
+		std::fprintf(stderr,"%s: processing command was already specified as \"%s\"\n",argv[0],prefs.process);
 		usage(argv[0]);
 	    }
 	    a++;
 	    prefs.process = argv[a];
 	}
-	else if (strcmp(argv[a],"-d")==0 || strcmp(argv[a],"--debug")==0)
+	else if (std::strcmp(argv[a],"-d")==0 || std::strcmp(argv[a],"--debug")==0)
 	    prefs.debug = 1;
-        else if (strncmp(argv[a],"--expire=",9)==0)
+        else if (std::strncmp(argv[a],"--expire=",9)==0)
         {
             if (prefs.expire)
             {
-                fprintf(stderr,"%s: expiration period was already specified as \"%u\"\n",argv[0],prefs.expire);
+                std::fprintf(stderr,"%s: expiration period was already specified as \"%u\"\n",argv[0],prefs.expire);
                 usage(argv[0]);
             }
 	    if (str_to_uint(&argv[a][9],&prefs.expire)<0)
 	    {
-		fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],&argv[a][9]);
+		std::fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],&argv[a][9]);
 		usage(argv[0]);
 	    }
         }
-        else if (strcmp(argv[a],"-e")==0)
+        else if (std::strcmp(argv[a],"-e")==0)
         {
             if (a+1>=argc)
             {
-                fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+                std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
                 usage(argv[0]);
             }
             if (prefs.expire)
             {
-                fprintf(stderr,"%s: expiration period was already specified as \"%u\"\n",argv[0],prefs.expire);
+                std::fprintf(stderr,"%s: expiration period was already specified as \"%u\"\n",argv[0],prefs.expire);
                 usage(argv[0]);
             }
             a++;
 	    if (str_to_uint(argv[a],&prefs.expire)<0)
 	    {
-		fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
+		std::fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
 		usage(argv[0]);
 	    }
 	}
-	else if (strcmp(argv[a],"-f")==0 || strcmp(argv[a],"--foreground")==0)
+	else if (std::strcmp(argv[a],"-f")==0 || std::strcmp(argv[a],"--foreground")==0)
 	    prefs.foreground = 1;
-        else if (strcmp(argv[a],"-x")==0 || strcmp(argv[a],"--XML")==0)
+        else if (std::strcmp(argv[a],"-x")==0 || std::strcmp(argv[a],"--XML")==0)
 	    prefs.XML_mode = 1;
-	else if (strncmp(argv[a],"--logfile=",10)==0)
+	else if (std::strncmp(argv[a],"--logfile=",10)==0)
 	{
 	    if (prefs.logfile)
 	    {
-		fprintf(stderr,"%s: eventlog file was already specified as \"%s\"\n",argv[0],prefs.logfile);
+		std::fprintf(stderr,"%s: eventlog file was already specified as \"%s\"\n",argv[0],prefs.logfile);
 		usage(argv[0]);
 	    }
 	    prefs.logfile = &argv[a][10];
 	}
-	else if (strcmp(argv[a],"-l")==0)
+	else if (std::strcmp(argv[a],"-l")==0)
 	{
 	    if (a+1>=argc)
 	    {
-		fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+		std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
 		usage(argv[0]);
 	    }
 	    if (prefs.logfile)
 	    {
-		fprintf(stderr,"%s: eventlog file was already specified as \"%s\"\n",argv[0],prefs.logfile);
+		std::fprintf(stderr,"%s: eventlog file was already specified as \"%s\"\n",argv[0],prefs.logfile);
 		usage(argv[0]);
 	    }
 	    a++;
 	    prefs.logfile = argv[a];
 	}
-	else if (strncmp(argv[a],"--outfile=",10)==0)
+	else if (std::strncmp(argv[a],"--outfile=",10)==0)
 	{
 	    if (prefs.outfile)
 	    {
-		fprintf(stderr,"%s: output file was already specified as \"%s\"\n",argv[0],prefs.outfile);
+		std::fprintf(stderr,"%s: output file was already specified as \"%s\"\n",argv[0],prefs.outfile);
 		usage(argv[0]);
 	    }
 	    prefs.outfile = &argv[a][10];
 	}
-	else if (strcmp(argv[a],"-o")==0)
+	else if (std::strcmp(argv[a],"-o")==0)
 	{
 	    if (a+1>=argc)
 	    {
-		fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+		std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
 		usage(argv[0]);
 	    }
 	    if (prefs.outfile)
 	    {
-		fprintf(stderr,"%s: output file was already specified as \"%s\"\n",argv[0],prefs.outfile);
+		std::fprintf(stderr,"%s: output file was already specified as \"%s\"\n",argv[0],prefs.outfile);
 		usage(argv[0]);
 	    }
 	    a++;
 	    prefs.outfile = argv[a];
 	}
-	else if (strncmp(argv[a],"--pidfile=",10)==0)
+	else if (std::strncmp(argv[a],"--pidfile=",10)==0)
 	{
 	    if (prefs.pidfile)
 	    {
-		fprintf(stderr,"%s: pid file was already specified as \"%s\"\n",argv[0],prefs.pidfile);
+		std::fprintf(stderr,"%s: pid file was already specified as \"%s\"\n",argv[0],prefs.pidfile);
 		usage(argv[0]);
 	    }
 	    prefs.pidfile = &argv[a][10];
 	}
-        else if (strncmp(argv[a],"--port=",7)==0)
+        else if (std::strncmp(argv[a],"--port=",7)==0)
         {
             if (prefs.port)
             {
-                fprintf(stderr,"%s: port number was already specified as \"%hu\"\n",argv[0],prefs.port);
+                std::fprintf(stderr,"%s: port number was already specified as \"%hu\"\n",argv[0],prefs.port);
                 usage(argv[0]);
             }
 	    if (str_to_ushort(&argv[a][7],&prefs.port)<0)
 	    {
-		fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],&argv[a][7]);
+		std::fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],&argv[a][7]);
 		usage(argv[0]);
 	    }
         }
-        else if (strcmp(argv[a],"-p")==0)
+        else if (std::strcmp(argv[a],"-p")==0)
         {
             if (a+1>=argc)
             {
-                fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+                std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
                 usage(argv[0]);
             }
             if (prefs.port)
             {
-                fprintf(stderr,"%s: port number was already specified as \"%hu\"\n",argv[0],prefs.port);
+                std::fprintf(stderr,"%s: port number was already specified as \"%hu\"\n",argv[0],prefs.port);
                 usage(argv[0]);
             }
             a++;
 	    if (str_to_ushort(argv[a],&prefs.port)<0)
 	    {
-		fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
+		std::fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
 		usage(argv[0]);
 	    }
         }
-	else if (strcmp(argv[a],"-P")==0)
+	else if (std::strcmp(argv[a],"-P")==0)
 	{
 	    if (a+1>=argc)
 	    {
-		fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+		std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
 		usage(argv[0]);
 	    }
 	    if (prefs.pidfile)
 	    {
-		fprintf(stderr,"%s: pid file was already specified as \"%s\"\n",argv[0],prefs.pidfile);
+		std::fprintf(stderr,"%s: pid file was already specified as \"%s\"\n",argv[0],prefs.pidfile);
 		usage(argv[0]);
 	    }
 	    a++;
 	    prefs.pidfile = argv[a];
 	}
-        else if (strncmp(argv[a],"--update=",9)==0)
+        else if (std::strncmp(argv[a],"--update=",9)==0)
         {
             if (prefs.update)
             {
-                fprintf(stderr,"%s: update period was already specified as \"%u\"\n",argv[0],prefs.expire);
+                std::fprintf(stderr,"%s: update period was already specified as \"%u\"\n",argv[0],prefs.expire);
                 usage(argv[0]);
             }
 	    if (str_to_uint(&argv[a][9],&prefs.update)<0)
 	    {
-		fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],&argv[a][9]);
+		std::fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],&argv[a][9]);
 		usage(argv[0]);
 	    }
         }
-        else if (strcmp(argv[a],"-u")==0)
+        else if (std::strcmp(argv[a],"-u")==0)
         {
             if (a+1>=argc)
             {
-                fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+                std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
                 usage(argv[0]);
             }
             if (prefs.update)
             {
-                fprintf(stderr,"%s: update period was already specified as \"%u\"\n",argv[0],prefs.expire);
+                std::fprintf(stderr,"%s: update period was already specified as \"%u\"\n",argv[0],prefs.expire);
                 usage(argv[0]);
             }
             a++;
 	    if (str_to_uint(argv[a],&prefs.update)<0)
 	    {
-		fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
+		std::fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
 		usage(argv[0]);
 	    }
         }
-        else if (strcmp(argv[a],"-h")==0 || strcmp(argv[a],"--help")==0 || strcmp(argv[a],"--usage")
+        else if (std::strcmp(argv[a],"-h")==0 || std::strcmp(argv[a],"--help")==0 || std::strcmp(argv[a],"--usage")
 ==0)
             usage(argv[0]);
-	else if (strcmp(argv[a],"-v")==0 || strcmp(argv[a],"--version")==0)
+	else if (std::strcmp(argv[a],"-v")==0 || std::strcmp(argv[a],"--version")==0)
         {
-            printf("version "PVPGN_VERSION"\n");
-            exit(0);
+            std::printf("version "PVPGN_VERSION"\n");
+            std::exit(0);
         }
-	else if (strcmp(argv[a],"--command")==0 || strcmp(argv[a],"--expire")==0 ||
-		 strcmp(argv[a],"--logfile")==0 || strcmp(argv[a],"--outfile")==0 ||
-		 strcmp(argv[a],"--port")==0 || strcmp(argv[a],"--pidfile")==0 ||
-		 strcmp(argv[a],"--update")==0)
+	else if (std::strcmp(argv[a],"--command")==0 || std::strcmp(argv[a],"--expire")==0 ||
+		 std::strcmp(argv[a],"--logfile")==0 || std::strcmp(argv[a],"--outfile")==0 ||
+		 std::strcmp(argv[a],"--port")==0 || std::strcmp(argv[a],"--pidfile")==0 ||
+		 std::strcmp(argv[a],"--update")==0)
 	{
-	    fprintf(stderr,"%s: option \"%s\" requires and argument.\n",argv[0],argv[a]);
+	    std::fprintf(stderr,"%s: option \"%s\" requires and argument.\n",argv[0],argv[a]);
 	    usage(argv[0]);
 	}
         else
         {
-            fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
+            std::fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
 
@@ -784,7 +734,7 @@ void fixup_str(char * str)
     char         prev;
     unsigned int i;
 
-    for (prev='\0',i=0; i<strlen(str); prev=str[i],i++)
+    for (prev='\0',i=0; i<std::strlen(str); prev=str[i],i++)
 	if (prev=='#' && str[i]=='#')
 	    str[i] = '%';
 }
