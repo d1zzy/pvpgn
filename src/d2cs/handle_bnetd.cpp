@@ -268,7 +268,7 @@ int on_bnetd_gameinforeq(t_connection * c, t_packet * packet)
 		return -1;
 	}
 
-	if (!(gamename = packet_get_str_const(packet,sizeof(t_bnetd_d2cs_gameinforeq),GAME_NAME_LEN)))
+	if (!(gamename = packet_get_str_const(packet,sizeof(t_bnetd_d2cs_gameinforeq),MAX_GAMENAME_LEN)))
 	{
 		eventlog(eventlog_level_error,__FUNCTION__,"missing or too long gamename");
 		return -1;

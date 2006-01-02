@@ -168,10 +168,10 @@ extern char * message_format_line(t_connection const * c, char const * in)
 	        {
 		    char const * tname;
 
-		    std::strncpy(&out[outpos],(tname = (conn_get_chatname(c)?conn_get_chatname(c):conn_get_loggeduser(c))),USER_NAME_MAX-1);
+		    std::strncpy(&out[outpos],(tname = (conn_get_chatname(c)?conn_get_chatname(c):conn_get_loggeduser(c))),MAX_USERNAME_LEN-1);
 		    conn_unget_chatname(c,tname);
 		}
-		out[outpos+USER_NAME_MAX-1] = '\0';
+		out[outpos+MAX_USERNAME_LEN-1] = '\0';
 		outpos += std::strlen(&out[outpos]);
 		break;
 

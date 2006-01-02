@@ -687,7 +687,7 @@ extern int account_check_name(char const * name)
 	if (std::strchr(prefs_get_account_allowed_symbols(),ch)) continue;
         return -1;
     }
-    if (i<USER_NAME_MIN || i>=USER_NAME_MAX)
+    if (i<MIN_USERNAME_LEN || i>=MAX_USERNAME_LEN)
 	return -1;
     return 0;
 }

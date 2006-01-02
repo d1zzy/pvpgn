@@ -69,8 +69,8 @@ static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, c
 
 	std::memset(chardata->header.charname, 0,MAX_CHARNAME_LEN);
 	std::strncpy((char*)chardata->header.charname,charname,MAX_CHARNAME_LEN);
-	std::memset(chardata->header.account, 0,MAX_ACCTNAME_LEN);
-	std::strncpy((char*)chardata->header.account,account,MAX_ACCTNAME_LEN);
+	std::memset(chardata->header.account, 0,MAX_USERNAME_LEN);
+	std::strncpy((char*)chardata->header.account,account,MAX_USERNAME_LEN);
 	std::memset(chardata->header.realmname, 0,MAX_REALMNAME_LEN);
 	std::strncpy((char*)chardata->header.realmname,prefs_get_realmname(),MAX_REALMNAME_LEN);
 	bn_int_set(&chardata->header.checksum,0);
@@ -587,7 +587,7 @@ extern int d2char_check_charname(char const * name)
 		if (ch=='.') continue;
 		return -1;
 	}
-	if (i >= MIN_NAME_LEN || i<= MAX_CHARNAME_LEN) return 0;
+	if (i >= MIN_CHARNAME_LEN || i<= MAX_CHARNAME_LEN) return 0;
 	return -1;
 }
 
@@ -607,7 +607,7 @@ extern int d2char_check_acctname(char const * name)
 		if (std::strchr(prefs_get_d2cs_account_allowed_symbols(),ch)) continue;
 		return -1;
 	}
-	if (i >= MIN_NAME_LEN || i<= MAX_ACCTNAME_LEN) return 0;
+	if (i >= MIN_USERNAME_LEN || i<= MAX_USERNAME_LEN) return 0;
 	return -1;
 }
 
@@ -642,7 +642,7 @@ extern int d2char_get_bak_savefile_name(char * filename, char const * charname)
 
 extern int d2char_get_infodir_name(char * filename, char const * account)
 {
-	char	tmpacct[MAX_ACCTNAME_LEN];
+	char	tmpacct[MAX_USERNAME_LEN];
 
 	ASSERT(filename,-1);
 	ASSERT(account,-1);
@@ -658,7 +658,7 @@ extern int d2char_get_infodir_name(char * filename, char const * account)
 extern int d2char_get_infofile_name(char * filename, char const * account, char const * charname)
 {
 	char	tmpchar[MAX_CHARNAME_LEN];
-	char	tmpacct[MAX_ACCTNAME_LEN];
+	char	tmpacct[MAX_USERNAME_LEN];
 
 	ASSERT(filename,-1);
 	ASSERT(account,-1);
@@ -678,7 +678,7 @@ extern int d2char_get_infofile_name(char * filename, char const * account, char 
 extern int d2char_get_bak_infofile_name(char * filename, char const * account, char const * charname)
 {
 	char	tmpchar[MAX_CHARNAME_LEN];
-	char	tmpacct[MAX_ACCTNAME_LEN];
+	char	tmpacct[MAX_USERNAME_LEN];
 
 	ASSERT(filename,-1);
 	ASSERT(account,-1);

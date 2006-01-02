@@ -377,10 +377,10 @@ extern int irc_welcome(t_connection * conn)
 
     if((conn_get_wol(conn) == 1))
         std::sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
-        WOL_NICKNAME_LEN, MAX_TOPIC_LEN, CHANNEL_NAME_LEN, prefs_get_irc_network_name());
+        WOL_NICKNAME_LEN, MAX_TOPIC_LEN, MAX_CHANNELNAME_LEN, prefs_get_irc_network_name());
     else
         std::sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
-        CHAR_NAME_LEN, MAX_TOPIC_LEN, CHANNEL_NAME_LEN, prefs_get_irc_network_name());
+        MAX_CHARNAME_LEN, MAX_TOPIC_LEN, MAX_CHANNELNAME_LEN, prefs_get_irc_network_name());
 
     if((std::strlen(temp))<=MAX_IRC_MESSAGE_LEN)
         irc_send(conn,RPL_ISUPPORT,temp);
@@ -453,7 +453,7 @@ extern int irc_welcome(t_connection * conn)
 extern char const * irc_convert_channel(t_channel const * channel)
 {
     char const * bname;
-    static char out[CHANNEL_NAME_LEN];
+    static char out[MAX_CHANNELNAME_LEN];
     unsigned int outpos;
     int i;
 
@@ -501,7 +501,7 @@ extern char const * irc_convert_channel(t_channel const * channel)
 
 extern char const * irc_convert_ircname(char const * pircname)
 {
-    static char out[CHANNEL_NAME_LEN];
+    static char out[MAX_CHANNELNAME_LEN];
     unsigned int outpos;
     int special;
     int i;

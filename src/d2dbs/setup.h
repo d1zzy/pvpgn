@@ -22,19 +22,10 @@
 # define MAX_PATH		1024
 #endif
 
-#define TRUE			1
-#define FALSE			0
 #define tf(a)			((a)?1:0)
 #define SELECT_TIME_OUT		20000
 #define kBufferSize		(1024*20)
 #define kMaxPacketLength	(1024*5)
-#define MAX_GAMEPASS_LEN	16
-#define MAX_GAMEDESC_LEN	32
-
-#define MAX_CHARNAME_LEN	16
-#define MAX_ACCTNAME_LEN	16
-#define MAX_GAMENAME_LEN	16
-#define MAX_REALMNAME_LEN	32
 
 #define DEFAULT_LOG_FILE		"/usr/local/var/d2dbs.std::log"
 #define DEFAULT_LOG_FILE_GS		"/usr/local/var/d2dbs-gs.std::log"

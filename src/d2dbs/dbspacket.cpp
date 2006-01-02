@@ -297,7 +297,7 @@ static int dbs_packet_savedata(t_d2dbs_connection * conn)
 	unsigned short      datatype;
 	unsigned short      datalen;
 	unsigned int        result;
-	char AccountName[MAX_ACCTNAME_LEN];
+	char AccountName[MAX_USERNAME_LEN];
 	char CharName[MAX_CHARNAME_LEN];
 	char RealmName[MAX_REALMNAME_LEN];
 	t_d2gs_d2dbs_save_data_request	* savecom;
@@ -311,8 +311,8 @@ static int dbs_packet_savedata(t_d2dbs_connection * conn)
 	datalen=bn_short_get(savecom->datalen);
 
 	readpos+=sizeof(*savecom);
-	std::strncpy(AccountName,readpos,MAX_ACCTNAME_LEN);
-	if (AccountName[MAX_ACCTNAME_LEN-1]!=0)
+	std::strncpy(AccountName,readpos,MAX_USERNAME_LEN);
+	if (AccountName[MAX_USERNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max acccount name length exceeded");
 	    return -1;
@@ -386,7 +386,7 @@ static int dbs_packet_getdata(t_d2dbs_connection * conn)
 	unsigned short	datatype;
 	unsigned short	datalen;
 	unsigned int	result;
-	char		AccountName[MAX_ACCTNAME_LEN];
+	char		AccountName[MAX_USERNAME_LEN];
 	char		CharName[MAX_CHARNAME_LEN];
 	char		RealmName[MAX_REALMNAME_LEN];
 	t_d2gs_d2dbs_get_data_request	* getcom;
@@ -403,8 +403,8 @@ static int dbs_packet_getdata(t_d2dbs_connection * conn)
 	datatype=bn_short_get(getcom->datatype);
 
 	readpos+=sizeof(*getcom);
-	std::strncpy(AccountName,readpos,MAX_ACCTNAME_LEN);
-	if (AccountName[MAX_ACCTNAME_LEN-1]!=0)
+	std::strncpy(AccountName,readpos,MAX_USERNAME_LEN);
+	if (AccountName[MAX_USERNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max account name length exceeded");
 	    return -1;
@@ -553,7 +553,7 @@ static int dbs_packet_updateladder(t_d2dbs_connection * conn)
 static int dbs_packet_charlock(t_d2dbs_connection * conn)
 {
 	char CharName[MAX_CHARNAME_LEN];
-	char AccountName[MAX_ACCTNAME_LEN];
+	char AccountName[MAX_USERNAME_LEN];
 	char RealmName[MAX_REALMNAME_LEN];
 	t_d2gs_d2dbs_char_lock * charlock;
 	char * readpos;
@@ -562,8 +562,8 @@ static int dbs_packet_charlock(t_d2dbs_connection * conn)
 	charlock=(t_d2gs_d2dbs_char_lock*)readpos;
 
 	readpos+=sizeof(*charlock);
-	std::strncpy(AccountName,readpos,MAX_ACCTNAME_LEN);
-	if (AccountName[MAX_ACCTNAME_LEN-1]!=0)
+	std::strncpy(AccountName,readpos,MAX_USERNAME_LEN);
+	if (AccountName[MAX_USERNAME_LEN-1]!=0)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"max account name length exceeded");
 	    return -1;

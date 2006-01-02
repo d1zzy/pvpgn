@@ -1492,7 +1492,7 @@ static int _client_loginreq1(t_connection * c, t_packet const *const packet)
 	char const *username;
 	t_account *account;
 
-	if (!(username = packet_get_str_const(packet, sizeof(t_client_loginreq1), USER_NAME_MAX))) {
+	if (!(username = packet_get_str_const(packet, sizeof(t_client_loginreq1), MAX_USERNAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad LOGINREQ1 (missing or too long username)", conn_get_socket(c));
 	    return -1;
 	}
@@ -1613,7 +1613,7 @@ static int _client_loginreq2(t_connection * c, t_packet const *const packet)
 	char const *username;
 	t_account *account;
 
-	if (!(username = packet_get_str_const(packet, sizeof(t_client_loginreq2), USER_NAME_MAX))) {
+	if (!(username = packet_get_str_const(packet, sizeof(t_client_loginreq2), MAX_USERNAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad LOGINREQ2 (missing or too long username)", conn_get_socket(c));
 	    return -1;
 	}
@@ -1719,7 +1719,7 @@ static int _client_loginreqw3(t_connection * c, t_packet const *const packet)
 	t_account *account;
 	int i;
 
-	if (!(username = packet_get_str_const(packet, sizeof(t_client_loginreq_w3), USER_NAME_MAX))) {
+	if (!(username = packet_get_str_const(packet, sizeof(t_client_loginreq_w3), MAX_USERNAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLIENT_LOGINREQ_W3 (missing or too long username)", conn_get_socket(c));
 	    return -1;
 	}
@@ -2190,7 +2190,7 @@ static int _client_atinvitefriend(t_connection * c, t_packet const *const packet
 	offset = sizeof(t_client_arrangedteam_invite_friend);
 
 	for (i = 0; i < count_to_invite; i++) {
-	    if (!(invited_usernames[i] = packet_get_str_const(packet, offset, USER_NAME_MAX))) {
+	    if (!(invited_usernames[i] = packet_get_str_const(packet, offset, MAX_USERNAME_LEN))) {
 		eventlog(eventlog_level_error, "handle_bnet", "Could not get username from invite packet");
 		return -1;
 	    } else {
@@ -2318,7 +2318,7 @@ static int _client_atacceptdeclineinvite(t_connection * c, t_packet const *const
 
 	//if user declined the invitation then
 	if (bn_int_get(packet->u.client_arrangedteam_accept_decline_invite.option) == CLIENT_ARRANGEDTEAM_DECLINE) {
-	    inviter = packet_get_str_const(packet, sizeof(t_client_arrangedteam_accept_decline_invite), USER_NAME_MAX);
+	    inviter = packet_get_str_const(packet, sizeof(t_client_arrangedteam_accept_decline_invite), MAX_USERNAME_LEN);
 	    dest_c = connlist_find_connection_by_accountname(inviter);
 
 	    eventlog(eventlog_level_info, "handle_bnet", "%s declined a arranged team game with %s", conn_get_username(c), inviter);
@@ -2540,7 +2540,7 @@ static int _client_claninforeq(t_connection * c, t_packet const *const packet)
     clantag1 = bn_int_get(packet->u.client_claninforeq.clantag);
     clan = NULL;
 
-    if (!(username = packet_get_str_const(packet, sizeof(t_client_claninforeq), USER_NAME_MAX))) {
+    if (!(username = packet_get_str_const(packet, sizeof(t_client_claninforeq), MAX_USERNAME_LEN))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLANINFOREQ (missing or too long username)", conn_get_socket(c));
 	return -1;
     }
@@ -2602,7 +2602,7 @@ static int _client_profilereq(t_connection * c, t_packet const *const packet)
 
     count = bn_int_get(packet->u.client_profilereq.count);
 
-    if (!(username = packet_get_str_const(packet, sizeof(t_client_profilereq), USER_NAME_MAX))) {
+    if (!(username = packet_get_str_const(packet, sizeof(t_client_profilereq), MAX_USERNAME_LEN))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad PROFILEREQ (missing or too long username)", conn_get_socket(c));
 	return -1;
     }
@@ -2645,7 +2645,7 @@ static int _client_realmjoinreq109(t_connection * c, t_packet const *const packe
 	char const *realmname;
 	t_realm *realm;
 
-	if (!(realmname = packet_get_str_const(packet, sizeof(t_client_realmjoinreq_109), REALM_NAME_LEN))) {
+	if (!(realmname = packet_get_str_const(packet, sizeof(t_client_realmjoinreq_109), MAX_REALMNAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad REALMJOINREQ_109 (missing or too long realmname)", conn_get_socket(c));
 	    return -1;
 	}
@@ -2998,7 +2998,7 @@ static int _client_playerinforeq(t_connection * c, t_packet const *const packet)
 	char const *info;
 	t_account *account;
 
-	if (!(username = packet_get_str_const(packet, sizeof(t_client_playerinforeq), USER_NAME_MAX))) {
+	if (!(username = packet_get_str_const(packet, sizeof(t_client_playerinforeq), MAX_USERNAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad PLAYERINFOREQ (missing or too long username)", conn_get_socket(c));
 	    return -1;
 	}
@@ -3096,7 +3096,7 @@ static int _client_joinchannel(t_connection * c, t_packet const *const packet)
 
     account = conn_get_account(c);
 
-    if (!(cname = packet_get_str_const(packet, sizeof(t_client_joinchannel), CHANNEL_NAME_LEN))) {
+    if (!(cname = packet_get_str_const(packet, sizeof(t_client_joinchannel), MAX_CHANNELNAME_LEN))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad JOINCHANNEL (missing or too long cname)", conn_get_socket(c));
 	return -1;
     }
@@ -3298,12 +3298,12 @@ static int _client_gamelistreq(t_connection * c, t_packet const *const packet)
 	return -1;
     }
 
-    if (!(gamename = packet_get_str_const(packet, sizeof(t_client_gamelistreq), GAME_NAME_LEN))) {
+    if (!(gamename = packet_get_str_const(packet, sizeof(t_client_gamelistreq), MAX_GAMENAME_LEN))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad GAMELISTREQ (missing or too long gamename)", conn_get_socket(c));
 	return -1;
     }
 
-    if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_gamelistreq) + std::strlen(gamename) + 1, GAME_PASS_LEN))) {
+    if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_gamelistreq) + std::strlen(gamename) + 1, MAX_GAMEPASS_LEN))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad GAMELISTREQ (missing or too long password)", conn_get_socket(c));
 	return -1;
     }
@@ -3409,12 +3409,12 @@ static int _client_joingame(t_connection * c, t_packet const *const packet)
 	return -1;
     }
 
-    if (!(gamename = packet_get_str_const(packet, sizeof(t_client_join_game), GAME_NAME_LEN))) {
+    if (!(gamename = packet_get_str_const(packet, sizeof(t_client_join_game), MAX_GAMENAME_LEN))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLIENT_JOIN_GAME (missing or too long gamename)", conn_get_socket(c));
 	return -1;
     }
 
-    if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_join_game) + std::strlen(gamename) + 1, GAME_PASS_LEN))) {
+    if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_join_game) + std::strlen(gamename) + 1, MAX_GAMEPASS_LEN))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLIENT_JOIN_GAME packet (missing or too long gamepass)", conn_get_socket(c));
 	return -1;
     }
@@ -3475,15 +3475,15 @@ static int _client_startgame1(t_connection * c, t_packet const *const packet)
 	unsigned int status;
 	t_game *currgame;
 
-	if (!(gamename = packet_get_str_const(packet, sizeof(t_client_startgame1), GAME_NAME_LEN))) {
+	if (!(gamename = packet_get_str_const(packet, sizeof(t_client_startgame1), MAX_GAMENAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME1 packet (missing or too long gamename)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame1) + std::strlen(gamename) + 1, GAME_PASS_LEN))) {
+	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame1) + std::strlen(gamename) + 1, MAX_GAMEPASS_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME1 packet (missing or too long gamepass)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame1) + std::strlen(gamename) + 1 + std::strlen(gamepass) + 1, GAME_INFO_LEN))) {
+	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame1) + std::strlen(gamename) + 1 + std::strlen(gamepass) + 1, MAX_GAMEINFO_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME1 packet (missing or too long gameinfo)", conn_get_socket(c));
 	    return -1;
 	}
@@ -3561,15 +3561,15 @@ static int _client_startgame3(t_connection * c, t_packet const *const packet)
 	unsigned int status;
 	t_game *currgame;
 
-	if (!(gamename = packet_get_str_const(packet, sizeof(t_client_startgame3), GAME_NAME_LEN))) {
+	if (!(gamename = packet_get_str_const(packet, sizeof(t_client_startgame3), MAX_GAMENAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME3 packet (missing or too long gamename)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame3) + std::strlen(gamename) + 1, GAME_PASS_LEN))) {
+	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame3) + std::strlen(gamename) + 1, MAX_GAMEPASS_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME3 packet (missing or too long gamepass)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame3) + std::strlen(gamename) + 1 + std::strlen(gamepass) + 1, GAME_INFO_LEN))) {
+	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame3) + std::strlen(gamename) + 1 + std::strlen(gamepass) + 1, MAX_GAMEINFO_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME3 packet (missing or too long gameinfo)", conn_get_socket(c));
 	    return -1;
 	}
@@ -3650,15 +3650,15 @@ static int _client_startgame4(t_connection * c, t_packet const *const packet)
 	unsigned short option;
 	t_game *currgame;
 
-	if (!(gamename = packet_get_str_const(packet, sizeof(t_client_startgame4), GAME_NAME_LEN))) {
+	if (!(gamename = packet_get_str_const(packet, sizeof(t_client_startgame4), MAX_GAMENAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME4 packet (missing or too long gamename)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame4) + std::strlen(gamename) + 1, GAME_PASS_LEN))) {
+	if (!(gamepass = packet_get_str_const(packet, sizeof(t_client_startgame4) + std::strlen(gamename) + 1, MAX_GAMEPASS_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME4 packet (missing or too long gamepass)", conn_get_socket(c));
 	    return -1;
 	}
-	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame4) + std::strlen(gamename) + 1 + std::strlen(gamepass) + 1, GAME_INFO_LEN))) {
+	if (!(gameinfo = packet_get_str_const(packet, sizeof(t_client_startgame4) + std::strlen(gamename) + 1 + std::strlen(gamepass) + 1, MAX_GAMEINFO_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME4 packet (missing or too long gameinfo)", conn_get_socket(c));
 	    return -1;
 	}
@@ -3784,7 +3784,7 @@ static int _client_gamereport(t_connection * c, t_packet const *const packet)
 		eventlog(eventlog_level_error, __FUNCTION__, "[%d] got corrupt GAME_REPORT packet (missing results %u-%u)", conn_get_socket(c), i + 1, player_count);
 		break;
 	    }
-	    if (!(player = packet_get_str_const(packet, player_off, USER_NAME_MAX))) {
+	    if (!(player = packet_get_str_const(packet, player_off, MAX_USERNAME_LEN))) {
 		eventlog(eventlog_level_error, __FUNCTION__, "[%d] got corrupt GAME_REPORT packet (missing players %u-%u)", conn_get_socket(c), i + 1, player_count);
 		break;
 	    }
@@ -4022,7 +4022,7 @@ static int _client_laddersearchreq(t_connection * c, t_packet const *const packe
 		id = ladder_id_normal;
 	}
 
-	if (!(playername = packet_get_str_const(packet, sizeof(t_client_laddersearchreq), USER_NAME_MAX))) {
+	if (!(playername = packet_get_str_const(packet, sizeof(t_client_laddersearchreq), MAX_USERNAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad LADDERSEARCHREQ packet (missing or too long playername)", conn_get_socket(c));
 	    return -1;
 	}
@@ -4346,7 +4346,7 @@ static int _client_w3xp_clan_createinvitereq(t_connection * c, t_packet const *c
 	    packet_append_data(rpacket, packet_get_data_const(packet, offset, size - offset), size - offset);
 	    offset++;
 	    do {
-		username = packet_get_str_const(packet, offset, USER_NAME_MAX);
+		username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
 		if (username) {
 		    t_connection *conn;
 		    offset += (std::strlen(username) + 1);
@@ -4385,7 +4385,7 @@ static int _client_w3xp_clan_createinvitereply(t_connection * c, t_packet const 
 	return -1;
     }
     offset = sizeof(t_client_w3xp_clan_createinvitereply);
-    username = packet_get_str_const(packet, offset, USER_NAME_MAX);
+    username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
     offset += (std::strlen(username) + 1);
     status = *((char *) packet_get_data_const(packet, offset, 1));
     if ((conn = connlist_find_connection_by_accountname(username)) == NULL)
@@ -4449,7 +4449,7 @@ static int _client_w3xp_clanmember_rankupdatereq(t_connection * c, t_packet cons
 	packet_set_type(rpacket, SERVER_W3XP_CLANMEMBER_RANKUPDATE_REPLY);
 	bn_int_set(&rpacket->u.server_w3xp_clanmember_rankupdate_reply.count,
 	           bn_int_get(packet->u.client_w3xp_clanmember_rankupdate_req.count));
-	username = packet_get_str_const(packet, offset, USER_NAME_MAX);
+	username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
 	offset += (std::strlen(username) + 1);
 	status = *((char *) packet_get_data_const(packet, offset, 1));
 
@@ -4492,7 +4492,7 @@ static int _client_w3xp_clanmember_removereq(t_connection * c, t_packet const *c
 	packet_set_type(rpacket, SERVER_W3XP_CLANMEMBER_REMOVE_REPLY);
 	bn_int_set(&rpacket->u.server_w3xp_clanmember_remove_reply.count,
 	           bn_int_get(packet->u.client_w3xp_clanmember_remove_req.count));
-	username = packet_get_str_const(packet, sizeof(t_client_w3xp_clanmember_remove_req), USER_NAME_MAX);
+	username = packet_get_str_const(packet, sizeof(t_client_w3xp_clanmember_remove_req), MAX_USERNAME_LEN);
 	bn_byte_set(&rpacket->u.server_w3xp_clanmember_remove_reply.result,
 	            SERVER_W3XP_CLANMEMBER_REMOVE_FAILED); // initially presume it failed
 
@@ -4541,7 +4541,7 @@ static int _client_w3xp_clan_membernewchiefreq(t_connection * c, t_packet const 
 	packet_set_size(rpacket, sizeof(t_server_w3xp_clan_membernewchiefreply));
 	packet_set_type(rpacket, SERVER_W3XP_CLAN_MEMBERNEWCHIEFREPLY);
 	bn_int_set(&rpacket->u.server_w3xp_clan_membernewchiefreply.count, bn_int_get(packet->u.client_w3xp_clan_membernewchiefreq.count));
-	username = packet_get_str_const(packet, sizeof(t_client_w3xp_clan_membernewchiefreq), USER_NAME_MAX);
+	username = packet_get_str_const(packet, sizeof(t_client_w3xp_clan_membernewchiefreq), MAX_USERNAME_LEN);
 	if ((acc = conn_get_account(c)) && (oldmember = account_get_clanmember(acc)) && (clanmember_get_status(oldmember) == CLAN_CHIEFTAIN) && (clan = clanmember_get_clan(oldmember)) && (newmember = clan_find_member_by_name(clan, username)) && (clanmember_set_status(oldmember, CLAN_GRUNT) == 0) && (clanmember_set_status(newmember, CLAN_CHIEFTAIN) == 0)) {
 	    clanmember_on_change_status(oldmember);
 	    clanmember_on_change_status(newmember);
@@ -4573,7 +4573,7 @@ static int _client_w3xp_clan_invitereq(t_connection * c, t_packet const *const p
 
     if ((clan = account_get_clan(conn_get_account(c))) != NULL) {
 	if (clan_get_member_count(clan) < prefs_get_clan_max_members()) {
-	    if ((clantag = clan_get_clantag(clan)) && (username = packet_get_str_const(packet, sizeof(t_client_w3xp_clan_invitereq), USER_NAME_MAX)) && (conn = connlist_find_connection_by_accountname(username)) && (rpacket = packet_create(packet_class_bnet))) {
+	    if ((clantag = clan_get_clantag(clan)) && (username = packet_get_str_const(packet, sizeof(t_client_w3xp_clan_invitereq), MAX_USERNAME_LEN)) && (conn = connlist_find_connection_by_accountname(username)) && (rpacket = packet_create(packet_class_bnet))) {
 		packet_set_size(rpacket, sizeof(t_server_w3xp_clan_invitereq));
 		packet_set_type(rpacket, SERVER_W3XP_CLAN_INVITEREQ);
 		bn_int_set(&rpacket->u.server_w3xp_clan_invitereq.count, bn_int_get(packet->u.client_w3xp_clan_invitereq.count));
@@ -4611,7 +4611,7 @@ static int _client_w3xp_clan_invitereply(t_connection * c, t_packet const *const
     }
 
     offset = sizeof(t_client_w3xp_clan_invitereply);
-    username = packet_get_str_const(packet, offset, USER_NAME_MAX);
+    username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
     offset += (std::strlen(username) + 1);
     status = *((char *) packet_get_data_const(packet, offset, 1));
     if ((conn = connlist_find_connection_by_accountname(username)) != NULL) {
@@ -4700,7 +4700,7 @@ static int _client_changeemailreq(t_connection * c, t_packet const *const packet
     int pos;
 
     pos = sizeof(t_client_changeemailreq);
-    if (!(username = packet_get_str_const(packet, pos, USER_NAME_MAX))) {
+    if (!(username = packet_get_str_const(packet, pos, MAX_USERNAME_LEN))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad username in CHANGEEMAILREQ packet", conn_get_socket(c));
 	return -1;
     }
@@ -4743,7 +4743,7 @@ static int _client_getpasswordreq(t_connection * c, t_packet const *const packet
     int pos;
 
     pos = sizeof(t_client_getpasswordreq);
-    if (!(username = packet_get_str_const(packet, pos, USER_NAME_MAX))) {
+    if (!(username = packet_get_str_const(packet, pos, MAX_USERNAME_LEN))) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad username in GETPASSWORDREQ packet", conn_get_socket(c));
 	return -1;
     }

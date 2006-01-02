@@ -127,8 +127,8 @@ typedef struct _user_info
     char const *	cdowner;
     char const *	cdkey;
     char const *	channel;
-    char		curr_gamename[GAME_NAME_LEN];
-    char		curr_gamepass[GAME_PASS_LEN];
+    char		curr_gamename[MAX_GAMENAME_LEN];
+    char		curr_gamepass[MAX_GAMEPASS_LEN];
     int			count, clantag;
     char const *	inviter;
 
@@ -886,9 +886,9 @@ extern int main(int argc, char * argv[])
 	    {
 		std::printf("The special characters #%%&*\\\",</>? are allowed in usernames. Try again.\n");
 	    }
-	    if (std::strlen(user.player)>=USER_NAME_MAX)
+	    if (std::strlen(user.player)>=MAX_USERNAME_LEN)
 	    {
-		std::printf("Usernames must not be more than %u characters long. Try again.\n",USER_NAME_MAX-1);
+		std::printf("Usernames must not be more than %u characters long. Try again.\n",MAX_USERNAME_LEN-1);
 		continue;
 	    }
 
@@ -909,9 +909,9 @@ extern int main(int argc, char * argv[])
 	    std::printf("\n");
 	    if (status<0)
 		continue;
-	    if (std::strlen(password)>USER_PASS_MAX)
+	    if (std::strlen(password)>MAX_USERPASS_LEN)
 	    {
-		std::printf("password must not be more than %u characters long. Try again.\n",USER_PASS_MAX);
+		std::printf("password must not be more than %u characters long. Try again.\n",MAX_USERPASS_LEN);
 		continue;
 	    }
 	    for (i=0; i<std::strlen(password); i++)
@@ -1018,9 +1018,9 @@ extern int main(int argc, char * argv[])
 		std::printf("Spaces not allowed in username. Try again.\n");
 		continue;
 	    }
-	    if (std::strlen(user.player)>=USER_NAME_MAX)
+	    if (std::strlen(user.player)>=MAX_USERNAME_LEN)
 	    {
-		std::printf("Usernames must not be more than %u characters long. Try again.\n",USER_NAME_MAX-1);
+		std::printf("Usernames must not be more than %u characters long. Try again.\n",MAX_USERNAME_LEN-1);
 		continue;
 	    }
 
@@ -1160,9 +1160,9 @@ extern int main(int argc, char * argv[])
 		std::printf("Spaces not allowed in username. Try again.\n");
 		continue;
 	    }
-	    if (std::strlen(user.player)>=USER_NAME_MAX)
+	    if (std::strlen(user.player)>=MAX_USERNAME_LEN)
 	    {
-		std::printf("Usernames must not be more than %u characters long. Try again.\n",USER_NAME_MAX-1);
+		std::printf("Usernames must not be more than %u characters long. Try again.\n",MAX_USERNAME_LEN-1);
 		continue;
 	    }
 
@@ -1736,7 +1736,7 @@ extern int main(int argc, char * argv[])
 				break;
 			    }
 			    offset+=std::strlen(clan)+1;
-			    if (!(inviter = packet_get_str_const(rpacket,offset,USER_NAME_MAX)))
+			    if (!(inviter = packet_get_str_const(rpacket,offset,MAX_USERNAME_LEN)))
 			    {
 				munge(&client);
 				std::printf("Got SERVER_W3XP_CLAN_INVITEREQ with bad or missing inviter\n");
@@ -1779,7 +1779,7 @@ extern int main(int argc, char * argv[])
 			    char const * online_str;
 
 			    offset = sizeof(t_server_w3xp_clanmemberupdate);
-			    if (!(member = packet_get_str_const(rpacket,offset,USER_NAME_MAX)))
+			    if (!(member = packet_get_str_const(rpacket,offset,MAX_USERNAME_LEN)))
 			    {
 				munge(&client);
 				std::printf("Got SERVER_W3XP_CLANMEMBERUPDATE with bad or missing member\n");
@@ -1802,7 +1802,7 @@ extern int main(int argc, char * argv[])
 			    }
 			    online = *online_p;
 			    offset+=1;
-			    if (!(append_str = packet_get_str_const(rpacket,offset,USER_NAME_MAX)))
+			    if (!(append_str = packet_get_str_const(rpacket,offset,MAX_USERNAME_LEN)))
 			    {
 				munge(&client);
 				std::printf("Got SERVER_W3XP_CLANMEMBERUPDATE with bad or missing append_str\n");

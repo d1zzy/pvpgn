@@ -112,7 +112,7 @@ static int on_d2cs_authreply(t_connection * c, t_packet const * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad packet size");
 		return -1;
 	}
-	if (!(realmname=packet_get_str_const(packet,sizeof(t_d2cs_bnetd_authreply),REALM_NAME_LEN))) {
+	if (!(realmname=packet_get_str_const(packet,sizeof(t_d2cs_bnetd_authreply),MAX_REALMNAME_LEN))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad realmname");
 		return -1;
 	}
@@ -186,7 +186,7 @@ static int on_d2cs_accountloginreq(t_connection * c, t_packet const * packet)
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad packet size");
 		return -1;
 	}
-	if (!(account=packet_get_str_const(packet,sizeof(t_d2cs_bnetd_accountloginreq),USER_NAME_MAX))) {
+	if (!(account=packet_get_str_const(packet,sizeof(t_d2cs_bnetd_accountloginreq),MAX_USERNAME_LEN))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"missing or too long account name");
 		return -1;
 	}
@@ -260,7 +260,7 @@ static int on_d2cs_charloginreq(t_connection * c, t_packet const * packet)
 	}
 	sessionnum=bn_int_get(packet->u.d2cs_bnetd_charloginreq.sessionnum);
 	pos=sizeof(t_d2cs_bnetd_charloginreq);
-	if (!(charname=packet_get_str_const(packet,pos,CHAR_NAME_LEN))) {
+	if (!(charname=packet_get_str_const(packet,pos,MAX_CHARNAME_LEN))) {
 		eventlog(eventlog_level_error,__FUNCTION__,"got bad character name");
 		return -1;
 	}
@@ -371,7 +371,7 @@ static int on_d2cs_gameinforeply(t_connection * c, t_packet const * packet)
 		return -1;
 	}
 
-	if (!(gamename = packet_get_str_const(packet,sizeof(t_d2cs_bnetd_gameinforeply),GAME_NAME_LEN)))
+	if (!(gamename = packet_get_str_const(packet,sizeof(t_d2cs_bnetd_gameinforeply),MAX_GAMENAME_LEN)))
 	{
 		eventlog(eventlog_level_error,__FUNCTION__,"missing or too long gamename");
 		return -1;

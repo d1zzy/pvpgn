@@ -20,9 +20,8 @@
 #ifndef INCLUDED_D2CS_D2GS_CHARACTER_H
 #define INCLUDED_D2CS_D2GS_CHARACTER_H
 
-#ifdef D2CS
-# include "common/bn_type.h"
-#endif
+#include "common/bn_type.h"
+#include "common/field_sizes.h"
 
 #ifdef D2GS
 # include "bn_types.h"
@@ -46,7 +45,7 @@ typedef struct
         bn_int          total_play_time;        /* total in game play time */
 	bn_int		reserved[6];
 	unsigned char	charname[MAX_CHARNAME_LEN];
-	unsigned char	account[MAX_ACCTNAME_LEN];
+	unsigned char	account[MAX_USERNAME_LEN];
 	unsigned char	realmname[MAX_REALMNAME_LEN];
 } t_d2charinfo_header;
 

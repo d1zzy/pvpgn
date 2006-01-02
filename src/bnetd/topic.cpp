@@ -151,7 +151,7 @@ int channel_set_topic(char const * channel_name, char const * topic_text, int do
 int topiclist_load(char const * topicfile)
 {
   std::FILE * fp;
-  char channel_name[CHANNEL_NAME_LEN];
+  char channel_name[MAX_CHANNELNAME_LEN];
   char topic[MAX_TOPIC_LEN];
 
   // make sure to unload previous topiclist before loading again

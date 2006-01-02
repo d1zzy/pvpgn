@@ -151,7 +151,7 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
     Count = bn_int_get(packet->u.client_findanongame.count);
     eventlog(eventlog_level_info,__FUNCTION__,"[%d] got a FINDANONGAME PROFILE packet",conn_get_socket(c));
 
-    if (!(username = packet_get_str_const(packet,sizeof(t_client_findanongame_profile),USER_NAME_MAX)))
+    if (!(username = packet_get_str_const(packet,sizeof(t_client_findanongame_profile),MAX_USERNAME_LEN)))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad FINDANONGAME_PROFILE (missing or too long username)",conn_get_socket(c));
 	return -1;
