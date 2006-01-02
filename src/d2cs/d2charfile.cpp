@@ -25,7 +25,6 @@
 #include <cctype>
 #include <cerrno>
 
-#include "compat/strerror.h"
 #include "compat/access.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
@@ -265,13 +264,13 @@ extern int d2char_convert(char const * account, char const * charname)
 	file=(char*)xmalloc(std::strlen(prefs_get_charinfo_dir())+1+std::strlen(account)+1+std::strlen(charname)+1);
 	d2char_get_infofile_name(file,account,charname);
 	if (!(fp=std::fopen(file,"rb+"))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"unable to open charinfo file \"%s\" for reading and writing (std::fopen: %s)",file,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"unable to open charinfo file \"%s\" for reading and writing (std::fopen: %s)",file,std::strerror(errno));
 		xfree(file);
 		return -1;
 	}
 	xfree(file);
 	if (std::fread(&charinfo,1,sizeof(charinfo),fp)!=sizeof(charinfo)) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error reading charinfo file for character \"%s\" (std::fread: %s)",charname,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"error reading charinfo file for character \"%s\" (std::fread: %s)",charname,std::strerror(errno));
 		std::fclose(fp);
 		return -1;
 	}
@@ -285,26 +284,26 @@ extern int d2char_convert(char const * account, char const * charname)
 
 	std::fseek(fp,0,SEEK_SET); /* FIXME: check return */
 	if (std::fwrite(&charinfo,1,sizeof(charinfo),fp)!=sizeof(charinfo)) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error writing charinfo file for character \"%s\" (std::fwrite: %s)",charname,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"error writing charinfo file for character \"%s\" (std::fwrite: %s)",charname,std::strerror(errno));
 		std::fclose(fp);
 		return -1;
 	}
 	if (std::fclose(fp)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close charinfo file for character \"%s\" after writing (std::fclose: %s)",charname,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close charinfo file for character \"%s\" after writing (std::fclose: %s)",charname,std::strerror(errno));
 		return -1;
 	}
 
 	file=(char*)xmalloc(std::strlen(prefs_get_charsave_dir())+1+std::strlen(charname)+1);
 	d2char_get_savefile_name(file,charname);
 	if (!(fp=std::fopen(file,"rb+"))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not open charsave file \"%s\" for reading and writing (std::fopen: %s)",file,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"could not open charsave file \"%s\" for reading and writing (std::fopen: %s)",file,std::strerror(errno));
 		xfree(file);
 		return -1;
 	}
 	xfree(file);
 	size=std::fread(buffer,1,sizeof(buffer),fp);
 	if (!std::feof(fp)) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error reading charsave file for character \"%s\" (std::fread: %s)",charname,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"error reading charsave file for character \"%s\" (std::fread: %s)",charname,std::strerror(errno));
 		std::fclose(fp);
 		return -1;
 	}
@@ -323,12 +322,12 @@ extern int d2char_convert(char const * account, char const * charname)
 	}
 	std::fseek(fp,0,SEEK_SET); /* FIXME: check return */
 	if (std::fwrite(buffer,1,size,fp)!=size) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error writing charsave file for character %s (std::fwrite: %s)",charname,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"error writing charsave file for character %s (std::fwrite: %s)",charname,std::strerror(errno));
 		std::fclose(fp);
 		return -1;
 	}
 	if (std::fclose(fp)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close charsave file for character \"%s\" after writing (std::fclose: %s)",charname,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close charsave file for character \"%s\" after writing (std::fclose: %s)",charname,std::strerror(errno));
 		return -1;
 	}
 	eventlog(eventlog_level_info,__FUNCTION__,"character %s(*%s) converted to expansion",charname,account);
@@ -355,7 +354,7 @@ extern int d2char_delete(char const * account, char const * charname)
 	file=(char*)xmalloc(std::strlen(prefs_get_charinfo_dir())+1+std::strlen(account)+1+std::strlen(charname)+1);
 	d2char_get_infofile_name(file,account,charname);
 	if (std::remove(file)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete charinfo file \"%s\" (std::remove: %s)",file,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete charinfo file \"%s\" (std::remove: %s)",file,std::strerror(errno));
 		xfree(file);
 		return -1;
 	}
@@ -365,7 +364,7 @@ extern int d2char_delete(char const * account, char const * charname)
 	file=(char*)xmalloc(std::strlen(prefs_get_charsave_dir())+1+std::strlen(charname)+1);
 	d2char_get_savefile_name(file,charname);
 	if (std::remove(file)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete charsave file \"%s\" (std::remove: %s)",file,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete charsave file \"%s\" (std::remove: %s)",file,std::strerror(errno));
 	}
 	xfree(file);
 
@@ -374,7 +373,7 @@ extern int d2char_delete(char const * account, char const * charname)
 	d2char_get_bak_infofile_name(file,account,charname);
 	if (access(file, F_OK) == 0) {
 	    if (std::remove(file)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete bak charinfo file \"%s\" (std::remove: %s)",file,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete bak charinfo file \"%s\" (std::remove: %s)",file,std::strerror(errno));
 	    }
 	}
 	xfree(file);
@@ -384,7 +383,7 @@ extern int d2char_delete(char const * account, char const * charname)
 	d2char_get_bak_savefile_name(file,charname);
 	if (access(file, F_OK) == 0) {
 	    if (std::remove(file)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete bak charsave file \"%s\" (std::remove: %s)",file,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"failed to delete bak charsave file \"%s\" (std::remove: %s)",file,std::strerror(errno));
 	    }
 	}
 	xfree(file);
@@ -477,7 +476,7 @@ extern int d2charinfo_load(char const * account, char const * charname, t_d2char
 		bn_byte_set(&data->portrait.ladder, D2CHARINFO_PORTRAIT_PADBYTE);
 
 		if (std::fwrite(data,1,sizeof(*data),fp)!=sizeof(*data)) {
-			eventlog(eventlog_level_error,__FUNCTION__,"error writing charinfo file for character \"%s\" (std::fwrite: %s)",charname,pstrerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"error writing charinfo file for character \"%s\" (std::fwrite: %s)",charname,std::strerror(errno));
 			std::fclose(fp);
 			return 0;
 }
@@ -487,14 +486,14 @@ extern int d2charinfo_load(char const * account, char const * charname, t_d2char
 		d2char_get_savefile_name(file,charname);
 
 		if (!(fp=std::fopen(file,"rb+"))) {
-			eventlog(eventlog_level_error,__FUNCTION__,"could not open charsave file \"%s\" for reading and writing (std::fopen: %s)",file,pstrerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"could not open charsave file \"%s\" for reading and writing (std::fopen: %s)",file,std::strerror(errno));
 			xfree(file);
 			return 0;
 		}
 		xfree(file);
 		size=std::fread(buffer,1,sizeof(buffer),fp);
 		if (!std::feof(fp)) {
-			eventlog(eventlog_level_error,__FUNCTION__,"error reading charsave file for character \"%s\" (std::fread: %s)",charname,pstrerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"error reading charsave file for character \"%s\" (std::fread: %s)",charname,std::strerror(errno));
 			std::fclose(fp);
 			return 0;
 		}
@@ -514,7 +513,7 @@ extern int d2charinfo_load(char const * account, char const * charname, t_d2char
 		}
 		std::fseek(fp,0,SEEK_SET);
 		if (std::fwrite(buffer,1,size,fp)!=size) {
-			eventlog(eventlog_level_error,__FUNCTION__,"error writing charsave file for character %s (std::fwrite: %s)",charname,pstrerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"error writing charsave file for character %s (std::fwrite: %s)",charname,std::strerror(errno));
 			std::fclose(fp);
 			return 0;
 		}
@@ -761,7 +760,7 @@ extern int file_read(char const * filename, void * data, unsigned int * size)
 	ASSERT(data,-1);
 	ASSERT(size,-1);
 	if (!(fp=std::fopen(filename,"rb"))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno));
 		return -1;
 	}
 
@@ -771,12 +770,12 @@ extern int file_read(char const * filename, void * data, unsigned int * size)
 	std::rewind(fp); /* FIXME: check return value */
 
 	if (std::fread(data,1,n,fp)!=n) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error reading file \"%s\" (std::fread: %s)",filename,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"error reading file \"%s\" (std::fread: %s)",filename,std::strerror(errno));
 		std::fclose(fp);
 		return -1;
 	}
 	if (std::fclose(fp)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (std::fclose: %s)",filename,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after reading (std::fclose: %s)",filename,std::strerror(errno));
 		return -1;
 	}
 	*size=n;
@@ -792,16 +791,16 @@ extern int file_write(char const * filename, void * data, unsigned int size)
 	ASSERT(data,-1);
 	ASSERT(size,-1);
 	if (!(fp=std::fopen(filename,"wb"))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)",filename,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)",filename,std::strerror(errno));
 		return -1;
 	}
 	if (std::fwrite(data,1,size,fp)!=size) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error writing file \"%s\" (std::fwrite: %s)",filename,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"error writing file \"%s\" (std::fwrite: %s)",filename,std::strerror(errno));
 		std::fclose(fp);
 		return -1;
 	}
 	if (std::fclose(fp)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after writing (std::fclose: %s)",filename,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"could not close file \"%s\" after writing (std::fclose: %s)",filename,std::strerror(errno));
 		return -1;
 	}
 	return 0;

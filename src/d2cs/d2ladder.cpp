@@ -24,7 +24,6 @@
 #include <cstring>
 #include <cerrno>
 
-#include "compat/strerror.h"
 #include "compat/strcasecmp.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
@@ -70,7 +69,7 @@ static int d2ladder_readladder(void)
 			std::strlen(CLIENTTAG_DIABLO2DV)+1);
 	std::sprintf(ladderfile,"%s/%s.%s",prefs_get_ladder_dir(),LADDER_FILE_PREFIX,CLIENTTAG_DIABLO2DV);
 	if (!(fp=std::fopen(ladderfile,"rb"))) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error opening ladder file \"%s\" for reading (std::fopen: %s)",ladderfile,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"error opening ladder file \"%s\" for reading (std::fopen: %s)",ladderfile,std::strerror(errno));
 		xfree(ladderfile);
 		return -1;
 	}
