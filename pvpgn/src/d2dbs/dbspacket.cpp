@@ -35,7 +35,6 @@
 #endif
 
 #include "compat/strsep.h"
-#include "compat/strerror.h"
 #include "compat/mkdir.h"
 #include "compat/access.h"
 #include "compat/statmacros.h"
@@ -109,7 +108,7 @@ static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn, char 
 		readlen=std::fwrite(data+curlen,1,writelen,fd);
 		if (readlen<=0) {
 			std::fclose(fd);
-			eventlog(eventlog_level_error,__FUNCTION__,"write() failed error : %s",pstrerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"write() failed error : %s",std::strerror(errno));
 			return 0;
 		}
 		curlen+=readlen;
@@ -164,7 +163,7 @@ static unsigned int dbs_packet_savedata_charinfo(t_d2dbs_connection* conn,char *
 		readlen=std::fwrite(data+curlen,1,writelen,fd);
 		if (readlen<=0) {
 			std::fclose(fd);
-			eventlog(eventlog_level_error,__FUNCTION__,"write() failed error : %s",pstrerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"write() failed error : %s",std::strerror(errno));
 			return 0;
 		}
 		curlen+=readlen;
@@ -229,7 +228,7 @@ static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn,char * 
 		readlen=std::fread(data+curlen,1,writelen,fd);
 		if (readlen<=0) {
 			std::fclose(fd);
-			eventlog(eventlog_level_error,__FUNCTION__,"read() failed error : %s",pstrerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"read() failed error : %s",std::strerror(errno));
 			return 0;
 		}
 		leftlen-=readlen;
@@ -281,7 +280,7 @@ static unsigned int dbs_packet_getdata_charinfo(t_d2dbs_connection* conn,char * 
 	    if (readlen<=0)
 		{
 			std::fclose(fd);
-			eventlog(eventlog_level_error,__FUNCTION__,"read() failed error : %s",pstrerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"read() failed error : %s",std::strerror(errno));
 			return 0;
 		}
 		leftlen-=readlen;

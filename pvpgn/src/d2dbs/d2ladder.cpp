@@ -24,7 +24,6 @@
 #include <cerrno>
 
 #include "compat/strncasecmp.h"
-#include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/tag.h"
@@ -378,7 +377,7 @@ int d2ladder_readladder(void)
 
 	readlen=std::fread(&fileheader,1,sizeof(fileheader),fdladder);
 	if (readlen<=0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,std::strerror(errno));
 		std::fclose(fdladder);
 		return -1;
 	}
@@ -402,7 +401,7 @@ int d2ladder_readladder(void)
 	lhead=(t_d2ladderfile_ladderindex*)xmalloc(blocksize);
 	readlen=std::fread(lhead,1,d2ladder_maxtype*sizeof(*lhead),fdladder);
 	if (readlen<=0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,pstrerror(errno));
+		eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,std::strerror(errno));
 		xfree(lhead);
 		std::fclose(fdladder);
 		return -1;
@@ -434,7 +433,7 @@ int d2ladder_readladder(void)
 		std::fseek(fdladder,bn_int_get(lhead[laddertype].offset),SEEK_SET);
 		readlen=std::fread(ldata,1,number*sizeof(*ldata),fdladder);
 		if (readlen<=0) {
-			eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,pstrerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"file %s read error(read:%s)",d2ladder_ladder_file,std::strerror(errno));
 			xfree(ldata);
 			xfree(info);
 			continue;
@@ -822,7 +821,7 @@ int d2ladder_checksum_set(void)
 		if (readlen<=0) {
 			xfree(buffer);
 			std::fclose(fdladder);
-			eventlog(eventlog_level_error,__FUNCTION__,"got bad save file or read error(read:%s)",pstrerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"got bad save file or read error(read:%s)",std::strerror(errno));
 			return -1;
 		}
 		curlen+=readlen;
@@ -876,7 +875,7 @@ int d2ladder_checksum_check(void)
 		if (readlen<=0) {
 			xfree(buffer);
 			std::fclose(fdladder);
-			eventlog(eventlog_level_error,__FUNCTION__,"got bad save file or read error(read:%s)",pstrerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"got bad save file or read error(read:%s)",std::strerror(errno));
 			return -1;
 		}
 		curlen+=readlen;
