@@ -64,8 +64,8 @@ int dbs_server_init(void);
 void dbs_server_loop(int ListeningSocket);
 int dbs_server_setup_fdsets(fd_set * pReadFDs, fd_set * pWriteFDs,
         fd_set * pExceptFDs, int ListeningSocket ) ;
-BOOL dbs_server_read_data(t_d2dbs_connection* conn) ;
-BOOL dbs_server_write_data(t_d2dbs_connection* conn) ;
+bool dbs_server_read_data(t_d2dbs_connection* conn) ;
+bool dbs_server_write_data(t_d2dbs_connection* conn) ;
 int dbs_server_list_add_socket(int sd, unsigned int ipaddr);
 static int setsockopt_keepalive(int sock);
 static unsigned int get_preset_d2gsid(unsigned int ipaddr);
@@ -200,16 +200,16 @@ int dbs_server_setup_fdsets(t_psock_fd_set * pReadFDs, t_psock_fd_set * pWriteFD
  * false on failure, or when the client closes its half of the
  * connection.  (EAGAIN doesn't count as a failure.)
  */
-BOOL dbs_server_read_data(t_d2dbs_connection* conn)
+bool dbs_server_read_data(t_d2dbs_connection* conn)
 {
 	int nBytes;
 
 	nBytes = net_recv(conn->sd, conn->ReadBuf + conn->nCharsInReadBuffer,
 			  kBufferSize - conn->nCharsInReadBuffer);
 
-	if (nBytes < 0) return FALSE;
+	if (nBytes < 0) return false;
 	conn->nCharsInReadBuffer += nBytes;
-	return TRUE;
+	return true;
 }
 
 
@@ -217,20 +217,20 @@ BOOL dbs_server_read_data(t_d2dbs_connection* conn)
  * The connection is writable, so send any pending data.  Returns
  * false on failure.  (EAGAIN doesn't count as a failure.)
  */
-BOOL dbs_server_write_data(t_d2dbs_connection* conn)
+bool dbs_server_write_data(t_d2dbs_connection* conn)
 {
 	int nBytes ;
 
 	nBytes = net_send(conn->sd, conn->WriteBuf,
 	    conn->nCharsInWriteBuffer > kMaxPacketLength ? kMaxPacketLength : conn->nCharsInWriteBuffer);
 
-	if (nBytes < 0) return FALSE;
+	if (nBytes < 0) return false;
 
 	conn->nCharsInWriteBuffer -= nBytes;
 	if (conn->nCharsInWriteBuffer)
 		std::memmove(conn->WriteBuf, conn->WriteBuf + nBytes, conn->nCharsInWriteBuffer);
 
-	return TRUE;
+	return true;
 }
 
 int dbs_server_list_add_socket(int sd, unsigned int ipaddr)
@@ -288,7 +288,7 @@ void dbs_server_loop(int lsocket)
 	fd_set ReadFDs, WriteFDs, ExceptFDs;
 	t_elem * elem;
 	t_d2dbs_connection* it;
-	BOOL bOK ;
+	bool bOK ;
 	const char* pcErrorType ;
 	struct timeval         tv;
 	int highest_fd;
@@ -346,12 +346,12 @@ void dbs_server_loop(int lsocket)
 
 		LIST_TRAVERSE(dbs_server_connection_list,elem)
 		{
-			bOK = TRUE;
+			bOK = true;
 			pcErrorType = 0;
 
 			if (!(it=(t_d2dbs_connection*)elem_get_data(elem))) continue;
 			if (PSOCK_FD_ISSET(it->sd, &ExceptFDs)) {
-				bOK = FALSE;
+				bOK = false;
 				pcErrorType = "General socket error"; /* FIXME: no no no no no */
 				PSOCK_FD_CLR(it->sd, &ExceptFDs);
 			} else {
