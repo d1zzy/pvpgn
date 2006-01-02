@@ -25,7 +25,9 @@
 # include "win32/service.h"
 #endif
 
+#include "compat/strcasecmp.h"
 #include "common/conf.h"
+#include "common/xalloc.h"
 #include "common/eventlog.h"
 #include "version.h"
 #include "common/setup_after.h"
