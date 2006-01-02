@@ -12,7 +12,7 @@ MakeIncludes=
 Compiler=
 CppCompiler=
 Linker=-lws2_32_@@_
-IsCpp=0
+IsCpp=1
 Icon=d2dbsConsole.ico
 ExeOutput=..\bin
 ObjectOutput=
@@ -40,7 +40,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit2]
-FileName=..\src\win32\service.c
+FileName=..\src\win32\service.cpp
 CompileCpp=0
 Folder=win32/Source Files
 Compile=1
@@ -140,7 +140,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit12]
-FileName=..\src\d2dbs\prefs.c
+FileName=..\src\d2dbs\prefs.cpp
 CompileCpp=0
 Folder=d2dbs/Source Files
 Compile=1
@@ -150,7 +150,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit13]
-FileName=..\src\d2dbs\charlock.c
+FileName=..\src\d2dbs\charlock.cpp
 CompileCpp=0
 Folder=d2dbs/Source Files
 Compile=1
@@ -160,7 +160,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit14]
-FileName=..\src\d2dbs\d2ladder.c
+FileName=..\src\d2dbs\d2ladder.cpp
 CompileCpp=0
 Folder=d2dbs/Source Files
 Compile=1
@@ -170,7 +170,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit15]
-FileName=..\src\d2dbs\dbsdupecheck.c
+FileName=..\src\d2dbs\dbsdupecheck.cpp
 CompileCpp=0
 Folder=d2dbs/Source Files
 Compile=1
@@ -180,7 +180,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit16]
-FileName=..\src\d2dbs\dbserver.c
+FileName=..\src\d2dbs\dbserver.cpp
 CompileCpp=0
 Folder=d2dbs/Source Files
 Compile=1
@@ -190,7 +190,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit17]
-FileName=..\src\d2dbs\dbspacket.c
+FileName=..\src\d2dbs\dbspacket.cpp
 CompileCpp=0
 Folder=d2dbs/Source Files
 Compile=1
@@ -200,7 +200,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit18]
-FileName=..\src\d2dbs\handle_signal.c
+FileName=..\src\d2dbs\handle_signal.cpp
 CompileCpp=0
 Folder=d2dbs/Source Files
 Compile=1
@@ -210,7 +210,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit19]
-FileName=..\src\d2dbs\main.c
+FileName=..\src\d2dbs\main.cpp
 CompileCpp=0
 Folder=d2dbs/Source Files
 Compile=1
@@ -220,7 +220,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit20]
-FileName=..\src\common\xalloc.c
+FileName=..\src\common\xalloc.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -230,7 +230,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit21]
-FileName=..\src\common\addr.c
+FileName=..\src\common\addr.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -240,7 +240,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit22]
-FileName=..\src\common\bn_type.c
+FileName=..\src\common\bn_type.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -250,7 +250,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit23]
-FileName=..\src\common\d2char_checksum.c
+FileName=..\src\common\d2char_checksum.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -260,7 +260,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit24]
-FileName=..\src\common\eventlog.c
+FileName=..\src\common\eventlog.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -270,7 +270,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit25]
-FileName=..\src\common\hexdump.c
+FileName=..\src\common\hexdump.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -280,7 +280,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit26]
-FileName=..\src\common\list.c
+FileName=..\src\common\list.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -290,7 +290,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit27]
-FileName=..\src\common\util.c
+FileName=..\src\common\util.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -300,7 +300,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit28]
-FileName=..\src\compat\strsep.c
+FileName=..\src\compat\strsep.cpp
 CompileCpp=0
 Folder=compat/Source Files
 Compile=1
@@ -310,7 +310,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit29]
-FileName=..\src\compat\inet_aton.c
+FileName=..\src\compat\inet_aton.cpp
 CompileCpp=0
 Folder=compat/Source Files
 Compile=1
@@ -320,7 +320,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit30]
-FileName=..\src\compat\psock.c
+FileName=..\src\compat\psock.cpp
 CompileCpp=0
 Folder=compat/Source Files
 Compile=1
@@ -330,7 +330,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit31]
-FileName=..\src\compat\strerror.c
+FileName=..\src\compat\strerror.cpp
 CompileCpp=0
 Folder=compat/Source Files
 Compile=1
@@ -498,7 +498,7 @@ ProductVersion=0.1
 AutoIncBuildNr=0
 
 [Unit46]
-FileName=..\src\common\packet.c
+FileName=..\src\common\packet.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -508,7 +508,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit47]
-FileName=..\src\common\network.c
+FileName=..\src\common\network.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -528,7 +528,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit49]
-FileName=..\src\d2dbs\cmdline.c
+FileName=..\src\d2dbs\cmdline.cpp
 CompileCpp=0
 Folder=d2dbs/Source Files
 Compile=1
@@ -548,7 +548,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit51]
-FileName=..\src\common\conf.c
+FileName=..\src\common\conf.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
@@ -568,7 +568,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit53]
-FileName=..\src\common\xstring.c
+FileName=..\src\common\xstring.cpp
 CompileCpp=0
 Folder=common/Source Files
 Compile=1
