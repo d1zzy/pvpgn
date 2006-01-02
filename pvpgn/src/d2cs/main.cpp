@@ -57,11 +57,13 @@
 using namespace pvpgn::d2cs;
 using namespace pvpgn;
 
+#ifdef WIN32
 char serviceLongName[] = "d2cs service";
 char serviceName[] = "d2cs";
 char serviceDescription[] = "Diablo 2 Character Server";
 
 int g_ServiceStatus = -1;
+#endif
 
 static int init(void);
 static int cleanup(void);

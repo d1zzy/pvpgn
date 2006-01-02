@@ -43,6 +43,11 @@
 #include "d2ladder.h"
 #include "common/setup_after.h"
 
+
+#ifdef WIN32
+extern int g_ServiceStatus;
+#endif
+
 namespace pvpgn
 {
 
@@ -57,7 +62,6 @@ static int server_loop(void);
 static int server_cleanup(void);
 
 t_addrlist		* server_listen_addrs;
-extern int g_ServiceStatus;
 
 static int server_listen(void)
 {
