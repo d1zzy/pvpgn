@@ -19,7 +19,7 @@
 #ifndef INCLUDED_BNI_H
 #define INCLUDED_BNI_H
 
-#include <stdio.h>
+#include <cstdio>
 
 #ifndef BNI_MAXICONS
 #define BNI_MAXICONS 4096
@@ -51,8 +51,8 @@ typedef struct {
 } t_bnifile;
 
 
-extern t_bnifile * load_bni(FILE *f);
-extern int write_bni(FILE *f, t_bnifile *b);
+extern t_bnifile * load_bni(std::FILE *f);
+extern int write_bni(std::FILE *f, t_bnifile *b);
 
 }
 

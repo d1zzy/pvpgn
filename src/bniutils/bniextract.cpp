@@ -2,7 +2,7 @@
     Copyright (C) 2000  Marco Ziech (mmz@gmx.net)
     Copyright (C) 2000  Ross Combs (rocombs@cs.nmsu.edu)
 
-    This program is free software; you can redistribute it and/or modify
+    This program is xfree software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
@@ -17,49 +17,17 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#include "compat/exitstatus.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
+#include <cstdlib>
+#include <cstring>
+#include <cerrno>
+
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
-# ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#include "compat/statmacros.h"
+
 #include "compat/mkdir.h"
+#include "compat/statmacros.h"
+#include "common/xalloc.h"
 #include "common/version.h"
 #include "fileio.h"
 #include "tga.h"
@@ -87,14 +55,14 @@ t_tgaimg * area2img(t_tgaimg *src, int x, int y, int width, int height, t_tgaimg
 	if (pixelsize == 0) return NULL;
 
 	dst = new_tgaimg(width,height,src->bpp,type);
-	dst->data = (t_uint8*)malloc(width*height*pixelsize);
+	dst->data = (t_uint8*)xmalloc(width*height*pixelsize);
 
 	datap = src->data;
 	datap += y*src->width*pixelsize;
 	destp = dst->data;
 	for (i = 0; i < height; i++) {
 		datap += x*pixelsize;
-		memcpy(destp,datap,width*pixelsize);
+		std::memcpy(destp,datap,width*pixelsize);
 		destp += width*pixelsize;
 		datap += (src->width-x)*pixelsize;
 	}
@@ -104,12 +72,12 @@ t_tgaimg * area2img(t_tgaimg *src, int x, int y, int width, int height, t_tgaimg
 
 void usage(char const * progname)
 {
-    fprintf(stderr,
+    std::fprintf(stderr,
 	    "usage: %s [<options>] [--] <BNI file> <output directory>\n"
             "    -h, --help, --usage  show this information and exit\n"
             "    -v, --version        print version number and exit\n",progname);
 
-    exit(STATUS_FAILURE);
+    std::exit(EXIT_FAILURE);
 }
 
 }
@@ -118,7 +86,7 @@ extern int main(int argc, char * argv[])
 {
     char const * outdir=NULL;
     char const * bnifile=NULL;
-    FILE *       fbni;
+    std::FILE *       fbni;
     struct stat  s;
     int          a;
     int          forcefile=0;
@@ -126,93 +94,93 @@ extern int main(int argc, char * argv[])
 
     if (argc<1 || !argv || !argv[0])
     {
-	fprintf(stderr,"bad arguments\n");
-	return STATUS_FAILURE;
+	std::fprintf(stderr,"bad arguments\n");
+	return EXIT_FAILURE;
     }
 
     for (a=1; a<argc; a++)
         if (forcefile && !bnifile)
             bnifile = argv[a];
-        else if (strcmp(argv[a],"-")==0 && !bnifile)
+        else if (std::strcmp(argv[a],"-")==0 && !bnifile)
             bnifile = dash;
         else if (argv[a][0]!='-' && !bnifile)
             bnifile = argv[a];
         else if (forcefile && !outdir)
             outdir = argv[a];
-        else if (strcmp(argv[a],"-")==0 && !outdir)
+        else if (std::strcmp(argv[a],"-")==0 && !outdir)
             outdir = dash;
         else if (argv[a][0]!='-' && !outdir)
             outdir = argv[a];
-        else if (forcefile || argv[a][0]!='-' || strcmp(argv[a],"-")==0)
+        else if (forcefile || argv[a][0]!='-' || std::strcmp(argv[a],"-")==0)
         {
-            fprintf(stderr,"%s: extra file argument \"%s\"\n",argv[0],argv[a]);
+            std::fprintf(stderr,"%s: extra file argument \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
-        else if (strcmp(argv[a],"--")==0)
+        else if (std::strcmp(argv[a],"--")==0)
             forcefile = 1;
-        else if (strcmp(argv[a],"-v")==0 || strcmp(argv[a],"--version")==0)
+        else if (std::strcmp(argv[a],"-v")==0 || std::strcmp(argv[a],"--version")==0)
         {
-            printf("version "PVPGN_VERSION"\n");
-            return STATUS_SUCCESS;
+            std::printf("version "PVPGN_VERSION"\n");
+            return EXIT_SUCCESS;
         }
-        else if (strcmp(argv[a],"-h")==0 || strcmp(argv[a],"--help")==0 || strcmp(argv[a],"--usage")
+        else if (std::strcmp(argv[a],"-h")==0 || std::strcmp(argv[a],"--help")==0 || std::strcmp(argv[a],"--usage")
 ==0)
             usage(argv[0]);
         else
         {
-            fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
+            std::fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
             usage(argv[0]);
         }
 
     if (!bnifile)
     {
-	fprintf(stderr,"%s: BNI file not specified\n",argv[0]);
+	std::fprintf(stderr,"%s: BNI file not specified\n",argv[0]);
 	usage(argv[0]);
     }
     if (!outdir)
     {
-	fprintf(stderr,"%s: output directory not specified\n",argv[0]);
+	std::fprintf(stderr,"%s: output directory not specified\n",argv[0]);
 	usage(argv[0]);
     }
 
     if (bnifile==dash)
         fbni = stdin;
     else
-	if (!(fbni = fopen(bnifile,"r")))
+	if (!(fbni = std::fopen(bnifile,"r")))
 	{
-	    fprintf(stderr,"%s: could not open BNI file \"%s\" for reading (fopen: %s)\n",argv[0],bnifile,pstrerror(errno));
-	    return STATUS_FAILURE;
+	    std::fprintf(stderr,"%s: could not open BNI file \"%s\" for reading (std::fopen: %s)\n",argv[0],bnifile,std::strerror(errno));
+	    return EXIT_FAILURE;
 	}
 
     if (outdir==dash)
     {
-	fprintf(stderr,"%s: can not write directory to <stdout>\n",argv[0]);
-	if (bnifile!=dash && fclose(fbni)<0)
-	    fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (fclose: %s)\n",argv[0],bnifile,pstrerror(errno));
-	return STATUS_FAILURE;
+	std::fprintf(stderr,"%s: can not write directory to <stdout>\n",argv[0]);
+	if (bnifile!=dash && std::fclose(fbni)<0)
+	    std::fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (std::fclose: %s)\n",argv[0],bnifile,std::strerror(errno));
+	return EXIT_FAILURE;
     }
     if (stat(outdir,&s)<0) {
 	if (errno == ENOENT) {
-	    fprintf(stderr,"Info: Creating directory \"%s\" ...\n",outdir);
+	    std::fprintf(stderr,"Info: Creating directory \"%s\" ...\n",outdir);
 	    if (p_mkdir(outdir,S_IRWXU+S_IRWXG+S_IRWXO)<0) {
-		fprintf(stderr,"%s: could not create output directory \"%s\" (mkdir: %s)",argv[0],outdir,pstrerror(errno));
-		if (bnifile!=dash && fclose(fbni)<0)
-		    fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (fclose: %s)\n",argv[0],bnifile,pstrerror(errno));
-		return STATUS_FAILURE;
+		std::fprintf(stderr,"%s: could not create output directory \"%s\" (mkdir: %s)",argv[0],outdir,std::strerror(errno));
+		if (bnifile!=dash && std::fclose(fbni)<0)
+		    std::fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (std::fclose: %s)\n",argv[0],bnifile,std::strerror(errno));
+		return EXIT_FAILURE;
 	    }
 	} else {
-	    fprintf(stderr,"%s: could not stat output directory \"%s\" (stat: %s)\n",argv[0],outdir,pstrerror(errno));
-	    if (bnifile!=dash && fclose(fbni)<0)
-		fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (fclose: %s)\n",argv[0],bnifile,pstrerror(errno));
-	    return STATUS_FAILURE;
+	    std::fprintf(stderr,"%s: could not stat output directory \"%s\" (stat: %s)\n",argv[0],outdir,std::strerror(errno));
+	    if (bnifile!=dash && std::fclose(fbni)<0)
+		std::fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (std::fclose: %s)\n",argv[0],bnifile,std::strerror(errno));
+	    return EXIT_FAILURE;
 	}
     }
     else
 	if (S_ISDIR(s.st_mode) == 0) {
-	    fprintf(stderr,"%s: \"%s\" is not a directory\n",argv[0],outdir);
-	    if (bnifile!=dash && fclose(fbni)<0)
-		fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (fclose: %s)\n",argv[0],bnifile,pstrerror(errno));
-	    return STATUS_FAILURE;
+	    std::fprintf(stderr,"%s: \"%s\" is not a directory\n",argv[0],outdir);
+	    if (bnifile!=dash && std::fclose(fbni)<0)
+		std::fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (std::fclose: %s)\n",argv[0],bnifile,std::strerror(errno));
+	    return EXIT_FAILURE;
 	}
 
     {
@@ -220,84 +188,84 @@ extern int main(int argc, char * argv[])
 	int          curry;
 	t_tgaimg *   iconimg;
 	t_bnifile *  bni;
-	FILE *       indexfile;
+	std::FILE *       indexfile;
 	char *       indexfilename;
 
-	fprintf(stderr,"Info: Loading \"%s\" ...\n",bnifile);
+	std::fprintf(stderr,"Info: Loading \"%s\" ...\n",bnifile);
 	bni = load_bni(fbni);
-	if (bni == NULL) return STATUS_FAILURE;
-	if (fseek(fbni,bni->dataoffset,SEEK_SET)<0) {
-		fprintf(stderr,"%s: could not seek to TGA data offset %lu (fseek: %s)\n",argv[0],(unsigned long int)bni->dataoffset,pstrerror(errno));
-		if (bnifile!=dash && fclose(fbni)<0)
-			fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (fclose: %s)\n",argv[0],bnifile,pstrerror(errno));
-		return STATUS_FAILURE;
+	if (bni == NULL) return EXIT_FAILURE;
+	if (std::fseek(fbni,bni->dataoffset,SEEK_SET)<0) {
+		std::fprintf(stderr,"%s: could not seek to TGA data offset %lu (std::fseek: %s)\n",argv[0],(unsigned long int)bni->dataoffset,std::strerror(errno));
+		if (bnifile!=dash && std::fclose(fbni)<0)
+			std::fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (std::fclose: %s)\n",argv[0],bnifile,std::strerror(errno));
+		return EXIT_FAILURE;
 	}
-	fprintf(stderr,"Info: Loading image ...\n");
+	std::fprintf(stderr,"Info: Loading image ...\n");
 	iconimg = load_tga(fbni);
-	if (iconimg == NULL) return STATUS_FAILURE;
+	if (iconimg == NULL) return EXIT_FAILURE;
 
-	fprintf(stderr,"Info: Extracting icons ...\n");
-	indexfilename = (char*)malloc(strlen(outdir)+14);
-	sprintf(indexfilename,"%s/bniindex.lst",outdir);
-	fprintf(stderr,"Info: Writing Index to \"%s\" ... \n",indexfilename);
-	indexfile = fopen(indexfilename , "w");
+	std::fprintf(stderr,"Info: Extracting icons ...\n");
+	indexfilename = (char*)xmalloc(std::strlen(outdir)+14);
+	std::sprintf(indexfilename,"%s/bniindex.lst",outdir);
+	std::fprintf(stderr,"Info: Writing Index to \"%s\" ... \n",indexfilename);
+	indexfile = std::fopen(indexfilename , "w");
 	if (indexfile == NULL) {
-		fprintf(stderr,"%s: could not open index file \"%s\" for writing (fopen: %s)\n",argv[0],indexfilename,pstrerror(errno));
-		if (bnifile!=dash && fclose(fbni)<0)
-			fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (fclose: %s)\n",argv[0],bnifile,pstrerror(errno));
-		return STATUS_FAILURE;
+		std::fprintf(stderr,"%s: could not open index file \"%s\" for writing (std::fopen: %s)\n",argv[0],indexfilename,std::strerror(errno));
+		if (bnifile!=dash && std::fclose(fbni)<0)
+			std::fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (std::fclose: %s)\n",argv[0],bnifile,std::strerror(errno));
+		return EXIT_FAILURE;
 	}
-	fprintf(indexfile,"unknown1 %08x\n",bni->unknown1);
-	fprintf(indexfile,"unknown2 %08x\n",bni->unknown2);
+	std::fprintf(indexfile,"unknown1 %08x\n",bni->unknown1);
+	std::fprintf(indexfile,"unknown2 %08x\n",bni->unknown2);
 	curry = 0;
 	for (i=0; i < bni->numicons; i++) {
-		FILE *dsttga;
+		std::FILE *dsttga;
 		char *name;
 		t_tgaimg *icn;
 		icn = area2img(iconimg,0,curry,bni->icons->icon[i].x,bni->icons->icon[i].y,tgaimgtype_uncompressed_truecolor);
 		if (icn == NULL) {
-			fprintf(stderr,"Error: area2img failed!\n");
-			return STATUS_FAILURE;
+			std::fprintf(stderr,"Error: area2img failed!\n");
+			return EXIT_FAILURE;
 		}
 		if (bni->icons->icon[i].id == 0) {
 			int tag = bni->icons->icon[i].tag;
-			name = (char*)malloc(strlen(outdir)+10);
-			sprintf(name,"%s/%c%c%c%c.tga",outdir,((tag >> 24) & 0xff),((tag >> 16) & 0xff),((tag >> 8) & 0xff),((tag >> 0) & 0xff));
+			name = (char*)xmalloc(std::strlen(outdir)+10);
+			std::sprintf(name,"%s/%c%c%c%c.tga",outdir,((tag >> 24) & 0xff),((tag >> 16) & 0xff),((tag >> 8) & 0xff),((tag >> 0) & 0xff));
 		} else {
-			name = (char*)malloc(strlen(outdir)+16);
-			sprintf(name,"%s/%08x.tga",outdir,bni->icons->icon[i].id);
+			name = (char*)xmalloc(std::strlen(outdir)+16);
+			std::sprintf(name,"%s/%08x.tga",outdir,bni->icons->icon[i].id);
 		}
-		fprintf(stderr,"Info: Writing icon %u(%ux%u) to file \"%s\" ... \n",i+1,icn->width,icn->height,name);
+		std::fprintf(stderr,"Info: Writing icon %u(%ux%u) to file \"%s\" ... \n",i+1,icn->width,icn->height,name);
 		curry += icn->height;
-		dsttga = fopen(name,"w");
+		dsttga = std::fopen(name,"w");
 		if (dsttga == NULL) {
-			fprintf(stderr,"%s: could not open ouptut TGA file \"%s\" for writing (fopen: %s)\n",argv[0],name,pstrerror(errno));
+			std::fprintf(stderr,"%s: could not open ouptut TGA file \"%s\" for writing (std::fopen: %s)\n",argv[0],name,std::strerror(errno));
 		} else {
 			if (write_tga(dsttga,icn) < 0) {
-				fprintf(stderr,"Error: Writing to TGA failed.\n");
+				std::fprintf(stderr,"Error: Writing to TGA failed.\n");
 			} else {
 				int tag = bni->icons->icon[i].tag;
 				if (bni->icons->icon[i].id == 0) {
-					fprintf(indexfile,"icon !%c%c%c%c %d %d %08x\n",((tag >> 24) & 0xff),((tag >> 16) & 0xff),((tag >> 8) & 0xff),((tag >> 0) & 0xff),bni->icons->icon[i].x,bni->icons->icon[i].y,bni->icons->icon[i].unknown);
+					std::fprintf(indexfile,"icon !%c%c%c%c %d %d %08x\n",((tag >> 24) & 0xff),((tag >> 16) & 0xff),((tag >> 8) & 0xff),((tag >> 0) & 0xff),bni->icons->icon[i].x,bni->icons->icon[i].y,bni->icons->icon[i].unknown);
 				} else {
-					fprintf(indexfile,"icon #%08x %d %d %08x\n",bni->icons->icon[i].id,bni->icons->icon[i].x,bni->icons->icon[i].y,bni->icons->icon[i].unknown);
+					std::fprintf(indexfile,"icon #%08x %d %d %08x\n",bni->icons->icon[i].id,bni->icons->icon[i].x,bni->icons->icon[i].y,bni->icons->icon[i].unknown);
 				}
 			}
-			if (fclose(dsttga)<0)
-				fprintf(stderr,"%s: could not close TGA file \"%s\" after writing (fclose: %s)\n",argv[0],name,pstrerror(errno));
+			if (std::fclose(dsttga)<0)
+				std::fprintf(stderr,"%s: could not close TGA file \"%s\" after writing (std::fclose: %s)\n",argv[0],name,std::strerror(errno));
 		}
-		free(name);
+		xfree(name);
 		destroy_img(icn);
 	}
 	destroy_img(iconimg);
-	if (fclose(indexfile)<0) {
-		fprintf(stderr,"%s: could not close index file \"%s\" after writing (fclose: %s)\n",argv[0],indexfilename,pstrerror(errno));
-		return STATUS_FAILURE;
+	if (std::fclose(indexfile)<0) {
+		std::fprintf(stderr,"%s: could not close index file \"%s\" after writing (std::fclose: %s)\n",argv[0],indexfilename,std::strerror(errno));
+		return EXIT_FAILURE;
 	}
-	free(indexfilename);
+	xfree(indexfilename);
     }
-    if (bnifile!=dash && fclose(fbni)<0)
-	fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (fclose: %s)\n",argv[0],bnifile,pstrerror(errno));
+    if (bnifile!=dash && std::fclose(fbni)<0)
+	std::fprintf(stderr,"%s: could not close BNI file \"%s\" after reading (std::fclose: %s)\n",argv[0],bnifile,std::strerror(errno));
 
-    return STATUS_SUCCESS;
+    return EXIT_SUCCESS;
 }

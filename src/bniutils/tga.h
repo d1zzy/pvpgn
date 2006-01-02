@@ -19,8 +19,7 @@
 #ifndef INCLUDED_TGA_H
 #define INCLUDED_TGA_H
 
-#include <stdio.h>
-
+#include <cstdio>
 #ifdef JUST_NEED_TYPES
 # include "compat/uint.h"
 #else
@@ -98,10 +97,10 @@ typedef enum {
 extern t_tgaimg * new_tgaimg(unsigned int width, unsigned int height, unsigned int bpp, t_tgaimgtype imgtype);
 extern int getpixelsize(t_tgaimg const *img);
 extern t_tgaimg * load_tgaheader(void);
-extern t_tgaimg * load_tga(FILE *f);
-extern int write_tga(FILE *f, t_tgaimg *img);
+extern t_tgaimg * load_tga(std::FILE *f);
+extern int write_tga(std::FILE *f, t_tgaimg *img);
 extern void destroy_img(t_tgaimg * img);
-extern void print_tga_info(t_tgaimg const * img, FILE * fp);
+extern void print_tga_info(t_tgaimg const * img, std::FILE * fp);
 
 }
 
