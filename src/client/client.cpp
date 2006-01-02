@@ -17,39 +17,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
+#include "client.h"
+
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+
+#ifdef WIN32
+# include <conio.h>
 #endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strrchr.h"
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#include "compat/read.h"
-#ifdef HAVE_SYS_IOCTL_H
-# include <sys/ioctl.h>
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#include "compat/psock.h"
-#include "common/packet.h"
+
 #include "common/network.h"
-#ifdef WIN32
-# include <conio.h> /* for kbhit() and getch() */
-#endif
-#include "client.h"
 #include "common/setup_after.h"
 
 
@@ -92,7 +73,7 @@ extern int client_blockrecv_packet(int sock, t_packet * packet)
             continue;
 
         default:
-/*	    printf("Got packet len %u/%u type 0x%04x\n",size,packet_get_size(packet),packet_get_type(packet)); */
+/*	    std::printf("Got packet len %u/%u type 0x%04x\n",size,packet_get_size(packet),packet_get_type(packet)); */
             return 0;
         }
 }
@@ -144,9 +125,9 @@ extern int client_get_termsize(int fd, unsigned int * w, unsigned int * h)
 	char const * str;
 	int          val;
 
-	if (!*w && (str = getenv("COLUMNS")) && (val = atoi(str))>0)
+	if (!*w && (str = std::getenv("COLUMNS")) && (val = std::atoi(str))>0)
 	    *w = val;
-	if (!*h && (str = getenv("LINES")) && (val = atoi(str))>0)
+	if (!*h && (str = std::getenv("LINES")) && (val = std::atoi(str))>0)
 	    *h = val;
     }
 #endif
@@ -160,7 +141,7 @@ extern int client_get_termsize(int fd, unsigned int * w, unsigned int * h)
 }
 
 
-/* This routine gets keyboard input. It handles printing the prompt, cursor positioning, and
+/* This routine std::gets keyboard input. It handles printing the prompt, cursor positioning, and
    text scrolling. It unfortunatly assumes that the chars read from stdin are in ASCII. */
 /* visible: -1=nothing, 0=prompt only, 1=prompt and text */
 extern int client_get_comm(char const * prompt, char * text, unsigned int maxlen, unsigned int * curpos, int visible, int redraw, unsigned int width)
@@ -174,20 +155,20 @@ extern int client_get_comm(char const * prompt, char * text, unsigned int maxlen
     for (count=0; count<16; count++)
     {
 	beg_pos = 0;
-	if (strlen(prompt)+1>=width)
+	if (std::strlen(prompt)+1>=width)
 	    visible = 0; /* no room to show any of the text */
-	else if (*curpos+strlen(prompt)+1>=width)
-	    beg_pos = (int)(*curpos+strlen(prompt)+1-width);
+	else if (*curpos+std::strlen(prompt)+1>=width)
+	    beg_pos = (int)(*curpos+std::strlen(prompt)+1-width);
 
 	if (redraw)
 	{
 	    if (visible!=-1)
-		printf("\r%s",prompt);
+		std::printf("\r%s",prompt);
 	    if (visible==1)
-		printf("%s",text+beg_pos);
+		std::printf("%s",text+beg_pos);
 	}
 
-	fflush(stdout);
+	std::fflush(stdout);
 #ifndef WIN32
 	addlen = read(fileno(stdin),&temp,1);
 #else
@@ -218,7 +199,7 @@ extern int client_get_comm(char const * prompt, char * text, unsigned int maxlen
 	    if (*curpos<1) /* already empty */
 	    {
 		if (visible==1)
-		    printf("\a");
+		    std::printf("\a");
 		continue;
 	    }
 	    (*curpos)--;
@@ -228,17 +209,17 @@ extern int client_get_comm(char const * prompt, char * text, unsigned int maxlen
 		if (beg_pos>0)
 		{
 		    beg_pos--;
-		    printf("\r%s%s",prompt,text+beg_pos);
+		    std::printf("\r%s%s",prompt,text+beg_pos);
 		}
 		else
-		  { printf("\b \b"); }
+		  { std::printf("\b \b"); }
 	    }
 	    continue;
 	case '\024': /* ^T */
 	    if (*curpos<2)
 	    {
 		if (visible==1)
-		    printf("\a");
+		    std::printf("\a");
 		continue;
 	    }
 	    {
@@ -250,8 +231,8 @@ extern int client_get_comm(char const * prompt, char * text, unsigned int maxlen
 
 		if (visible==1)
 		{
-		    printf("\b\b");
-		    printf("%s",&text[*curpos-2]);
+		    std::printf("\b\b");
+		    std::printf("%s",&text[*curpos-2]);
 		}
 	    }
 	    continue;
@@ -259,11 +240,11 @@ extern int client_get_comm(char const * prompt, char * text, unsigned int maxlen
 	    if (*curpos<1)
 	    {
 		if (visible==1)
-		    printf("\a");
+		    std::printf("\a");
 		continue;
 	    }
 	    {
-		char * t=strrchr(text,' ');
+		char * t=std::strrchr(text,' ');
 		unsigned int t1=beg_pos,t2;
 
 		addlen = t ? t - text : 0;
@@ -275,18 +256,18 @@ extern int client_get_comm(char const * prompt, char * text, unsigned int maxlen
 		{
 		    if (t1 == 0)
 			for (i=0; i < *curpos - addlen; i++)
-			    printf("\b \b");
+			    std::printf("\b \b");
 		    else
 		    {
 			/* the \r is counted in the return value, but that's ok
 			   because the last column is always blank */
-			t2 = printf("\r%s%s",prompt,text+beg_pos);
+			t2 = std::printf("\r%s%s",prompt,text+beg_pos);
 			if (t1 > 0 && beg_pos == 0)
 			{
 			    for (i=0; i<width-t2; i++)
-				printf(" ");
+				std::printf(" ");
 			    for (i=0; i<width-t2; i++)
-				printf("\b");
+				std::printf("\b");
 			}
 		    }
 		}
@@ -298,10 +279,10 @@ extern int client_get_comm(char const * prompt, char * text, unsigned int maxlen
 	    {
 		unsigned int t2;
 
-		t2 = printf("\r%s",prompt);
+		t2 = std::printf("\r%s",prompt);
 		for (i=0; i<width-t2; i++)
-		    printf(" ");
-		printf("\r%s",prompt);
+		    std::printf(" ");
+		std::printf("\r%s",prompt);
 	    }
 	    *curpos = 0;
 	    text[0] = '\0';
@@ -310,23 +291,23 @@ extern int client_get_comm(char const * prompt, char * text, unsigned int maxlen
 	    if (temp>0 && temp<32) /* unhandled control char */
 	    {
 		if (visible==1)
-		    printf("\a");
+		    std::printf("\a");
 		continue;
 	    }
 	    if ((*curpos+1)>=maxlen) /* too full */
 	    {
 		if (visible==1)
-		    printf("\a");
+		    std::printf("\a");
 		continue;
 	    }
 	    if (visible==1)
 	    {
-		if (beg_pos>0 || (*curpos + strlen(prompt) + 2 > width))
+		if (beg_pos>0 || (*curpos + std::strlen(prompt) + 2 > width))
 		{
 		    beg_pos++;
-		    printf("\r%s%s",prompt,text+beg_pos);
+		    std::printf("\r%s%s",prompt,text+beg_pos);
 		}
-		printf("%c",temp);
+		std::printf("%c",temp);
 	    }
 	    text[*curpos] = temp;
 	    (*curpos)++;

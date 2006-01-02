@@ -16,69 +16,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#endif
-#ifdef HAVE_MEMORY_H
-# include <memory.h>
-#endif
-#include "compat/memset.h"
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
-# ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-# endif
-#endif
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#include "compat/recv.h"
-#include "compat/send.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
+#include "udptest.h"
+
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+#include <ctime>
+
 #include "compat/psock.h"
 #include "common/packet.h"
-#include "common/init_protocol.h"
-#include "common/udp_protocol.h"
-#include "common/tag.h"
 #include "common/bn_type.h"
-#include "common/field_sizes.h"
-#include "common/network.h"
-#include "client.h"
-#include "udptest.h"
+#include "common/tag.h"
 #include "common/setup_after.h"
 
 
@@ -103,22 +51,22 @@ extern int client_udptest_setup(char const * progname, unsigned short * lsock_po
 
     if (!progname)
     {
-	fprintf(stderr,"got NULL progname\n");
+	std::fprintf(stderr,"got NULL progname\n");
 	return -1;
     }
 
     if ((lsock = psock_socket(PF_INET,SOCK_DGRAM,PSOCK_IPPROTO_UDP))<0)
     {
-	fprintf(stderr,"%s: could not create UDP socket (psock_socket: %s)\n",progname,pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not create UDP socket (psock_socket: %s)\n",progname,std::strerror(psock_errno()));
 	return -1;
     }
 
     if (psock_ctl(lsock,PSOCK_NONBLOCK)<0)
-	fprintf(stderr,"%s: could not set UDP socket to non-blocking mode (psock_ctl: %s)\n",progname,pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not set UDP socket to non-blocking mode (psock_ctl: %s)\n",progname,std::strerror(psock_errno()));
 
     for (lsock_port=BNETD_MIN_TEST_PORT; lsock_port<=BNETD_MAX_TEST_PORT; lsock_port++)
     {
-	memset(&laddr,0,sizeof(laddr));
+	std::memset(&laddr,0,sizeof(laddr));
 	laddr.sin_family = PSOCK_AF_INET;
 	laddr.sin_port = htons(lsock_port);
 	laddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -126,11 +74,11 @@ extern int client_udptest_setup(char const * progname, unsigned short * lsock_po
 	    break;
 
 	if (lsock_port==BNETD_MIN_TEST_PORT)
-	    dprintf("Could not bind to standard UDP port %hu, trying others. (psock_bind: %s)\n",BNETD_MIN_TEST_PORT,pstrerror(psock_errno()));
+	    dprintf("Could not bind to standard UDP port %hu, trying others. (psock_bind: %s)\n",BNETD_MIN_TEST_PORT,std::strerror(psock_errno()));
     }
     if (lsock_port>BNETD_MAX_TEST_PORT)
     {
-	fprintf(stderr,"%s: could not bind to any UDP port %hu through %hu (psock_bind: %s)\n",progname,BNETD_MIN_TEST_PORT,BNETD_MAX_TEST_PORT,pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not bind to any UDP port %hu through %hu (psock_bind: %s)\n",progname,BNETD_MIN_TEST_PORT,BNETD_MAX_TEST_PORT,std::strerror(psock_errno()));
 	psock_close(lsock);
 	return -1;
     }
@@ -147,28 +95,28 @@ extern int client_udptest_recv(char const * progname, int lsock, unsigned short 
     int          len;
     unsigned int count;
     t_packet *   rpacket;
-    time_t       start;
+    std::time_t       start;
 
     if (!progname)
     {
-	fprintf(stderr,"%s: got NULL progname\n",progname);
+	std::fprintf(stderr,"%s: got NULL progname\n",progname);
 	return -1;
     }
 
     if (!(rpacket = packet_create(packet_class_bnet)))
     {
-	fprintf(stderr,"%s: could not create packet\n",progname);
+	std::fprintf(stderr,"%s: could not create packet\n",progname);
 	return -1;
     }
 
-    start = time(NULL);
+    start = std::time(NULL);
     count = 0;
-    while (start+(time_t)timeout>=time(NULL))  /* timeout after a few seconds from last packet */
+    while (start+(std::time_t)timeout>=std::time(NULL))  /* timeout after a few seconds from last packet */
     {
 	if ((len = psock_recv(lsock,packet_get_raw_data_build(rpacket,0),MAX_PACKET_SIZE,0))<0)
 	{
 	    if (psock_errno()!=PSOCK_EAGAIN && psock_errno()!=PSOCK_EWOULDBLOCK)
-		fprintf(stderr,"%s: failed to receive UDPTEST on port %hu (psock_recv: %s)\n",progname,lsock_port,pstrerror(psock_errno()));
+		std::fprintf(stderr,"%s: failed to receive UDPTEST on port %hu (psock_recv: %s)\n",progname,lsock_port,std::strerror(psock_errno()));
 	    continue;
 	}
 	packet_set_size(rpacket,len);
@@ -181,7 +129,7 @@ extern int client_udptest_recv(char const * progname, int lsock, unsigned short 
 
 	if (bn_int_tag_eq(rpacket->u.server_udptest.bnettag,BNETTAG)<0)
 	{
-	    fprintf(stderr,"%s: got bad UDPTEST packet on port %hu\n",progname,lsock_port);
+	    std::fprintf(stderr,"%s: got bad UDPTEST packet on port %hu\n",progname,lsock_port);
 	    continue;
 	}
 
@@ -189,14 +137,14 @@ extern int client_udptest_recv(char const * progname, int lsock, unsigned short 
 	if (count>=2)
 	    break;
 
-	start = time(NULL);
+	start = std::time(NULL);
     }
 
     packet_destroy(rpacket);
 
     if (count<2)
     {
-	printf("Only received %d UDP packets on port %hu. Connection may be slow or firewalled.\n",count,lsock_port);
+	std::printf("Only received %d UDP packets on port %hu. Connection may be slow or firewalled.\n",count,lsock_port);
 	return -1;
     }
 

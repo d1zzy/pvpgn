@@ -16,93 +16,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#include "compat/exitstatus.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef HAVE_MEMORY_H
-# include <memory.h>
-#endif
-#include "compat/memset.h"
-#include "compat/memcpy.h"
-#include <ctype.h>
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#include "compat/strftime.h"
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <cstring>
+#include <cctype>
+
 #ifdef HAVE_TERMIOS_H
 # include <termios.h>
 #endif
+
 #include "compat/termios.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#include "compat/send.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#include "compat/inet_ntoa.h"
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
-#ifdef HAVE_SYS_STAT_H
-# include <sys/stat.h>
-#endif
 #include "compat/psock.h"
 #include "common/packet.h"
-#include "common/init_protocol.h"
-#include "common/file_protocol.h"
+#include "common/field_sizes.h"
+#include "common/bnettime.h"
+#include "common/hexdump.h"
+#include "common/util.h"
 #include "common/tag.h"
 #include "common/bn_type.h"
-#include "common/field_sizes.h"
-#include "common/network.h"
-#include "common/version.h"
-#include "common/util.h"
-#include "common/bnettime.h"
-#ifdef CLIENTDEBUG
-#include "common/eventlog.h"
-#endif
-#include "common/hexdump.h"
-#include "client.h"
 #include "common/xalloc.h"
+#include "common/file_protocol.h"
+#include "common/init_protocol.h"
+#ifdef CLIENTDEBUG
+# include "common/eventlog.h"
+#endif
+#include "client.h"
 #include "common/setup_after.h"
 
 using namespace pvpgn;
@@ -113,13 +52,13 @@ namespace
 
 void usage(char const * progname)
 {
-    fprintf(stderr,"usage: %s [<options>] [<servername> [<TCP portnumber>]]\n",progname);
-    fprintf(stderr,
+    std::fprintf(stderr,"usage: %s [<options>] [<servername> [<TCP portnumber>]]\n",progname);
+    std::fprintf(stderr,
             "    -b, --client=SEXP           report client as Brood Wars\n"
             "    -d, --client=DRTL           report client as Diablo Retail\n"
             "    --client=DSHR               report client as Diablo Shareware\n"
             "    -s, --client=STAR           report client as Starcraft (default)\n");
-    fprintf(stderr,
+    std::fprintf(stderr,
 	    "    --client=SSHR               report client as Starcraft Shareware\n"
 	    "    -w, --client=W2BN           report client as Warcraft II BNE\n"
             "    --client=D2DV               report client as Diablo II\n"
@@ -127,18 +66,18 @@ void usage(char const * progname)
             "    --client=WAR3               report client as Warcraft III\n"
             "    --client=W3XP               report client as Warcraft III: FT\n"
             "    --hexdump=FILE              do hex dump of packets into FILE\n");
-    fprintf(stderr,
+    std::fprintf(stderr,
 	    "    --arch=IX86                 report architecture as Windows (x86)\n"
 	    "    --arch=PMAC                 report architecture as Macintosh\n"
 	    "    --arch=XMAC                 report architecture as Macintosh OSX\n"
 	    );
-    fprintf(stderr,
+    std::fprintf(stderr,
 	    "    --startoffset=OFFSET        force offset to be OFFSET\n"
 	    "    --exists=ACTION             Ask/Overwrite/Backup/Resume if the file exists\n"
 	    "    --file=FILENAME             use FILENAME instead of asking\n"
             "    -h, --help, --usage         show this information and exit\n"
             "    -v, --version               print version number and exit\n");
-    exit(STATUS_FAILURE);
+    std::exit(EXIT_FAILURE);
 }
 
 }
@@ -175,11 +114,11 @@ extern int main(int argc, char * argv[])
     int		       exist_action=EXIST_ACTION_UNSPEC;
     struct stat        exist_buf;
     char const *       filename;
-    FILE *             fp;
-    FILE *             hexstrm=NULL;
+    std::FILE *             fp;
+    std::FILE *             hexstrm=NULL;
     int                fd_stdin;
     t_bnettime         bntime;
-    time_t             tm;
+    std::time_t             tm;
     char               timestr[FILE_TIME_MAXLEN];
     unsigned int       screen_width,screen_height;
     int                munged;
@@ -187,178 +126,178 @@ extern int main(int argc, char * argv[])
 
     if (argc<1 || !argv || !argv[0])
     {
-	fprintf(stderr,"bad arguments\n");
-	return STATUS_FAILURE;
+	std::fprintf(stderr,"bad arguments\n");
+	return EXIT_FAILURE;
     }
 
     for (a=1; a<argc; a++)
-	if (servname && isdigit((int)argv[a][0]) && a+1>=argc)
+	if (servname && std::isdigit((int)argv[a][0]) && a+1>=argc)
 	{
             if (str_to_ushort(argv[a],&servport)<0)
             {
-                fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
+                std::fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
                 usage(argv[0]);
             }
 	}
 	else if (!servname && argv[a][0]!='-' && a+2>=argc)
 	    servname = argv[a];
-        else if (strcmp(argv[a],"-b")==0 || strcmp(argv[a],"--client=SEXP")==0)
+        else if (std::strcmp(argv[a],"-b")==0 || std::strcmp(argv[a],"--client=SEXP")==0)
         {
             if (clienttag)
             {
-                fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
+                std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
                 usage(argv[0]);
             }
             clienttag = CLIENTTAG_BROODWARS;
         }
-        else if (strcmp(argv[a],"-d")==0 || strcmp(argv[a],"--client=DRTL")==0)
+        else if (std::strcmp(argv[a],"-d")==0 || std::strcmp(argv[a],"--client=DRTL")==0)
         {
             if (clienttag)
             {
-                fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
+                std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
                 usage(argv[0]);
             }
             clienttag = CLIENTTAG_DIABLORTL;
         }
-        else if (strcmp(argv[a],"--client=DSHR")==0)
+        else if (std::strcmp(argv[a],"--client=DSHR")==0)
         {
             if (clienttag)
             {
-                fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
+                std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
                 usage(argv[0]);
             }
             clienttag = CLIENTTAG_DIABLOSHR;
         }
-        else if (strcmp(argv[a],"-s")==0 || strcmp(argv[a],"--client=STAR")==0)
+        else if (std::strcmp(argv[a],"-s")==0 || std::strcmp(argv[a],"--client=STAR")==0)
         {
             if (clienttag)
             {
-                fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
+                std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
                 usage(argv[0]);
             }
             clienttag = CLIENTTAG_STARCRAFT;
         }
-        else if (strcmp(argv[a],"--client=SSHR")==0)
+        else if (std::strcmp(argv[a],"--client=SSHR")==0)
         {
             if (clienttag)
             {
-                fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
+                std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
                 usage(argv[0]);
             }
             clienttag = CLIENTTAG_SHAREWARE;
         }
-	else if (strcmp(argv[a],"-w")==0 || strcmp(argv[a],"--client=W2BN")==0)
+	else if (std::strcmp(argv[a],"-w")==0 || std::strcmp(argv[a],"--client=W2BN")==0)
 	{
             if (clienttag)
             {
-                fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
+                std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
                 usage(argv[0]);
             }
             clienttag = CLIENTTAG_WARCIIBNE;
 	}
-        else if (strcmp(argv[a],"--client=D2DV")==0)
+        else if (std::strcmp(argv[a],"--client=D2DV")==0)
         {
             if (clienttag)
             {
-                fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
+                std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
                 usage(argv[0]);
             }
             clienttag = CLIENTTAG_DIABLO2DV;
         }
-        else if (strcmp(argv[a],"--client=D2XP")==0)
+        else if (std::strcmp(argv[a],"--client=D2XP")==0)
         {
             if (clienttag)
             {
-                fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
+                std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
                 usage(argv[0]);
             }
             clienttag = CLIENTTAG_DIABLO2XP;
         }
-        else if (strcmp(argv[a],"--client=WAR3")==0)
+        else if (std::strcmp(argv[a],"--client=WAR3")==0)
         {
             if (clienttag)
             {
-                fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
+                std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
                 usage(argv[0]);
             }
             clienttag = CLIENTTAG_WARCRAFT3;
 	    newproto = 1;
         }
-        else if (strcmp(argv[a],"--client=W3XP")==0)
+        else if (std::strcmp(argv[a],"--client=W3XP")==0)
         {
             if (clienttag)
             {
-                fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
+                std::fprintf(stderr,"%s: client type was already specified as \"%s\"\n",argv[0],clienttag);
                 usage(argv[0]);
             }
             clienttag = CLIENTTAG_WAR3XP;
 	    newproto = 1;
         }
-        else if (strncmp(argv[a],"--client=",9)==0)
+        else if (std::strncmp(argv[a],"--client=",9)==0)
         {
-            fprintf(stderr,"%s: unknown client tag \"%s\"\n",argv[0],&argv[a][9]);
+            std::fprintf(stderr,"%s: unknown client tag \"%s\"\n",argv[0],&argv[a][9]);
             usage(argv[0]);
         }
-        else if (strcmp(argv[a],"--arch=IX86")==0)
+        else if (std::strcmp(argv[a],"--arch=IX86")==0)
         {
             if (archtag)
             {
-                fprintf(stderr,"%s: architecture type was already specified as \"%s\"\n",argv[0],archtag);
+                std::fprintf(stderr,"%s: architecture type was already specified as \"%s\"\n",argv[0],archtag);
                 usage(argv[0]);
             }
             archtag = ARCHTAG_WINX86;
         }
-        else if (strcmp(argv[a],"--arch=PMAC")==0)
+        else if (std::strcmp(argv[a],"--arch=PMAC")==0)
         {
             if (archtag)
             {
-                fprintf(stderr,"%s: architecture type was already specified as \"%s\"\n",argv[0],archtag);
+                std::fprintf(stderr,"%s: architecture type was already specified as \"%s\"\n",argv[0],archtag);
                 usage(argv[0]);
             }
             archtag = ARCHTAG_MACPPC;
         }
-        else if (strcmp(argv[a],"--arch=XMAC")==0)
+        else if (std::strcmp(argv[a],"--arch=XMAC")==0)
         {
             if (archtag)
             {
-                fprintf(stderr,"%s: architecture type was already specified as \"%s\"\n",argv[0],archtag);
+                std::fprintf(stderr,"%s: architecture type was already specified as \"%s\"\n",argv[0],archtag);
                 usage(argv[0]);
             }
             archtag = ARCHTAG_OSXPPC;
         }
-        else if (strncmp(argv[a],"--arch=",9)==0)
+        else if (std::strncmp(argv[a],"--arch=",9)==0)
         {
-            fprintf(stderr,"%s: unknown architecture tag \"%s\"\n",argv[0],&argv[a][9]);
+            std::fprintf(stderr,"%s: unknown architecture tag \"%s\"\n",argv[0],&argv[a][9]);
             usage(argv[0]);
         }
-	else if (strncmp(argv[a],"--hexdump=",10)==0)
+	else if (std::strncmp(argv[a],"--hexdump=",10)==0)
 	{
 	    if (hexfile)
 	    {
-		fprintf(stderr,"%s: hexdump file was already specified as \"%s\"\n",argv[0],hexfile);
+		std::fprintf(stderr,"%s: hexdump file was already specified as \"%s\"\n",argv[0],hexfile);
 		usage(argv[0]);
 	    }
 	    hexfile = &argv[a][10];
 	}
-	else if (strncmp(argv[a],"--startoffset=",14)==0)
+	else if (std::strncmp(argv[a],"--startoffset=",14)==0)
 	{
 	    if (startoffsetoverride)
 	    {
-		fprintf(stderr,"%s: startoffset was already specified as %u\n",argv[0],startoffset);
+		std::fprintf(stderr,"%s: startoffset was already specified as %u\n",argv[0],startoffset);
 		usage(argv[0]);
 	    }
             if (str_to_uint(&argv[a][14],&startoffset)<0)
             {
-                fprintf(stderr,"%s: startoffset \"%s\" should be a positive integer\n",argv[0],&argv[a][14]);
+                std::fprintf(stderr,"%s: startoffset \"%s\" should be a positive integer\n",argv[0],&argv[a][14]);
                 usage(argv[0]);
             }
 	    startoffsetoverride = 1;
 	}
-	else if (strncmp(argv[a],"--exists=",9)==0)
+	else if (std::strncmp(argv[a],"--exists=",9)==0)
 	{
 	    if (exist_action!=EXIST_ACTION_UNSPEC)
 	    {
-		fprintf(stderr,"%s: exists was already specified\n",argv[0]);
+		std::fprintf(stderr,"%s: exists was already specified\n",argv[0]);
 		usage(argv[0]);
 	    }
 	    if (argv[a][9]=='o' || argv[a][9]=='O')
@@ -370,34 +309,34 @@ extern int main(int argc, char * argv[])
 	    else if (argv[a][9]=='r' || argv[a][9]=='R')
 	    	exist_action = EXIST_ACTION_RESUME;
 	    else {
-		fprintf(stderr,"%s: exists must begin with a,A,o,O,b,B,r or R",argv[0]);
+		std::fprintf(stderr,"%s: exists must begin with a,A,o,O,b,B,r or R",argv[0]);
 		usage(argv[0]);
 	    }
 	}
-	else if (strncmp(argv[a],"--file=",7)==0)
+	else if (std::strncmp(argv[a],"--file=",7)==0)
 	{
 	    if (reqfile)
 	    {
-		fprintf(stderr,"%s: file was already specified as \"%s\"\n",argv[0],reqfile);
+		std::fprintf(stderr,"%s: file was already specified as \"%s\"\n",argv[0],reqfile);
 		usage(argv[0]);
 	    }
 	    reqfile = &argv[a][7];
 	}
-	else if (strcmp(argv[a],"-v")==0 || strcmp(argv[a],"--version")==0)
+	else if (std::strcmp(argv[a],"-v")==0 || std::strcmp(argv[a],"--version")==0)
 	{
-            printf("version "PVPGN_VERSION"\n");
+            std::printf("version "PVPGN_VERSION"\n");
             return 0;
 	}
-	else if (strcmp(argv[a],"-h")==0 || strcmp(argv[a],"--help")==0 || strcmp(argv[a],"--usage")==0)
+	else if (std::strcmp(argv[a],"-h")==0 || std::strcmp(argv[a],"--help")==0 || std::strcmp(argv[a],"--usage")==0)
             usage(argv[0]);
-        else if (strcmp(argv[a],"--client")==0 || strcmp(argv[a],"--hexdump")==0)
+        else if (std::strcmp(argv[a],"--client")==0 || std::strcmp(argv[a],"--hexdump")==0)
         {
-            fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
+            std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
             usage(argv[0]);
         }
 	else
 	{
-	    fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
+	    std::fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
 	    usage(argv[0]);
 	}
 
@@ -414,22 +353,22 @@ extern int main(int argc, char * argv[])
 
     if (hexfile)
     {
-	if (!(hexstrm = fopen(hexfile,"w")))
-	    fprintf(stderr,"%s: could not open file \"%s\" for writing the hexdump (fopen: %s)",argv[0],hexfile,pstrerror(errno));
+	if (!(hexstrm = std::fopen(hexfile,"w")))
+	    std::fprintf(stderr,"%s: could not open file \"%s\" for writing the hexdump (std::fopen: %s)",argv[0],hexfile,std::strerror(errno));
 	else
-	  { fprintf(hexstrm,"# dump generated by bnftp version "PVPGN_VERSION"\n"); }
+	  { std::fprintf(hexstrm,"# dump generated by bnftp version "PVPGN_VERSION"\n"); }
     }
 
     if (psock_init()<0)
     {
-        fprintf(stderr,"%s: could not inialialize socket functions\n",argv[0]);
-        return STATUS_FAILURE;
+        std::fprintf(stderr,"%s: could not inialialize socket functions\n",argv[0]);
+        return EXIT_FAILURE;
     }
 
     if (!(host = gethostbyname(servname)))
     {
-	fprintf(stderr,"%s: unknown host \"%s\"\n",argv[0],servname);
-	return STATUS_FAILURE;
+	std::fprintf(stderr,"%s: unknown host \"%s\"\n",argv[0],servname);
+	return EXIT_FAILURE;
     }
 
     fd_stdin = fileno(stdin);
@@ -444,39 +383,39 @@ extern int main(int argc, char * argv[])
     }
     else
     {
-	fprintf(stderr,"%s: could not get terminal attributes for stdin\n",argv[0]);
+	std::fprintf(stderr,"%s: could not get terminal attributes for stdin\n",argv[0]);
 	changed_in = 0;
     }
 
     if (client_get_termsize(fd_stdin,&screen_width,&screen_height)<0)
     {
-        fprintf(stderr,"%s: could not determine screen size\n",argv[0]);
+        std::fprintf(stderr,"%s: could not determine screen size\n",argv[0]);
         if (changed_in)
             tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-        return STATUS_FAILURE;
+        return EXIT_FAILURE;
     }
 
     if ((sd = psock_socket(PSOCK_PF_INET,PSOCK_SOCK_STREAM,PSOCK_IPPROTO_TCP))<0)
     {
-	fprintf(stderr,"%s: could not create socket (psock_socket: %s)\n",argv[0],pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not create socket (psock_socket: %s)\n",argv[0],std::strerror(psock_errno()));
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
-    memset(&saddr,0,sizeof(saddr));
+    std::memset(&saddr,0,sizeof(saddr));
     saddr.sin_family = PSOCK_AF_INET;
     saddr.sin_port   = htons(servport);
-    memcpy(&saddr.sin_addr.s_addr,host->h_addr_list[0],host->h_length);
+    std::memcpy(&saddr.sin_addr.s_addr,host->h_addr_list[0],host->h_length);
     if (psock_connect(sd,(struct sockaddr *)&saddr,sizeof(saddr))<0)
     {
-	fprintf(stderr,"%s: could not connect to server \"%s\" port %hu (psock_connect: %s)\n",argv[0],servname,servport,pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not connect to server \"%s\" port %hu (psock_connect: %s)\n",argv[0],servname,servport,std::strerror(psock_errno()));
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
-    printf("Connected to %s:%hu.\n",inet_ntoa(saddr.sin_addr),servport);
+    std::printf("Connected to %s:%hu.\n",inet_ntoa(saddr.sin_addr),servport);
 
 #ifdef CLIENTDEBUG
     eventlog_set(stderr);
@@ -484,15 +423,15 @@ extern int main(int argc, char * argv[])
 
     if (!(packet = packet_create(packet_class_init)))
     {
-	fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
     bn_byte_set(&packet->u.client_initconn.cclass,CLIENT_INITCONN_CLASS_FILE);
     if (hexstrm)
     {
-	fprintf(hexstrm,"%d: send class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
+	std::fprintf(hexstrm,"%d: send class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
 		sd,
 		packet_get_class_str(packet),(unsigned int)packet_get_class(packet),
 		packet_get_type_str(packet,packet_dir_from_client),packet_get_type(packet),
@@ -504,19 +443,19 @@ extern int main(int argc, char * argv[])
 
     if (!(rpacket = packet_create(packet_class_file)))
     {
-	fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
     if (!(fpacket = packet_create(packet_class_raw)))
     {
-	fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
 	packet_del_ref(rpacket);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
     if (!reqfile) /* if not specified on the command line then prompt for it */
@@ -530,12 +469,12 @@ extern int main(int argc, char * argv[])
 	    switch (client_get_comm("filename: ",text,sizeof(text),&commpos,1,munged,screen_width))
 	    {
 	    case -1: /* cancel or error */
-	    	printf("\n");
+	    	std::printf("\n");
 	    	if (changed_in)
 		    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
 	    	packet_del_ref(fpacket);
 	    	packet_del_ref(rpacket);
-	    	return STATUS_FAILURE;
+	    	return EXIT_FAILURE;
 
 	    case 0: /* timeout */
 	    	munged = 0;
@@ -545,7 +484,7 @@ extern int main(int argc, char * argv[])
 	    	munged = 0;
 	    	if (text[0]=='\0')
 		    continue;
-	    	printf("\n");
+	    	std::printf("\n");
 	    }
 	    break;
     	}
@@ -565,12 +504,12 @@ extern int main(int argc, char * argv[])
 	    switch (client_get_comm("File exists [O]verwrite, [B]ackup or [R]esume?: ",text2,sizeof(text2),&commpos,1,munged,screen_width))
 	    {
 	    case -1: /* cancel or error */
-	    	printf("\n");
+	    	std::printf("\n");
 	    	if (changed_in)
 		    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
 	    	packet_del_ref(fpacket);
 	    	packet_del_ref(rpacket);
-	    	return STATUS_FAILURE;
+	    	return EXIT_FAILURE;
 
 	    case 0: /* timeout */
 	    	munged = 0;
@@ -580,7 +519,7 @@ extern int main(int argc, char * argv[])
 	    	munged = 0;
 	    	if (text2[0]=='\0')
 		    continue;
-	    	printf("\n");
+	    	std::printf("\n");
 		break;
 	    }
 
@@ -599,7 +538,7 @@ extern int main(int argc, char * argv[])
 		exist_action = EXIST_ACTION_RESUME;
 		break;
 	    default:
-		printf("Please answer with o,O,b,B,r or R.\n");
+		std::printf("Please answer with o,O,b,B,r or R.\n");
 		munged = 1;
 		continue;
 	    }
@@ -618,31 +557,31 @@ extern int main(int argc, char * argv[])
 		unsigned int bnr;
 		int          renamed=0;
 
-		bakfile = (char*)xmalloc(strlen(reqfile)+1+2+1); /* assuming we go up to bnr 99 we need reqfile+'.'+'99'+'\0' */
+		bakfile = (char*)xmalloc(std::strlen(reqfile)+1+2+1); /* assuming we go up to bnr 99 we need reqfile+'.'+'99'+'\0' */
 		for (bnr=0; bnr<100; bnr++)
 		{
-		    sprintf(bakfile,"%s.%d",reqfile,bnr);
+		    std::sprintf(bakfile,"%s.%d",reqfile,bnr);
 		    if (stat(bakfile,&exist_buf)==0)
 			continue; /* backup exists */
 		    /* backup does not exist */
-		    if (rename(reqfile,bakfile)<0) /* just rename the existing file to the backup */
-			fprintf(stderr,"%s: could not create backup file \"%s\" (rename: %s)\n",argv[0],bakfile,pstrerror(errno));
+		    if (std::rename(reqfile,bakfile)<0) /* just std::rename the existing file to the backup */
+			std::fprintf(stderr,"%s: could not create backup file \"%s\" (std::rename: %s)\n",argv[0],bakfile,std::strerror(errno));
 		    else
 		    {
 			renamed = 1;
-			printf("Renaming \"%s\" to \"%s\".\n",reqfile,bakfile);
+			std::printf("Renaming \"%s\" to \"%s\".\n",reqfile,bakfile);
 		    }
 		    break;
 		}
 		xfree(bakfile);
 		if (!renamed)
 		{
-		    fprintf(stderr,"%s: could not create backup for \"%s\".\n",argv[0],reqfile);
+		    std::fprintf(stderr,"%s: could not create backup for \"%s\".\n",argv[0],reqfile);
 		    if (changed_in)
 			tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
 		    packet_del_ref(fpacket);
 		    packet_del_ref(rpacket);
-		    return STATUS_FAILURE;
+		    return EXIT_FAILURE;
 		}
 	    	if (!startoffsetoverride)
 	    	    startoffset = 0;
@@ -663,10 +602,10 @@ extern int main(int argc, char * argv[])
 
     if (!(packet = packet_create(packet_class_file)))
     {
-	fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	packet_del_ref(fpacket);
 	packet_del_ref(rpacket);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
     if (newproto) {
 	/* first send ARCH/CTAG */
@@ -688,16 +627,16 @@ extern int main(int argc, char * argv[])
     }
     if (hexstrm)
     {
-	fprintf(hexstrm,"%d: send class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
+	std::fprintf(hexstrm,"%d: send class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
 		sd,
 		packet_get_class_str(packet),(unsigned int)packet_get_class(packet),
 		packet_get_type_str(packet,packet_dir_from_client),packet_get_type(packet),
 		packet_get_size(packet));
 	hexdump(hexstrm,packet_get_raw_data(packet,0),packet_get_size(packet));
     }
-    if (newproto) printf("\nSending ARCH/CTAG info...");
-    else printf("\nRequesting info...");
-    fflush(stdout);
+    if (newproto) std::printf("\nSending ARCH/CTAG info...");
+    else std::printf("\nRequesting info...");
+    std::fflush(stdout);
     client_blocksend_packet(sd,packet);
     packet_del_ref(packet);
 
@@ -706,14 +645,14 @@ extern int main(int argc, char * argv[])
 	packet_set_size(fpacket, sizeof(t_server_file_unknown1));
 	if (client_blockrecv_packet(sd,fpacket)<0)
 	{
-	    fprintf(stderr,"%s: server closed connection\n",argv[0]);
+	    std::fprintf(stderr,"%s: server closed connection\n",argv[0]);
 	    packet_del_ref(fpacket);
 	    packet_del_ref(rpacket);
-	    return STATUS_FAILURE;
+	    return EXIT_FAILURE;
 	}
 	if (hexstrm)
 	{
-	    fprintf(hexstrm,"%d: recv class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
+	    std::fprintf(hexstrm,"%d: recv class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
 		     sd,
 		     packet_get_class_str(fpacket),(unsigned int)packet_get_class(fpacket),
 		     packet_get_type_str(fpacket,packet_dir_from_server),packet_get_type(fpacket),
@@ -731,12 +670,12 @@ extern int main(int argc, char * argv[])
 	bn_long_set_a_b(&fpacket->u.client_file_req3.unknown5, 0, 0);
 	bn_long_set_a_b(&fpacket->u.client_file_req3.unknown6, 0, 0);
 	packet_append_string(fpacket, reqfile);
-	printf("\nRequesting info...");
-	fflush(stdout);
+	std::printf("\nRequesting info...");
+	std::fflush(stdout);
 	client_blocksend_packet(sd,fpacket);
 	if (hexstrm)
 	{
-	    fprintf(hexstrm,"%d: send class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
+	    std::fprintf(hexstrm,"%d: send class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
 		    sd,
 		    packet_get_class_str(fpacket),(unsigned int)packet_get_class(fpacket),
 		    packet_get_type_str(fpacket,packet_dir_from_client),packet_get_type(fpacket),
@@ -748,14 +687,14 @@ extern int main(int argc, char * argv[])
     {
 	if (client_blockrecv_packet(sd,rpacket)<0)
 	{
-	    fprintf(stderr,"%s: server closed connection\n",argv[0]);
+	    std::fprintf(stderr,"%s: server closed connection\n",argv[0]);
 	    packet_del_ref(fpacket);
 	    packet_del_ref(rpacket);
-	    return STATUS_FAILURE;
+	    return EXIT_FAILURE;
 	}
 	if (hexstrm)
 	{
-	    fprintf(hexstrm,"%d: recv class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
+	    std::fprintf(hexstrm,"%d: recv class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
 		     sd,
 		     packet_get_class_str(rpacket),(unsigned int)packet_get_class(rpacket),
 		     packet_get_type_str(rpacket,packet_dir_from_server),packet_get_type(rpacket),
@@ -768,111 +707,111 @@ extern int main(int argc, char * argv[])
     filelen = bn_int_get(rpacket->u.server_file_reply.filelen);
     bn_long_to_bnettime(rpacket->u.server_file_reply.timestamp,&bntime);
     tm = bnettime_to_time(bntime);
-    strftime(timestr,FILE_TIME_MAXLEN,FILE_TIME_FORMAT,localtime(&tm));
+    std::strftime(timestr,FILE_TIME_MAXLEN,FILE_TIME_FORMAT,std::localtime(&tm));
     filename = packet_get_str_const(rpacket,sizeof(t_server_file_reply),MAX_FILENAME_STR);
 
     if (exist_action==EXIST_ACTION_RESUME)
     {
-	if (!(fp = fopen(reqfile,"ab")))
+	if (!(fp = std::fopen(reqfile,"ab")))
 	{
-	    fprintf(stderr,"%s: could not open file \"%s\" for appending (fopen: %s)\n",argv[0],reqfile,pstrerror(errno));
+	    std::fprintf(stderr,"%s: could not open file \"%s\" for appending (std::fopen: %s)\n",argv[0],reqfile,std::strerror(errno));
 	    packet_del_ref(fpacket);
 	    packet_del_ref(rpacket);
-	    return STATUS_FAILURE;
+	    return EXIT_FAILURE;
 	}
     }
     else
     {
-	if (!(fp = fopen(reqfile,"wb")))
+	if (!(fp = std::fopen(reqfile,"wb")))
 	{
-	    fprintf(stderr,"%s: could not open file \"%s\" for writing (fopen: %s)\n",argv[0],reqfile,pstrerror(errno));
+	    std::fprintf(stderr,"%s: could not open file \"%s\" for writing (std::fopen: %s)\n",argv[0],reqfile,std::strerror(errno));
 	    packet_del_ref(fpacket);
 	    packet_del_ref(rpacket);
-	    return STATUS_FAILURE;
+	    return EXIT_FAILURE;
 	}
     }
 
-    printf("\n name: \"");
+    std::printf("\n name: \"");
     str_print_term(stdout,filename,0,0);
-    printf("\"\n changed: %s\n length: %u bytes\n",timestr,filelen);
-    fflush(stdout);
+    std::printf("\"\n changed: %s\n length: %u bytes\n",timestr,filelen);
+    std::fflush(stdout);
 
     if (startoffset>0) {
 	filelen -= startoffset; /* for resuming files */
-	printf("Resuming at position %u (%u bytes remaining).\n",startoffset,filelen);
+	std::printf("Resuming at position %u (%u bytes remaining).\n",startoffset,filelen);
     }
 
-    printf("\nSaving to \"%s\"...",reqfile);
+    std::printf("\nSaving to \"%s\"...",reqfile);
 
     for (currsize=0; currsize+MAX_PACKET_SIZE<=filelen; currsize+=MAX_PACKET_SIZE)
     {
-	printf(".");
-	fflush(stdout);
+	std::printf(".");
+	std::fflush(stdout);
 
 	if (client_blockrecv_raw_packet(sd,fpacket,MAX_PACKET_SIZE)<0)
 	{
-	    printf("error\n");
-	    fprintf(stderr,"%s: server closed connection\n",argv[0]);
-	    if (fclose(fp)<0)
-		fprintf(stderr,"%s: could not close file \"%s\" after writing (fclose: %s)\n",argv[0],reqfile,pstrerror(errno));
+	    std::printf("error\n");
+	    std::fprintf(stderr,"%s: server closed connection\n",argv[0]);
+	    if (std::fclose(fp)<0)
+		std::fprintf(stderr,"%s: could not close file \"%s\" after writing (std::fclose: %s)\n",argv[0],reqfile,std::strerror(errno));
 	    packet_del_ref(fpacket);
 	    packet_del_ref(rpacket);
-	    return STATUS_FAILURE;
+	    return EXIT_FAILURE;
 	}
 	if (hexstrm)
 	{
-	    fprintf(hexstrm,"%d: recv class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
+	    std::fprintf(hexstrm,"%d: recv class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
 		     sd,
 		     packet_get_class_str(fpacket),(unsigned int)packet_get_class(fpacket),
 		     packet_get_type_str(fpacket,packet_dir_from_server),packet_get_type(fpacket),
 		     packet_get_size(fpacket));
 	    hexdump(hexstrm,packet_get_raw_data(fpacket,0),packet_get_size(fpacket));
 	}
-	if (fwrite(packet_get_raw_data_const(fpacket,0),1,MAX_PACKET_SIZE,fp)<MAX_PACKET_SIZE)
+	if (std::fwrite(packet_get_raw_data_const(fpacket,0),1,MAX_PACKET_SIZE,fp)<MAX_PACKET_SIZE)
 	{
-	    printf("error\n");
-	    fprintf(stderr,"%s: could not write to file \"%s\" (fwrite: %s)\n",argv[0],reqfile,pstrerror(errno));
-	    if (fclose(fp)<0)
-		fprintf(stderr,"%s: could not close file \"%s\" after writing (fclose: %s)\n",argv[0],reqfile,pstrerror(errno));
+	    std::printf("error\n");
+	    std::fprintf(stderr,"%s: could not write to file \"%s\" (std::fwrite: %s)\n",argv[0],reqfile,std::strerror(errno));
+	    if (std::fclose(fp)<0)
+		std::fprintf(stderr,"%s: could not close file \"%s\" after writing (std::fclose: %s)\n",argv[0],reqfile,std::strerror(errno));
 	    packet_del_ref(fpacket);
 	    packet_del_ref(rpacket);
-	    return STATUS_FAILURE;
+	    return EXIT_FAILURE;
 	}
     }
     filelen -= currsize;
     if (filelen)
     {
-	printf(".");
-	fflush(stdout);
+	std::printf(".");
+	std::fflush(stdout);
 
 	if (client_blockrecv_raw_packet(sd,fpacket,filelen)<0)
 	{
-	    printf("error\n");
-	    fprintf(stderr,"%s: server closed connection\n",argv[0]);
-	    if (fclose(fp)<0)
-		fprintf(stderr,"%s: could not close file \"%s\" after writing (fclose: %s)\n",argv[0],reqfile,pstrerror(errno));
+	    std::printf("error\n");
+	    std::fprintf(stderr,"%s: server closed connection\n",argv[0]);
+	    if (std::fclose(fp)<0)
+		std::fprintf(stderr,"%s: could not close file \"%s\" after writing (std::fclose: %s)\n",argv[0],reqfile,std::strerror(errno));
 	    packet_del_ref(fpacket);
 	    packet_del_ref(rpacket);
-	    return STATUS_FAILURE;
+	    return EXIT_FAILURE;
 	}
 	if (hexstrm)
 	{
-	    fprintf(hexstrm,"%d: recv class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
+	    std::fprintf(hexstrm,"%d: recv class=%s[0x%02hx] type=%s[0x%04hx] length=%u\n",
 		     sd,
 		     packet_get_class_str(fpacket),(unsigned int)packet_get_class(fpacket),
 		     packet_get_type_str(fpacket,packet_dir_from_server),packet_get_type(fpacket),
 		     packet_get_size(fpacket));
 	    hexdump(hexstrm,packet_get_raw_data(fpacket,0),packet_get_size(fpacket));
 	}
-	if (fwrite(packet_get_raw_data_const(fpacket,0),1,filelen,fp)<filelen)
+	if (std::fwrite(packet_get_raw_data_const(fpacket,0),1,filelen,fp)<filelen)
 	{
-	    printf("error\n");
-	    fprintf(stderr,"%s: could not write to file \"%s\"\n",argv[0],reqfile);
-	    if (fclose(fp)<0)
-		fprintf(stderr,"%s: could not close file \"%s\" after writing (fclose: %s)\n",argv[0],reqfile,pstrerror(errno));
+	    std::printf("error\n");
+	    std::fprintf(stderr,"%s: could not write to file \"%s\"\n",argv[0],reqfile);
+	    if (std::fclose(fp)<0)
+		std::fprintf(stderr,"%s: could not close file \"%s\" after writing (std::fclose: %s)\n",argv[0],reqfile,std::strerror(errno));
 	    packet_del_ref(fpacket);
 	    packet_del_ref(rpacket);
-	    return STATUS_FAILURE;
+	    return EXIT_FAILURE;
 	}
     }
 
@@ -881,17 +820,17 @@ extern int main(int argc, char * argv[])
 
     if (hexstrm)
     {
-	fprintf(hexstrm,"# end of dump\n");
-	if (fclose(hexstrm)<0)
-	    fprintf(stderr,"%s: could not close hexdump file \"%s\" after writing (fclose: %s)",argv[0],hexfile,pstrerror(errno));
+	std::fprintf(hexstrm,"# end of dump\n");
+	if (std::fclose(hexstrm)<0)
+	    std::fprintf(stderr,"%s: could not close hexdump file \"%s\" after writing (std::fclose: %s)",argv[0],hexfile,std::strerror(errno));
     }
 
-    if (fclose(fp)<0)
+    if (std::fclose(fp)<0)
     {
-	fprintf(stderr,"%s: could not close file \"%s\" after writing (fclose: %s)\n",argv[0],reqfile,pstrerror(errno));
-	return STATUS_FAILURE;
+	std::fprintf(stderr,"%s: could not close file \"%s\" after writing (std::fclose: %s)\n",argv[0],reqfile,std::strerror(errno));
+	return EXIT_FAILURE;
     }
 
-    printf("done\n");
-    return STATUS_FAILURE;
+    std::printf("done\n");
+    return EXIT_FAILURE;
 }

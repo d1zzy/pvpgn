@@ -16,91 +16,25 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#endif
-#include "compat/exitstatus.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef HAVE_MEMORY_H
-# include <memory.h>
-#endif
-#include "compat/memset.h"
-#include "compat/memcpy.h"
-#include <ctype.h>
-#include <errno.h>
-#include "compat/strerror.h"
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-#ifdef HAVE_FCNTL_H
-# include <fcntl.h>
-#else
-# ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-# endif
-#endif
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <cstring>
+#include <cerrno>
+
 #ifdef HAVE_TERMIOS_H
 # include <termios.h>
 #endif
+
 #include "compat/termios.h"
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SELECT_H
-# include <sys/select.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#include "compat/socket.h"
-#include "compat/send.h"
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-#include "compat/netinet_in.h"
-#ifdef HAVE_ARPA_INET_H
-# include <arpa/inet.h>
-#endif
-#include "compat/inet_ntoa.h"
-#ifdef HAVE_NETDB_H
-# include <netdb.h>
-#endif
 #include "compat/psock.h"
+#include "compat/inet_ntoa.h"
 #include "common/packet.h"
-#include "common/init_protocol.h"
-#include "common/bot_protocol.h"
-#include "common/bn_type.h"
 #include "common/field_sizes.h"
-#include "common/network.h"
-#include "common/version.h"
 #include "common/util.h"
+#include "common/init_protocol.h"
+#include "common/bn_type.h"
+#include "common/network.h"
 #ifdef CLIENTDEBUG
 # include "common/eventlog.h"
 #endif
@@ -115,11 +49,11 @@ namespace
 
 void usage(char const * progname)
 {
-    fprintf(stderr,"usage: %s [<options>] [<servername> [<TCP portnumber>]]\n"
+    std::fprintf(stderr,"usage: %s [<options>] [<servername> [<TCP portnumber>]]\n"
             "    -h, --help, --usage         show this information and exit\n"
             "    -v, --version               print version number and exit\n",
 	    progname);
-    exit(STATUS_FAILURE);
+    std::exit(EXIT_FAILURE);
 }
 
 }
@@ -145,31 +79,31 @@ extern int main(int argc, char * argv[])
 
     if (argc<1 || !argv || !argv[0])
     {
-	fprintf(stderr,"bad arguments\n");
-	return STATUS_FAILURE;
+	std::fprintf(stderr,"bad arguments\n");
+	return EXIT_FAILURE;
     }
 
     for (a=1; a<argc; a++)
-	if (servname && isdigit((int)argv[a][0]) && a+1>=argc)
+	if (servname && std::isdigit((int)argv[a][0]) && a+1>=argc)
 	{
 	    if (str_to_ushort(argv[a],&servport)<0)
 	    {
-		fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
+		std::fprintf(stderr,"%s: \"%s\" should be a positive integer\n",argv[0],argv[a]);
 		usage(argv[0]);
 	    }
 	}
 	else if (!servname && argv[a][0]!='-' && a+2>=argc)
 	    servname = argv[a];
-	else if (strcmp(argv[a],"-v")==0 || strcmp(argv[a],"--version")==0)
+	else if (std::strcmp(argv[a],"-v")==0 || std::strcmp(argv[a],"--version")==0)
 	{
-            printf("version "PVPGN_VERSION"\n");
-            return STATUS_SUCCESS;
+            std::printf("version "PVPGN_VERSION"\n");
+            return EXIT_SUCCESS;
 	}
-	else if (strcmp(argv[a],"-h")==0 || strcmp(argv[a],"--help")==0 || strcmp(argv[a],"--usage")==0)
+	else if (std::strcmp(argv[a],"-h")==0 || std::strcmp(argv[a],"--help")==0 || std::strcmp(argv[a],"--usage")==0)
             usage(argv[0]);
 	else
 	{
-	    fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
+	    std::fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
 	    usage(argv[0]);
 	}
 
@@ -180,14 +114,14 @@ extern int main(int argc, char * argv[])
 
     if (psock_init()<0)
     {
-        fprintf(stderr,"%s: could not inialialize socket functions\n",argv[0]);
-        return STATUS_FAILURE;
+        std::fprintf(stderr,"%s: could not inialialize socket functions\n",argv[0]);
+        return EXIT_FAILURE;
     }
 
     if (!(host = gethostbyname(servname)))
     {
-	fprintf(stderr,"%s: unknown host \"%s\"\n",argv[0],servname);
-	return STATUS_FAILURE;
+	std::fprintf(stderr,"%s: unknown host \"%s\"\n",argv[0],servname);
+	return EXIT_FAILURE;
     }
 
     fd_stdin = fileno(stdin);
@@ -202,58 +136,58 @@ extern int main(int argc, char * argv[])
     }
     else
     {
-	fprintf(stderr,"%s: could not set terminal attributes for stdin\n",argv[0]);
+	std::fprintf(stderr,"%s: could not set terminal attributes for stdin\n",argv[0]);
 	changed_in = 0;
     }
 
     if (client_get_termsize(fd_stdin,&screen_width,&screen_height)<0)
     {
-	fprintf(stderr,"%s: could not determine screen size\n",argv[0]);
+	std::fprintf(stderr,"%s: could not determine screen size\n",argv[0]);
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
     if ((sd = psock_socket(PSOCK_PF_INET,PSOCK_SOCK_STREAM,PSOCK_IPPROTO_TCP))<0)
     {
-	fprintf(stderr,"%s: could not create socket (psock_socket: %s)\n",argv[0],pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not create socket (psock_socket: %s)\n",argv[0],std::strerror(psock_errno()));
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
-    memset(&saddr,0,sizeof(saddr));
+    std::memset(&saddr,0,sizeof(saddr));
     saddr.sin_family = PSOCK_AF_INET;
     saddr.sin_port   = htons(servport);
-    memcpy(&saddr.sin_addr.s_addr,host->h_addr_list[0],host->h_length);
+    std::memcpy(&saddr.sin_addr.s_addr,host->h_addr_list[0],host->h_length);
     if (psock_connect(sd,(struct sockaddr *)&saddr,sizeof(saddr))<0)
     {
-	fprintf(stderr,"%s: could not connect to server \"%s\" port %hu (psock_connect: %s)\n",argv[0],servname,servport,pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not connect to server \"%s\" port %hu (psock_connect: %s)\n",argv[0],servname,servport,std::strerror(psock_errno()));
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
     if (psock_ctl(sd,PSOCK_NONBLOCK)<0)
     {
-	fprintf(stderr,"%s: could not set TCP socket to non-blocking mode (psock_ctl: %s)\n",argv[0],pstrerror(psock_errno()));
+	std::fprintf(stderr,"%s: could not set TCP socket to non-blocking mode (psock_ctl: %s)\n",argv[0],std::strerror(psock_errno()));
 	psock_close(sd);
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
-    printf("Connected to %s:%hu.\n",inet_ntoa(saddr.sin_addr),servport);
+    std::printf("Connected to %s:%hu.\n",inet_ntoa(saddr.sin_addr),servport);
 #ifdef CLIENTDEBUG
     eventlog_set(stderr);
 #endif
 
     if (!(packet = packet_create(packet_class_init)))
     {
-	fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
     bn_byte_set(&packet->u.client_initconn.cclass,CLIENT_INITCONN_CLASS_BOT);
     client_blocksend_packet(sd,packet);
@@ -261,18 +195,18 @@ extern int main(int argc, char * argv[])
 
     if (!(rpacket = packet_create(packet_class_raw)))
     {
-	fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
 
     if (!(packet = packet_create(packet_class_raw)))
     {
-	fprintf(stderr,"%s: could not create packet\n",argv[0]);
+	std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 	if (changed_in)
 	    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-	return STATUS_FAILURE;
+	return EXIT_FAILURE;
     }
     packet_append_ntstring(packet,"\004");
     client_blocksend_packet(sd,packet);
@@ -298,7 +232,7 @@ extern int main(int argc, char * argv[])
 	    if (psock_select(highest_fd+1,&rfds,NULL,NULL,NULL)<0)
 	    {
 		if (errno!=PSOCK_EINTR)
-		    fprintf(stderr,"%s: select failed (select: %s)\n",argv[0],pstrerror(errno));
+		    std::fprintf(stderr,"%s: select failed (select: %s)\n",argv[0],std::strerror(errno));
 		continue;
 	    }
 
@@ -317,17 +251,17 @@ extern int main(int argc, char * argv[])
 		    char * str=(char*)packet_get_raw_data(rpacket,0);
 
 		    str[currsize] = '\0';
-		    printf("%s",str);
-		    fflush(stdout);
+		    std::printf("%s",str);
+		    std::fflush(stdout);
 		}
 
 		if (sd==-1) /* if connection was closed */
 		{
-		    printf("Connection closed by server.\n");
+		    std::printf("Connection closed by server.\n");
 		    if (changed_in)
 			tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
  		    packet_del_ref(rpacket);
-		    return STATUS_SUCCESS;
+		    return EXIT_SUCCESS;
 		}
 	    }
 
@@ -338,7 +272,7 @@ extern int main(int argc, char * argv[])
 		case -1: /* cancel */
 		    if (changed_in)
 			tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
-		    return STATUS_FAILURE;
+		    return EXIT_FAILURE;
 
 		case 0: /* timeout */
 		    break;
@@ -346,11 +280,11 @@ extern int main(int argc, char * argv[])
 		case 1:
 		    if (!(packet = packet_create(packet_class_raw)))
 		    {
-			fprintf(stderr,"%s: could not create packet\n",argv[0]);
+			std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
 			if (changed_in)
 			    tcsetattr(fd_stdin,TCSAFLUSH,&in_attr_old);
  			packet_del_ref(rpacket);
-			return STATUS_FAILURE;
+			return EXIT_FAILURE;
 		    }
 		    packet_append_ntstring(packet,text);
 		    packet_append_ntstring(packet,"\r\n");
