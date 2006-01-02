@@ -5,10 +5,10 @@
  */
 
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef HAVE_SYS_STAT_H
-# include <sys/stat.h>
-#endif
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
+
 #include "compat/mmap.h"
 #include "cdb_int.h"
 #include "common/setup_after.h"
@@ -17,16 +17,16 @@ namespace pvpgn
 {
 
 int
-cdb_init(struct cdb *cdbp, FILE *fd)
+cdb_init(struct cdb *cdbp, std::FILE *fd)
 {
   unsigned char *mem;
   unsigned fsize, dend;
 
   /* get file size */
-  if (fseek(fd, 0, SEEK_END))
+  if (std::fseek(fd, 0, SEEK_END))
     return -1;
-  fsize = (unsigned)(ftell(fd));
-  rewind(fd);
+  fsize = (unsigned)(std::ftell(fd));
+  std::rewind(fd);
   /* trivial sanity check: at least toc should be here */
   if (fsize < 2048)
     return errno = EPROTO, -1;
@@ -88,7 +88,7 @@ cdb_read(const struct cdb *cdbp, void *buf, unsigned len, unsigned pos)
 {
   const void *data = cdb_get(cdbp, len, pos);
   if (!data) return -1;
-  memcpy(buf, data, len);
+  std::memcpy(buf, data, len);
   return 0;
 }
 

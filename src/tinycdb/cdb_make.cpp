@@ -5,24 +5,10 @@
  */
 
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+
 #include "common/xalloc.h"
 #include "cdb_int.h"
 #include "common/setup_after.h"
@@ -40,9 +26,9 @@ cdb_pack(unsigned num, unsigned char buf[4])
 }
 
 int
-cdb_make_start(struct cdb_make *cdbmp, FILE *fd)
+cdb_make_start(struct cdb_make *cdbmp, std::FILE *fd)
 {
-  memset(cdbmp, 0, sizeof(*cdbmp));
+  std::memset(cdbmp, 0, sizeof(*cdbmp));
   cdbmp->cdb_fd = fd;
   cdbmp->cdb_dpos = 2048;
   cdbmp->cdb_bpos = cdbmp->cdb_buf + 2048;
@@ -50,10 +36,10 @@ cdb_make_start(struct cdb_make *cdbmp, FILE *fd)
 }
 
 static int
-ewrite(FILE *fd, const char *buf, int len)
+ewrite(std::FILE *fd, const char *buf, int len)
 {
   while(len) {
-    int l = fwrite(buf, 1, len, fd);
+    int l = std::fwrite(buf, 1, len, fd);
     if (l < 0 && errno != EINTR)
       return -1;
     len -= l;
@@ -68,7 +54,7 @@ _cdb_make_write(struct cdb_make *cdbmp, const char *ptr, unsigned len)
   unsigned l = sizeof(cdbmp->cdb_buf) - (cdbmp->cdb_bpos - cdbmp->cdb_buf);
   cdbmp->cdb_dpos += len;
   if (len > l) {
-    memcpy(cdbmp->cdb_bpos, ptr, l);
+    std::memcpy(cdbmp->cdb_bpos, ptr, l);
     if (ewrite(cdbmp->cdb_fd, cdbmp->cdb_buf, sizeof(cdbmp->cdb_buf)) < 0)
       return -1;
     ptr += l; len -= l;
@@ -82,7 +68,7 @@ _cdb_make_write(struct cdb_make *cdbmp, const char *ptr, unsigned len)
     cdbmp->cdb_bpos = cdbmp->cdb_buf;
   }
   if (len) {
-    memcpy(cdbmp->cdb_bpos, ptr, len);
+    std::memcpy(cdbmp->cdb_bpos, ptr, len);
     cdbmp->cdb_bpos += len;
   }
   return 0;
@@ -162,7 +148,7 @@ cdb_make_finish_internal(struct cdb_make *cdbmp)
     cdb_pack(hpos[t], p + (t << 3));
     cdb_pack(hcnt[t], p + (t << 3) + 4);
   }
-  rewind(cdbmp->cdb_fd);
+  std::rewind(cdbmp->cdb_fd);
   if (ewrite(cdbmp->cdb_fd, (char*)p, 2048) != 0)
     return -1;
 

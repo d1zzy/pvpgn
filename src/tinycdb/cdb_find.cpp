@@ -5,6 +5,9 @@
  */
 
 #include "common/setup_before.h"
+#include <cstring>
+#include <cerrno>
+
 #include "cdb_int.h"
 #include "common/setup_after.h"
 
@@ -57,7 +60,7 @@ cdb_find(struct cdb *cdbp, const void *key, unsigned klen)
       if (cdb_unpack(cdbp->cdb_mem + pos) == klen) {
 	if (cdbp->cdb_dend - klen < pos + 8)
 	  return errno = EPROTO, -1;
-	if (memcmp(key, cdbp->cdb_mem + pos + 8, klen) == 0) {
+	if (std::memcmp(key, cdbp->cdb_mem + pos + 8, klen) == 0) {
 	  n = cdb_unpack(cdbp->cdb_mem + pos + 4);
 	  pos += 8;
 	  if (cdbp->cdb_dend < n || cdbp->cdb_dend - n < pos + klen)

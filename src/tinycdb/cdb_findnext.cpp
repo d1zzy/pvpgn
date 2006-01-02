@@ -7,6 +7,9 @@
 /* see cdb_find.c for comments */
 
 #include "common/setup_before.h"
+#include <cstring>
+#include <cerrno>
+
 #include "cdb_int.h"
 #include "common/setup_after.h"
 
@@ -63,7 +66,7 @@ cdb_findnext(struct cdb_find *cdbfp) {
       if (cdb_unpack(cdbp->cdb_mem + pos) == klen) {
 	if (cdbp->cdb_fsize - klen < pos + 8)
 	  return errno = EPROTO, -1;
-	if (memcmp(cdbfp->cdb_key,
+	if (std::memcmp(cdbfp->cdb_key,
 	    cdbp->cdb_mem + pos + 8, klen) == 0) {
 	  n = cdb_unpack(cdbp->cdb_mem + pos + 4);
 	  pos += 8;

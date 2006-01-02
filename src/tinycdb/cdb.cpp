@@ -4,26 +4,13 @@
  */
 
 #include "common/setup_before.h"
-#include <stdio.h>
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include <stdarg.h>
-#include "compat/pgetopt.h"
-#include "compat/strerror.h"
-#include <errno.h>
+#include <cstdarg>
+#include <cstdio>
+#include <cstring>
+#include <cerrno>
+
 #include "common/xalloc.h"
+#include "compat/pgetopt.h"
 #include "cdb.h"
 #include "common/setup_after.h"
 
@@ -50,20 +37,20 @@ __attribute__((noreturn,format(printf,2,3)))
 error(int errnum, const char *fmt, ...)
 {
   if (fmt) {
-    va_list ap;
-    fprintf(stderr, "%s: ", progname);
+    std::va_list ap;
+    std::fprintf(stderr, "%s: ", progname);
     va_start(ap, fmt);
-    vfprintf(stderr, fmt, ap);
+    std::vfprintf(stderr, fmt, ap);
     va_end(ap);
   }
   if (errnum)
-    fprintf(stderr, ": %s\n", pstrerror(errnum));
+    std::fprintf(stderr, ": %s\n", std::strerror(errnum));
   else {
-    if (fmt) putc('\n', stderr);
-    fprintf(stderr, "%s: try `%s -h' for help\n", progname, progname);
+    if (fmt) std::putc('\n', stderr);
+    std::fprintf(stderr, "%s: try `%s -h' for help\n", progname, progname);
   }
-  fflush(stderr);
-  exit(errnum ? 111 : 2);
+  std::fflush(stderr);
+  std::exit(errnum ? 111 : 2);
 }
 
 static void allocbuf(unsigned len) {
@@ -79,15 +66,15 @@ static int qmode(char *dbname, char *key, int num, int flags)
 {
   struct cdb c;
   struct cdb_find cf;
-  FILE *fd;
+  std::FILE *fd;
   int r;
   int n, found;
 
-  fd = fopen(dbname, "rb");
+  fd = std::fopen(dbname, "rb");
   if (fd == NULL || cdb_init(&c, fd) != 0)
     error(errno, "unable to open database `%s'", dbname);
 
-  r = cdb_findinit(&cf, &c, key, strlen(key));
+  r = cdb_findinit(&cf, &c, key, std::strlen(key));
   if (!r)
     return 100;
   else if (r < 0)
@@ -100,8 +87,8 @@ static int qmode(char *dbname, char *key, int num, int flags)
     allocbuf(cdb_datalen(&c));
     if (cdb_read(&c, buf, cdb_datalen(&c), cdb_datapos(&c)) != 0)
       error(errno, "unable to read value");
-    fwrite(buf, 1, cdb_datalen(&c), stdout);
-    if (flags & F_MAP) putchar('\n');
+    std::fwrite(buf, 1, cdb_datalen(&c), stdout);
+    if (flags & F_MAP) std::putchar('\n');
     if (num)
       break;
   }
@@ -111,29 +98,29 @@ static int qmode(char *dbname, char *key, int num, int flags)
 }
 
 static void
-fget(FILE *f, unsigned char *b, unsigned len, unsigned *posp, unsigned limit)
+fget(std::FILE *f, unsigned char *b, unsigned len, unsigned *posp, unsigned limit)
 {
   if (posp && limit - *posp < len)
     error(EPROTO, "invalid database format");
-  if (fread(b, 1, len, f) != len) {
-    if (ferror(f)) error(errno, "unable to read");
-    fprintf(stderr, "%s: unable to read: short file\n", progname);
-    exit(2);
+  if (std::fread(b, 1, len, f) != len) {
+    if (std::ferror(f)) error(errno, "unable to read");
+    std::fprintf(stderr, "%s: unable to read: short file\n", progname);
+    std::exit(2);
   }
   if (posp) *posp += len;
 }
 
 static int
-fcpy(FILE *fi, FILE *fo, unsigned len, unsigned *posp, unsigned limit)
+fcpy(std::FILE *fi, std::FILE *fo, unsigned len, unsigned *posp, unsigned limit)
 {
   while(len > blen) {
     fget(fi, (unsigned char*)buf, blen, posp, limit);
-    if (fo && fwrite(buf, 1, blen, fo) != blen) return -1;
+    if (fo && std::fwrite(buf, 1, blen, fo) != blen) return -1;
     len -= blen;
   }
   if (len) {
     fget(fi, (unsigned char*)buf, len, posp, limit);
-    if (fo && fwrite(buf, 1, len, fo) != len) return -1;
+    if (fo && std::fwrite(buf, 1, len, fo) != len) return -1;
   }
   return 0;
 }
@@ -143,10 +130,10 @@ dmode(const char *dbname, char mode, int flags)
 {
   unsigned eod, klen, vlen;
   unsigned pos = 0;
-  FILE *f;
-  if (strcmp(dbname, "-") == 0)
+  std::FILE *f;
+  if (std::strcmp(dbname, "-") == 0)
     f = stdin;
-  else if ((f = fopen(dbname, "rb")) == NULL)
+  else if ((f = std::fopen(dbname, "rb")) == NULL)
     error(errno, "open %s", dbname);
   allocbuf(2048);
   fget(f, (unsigned char*)buf, 2048, &pos, 2048);
@@ -156,26 +143,26 @@ dmode(const char *dbname, char mode, int flags)
     klen = cdb_unpack((unsigned char*)buf);
     vlen = cdb_unpack((unsigned char*)(buf + 4));
     if (!(flags & F_MAP))
-      if (printf(mode == 'd' ? "+%u,%u:" : "+%u:", klen, vlen) < 0) return -1;
+      if (std::printf(mode == 'd' ? "+%u,%u:" : "+%u:", klen, vlen) < 0) return -1;
     if (fcpy(f, stdout, klen, &pos, eod) != 0) return -1;
     if (mode == 'd')
-      if (fputs(flags & F_MAP ? " " : "->", stdout) < 0)
+      if (std::fputs(flags & F_MAP ? " " : "->", stdout) < 0)
         return -1;
     if (fcpy(f, mode == 'd' ? stdout : NULL, vlen, &pos, eod) != 0)
       return -1;
-    if (putc('\n', stdout) < 0)
+    if (std::putc('\n', stdout) < 0)
       return -1;
   }
   if (pos != eod)
     error(EPROTO, "invalid cdb file format");
   if (!(flags & F_MAP))
-    if (putc('\n', stdout) < 0)
+    if (std::putc('\n', stdout) < 0)
       return -1;
   return 0;
 }
 
 static int smode(const char *dbname) {
-  FILE *f;
+  std::FILE *f;
   unsigned pos, eod;
   unsigned cnt = 0;
   unsigned kmin = 0, kmax = 0, ktot = 0;
@@ -186,9 +173,9 @@ static int smode(const char *dbname) {
   unsigned char toc[2048];
   unsigned k;
 
-  if (strcmp(dbname, "-") == 0)
+  if (std::strcmp(dbname, "-") == 0)
     f = stdin;
-  else if ((f = fopen(dbname, "rb")) == NULL)
+  else if ((f = std::fopen(dbname, "rb")) == NULL)
     error(errno, "open %s", dbname);
 
   pos = 0;
@@ -240,34 +227,34 @@ static int smode(const char *dbname) {
     htot += hlen;
     ++hcnt;
   }
-  printf("number of records: %u\n", cnt);
-  printf("key min/avg/max length: %u/%u/%u\n",
+  std::printf("number of records: %u\n", cnt);
+  std::printf("key min/avg/max length: %u/%u/%u\n",
          kmin, cnt ? (ktot + cnt / 2) / cnt : 0, kmax);
-  printf("val min/avg/max length: %u/%u/%u\n",
+  std::printf("val min/avg/max length: %u/%u/%u\n",
          vmin, cnt ? (vtot + cnt / 2) / cnt : 0, vmax);
-  printf("hash tables/entries/collisions: %u/%u/%u\n",
+  std::printf("hash tables/entries/collisions: %u/%u/%u\n",
          hcnt, htot, cnt - dist[0]);
-  printf("hash table min/avg/max length: %u/%u/%u\n",
+  std::printf("hash table min/avg/max length: %u/%u/%u\n",
          hmin, hcnt ? (htot + hcnt / 2) / hcnt : 0, hmax);
-  printf("hash table distances:\n");
+  std::printf("hash table distances:\n");
   for(k = 0; k < NDIST; ++k)
-    printf(" %c%u: %6u %2u%%\n",
+    std::printf(" %c%u: %6u %2u%%\n",
            k == NDIST - 1 ? '>' : 'd', k == NDIST - 1 ? k - 1 : k,
            dist[k], cnt ? dist[k] * 100 / cnt : 0);
   return 0;
 }
 
 static void badinput(const char *fn) {
-  fprintf(stderr, "%s: %s: bad format\n", progname, fn);
-  exit(2);
+  std::fprintf(stderr, "%s: %s: bad format\n", progname, fn);
+  std::exit(2);
 }
 
-static int getnum(FILE *f, unsigned *np, const char *fn) {
+static int getnum(std::FILE *f, unsigned *np, const char *fn) {
   unsigned n;
-  int c = getc(f);
+  int c = std::getc(f);
   if (c < '0' || c > '9') badinput(fn);
   n = c - '0';
-  while((c = getc(f)) >= '0' && c <= '9') {
+  while((c = std::getc(f)) >= '0' && c <= '9') {
     c -= '0';
     if (0xffffffff / 10 - c < n) badinput(fn);
     n = n * 10 + c;
@@ -286,32 +273,32 @@ addrec(struct cdb_make *cdbmp,
   if (r < 0)
     error(errno, "cdb_make_put");
   else if (r && (flags & F_WARNDUP)) {
-    fprintf(stderr, "%s: key `", progname);
-    fwrite(key, 1, klen, stderr);
-    fputs("' duplicated\n", stderr);
+    std::fprintf(stderr, "%s: key `", progname);
+    std::fwrite(key, 1, klen, stderr);
+    std::fputs("' duplicated\n", stderr);
     if (flags & F_ERRDUP)
-      exit(1);
+      std::exit(1);
   }
 }
 
 static void
-dofile_cdb(struct cdb_make *cdbmp, FILE *f, const char *fn, int flags)
+dofile_cdb(struct cdb_make *cdbmp, std::FILE *f, const char *fn, int flags)
 {
   unsigned klen, vlen;
   int c;
-  while((c = getc(f)) == '+') {
+  while((c = std::getc(f)) == '+') {
     if ((c = getnum(f, &klen, fn)) != ',' ||
         (c = getnum(f, &vlen, fn)) != ':' ||
         0xffffffff - klen < vlen)
       badinput(fn);
     allocbuf(klen + vlen);
     fget(f, (unsigned char*)buf, klen, NULL, 0);
-    if (getc(f) != '-' || getc(f) != '>') badinput(fn);
+    if (std::getc(f) != '-' || std::getc(f) != '>') badinput(fn);
     fget(f, (unsigned char*)(buf + klen), vlen, NULL, 0);
-    switch (getc(f))
+    switch (std::getc(f))
 	{
 	    case '\n': break;
-	    case '\r': if (getc(f)=='\n') break;
+	    case '\r': if (std::getc(f)=='\n') break;
 	    default: badinput(fn);
 	}
     addrec(cdbmp, buf, klen, buf + klen, vlen, flags);
@@ -319,19 +306,19 @@ dofile_cdb(struct cdb_make *cdbmp, FILE *f, const char *fn, int flags)
     switch (c)
 	{
 	    case '\n': break;
-	    case '\r': if (getc(f)=='\n') break;
+	    case '\r': if (std::getc(f)=='\n') break;
 	    default: badinput(fn);
 	}
 }
 
 static void
-dofile_ln(struct cdb_make *cdbmp, FILE *f, const char *fn, int flags)
+dofile_ln(struct cdb_make *cdbmp, std::FILE *f, const char *fn, int flags)
 {
   char *k, *v;
-  while(fgets(buf, blen, f) != NULL) {
+  while(std::fgets(buf, blen, f) != NULL) {
     unsigned l = 0;
     for (;;) {
-      l += strlen(buf + l);
+      l += std::strlen(buf + l);
       v = buf + l;
       if (v > buf && v[-1] == '\n') {
         v[-1] = '\0';
@@ -339,7 +326,7 @@ dofile_ln(struct cdb_make *cdbmp, FILE *f, const char *fn, int flags)
       }
       if (l < blen)
         allocbuf(l + 512);
-      if (!fgets(buf + l, blen - l, f))
+      if (!std::fgets(buf + l, blen - l, f))
         break;
     }
     k = buf;
@@ -350,18 +337,18 @@ dofile_ln(struct cdb_make *cdbmp, FILE *f, const char *fn, int flags)
     while(*v && *v != ' ' && *v != '\t') ++v;
     if (*v) *v++ = '\0';
     while(*v == ' ' || *v == '\t') ++v;
-    addrec(cdbmp, k, strlen(k), v, strlen(v), flags);
+    addrec(cdbmp, k, std::strlen(k), v, std::strlen(v), flags);
   }
 }
 
 static void
-dofile(struct cdb_make *cdbmp, FILE *f, const char *fn, int flags)
+dofile(struct cdb_make *cdbmp, std::FILE *f, const char *fn, int flags)
 {
   if (flags & F_MAP)
     dofile_ln(cdbmp, f, fn, flags);
   else
     dofile_cdb(cdbmp, f, fn, flags);
-  if (ferror(f))
+  if (std::ferror(f))
     error(errno, "read error");
 }
 
@@ -369,14 +356,14 @@ static int
 cmode(char *dbname, char *tmpname, int argc, char **argv, int flags)
 {
   struct cdb_make cdb;
-  FILE *fd;
+  std::FILE *fd;
   if (!tmpname) {
-    tmpname = (char*)xmalloc(strlen(dbname) + 5);
+    tmpname = (char*)xmalloc(std::strlen(dbname) + 5);
     if (!tmpname)
       error(ENOMEM, "unable to allocate memory");
-    strcat(strcpy(tmpname, dbname), ".tmp");
+    std::strcat(std::strcpy(tmpname, dbname), ".tmp");
   }
-  fd = fopen(tmpname, "w+b");
+  fd = std::fopen(tmpname, "w+b");
   if (fd == 0)
     error(errno, "unable to create %s", tmpname);
   cdb_make_start(&cdb, fd);
@@ -384,14 +371,14 @@ cmode(char *dbname, char *tmpname, int argc, char **argv, int flags)
   if (argc) {
     int i;
     for (i = 0; i < argc; ++i) {
-      if (strcmp(argv[i], "-") == 0)
+      if (std::strcmp(argv[i], "-") == 0)
         dofile(&cdb, stdin, "(stdin)", flags);
       else {
-        FILE *f = fopen(argv[i], "rb");
+        std::FILE *f = std::fopen(argv[i], "rb");
         if (!f)
           error(errno, "%s", argv[i]);
         dofile(&cdb, f, argv[i], flags);
-        fclose(f);
+        std::fclose(f);
       }
     }
   }
@@ -399,9 +386,9 @@ cmode(char *dbname, char *tmpname, int argc, char **argv, int flags)
     dofile(&cdb, stdin, "(stdin)", flags);
   if (cdb_make_finish(&cdb) != 0)
     error(errno, "cdb_make_finish");
-  fclose(fd);
-  if (rename(tmpname, dbname) != 0)
-    error(errno, "rename %s->%s", tmpname, dbname);
+  std::fclose(fd);
+  if (std::rename(tmpname, dbname) != 0)
+    error(errno, "std::rename %s->%s", tmpname, dbname);
   return 0;
 }
 
@@ -416,7 +403,7 @@ int main(int argc, char **argv)
   extern char *optarg;
   extern int optind;
 
-  if ((progname = strrchr(argv[0], '/')) != NULL)
+  if ((progname = std::strrchr(argv[0], '/')) != NULL)
     argv[0] = ++progname;
   else
     progname = argv[0];
@@ -438,11 +425,11 @@ int main(int argc, char **argv)
     case 'u': flags = (flags & ~F_DUPMASK) | CDB_PUT_INSERT; break;
     case 'm': flags |= F_MAP; break;
     case 'n':
-      if ((num = atoi(optarg)) <= 0)
+      if ((num = std::atoi(optarg)) <= 0)
         error(0, "invalid record number `%s'", optarg);
       break;
     case 'h':
-      printf("\
+      std::printf("\
 %s: Constant DataBase (CDB) tool. Usage is:\n\
  query:  %s -q [-m] [-n recno|-a] cdbfile key\n\
  dump:   %s -d [-m] [cdbfile|-]\n\
@@ -483,7 +470,7 @@ int main(int argc, char **argv)
     default:
       error(0, "no -q, -c, -d, -l or -s option specified");
   }
-  if (r < 0 || fflush(stdout) < 0)
+  if (r < 0 || std::fflush(stdout) < 0)
     error(errno, "unable to write: %d", c);
   return r;
 }

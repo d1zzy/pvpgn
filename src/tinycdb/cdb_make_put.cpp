@@ -5,13 +5,7 @@
  */
 
 #include "common/setup_before.h"
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
+#include <cerrno>
 #include "common/xalloc.h"
 #include "cdb_int.h"
 #include "common/setup_after.h"

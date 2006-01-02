@@ -4,20 +4,7 @@
  * Public domain.
  */
 
-#include "common/setup_before.h"
 #include "cdb.h"
-#include <errno.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-# ifdef HAVE_MEMORY_H
-#  include <memory.h>
-# endif
-#endif
-#include "common/setup_after.h"
 
 #ifndef EPROTO
 # define EPROTO EINVAL

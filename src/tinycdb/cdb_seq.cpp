@@ -5,6 +5,8 @@
  */
 
 #include "common/setup_before.h"
+#include <cerrno>
+
 #include "cdb_int.h"
 #include "common/setup_after.h"
 
