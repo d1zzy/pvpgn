@@ -30,6 +30,7 @@
 #include <string.h>
 #include <commctrl.h>
 #include <time.h>
+#include "gui_printf.h"
 #include "bnetd/connection.h"
 #include "bnetd/account.h"
 #include "bnetd/account_wrap.h"
@@ -48,6 +49,8 @@
 
 namespace pvpgn
 {
+
+HWND	ghwndConsole;
 
 namespace bnetd
 {
@@ -91,7 +94,6 @@ BOOL CALLBACK	KickDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 struct gui_struc {
 	HWND	hwnd;
 	HMENU	hmenuTray;
-	HWND	hwndConsole;
 	HWND	hwndUsers;
 	HWND	hwndUserCount;
 	HWND	hwndUserEditButton;
@@ -202,7 +204,7 @@ long PASCAL guiWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 static BOOL guiOnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 {
-	gui.hwndConsole = CreateWindowEx(
+	ghwndConsole = CreateWindowEx(
 		0,
 		RICHEDIT_CLASS,
 		NULL,
@@ -214,7 +216,7 @@ static BOOL guiOnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 		0,
 		NULL);
 	
-	if(!gui.hwndConsole) return FALSE;
+	if(!ghwndConsole) return FALSE;
 	
 	gui.hwndUsers = CreateWindowEx(
 		WS_EX_CLIENTEDGE,
@@ -345,7 +347,7 @@ static void guiOnPaint(HWND hwnd)
 	
 	EndPaint(hwnd, &ps);
 	
-	UpdateWindow(gui.hwndConsole);
+	UpdateWindow(ghwndConsole);
 	UpdateWindow(gui.hwndUsers);
 	UpdateWindow(gui.hwndUserCount);
 	UpdateWindow(gui.hwndUserEditButton);
@@ -413,7 +415,7 @@ static void guiOnSize(HWND hwnd, UINT state, int cx, int cy)
 	gui.rectUsers.right = cx ;
 	gui.rectUsers.top = 18 + cy_edge;
 	gui.rectUsers.bottom = cy - cy_status -20 ;
-	guiMoveWindow(gui.hwndConsole, &gui.rectConsole);
+	guiMoveWindow(ghwndConsole, &gui.rectConsole);
 	guiMoveWindow(gui.hwndUsers, &gui.rectUsers);
 	MoveWindow(gui.hwndUserCount, cx - 140, 0, 140, 18, TRUE); 
 	MoveWindow(gui.hwndUserEditButton, cx - 140, cy - cy_status -20, 140, 20, TRUE);
@@ -485,58 +487,6 @@ static void guiOnMouseMove(HWND hwnd, int x, int y, UINT keyFlags)
 	}
 }
 
-extern int gui_printf(const char *format, ...)
-{
-	va_list arglist;
-	va_start(arglist, format);
-	return gui_lvprintf(eventlog_level_error, format, arglist);
-}
-
-extern int gui_lprintf(t_eventlog_level l, const char *format, ...)
-{
-	va_list arglist;
-	va_start(arglist, format);
-	return gui_lvprintf(l, format, arglist);
-}
-
-extern int gui_lvprintf(t_eventlog_level l, const char *format, va_list arglist)
-{
-	char buff[4096];
-	int result;
-	COLORREF clr;
-	
-	result = vsprintf(buff, format, arglist);
-	
-	switch(l) {
-		case eventlog_level_none:
-			clr = RGB(0, 0, 0);
-			break;
-		case eventlog_level_trace:
-			clr = RGB(255, 0, 255);
-			break;
-		case eventlog_level_debug:
-			clr = RGB(0, 0, 255);
-			break;
-		case eventlog_level_info:
-			clr = RGB(0, 0, 0);
-			break;
-		case eventlog_level_warn:
-			clr = RGB(255, 128, 64);
-			break;
-		case eventlog_level_error:
-			clr = RGB(255, 0, 0);
-			break;
-		case eventlog_level_fatal:
-			clr = RGB(255, 0, 0);
-			break;
-		default:
-			clr = RGB(0, 0, 0);
-	}
-	
-	guiAddText(buff, clr);
-	return result;
-}
-
 static void guiOnUpdates ()
 {
 	ShellExecute(NULL, "open", "www.pvpgn.org", NULL, NULL, SW_SHOW );
@@ -594,19 +544,19 @@ static void guiAddText(const char *str, COLORREF clr)
 	CHARRANGE cr;
 	CHARRANGE ds;
 	CHARFORMAT fmt;
-	text_length = SendMessage(gui.hwndConsole, WM_GETTEXTLENGTH, 0, 0);
+	text_length = SendMessage(ghwndConsole, WM_GETTEXTLENGTH, 0, 0);
 	
 	if ( text_length >30000 ) {
 		ds.cpMin = 0;
 		ds.cpMax = text_length - 30000;
-		SendMessage(gui.hwndConsole, EM_EXSETSEL, 0, (LPARAM)&ds);
-		SendMessage(gui.hwndConsole, EM_REPLACESEL, FALSE, 0);
+		SendMessage(ghwndConsole, EM_EXSETSEL, 0, (LPARAM)&ds);
+		SendMessage(ghwndConsole, EM_REPLACESEL, FALSE, 0);
 	}
 	
 	cr.cpMin = text_length;
 	cr.cpMax = text_length;
 	
-	SendMessage(gui.hwndConsole, EM_EXSETSEL, 0, (LPARAM)&cr); 
+	SendMessage(ghwndConsole, EM_EXSETSEL, 0, (LPARAM)&cr); 
 	
 	fmt.cbSize = sizeof(CHARFORMAT);
 	fmt.dwMask = CFM_COLOR|CFM_FACE|CFM_SIZE|CFM_BOLD|CFM_ITALIC|CFM_STRIKEOUT|CFM_UNDERLINE;
@@ -615,8 +565,8 @@ static void guiAddText(const char *str, COLORREF clr)
 	fmt.crTextColor = clr;
 	strcpy(fmt.szFaceName,"Courier New");
 	
-	SendMessage(gui.hwndConsole, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&fmt);
-	SendMessage(gui.hwndConsole, EM_REPLACESEL, FALSE, (LPARAM)str);
+	SendMessage(ghwndConsole, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&fmt);
+	SendMessage(ghwndConsole, EM_REPLACESEL, FALSE, (LPARAM)str);
 }
 
 static void guiDEAD(char *message)
@@ -651,7 +601,7 @@ static void guiMoveWindow(HWND hwnd, RECT* r)
 
 static void guiClearLogWindow(void)
 {
-	SendMessage(gui.hwndConsole, WM_SETTEXT, 0, 0);
+	SendMessage(ghwndConsole, WM_SETTEXT, 0, 0);
 }
 
 static void guiKillTrayIcon(void)

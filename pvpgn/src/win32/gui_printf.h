@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001  Erik Latoshek [forester] (laterk@inbox.lv)
+ * Copyright (C) 2004   CreepLord (creeplord@pvpgn.org)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,19 +15,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef __WINMAIN_H__
-#define __WINMAIN_H__
+ 
+#ifndef __GUI_PRINTF_H__
+#define __GUI_PRINTF_H__
+ 
+#ifdef WIN32_GUI 
+ 
+#include "common/setup_before.h"
+
+#include <windows.h>
+#include <stdarg.h>
+#include "common/eventlog.h"
+
+#include "common/setup_after.h"
 
 namespace pvpgn
 {
-
-namespace bnetd
-{
           
-extern void guiOnUpdateUserList(void);
+extern int gui_lvprintf(t_eventlog_level l, const char *format, va_list arglist);
+extern int gui_lprintf(t_eventlog_level l, const char *format, ...);
+extern int gui_printf(const char *format, ...);
 
 }
-
-}
+#endif
 
 #endif
