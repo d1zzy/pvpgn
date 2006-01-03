@@ -194,7 +194,7 @@ AC_C_INLINE
 # Checks for libraries.
 AC_CHECK_LIB(m, pow, [LIBS="$LIBS -lm"])
 
-AC_CHECK_LIB(z, compress, [LIBS="$LIBS -lz"])
+AC_CHECK_LIB(z, compress, [LIBS="$LIBS -lz"], [AC_MSG_ERROR([not found, please install the zlib libraries])])
 
 mysql_include_path=""
 dnl Detecting mysql paths
@@ -492,7 +492,7 @@ AC_FUNC_MKDIR_ARGS
 AC_CHECK_FUNCS(gethostname gettimeofday select socket strdup strtoul strerror inet_aton inet_ntoa uname recv send recvfrom sendto uname fork getpid sigaction sigprocmask sigaddset setpgid setpgrp ftime strcasecmp strncasecmp stricmp strnicmp chdir difftime strchr strrchr index rindex memcpy memset memmove bcopy wait waitpid pipe getenv ioctl setsid mktime poll gethostbyname getservbyname getlogin pow getpwnam getgrnam getuid getgid setuid setgid mkdir _mkdir strsep getopt kqueue setitimer epoll_create getrlimit vsnprintf _vsnprintf snprintf _snprintf)
 
 AC_OUTPUT([Makefile src/Makefile src/compat/Makefile src/common/Makefile \
-src/tinycdb/Makefile src/zlib/Makefile src/bnetd/Makefile src/d2cs/Makefile \
+src/tinycdb/Makefile src/bnetd/Makefile src/d2cs/Makefile \
 src/d2dbs/Makefile src/bntrackd/Makefile src/client/Makefile \
 src/bnpass/Makefile src/bniutils/Makefile src/bnpcap/Makefile man/Makefile \
 conf/Makefile docs/Makefile Win32-Projects/Makefile files/Makefile \

@@ -28,7 +28,7 @@
 #include "common/tag.h"
 #include "common/bn_type.h"
 #include "common/xalloc.h"
-#include "zlib/pvpgn_zlib.h"
+#include "zlib.h"
 #include "tournament.h"
 #include "anongame_maplists.h"
 #include "common/setup_after.h"
@@ -1966,7 +1966,7 @@ static int zlib_compress(void const *src, int srclen, char **dest, int *destlen)
     tmpdata = (char *) xmalloc(srclen + (srclen / 0x10) + 0x200 + 0x8000);
 
     std::memset(&zcpr, 0, sizeof(z_stream));
-    pvpgn_deflateInit(&zcpr, 9);
+    deflateInit(&zcpr, 9);
     zcpr.next_in = (Bytef*) src;
     zcpr.next_out = (Bytef*)tmpdata;
     do
@@ -1974,7 +1974,7 @@ static int zlib_compress(void const *src, int srclen, char **dest, int *destlen)
 	all_read_before = zcpr.total_in;
 	zcpr.avail_in = (lorigtodo < 0x8000) ? lorigtodo : 0x8000;
 	zcpr.avail_out = 0x8000;
-	ret = pvpgn_deflate(&zcpr, (zcpr.avail_in == lorigtodo) ? Z_FINISH : Z_SYNC_FLUSH);
+	ret = deflate(&zcpr, (zcpr.avail_in == lorigtodo) ? Z_FINISH : Z_SYNC_FLUSH);
 	lorigdone += (zcpr.total_in - all_read_before);
 	lorigtodo -= (zcpr.total_in - all_read_before);
     }
@@ -1989,7 +1989,7 @@ static int zlib_compress(void const *src, int srclen, char **dest, int *destlen)
 	std::memcpy((*dest) + 4, tmpdata, (*destlen));
 	(*destlen) += 4;
     }
-    pvpgn_deflateEnd(&zcpr);
+    deflateEnd(&zcpr);
 
     xfree((void *) tmpdata);
 
