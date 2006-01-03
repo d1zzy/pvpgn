@@ -18,8 +18,7 @@ bnetd_SOURCES = account.cpp account_wrap.cpp adbanner.cpp alias_command.cpp anon
 
 bnetd_LDADD = $(top_builddir)/src/common/libcommon.a \
 	$(top_builddir)/src/compat/libcompat.a \
-	$(top_builddir)/src/tinycdb/libtinycdb.a \
-	$(top_builddir)/src/zlib/libzlib.a
+	$(top_builddir)/src/tinycdb/libtinycdb.a
 
 noinst_HEADERS = account.h account_wrap.h adbanner.h alias_command.h \
 	anongame_gameresult.h anongame.h anongame_infos.h anongame_maplists.h \
