@@ -21,7 +21,9 @@
 #include <ctime>
 #include <cstring>
 #include <cctype>
-#include <sys/stat.h>
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
 #ifdef HAVE_TERMIOS_H
 # include <termios.h>
 #endif
