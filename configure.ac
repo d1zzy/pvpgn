@@ -20,7 +20,7 @@ AC_CONFIG_AUX_DIR(src/autoconf)
 
 AC_CANONICAL_SYSTEM
 
-AM_INIT_AUTOMAKE(pvpgn, 1.7.8-CVS)
+AM_INIT_AUTOMAKE(pvpgn, 1.99.x-SVN)
 AC_CONFIG_HEADER(config.h)
 
 builtin(include,src/autoconf/ccstdc.m4)
