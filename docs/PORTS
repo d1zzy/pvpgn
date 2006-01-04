@@ -6,6 +6,7 @@ PvPGN porting status file
 ------------------------------------------------------------------
  x86    | Linux 2.6.x      | OK      | g++ >=3.3.x | main dev. platform
  x86_64 | Linux 2.6.x      | OK      | g++ >=3.4.x | sec dev. platform
+ x86    | WIN32            | OK      | mingw       | using Dev-C++ IDE
 
 Notes:
 - clearly x86 is the most tested version
