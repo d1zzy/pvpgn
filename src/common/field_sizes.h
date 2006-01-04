@@ -18,49 +18,49 @@
 #ifndef INCLUDED_FIELD_SIZES_TYPES
 #define INCLUDED_FIELD_SIZES_TYPES
 
-#define MAX_PACKET_SIZE      3072
-#define MAX_NORMAL_TYPE    0xffff
-#define MAX_FILE_TYPE      0xffff
-#define MAX_AUTH_TYPE        0xff
-#define MAX_GAMES_LIST         20
-#define MAX_MESSAGE_LEN       255
-#define MAX_COMMAND_LEN        32
-#define MAX_USERNAME_LEN       16 /* including terminating NUL char */
-#define MIN_USERNAME_LEN        2
-#define MAX_USERPASS_LEN       12 /* max password length as allowed by clients */
-#define UNCHECKED_NAME_STR     32 /* including terminating NUL char */
+const unsigned MAX_PACKET_SIZE = 3072;
+const unsigned MAX_NORMAL_TYPE = 0xffff;
+const unsigned MAX_FILE_TYPE = 0xffff;
+const int MAX_AUTH_TYPE = 0xff;
+const int MAX_GAMES_LIST = 20;
+const unsigned MAX_MESSAGE_LEN = 255;
+const int MAX_COMMAND_LEN = 32;
+const unsigned MAX_USERNAME_LEN = 16; /* including terminating NUL char */
+const unsigned MIN_USERNAME_LEN = 2;
+const unsigned MAX_USERPASS_LEN = 12; /* max password length as allowed by clients */
+const int UNCHECKED_NAME_STR = 32; /* including terminating NUL char */
                                   /* (longer than USER_NAME_MAX and CHAR_NAME_LEN so that
                                    *  proper error packets can be returned) */
-#define CLANSHORT_NAME_MAX	4
-#define CLAN_NAME_MAX		25 /* including terminating NUL char */
-#define MAX_CLANNAME_LEN	64
-#define MAX_CHANNELNAME_LEN	64
-#define MAX_CHARNAME_LEN	16
-#define MIN_CHARNAME_LEN	2
-#define MAX_GAMENAME_LEN	16
-#define MAX_GAMEPASS_LEN	16
-#define MAX_GAMEINFO_LEN	256
-#define MAX_GAMEDESC_LEN	32
-#define MAP_NAME_LEN           64
-#define BNETHASH_LEN           20 /* uint32*5, see bnethash.h */
-#define MAX_EXEINFO_STR       256 /* including terminating NUL char */
-#define MAX_OWNER_STR         128 /* including terminating NUL char */
-#define MAX_CDKEY_STR         128 /* including terminating NUL char */
-#define MAX_EMAIL_STR         128 /* including terminating NUL char */
-#define MAX_WINHOST_STR       128 /* including terminating NUL char */
-#define MAX_WINUSER_STR       128 /* including terminating NUL char */
-#define MAX_LANG_STR           64 /* including terminating NUL char */
-#define MAX_COUNTRYNAME_STR   128 /* including terminating NUL char */
-#define MAX_FILENAME_STR     2048 /* including terminating NUL char */
-#define MAX_GAMEREP_HEAD_STR 2048 /* including terminating NUL char */
-#define MAX_GAMEREP_BODY_STR 8192 /* including terminating NUL char */
-#define MAX_PLAYERINFO_STR   2048 /* including terminating NUL char */
-#define MAX_COUNTRYCODE_STR    32 /* including terminating NUL char */
-#define MAX_COUNTRY_STR        32 /* including terminating NUL char */
-#define MAX_ATTRKEY_STR      1024 /* including terminating NUL char */
-#define MAX_ATTRVAL_STR      4096 /* including terminating NUL char */
-#define MAX_IRC_MESSAGE_LEN 512 /* including CRLF (according to RFC 2812) */
-#define MAX_TOPIC_LEN         201 /* including terminating NUL char */
-#define MAX_REALMNAME_LEN	32
+const int CLANSHORT_NAME_MAX = 4;
+const unsigned CLAN_NAME_MAX = 25; /* including terminating NUL char */
+const int MAX_CLANNAME_LEN = 64;
+const int MAX_CHANNELNAME_LEN = 64;
+const unsigned MAX_CHARNAME_LEN = 16;
+const unsigned MIN_CHARNAME_LEN = 2;
+const int MAX_GAMENAME_LEN = 16;
+const int MAX_GAMEPASS_LEN = 16;
+const int MAX_GAMEINFO_LEN = 256;
+const int MAX_GAMEDESC_LEN = 32;
+const int MAP_NAME_LEN = 64;
+const int BNETHASH_LEN = 20; /* uint32*5, see bnethash.h */
+const int MAX_EXEINFO_STR = 256; /* including terminating NUL char */
+const int MAX_OWNER_STR = 128; /* including terminating NUL char */
+const int MAX_CDKEY_STR = 128; /* including terminating NUL char */
+const int MAX_EMAIL_STR = 128; /* including terminating NUL char */
+const int MAX_WINHOST_STR = 128; /* including terminating NUL char */
+const int MAX_WINUSER_STR = 128; /* including terminating NUL char */
+const int MAX_LANG_STR = 64; /* including terminating NUL char */
+const int MAX_COUNTRYNAME_STR = 128; /* including terminating NUL char */
+const int MAX_FILENAME_STR = 2048; /* including terminating NUL char */
+const int MAX_GAMEREP_HEAD_STR = 2048; /* including terminating NUL char */
+const int MAX_GAMEREP_BODY_STR = 8192; /* including terminating NUL char */
+const int MAX_PLAYERINFO_STR = 2048; /* including terminating NUL char */
+const int MAX_COUNTRYCODE_STR = 32; /* including terminating NUL char */
+const int MAX_COUNTRY_STR = 32; /* including terminating NUL char */
+const int MAX_ATTRKEY_STR = 1024; /* including terminating NUL char */
+const int MAX_ATTRVAL_STR = 4096; /* including terminating NUL char */
+const unsigned MAX_IRC_MESSAGE_LEN = 512; /* including CRLF (according to RFC 2812) */
+const unsigned MAX_TOPIC_LEN = 201; /* including terminating NUL char */
+const int MAX_REALMNAME_LEN = 32;
 
 #endif

@@ -660,14 +660,12 @@ int read_commandline(int argc, char * * argv,
 
 void munge(t_client_state * client)
 {
-    int i;
-
     if (!client->munged)
     {
 	std::printf("\r");
-	for (i=0; i<std::strlen(mode_get_prompt(client->mode)); i++)
+	for (unsigned i=0; i<std::strlen(mode_get_prompt(client->mode)); i++)
 	    std::printf(" ");
-	for (i=0; i<std::strlen(client->text) && i<client->screen_width-std::strlen(mode_get_prompt(client->mode)); i++)
+	for (unsigned i=0; i<std::strlen(client->text) && i<client->screen_width-std::strlen(mode_get_prompt(client->mode)); i++)
 	    std::printf(" ");
 	std::printf("\r");
 	client->munged = 1;

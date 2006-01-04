@@ -407,7 +407,7 @@ static int anongame_infos_destroy(t_anongame_infos * anongame_infos)
     return 0;
 }
 
-static int anongame_infos_set_str(char **dst, char *src, char *errstr)
+static int anongame_infos_set_str(char **dst, const char *src, char *errstr)
 {
     char *temp;
 
@@ -425,7 +425,7 @@ static int anongame_infos_set_str(char **dst, char *src, char *errstr)
     return 0;
 }
 
-static int anongame_infos_URL_set_URL(int member, char *URL)
+static int anongame_infos_URL_set_URL(int member, const char *URL)
 {
     char **anongame_infos_URLs;
 
@@ -448,7 +448,7 @@ extern char *anongame_infos_URL_get_URL(int member)
 }
 
 
-static int anongame_infos_DESC_set_DESC(t_anongame_infos_DESC * anongame_infos_DESC, int member, char *DESC)
+static int anongame_infos_DESC_set_DESC(t_anongame_infos_DESC * anongame_infos_DESC, int member, const char *DESC)
 {
     char ** descs;
 

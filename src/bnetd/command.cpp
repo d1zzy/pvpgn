@@ -4245,7 +4245,7 @@ static int _handle_tos_command(t_connection * c, char const * text)
     {
 
          char * buff;
-         int len;
+         unsigned len;
 
          while ((buff = file_get_line(fp)))
          {
