@@ -67,7 +67,7 @@ extern int irc_send_cmd(t_connection * conn, char const * command, char const * 
 {
     t_packet * p;
     char data[MAX_IRC_MESSAGE_LEN+1];
-    int len;
+    unsigned len;
     char const * ircname = server_get_hostname();
     char const * nick;
 
@@ -92,7 +92,7 @@ extern int irc_send_cmd(t_connection * conn, char const * command, char const * 
     if (params) {
         len = 1+std::strlen(ircname)+1+std::strlen(command)+1+std::strlen(nick)+1+std::strlen(params)+2;
 	if (len > MAX_IRC_MESSAGE_LEN) {
-	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%d bytes)",len);
+	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%u bytes)",len);
 	    return -1;
 	}
 	else
@@ -100,7 +100,7 @@ extern int irc_send_cmd(t_connection * conn, char const * command, char const * 
     } else {
         len = 1+std::strlen(ircname)+1+std::strlen(command)+1+std::strlen(nick)+1+2;
     	if (len > MAX_IRC_MESSAGE_LEN) {
-	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%d bytes)",len);
+	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%u bytes)",len);
 	    return -1;
 	}
 	else
@@ -134,7 +134,7 @@ extern int irc_send_cmd2(t_connection * conn, char const * prefix, char const * 
 {
     t_packet * p;
     char data[MAX_IRC_MESSAGE_LEN+1];
-    int len;
+    unsigned len;
 
     if (!conn) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
@@ -163,7 +163,7 @@ extern int irc_send_cmd2(t_connection * conn, char const * prefix, char const * 
     if (comment) {
         len = 1+std::strlen(prefix)+1+std::strlen(command)+1+std::strlen(postfix)+2+std::strlen(comment)+1+2;
     	if (len > MAX_IRC_MESSAGE_LEN) {
-	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%d bytes)",len);
+	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%u bytes)",len);
 	    return -1;
 	}
 	else
@@ -171,7 +171,7 @@ extern int irc_send_cmd2(t_connection * conn, char const * prefix, char const * 
     } else {
         len = 1+std::strlen(prefix)+1+std::strlen(command)+1+std::strlen(postfix)+1+2;
     	if (len > MAX_IRC_MESSAGE_LEN) {
-	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%d bytes)",len);
+	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%u bytes)",len);
 	    return -1;
 	}
 	else
@@ -683,7 +683,6 @@ static char * irc_message_preformat(t_irc_message_from const * from, char const 
 
 extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
 {
-    int len;
     /* the four elements */
     char * e1;
     char * e1_2;
@@ -743,8 +742,7 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
 	toname = ""; /* HACK: the target field is really empty */
     }
 
-    len = (std::strlen(e1)+1+std::strlen(e2)+1+std::strlen(toname)+1+std::strlen(e4)+2+1);
-    if (len<=MAX_IRC_MESSAGE_LEN) {
+    if (std::strlen(e1)+1+std::strlen(e2)+1+std::strlen(toname)+1+std::strlen(e4)+2+1 <= MAX_IRC_MESSAGE_LEN) {
 	char msg[MAX_IRC_MESSAGE_LEN+1];
 
 	if (e1_2)

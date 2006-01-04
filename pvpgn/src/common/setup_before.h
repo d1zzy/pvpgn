@@ -75,235 +75,226 @@
 #define CLIENT_MAX_UDPTEST_WAIT 5
 
 /* length of listen socket queue */
-/* #define LISTEN_QUEUE SOMAXCONN */
-#define LISTEN_QUEUE 10
+const int LISTEN_QUEUE = 10;
 
 /* the format for account numbers */
 #define UID_FORMAT "#%08u"
-#define UID_MAXLEN 8
 
 /* the format for game ids */
 #define GAMEID_FORMAT "#%06u"
-#define GAMEID_MAXLEN 8
 
 /* the format of timestamps in the logfile */
 #define EVENT_TIME_FORMAT "%b %d %H:%M:%S"
-#define EVENT_TIME_MAXLEN 32
+const int EVENT_TIME_MAXLEN = 32;
 
 /* the format of the stat times in bnstat */
 #define STAT_TIME_FORMAT "%Y %b %d %H:%M:%S"
-#define STAT_TIME_MAXLEN 32
+const int STAT_TIME_MAXLEN = 32;
 
 /* the format of the file modification time in bnftp */
 #define FILE_TIME_FORMAT "%Y %b %d %H:%M:%S"
-#define FILE_TIME_MAXLEN 32
+const int FILE_TIME_MAXLEN = 32;
 
 /* the format of the dates in the game report and for /gameinfo */
 #define GAME_TIME_FORMAT "%a %b %d %H:%M:%S %Z"
-#define GAME_TIME_MAXLEN 32
+const int GAME_TIME_MAXLEN = 32;
 
 /* the format of the timestamps for the start/end of channel log files */
 #define CHANLOG_TIME_FORMAT "%Y %b %d %H:%M:%S %Z"
-#define CHANLOG_TIME_MAXLEN 32
+const int CHANLOG_TIME_MAXLEN = 32;
 
 /* the format of the timestamps for lines in the channel log files */
 #define CHANLOGLINE_TIME_FORMAT "%b %d %H:%M:%S"
-#define CHANLOGLINE_TIME_MAXLEN 32
 
 /* adjustable constants */
 #define BNETD_LADDER_DEFAULT_TIME "19764578 0" /* 0:00 1 Jan 1970 GMT */
 
 /* for clients if ioctl(TIOCGWINSZ) fails and $LINES and $COLUMNS aren't set */
-#define DEF_SCREEN_WIDTH  80
-#define DEF_SCREEN_HEIGHT 24
+const int DEF_SCREEN_WIDTH = 80;
+const int DEF_SCREEN_HEIGHT = 24;
 
 /***************************************************************/
 /* default values for bnetd.conf */
 
 /* default Boolean setup values */
-#define BNETD_CHANLOG           0
+const bool BNETD_CHANLOG = false;
 
 /* default path configuration values */
 #ifndef BNETD_DEFAULT_CONF_FILE
 # define BNETD_DEFAULT_CONF_FILE "conf/bnetd.conf"
 #endif
-#define BNETD_FILE_DIR          "files"
-#define BNETD_STORAGE_PATH      ""
-#define BNETD_REPORT_DIR        "reports"
-#define BNETD_LOG_FILE          "logs/bnetd.log"
-#define BNETD_MOTD_FILE         "conf/bnmotd.txt"
-#define BNETD_NEWS_DIR          "news"
-#define BNETD_AD_FILE           "conf/ad.conf"
-#define BNETD_CHANNEL_FILE      "conf/channel.conf"
-#define BNETD_PID_FILE          ""  /* this means "none" */
-#define BNETD_ACCOUNT_TMP       ".bnetd_acct_temp"
-#define BNETD_IPBAN_FILE        "conf/bnban.conf"
-#define BNETD_HELP_FILE         "conf/bnhelp.conf"
-#define BNETD_FORTUNECMD        "/usr/games/fortune"
-#define BNETD_TRANS_FILE        "conf/address_translation.conf"
-#define BNETD_CHANLOG_DIR       "chanlogs"
-#define BNETD_REALM_FILE        "conf/realm.conf"
-#define BNETD_ISSUE_FILE        "conf/bnissue.txt"
-#define BNETD_MAIL_DIR          "var/bnmail"
-#define PVPGN_VERSIONCHECK      "conf/versioncheck.conf"
-#define BNETD_LADDER_DIR        "var/ladders"
-#define BNETD_STATUS_DIR        "var/status"
-#define BNETD_TOPIC_FILE	"var/topics"
-#define BNETD_DBLAYOUT_FILE     "conf/sql_DB_layout.conf"
-#define BNETD_SUPPORT_FILE      "conf/supportfile.conf"
+const char * const BNETD_FILE_DIR = "files";
+const char * const BNETD_STORAGE_PATH = "";
+const char * const BNETD_REPORT_DIR = "reports";
+const char * const BNETD_LOG_FILE = "logs/bnetd.log";
+const char * const BNETD_MOTD_FILE = "conf/bnmotd.txt";
+const char * const BNETD_NEWS_DIR = "news";
+const char * const BNETD_AD_FILE = "conf/ad.conf";
+const char * const BNETD_CHANNEL_FILE = "conf/channel.conf";
+const char * const BNETD_PID_FILE = "";  /* this means "none" */
+const char * const BNETD_ACCOUNT_TMP = ".bnetd_acct_temp";
+const char * const BNETD_IPBAN_FILE = "conf/bnban.conf";
+const char * const BNETD_HELP_FILE = "conf/bnhelp.conf";
+const char * const BNETD_FORTUNECMD = "/usr/games/fortune";
+const char * const BNETD_TRANS_FILE = "conf/address_translation.conf";
+const char * const BNETD_CHANLOG_DIR = "chanlogs";
+const char * const BNETD_REALM_FILE = "conf/realm.conf";
+const char * const BNETD_ISSUE_FILE = "conf/bnissue.txt";
+const char * const BNETD_MAIL_DIR = "var/bnmail";
+const char * const PVPGN_VERSIONCHECK = "conf/versioncheck.conf";
+const char * const BNETD_LADDER_DIR = "var/ladders";
+const char * const BNETD_STATUS_DIR = "var/status";
+const char * const BNETD_TOPIC_FILE = "var/topics";
+const char * const BNETD_DBLAYOUT_FILE = "conf/sql_DB_layout.conf";
+const char * const BNETD_SUPPORT_FILE = "conf/supportfile.conf";
 
-#define BNETD_COMMAND_GROUPS_FILE "conf/command_groups.conf"
-#define BNETD_TOURNAMENT_FILE	"conf/tournament.conf"
-#define BNETD_ALIASFILE         "conf/bnalias.conf"
-/* ADDED BY UNDYING SOULZZ 4/9/02 */
-/* default identify timeout value */
-#define W3_IDENTTIMEOUT		15	/* seconds */
-/* Added by Soar */
+const char * const BNETD_COMMAND_GROUPS_FILE = "conf/command_groups.conf";
+const char * const BNETD_TOURNAMENT_FILE = "conf/tournament.conf";
+const char * const BNETD_ALIASFILE = "conf/bnalias.conf";
 /* time limit for new member as newer(whom cannot be promoted) in clan, (hrs) */
-#define CLAN_NEWER_TIME     168
-#define CLAN_MAX_MEMBERS    50
+const int CLAN_NEWER_TIME = 168;
+const int CLAN_MAX_MEMBERS = 50;
 
-/* moved from account.h */
-#define MAX_FRIENDS 20
+const int MAX_FRIENDS = 20;
 
 /* maximum ammount of bytes sent in a single server.c/sd_tcpoutput call */
-#define BNETD_MAX_OUTBURST 16384
+const unsigned BNETD_MAX_OUTBURST = 16384;
 
 /* default files relative to FILE_DIR */
-#define BNETD_TOS_FILE     "tos.txt"
-#define BNETD_ICON_FILE    "icons.bni"
-#define BNETD_WAR3_ICON_FILE	"icons-WAR3.bni"
-#define BNETD_STAR_ICON_FILE	"icons_STAR.bni"
-#define BNETD_MPQ_FILE     "autoupdate"
+const char * const BNETD_TOS_FILE = "tos.txt";
+const char * const BNETD_ICON_FILE = "icons.bni";
+const char * const BNETD_WAR3_ICON_FILE = "icons-WAR3.bni";
+const char * const BNETD_STAR_ICON_FILE = "icons_STAR.bni";
+const char * const BNETD_MPQ_FILE = "autoupdate";
 
 /* other default configuration values */
-#define BNETD_LOG_LEVELS      "warn,error"
-#define BNETD_SERV_ADDRS      "" /* this means none */
-#define BNETD_SERV_PORT       6112
-#define BNETD_W3ROUTE_ADDR    "0.0.0.0"
-#define BNETD_W3ROUTE_PORT    6200
-#define BNETD_SERVERNAME      "PvPGN Realm"
-#define BNETD_IRC_ADDRS       "" /* this means none */
-#define BNETD_IRC_PORT        6667 /* used if port not specified */
-#define BNETD_IRC_NETWORK_NAME "PvPGN"
-#define BNETD_WOL_ADDRS       ""
-#define BNETD_WOL_PORT        4005
-#define BNETD_TRACK_ADDRS     "track.pvpgn.org"
-#define BNETD_TRACK_PORT      6114 /* use this port if not specified */
-#define BNETD_DEF_TEST_PORT   6112 /* default guess for UDP test port */
-#define BNETD_MIN_TEST_PORT   6112
-#define BNETD_MAX_TEST_PORT   6500
-#define BNETD_USERSYNC        300 /* s */
-#define BNETD_USERFLUSH       1000
-#define BNETD_USERSTEP        100 /* check 100 users per call in accountlist_save() */
-#define BNETD_LATENCY         600 /* s */
-#define BNETD_IRC_LATENCY     180 /* s */ /* Ping timeout for IRC connections */
-#define BNETD_DEF_NULLMSG     120 /* s */
-#define BNETD_TRACK_TIME      0
-#define BNETD_POLL_INTERVAL   20 /* 20 ms */
-#define BNETD_JIFFIES         50 /* 50 ms jiffies time quantum */
-#define BNETD_SHUTDELAY       300 /* s */
-#define BNETD_SHUTDECR        60 /* s */
-#define BNETD_DEFAULT_OWNER   "PvPGN"
-#define BNETD_DEFAULT_KEY     "3310541526205"
-#define BNETD_DEFAULT_HOST    "localhost"
-#define BNETD_QUOTA_DOBAE     7 /* lines */
-#define BNETD_QUOTA_LINES     5 /* lines */
-#define BNETD_QUOTA_TIME      5 /* s */
-#define BNETD_QUOTA_WLINE     40 /* chars */
-#define BNETD_QUOTA_MLINE     200 /* chars */
-#define BNETD_LADDER_INIT_RAT 1000
-#define BNETD_MAIL_SUPPORT    0
-#define BNETD_MAIL_QUOTA      5
-#define BNETD_LOG_NOTICE      "*** Please note this channel is logged! ***"
-#define BNETD_HASHTABLE_SIZE  61
-#define BNETD_REALM_PORT      6113  /* where D2CS listens */
-#define BNETD_TELNET_ADDRS    "" /* this means none */
-#define BNETD_TELNET_PORT     23 /* used if port not specified */
-#define BNETD_EXEINFO_MATCH   "exact"
-#define PVPGN_VERSION_TIMEDIV 0 /* no timediff check by default */
-#define PVPGN_CACHE_MEMLIMIT  5000000  /* bytes */
-#define PVPGN_DEFAULT_SYMB    "-_[]"
+const char * const BNETD_LOG_LEVELS = "warn,error";
+const char * const BNETD_SERV_ADDRS = ""; /* this means none */
+const int BNETD_SERV_PORT = 6112;
+const char * const BNETD_W3ROUTE_ADDR = "0.0.0.0";
+const int BNETD_W3ROUTE_PORT = 6200;
+const char * const BNETD_SERVERNAME = "PvPGN Realm";
+const char * const BNETD_IRC_ADDRS = ""; /* this means none */
+const int BNETD_IRC_PORT = 6667; /* used if port not specified */
+const char * const BNETD_IRC_NETWORK_NAME  = "PvPGN";
+const char * const BNETD_WOL_ADDRS = "";
+const int BNETD_WOL_PORT = 4005;
+const char * const BNETD_TRACK_ADDRS = "track.pvpgn.org";
+const int BNETD_TRACK_PORT = 6114; /* use this port if not specified */
+const int BNETD_DEF_TEST_PORT = 6112; /* default guess for UDP test port */
+const int BNETD_MIN_TEST_PORT = 6112;
+const int BNETD_MAX_TEST_PORT = 6500;
+const int BNETD_USERSYNC = 300; /* s */
+const int BNETD_USERFLUSH = 1000;
+const int BNETD_USERSTEP = 100; /* check 100 users per call in accountlist_save() */
+const int BNETD_LATENCY = 600; /* s */
+const int BNETD_IRC_LATENCY = 180; /* s */ /* Ping timeout for IRC connections */
+const int BNETD_DEF_NULLMSG = 120; /* s */
+const int BNETD_TRACK_TIME = 0;
+const int BNETD_POLL_INTERVAL = 20; /* 20 ms */
+const int BNETD_JIFFIES = 50; /* 50 ms jiffies time quantum */
+const int BNETD_SHUTDELAY = 300; /* s */
+const int BNETD_SHUTDECR = 60; /* s */
+const char * const BNETD_DEFAULT_OWNER = "PvPGN";
+const char * const BNETD_DEFAULT_KEY = "3310541526205";
+const char * const BNETD_DEFAULT_HOST = "localhost";
+const int BNETD_QUOTA_DOBAE = 7; /* lines */
+const int BNETD_QUOTA_LINES = 5; /* lines */
+const int BNETD_QUOTA_TIME = 5; /* s */
+const int BNETD_QUOTA_WLINE = 40; /* chars */
+const int BNETD_QUOTA_MLINE = 200; /* chars */
+const int BNETD_LADDER_INIT_RAT = 1000;
+const int BNETD_MAIL_SUPPORT = 0;
+const int BNETD_MAIL_QUOTA = 5;
+const char * const BNETD_LOG_NOTICE = "*** Please note this channel is logged! ***";
+const int BNETD_HASHTABLE_SIZE = 61;
+const int BNETD_REALM_PORT = 6113;  /* where D2CS listens */
+const char * const BNETD_TELNET_ADDRS = ""; /* this means none */
+const int BNETD_TELNET_PORT = 23; /* used if port not specified */
+const char * const BNETD_EXEINFO_MATCH = "exact";
+const int PVPGN_VERSION_TIMEDIV = 0; /* no timediff check by default */
+const int PVPGN_CACHE_MEMLIMIT = 5000000;  /* bytes */
+const char * const PVPGN_DEFAULT_SYMB = "-_[]";
 
 /***************************************************************/
 /* default values for the tracking server */
 
-#define BNTRACKD_EXPIRE      600
-#define BNTRACKD_UPDATE      150
-#define BNTRACKD_GRANULARITY 5
-#define BNTRACKD_SERVER_PORT 6114
-#define BNTRACKD_PIDFILE     "" /* this means "none" */
-#define BNTRACKD_OUTFILE     "pvpgnlist.txt"
+const int BNTRACKD_EXPIRE = 600;
+const int BNTRACKD_UPDATE = 150;
+const int BNTRACKD_GRANULARITY = 5;
+const int BNTRACKD_SERVER_PORT = 6114;
+const char * const BNTRACKD_PIDFILE = ""; /* this means "none" */
+const char * const BNTRACKD_OUTFILE = "pvpgnlist.txt";
 #ifdef WIN32
-#define BNTRACKD_PROCESS     "process.pl"
-#define BNTRACKD_LOGFILE     "bntrackd.log"
+const char * const BNTRACKD_PROCESS = "process.pl";
+const char * const BNTRACKD_LOGFILE = "bntrackd.log";
 #else
-#define BNTRACKD_PROCESS     "scripts/process.pl"
-#define BNTRACKD_LOGFILE     "logs/bntrackd.log"
+const char * const BNTRACKD_PROCESS = "scripts/process.pl";
+const char * const BNTRACKD_LOGFILE = "logs/bntrackd.log";
 #endif
 
 /***************************************************************/
 /* default values for W3XP anongameinfo packet */
 
-#define PVPGN_DEFAULT_URL    "www.pvpgn.org"
+const char * const PVPGN_DEFAULT_URL = "www.pvpgn.org";
 
-#define PVPGN_PG_1V1_DESC      "Solo Games"
-#define PVPGN_AT_2V2_DESC       "2 player team"
-#define PVPGN_AT_3V3_DESC       "3 player team"
-#define PVPGN_AT_4V4_DESC       "4 player team"
-#define PVPGN_PG_TEAM_DESC      "Team Games"
-#define PVPGN_PG_FFA_DESC       "Free for All Games"
-#define PVPGN_CLAN_1V1_DESC	"Solo Games"
-#define PVPGN_CLAN_2V2_DESC	"2 player team"
-#define PVPGN_CLAN_3V3_DESC	"3 player team"
-#define PVPGN_CLAN_4V4_DESC	"4 player team"
+const char * const PVPGN_PG_1V1_DESC = "Solo Games";
+const char * const PVPGN_AT_2V2_DESC = "2 player team";
+const char * const PVPGN_AT_3V3_DESC = "3 player team";
+const char * const PVPGN_AT_4V4_DESC = "4 player team";
+const char * const PVPGN_PG_TEAM_DESC = "Team Games";
+const char * const PVPGN_PG_FFA_DESC = "Free for All Games";
+const char * const PVPGN_CLAN_1V1_DESC = "Solo Games";
+const char * const PVPGN_CLAN_2V2_DESC = "2 player team";
+const char * const PVPGN_CLAN_3V3_DESC = "3 player team";
+const char * const PVPGN_CLAN_4V4_DESC = "4 player team";
 
-#define PVPGN_1V1_GT_DESC   "One vs. One"
-#define PVPGN_1V1_GT_LONG   "Two players fight to the death"
+const char * const PVPGN_1V1_GT_DESC = "One vs. One";
+const char * const PVPGN_1V1_GT_LONG = "Two players fight to the death";
 
-#define PVPGN_2V2_GT_DESC    "Two vs. Two"
-#define PVPGN_2V2_GT_LONG    "Two teams of two vie for dominance"
+const char * const PVPGN_2V2_GT_DESC = "Two vs. Two";
+const char * const PVPGN_2V2_GT_LONG = "Two teams of two vie for dominance";
 
-#define PVPGN_3V3_GT_DESC    "Three vs. Three"
-#define PVPGN_3V3_GT_LONG    "Two teams of three face off on the battlefield"
+const char * const PVPGN_3V3_GT_DESC = "Three vs. Three";
+const char * const PVPGN_3V3_GT_LONG = "Two teams of three face off on the battlefield";
 
-#define PVPGN_4V4_GT_DESC    "Four vs. Four"
-#define PVPGN_4V4_GT_LONG    "Two teams of four head to battle"
+const char * const PVPGN_4V4_GT_DESC = "Four vs. Four";
+const char * const PVPGN_4V4_GT_LONG = "Two teams of four head to battle";
 
-#define PVPGN_5V5_GT_DESC    "Five vs. Five"
-#define PVPGN_5V5_GT_LONG    "Two teams of five - who will prevail?"
+const char * const PVPGN_5V5_GT_DESC = "Five vs. Five";
+const char * const PVPGN_5V5_GT_LONG = "Two teams of five - who will prevail?";
 
-#define PVPGN_6V6_GT_DESC    "Six vs. Six"
-#define PVPGN_6V6_GT_LONG    "Two teams of six - get ready to rumble!"
+const char * const PVPGN_6V6_GT_DESC = "Six vs. Six";
+const char * const PVPGN_6V6_GT_LONG = "Two teams of six - get ready to rumble!";
 
-#define PVPGN_SFFA_GT_DESC    "Small Free for All"
-#define PVPGN_SFFA_GT_LONG    "Can you defeat 3-5 opponents alone?"
+const char * const PVPGN_SFFA_GT_DESC = "Small Free for All";
+const char * const PVPGN_SFFA_GT_LONG = "Can you defeat 3-5 opponents alone?";
 
-#define PVPGN_TFFA_GT_DESC    "Team Free for All"
-#define PVPGN_TFFA_GT_LONG    "Can your team defeat 1-2 others?"
+const char * const PVPGN_TFFA_GT_DESC = "Team Free for All";
+const char * const PVPGN_TFFA_GT_LONG = "Can your team defeat 1-2 others?";
 
-#define PVPGN_2V2V2_GT_DESC  "Two vs. Two vs. Two"
-#define PVPGN_2V2V2_GT_LONG  "Three teams of two, can you handle it?"
+const char * const PVPGN_2V2V2_GT_DESC = "Two vs. Two vs. Two";
+const char * const PVPGN_2V2V2_GT_LONG = "Three teams of two, can you handle it?";
 
-#define PVPGN_3V3V3_GT_DESC  "Three vs. Three vs. Three"
-#define PVPGN_3V3V3_GT_LONG  "Three teams of three battle each other "
+const char * const PVPGN_3V3V3_GT_DESC = "Three vs. Three vs. Three";
+const char * const PVPGN_3V3V3_GT_LONG = "Three teams of three battle each other ";
 
-#define PVPGN_4V4V4_GT_DESC  "Four vs. Four vs. Four"
-#define PVPGN_4V4V4_GT_LONG  "Three teams of four - things getting crowded?"
+const char * const PVPGN_4V4V4_GT_DESC = "Four vs. Four vs. Four";
+const char * const PVPGN_4V4V4_GT_LONG = "Three teams of four - things getting crowded?";
 
-#define PVPGN_2V2V2V2_GT_DESC  "Two vs. Two vs. Two vs. Two"
-#define PVPGN_2V2V2V2_GT_LONG  "Four teams of two, is this a challenge?"
+const char * const PVPGN_2V2V2V2_GT_DESC = "Two vs. Two vs. Two vs. Two";
+const char * const PVPGN_2V2V2V2_GT_LONG = "Four teams of two, is this a challenge?";
 
-#define PVPGN_3V3V3V3_GT_DESC  "Three vs. Three vs. Three vs. Three"
-#define PVPGN_3V3V3V3_GT_LONG  "Four teams of three, the ultimate challenge!"
+const char * const PVPGN_3V3V3V3_GT_DESC = "Three vs. Three vs. Three vs. Three";
+const char * const PVPGN_3V3V3V3_GT_LONG = "Four teams of three, the ultimate challenge!";
 
-#define PVPGN_AINFO_FILE     "conf/anongame_infos.conf"
+const char * const PVPGN_AINFO_FILE = "conf/anongame_infos.conf";
 
 /* max number of players in an anongame match [Omega] */
-#define ANONGAME_MAX_GAMECOUNT  12
+const int ANONGAME_MAX_GAMECOUNT = 12;
 
 /* max level of players*/
-#define ANONGAME_MAX_LEVEL 100
+const int ANONGAME_MAX_LEVEL = 100;
 
 /***************************************************************/
 /* platform dependent features */
@@ -355,17 +346,17 @@
 #endif
 
 /* default maxim number of sockets in the fdwatch pool */
-#define BNETD_MAX_SOCKETS 1000
+const int BNETD_MAX_SOCKETS = 1000;
 
 /* Used for FDSETSIZE redefine (only on WIN32 so so far) */
-#define BNETD_MAX_SOCKVAL 8192
+const int BNETD_MAX_SOCKVAL = 8192;
 
 /*
  * select() hackery... works most places, need to add autoconf checks
  * because some systems may redefine FD_SETSIZE, have it as a variable,
  * or not have the concept of such a value.
  * dizzy: this is a total hack. only WIN32 so far specifies this as beeing
- * "legal"; in UNIX in general it should be NOT because the kernel interface 
+ * "legal"; in UNIX in general it should be NOT because the kernel interface
  * of select will never notice your userland changes to the fd_sets
  */
 /* Win32 defaults to 64, BSD and Linux default to 1024 */

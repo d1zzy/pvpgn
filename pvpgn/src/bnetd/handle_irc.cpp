@@ -317,7 +317,6 @@ extern int handle_irc_packet(t_connection * conn, t_packet const * const packet)
 {
     unsigned int i;
     char ircline[MAX_IRC_MESSAGE_LEN];
-    int ircpos;
     char const * data;
 
     if (!packet) {
@@ -336,7 +335,7 @@ extern int handle_irc_packet(t_connection * conn, t_packet const * const packet)
     data = conn_get_ircline(conn); /* fetch current status */
     if (data)
 	std::strcpy(ircline,data);
-    ircpos = std::strlen(ircline);
+    unsigned ircpos = std::strlen(ircline);
     data = (const char *)packet_get_raw_data_const(packet,0);
     for (i=0; i < packet_get_size(packet); i++) {
 	if ((data[i] == '\r')||(data[i] == '\0')) {
@@ -352,7 +351,7 @@ extern int handle_irc_packet(t_connection * conn, t_packet const * const packet)
 	    else {
 		ircpos++; /* for the statistic :) */
 	    	eventlog(eventlog_level_warn,__FUNCTION__,"[%d] client exceeded maximum allowed message length by %d characters",conn_get_socket(conn),ircpos-MAX_IRC_MESSAGE_LEN);
-		if ((ircpos-MAX_IRC_MESSAGE_LEN)>100) {
+		if (ircpos > 100 + MAX_IRC_MESSAGE_LEN) {
 		    /* automatic flood protection */
 		    eventlog(eventlog_level_error,__FUNCTION__,"[%d] excess flood",conn_get_socket(conn));
 		    return -1;
@@ -425,9 +424,8 @@ static int _handle_user_command(t_connection * conn, int numparams, char ** para
                         t_account * tempacct;
                         t_hash pass_hash;
                         char * pass = "supersecret";
-                        int j;
 
-            			for (j=0; j<std::strlen(pass); j++)
+            			for (unsigned j=0; j<std::strlen(pass); j++)
             				if (std::isupper((int)pass[j])) pass[j] = std::tolower((int)pass[j]);
 
             			bnet_hash(&pass_hash,std::strlen(pass),pass);
