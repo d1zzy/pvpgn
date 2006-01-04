@@ -1699,29 +1699,20 @@ Packet #13
 typedef struct
 {
     t_bnet_header h;
-    bn_int        password_hash1[5];
+    bn_int	client_password_proof[5];
 } PACKED_ATTR() t_client_logonproofreq;
 
 #define SERVER_LOGONPROOFREPLY 0x54ff
 typedef struct
 {
    t_bnet_header h;
-   bn_int response;
-   bn_int unknown1;
-   bn_short port0;
-   bn_int unknown2;
-   bn_short port1;
-   bn_int unknown3;
-   bn_int unknown4;
+   bn_int	response;
+   bn_int	server_password_proof[5];
 } PACKED_ATTR() t_server_logonproofreply;
 #define SERVER_LOGONPROOFREPLY_RESPONSE_OK 0x00000000
-/*#define SERVER_LOGONPROOFREPLY_RESPONSE_BADPASS 0x00000001 */
-#define SERVER_LOGONPROOFREPLY_RESPONSE_BADPASS 0x00000002 /* from the battle net dump... */
-#define SERVER_LOGONPROOFREPLY_RESPONSE_EMAIL  0x0000000E
-#define SERVER_LOGONPROOFREPLY_UNKNOWN1  0x02825278
-#define SERVER_LOGONPROOFREPLY_UNKNOWN2  0x00000000
-#define SERVER_LOGONPROOFREPLY_UNKNOWN3  0x02825278
-#define SERVER_LOGONPROOFREPLY_UNKNOWN4  0x00000000
+#define SERVER_LOGONPROOFREPLY_RESPONSE_BADPASS 0x00000002
+#define SERVER_LOGONPROOFREPLY_RESPONSE_EMAIL   0x0000000E
+#define SERVER_LOGONPROOFREPLY_RESPONSE_CUSTOM  0x0000000F
 /******************************************************/
 
 /******************************************************/
