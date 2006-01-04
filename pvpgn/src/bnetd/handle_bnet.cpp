@@ -1750,9 +1750,6 @@ static int _client_loginreqw3(t_connection * c, t_packet const *const packet)
 	    } else if (account_get_auth_bnetlogin(account) == 0) {	/* default to true */
 		eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) login for \"%s\" refused (no bnet access)", conn_get_socket(c), username);
 		bn_int_set(&rpacket->u.server_loginreply_w3.message, SERVER_LOGINREPLY_W3_MESSAGE_BADACCT);
-	    } else if (account_get_auth_lock(account) == 1) {	/* default to false */
-		eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
-		bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY_W3_MESSAGE_BADACCT);
 	    } else {
 		eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) \"%s\" passed account check", conn_get_socket(c), username);
 		conn_set_loggeduser(c, username);
@@ -1799,6 +1796,7 @@ static int _client_logonproofreq(t_connection * c, t_packet const *const packet)
     {
 	char const *username;
 	t_account *account;
+	int server_password_proof[5];
 
 	eventlog(eventlog_level_info, __FUNCTION__, "[%d] logon proof requested", conn_get_socket(c));
 
@@ -1807,23 +1805,24 @@ static int _client_logonproofreq(t_connection * c, t_packet const *const packet)
 	packet_set_size(rpacket, sizeof(t_server_logonproofreply));
 	packet_set_type(rpacket, SERVER_LOGONPROOFREPLY);
 
+	std::memset(server_password_proof,0,sizeof(server_password_proof));
+
 	bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_BADPASS);
 
-	bn_int_set(&rpacket->u.server_logonproofreply.unknown1, SERVER_LOGONPROOFREPLY_UNKNOWN1);
-
-	bn_short_set(&rpacket->u.server_logonproofreply.port0, (short) 0x0000);
-
-	bn_int_set(&rpacket->u.server_logonproofreply.unknown2, SERVER_LOGONPROOFREPLY_UNKNOWN2);
-
-	bn_short_set(&rpacket->u.server_logonproofreply.port1, (short) 0x0000);
-
-	bn_int_set(&rpacket->u.server_logonproofreply.unknown3, SERVER_LOGONPROOFREPLY_UNKNOWN3);
-	bn_int_set(&rpacket->u.server_logonproofreply.unknown4, SERVER_LOGONPROOFREPLY_UNKNOWN4);
+	bn_int_set(&rpacket->u.server_logonproofreply.server_password_proof[0], server_password_proof[0]);
+	bn_int_set(&rpacket->u.server_logonproofreply.server_password_proof[1], server_password_proof[1]);
+	bn_int_set(&rpacket->u.server_logonproofreply.server_password_proof[2], server_password_proof[2]);
+	bn_int_set(&rpacket->u.server_logonproofreply.server_password_proof[3], server_password_proof[3]);
+	bn_int_set(&rpacket->u.server_logonproofreply.server_password_proof[4], server_password_proof[4]);
 
 	if (!(username = conn_get_loggeduser(c))) {
 	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) got NULL username, 0x54ff before 0x53ff?", conn_get_socket(c));
 	} else if (!(account = accountlist_find_account(username))) {
 	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) login in 0x54ff for \"%s\" refused (no such account)", conn_get_socket(c), username);
+	} else if (account_get_auth_lock(account) == 1) {	/* default to false */
+	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
+	    bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_CUSTOM);
+	    packet_append_string(rpacket, "This account has been locked.");
 	} else {
 	    t_hash serverhash;
 	    t_hash clienthash;
@@ -1833,11 +1832,11 @@ static int _client_logonproofreq(t_connection * c, t_packet const *const packet)
 		return -1;
 	    }
 	    // endian fix
-	    clienthash[0] = bn_int_get(packet->u.client_logonproofreq.password_hash1[0]);
-	    clienthash[1] = bn_int_get(packet->u.client_logonproofreq.password_hash1[1]);
-	    clienthash[2] = bn_int_get(packet->u.client_logonproofreq.password_hash1[2]);
-	    clienthash[3] = bn_int_get(packet->u.client_logonproofreq.password_hash1[3]);
-	    clienthash[4] = bn_int_get(packet->u.client_logonproofreq.password_hash1[4]);
+	    clienthash[0] = bn_int_get(packet->u.client_logonproofreq.client_password_proof[0]);
+	    clienthash[1] = bn_int_get(packet->u.client_logonproofreq.client_password_proof[1]);
+	    clienthash[2] = bn_int_get(packet->u.client_logonproofreq.client_password_proof[2]);
+	    clienthash[3] = bn_int_get(packet->u.client_logonproofreq.client_password_proof[3]);
+	    clienthash[4] = bn_int_get(packet->u.client_logonproofreq.client_password_proof[4]);
 
 	    hash_set_str(&serverhash, account_get_pass(account));
 	    if (hash_eq(clienthash, serverhash)) {
@@ -1855,9 +1854,9 @@ static int _client_logonproofreq(t_connection * c, t_packet const *const packet)
 		eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) got wrong password for \"%s\"", conn_get_socket(c), username);
 		conn_increment_passfail_count(c);
 	    }
-	    conn_push_outqueue(c, rpacket);
-	    packet_del_ref(rpacket);
 	}
+	conn_push_outqueue(c, rpacket);
+	packet_del_ref(rpacket);
     }
     clan_send_status_window(c);
 
