@@ -1,7 +1,7 @@
 [Project]
 FileName=PvPGNConsole.dev
 Name=PvPGNConsole
-UnitCount=283
+UnitCount=274
 Type=1
 Ver=1
 ObjFiles=
@@ -11,15 +11,15 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=
 CppCompiler=
-Linker=-lws2_32_@@_
+Linker=-lws2_32 -llibz_@@_
 IsCpp=1
-Icon=PvPGNConsole.ico
+Icon=
 ExeOutput=..\bin
 ObjectOutput=
 OverrideOutput=0
 OverrideOutputName=PvPGNConsole.exe
 HostApplication=
-Folders=bnetd,"bnetd/Header Files","bnetd/Source Files",common,"common/Header Files","common/Source Files",compat,"compat/Header Files","compat/Source Files",tinycdb,"tinycdb/Header Files","tinycdb/Source Files",win32,"win32/Header Files","win32/Source Files",zlib,"zlib/Header Files","zlib/Source Files"
+Folders=bnetd,"bnetd/Header Files","bnetd/Source Files",common,"common/Header Files","common/Source Files",compat,"compat/Header Files","compat/Source Files",tinycdb,"tinycdb/Header Files","tinycdb/Source Files",win32,"win32/Header Files","win32/Source Files"
 CommandLine=
 UseCustomMakefile=0
 IncludeVersionInfo=0
@@ -2498,96 +2498,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit246]
-FileName=..\src\zlib\pvpgn_zutil.h
-CompileCpp=0
-Folder=zlib/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit247]
-FileName=..\src\zlib\pvpgn_deflate.h
-CompileCpp=0
-Folder=zlib/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit248]
-FileName=..\src\zlib\pvpgn_trees.h
-CompileCpp=0
-Folder=zlib/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit249]
-FileName=..\src\zlib\pvpgn_zconf.h
-CompileCpp=0
-Folder=zlib/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit250]
-FileName=..\src\zlib\pvpgn_zlib.h
-CompileCpp=0
-Folder=zlib/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit251]
-FileName=..\src\zlib\pvpgn_zutil.c
-CompileCpp=0
-Folder=zlib/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit252]
-FileName=..\src\zlib\pvpgn_adler32.c
-CompileCpp=0
-Folder=zlib/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit253]
-FileName=..\src\zlib\pvpgn_deflate.c
-CompileCpp=0
-Folder=zlib/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit254]
-FileName=..\src\zlib\pvpgn_trees.c
-CompileCpp=0
-Folder=zlib/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit255]
 FileName=..\src\tinycdb\cdb_int.h
 CompileCpp=0
 Folder=tinycdb/Header Files
@@ -2597,7 +2507,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit256]
+[Unit247]
 FileName=..\src\tinycdb\cdb_unpack.cpp
 CompileCpp=0
 Folder=tinycdb/Source Files
@@ -2607,7 +2517,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit257]
+[Unit248]
 FileName=..\src\tinycdb\cdb_find.cpp
 CompileCpp=0
 Folder=tinycdb/Source Files
@@ -2617,7 +2527,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit258]
+[Unit249]
 FileName=..\src\tinycdb\cdb_findnext.cpp
 CompileCpp=0
 Folder=tinycdb/Source Files
@@ -2627,7 +2537,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit259]
+[Unit250]
 FileName=..\src\tinycdb\cdb_hash.cpp
 CompileCpp=0
 Folder=tinycdb/Source Files
@@ -2637,7 +2547,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit260]
+[Unit251]
 FileName=..\src\tinycdb\cdb_init.cpp
 CompileCpp=0
 Folder=tinycdb/Source Files
@@ -2647,7 +2557,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit261]
+[Unit252]
 FileName=..\src\tinycdb\cdb_make.cpp
 CompileCpp=0
 Folder=tinycdb/Source Files
@@ -2657,7 +2567,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit262]
+[Unit253]
 FileName=..\src\tinycdb\cdb_make_add.cpp
 CompileCpp=0
 Folder=tinycdb/Source Files
@@ -2667,7 +2577,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit263]
+[Unit254]
 FileName=..\src\tinycdb\cdb_make_find.cpp
 CompileCpp=0
 Folder=tinycdb/Source Files
@@ -2677,7 +2587,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit264]
+[Unit255]
 FileName=..\src\tinycdb\cdb_make_put.cpp
 CompileCpp=0
 Folder=tinycdb/Source Files
@@ -2687,7 +2597,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit265]
+[Unit256]
 FileName=..\src\tinycdb\cdb_seek.cpp
 CompileCpp=0
 Folder=tinycdb/Source Files
@@ -2697,7 +2607,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit266]
+[Unit257]
 FileName=..\src\tinycdb\cdb_seq.cpp
 CompileCpp=0
 Folder=tinycdb/Source Files
@@ -2707,7 +2617,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit267]
+[Unit258]
 FileName=..\src\win32\service.h
 CompileCpp=0
 Folder=win32/Header Files
@@ -2717,7 +2627,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit268]
+[Unit259]
 FileName=..\src\win32\service.cpp
 CompileCpp=0
 Folder=win32/Source Files
@@ -2727,7 +2637,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit269]
+[Unit260]
 FileName=..\src\bnetd\team.h
 CompileCpp=0
 Folder=bnetd/Header Files
@@ -2737,7 +2647,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit270]
+[Unit261]
 FileName=..\src\bnetd\team.cpp
 CompileCpp=0
 Folder=bnetd/Source Files
@@ -2747,7 +2657,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit271]
+[Unit262]
 FileName=..\src\common\rcm.h
 CompileCpp=0
 Folder=common/Header Files
@@ -2757,7 +2667,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit272]
+[Unit263]
 FileName=..\src\common\rcm.cpp
 CompileCpp=0
 Folder=common/Source Files
@@ -2767,7 +2677,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit273]
+[Unit264]
 FileName=..\src\bnetd\attr.h
 CompileCpp=0
 Folder=bnetd/Header Files
@@ -2777,10 +2687,100 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit274]
+[Unit265]
 FileName=..\src\bnetd\attrlayer.h
 CompileCpp=0
 Folder=bnetd/Header Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit266]
+FileName=..\src\bnetd\attrgroup.h
+CompileCpp=0
+Folder=bnetd/Header Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit267]
+FileName=..\src\bnetd\attrlayer.cpp
+CompileCpp=0
+Folder=bnetd/Source Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit268]
+FileName=..\src\bnetd\attrgroup.cpp
+CompileCpp=0
+Folder=bnetd/Source Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit269]
+FileName=..\src\bnetd\cmdline.h
+CompileCpp=0
+Folder=bnetd/Header Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit270]
+FileName=..\src\bnetd\cmdline.cpp
+CompileCpp=0
+Folder=bnetd/Source Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit271]
+FileName=..\src\common\conf.h
+CompileCpp=0
+Folder=common/Header Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit272]
+FileName=..\src\common\conf.cpp
+CompileCpp=0
+Folder=common/Source Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit273]
+FileName=..\src\common\systemerror.h
+CompileCpp=1
+Folder=common/Header Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit274]
+FileName=..\src\common\systemerror.cpp
+CompileCpp=1
+Folder=common/Source Files
 Compile=1
 Link=1
 Priority=1000
