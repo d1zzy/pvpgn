@@ -6,16 +6,16 @@ http://prdownloads.sourceforge.net/dev-cpp/devcpp4990setup.exe
 
 2) Install Dev-C++ in a folder without any spaces in the path
 
-3) Go into the Win32-Projects folder of the PvPGN sources
+3) From within Dev-C++ install the zlib-DevPak from the DevPacks.org community server (Tools->Check for Updates/Packages)
+
+4) Go into the Win32-Projects folder of the PvPGN sources
 Simply double-click on any of the *.dev files to fire up Dev-C++ and use Execute->Compile to build the binary
 
-3) The resulting exe file will be in the bin directory and you can use it with the other files from the latest PvPGN release.
+5) The resulting exe file will be in the bin directory and you can use it with the other files from the latest PvPGN release.
 
-Notes for MYSQL Support:
-mySQL support with Dev-C++ still unsupported/untested
+Notes for MYSQL/PGSQL/SQLITE3/ODBC Support:
+ support with Dev-C++ still unsupported/untested
 
-Notes for GUI Support:
-We won't support building a GUI version with Dev-C++
 
 Common problems and Solutions:
 ==============================
