@@ -24,6 +24,7 @@
 #include <cstring>
 #include <cerrno>
 #ifdef WIN32
+# include <cstdio>
 # include <windows.h>
 #endif
 #include "uname.h"
@@ -43,22 +44,29 @@ extern int uname(struct utsname * buf)
 
 #ifdef WIN32
     {
-         OSVERSIONINFO osver;
+              enum { WinNT, Win95, Win98, WinUnknown };
+              OSVERSIONINFO osver;
+              SYSTEM_INFO sysinfo;
+              DWORD sLength;
+              DWORD os = WinUnknown;
+  
          
          osver.dwOSVersionInfoSize = sizeof (osver);
          GetVersionEx (&osver);
+         GetSystemInfo (&sysinfo);
          
          switch (osver.dwPlatformId)
          {
           case VER_PLATFORM_WIN32_NT: /* NT, Windows 2000 or Windows XP */
                if (osver.dwMajorVersion == 4)
-                      strcpy (buf->sysname, "Windows NT4x"); /* NT4x */
+                      std::strcpy (buf->sysname, "Windows NT4x"); /* NT4x */
                else if (osver.dwMajorVersion <= 3)
-                    strcpy (buf->sysname, "Windows NT3x"); /* NT3x */
+                    std::strcpy (buf->sysname, "Windows NT3x"); /* NT3x */
                else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion < 1)
-                    strcpy (buf->sysname, "Windows 2000"); /* 2k */
+                    std::strcpy (buf->sysname, "Windows 2000"); /* 2k */
                else if (osver.dwMajorVersion >= 5)
-                    strcpy (buf->sysname, "Windows XP");   /* XP */
+                    std::strcpy (buf->sysname, "Windows XP");   /* XP */
+               os = WinNT;
                break;
 
           case VER_PLATFORM_WIN32_WINDOWS: /* Win95, Win98 or WinME */
@@ -66,30 +74,93 @@ extern int uname(struct utsname * buf)
                   ((osver.dwMajorVersion == 4) && (osver.dwMinorVersion > 0)))
                {
                    if (osver.dwMinorVersion >= 90)
-	                   strcpy (buf->sysname, "Windows ME"); /* ME */
+	                   std::strcpy (buf->sysname, "Windows ME"); /* ME */
                    else
-	                   strcpy (buf->sysname, "Windows 98"); /* 98 */
+	                   std::strcpy (buf->sysname, "Windows 98"); /* 98 */
+	               os = Win98;
                }else{
-                       strcpy (buf->sysname, "Windows 95"); /* 95 */
+                       std::strcpy (buf->sysname, "Windows 95"); /* 95 */
+                   os = Win95;
                }
+               
                break;
 
           case VER_PLATFORM_WIN32s: /* Windows 3.x */
-               strcpy (buf->sysname, "Windows");
+               std::strcpy (buf->sysname, "Windows");
                break;
                
           default:
                std::strcpy(buf->sysname,"Win32");
                break;
           }
+          
+          std::sprintf (buf->version, "%ld.%02ld", osver.dwMajorVersion, osver.dwMinorVersion);
+
+          if (osver.szCSDVersion[0] != '\0' && 
+             (std::strlen (osver.szCSDVersion) + std::strlen (buf->version) + 1) < 
+             sizeof (buf->version))
+          {
+             std::strcat (buf->version, " ");
+             std::strcat (buf->version, osver.szCSDVersion);
+          }
+          
+          std::sprintf (buf->release, "build %ld", osver.dwBuildNumber & 0xFFFF);
+          
+          switch (sysinfo.wProcessorArchitecture)
+          {
+          case PROCESSOR_ARCHITECTURE_PPC:
+               std::strcpy (buf->machine, "ppc");
+               break;
+          case PROCESSOR_ARCHITECTURE_ALPHA:
+               std::strcpy (buf->machine, "alpha");
+               break;
+          case PROCESSOR_ARCHITECTURE_MIPS:
+               std::strcpy (buf->machine, "mips");
+               break;
+          case PROCESSOR_ARCHITECTURE_INTEL:
+          /* 
+           * dwProcessorType is only valid in Win95 and Win98 and WinME
+           * wProcessorLevel is only valid in WinNT 
+           */
+              switch (os)
+              {
+              case Win95:
+              case Win98:
+                  switch (sysinfo.dwProcessorType)
+                  {
+                  case PROCESSOR_INTEL_386:
+                  case PROCESSOR_INTEL_486:
+                  case PROCESSOR_INTEL_PENTIUM:
+                      std::sprintf (buf->machine, "i%ld", sysinfo.dwProcessorType);
+                      break;
+                  default:
+                      std::strcpy (buf->machine, "i386");
+                      break;
+                  }
+                  break;
+              case WinNT:
+                  std::sprintf (buf->machine, "i%d86", sysinfo.wProcessorLevel);
+                  break;
+              default:
+                  std::strcpy (buf->machine, "unknown");
+              break;
+              }
+              break;
+          default:
+              std::strcpy (buf->machine, "unknown");
+              break;
+          }
+          
+          sLength = sizeof (buf->nodename) - 1;
+          GetComputerName (buf->nodename, &sLength);
     }
 #else
-    std::strcpy(buf->sysname,"");
+    std::strcpy(buf->sysname,"unknown");
+    std::strcpy(buf->version,"unknown");
+    std::strcpy(buf->release,"unknown");
+    std::strcpy(buf->machine,"unknown");
+    std::strcpy(buf->nodename,"unknown");
 #endif
-    std::strcpy(buf->nodename,"");
-    std::strcpy(buf->release,"");
-    std::strcpy(buf->version,"");
-    std::strcpy(buf->machine,"");
     std::strcpy(buf->domainname,"");
 
     return 0;
