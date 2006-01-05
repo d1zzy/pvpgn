@@ -41,6 +41,7 @@
 
 #include "compat/stdfileno.h"
 #include "compat/psock.h"
+#include "compat/uname.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/fdwatch.h"
@@ -419,14 +420,20 @@ void post_server_shutdown(int status)
 
 void pvpgn_greeting(void)
 {
+    struct utsname     utsbuf;
 #ifdef HAVE_GETPID
     eventlog(eventlog_level_info,__FUNCTION__,PVPGN_SOFTWARE" version "PVPGN_VERSION" process %u",(unsigned int)getpid());
 #else
     eventlog(eventlog_level_info,__FUNCTION__,PVPGN_SOFTWARE" version "PVPGN_VERSION);
 #endif
 
+    if (!(uname(&utsbuf)<0))
+	{
+        eventlog(eventlog_level_info,__FUNCTION__,"running on %s %s %s (%s)",utsbuf.sysname, utsbuf.version, utsbuf.release, utsbuf.machine);
+    }
+ 
     printf("You are currently Running "PVPGN_SOFTWARE" "PVPGN_VERSION"\n");
-    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     printf("If you need support:\n");
     printf(" * READ the documentation at http://pvpgndocs.berlios.de/\n");
     printf(" * you can subscribe to the pvpgn-users mailing list at \n");
@@ -434,7 +441,7 @@ void pvpgn_greeting(void)
     printf(" * check out the forums at http://forums.pvpgn.org\n");
     printf(" * visit us on IRC on irc.pvpgn.org channel #pvpgn\n");
     printf("\nServer is now running.\n");
-    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+    printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 
     return;
 }
