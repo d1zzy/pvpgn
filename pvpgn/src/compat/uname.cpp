@@ -14,18 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * win32 part based on win32-uname.c from libguile
+ *
  */
 #include "common/setup_before.h"
 #ifndef HAVE_UNAME
 
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
+#include <cstring>
+#include <cerrno>
+#ifdef WIN32
+# include <windows.h>
 #endif
-#include <errno.h>
 #include "uname.h"
 #include "common/setup_after.h"
 
@@ -42,18 +42,55 @@ extern int uname(struct utsname * buf)
     }
 
 #ifdef WIN32
-/* FIXME: distinguish between: */
-/*   Microsoft Windows 3.1-32s/3.11-32s/95/95SP1/95A/95B/95OSR2/95OSR2.1/95OSR2.5/95B+MSIE/98/98OEM/98SE/2000ME "New Technology" 3.1/3.5 Server/3.51 Server/4.0 Server/4.0SP1 Server/4.0SP2 Server/4.0SP3 Server/4.0SP4 Server/4.0SP6 Server/3.5 Workstation/3.51 Workstation/4.0 Workstation/4.0SP1 Workstation/4.0SP2 Workstation/4.0SP3 Workstation/4.0SP4 Workstation/4.0SP6 Workstation/"2000 Professional Edition"/"2000 Server"/"2000 Advanced Server"/"Windows 2000 Terminal Server" Win CE/"Windows Powered"/"Pocket OS" 1.0/1.1/2.0/2.1 */
-/* maybe report the build number too */
-    strcpy(buf->sysname,"Win32");
+    {
+         OSVERSIONINFO osver;
+         
+         osver.dwOSVersionInfoSize = sizeof (osver);
+         GetVersionEx (&osver);
+         
+         switch (osver.dwPlatformId)
+         {
+          case VER_PLATFORM_WIN32_NT: /* NT, Windows 2000 or Windows XP */
+               if (osver.dwMajorVersion == 4)
+                      strcpy (buf->sysname, "Windows NT4x"); /* NT4x */
+               else if (osver.dwMajorVersion <= 3)
+                    strcpy (buf->sysname, "Windows NT3x"); /* NT3x */
+               else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion < 1)
+                    strcpy (buf->sysname, "Windows 2000"); /* 2k */
+               else if (osver.dwMajorVersion >= 5)
+                    strcpy (buf->sysname, "Windows XP");   /* XP */
+               break;
+
+          case VER_PLATFORM_WIN32_WINDOWS: /* Win95, Win98 or WinME */
+               if ((osver.dwMajorVersion > 4) || 
+                  ((osver.dwMajorVersion == 4) && (osver.dwMinorVersion > 0)))
+               {
+                   if (osver.dwMinorVersion >= 90)
+	                   strcpy (buf->sysname, "Windows ME"); /* ME */
+                   else
+	                   strcpy (buf->sysname, "Windows 98"); /* 98 */
+               }else{
+                       strcpy (buf->sysname, "Windows 95"); /* 95 */
+               }
+               break;
+
+          case VER_PLATFORM_WIN32s: /* Windows 3.x */
+               strcpy (buf->sysname, "Windows");
+               break;
+               
+          default:
+               std::strcpy(buf->sysname,"Win32");
+               break;
+          }
+    }
 #else
-    strcpy(buf->sysname,"");
+    std::strcpy(buf->sysname,"");
 #endif
-    strcpy(buf->nodename,"");
-    strcpy(buf->release,"");
-    strcpy(buf->version,"");
-    strcpy(buf->machine,"");
-    strcpy(buf->domainname,"");
+    std::strcpy(buf->nodename,"");
+    std::strcpy(buf->release,"");
+    std::strcpy(buf->version,"");
+    std::strcpy(buf->machine,"");
+    std::strcpy(buf->domainname,"");
 
     return 0;
 }
