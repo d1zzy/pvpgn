@@ -19,9 +19,9 @@
 #include "setup.h"
 #include "d2gs.h"
 
+#include <limits>
 #include <cstdlib>
 #include <ctime>
-#include <climits>
 #include <cstring>
 
 #include "compat/psock.h"
@@ -364,14 +364,14 @@ extern unsigned int d2gs_calc_checksum(t_connection * c)
 	len=std::strlen(realmname);
 	for (i=0; i<len ; i++) {
 		ch = (unsigned int)(unsigned char) realmname[i];
-		checksum ^= ROTL(sessionnum,i, sizeof(unsigned int) * CHAR_BIT);
-		checksum ^= ROTL(port , ch, sizeof(unsigned int) * CHAR_BIT);
+		checksum ^= ROTL(sessionnum,i, (std::numeric_limits<unsigned int>::digits));
+		checksum ^= ROTL(port , ch, (std::numeric_limits<unsigned int>::digits));
 	}
 	len=std::strlen(password);
 	for (i=0; i<len ; i++) {
 		ch = (unsigned int)(unsigned char) password[i];
-		checksum ^= ROTL(sessionnum,i, sizeof(unsigned int) * CHAR_BIT);
-		checksum ^= ROTL(port , ch, sizeof(unsigned int) * CHAR_BIT);
+		checksum ^= ROTL(sessionnum,i, (std::numeric_limits<unsigned int>::digits));
+		checksum ^= ROTL(port , ch, (std::numeric_limits<unsigned int>::digits));
 	}
 	checksum ^= addr;
 	return checksum;

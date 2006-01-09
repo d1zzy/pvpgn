@@ -55,7 +55,7 @@ typedef struct
 #define D2LADDER_STD_OVERALL		0x09
 #define D2LADDER_EXP_HC_OVERALL		0x13
 #define D2LADDER_EXP_STD_OVERALL	0x1B
-#define D2CHAR_CLASS_MAX		0x04
-#define D2CHAR_EXP_CLASS_MAX		0x06
+const unsigned D2CHAR_CLASS_MAX = 0x04;
+const unsigned D2CHAR_EXP_CLASS_MAX = 0x06;
 
 #endif
