@@ -19,6 +19,7 @@
 #include "setup.h"
 #include "d2charfile.h"
 
+#include <algorithm>
 #include <cstring>
 #include <ctime>
 #include <cstdio>
@@ -766,7 +767,7 @@ extern int file_read(char const * filename, void * data, unsigned int * size)
 
 	std::fseek(fp,0,SEEK_END); /* FIXME: check return value */
 	n=std::ftell(fp);
-	n=min(*size,n);
+	n=std::min(*size,n);
 	std::rewind(fp); /* FIXME: check return value */
 
 	if (std::fread(data,1,n,fp)!=n) {

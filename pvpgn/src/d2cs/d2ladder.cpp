@@ -20,6 +20,7 @@
 #include "setup.h"
 #include "d2ladder.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <cerrno>
@@ -180,9 +181,9 @@ static int d2ladder_append_ladder(unsigned int type, t_d2ladderfile_ladderinfo *
 	}
 	if (charstatus_get_expansion(status)) {
 		ladderstatus |= LADDERSTATUS_FLAG_EXPANSION;
-		ladderstatus |= min(chclass,D2CHAR_EXP_CLASS_MAX);
+		ladderstatus |= std::min<unsigned>(chclass,D2CHAR_EXP_CLASS_MAX);
 	} else {
-		ladderstatus |= min(chclass,D2CHAR_CLASS_MAX);
+		ladderstatus |= std::min<unsigned>(chclass,D2CHAR_CLASS_MAX);
 	}
 	ladderinfo=ladder_data[type].info+ladder_data[type].curr_len;
 	bn_int_set(&ladderinfo->explow, bn_int_get(info->experience));
