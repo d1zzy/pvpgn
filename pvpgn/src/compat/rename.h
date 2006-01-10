@@ -28,10 +28,10 @@ static inline int p_rename(const char * oldpath, const char * newpath)
 {
 #ifdef WIN32
     if(access(newpath, F_OK) == 0)
-        if(remove(newpath) < 0)
+        if(std::remove(newpath) < 0)
             return -1;
 #endif
-    return rename(oldpath, newpath);
+    return std::rename(oldpath, newpath);
 }
 
 }

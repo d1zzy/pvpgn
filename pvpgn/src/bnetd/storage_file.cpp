@@ -32,6 +32,7 @@
 
 #include "compat/strcasecmp.h"
 #include "compat/pdir.h"
+#include "compat/rename.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/tag.h"
@@ -280,7 +281,7 @@ static int file_write_attrs(t_storage_info * info, const t_hlist *attributes)
 	return -1;
     }
 
-    if (std::rename(tempname, (const char *) info) < 0)
+    if (p_rename(tempname, (const char *) info) < 0)
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "could not std::rename account file to \"%s\" (std::rename: %s)", (char *) info, std::strerror(errno));
 	xfree(tempname);

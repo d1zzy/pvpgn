@@ -23,6 +23,7 @@
 #include <cerrno>
 #include <cstring>
 
+#include "compat/rename.h"
 #include "common/eventlog.h"
 #include "common/addr.h"
 #include "common/bnettime.h"
@@ -1023,7 +1024,7 @@ static int game_report(t_game * game)
 	return -1;
     }
 
-    if (std::rename(tempname,realname)<0)
+    if (p_rename(tempname,realname)<0)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not std::rename report file to \"%s\" (std::rename: %s)",realname,std::strerror(errno));
 	xfree(realname);

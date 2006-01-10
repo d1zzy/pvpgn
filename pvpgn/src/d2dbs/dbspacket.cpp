@@ -36,6 +36,7 @@
 
 #include "compat/strsep.h"
 #include "compat/mkdir.h"
+#include "compat/rename.h"
 #include "compat/access.h"
 #include "compat/statmacros.h"
 #include "compat/psock.h"
@@ -118,10 +119,10 @@ static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn, char 
 
 	std::sprintf(bakfile,"%s/%s",prefs_get_charsave_bak_dir(),CharName);
 	std::sprintf(savefile,"%s/%s",d2dbs_prefs_get_charsave_dir(),CharName);
-	if (std::rename(savefile, bakfile)==-1) {
+	if (p_rename(savefile, bakfile)==-1) {
 		eventlog(eventlog_level_warn,__FUNCTION__,"error std::rename %s to %s", savefile, bakfile);
 	}
-	if (std::rename(filename, savefile)==-1) {
+	if (p_rename(filename, savefile)==-1) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error std::rename %s to %s", filename, savefile);
 		return 0;
 	}
@@ -173,10 +174,10 @@ static unsigned int dbs_packet_savedata_charinfo(t_d2dbs_connection* conn,char *
 
 	std::sprintf(bakfile,"%s/%s/%s",prefs_get_charinfo_bak_dir(),AccountName,CharName);
 	std::sprintf(savefile,"%s/%s/%s",d2dbs_prefs_get_charinfo_dir(),AccountName,CharName);
-	if (std::rename(savefile, bakfile)==-1) {
+	if (p_rename(savefile, bakfile)==-1) {
 		eventlog(eventlog_level_info,__FUNCTION__,"error std::rename %s to %s", savefile, bakfile);
 	}
-	if (std::rename(filename, savefile)==-1) {
+	if (p_rename(filename, savefile)==-1) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error std::rename %s to %s", filename, savefile);
 		return 0;
 	}
