@@ -24,6 +24,7 @@
 #include <cerrno>
 
 #include "compat/strncasecmp.h"
+#include "compat/rename.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/tag.h"
@@ -259,7 +260,7 @@ int d2ladder_check(void)
 	if (!d2ladder_backup_file) return -1;
 	if(d2ladder_checksum_check()!=1) {
 		eventlog(eventlog_level_error,__FUNCTION__,"ladder file checksum error,try to use backup file");
-		if (std::rename(d2ladder_backup_file,d2ladder_ladder_file)==-1) {
+		if (p_rename(d2ladder_backup_file,d2ladder_ladder_file)==-1) {
 			eventlog(eventlog_level_error,__FUNCTION__,"error std::rename %s to %s", d2ladder_backup_file,d2ladder_ladder_file);
 		}
 		if(d2ladder_checksum_check()!=1) {
@@ -646,7 +647,7 @@ extern int d2ladder_saveladder(void)
 
 	if(d2ladder_checksum_check()==1) {
 		eventlog(eventlog_level_info,__FUNCTION__,"backup ladder file");
-		if (std::rename(d2ladder_ladder_file,d2ladder_backup_file)==-1) {
+		if (p_rename(d2ladder_ladder_file,d2ladder_backup_file)==-1) {
 			eventlog(eventlog_level_warn,__FUNCTION__,"error std::rename %s to %s", d2ladder_ladder_file, d2ladder_backup_file);
 		}
 	}
