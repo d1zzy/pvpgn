@@ -56,6 +56,7 @@ charinfodir	=	var\charinfo
 ladderdir	=	var\ladders
 bak_charsavedir	=	var\bak\charsave
 bak_charinfodir	=	var\bak\charinfo
+#pidfile		=	var\d2d2s.pid
 #										#
 #################################################################################
 

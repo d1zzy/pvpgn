@@ -95,6 +95,7 @@ ladderdir		=	var\ladders
 newbiefile		=	files\newbie.save
 transfile		=	conf\address_translation.conf
 d2gsconffile		=	conf\d2server.ini
+#pidfile			=	var\d2cs.pid
 #										#
 #################################################################################
 
