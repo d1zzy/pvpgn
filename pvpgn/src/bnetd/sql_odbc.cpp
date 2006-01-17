@@ -87,20 +87,103 @@ static HDBC con = SQL_NULL_HDBC;
 
 static SQLINTEGER ROWCOUNT = 0;
 
+#ifndef RUNTIME_LIBS
+#define p_SQLAllocEnv		SQLAllocEnv
+#define p_SQLAllocConnect	SQLAllocConnect
+#define p_SQLAllocStmt		SQLAllocStmt
+#define p_SQLBindCol		SQLBindCol
+#define p_SQLColAttribute	SQLColAttribute
+#define p_SQLConnect		SQLConnect
+#define p_SQLDisconnect		SQLDisconnect
+#define p_SQLExecDirect		SQLExecDirect
+#define p_SQLFetch		SQLFetch
+#define p_SQLFreeHandle		SQLFreeHandle
+#define p_SQLRowCount		SQLRowCount
+#define p_SQLGetDiagRec		SQLGetDiagRec
+#define p_SQLNumResultCols	SQLNumResultCols
+#else
+/* RUNTIME_LIBS */
+static int odbc_load_dll(void);
+
+typedef SQLRETURN (SQL_API *f_SQLAllocEnv	)(SQLHENV*);
+typedef SQLRETURN (SQL_API *f_SQLAllocConnect	)(SQLHENV,SQLHDBC*);
+typedef SQLRETURN (SQL_API *f_SQLAllocStmt	)(SQLHDBC,SQLHSTMT*);
+typedef SQLRETURN (SQL_API *f_SQLBindCol	)(SQLHSTMT,SQLUSMALLINT,SQLSMALLINT,SQLPOINTER,SQLLEN,SQLLEN*);
+typedef SQLRETURN (SQL_API *f_SQLColAttribute	)(SQLHSTMT,SQLUSMALLINT,SQLUSMALLINT,SQLPOINTER,SQLSMALLINT,SQLSMALLINT*,SQLPOINTER);
+typedef SQLRETURN (SQL_API *f_SQLConnect	)(SQLHDBC,SQLCHAR*,SQLSMALLINT,SQLCHAR*,SQLSMALLINT,SQLCHAR*,SQLSMALLINT);
+typedef SQLRETURN (SQL_API *f_SQLDisconnect	)(SQLHDBC);
+typedef SQLRETURN (SQL_API *f_SQLExecDirect	)(SQLHSTMT,SQLCHAR*,SQLINTEGER);
+typedef SQLRETURN (SQL_API *f_SQLFetch		)(SQLHSTMT);
+typedef SQLRETURN (SQL_API *f_SQLFreeHandle	)(SQLSMALLINT,SQLHANDLE);
+typedef SQLRETURN (SQL_API *f_SQLRowCount	)(SQLHSTMT,SQLLEN*);
+typedef SQLRETURN (SQL_API *f_SQLGetDiagRec	)(SQLSMALLINT,SQLHANDLE,SQLSMALLINT,SQLCHAR*,SQLINTEGER*,SQLCHAR*,SQLSMALLINT,SQLSMALLINT*);
+typedef SQLRETURN (SQL_API *f_SQLNumResultCols	)(SQLHSTMT,SQLSMALLINT*);
+
+static f_SQLAllocEnv		p_SQLAllocEnv;
+static f_SQLAllocConnect	p_SQLAllocConnect;
+static f_SQLAllocStmt		p_SQLAllocStmt;
+static f_SQLBindCol		p_SQLBindCol;
+static f_SQLColAttribute	p_SQLColAttribute;
+static f_SQLConnect		p_SQLConnect;
+static f_SQLDisconnect		p_SQLDisconnect;
+static f_SQLExecDirect		p_SQLExecDirect;
+static f_SQLFetch		p_SQLFetch;
+static f_SQLFreeHandle		p_SQLFreeHandle;
+static f_SQLRowCount		p_SQLRowCount;
+static f_SQLGetDiagRec		p_SQLGetDiagRec;
+static f_SQLNumResultCols	p_SQLNumResultCols;
+
+#include "compat/runtime_libs.h" /* defines OpenLibrary(), GetFunction(), CloseLibrary() & ODBC_LIB */
+
+static void * handle = NULL;
+
+static int odbc_load_dll(void)
+{
+	if ((handle = OpenLibrary(ODBC_LIB)) == NULL) return -1;
+	
+	if (	((p_SQLAllocEnv		= (f_SQLAllocEnv)	GetFunction(handle, "SQLAllocEnv"))		== NULL) ||
+		((p_SQLAllocConnect	= (f_SQLAllocConnect)	GetFunction(handle, "SQLAllocConnect"))		== NULL) ||
+		((p_SQLAllocStmt	= (f_SQLAllocStmt)	GetFunction(handle, "SQLAllocStmt"))		== NULL) ||
+		((p_SQLBindCol		= (f_SQLBindCol)	GetFunction(handle, "SQLBindCol"))		== NULL) ||
+		((p_SQLColAttribute	= (f_SQLColAttribute)	GetFunction(handle, "SQLColAttribute"))		== NULL) ||
+		((p_SQLConnect		= (f_SQLConnect)	GetFunction(handle, "SQLConnect"))		== NULL) ||
+		((p_SQLDisconnect	= (f_SQLDisconnect)	GetFunction(handle, "SQLDisconnect"))		== NULL) ||
+		((p_SQLExecDirect	= (f_SQLExecDirect)	GetFunction(handle, "SQLExecDirect"))		== NULL) ||
+		((p_SQLFetch		= (f_SQLFetch)		GetFunction(handle, "SQLFetch"))		== NULL) ||
+		((p_SQLFreeHandle	= (f_SQLFreeHandle)	GetFunction(handle, "SQLFreeHandle"))		== NULL) ||
+		((p_SQLRowCount		= (f_SQLRowCount)	GetFunction(handle, "SQLRowCount"))		== NULL) ||
+		((p_SQLGetDiagRec	= (f_SQLGetDiagRec)	GetFunction(handle, "SQLGetDiagRec"))		== NULL) ||
+		((p_SQLNumResultCols	= (f_SQLNumResultCols)	GetFunction(handle, "SQLNumResultCols"))	== NULL) )
+	{
+		CloseLibrary(handle);
+		handle = NULL;
+		return -1;
+	}
+			
+	return 0;
+}
+#endif
+
 /************************************************
 	t_sql_engine Interface methods.
 ************************************************/
 
 static int sql_odbc_init(const char *host, const char *port, const char *socket, const char *name, const char *user, const char *pass)
 {
+#ifdef RUNTIME_LIBS
+	if (odbc_load_dll()) {
+		eventlog(eventlog_level_error, __FUNCTION__, "error loading library file \"%s\"", ODBC_LIB);
+		return -1;
+	}
+#endif
 	/* Create environment. */
-	if(odbc_Result(SQLAllocEnv(&env)) && odbc_Result(SQLAllocConnect(env, &con))) {
+	if(odbc_Result(p_SQLAllocEnv(&env)) && odbc_Result(p_SQLAllocConnect(env, &con))) {
 		eventlog(eventlog_level_debug, __FUNCTION__, "Created ODBC environment.");
 	} else {
 		eventlog(eventlog_level_error, __FUNCTION__, "Unable to allocate ODBC environment.");
 		return odbc_Fail();
 	}
-	if(odbc_Result(SQLConnect(con, (SQLCHAR*)name, SQL_NTS, (SQLCHAR*)user, SQL_NTS, (SQLCHAR*)pass, SQL_NTS))) {
+	if(odbc_Result(p_SQLConnect(con, (SQLCHAR*)name, SQL_NTS, (SQLCHAR*)user, SQL_NTS, (SQLCHAR*)pass, SQL_NTS))) {
 		eventlog(eventlog_level_debug, __FUNCTION__, "Connected to ODBC datasource \"%s\".", name);
 	} else {
 		eventlog(eventlog_level_error, __FUNCTION__, "Unable to connect to ODBC datasource \"%s\".", name);
@@ -113,14 +196,20 @@ static int sql_odbc_init(const char *host, const char *port, const char *socket,
 static int sql_odbc_close(void)
 {
 	if(con) {
-		SQLDisconnect(con);
-		SQLFreeHandle(SQL_HANDLE_DBC, con);
+		p_SQLDisconnect(con);
+		p_SQLFreeHandle(SQL_HANDLE_DBC, con);
 		con = NULL;
 	}
 	if(env) {
-		SQLFreeHandle(SQL_HANDLE_ENV, env);
+		p_SQLFreeHandle(SQL_HANDLE_ENV, env);
 		env = NULL;
 	}
+#ifdef RUNTIME_LIBS
+	if (handle) {
+		CloseLibrary(handle);
+		handle = NULL;
+	}
+#endif
 	eventlog(eventlog_level_debug, __FUNCTION__, "ODBC connection closed.");
 	return 0;
 }
@@ -141,11 +230,11 @@ static t_sql_res* sql_odbc_query_res(const char *query)
 //	eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 
 	/* Run query and check for success. */
-	SQLAllocStmt(con, &stmt);
-	result = SQLExecDirect(stmt, (SQLCHAR*)query, SQL_NTS);
+	p_SQLAllocStmt(con, &stmt);
+	result = p_SQLExecDirect(stmt, (SQLCHAR*)query, SQL_NTS);
 	if(!odbc_Result(result)) {
 //		odbc_Error(SQL_HANDLE_STMT, stmt, eventlog_level_debug, __FUNCTION__);
-		SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+		p_SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 		return NULL;
 	}
 
@@ -165,7 +254,7 @@ static t_sql_res* sql_odbc_query_res(const char *query)
 			sql_odbc_free_result(res);
 			return NULL;
 		}
-		result = SQLFetch(stmt);
+		result = p_SQLFetch(stmt);
 		if(odbc_Result(result)) {
 			rowSet->row = row;
 			rowSet->next = odbc_alloc_rowSet();
@@ -200,14 +289,14 @@ static int sql_odbc_query(const char *query)
 	}
 //	eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 
-	SQLAllocStmt(con, &stmt);
-	result = odbc_Result(SQLExecDirect(stmt, (SQLCHAR*)query, SQL_NTS));
+	p_SQLAllocStmt(con, &stmt);
+	result = odbc_Result(p_SQLExecDirect(stmt, (SQLCHAR*)query, SQL_NTS));
 	if(result) {
-		SQLRowCount(stmt, &ROWCOUNT);
+		p_SQLRowCount(stmt, &ROWCOUNT);
 	} else {
 //		odbc_Error(SQL_HANDLE_STMT, stmt, eventlog_level_trace, __FUNCTION__);
 	}
-	SQLFreeHandle(SQL_HANDLE_STMT, stmt);
+	p_SQLFreeHandle(SQL_HANDLE_STMT, stmt);
 	result = result == -1 ? 0 : -1;
 	return result;
 }
@@ -233,7 +322,7 @@ static void sql_odbc_free_result(t_sql_res *result)
 	if(result) {
 		t_odbc_res *res = (t_odbc_res*)result;
 		if(res->stmt) {
-			SQLFreeHandle(SQL_HANDLE_STMT, res->stmt);
+			p_SQLFreeHandle(SQL_HANDLE_STMT, res->stmt);
 			res->stmt = NULL;
 		}
 		if(res->rowSet) {
@@ -264,7 +353,7 @@ static unsigned int sql_odbc_num_fields(t_sql_res *result)
 	if(!result) {
 		eventlog(eventlog_level_error, __FUNCTION__, "Got NULL result.");
 	} else {
-		SQLNumResultCols(((t_odbc_res*)result)->stmt, &numCols);
+		p_SQLNumResultCols(((t_odbc_res*)result)->stmt, &numCols);
 	}
 	return numCols;
 }
@@ -295,12 +384,12 @@ static t_sql_field* sql_odbc_fetch_fields(t_sql_res *result)
 		TCHAR *fName;
 		TCHAR *tmp;
 		SQLSMALLINT fNameSz;
-		SQLColAttribute(res->stmt, i+1, SQL_DESC_NAME, NULL, 0, &fNameSz, NULL);
+		p_SQLColAttribute(res->stmt, i+1, SQL_DESC_NAME, NULL, 0, &fNameSz, NULL);
 		fName = (TCHAR *)xmalloc(fNameSz);
 		if(!fName) {
 			return NULL;
 		}
-		SQLColAttribute(res->stmt, i+1, SQL_DESC_NAME, fName, fNameSz, &fNameSz, NULL);
+		p_SQLColAttribute(res->stmt, i+1, SQL_DESC_NAME, fName, fNameSz, &fNameSz, NULL);
 		tmp = fName;
 		for ( ; *tmp; ++tmp) *tmp = std::toupper(*tmp);
 		fields[i] = fName;
@@ -356,12 +445,12 @@ static t_sql_row* odbc_alloc_row(t_odbc_res *result, SQLINTEGER *sizes)
 	for(i=0; i<fieldCount; i++) {
 		TCHAR *cell;
 		SQLLEN cellSz;
-		SQLColAttribute(stmt, i+1, SQL_DESC_DISPLAY_SIZE, NULL, 0, NULL, &cellSz);
+		p_SQLColAttribute(stmt, i+1, SQL_DESC_DISPLAY_SIZE, NULL, 0, NULL, &cellSz);
 		cell = (TCHAR *)xcalloc(sizeof *cell, ++cellSz);
 		if(!cell) {
 			return NULL;
 		}
-		SQLBindCol(stmt, i+1, SQL_C_CHAR, cell, cellSz, &sizes[i]);
+		p_SQLBindCol(stmt, i+1, SQL_C_CHAR, cell, cellSz, &sizes[i]);
 
 		row[i] = cell;
 	}
@@ -383,9 +472,9 @@ static void odbc_Error(SQLSMALLINT type, void *obj, t_eventlog_level level, cons
 	SQLSMALLINT mTextLen;
 	short i = 0;
 
-	while(SQLGetDiagRec(type, obj, ++i, NULL, NULL, NULL, 0, &mTextLen) != SQL_NO_DATA) {
+	while(p_SQLGetDiagRec(type, obj, ++i, NULL, NULL, NULL, 0, &mTextLen) != SQL_NO_DATA) {
 		SQLCHAR *mText = (SQLCHAR *)xcalloc(sizeof *mText, ++mTextLen);
-		SQLGetDiagRec(type, obj, i, mState,	&native, mText, mTextLen, NULL);
+		p_SQLGetDiagRec(type, obj, i, mState,	&native, mText, mTextLen, NULL);
 		eventlog(level, function, "ODBC Error: State %s, Native %i: %s", mState, native, mText);
 		xfree(mText);
 	}
