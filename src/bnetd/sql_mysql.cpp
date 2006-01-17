@@ -67,24 +67,106 @@ t_sql_engine sql_mysql = {
 
 static MYSQL *mysql = NULL;
 
+#ifndef RUNTIME_LIBS
+#define p_mysql_affected_rows		mysql_affected_rows
+#define p_mysql_close			mysql_close
+#define p_mysql_error			mysql_error
+#define p_mysql_fetch_fields		mysql_fetch_fields
+#define p_mysql_fetch_row		mysql_fetch_row
+#define p_mysql_free_result		mysql_free_result
+#define p_mysql_init			mysql_init
+#define p_mysql_num_fields		mysql_num_fields
+#define p_mysql_num_rows		mysql_num_rows
+#define p_mysql_query			mysql_query
+#define p_mysql_real_connect		mysql_real_connect
+#define p_mysql_real_escape_string	mysql_real_escape_string
+#define p_mysql_store_result		mysql_store_result
+#else
+/* RUNTIME_LIBS */
+static int mysql_load_dll(void);
+
+typedef my_ulonglong	(STDCALL *f_mysql_affected_rows		)(MYSQL*);
+typedef void		(STDCALL *f_mysql_close			)(MYSQL*);
+typedef const char*	(STDCALL *f_mysql_error			)(MYSQL*);
+typedef MYSQL_FIELD*	(STDCALL *f_mysql_fetch_fields		)(MYSQL_RES*);
+typedef MYSQL_ROW	(STDCALL *f_mysql_fetch_row		)(MYSQL_RES*);
+typedef my_bool		(STDCALL *f_mysql_free_result		)(MYSQL_RES*);
+typedef MYSQL*		(STDCALL *f_mysql_init			)(MYSQL*);
+typedef unsigned int	(STDCALL *f_mysql_num_fields		)(MYSQL_RES*);
+typedef my_ulonglong	(STDCALL *f_mysql_num_rows		)(MYSQL_RES*);
+typedef int		(STDCALL *f_mysql_query			)(MYSQL*,const char*);
+typedef MYSQL*		(STDCALL *f_mysql_real_connect		)(MYSQL*,const char*,const char*,const char*,const char*,unsigned int,const char*,unsigned long);
+typedef unsigned long	(STDCALL *f_mysql_real_escape_string	)(MYSQL*,char*,const char*,unsigned long);
+typedef MYSQL_RES*	(STDCALL *f_mysql_store_result		)(MYSQL*);
+
+static f_mysql_affected_rows		p_mysql_affected_rows;
+static f_mysql_close			p_mysql_close;
+static f_mysql_error			p_mysql_error;
+static f_mysql_fetch_fields		p_mysql_fetch_fields;
+static f_mysql_fetch_row		p_mysql_fetch_row;
+static f_mysql_free_result		p_mysql_free_result;
+static f_mysql_init			p_mysql_init;
+static f_mysql_num_fields		p_mysql_num_fields;
+static f_mysql_num_rows			p_mysql_num_rows;
+static f_mysql_query			p_mysql_query;
+static f_mysql_real_connect		p_mysql_real_connect;
+static f_mysql_real_escape_string	p_mysql_real_escape_string;
+static f_mysql_store_result		p_mysql_store_result;
+
+#include "compat/runtime_libs.h" /* defines OpenLibrary(), GetFunction(), CloseLibrary() & MYSQL_LIB */
+
+static void * handle = NULL;
+
+static int mysql_load_dll(void)
+{
+	if ((handle = OpenLibrary(MYSQL_LIB)) == NULL) return -1;
+	
+	if (	((p_mysql_affected_rows		= (f_mysql_affected_rows)	GetFunction(handle, "mysql_affected_rows"))	== NULL) ||
+		((p_mysql_close			= (f_mysql_close)		GetFunction(handle, "mysql_close"))		== NULL) ||
+		((p_mysql_error			= (f_mysql_error)		GetFunction(handle, "mysql_error"))		== NULL) ||
+		((p_mysql_fetch_fields		= (f_mysql_fetch_fields)	GetFunction(handle, "mysql_fetch_fields"))	== NULL) ||
+		((p_mysql_fetch_row		= (f_mysql_fetch_row)		GetFunction(handle, "mysql_fetch_row"))		== NULL) ||
+		((p_mysql_free_result		= (f_mysql_free_result)		GetFunction(handle, "mysql_free_result"))	== NULL) ||
+		((p_mysql_init			= (f_mysql_init)		GetFunction(handle, "mysql_init"))		== NULL) ||
+		((p_mysql_num_fields		= (f_mysql_num_fields)		GetFunction(handle, "mysql_num_fields"))	== NULL) ||
+		((p_mysql_num_rows		= (f_mysql_num_rows)		GetFunction(handle, "mysql_num_rows"))		== NULL) ||
+		((p_mysql_query			= (f_mysql_query)		GetFunction(handle, "mysql_query"))		== NULL) ||
+		((p_mysql_real_connect		= (f_mysql_real_connect)	GetFunction(handle, "mysql_real_connect"))	== NULL) ||
+		((p_mysql_real_escape_string	= (f_mysql_real_escape_string)	GetFunction(handle, "mysql_real_escape_string"))== NULL) ||
+		((p_mysql_store_result		= (f_mysql_store_result)	GetFunction(handle, "mysql_store_result"))	== NULL) )
+	{
+		CloseLibrary(handle);
+		handle = NULL;
+		return -1;
+	}
+			
+	return 0;
+}
+#endif /* RUNTIME_LIBS */
+
 static int sql_mysql_init(const char *host, const char *port, const char *socket, const char *name, const char *user, const char *pass)
 {
     if (name == NULL || user == NULL) {
         eventlog(eventlog_level_error, __FUNCTION__, "got NULL parameter");
         return -1;
     }
-
-    if ((mysql = mysql_init(NULL)) == NULL) {
+#ifdef RUNTIME_LIBS
+    if (mysql_load_dll()) {
+	eventlog(eventlog_level_error, __FUNCTION__, "error loading library file \"%s\"", MYSQL_LIB);
+	return -1;
+    }
+#endif
+    if ((mysql = p_mysql_init(NULL)) == NULL) {
         eventlog(eventlog_level_error, __FUNCTION__, "got error from mysql_init");
         return -1;
     }
 
-    if (mysql_real_connect(mysql, host, user, pass, name, port ? std::atoi(port) : 0, socket, CLIENT_FOUND_ROWS) == NULL) {
-        eventlog(eventlog_level_error, __FUNCTION__, "error connecting to database (db said: '%s')", mysql_error(mysql));
-	mysql_close(mysql);
+    if (p_mysql_real_connect(mysql, host, user, pass, name, port ? atoi(port) : 0, socket, CLIENT_FOUND_ROWS) == NULL) {
+        eventlog(eventlog_level_error, __FUNCTION__, "error connecting to database (db said: '%s')", p_mysql_error(mysql));
+	p_mysql_close(mysql);
         return -1;
     }
-
+    
     /* allows identifers (specificly column names) to be quoted using double quotes (") in addition to ticks (`) */
     sql_mysql_query("SET sql_mode='ANSI_QUOTES'");
 
@@ -94,10 +176,15 @@ static int sql_mysql_init(const char *host, const char *port, const char *socket
 static int sql_mysql_close(void)
 {
     if (mysql) {
-	mysql_close(mysql);
+	p_mysql_close(mysql);
 	mysql = NULL;
     }
-
+#ifdef RUNTIME_LIBS
+    if (handle) {
+	CloseLibrary(handle);
+	handle = NULL;
+    }
+#endif
     return 0;
 }
 
@@ -115,12 +202,12 @@ static t_sql_res * sql_mysql_query_res(const char * query)
         return NULL;
     }
 
-    if (mysql_query(mysql, query)) {
+    if (p_mysql_query(mysql, query)) {
 //        eventlog(eventlog_level_debug, __FUNCTION__, "got error from query (%s)", query);
 	return NULL;
     }
 
-    res = mysql_store_result(mysql);
+    res = p_mysql_store_result(mysql);
     if (res == NULL) {
         eventlog(eventlog_level_error, __FUNCTION__, "got error from store result");
         return NULL;
@@ -141,7 +228,7 @@ static int sql_mysql_query(const char * query)
         return -1;
     }
 
-    return mysql_query(mysql, query) == 0 ? 0 : -1;
+    return p_mysql_query(mysql, query) == 0 ? 0 : -1;
 }
 
 static t_sql_row * sql_mysql_fetch_row(t_sql_res *result)
@@ -151,7 +238,7 @@ static t_sql_row * sql_mysql_fetch_row(t_sql_res *result)
 	return NULL;
     }
 
-    return mysql_fetch_row((MYSQL_RES *)result);
+    return p_mysql_fetch_row((MYSQL_RES *)result);
 }
 
 static void sql_mysql_free_result(t_sql_res *result)
@@ -161,7 +248,7 @@ static void sql_mysql_free_result(t_sql_res *result)
 	return;
     }
 
-    mysql_free_result((MYSQL_RES *)result);
+    p_mysql_free_result((MYSQL_RES *)result);
 }
 
 static unsigned int sql_mysql_num_rows(t_sql_res *result)
@@ -171,7 +258,7 @@ static unsigned int sql_mysql_num_rows(t_sql_res *result)
 	return 0;
     }
 
-    return mysql_num_rows((MYSQL_RES *)result);
+    return p_mysql_num_rows((MYSQL_RES *)result);
 }
 
 static unsigned int sql_mysql_num_fields(t_sql_res *result)
@@ -181,12 +268,12 @@ static unsigned int sql_mysql_num_fields(t_sql_res *result)
 	return 0;
     }
 
-    return mysql_num_fields((MYSQL_RES *)result);
+    return p_mysql_num_fields((MYSQL_RES *)result);
 }
 
 static unsigned int sql_mysql_affected_rows(void)
 {
-    return mysql_affected_rows(mysql);
+    return p_mysql_affected_rows(mysql);
 }
 
 static t_sql_field * sql_mysql_fetch_fields(t_sql_res *result)
@@ -200,8 +287,8 @@ static t_sql_field * sql_mysql_fetch_fields(t_sql_res *result)
 	return NULL;
     }
 
-    fieldno = mysql_num_fields((MYSQL_RES *)result);
-    fields = mysql_fetch_fields((MYSQL_RES *)result);
+    fieldno = p_mysql_num_fields((MYSQL_RES *)result);
+    fields = p_mysql_fetch_fields((MYSQL_RES *)result);
 
     rfields = (t_sql_field *)xmalloc(sizeof(t_sql_field) * (fieldno + 1));
     for(i = 0; i < fieldno; i++)
@@ -228,7 +315,7 @@ static void sql_mysql_escape_string(char *escape, const char *from, int len)
 	eventlog(eventlog_level_error, __FUNCTION__, "mysql driver not initilized");
 	return;
     }
-    mysql_real_escape_string(mysql, escape, from, len);
+    p_mysql_real_escape_string(mysql, escape, from, len);
 }
 
 }

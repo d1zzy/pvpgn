@@ -71,12 +71,75 @@ t_sql_engine sql_sqlite3 = {
 
 static sqlite3 *db = NULL;
 
+#ifndef RUNTIME_LIBS
+# define p_sqlite3_changes	sqlite3_changes
+# define p_sqlite3_close	sqlite3_close
+# define p_sqlite3_errmsg	sqlite3_errmsg
+# define p_sqlite3_exec		sqlite3_exec
+# define p_sqlite3_free_table	sqlite3_free_table
+# define p_sqlite3_get_table	sqlite3_get_table
+# define p_sqlite3_open		sqlite3_open
+# define p_sqlite3_snprintf	sqlite3_snprintf
+#else
+/* RUNTIME_LIBS */
+static int sqlite_load_library(void);
+
+typedef int		(*f_sqlite3_changes)(sqlite3*);
+typedef int		(*f_sqlite3_close)(sqlite3*);
+typedef const char*	(*f_sqlite3_errmsg)(sqlite3*);
+typedef int		(*f_sqlite3_exec)(sqlite3*,const char*,sqlite3_callback,void*,char**);
+typedef void		(*f_sqlite3_free_table)(char **);
+typedef int		(*f_sqlite3_get_table)(sqlite3*,const char*,char***,int*,int*,char**);
+typedef int		(*f_sqlite3_open)(const char*,sqlite3**);
+typedef char*		(*f_sqlite3_snprintf)(int,char*,const char*,...);
+
+static f_sqlite3_changes	p_sqlite3_changes	= NULL;
+static f_sqlite3_close		p_sqlite3_close		= NULL;
+static f_sqlite3_errmsg		p_sqlite3_errmsg	= NULL;
+static f_sqlite3_exec		p_sqlite3_exec		= NULL;
+static f_sqlite3_free_table	p_sqlite3_free_table	= NULL;
+static f_sqlite3_get_table	p_sqlite3_get_table	= NULL;
+static f_sqlite3_open		p_sqlite3_open		= NULL;
+static f_sqlite3_snprintf	p_sqlite3_snprintf	= NULL;
+
+#include "compat/runtime_libs.h" /* defines OpenLibrary(), GetFunction(), CloseLibrary() & SQLITE3_LIB */
+
+static void * handle = NULL;
+
+static int sqlite_load_library(void)
+{
+	if ((handle = OpenLibrary(SQLITE3_LIB)) == NULL) return -1;
+	
+	if (	((p_sqlite3_changes	= (f_sqlite3_changes)		GetFunction(handle, "sqlite3_changes"))		== NULL) ||
+		((p_sqlite3_close	= (f_sqlite3_close)		GetFunction(handle, "sqlite3_close"))		== NULL) ||
+		((p_sqlite3_errmsg	= (f_sqlite3_errmsg)		GetFunction(handle, "sqlite3_errmsg"))		== NULL) ||
+		((p_sqlite3_exec	= (f_sqlite3_exec)		GetFunction(handle, "sqlite3_exec"))		== NULL) ||
+		((p_sqlite3_free_table	= (f_sqlite3_free_table)	GetFunction(handle, "sqlite3_free_table"))	== NULL) ||
+		((p_sqlite3_get_table	= (f_sqlite3_get_table)		GetFunction(handle, "sqlite3_get_table"))	== NULL) ||
+		((p_sqlite3_open	= (f_sqlite3_open)		GetFunction(handle, "sqlite3_open"))		== NULL) ||
+		((p_sqlite3_snprintf	= (f_sqlite3_snprintf)		GetFunction(handle, "sqlite3_snprintf"))	== NULL) )
+	{
+		CloseLibrary(handle);
+		handle = NULL;
+		return -1;
+	}
+	
+	return 0;
+}
+#endif /* RUNTIME_LIBS */
+
 static int sql_sqlite3_init(const char *host, const char *port, const char *socket, const char *name, const char *user, const char *pass)
 {
+#ifdef RUNTIME_LIBS
+    if (sqlite_load_library()) {
+	eventlog(eventlog_level_error, __FUNCTION__, "error loading library file \"%s\"", SQLITE3_LIB);
+	return -1;
+    }
+#endif
     /* SQLite3 has no host, port, socket, user or password and the database name is the path to the db file */
-    if (sqlite3_open(name, &db) != SQLITE_OK) {
-        eventlog(eventlog_level_error, __FUNCTION__, "got error from sqlite3_open (%s)", sqlite3_errmsg(db));
-	sqlite3_close(db);
+    if (p_sqlite3_open(name, &db) != SQLITE_OK) {
+        eventlog(eventlog_level_error, __FUNCTION__, "got error from sqlite3_open (%s)", p_sqlite3_errmsg(db));
+	p_sqlite3_close(db);
         return -1;
     }
 
@@ -86,13 +149,18 @@ static int sql_sqlite3_init(const char *host, const char *port, const char *sock
 static int sql_sqlite3_close(void)
 {
     if (db) {
-	if (sqlite3_close(db) != SQLITE_OK) {
-    	    eventlog(eventlog_level_error, __FUNCTION__, "got error from sqlite3_close (%s)", sqlite3_errmsg(db));
+	if (p_sqlite3_close(db) != SQLITE_OK) {
+    	    eventlog(eventlog_level_error, __FUNCTION__, "got error from sqlite3_close (%s)", p_sqlite3_errmsg(db));
     	    return -1;
 	}
 	db = NULL;
     }
-
+#ifdef RUNTIME_LIBS
+    if (handle) {
+	CloseLibrary(handle);
+	handle = NULL;
+    }
+#endif
     return 0;
 }
 
@@ -112,8 +180,8 @@ static t_sql_res * sql_sqlite3_query_res(const char* query)
 
     res = (t_sqlite3_res *)xmalloc(sizeof(t_sqlite3_res));
 
-    if (sqlite3_get_table(db, query, &res->results, &res->rows, &res->columns, NULL) != SQLITE_OK) {
-/*        eventlog(eventlog_level_debug, __FUNCTION__, "got error (%s) from query (%s)", sqlite3_errmsg(db), query); */
+    if (p_sqlite3_get_table(db, query, &res->results, &res->rows, &res->columns, NULL) != SQLITE_OK) {
+/*        eventlog(eventlog_level_debug, __FUNCTION__, "got error (%s) from query (%s)", p_sqlite3_errmsg(db), query); */
 	xfree((void*)res);
 	return NULL;
     }
@@ -135,7 +203,7 @@ static int sql_sqlite3_query(const char* query)
         return -1;
     }
 
-    return sqlite3_exec(db, query, NULL, NULL, NULL) == SQLITE_OK ? 0 : -1;
+    return p_sqlite3_exec(db, query, NULL, NULL, NULL) == SQLITE_OK ? 0 : -1;
 }
 
 static t_sql_row * sql_sqlite3_fetch_row(t_sql_res *result)
@@ -157,7 +225,7 @@ static void sql_sqlite3_free_result(t_sql_res *result)
 	return;
     }
 
-    sqlite3_free_table(((t_sqlite3_res *)result)->results);
+    p_sqlite3_free_table(((t_sqlite3_res *)result)->results);
     xfree(result);
 }
 
@@ -183,7 +251,7 @@ static unsigned int sql_sqlite3_num_fields(t_sql_res *result)
 
 static unsigned int sql_sqlite3_affected_rows(void)
 {
-    return sqlite3_changes(db);
+    return p_sqlite3_changes(db);
 }
 
 static t_sql_field * sql_sqlite3_fetch_fields(t_sql_res *result)
@@ -213,7 +281,7 @@ static void sql_sqlite3_escape_string(char *escape, const char *from, int len)
 	eventlog(eventlog_level_error, __FUNCTION__, "sqlite3 driver not initilized");
 	return;
     }
-    sqlite3_snprintf(len * 2 + 1, escape, "%q", from);
+    p_sqlite3_snprintf(len * 2 + 1, escape, "%q", from);
 }
 
 }
