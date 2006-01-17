@@ -19,9 +19,9 @@
 #include "setup.h"
 #include "charlock.h"
 
+#include <limits>
 #include <cstring>
 #include <cctype>
-#include <climits>
 
 #include "compat/strcasecmp.h"
 #include "common/xalloc.h"
@@ -245,8 +245,8 @@ static unsigned int string_hash(char const *string)
 			ch = (unsigned int)(unsigned char)std::tolower((int)string[i]);
 		else
 			ch = (unsigned int)(unsigned char)string[i];
-		hash ^= ROTL(ch,pos,sizeof(unsigned int)*CHAR_BIT);
-		pos += CHAR_BIT-1;
+		hash ^= ROTL(ch,pos,(std::numeric_limits<unsigned int>::digits));
+		pos += (std::numeric_limits<unsigned char>::digits)-1;
 	}
 
 	return hash;
