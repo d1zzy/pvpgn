@@ -19,6 +19,7 @@
 #include "setup.h"
 #include "connection.h"
 
+#include <limits>
 #include <cctype>
 #include <cstring>
 #include <ctime>
@@ -80,8 +81,8 @@ static unsigned int conn_charname_hash(char const * charname)
 		} else {
 			ch=(unsigned int)(unsigned char)charname[i];
 		}
-		hash ^= ROTL(ch,pos,sizeof(unsigned int) * CHAR_BIT);
-		pos += CHAR_BIT-1;
+		hash ^= ROTL(ch,pos,(std::numeric_limits<unsigned int>::digits));
+		pos += (std::numeric_limits<unsigned char>::digits)-1;
 	}
 	return hash;
 }
