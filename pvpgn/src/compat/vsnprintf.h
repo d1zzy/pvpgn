@@ -19,13 +19,15 @@
 #define INCLUDED_VSNPRINTF_PROTOS
 
 #include <stdio.h>
-#include "compat/vargs.h"
 
 #if !defined(HAVE_VSNPRINTF)
 #ifdef HAVE__VSNPRINTF
 #define vsnprintf(str,size,format,ap) _vsnprintf(str,size,format,ap)
 #else
 #if defined(_IOSTRG) && defined(_IOSTRG) && defined(HAVE_DOPRNT)
+
+#include <stdarg.h>
+
 namespace pvpgn
 {
 
