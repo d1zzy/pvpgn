@@ -22,6 +22,7 @@
 
 #include <cerrno>
 #include <cstring>
+#include <cassert>
 
 #include "compat/rename.h"
 #include "common/eventlog.h"
