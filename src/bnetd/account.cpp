@@ -22,6 +22,7 @@
 #include "account.h"
 
 #include <cstddef>
+#include <cassert>
 
 #include "compat/strdup.h"
 #include "compat/strcasecmp.h"

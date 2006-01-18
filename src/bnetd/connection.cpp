@@ -23,6 +23,7 @@
 
 #include <cerrno>
 #include <cstring>
+#include <cassert>
 
 #ifdef WIN32_GUI
 #include <win32/winmain.h>
