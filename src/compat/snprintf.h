@@ -19,7 +19,6 @@
 #define INCLUDED_SNPRINTF_PROTOS
 
 #include <stdio.h>
-#include "compat/vargs.h"
 
 #if !defined(HAVE_SNPRINTF)
 #ifdef HAVE__SNPRINTF

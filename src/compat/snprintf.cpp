@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include "common/setup_before.h"
-#include <stdio.h>
-#include "compat/vargs.h"
+#include "compat/snprintf.h"
+#include <stdarg.h>
 #include "compat/vsnprintf.h"
 #include "common/setup_after.h"
 
@@ -31,7 +31,7 @@ extern int snprintf(char *str, size_t size, const char *format, ...)
     int result;
     va_list args;
 
-    VA_START(args,format);
+    va_start(args,format);
     result = vsnprintf(str,size,format,args);
     va_end(args);
     return result;
