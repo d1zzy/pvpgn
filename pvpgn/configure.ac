@@ -27,7 +27,6 @@ builtin(include,src/autoconf/ccstdc.m4)
 builtin(include,src/autoconf/mkdir.m4)
 
 # Checks for programs.
-AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_RANLIB
@@ -53,7 +52,7 @@ zwarnflags=""
 AC_ARG_WITH(warn, [  --with-warn             enable compiler warnings], [zwarnflags="-pedantic -Wall -W -Wshadow -Wpointer-arith -Wbad-function-cast -Wcast-qual -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wmissing-declarations -Wredundant-decls -Wnested-externs -Wunreachable-code -Winline -Wpacked -Wno-sign-compare"])
 
 zlangflags=""
-AC_ARG_WITH(ansi, [  --with-ansi             use ANSI C mode], [zlangflags="-ansi -pedantic"])
+AC_ARG_WITH(ansi, [  --with-ansi             use strict ANSI C++98 mode], [zlangflags="-std=c++98 -pedantic"])
 
 extra_include=""
 AC_ARG_WITH(includes, [  --with-includes=DIR     search include DIR for header files], [
@@ -86,8 +85,6 @@ x/*|x.*)
 esac])
 
 extra_lib=""
-AC_ARG_WITH(efence, [  --with-efence           link with Electric Fence to find memory problems], [extra_lib="${extra_lib} -lefence"])
-
 AC_ARG_WITH(mysql, [  --with-mysql            include MySQL user accounts support])
 
 AC_ARG_WITH(pgsql, [  --with-pgsql            include PostgreSQL user accounts support])
@@ -183,13 +180,6 @@ AC_SUBST(DEFINES)
 AM_CONDITIONAL([COND_BNETD], [test -z "$enable_bnetd" -o x"$enable_bnetd" = xyes])
 AM_CONDITIONAL([COND_D2CS], [test -z "$enable_d2cs" -o x"$enable_d2cs" = xyes])
 AM_CONDITIONAL([COND_D2DBS], [test -z "$enable_d2dbs" -o x"$enable_d2dbs" = xyes])
-
-# Checks for compiler quirks.
-AC_PROG_GCC_TRADITIONAL
-AM_PROG_CC_STDC
-AC_C_CONST
-AC_C_INLINE
-#AC_EXEEXT
 
 # Checks for libraries.
 AC_CHECK_LIB(m, pow, [LIBS="$LIBS -lm"])
@@ -417,60 +407,62 @@ AM_CONDITIONAL([COND_BNPCAP], [test "$ac_cv_lib_pcap_pcap_open_offline" = "yes"]
 
 # Checks for header files.
 AC_HEADER_DIRENT
-AC_HEADER_STDC
-AC_HEADER_TIME
 AC_HEADER_STAT
+dnl checking for STD C++98 + STD C90 headers, these are mandatory
 AC_CHECK_HEADERS([\
-    fcntl.h \
-    sys/time.h \
-    time.h \
-    sys/select.h \
-    string.h \
-    strings.h \
-    unistd.h \
-    stdarg.h \
-    varargs.h \
-    malloc.h \
-    sys/utsname.h \
-    sys/timeb.h \
-    sys/socket.h \
-    sys/param.h \
-    netinet/in.h \
-    arpa/inet.h \
-    netdb.h \
-    termios.h \
-    stddef.h \
-    memory.h \
-    sys/types.h \
-    sys/wait.h \
-    sys/ioctl.h \
-    stdint.h \
-    sys/file.h \
-    limits.h \
-    poll.h \
-    sys/poll.h \
-    stropts.h \
-    sys/stropts.h \
-    sys/stat.h \
-    pwd.h \
-    grp.h \
-    dir.h \
-    direct.h \
-    sys/mman.h \
-    sys/event.h \
-    sys/epoll.h \
-    sys/resource.h \
-    assert.h \
-    sqlite3.h \
-    pcap.h \
+	cassert \
+	cctype \
+	cerrno \
+	climits \
+	cmath \
+	csignal \
+	signal.h \
+	cstdarg \
+	cstddef \
+	cstdio \
+	cstdlib \
+	cstring \
+	ctime \
+],, AC_MSG_ERROR(Standard C90/C++98 header missing, you need a fully standard compliant compiler/enviroment.))
+
+AC_CHECK_HEADERS([\
+	fcntl.h \
+	sys/time.h \
+	sys/select.h \
+	unistd.h \
+	sys/utsname.h \
+	sys/timeb.h \
+	sys/socket.h \
+	sys/param.h \
+	netinet/in.h \
+	arpa/inet.h \
+	netdb.h \
+	termios.h \
+	sys/types.h \
+	sys/wait.h \
+	sys/ioctl.h \
+	stdint.h \
+	sys/file.h \
+	poll.h \
+	sys/poll.h \
+	stropts.h \
+	sys/stropts.h \
+	sys/stat.h \
+	pwd.h \
+	grp.h \
+	dir.h \
+	direct.h \
+	sys/mman.h \
+	sys/event.h \
+	sys/epoll.h \
+	sys/resource.h \
+	sqlite3.h \
+	pcap.h \
 ])
 
 # Checks for typedefs and structures
-AC_STRUCT_TM
 AC_TYPE_PID_T
-AC_TYPE_SIGNAL
 AC_TYPE_OFF_T
-AC_TYPE_SIZE_T
 AC_CHECK_SIZEOF(unsigned char, 1)
 AC_CHECK_SIZEOF(unsigned short, 2)
 AC_CHECK_SIZEOF(unsigned int, 4)
@@ -484,16 +476,91 @@ AC_CHECK_SIZEOF(signed long long, 0)
 
 # Checks for library functions.
 AC_FUNC_MMAP
-AC_FUNC_STRFTIME
 AC_FUNC_VPRINTF
 AC_FUNC_SETPGRP
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_MKDIR_ARGS
-AC_CHECK_FUNCS(gethostname gettimeofday select socket strdup strtoul strerror inet_aton inet_ntoa uname recv send recvfrom sendto uname fork getpid sigaction sigprocmask sigaddset setpgid setpgrp ftime strcasecmp strncasecmp stricmp strnicmp chdir difftime strchr strrchr index rindex memcpy memset memmove bcopy wait waitpid pipe getenv ioctl setsid mktime poll gethostbyname getservbyname getlogin pow getpwnam getgrnam getuid getgid setuid setgid mkdir _mkdir strsep getopt kqueue setitimer epoll_create getrlimit vsnprintf _vsnprintf snprintf _snprintf)
+AC_CHECK_FUNCS([\
+	gethostname \
+	gettimeofday \
+	select \
+	socket \
+	strdup \
+	strtoul \
+	inet_aton \
+	inet_ntoa \
+	uname \
+	recv \
+	send \
+	recvfrom \
+	sendto \
+	uname \
+	fork \
+	getpid \
+	sigaction \
+	sigprocmask \
+	sigaddset \
+	setpgid \
+	setpgrp \
+	ftime \
+	strcasecmp \
+	strncasecmp \
+	stricmp \
+	strnicmp \
+	chdir \
+	difftime \
+	strchr \
+	strrchr \
+	index \
+	rindex \
+	wait \
+	waitpid \
+	pipe \
+	getenv \
+	ioctl \
+	setsid \
+	poll \
+	gethostbyname \
+	getservbyname \
+	getlogin \
+	getpwnam \
+	getgrnam \
+	getuid \
+	getgid \
+	setuid \
+	setgid \
+	mkdir \
+	_mkdir \
+	strsep \
+	getopt \
+	kqueue \
+	setitimer \
+	epoll_create \
+	getrlimit \
+	vsnprintf \
+	_vsnprintf \
+	snprintf \
+	_snprintf \
+])
 
-AC_OUTPUT([Makefile src/Makefile src/compat/Makefile src/common/Makefile \
-src/tinycdb/Makefile src/bnetd/Makefile src/d2cs/Makefile \
-src/d2dbs/Makefile src/bntrackd/Makefile src/client/Makefile \
-src/bnpass/Makefile src/bniutils/Makefile src/bnpcap/Makefile man/Makefile \
-conf/Makefile docs/Makefile Win32-Projects/Makefile files/Makefile \
-src/autoconf/Makefile])
+AC_OUTPUT([
+	Makefile \
+	src/Makefile \
+	src/compat/Makefile \
+	src/common/Makefile \
+	src/tinycdb/Makefile \
+	src/bnetd/Makefile \
+	src/d2cs/Makefile \
+	src/d2dbs/Makefile \
+	src/bntrackd/Makefile \
+	src/client/Makefile \
+	src/bnpass/Makefile \
+	src/bniutils/Makefile \
+	src/bnpcap/Makefile \
+	man/Makefile \
+	conf/Makefile \
+	docs/Makefile \
+	Win32-Projects/Makefile \
+	files/Makefile \
+	src/autoconf/Makefile \
+])
