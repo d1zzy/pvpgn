@@ -44,7 +44,6 @@ fi
 
 # Checks for systems.
 AC_AIX
-AC_ISC_POSIX
 AC_MINIX
 
 # Custom checks.
@@ -389,6 +388,13 @@ fi
 
 AC_CHECK_LIB(nsl, gethostbyname, [LIBS="$LIBS -lnsl"])
 AC_CHECK_LIB(socket, socket, [LIBS="$LIBS -lsocket"])
+AC_MSG_CHECKING([for select in -lws2_32])
+save_libs=$LIBS
+LIBS="$LIBS -lws2_32"
+AC_LINK_IFELSE(
+	[AC_LANG_PROGRAM([[#include <winsock2.h>]],[[select(0,0,0,0,0);]])], 
+	AC_MSG_RESULT( [yes] ) , 
+	[ LIBS=$save_libs; AC_MSG_RESULT( [no] ) ] )
 AC_CHECK_LIB(resolv, inet_aton, [LIBS="$LIBS -lresolv"])
 dnl BeOS BONE...
 AC_CHECK_LIB(bind, __inet_aton, [LIBS="$LIBS -lbind"])
@@ -477,7 +483,6 @@ AC_CHECK_SIZEOF(signed long long, 0)
 # Checks for library functions.
 AC_FUNC_MMAP
 AC_FUNC_VPRINTF
-AC_FUNC_SETPGRP
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_MKDIR_ARGS
 AC_CHECK_FUNCS([\
@@ -501,7 +506,6 @@ AC_CHECK_FUNCS([\
 	sigprocmask \
 	sigaddset \
 	setpgid \
-	setpgrp \
 	ftime \
 	strcasecmp \
 	strncasecmp \
@@ -542,6 +546,7 @@ AC_CHECK_FUNCS([\
 	snprintf \
 	_snprintf \
 ])
+AC_CHECK_FUNC([setpgrp], [AC_FUNC_SETPGRP])
 
 AC_OUTPUT([
 	Makefile \
@@ -563,4 +568,5 @@ AC_OUTPUT([
 	Win32-Projects/Makefile \
 	files/Makefile \
 	src/autoconf/Makefile \
+	src/win32/Makefile \
 ])

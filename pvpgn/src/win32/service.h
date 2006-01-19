@@ -14,6 +14,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifdef WIN32
+#ifndef WIN32_SERVICE_INCLUDED
+#define WIN32_SERVICE_INCLUDED
+
 void Win32_ServiceInstall(void);
 void Win32_ServiceUninstall(void);
 void Win32_ServiceRun(void);
+
+#endif /* !WIN32_SERVICE_INCLUDED */
+#endif /* WIN32 */

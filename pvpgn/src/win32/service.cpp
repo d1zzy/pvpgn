@@ -14,9 +14,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifdef WIN32
+
 #include <windows.h>
 #include <winsvc.h>
-#include <stdlib.h>
 
 #if !defined(WINADVAPI)
 #if !defined(_ADVAPI32_)
@@ -233,3 +234,5 @@ void Win32_ServiceRun()
 	{
 	} 
 }
+
+#endif
