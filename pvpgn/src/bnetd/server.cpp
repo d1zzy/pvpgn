@@ -1130,36 +1130,36 @@ static int _setup_posixsig(void)
 
 #ifdef WIN32
 # ifndef WIN32_GUI
-BOOL CtrlHandler( DWORD fdwCtrlType ) 
-{ 
-  switch( fdwCtrlType ) 
-  { 
-    // Handle the CTRL-C signal. 
-    case CTRL_C_EVENT: 
+BOOL CtrlHandler( DWORD fdwCtrlType )
+{
+  switch( fdwCtrlType )
+  {
+    // Handle the CTRL-C signal.
+    case CTRL_C_EVENT:
       server_quit_wraper();
       return( TRUE );
- 
-    // CTRL-CLOSE: confirm that the user wants to exit. 
+
+    // CTRL-CLOSE: confirm that the user wants to exit.
       server_quit_wraper();
-      return( TRUE ); 
- 
-    // Pass other signals to the next handler. 
-    case CTRL_BREAK_EVENT: 
+      return( TRUE );
+
+    // Pass other signals to the next handler.
+    case CTRL_BREAK_EVENT:
       server_quit_wraper();
-      return FALSE; 
- 
-    case CTRL_LOGOFF_EVENT: 
+      return FALSE;
+
+    case CTRL_LOGOFF_EVENT:
       server_quit_wraper();
-      return FALSE; 
- 
-    case CTRL_SHUTDOWN_EVENT: 
+      return FALSE;
+
+    case CTRL_SHUTDOWN_EVENT:
       server_quit_wraper();
-      return FALSE; 
- 
-    default: 
-      return FALSE; 
-  } 
-} 
+      return FALSE;
+
+    default:
+      return FALSE;
+  }
+}
 # endif
 #endif
 
@@ -1167,19 +1167,16 @@ static std::time_t prev_exittime;
 
 static void _server_mainloop(t_addrlist *laddrs)
 {
-    std::time_t          next_savetime, next_flushtime, track_time;
+    std::time_t          next_savetime, track_time;
     std::time_t          war3_ladder_updatetime;
     std::time_t          output_updatetime;
     unsigned int    count;
-    int             savestep, flushstep;
 
     starttime = std::time(NULL);
     track_time = starttime - prefs_get_track();
     next_savetime = starttime + prefs_get_user_sync_timer();
-    next_flushtime = starttime + prefs_get_user_flush_timer();
     war3_ladder_updatetime  = starttime - prefs_get_war3_ladder_update_secs();
     output_updatetime = starttime - prefs_get_output_update_secs();
-    savestep = flushstep = 0;
 
     count = 0;
 
@@ -1248,29 +1245,14 @@ static void _server_mainloop(t_addrlist *laddrs)
 	}
 	prev_exittime = curr_exittime;
 
-	if (next_savetime <=now)
-	{
-	    if (!savestep) { /* do this stuff only first step of save */
-    		clanlist_save();
-        	gamelist_check_voidgame();
-	    }
-	    savestep = accountlist_save(FS_NONE);
-
-	    if (!savestep)	/* saving finished */
+	if (next_savetime <=now) {
+		/* do this stuff in usersync periods */
+		clanlist_save();
+		gamelist_check_voidgame();
 		next_savetime += prefs_get_user_sync_timer();
 	}
-
-	if (next_flushtime <=now)
-	{
-	    if (!flushstep) { /* do this stuff only first step of save */
-    		clanlist_save();
-        	gamelist_check_voidgame();
-	    }
-	    flushstep = accountlist_flush(FS_NONE);
-
-	    if (!flushstep)	/* flushing finished */
-		next_flushtime += prefs_get_user_flush_timer();
-	}
+	accountlist_save(FS_NONE);
+	accountlist_flush(FS_NONE);
 
 	if (prefs_get_track() && track_time+(std::time_t)prefs_get_track()<=now)
 	{
@@ -1295,10 +1277,6 @@ static void _server_mainloop(t_addrlist *laddrs)
 	{
 	    eventlog(eventlog_level_info,__FUNCTION__,"saving accounts due to std::signal");
     	    clanlist_save();
-
-	    savestep = accountlist_save(FS_NONE);
-	    if (!savestep)	/* saving finished */
-		next_savetime += prefs_get_user_sync_timer();
 
 	    do_save = 0;
 	}
