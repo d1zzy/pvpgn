@@ -46,6 +46,7 @@ static inline void attrgroup_set_accessed(t_attrgroup *attrgroup)
 {
     FLAG_SET(&attrgroup->flags, ATTRGROUP_FLAG_ACCESSED);
     attrgroup->lastaccess = now;
+    attrlayer_accessed(attrgroup);
 }
 
 static inline void attrgroup_clear_accessed(t_attrgroup *attrgroup)

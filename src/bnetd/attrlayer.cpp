@@ -107,14 +107,17 @@ extern int attrlayer_flush(int flags)
 		fcount++;
 		break;
 	    case 0:
+		/* stop on the first account not flushed (ie accessed too early) */
+		goto loopout;
 	    default:
 		break;
 	}
 	tcount++;
     }
 
+loopout:
     if (fcount>0)
-	eventlog(eventlog_level_debug, __FUNCTION__, "flushed %u of %u user accounts", fcount, tcount);
+	eventlog(eventlog_level_debug, __FUNCTION__, "flushed %u user accounts", fcount);
 
     if (!FLAG_ISSET(flags, FS_ALL) && curr != &loadedlist) return 1;
 
@@ -148,14 +151,17 @@ extern int attrlayer_save(int flags)
 		scount++;
 		break;
 	    case 0:
+		/* stop on the first account not saved (ie dirty too early) */
+		goto loopout;
 	    default:
 		break;
 	}
 	tcount++;
     }
 
+loopout:
     if (scount>0)
-	eventlog(eventlog_level_debug, __FUNCTION__, "saved %u of %u user accounts", scount, tcount);
+	eventlog(eventlog_level_debug, __FUNCTION__, "saved %u user accounts", scount);
 
     if (!FLAG_ISSET(flags, FS_ALL) && curr != &dirtylist) return 1;
 
@@ -185,6 +191,13 @@ extern void attrlayer_del_dirtylist(t_elist *what)
 extern t_attrgroup * attrlayer_get_defattrgroup(void)
 {
     return defattrs;
+}
+
+extern void attrlayer_accessed(t_attrgroup* attrgroup)
+{
+	/* move the attrgroup at the end of loaded list for the "flush" loop */
+	elist_del(&attrgroup->loadedlist);
+	elist_add_tail(&loadedlist, &attrgroup->loadedlist);
 }
 
 }
