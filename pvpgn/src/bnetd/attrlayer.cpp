@@ -100,15 +100,15 @@ extern int attrlayer_flush(int flags)
 
 	attrgroup = elist_entry(curr, t_attrgroup, loadedlist);
 	switch(attrgroup_flush(attrgroup, flags)) {
-	    case -1:
-		eventlog(eventlog_level_error, __FUNCTION__, "could not flush account");
-		break;
-	    case 1:
-		fcount++;
-		break;
 	    case 0:
 		/* stop on the first account not flushed (ie accessed too early) */
 		goto loopout;
+	    case 1:
+		fcount++;
+		break;
+	    case -1:
+		eventlog(eventlog_level_error, __FUNCTION__, "could not flush account");
+		break;
 	    default:
 		break;
 	}
@@ -144,15 +144,15 @@ extern int attrlayer_save(int flags)
 
 	attrgroup = elist_entry(curr, t_attrgroup, dirtylist);
 	switch(attrgroup_save(attrgroup, flags)) {
-	    case -1:
-		eventlog(eventlog_level_error, __FUNCTION__, "could not save account");
-		break;
-	    case 1:
-		scount++;
-		break;
 	    case 0:
 		/* stop on the first account not saved (ie dirty too early) */
 		goto loopout;
+	    case 1:
+		scount++;
+		break;
+	    case -1:
+		eventlog(eventlog_level_error, __FUNCTION__, "could not save account");
+		break;
 	    default:
 		break;
 	}
