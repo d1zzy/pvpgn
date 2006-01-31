@@ -17,7 +17,7 @@
  */
 #include "common/setup_before.h"
 #include "compat/snprintf.h"
-#include <stdarg.h>
+#include <cstdarg>
 #include "compat/vsnprintf.h"
 #include "common/setup_after.h"
 

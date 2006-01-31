@@ -18,7 +18,7 @@
 #ifndef INCLUDED_VSNPRINTF_PROTOS
 #define INCLUDED_VSNPRINTF_PROTOS
 
-#include <stdio.h>
+#include <cstdio>
 
 #if !defined(HAVE_VSNPRINTF)
 #ifdef HAVE__VSNPRINTF
@@ -26,7 +26,7 @@
 #else
 #if defined(_IOSTRG) && defined(_IOSTRG) && defined(HAVE_DOPRNT)
 
-#include <stdarg.h>
+#include <cstdarg>
 
 namespace pvpgn
 {

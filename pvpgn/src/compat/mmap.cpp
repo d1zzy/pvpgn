@@ -17,13 +17,7 @@
  */
 #include "common/setup_before.h"
 #ifndef HAVE_MMAP
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
+#include <cstdlib>
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif

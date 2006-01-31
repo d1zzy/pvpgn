@@ -18,22 +18,18 @@
 #ifndef INCLUDED_SNPRINTF_PROTOS
 #define INCLUDED_SNPRINTF_PROTOS
 
-#include <stdio.h>
+#include <cstdio>
 
 #if !defined(HAVE_SNPRINTF)
 #ifdef HAVE__SNPRINTF
 #define snprintf _snprintf
 #else
-#if defined(HAVE_VSNPRINTF) || defined(HAVE__VSNPRINTF)
 namespace pvpgn
 {
 
 extern int snprintf(char *str, size_t size, const char *format, ...);
 
 }
-#else
-#error "Your system lacks ANY kind of snprintf support!"
-#endif
 #endif
 #endif
 

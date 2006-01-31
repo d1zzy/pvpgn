@@ -17,31 +17,17 @@
  */
 #define PDIR_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
+
+#include "pdir.h"
+
+#include <cstddef>
+#include <cstdlib>
+#include <cstring>
+#include <cerrno>
+
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strdup.h"
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
 #else
@@ -59,11 +45,9 @@
 #ifdef WIN32
 # include <io.h> /* for _findfirst(), _findnext(), etc */
 #endif
-#include <errno.h>
 #include "compat/strerror.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
-#include "pdir.h"
 #include "common/setup_after.h"
 
 
@@ -139,7 +123,7 @@ extern int p_rewinddir(t_pdir * pdir) {
        _findclose(pdir->lFindHandle);
    }
    pdir->status = 0;
-   memset(&pdir->fileinfo, 0, sizeof(pdir->fileinfo)); /* no need for compat because WIN32 always has memset() */
+   std::memset(&pdir->fileinfo, 0, sizeof(pdir->fileinfo)); /* no need for compat because WIN32 always has memset() */
    pdir->lFindHandle = _findfirst(pdir->path, &pdir->fileinfo);
    if (pdir->lFindHandle < 0) {
       pdir->status = -1;

@@ -17,28 +17,10 @@
  */
 #include "common/setup_before.h"
 #ifndef HAVE_STRDUP
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
 #include "strdup.h"
+#include <cstddef>
+#include <cstdlib>
+#include <cstring>
 #include "common/setup_after.h"
 
 
@@ -49,9 +31,9 @@ extern char * strdup(char const * str)
 {
     char * out;
 
-    if (!(out = malloc(strlen(str)+1)))
+    if (!(out = (char *)std::malloc(std::strlen(str)+1)))
         return NULL;
-    strcpy(out,str);
+    std::strcpy(out,str);
     return out;
 }
 
