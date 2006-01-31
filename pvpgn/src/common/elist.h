@@ -37,9 +37,7 @@ typedef struct hlist_struct {
 #ifndef INCLUDED_ELIST_PROTOS
 #define INCLUDED_ELIST_PROTOS
 
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#endif
+#include <cstddef>
 
 /* access to it's members */
 #define elist_next(ptr) ((ptr)->next)
