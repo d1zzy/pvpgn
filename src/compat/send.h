@@ -22,13 +22,7 @@
 
 /* some sendto()s don't handle NULL, but send is called depreciated on BSD */
 #ifdef HAVE_SENDTO
-# ifdef HAVE_STDDEF_H
-#  include <stddef.h>
-# else
-#  ifndef NULL
-#   define NULL ((void *)0)
-#  endif
-# endif
+# include <cstddef>
 # define send(s, b, l, f) sendto(s, b, l, f, NULL, NULL)
 #else
 # error "This program requires sendto()"

@@ -22,13 +22,7 @@
 
 /* some recvfrom()s don't handle NULL, but recv is called depreciated on BSD */
 #ifdef HAVE_RECVFROM
-# ifdef HAVE_STDDEF_H
-#  include <stddef.h>
-# else
-#  ifndef NULL
-#   define NULL ((void *)0)
-#  endif
-# endif
+# include <cstddef>
 # define recv(s, b, l, f) recvfrom(s, b, l, f, NULL, NULL)
 #else
 # error "This program requires recvfrom()"

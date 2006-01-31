@@ -19,7 +19,8 @@
 #include "compat/vsnprintf.h"
 #include "common/setup_after.h"
 
-#if !defined(HAVE_VSNPRINTF) && !defined(HAVE__VSNPRINTF) && defined(HAVE_DOPRNT) && defined(_IOWRT) && defined(_IOSTRG)
+#if !defined(HAVE_VSNPRINTF) && !defined(HAVE__VSNPRINTF)
+# if defined(HAVE_DOPRNT) && defined(_IOWRT) && defined(_IOSTRG)
 
 namespace pvpgn
 {
@@ -44,6 +45,8 @@ extern int vsnprintf(char *str, int size, const char *format, va_list ap)
 
 }
 
-#else
+# else
+#  error "This program requires either vsnprintf(), _vsnprintf() or _doprnt()"
+# endif
 typedef int filenotempty; /* make ISO standard happy */
 #endif

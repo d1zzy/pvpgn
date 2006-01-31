@@ -18,7 +18,7 @@
 #ifndef INCLUDED_STRERROR_PROTOS
 #define INCLUDED_STRERROR_PROTOS
 
-#if !defined(HAVE_STRERROR) || defined(WIN32)
+#if defined(WIN32)
 namespace pvpgn
 {
 
@@ -28,7 +28,7 @@ extern char const * pstrerror(int errornum);
 
 #else
 
-#include <string.h>
+#include <cstring>
 
 # define pstrerror(e) strerror(e)
 #endif

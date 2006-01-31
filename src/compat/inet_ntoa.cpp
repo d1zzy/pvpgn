@@ -17,15 +17,11 @@
  */
 #include "common/setup_before.h"
 #ifndef HAVE_INET_NTOA
+#include "inet_ntoa.h"
 
-#include <stdio.h>
-#ifdef HAVE_STDDEF_H
-# include <stddef.h>
-#else
-# ifndef NULL
-#  define NULL ((void *)0)
-# endif
-#endif
+#include <cstdio>
+#include <cstddef>
+
 #ifdef HAVE_SYS_TYPES
 # include <sys/types.h>
 #endif
@@ -38,7 +34,6 @@
 #ifdef HAVE_ARPA_INET_H
 # include <arpa/inet.h>
 #endif
-#include "inet_ntoa.h"
 #include "common/setup_after.h"
 
 
@@ -54,11 +49,11 @@ extern char const * inet_ntoa(struct in_addr const * addr)
 	return NULL;
 
     val = ntohl(addr->s_addr);
-    sprintf(buff,"%u.%u.%u.%u",
-	    (val>>24)&0xff,
-	    (val>>16)&0xff,
-	    (val>> 8)&0xff,
-	    (val    )&0xff);
+    std::sprintf(buff,"%u.%u.%u.%u",
+	        (val>>24)&0xff,
+	        (val>>16)&0xff,
+	        (val>> 8)&0xff,
+	        (val    )&0xff);
     return buff;
 }
 
