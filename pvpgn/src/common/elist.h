@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2004  Dizzy
+ * Copyright (C) 2004,2006  Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,144 @@
 
 namespace pvpgn
 {
+
+template<typename T>
+class elist_node
+{
+public:
+	elist_node(): info_(0), prev_(this), next_(this) {}
+	~elist_node() throw() {
+		remove();
+	}
+
+	void link_front(elist_node& where, T& info) {
+		info_ = &info;
+		where.next_->prev_ = this;
+		next_ = where.next_;
+		prev_ = &where;
+		where.next_ = this;
+	}
+
+	void link_back(elist_node& where, T& info) {
+		info_ = &info;
+		where.prev_->next_ = this;
+		next_ = &where;
+		prev_ = where.prev_;
+		where.prev_ = this;
+	}
+
+	void remove() {
+		/* remove ourselves from any link */
+		prev_->next_ = next_;
+		next_->prev_ = prev_;
+		prev_ = next_ = this;
+		/* poison this to find out bugs a lot earlier */
+		info_ = 0;
+	}
+
+	T& info() const { return *info_; }
+
+	elist_node* next() const { return next_; }
+	elist_node* prev() const { return prev_; }
+
+private:
+	T* info_;
+	elist_node *prev_, *next_;
+
+	elist_node(const elist_node&);
+	elist_node& operator=(const elist_node&);
+};
+
+template<typename T>
+class elist
+{
+public:
+	class iterator
+	{
+	public:
+		iterator(): ptr(0) {}
+		iterator(const iterator& orig):ptr(orig.ptr) {}
+		~iterator() throw() {}
+
+		bool operator==(const iterator& op) const {
+			return ptr == op.ptr;
+		}
+		bool operator!=(const iterator& op) const {
+			return ptr != op.ptr;
+		}
+
+		iterator& operator++() {
+			ptr = ptr->next();
+			return *this;
+		}
+		iterator operator++(int) {
+			elist_node<T>* save = ptr;
+			ptr = ptr->next();
+			return iterator(save);
+		}
+
+		T& operator*() const {
+			return ptr->info();
+		}
+
+		T* operator->() const {
+			return &ptr->info();
+		}
+
+	private:
+		elist_node<T> *ptr;
+
+		explicit iterator(elist_node<T>* ptr_): ptr(ptr_) {}
+		friend class elist;
+	};
+
+	explicit elist(elist_node<T> T::* node_): node(node_) {}
+	~elist() throw() {
+		clear();
+	}
+
+	void push_back(T& obj) {
+		(obj.*node).link_back(head, obj);
+	}
+
+	void push_front(T& obj) {
+		(obj.*node).link_front(head, obj);
+	}
+
+	void remove(T& obj) {
+		(obj.*node).remove();
+	}
+
+	void remove(iterator& it) {
+		it.ptr->remove();
+	}
+
+	void clear() {
+		while(!empty())
+			head.prev()->remove();
+	}
+
+	bool empty() {
+		return head.prev() == head.next();
+	}
+
+	T& front() const { return head.next()->info(); }
+	T& back() const { return head.back()->info(); }
+
+	iterator begin() {
+		return iterator(head.next());
+	}
+	iterator end() {
+		return iterator(&head);
+	}
+
+private:
+	/* the head of the list */
+	elist_node<T> head;
+
+	/* used to access the elist_node<T> of a given T */
+	elist_node<T> T::* node;
+};
 
 typedef struct elist_struct {
     struct elist_struct *next, *prev;
