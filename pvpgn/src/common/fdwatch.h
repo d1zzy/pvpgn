@@ -35,15 +35,17 @@ typedef enum {
 
 typedef int (*fdwatch_handler)(void *data, t_fdwatch_type);
 
-typedef struct {
-    int fd;
-    int rw;
-    fdwatch_handler hnd;
-    void *data;
+struct t_fdwatch_fd {
+	int fd;
+	int rw;
+	fdwatch_handler hnd;
+	void *data;
 
-    t_elist uselist;
-    t_elist freelist;
-} t_fdwatch_fd;
+	elist_node<t_fdwatch_fd> uselist;
+	elist_node<t_fdwatch_fd> freelist;
+
+	t_fdwatch_fd():fd(0), rw(0), hnd(0), data(0), uselist(), freelist() {}
+};
 
 typedef int (*t_fdw_cb)(t_fdwatch_fd *cfd, void *data);
 

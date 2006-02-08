@@ -39,9 +39,15 @@ namespace pvpgn
 unsigned fdw_maxcons;
 t_fdwatch_fd *fdw_fds = NULL;
 
-static FDWBackend * fdw = NULL;
-static DECLARE_ELIST_INIT(freelist);
-static DECLARE_ELIST_INIT(uselist);
+namespace
+{
+
+FDWBackend * fdw = NULL;
+typedef elist<t_fdwatch_fd> FDWList;
+FDWList freelist(&t_fdwatch_fd::freelist);
+FDWList uselist(&t_fdwatch_fd::uselist);
+
+}
 
 extern int fdwatch_init(int maxcons)
 {
@@ -57,10 +63,9 @@ extern int fdwatch_init(int maxcons)
 	fdw_maxcons = maxcons;
 
 	fdw_fds = new t_fdwatch_fd[fdw_maxcons];
-	std::memset(fdw_fds, 0, sizeof(t_fdwatch_fd) * fdw_maxcons);
 	/* add all slots to the freelist */
 	for(i = 0; i < fdw_maxcons; i++)
-		elist_add_tail(&freelist,&(fdw_fds[i].freelist));
+		freelist.push_back(fdw_fds[i]);
 
 #ifdef HAVE_EPOLL
 	try {
@@ -101,8 +106,8 @@ extern int fdwatch_close(void)
 {
 	if (fdw) { delete fdw; fdw = NULL; }
 	if (fdw_fds) { delete[] fdw_fds; fdw_fds = NULL; }
-	elist_init(&freelist);
-	elist_init(&uselist);
+	freelist.clear();
+	uselist.clear();
 
 	return 0;
 }
@@ -110,16 +115,16 @@ extern int fdwatch_close(void)
 extern int fdwatch_add_fd(int fd, unsigned rw, fdwatch_handler h, void *data)
 {
 	/* max sockets reached */
-	if (elist_empty(&freelist)) return -1;
+	if (freelist.empty()) return -1;
 
-	t_fdwatch_fd *cfd = elist_entry(elist_next(&freelist),t_fdwatch_fd,freelist);
+	t_fdwatch_fd *cfd = &freelist.front();
 	fdw_fd(cfd) = fd;
 
 	if (fdw->add(fdw_idx(cfd), rw)) return -1;
 
 	/* add it to used sockets list, remove it from free list */
-	elist_add_tail(&uselist,&cfd->uselist);
-	elist_del(&cfd->freelist);
+	uselist.push_back(*cfd);
+	freelist.remove(*cfd);
 
 	fdw_rw(cfd) = rw;
 	fdw_data(cfd) = data;
@@ -168,8 +173,8 @@ extern int fdwatch_del_fd(int idx)
 	fdw->del(idx);
 
 	/* remove it from uselist, add it to freelist */
-	elist_del(&cfd->uselist);
-	elist_add_tail(&freelist,&cfd->freelist);
+	uselist.remove(*cfd);
+	freelist.push_back(*cfd);
 
 	fdw_fd(cfd) = 0;
 	fdw_rw(cfd) = 0;
@@ -191,11 +196,8 @@ extern void fdwatch_handle(void)
 
 extern void fdwatch_traverse(t_fdw_cb cb, void *data)
 {
-	t_elist *curr;
-
-	elist_for_each(curr,&uselist)
-	{
-		if (cb(elist_entry(curr,t_fdwatch_fd,uselist),data)) break;
+	for(FDWList::iterator it(uselist.begin());it != uselist.end(); ++it) {
+		if (cb(&*it,data)) break;
 	}
 }
 
