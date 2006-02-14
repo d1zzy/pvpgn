@@ -3573,7 +3573,7 @@ static int _handle_gameinfo_command(t_connection * c, char const *text)
 
 static int _handle_ladderactivate_command(t_connection * c, char const *text)
 {
-  ladderlist_make_all_active();
+  ladders.activate();
   message_send_text(c,message_type_info,c,"Copied current scores to active scores on all ladders.");
   return 0;
 }
@@ -3632,10 +3632,11 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
   unsigned int i,j;
   t_account *  account;
   t_clienttag clienttag;
+  const LadderReferencedObject* referencedObject;
+  LadderList* ladderList;
 
-  for (i=0; text[i]!=' ' && text[i]!='\0'; i++); /* skip command */
-  for (; text[i]==' '; i++);
-  for (j=0; text[i]!=' ' && text[i]!='\0'; i++) /* get dest */
+  text = skip_command(text);
+  for (i=0,j=0; text[i]!=' ' && text[i]!='\0'; i++) /* get dest */
     if (j<sizeof(dest)-1) dest[j++] = text[i];
   dest[j] = '\0';
   for (; text[i]==' '; i++);
@@ -3652,9 +3653,10 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
     }
 
   if (text[i]!='\0') {
-    if (std::strlen(text)!=4) {
+    if (std::strlen(&text[i])!=4) {
+      message_send_text(c,message_type_error,c,text);
       message_send_text(c,message_type_error,c,"You must supply a rank and a valid program ID.");
-      message_send_text(c,message_type_error,c,"Example: /ladderinfo 1 STAR");
+      message_send_text(c,message_type_error,c,"Example: /ladderinfo 1 STAR not");
       return 0;
     }
     clienttag = tag_case_str_to_uint(&text[i]);
@@ -3665,7 +3667,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
     }
   if (clienttag==CLIENTTAG_STARCRAFT_UINT)
     {
-      if ((account = ladder_get_account_by_rank(rank,ladder_sort_highestrated,ladder_time_active,CLIENTTAG_STARCRAFT_UINT,ladder_id_normal)))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_active));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (account = referencedObject->getAccount()))
 	{
 	  std::sprintf(msgtemp,"Starcraft active  %5u: %-20.20s %u/%u/%u rating %u",
 		  rank,
@@ -3679,7 +3683,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
 	std::sprintf(msgtemp,"Starcraft active  %5u: <none>",rank);
       message_send_text(c,message_type_info,c,msgtemp);
 
-      if ((account = ladder_get_account_by_rank(rank,ladder_sort_highestrated,ladder_time_current,CLIENTTAG_STARCRAFT_UINT,ladder_id_normal)))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (account = referencedObject->getAccount()))
 	{
 	  std::sprintf(msgtemp,"Starcraft current %5u: %-20.20s %u/%u/%u rating %u",
 		  rank,
@@ -3695,7 +3701,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
     }
   else if (clienttag==CLIENTTAG_BROODWARS_UINT)
     {
-      if ((account = ladder_get_account_by_rank(rank,ladder_sort_highestrated,ladder_time_active,CLIENTTAG_BROODWARS_UINT,ladder_id_normal)))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_active));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (account = referencedObject->getAccount()))
 	{
 	  std::sprintf(msgtemp,"Brood War active  %5u: %-20.20s %u/%u/%u rating %u",
 		  rank,
@@ -3709,7 +3717,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
 	std::sprintf(msgtemp,"Brood War active  %5u: <none>",rank);
       message_send_text(c,message_type_info,c,msgtemp);
 
-      if ((account = ladder_get_account_by_rank(rank,ladder_sort_highestrated,ladder_time_current,CLIENTTAG_BROODWARS_UINT,ladder_id_normal)))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (account = referencedObject->getAccount()))
 	{
 	  std::sprintf(msgtemp,"Brood War current %5u: %-20.20s %u/%u/%u rating %u",
 		  rank,
@@ -3725,7 +3735,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
     }
   else if (clienttag==CLIENTTAG_WARCIIBNE_UINT)
     {
-      if ((account = ladder_get_account_by_rank(rank,ladder_sort_highestrated,ladder_time_active,CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal)))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_active));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (account = referencedObject->getAccount()))
 	{
 	  std::sprintf(msgtemp,"Warcraft II standard active  %5u: %-20.20s %u/%u/%u rating %u",
 		  rank,
@@ -3739,7 +3751,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
 	std::sprintf(msgtemp,"Warcraft II standard active  %5u: <none>",rank);
       message_send_text(c,message_type_info,c,msgtemp);
 
-      if ((account = ladder_get_account_by_rank(rank,ladder_sort_highestrated,ladder_time_active,CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman)))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman, clienttag, ladder_sort_highestrated, ladder_time_active));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (account = referencedObject->getAccount()))
 	{
 	  std::sprintf(msgtemp,"Warcraft II IronMan active   %5u: %-20.20s %u/%u/%u rating %u",
 		  rank,
@@ -3753,7 +3767,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
 	std::sprintf(msgtemp,"Warcraft II IronMan active   %5u: <none>",rank);
       message_send_text(c,message_type_info,c,msgtemp);
 
-      if ((account = ladder_get_account_by_rank(rank,ladder_sort_highestrated,ladder_time_current,CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal)))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (account = referencedObject->getAccount()))
 	{
 	  std::sprintf(msgtemp,"Warcraft II standard current %5u: %-20.20s %u/%u/%u rating %u",
 		  rank,
@@ -3767,7 +3783,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
 	std::sprintf(msgtemp,"Warcraft II standard current %5u: <none>",rank);
       message_send_text(c,message_type_info,c,msgtemp);
 
-      if ((account = ladder_get_account_by_rank(rank,ladder_sort_highestrated,ladder_time_current,CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman)))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman, clienttag, ladder_sort_highestrated, ladder_time_current));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (account = referencedObject->getAccount()))
 	{
 	  std::sprintf(msgtemp,"Warcraft II IronMan current  %5u: %-20.20s %u/%u/%u rating %u",
 		  rank,
@@ -3785,7 +3803,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
   else if (clienttag==CLIENTTAG_WARCRAFT3_UINT || clienttag==CLIENTTAG_WAR3XP_UINT)
     {
       unsigned int teamcount = 0;
-      if ((account = ladder_get_account(solo_ladder(clienttag),rank,&teamcount,clienttag)))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_solo, clienttag, ladder_sort_default, ladder_time_default));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (account = referencedObject->getAccount()))
 	{
 	  std::sprintf(msgtemp,"WarCraft3 Solo   %5u: %-20.20s %u/%u/0",
 		  rank,
@@ -3797,7 +3817,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
 	std::sprintf(msgtemp,"WarCraft3 Solo   %5u: <none>",rank);
       message_send_text(c,message_type_info,c,msgtemp);
 
-      if ((account = ladder_get_account(team_ladder(clienttag),rank,&teamcount,clienttag)))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_team, clienttag, ladder_sort_default, ladder_time_default));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (account = referencedObject->getAccount()))
 	{
 	  std::sprintf(msgtemp,"WarCraft3 Team   %5u: %-20.20s %u/%u/0",
 		  rank,
@@ -3809,7 +3831,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
 	std::sprintf(msgtemp,"WarCraft3 Team   %5u: <none>",rank);
       message_send_text(c,message_type_info,c,msgtemp);
 
-      if ((account = ladder_get_account(ffa_ladder(clienttag),rank,&teamcount,clienttag)))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_ffa, clienttag, ladder_sort_default, ladder_time_default));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (account = referencedObject->getAccount()))
 	{
 	  std::sprintf(msgtemp,"WarCraft3 FFA   %5u: %-20.20s %u/%u/0",
 		  rank,
@@ -3821,9 +3845,9 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
 	std::sprintf(msgtemp,"WarCraft3 FFA   %5u: <none>",rank);
       message_send_text(c,message_type_info,c,msgtemp);
 
+      /*
       if ((account = ladder_get_account(at_ladder(clienttag),rank,&teamcount,clienttag)))
 	{
-	/*
 	  if (account_get_atteammembers(account,teamcount,clienttag))
 	    std::sprintf(msgtemp,"WarCraft3 AT Team   %5u: %-80.80s %u/%u/0",
 		    rank,
@@ -3831,12 +3855,13 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
 		    account_get_atteamwin(account,teamcount,clienttag),
 		    account_get_atteamloss(account,teamcount,clienttag));
 
-	  else */
+	  else
 	    std::sprintf(msgtemp,"WarCraft3 AT Team   %5u: <invalid team info>",rank);
 	}
       else
 	std::sprintf(msgtemp,"WarCraft3 AT Team  %5u: <none>",rank);
       message_send_text(c,message_type_info,c,msgtemp);
+      */
     }
   //<---
   else

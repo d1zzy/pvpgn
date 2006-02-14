@@ -3877,6 +3877,8 @@ static int _client_ladderreq(t_connection * c, t_packet const *const packet)
 	char const *timestr;
 	t_bnettime bt;
 	t_ladder_id id;
+	t_ladder_sort sort;
+	bool error = false;
 
 	clienttag = conn_get_clienttag(c);
 
@@ -3910,26 +3912,43 @@ static int _client_ladderreq(t_connection * c, t_packet const *const packet)
 	bn_int_set(&rpacket->u.server_ladderreply.startplace, start);
 	bn_int_set(&rpacket->u.server_ladderreply.count, count);
 
-	for (i = start; i < start + count; i++) {
-	    switch (type) {
+	switch (type){
 		case CLIENT_LADDERREQ_TYPE_HIGHESTRATED:
-		    if (!(account = ladder_get_account_by_rank(i + 1, ladder_sort_highestrated, ladder_time_active, clienttag, id)))
-			account = ladder_get_account_by_rank(i + 1, ladder_sort_highestrated, ladder_time_current, clienttag, id);
-		    break;
+			sort = ladder_sort_highestrated;
+			break;
 		case CLIENT_LADDERREQ_TYPE_MOSTWINS:
-		    if (!(account = ladder_get_account_by_rank(i + 1, ladder_sort_mostwins, ladder_time_active, clienttag, id)))
-			account = ladder_get_account_by_rank(i + 1, ladder_sort_mostwins, ladder_time_current, clienttag, id);
-		    break;
+			sort = ladder_sort_mostwins;
+			break;
 		case CLIENT_LADDERREQ_TYPE_MOSTGAMES:
-		    if (!(account = ladder_get_account_by_rank(i + 1, ladder_sort_mostgames, ladder_time_active, clienttag, id)))
-			account = ladder_get_account_by_rank(i + 1, ladder_sort_mostgames, ladder_time_current, clienttag, id);
-		    break;
+			sort = ladder_sort_mostgames;
+			break;
 		default:
-		    account = NULL;
-		    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got unknown value for ladderreq.type=%u", conn_get_socket(c), type);
-	    }
+			eventlog(eventlog_level_error, __FUNCTION__, "[%d] got unknown value for ladderreq.type=%u", conn_get_socket(c), type);
+			error = true;
+	}
+	
+	LadderList* ladderList_active = NULL;
+	LadderList* ladderList_current = NULL;
 
-	    if (account) {
+	if (!error)
+	{
+	ladderList_active = ladders.getLadderList(LadderKey(id,clienttag,sort,ladder_time_active));
+	ladderList_current = ladders.getLadderList(LadderKey(id,clienttag,sort,ladder_time_current));
+	}
+	
+	for (i = start; i < start + count; i++) {
+		
+
+		const LadderReferencedObject* referencedObject = NULL;
+		account = NULL;
+		if (!error){
+			
+		    	if (!(referencedObject = ladderList_active->getReferencedObject(i+1)))
+			    	referencedObject = ladderList_current->getReferencedObject(i+1);
+		}
+
+          if ((referencedObject) && (account = referencedObject->getAccount()))
+	  {
 		bn_int_set(&entry.active.wins, account_get_ladder_active_wins(account, clienttag, id));
 		bn_int_set(&entry.active.loss, account_get_ladder_active_losses(account, clienttag, id));
 		bn_int_set(&entry.active.disconnect, account_get_ladder_active_disconnects(account, clienttag, id));
@@ -4003,8 +4022,10 @@ static int _client_laddersearchreq(t_connection * c, t_packet const *const packe
 	char const *playername;
 	t_account *account;
 	unsigned int idnum;
+	unsigned int type;
 	unsigned int rank;	/* starts at zero */
 	t_ladder_id id;
+	t_ladder_sort sort;
 	t_clienttag ctag = conn_get_clienttag(c);
 
 	idnum = bn_int_get(packet->u.client_laddersearchreq.id);
@@ -4021,6 +4042,22 @@ static int _client_laddersearchreq(t_connection * c, t_packet const *const packe
 		id = ladder_id_normal;
 	}
 
+	type = bn_int_get(packet->u.client_laddersearchreq.type);
+	switch(type)  {
+		case CLIENT_LADDERSEARCHREQ_TYPE_HIGHESTRATED:
+			sort = ladder_sort_highestrated;
+			break;
+		case CLIENT_LADDERSEARCHREQ_TYPE_MOSTWINS:
+			sort = ladder_sort_mostwins;
+			break;
+		case CLIENT_LADDERSEARCHREQ_TYPE_MOSTGAMES:
+			sort = ladder_sort_mostgames;
+			break;
+		default:
+			sort = ladder_sort_default;
+			eventlog(eventlog_level_error, __FUNCTION__, "[%d] got unknown ladder search type %u", conn_get_socket(c), type);
+	}
+
 	if (!(playername = packet_get_str_const(packet, sizeof(t_client_laddersearchreq), MAX_USERNAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad LADDERSEARCHREQ packet (missing or too long playername)", conn_get_socket(c));
 	    return -1;
@@ -4029,32 +4066,18 @@ static int _client_laddersearchreq(t_connection * c, t_packet const *const packe
 	if (!(account = accountlist_find_account(playername)))
 	    rank = SERVER_LADDERSEARCHREPLY_RANK_NONE;
 	else {
-	    switch (bn_int_get(packet->u.client_laddersearchreq.type)) {
+	    LadderList * ladderList_active  = ladders.getLadderList(LadderKey(id,ctag,sort,ladder_time_active));
+	    LadderList * ladderList_current = ladders.getLadderList(LadderKey(id,ctag,sort,ladder_time_current));
+	    unsigned int uid = account_get_uid(account);
+	    const LadderReferencedObject * referencedObject;
+	    switch (type) {
 		case CLIENT_LADDERSEARCHREQ_TYPE_HIGHESTRATED:
-		    if (!(rank=ladder_get_rank_by_account(account, ladder_sort_highestrated, ladder_time_active, ctag, id)))
-		    {
-			if (!(rank = ladder_get_rank_by_account(account, ladder_sort_highestrated,
-			                                        ladder_time_current, ctag, id)) ||
-			   (ladder_get_account_by_rank(rank, ladder_sort_highestrated, ladder_time_active, ctag, id)))
-			    rank = 0;
-		    }
-		    break;
 		case CLIENT_LADDERSEARCHREQ_TYPE_MOSTWINS:
-		    if (!(rank=ladder_get_rank_by_account(account, ladder_sort_mostwins, ladder_time_active, ctag, id)))
-		    {
-			if (!(rank = ladder_get_rank_by_account(account, ladder_sort_mostwins,
-			                                        ladder_time_current, ctag, id)) ||
-			   (ladder_get_account_by_rank(rank, ladder_sort_mostwins, ladder_time_active, ctag, id)))
-			    rank = 0;
-		    }
-		    break;
 		case CLIENT_LADDERSEARCHREQ_TYPE_MOSTGAMES:
-		    if (!(rank=ladder_get_rank_by_account(account, ladder_sort_mostgames, ladder_time_active, ctag, id)))
+		    if (!(rank = ladderList_active->getRank(uid)))
 		    {
-			if (!(rank = ladder_get_rank_by_account(account, ladder_sort_mostgames,
-			                                        ladder_time_current, ctag, id)) ||
-			   (ladder_get_account_by_rank(rank, ladder_sort_mostgames, ladder_time_active, ctag, id)))
-			    rank = 0;
+			if (!(rank = ladderList_current->getRank(uid)) || ladderList_active->getReferencedObject(rank))
+				rank = 0;
 		    }
 		    break;
 		default:

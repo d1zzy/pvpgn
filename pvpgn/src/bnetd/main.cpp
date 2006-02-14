@@ -339,9 +339,8 @@ int pre_server_startup(void)
         eventlog(eventlog_level_error, "pre_server_startup", "could not load WAR3 xp calc tables");
         return STATUS_WAR3XPTABLES_FAILURE;
     }
-    ladders_init();
-    ladders_load_accounts_to_ladderlists();
-    ladder_update_all_accounts();
+    ladders.load();
+    ladders.update();
     if (characterlist_create("")<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load character list");
     if (prefs_get_track()) /* setup the tracking mechanism */
@@ -381,8 +380,7 @@ void post_server_shutdown(int status)
         case STATUS_WAR3XPTABLES_FAILURE:
 
 	case STATUS_LADDERLIST_FAILURE:
-	    ladder_update_all_accounts();
-    	    ladders_destroy();
+	    ladders.save();
 	    output_dispose_filename();
 	    accountlist_destroy();
     	    attrlayer_cleanup();

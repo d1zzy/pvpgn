@@ -23,7 +23,14 @@
 
 #include <cstdio>
 #include <cerrno>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <sstream>
 #include <cstring>
+#include <list>
+#include <map>
+#include <algorithm>
 
 #include "compat/strerror.h"
 #include "common/tag.h"
@@ -37,7 +44,6 @@
 #include "account_wrap.h"
 #include "prefs.h"
 #include "ladder_calc.h"
-#include "ladder_binary.h"
 #include "common/setup_after.h"
 
 #define MaxRankKeptInLadder 1000
@@ -53,70 +59,12 @@ static t_xpcalc_entry  * xpcalc;
 static t_xplevel_entry * xplevels;
 int w3_xpcalc_maxleveldiff;
 
-const char * WAR3_solo_file = "WAR3_solo";
-const char * W3XP_solo_file = "W3XP_solo";
-const char * WAR3_team_file = "WAR3_team";
-const char * W3XP_team_file = "W3XP_team";
-const char * WAR3_ffa_file  = "WAR3_ffa";
-const char * W3XP_ffa_file  = "W3XP_ffa";
-const char * WAR3_at_file   = "WAR3_atteam";
-const char * W3XP_at_file   = "W3XP_atteam";
-const char * STAR_ar_file   = "STAR_active_rating";
-const char * STAR_cr_file   = "STAR_current_rating";
-const char * SEXP_ar_file   = "SEXP_active_rating";
-const char * SEXP_cr_file   = "SEXP_current_rating";
-const char * W2BN_ar_file   = "W2BN_active_rating";
-const char * W2BN_cr_file   = "W2BN_current_rating";
-const char * W2BN_ari_file   = "W2BN_active_rating_iron";
-const char * W2BN_cri_file   = "W2BN_current_rating_iron";
-const char * std_end   = ".dat";
-const char * xml_end   = ".xml";
-
 char * ladder_id_str[] = {"0","1","","3","","solo","team","ffa"};
+char * bin_ladder_id_str[] = {"","","","I","","SOLO","TEAM","FFA"};
+char * bin_ladder_sort_str[] = { "R", "W", "G", ""};
+char * bin_ladder_time_str[] = { "A", "C", ""};
 
-char * WAR3_solo_filename, * WAR3_team_filename, * WAR3_ffa_filename, * WAR3_at_filename;
-char * W3XP_solo_filename, * W3XP_team_filename, * W3XP_ffa_filename, * W3XP_at_filename;
-char * STAR_ar_filename, * STAR_cr_filename, * SEXP_ar_filename, * SEXP_cr_filename;
-char * W2BN_ar_filename, * W2BN_cr_filename, * W2BN_ari_filename, * W2BN_cri_filename;
-
-t_ladder WAR3_solo_ladder, WAR3_team_ladder, WAR3_ffa_ladder, WAR3_at_ladder;
-t_ladder W3XP_solo_ladder, W3XP_team_ladder, W3XP_ffa_ladder, W3XP_at_ladder;
-t_ladder STAR_active_rating,          STAR_active_wins,          STAR_active_games,
-         STAR_current_rating,         STAR_current_wins,         STAR_current_games;
-t_ladder SEXP_active_rating,          SEXP_active_wins,          SEXP_active_games,
-         SEXP_current_rating,         SEXP_current_wins,         SEXP_current_games;
-t_ladder W2BN_active_rating,          W2BN_active_wins,          W2BN_active_games,
-         W2BN_active_rating_ironman,  W2BN_active_wins_ironman,  W2BN_active_games_ironman;
-t_ladder W2BN_current_rating,         W2BN_current_wins,         W2BN_current_games,
-         W2BN_current_rating_ironman, W2BN_current_wins_ironman, W2BN_current_games_ironman;
-
-t_ladder_internal * last_internal = NULL;
-t_ladder	     * last_ladder   = NULL;
-int 		       last_rank     = 0;
-
-/*
- * Make the current ladder statistics the active ones.
- */
-
-extern int ladder_make_active(t_ladder *current, t_ladder *active,int set_attributes);
-
-extern int ladderlist_make_all_active(void)
-{
-	ladder_make_active(ladder_cr(CLIENTTAG_STARCRAFT_UINT,ladder_id_normal), ladder_ar(CLIENTTAG_STARCRAFT_UINT,ladder_id_normal),1);
-	ladder_make_active(ladder_cw(CLIENTTAG_STARCRAFT_UINT,ladder_id_normal), ladder_aw(CLIENTTAG_STARCRAFT_UINT,ladder_id_normal),0);
-	ladder_make_active(ladder_cg(CLIENTTAG_STARCRAFT_UINT,ladder_id_normal), ladder_ag(CLIENTTAG_STARCRAFT_UINT,ladder_id_normal),0);
-	ladder_make_active(ladder_cr(CLIENTTAG_BROODWARS_UINT,ladder_id_normal), ladder_ar(CLIENTTAG_BROODWARS_UINT,ladder_id_normal),1);
-	ladder_make_active(ladder_cw(CLIENTTAG_BROODWARS_UINT,ladder_id_normal), ladder_aw(CLIENTTAG_BROODWARS_UINT,ladder_id_normal),0);
-	ladder_make_active(ladder_cg(CLIENTTAG_BROODWARS_UINT,ladder_id_normal), ladder_ag(CLIENTTAG_BROODWARS_UINT,ladder_id_normal),0);
-	ladder_make_active(ladder_cr(CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal), ladder_ar(CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal),1);
-	ladder_make_active(ladder_cw(CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal), ladder_aw(CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal),0);
-	ladder_make_active(ladder_cg(CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal), ladder_ag(CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal),0);
-	ladder_make_active(ladder_cr(CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman),ladder_ar(CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman),1);
-	ladder_make_active(ladder_cw(CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman),ladder_aw(CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman),0);
-	ladder_make_active(ladder_cg(CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman),ladder_ag(CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman),0);
-	ladder_update_all_accounts();
-    return 0;
-}
+Ladders ladders;
 
 
 /*
@@ -124,7 +72,7 @@ extern int ladderlist_make_all_active(void)
  */
 extern int ladder_init_account(t_account * account, t_clienttag clienttag, t_ladder_id id)
 {
-    int uid;
+    unsigned int uid, rating;
     char clienttag_str[5];
 
     if (!account)
@@ -149,11 +97,18 @@ extern int ladder_init_account(t_account * account, t_clienttag clienttag, t_lad
 	account_adjust_ladder_rating(account,clienttag,id,prefs_get_ladder_init_rating());
 
 	uid = account_get_uid(account);
+	rating = account_get_ladder_rating(account,clienttag,id);
 
-	war3_ladder_add(ladder_cr(clienttag,id),uid,0,account_get_ladder_rating(account,clienttag,id),account,0,clienttag);
-	war3_ladder_add(ladder_cw(clienttag,id),uid,0,0,account,0,clienttag);
-	war3_ladder_add(ladder_cg(clienttag,id),uid,0,0,account,0,clienttag);
+	LadderList* ladderlist_cr = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_highestrated, ladder_time_current));
+	LadderList* ladderlist_cw = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostwins, ladder_time_current));
+	LadderList* ladderlist_cg = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostgames, ladder_time_current));
 
+	LadderReferencedObject reference(account);
+
+	ladderlist_cr->updateEntry(uid,rating,0,reference);
+	ladderlist_cg->updateEntry(uid,0,rating,reference);
+	ladderlist_cw->updateEntry(uid,0,rating,reference);
+	
 	eventlog(eventlog_level_info,__FUNCTION__,"initialized account for \"%s\" for \"%s\" ladder",account_get_name(account),tag_uint_to_str(clienttag_str,clienttag));
     }
 
@@ -251,29 +206,36 @@ extern int ladder_update(t_clienttag clienttag, t_ladder_id id, unsigned int cou
 
     for (curr=0; curr<count; curr++)
 	{
-	  int won,wins,games;
+	  unsigned int wins, games;
 	  t_account * account;
-
-	  if (results[curr]==game_result_win) won=1; else won=0;
 
 	  account = players[curr];
 	  uid = account_get_uid(account);
 	  wins = account_get_ladder_wins(account,clienttag,id);
 	  games = wins + account_get_ladder_losses(account,clienttag,id) + account_get_ladder_disconnects(account,clienttag,id);
-
+	  
 	  account_adjust_ladder_rating(account,clienttag,id,info[curr].adj);
+	  unsigned int rating = account_get_ladder_rating(account,clienttag,id);
 
-	  war3_ladder_update(ladder_cr(clienttag,id),uid,won,account_get_ladder_rating(account,clienttag,id),players[curr],0);
+	  LadderReferencedObject reference(account);
+
+	  LadderList* ladderlist = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_highestrated, ladder_time_current));
+	  ladderlist->updateEntry(uid,rating,wins,reference);
 
 	  if (results[curr]!=game_result_draw)
-	        war3_ladder_update(ladder_cg(clienttag,id),uid,info[curr].adj,games,players[curr],0);
+	  {
+	  	ladderlist = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostgames, ladder_time_current));
+		ladderlist->updateEntry(uid,games,rating,reference);
+	  }
 
 	  if (results[curr]==game_result_win)
-		war3_ladder_update(ladder_cw(clienttag,id),uid,info[curr].adj,wins,players[curr],0);
+	  {
+	  	ladderlist = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostwins, ladder_time_current));
+		ladderlist->updateEntry(uid,wins,rating,reference);
+	  }
 	}
 
-	ladder_update_all_accounts();
-
+	ladders.update();
     return 0;
 }
 
@@ -299,1180 +261,7 @@ extern int ladder_check_map(char const * mapname, t_game_maptype maptype, t_clie
 }
 
 
-extern t_account * ladder_get_account_by_rank(unsigned int rank, t_ladder_sort lsort, t_ladder_time ltime, t_clienttag clienttag, t_ladder_id id)
-{
-    unsigned int dummy;
-
-    if (rank<1)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"got zero rank");
-	return NULL;
-    }
-    if (!clienttag)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"got bad clienttag");
-	return NULL;
-    }
-
-    switch (lsort)
-    {
-    case ladder_sort_highestrated:
-		if (ltime == ladder_time_current)
-			return ladder_get_account(ladder_cr(clienttag,id),rank,&dummy,clienttag);
-		else
-			return ladder_get_account(ladder_ar(clienttag,id),rank,&dummy,clienttag);
-    case ladder_sort_mostwins:
-		if (ltime == ladder_time_current)
-			return ladder_get_account(ladder_cw(clienttag,id),rank,&dummy,clienttag);
-		else
-			return ladder_get_account(ladder_aw(clienttag,id),rank,&dummy,clienttag);
-    case ladder_sort_mostgames:
-		if (ltime == ladder_time_current)
-			return ladder_get_account(ladder_cg(clienttag,id),rank,&dummy,clienttag);
-		else
-			return ladder_get_account(ladder_ag(clienttag,id),rank,&dummy,clienttag);
-    default:
-	eventlog(eventlog_level_error,__FUNCTION__,"got bad ladder sort %u",(unsigned int)lsort);
-    }
-    return NULL;
-}
-
-
-extern unsigned int ladder_get_rank_by_account(t_account * account, t_ladder_sort lsort, t_ladder_time ltime, t_clienttag clienttag, t_ladder_id id)
-{
-    int uid;
-
-    if (!account)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL account");
-	return 0;
-    }
-    if (!clienttag)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"got bad clienttag");
-	return 0;
-    }
-
-	uid = account_get_uid(account);
-
-    switch (lsort)
-    {
-    case ladder_sort_highestrated:
-		if (ltime == ladder_time_current)
-			return ladder_get_rank(ladder_cr(clienttag,id),uid,0,clienttag);
-		else
-			return ladder_get_rank(ladder_ar(clienttag,id),uid,0,clienttag);
-    case ladder_sort_mostwins:
-		if (ltime == ladder_time_current)
-			return ladder_get_rank(ladder_cw(clienttag,id),uid,0,clienttag);
-		else
-			return ladder_get_rank(ladder_aw(clienttag,id),uid,0,clienttag);
-    case ladder_sort_mostgames:
-		if (ltime == ladder_time_current)
-			return ladder_get_rank(ladder_cg(clienttag,id),uid,0,clienttag);
-		else
-			return ladder_get_rank(ladder_ag(clienttag,id),uid,0,clienttag);
-    default:
-	eventlog(eventlog_level_error,__FUNCTION__,"got bad ladder sort %u",(unsigned int)lsort);
-    }
-
-    return 0;
-}
-
-int in_same_team(t_account * acc1, t_account * acc2, unsigned int tc1, unsigned int tc2, t_clienttag clienttag)
-{
-   return 0;
-}
-
-extern t_ladder * solo_ladder(t_clienttag clienttag)
-{
-  if (clienttag==CLIENTTAG_WARCRAFT3_UINT)
-    return &WAR3_solo_ladder;
-  if (clienttag==CLIENTTAG_WAR3XP_UINT)
-    return &W3XP_solo_ladder;
-  else
-    return NULL;
-}
-
-extern t_ladder * team_ladder(t_clienttag clienttag)
-{
-  if (clienttag==CLIENTTAG_WARCRAFT3_UINT)
-    return &WAR3_team_ladder;
-  if (clienttag==CLIENTTAG_WAR3XP_UINT)
-    return &W3XP_team_ladder;
-  else
-    return NULL;
-}
-
-extern t_ladder * ffa_ladder(t_clienttag clienttag)
-{
-  if (clienttag==CLIENTTAG_WARCRAFT3_UINT)
-    return &WAR3_ffa_ladder;
-  else
-    return &W3XP_ffa_ladder;
-}
-
-extern t_ladder * at_ladder(t_clienttag clienttag)
-{
-  if (clienttag==CLIENTTAG_WARCRAFT3_UINT)
-    return &WAR3_at_ladder;
-  else
-    return &W3XP_at_ladder;
-}
-
- extern t_ladder * ladder_ar(t_clienttag clienttag, t_ladder_id ladder_id)
- {
-   if (clienttag==CLIENTTAG_STARCRAFT_UINT)
-	   return &STAR_active_rating;
-   else if (clienttag==CLIENTTAG_BROODWARS_UINT)
-	   return &SEXP_active_rating;
-   else if (clienttag==CLIENTTAG_WARCIIBNE_UINT)
-   {
-           if (ladder_id == ladder_id_normal)
-	           return &W2BN_active_rating;
-	   else
-	           return &W2BN_active_rating_ironman;
-   }
-   else return NULL;
- }
-
- extern t_ladder * ladder_aw(t_clienttag clienttag, t_ladder_id ladder_id)
- {
-   if (clienttag==CLIENTTAG_STARCRAFT_UINT)
-	   return &STAR_active_wins;
-   else if (clienttag==CLIENTTAG_BROODWARS_UINT)
-	   return &SEXP_active_wins;
-   else if (clienttag==CLIENTTAG_WARCIIBNE_UINT)
-   {
-           if (ladder_id == ladder_id_normal)
-	           return &W2BN_active_wins;
-	   else
-	           return &W2BN_active_wins_ironman;
-   }
-   else return NULL;
- }
-
- extern t_ladder * ladder_ag(t_clienttag clienttag, t_ladder_id ladder_id)
- {
-   if (clienttag==CLIENTTAG_STARCRAFT_UINT)
-	   return &STAR_active_games;
-   else if (clienttag==CLIENTTAG_BROODWARS_UINT)
-	   return &SEXP_active_games;
-   else if (clienttag==CLIENTTAG_WARCIIBNE_UINT)
-   {
-           if (ladder_id == ladder_id_normal)
-	           return &W2BN_active_games;
-	   else
-	           return &W2BN_active_games_ironman;
-   }
-   else return NULL;
- }
-
- extern t_ladder * ladder_cr(t_clienttag clienttag, t_ladder_id ladder_id)
-{
-   if (clienttag==CLIENTTAG_STARCRAFT_UINT)
-	   return &STAR_current_rating;
-   else if (clienttag==CLIENTTAG_BROODWARS_UINT)
-	   return &SEXP_current_rating;
-   else if (clienttag==CLIENTTAG_WARCIIBNE_UINT)
-   {
-	   if (ladder_id == ladder_id_normal)
-		   return &W2BN_current_rating;
-	   else
-		   return &W2BN_current_rating_ironman;
-   }
-   else return NULL;
- }
-
- extern t_ladder * ladder_cw(t_clienttag clienttag, t_ladder_id ladder_id)
-{
-   if (clienttag==CLIENTTAG_STARCRAFT_UINT)
-	   return &STAR_current_wins;
-   else if (clienttag==CLIENTTAG_BROODWARS_UINT)
-	   return &SEXP_current_wins;
-   else if (clienttag==CLIENTTAG_WARCIIBNE_UINT)
-   {
-	   if (ladder_id == ladder_id_normal)
-		   return &W2BN_current_wins;
-	   else
-		   return &W2BN_current_wins_ironman;
-   }
-   else return NULL;
- }
-
- extern t_ladder * ladder_cg(t_clienttag clienttag, t_ladder_id ladder_id)
-{
-   if (clienttag==CLIENTTAG_STARCRAFT_UINT)
-	   return &STAR_current_games;
-   else if (clienttag==CLIENTTAG_BROODWARS_UINT)
-	   return &SEXP_current_games;
-   else if (clienttag==CLIENTTAG_WARCIIBNE_UINT)
-   {
-	   if (ladder_id == ladder_id_normal)
-		   return &W2BN_current_games;
-	   else
-		   return &W2BN_current_games_ironman;
-   }
-   else return NULL;
- }
-
-t_clienttag ladder_get_clienttag(t_ladder * ladder)
-{
-  return ladder->clienttag;
-}
-
-t_binary_ladder_types w3_ladder_to_binary_ladder_types(t_ladder * ladder)
-{
-  return ladder->type;
-}
-
-t_ladder * binary_ladder_types_to_w3_ladder(t_binary_ladder_types type)
-{
-  t_ladder * ladder;
-
-  switch (type)
-  {
-    case WAR3_SOLO:
-	ladder = &WAR3_solo_ladder;
-	break;
-    case WAR3_TEAM:
-	ladder = &WAR3_team_ladder;
-	break;
-    case WAR3_FFA:
-	ladder = &WAR3_ffa_ladder;
-	break;
-    case WAR3_AT:
-	ladder = &WAR3_at_ladder;
-	break;
-    case W3XP_SOLO:
-	ladder = &W3XP_solo_ladder;
-	break;
-    case W3XP_TEAM:
-	ladder = &W3XP_team_ladder;
-	break;
-    case W3XP_FFA:
-	ladder = &W3XP_ffa_ladder;
-	break;
-    case W3XP_AT:
-	ladder = &W3XP_at_ladder;
-	break;
-	case STAR_AR  :
-	ladder = &STAR_active_rating;
-	break;
-	case STAR_AW  :
-	ladder = &STAR_active_wins;
-	break;
-	case STAR_AG  :
-	ladder = &STAR_active_games;
-	break;
-	case STAR_CR  :
-	ladder = &STAR_current_rating;
-	break;
-	case STAR_CW  :
-	ladder = &STAR_current_wins;
-	break;
-	case STAR_CG  :
-	ladder = &STAR_current_games;
-	break;
-	case SEXP_AR  :
-	ladder = &SEXP_active_rating;
-	break;
-	case SEXP_AW  :
-	ladder = &SEXP_active_wins;
-	break;
-	case SEXP_AG  :
-	ladder = &SEXP_active_games;
-	break;
-	case SEXP_CR  :
-	ladder = &SEXP_current_rating;
-	break;
-	case SEXP_CW  :
-	ladder = &SEXP_current_wins;
-	break;
-	case SEXP_CG  :
-	ladder = &SEXP_current_games;
-	break;
-	case W2BN_AR  :
-	ladder = &W2BN_active_rating;
-	break;
-	case W2BN_AW  :
-	ladder = &W2BN_active_wins;
-	break;
-	case W2BN_AG  :
-	ladder = &W2BN_active_games;
-	break;
-	case W2BN_CR  :
-	ladder = &W2BN_current_rating;
-	break;
-	case W2BN_CW  :
-	ladder = &W2BN_current_wins;
-	break;
-	case W2BN_CG  :
-	ladder = &W2BN_current_games;
-	break;
-	case W2BN_ARI :
-	ladder = &W2BN_active_rating_ironman;
-	break;
-	case W2BN_AWI :
-	ladder = &W2BN_active_wins_ironman;
-	break;
-	case W2BN_AGI :
-	ladder = &W2BN_active_games_ironman;
-	break;
-	case W2BN_CRI :
-	ladder = &W2BN_current_rating_ironman;
-	break;
-	case W2BN_CWI :
-	ladder = &W2BN_current_wins_ironman;
-	break;
-	case W2BN_CGI :
-	ladder = &W2BN_current_games_ironman;
-	break;
-
-    default:
-	eventlog(eventlog_level_error,__FUNCTION__,"got invalid ladder type %d",type);
-	return NULL;
-  }
-  return ladder;
-}
-
-void ladder_init(t_ladder *ladder,t_binary_ladder_types type, t_clienttag clienttag, t_ladder_id ladder_id)
-{
-    ladder->first = NULL;
-    ladder->last  = NULL;
-    ladder->dirty = 1;
-    ladder->type = type;
-    ladder->clienttag = clienttag;
-    ladder->ladder_id = ladder_id;
-}
-
-void ladder_destroy(t_ladder *ladder)
-{
-  t_ladder_internal *pointer;
-
-  while (ladder->first!=NULL)
-  {
-    pointer = ladder->first;
-    ladder->first = pointer->prev;
-    xfree((void *)pointer);
-  }
-}
-
-extern int war3_ladder_add(t_ladder *ladder, int uid, int xp, int level, t_account *account, unsigned int teamcount,t_clienttag clienttag)
-{
-   t_ladder_internal *ladder_entry;
-
-   ladder_entry = (t_ladder_internal*)xmalloc(sizeof(t_ladder_internal));
-
-   ladder_entry->uid       = uid;
-   ladder_entry->xp        = xp;
-   ladder_entry->level     = level;
-   ladder_entry->account   = account;
-   ladder_entry->teamcount = teamcount;
-   ladder_entry->prev      = NULL;
-   ladder_entry->next      = NULL;
-
-   if (ladder->first == NULL)
-   { // ladder empty, so just insert element
-      ladder->first = ladder_entry;
-      ladder->last  = ladder_entry;
-   }
-   else
-   { // already elements in list
-     // determine if first or last user in ladder has XP
-     // closest to current, cause should be the shorter way to insert
-     // new user
-        if ((ladder->first->xp - xp) >= (xp - ladder->last->xp))
-        // we should enter from last to first
-        {
-          t_ladder_internal *search;
-          search = ladder->last;
-          while ((search != NULL) && (search->level < level))
-          {
-            search = search->next;
-          }
-          while ((search != NULL) && (search->level == level) && (search->xp < xp))
-	  {
-            search = search->next;
-	  }
-
-          if (teamcount!=0) // this only happens for atteams
-	  {
-	     t_ladder_internal *teamsearch;
-	     t_ladder_internal *teamfound;
-
-	     teamsearch = search;
-	     teamfound = NULL;
-
-	     while ((teamsearch != NULL) && (teamsearch->xp == xp) && (teamsearch->level == level))
-	     {
-	         if (in_same_team(account,teamsearch->account,teamcount,teamsearch->teamcount,clienttag))
-	    	 {
-		    teamfound = teamsearch;
-		    break;
-		 }
-		 teamsearch = teamsearch->next;
-	     }
-	     if (teamfound!=NULL) search = teamfound;
-          }
-
-          if (search == NULL)
-          {
-            ladder->first->next = ladder_entry;
-            ladder_entry->prev  = ladder->first;
-            ladder->first       = ladder_entry;
-          }
-          else
-          {
-             ladder_entry->next = search;
-             ladder_entry->prev = search->prev;
-             if (search == ladder->last)
-             // enter at end of list
-             {
-                search->prev = ladder_entry;
-                ladder->last = ladder_entry;
-             }
-             else
-             {
-                search->prev->next = ladder_entry;
-                search->prev       = ladder_entry;
-             }
-          }
-        }
-        else
-        // start from first and the search towards last
-        {
-          t_ladder_internal *search;
-          search = ladder->first;
-	  while ((search != NULL) && (search->level > level))
-	  {
-	     search = search->prev;
-	  }
-          while ((search != NULL) && (search->level == level) && (search->xp > xp))
-          {
-             search = search->prev;
-          }
-
-	  if (teamcount!=0) // this only happens for atteams
-	  {
-	     t_ladder_internal *teamsearch;
-	     t_ladder_internal *teamfound;
-
-	     teamsearch = search;
-	     teamfound = NULL;
-
-	     while ((teamsearch != NULL) && (teamsearch->xp == xp))
-	     {
-	         if (in_same_team(account,teamsearch->account,teamcount,teamsearch->teamcount,clienttag))
-		 {
-		    teamfound = teamsearch;
-		    break;
-		 }
-		 teamsearch = teamsearch->prev;
-	     }
-	     if (teamfound!=NULL) search = teamfound;
-
-	  }
-
-
-          if (search == NULL)
-          {
-             ladder->last->prev = ladder_entry;
-             ladder_entry->next = ladder->last;
-             ladder->last       = ladder_entry;
-          }
-          else
-          {
-             ladder_entry->prev = search;
-             ladder_entry->next = search->next;
-             if (search == ladder->first)
-             // enter at beginning of list
-             {
-                search->next  = ladder_entry;
-                ladder->first = ladder_entry;
-             }
-             else
-             {
-                search->next->prev = ladder_entry;
-                search->next       = ladder_entry;
-             }
-           }
-        }
-      }
-       ladder->dirty = 1;
-       return 0;
-}
-
-extern int war3_ladder_update(t_ladder *ladder, int uid, int xp, int level, t_account *account, unsigned int teamcount)
-{
-   t_ladder_internal *search, *newpos;
-   search = ladder->first;
-   while (search && ((search->uid != uid) || (search->teamcount!=teamcount))) { search = search->prev; }
-   if (search != NULL)
-   {
-     search->xp += xp;
-     search->level = level;
-     ladder->dirty = 1;
-
-     // make sure, we don't get negative XP
-     if (search->xp < 0) search->xp = 0;
-
-     if (xp>0)
-     // XP gained.... maybe getting better ranking
-     {
-        newpos = search->next;
-	while ((newpos != NULL) && (newpos->level < level))
-	{
-	  newpos = newpos->next;
-	}
-        while ((newpos != NULL) && (newpos->level == level) && (newpos->xp < search->xp))
-        {
-          newpos = newpos->next;
-        }
-        if (newpos != search->next)
-        // so we really have to change ranking now
-        {
-          // first close gap, where we've been...
-          search->next->prev = search->prev;
-          if (search->prev != NULL)
-            search->prev->next = search->next;
-          else
-            ladder->last = search->next;
-          // and then move to new position
-          search->next = newpos;
-          if (newpos == NULL)
-          {
-             search->prev = ladder->first;
-             ladder->first->next = search;
-             ladder->first       = search;
-          }
-          else
-          {
-            search->prev = newpos->prev;
-            newpos->prev->next = search;
-            newpos->prev = search;
-          }
-        }
-     }
-     if (xp<0)
-     // XP lost.... maybe ranking std::gets worse
-     {
-        newpos = search->prev;
-	while ((newpos != NULL) && (newpos->level > level))
-	{
-	  newpos = newpos->prev;
-	}
-        while ((newpos != NULL) && (newpos->level == level) && (newpos->xp > search->xp))
-        {
-          newpos = newpos->prev;
-        }
-        if (newpos != search->prev)
-        // so we really have to change ranking now
-        {
-          // first close gap, where we've been...
-          search->prev->next = search->next;
-          if (search->next != NULL)
-            search->next->prev = search->prev;
-          else
-            ladder->first = search->prev;
-          // and then move to new position
-          search->prev = newpos;
-          if (newpos == NULL)
-          {
-             search->next = ladder->last;
-             ladder->last->prev = search;
-             ladder->last       = search;
-          }
-          else
-          {
-            search->next = newpos->next;
-            newpos->next->prev = search;
-            newpos->next = search;
-          }
-        }
-     }
-     return 0;
-   }
-   else
-   return -1;
- }
-
- extern int ladder_get_rank(t_ladder *ladder, int uid, unsigned int teamcount, t_clienttag clienttag)
- {
-   int ranking = 1;
-   t_ladder_internal *search;
-   search = ladder->first;
-   while ((search!=NULL) && ((search->uid != uid) || (search->teamcount!=teamcount)))
-   {
-     search = search->prev;
-     ranking++;
-     if (ladder==at_ladder(clienttag))
-     {
-       // if in the same team as previous account
-       if ((search) && (search->next)
-           && in_same_team(search->account,search->next->account,teamcount,search->next->teamcount,clienttag))
-	       ranking--;
-     }
-   }
-   if (search != NULL)
-   {
-     return ranking;
-   }
-   else
-   {
-     return 0;
-   }
- }
-
-t_ladder_internal * ladder_get_rank_internal(t_ladder * ladder,int rank, t_clienttag clienttag)
-{
-  int ranking;
-  t_ladder_internal *search;
-
-  // this should be a huge speedup when getting many subsequent entries from ladder
-  // like used in saving of binary ladders
-  if ((last_ladder == ladder) && (last_rank < rank) && (last_internal != NULL))
-    {
-      ranking = last_rank;
-      search = last_internal;
-    }
-  else
-    {
-      ranking = 1;
-      search = ladder->first;
-    }
-
-  while ((search!=NULL) && (ranking<rank))
-  {
-     search = search->prev;
-     ranking++;
-     if (ladder == at_ladder(clienttag))
-     {
-       if ((search) && (search->next)
-	  && in_same_team(search->account,search->next->account,search->teamcount,search->next->teamcount,clienttag))
-	      ranking--;
-     }
-  }
-  last_ladder   = ladder;
-  last_internal = search;
-  last_rank     = rank;
-  return search;
-}
-
-extern t_account * ladder_get_account(t_ladder *ladder, int rank, unsigned int * teamcount,t_clienttag clienttag)
-{
-  t_ladder_internal *search;
-
-  if (!(ladder))
-  {
-    // eventlog(eventlog_level_error,__FUNCTION__,"got request for non-existant ladder");
-    return NULL;
-  }
-
-  search = ladder_get_rank_internal(ladder,rank,clienttag);
-
-  if (search)
-  {
-    *teamcount = search->teamcount;
-    return search->account;
-  }
-  else
-  {
-    *teamcount = 0;
-    return NULL;
-  }
-}
-
-typedef int (* t_set_fct)(t_account *account,t_clienttag cltag, t_ladder_id ldr_id,unsigned int rank);
-typedef int (* t_get_fct)(t_account *account,t_clienttag cltag, t_ladder_id ldr_id);
-
-extern int ladder_update_accounts(t_ladder *ladder, t_set_fct set_fct, t_get_fct get_fct1)
-{
-    t_ladder_internal *pointer, *tmp_pointer;
-    t_account *account;
-    t_clienttag clienttag;
-    int rank = 1;
-    int update = 0;
-    char clienttag_str[5];
-
-    if (ladder->dirty == 1)
-    {
-      if ((set_fct!=NULL) && (get_fct1!=NULL))
-      {
-      clienttag = ladder_get_clienttag(ladder);
-      pointer = ladder->first;
-      while (pointer!=NULL)
-      {
-         account = pointer->account;
-         if (rank <= MaxRankKeptInLadder)
-         {
-           if (ladder->ladder_id == ladder_id_none) //war3/w3xp AT ladder
-	   {
-		   // do nothing now
-	   }
-	   else //other ladders...
-	   {
-	     if ((*get_fct1)(account,clienttag,ladder->ladder_id)!=rank)
-             {
-	       (*set_fct)(account,clienttag,ladder->ladder_id,rank);
-	       update++;
-	     }
-	   }
-
-	   pointer=pointer->prev;
-	   rank++;
-
-         }
-         else
-	 {
-	   // leave while loop
-           break;
-	 }
-      }
-      while (pointer!=NULL)
-      {
-        // all accounts following now are out of the ladder range we keep track of....
-	    // so set rank to 0 and std::remove account from ladder
-        if (ladder->ladder_id == ladder_id_none) //war3/w3xp AT ladder
-		{
-		}
-		else
-		{
-		  if ((*get_fct1)(account,clienttag,ladder->ladder_id)!=0)
-		    (*set_fct)(account,clienttag,ladder->ladder_id,0);
-		}
-
-	// std::remove account from ladder
-	if (pointer->next!=NULL) pointer->next->prev = pointer->prev;
-	if (pointer->prev!=NULL) pointer->prev->next = pointer->next;
-	if (ladder->last == pointer)  ladder->last  = pointer->next;
-	if (ladder->first == pointer) ladder->first = pointer->prev;
-	tmp_pointer = pointer->prev;
-	xfree((void *)pointer);
-	pointer = tmp_pointer;
-      }
-      }
-      binary_ladder_save(w3_ladder_to_binary_ladder_types(ladder),4,&ladder_get_from_ladder);
-      if (update != 0)
-        eventlog(eventlog_level_info,__FUNCTION__,"updated %u accounts for clienttag %s",update,tag_uint_to_str(clienttag_str,ladder->clienttag));
-    }
-    ladder->dirty = 0;
-    return 0;
-}
-
-extern int ladder_update_all_accounts(void)
-{
-  eventlog(eventlog_level_info,__FUNCTION__,"updating ranking for all accounts");
-  ladder_update_accounts(&WAR3_solo_ladder, &account_set_ladder_rank,   &account_get_ladder_rank);
-  ladder_update_accounts(&WAR3_team_ladder, &account_set_ladder_rank,   &account_get_ladder_rank);
-  ladder_update_accounts(&WAR3_ffa_ladder,  &account_set_ladder_rank,   &account_get_ladder_rank);
-  //ladder_update_accounts(&WAR3_at_ladder,  &account_set_atteamrank, &account_get_atteamrank);
-  ladder_update_accounts(&W3XP_solo_ladder, &account_set_ladder_rank,   &account_get_ladder_rank);
-  ladder_update_accounts(&W3XP_team_ladder, &account_set_ladder_rank,   &account_get_ladder_rank);
-  ladder_update_accounts(&W3XP_ffa_ladder,  &account_set_ladder_rank,   &account_get_ladder_rank);
-  //ladder_update_accounts(&W3XP_at_ladder,  &account_set_atteamrank, &account_get_atteamrank);
-  ladder_update_accounts(&STAR_current_rating,&account_set_ladder_rank, &account_get_ladder_rank);
-  ladder_update_accounts(&STAR_current_wins,  NULL,                      NULL);
-  ladder_update_accounts(&STAR_current_games, NULL,                      NULL);
-  ladder_update_accounts(&SEXP_current_rating,&account_set_ladder_rank, &account_get_ladder_rank);
-  ladder_update_accounts(&SEXP_current_wins,  NULL,                      NULL);
-  ladder_update_accounts(&SEXP_current_games, NULL,                      NULL);
-  ladder_update_accounts(&STAR_active_rating, &account_set_ladder_active_rank, &account_get_ladder_active_rank);
-  ladder_update_accounts(&STAR_active_wins,   NULL,                      NULL);
-  ladder_update_accounts(&STAR_active_games,  NULL,                      NULL);
-  ladder_update_accounts(&SEXP_active_rating, &account_set_ladder_active_rank, &account_get_ladder_active_rank);
-  ladder_update_accounts(&SEXP_active_wins,   NULL,                      NULL);
-  ladder_update_accounts(&SEXP_active_games,  NULL,                      NULL);
-  ladder_update_accounts(&W2BN_current_rating,&account_set_ladder_rank, &account_get_ladder_rank);
-  ladder_update_accounts(&W2BN_current_wins,  NULL,                      NULL);
-  ladder_update_accounts(&W2BN_current_games, NULL,                      NULL);
-  ladder_update_accounts(&W2BN_active_rating, &account_set_ladder_rank, &account_get_ladder_rank);
-  ladder_update_accounts(&W2BN_active_wins,   NULL,                      NULL);
-  ladder_update_accounts(&W2BN_active_games,  NULL,                      NULL);
-  ladder_update_accounts(&W2BN_current_rating_ironman, &account_set_ladder_rank, &account_get_ladder_rank);
-  ladder_update_accounts(&W2BN_current_wins_ironman,  NULL,                      NULL);
-  ladder_update_accounts(&W2BN_current_games_ironman, NULL,                      NULL);
-  ladder_update_accounts(&W2BN_active_rating_ironman, &account_set_ladder_rank, &account_get_ladder_rank);
-  ladder_update_accounts(&W2BN_active_wins_ironman,  NULL,                      NULL);
-  ladder_update_accounts(&W2BN_active_games_ironman, NULL,                      NULL);
-
-  eventlog(eventlog_level_info,__FUNCTION__,"finished updating ranking for all accounts");
-  return 0;
-}
-
-t_binary_ladder_load_result binary_load(t_binary_ladder_types type)
-{
-  t_binary_ladder_load_result result;
-  t_ladder * ladder;
-
-  result = binary_ladder_load(type,4,&ladder_put_into_ladder);
-  if (result == illegal_checksum)
-  {
-    t_clienttag clienttag;
-	t_ladder_id ladder_id;
-
-    ladder = binary_ladder_types_to_w3_ladder(type);
-	clienttag = ladder_get_clienttag(ladder);
-	ladder_id = ladder->ladder_id;
-    ladder_destroy(ladder);
-    ladder_init(ladder,type,clienttag,ladder_id);
-  }
-  return result;
-}
-
-extern void ladders_load_accounts_to_ladderlists(void)
-{
-  t_entry   * curr;
-  t_account * account;
-  int xp;
-
-  t_binary_ladder_load_result war3_solo_res, war3_team_res, war3_ffa_res, war3_at_res;
-  t_binary_ladder_load_result w3xp_solo_res, w3xp_team_res, w3xp_ffa_res, w3xp_at_res;
-  t_binary_ladder_load_result star_ar_res, star_aw_res, star_ag_res, star_cr_res, star_cw_res, star_cg_res;
-  t_binary_ladder_load_result sexp_ar_res, sexp_aw_res, sexp_ag_res, sexp_cr_res, sexp_cw_res, sexp_cg_res;
-  t_binary_ladder_load_result w2bn_cr_res, w2bn_cw_res, w2bn_cg_res, w2bn_cri_res, w2bn_cwi_res, w2bn_cgi_res;
-  t_binary_ladder_load_result w2bn_ar_res, w2bn_aw_res, w2bn_ag_res, w2bn_ari_res, w2bn_awi_res, w2bn_agi_res;
-
-  war3_solo_res = binary_load(WAR3_SOLO);
-  war3_team_res = binary_load(WAR3_TEAM);
-  war3_ffa_res  = binary_load(WAR3_FFA);
-  war3_at_res   = load_success; // binary_load(WAR3_AT);
-  w3xp_solo_res = binary_load(W3XP_SOLO);
-  w3xp_team_res = binary_load(W3XP_TEAM);
-  w3xp_ffa_res  = binary_load(W3XP_FFA);
-  w3xp_at_res   = load_success; // binary_load(W3XP_AT);
-  star_ar_res   = binary_load(STAR_AR);
-  star_aw_res   = binary_load(STAR_AW);
-  star_ag_res   = binary_load(STAR_AG);
-  star_cr_res   = binary_load(STAR_CR);
-  star_cw_res   = binary_load(STAR_CW);
-  star_cg_res   = binary_load(STAR_CG);
-  sexp_ar_res   = binary_load(SEXP_AR);
-  sexp_aw_res   = binary_load(SEXP_AW);
-  sexp_ag_res   = binary_load(SEXP_AG);
-  sexp_cr_res   = binary_load(SEXP_CR);
-  sexp_cw_res   = binary_load(SEXP_CW);
-  sexp_cg_res   = binary_load(SEXP_CG);
-  w2bn_cr_res   = binary_load(W2BN_CR);
-  w2bn_cw_res   = binary_load(W2BN_CW);
-  w2bn_cg_res   = binary_load(W2BN_CG);
-  w2bn_cri_res  = binary_load(W2BN_CRI);
-  w2bn_cwi_res  = binary_load(W2BN_CWI);
-  w2bn_cgi_res  = binary_load(W2BN_CGI);
-  w2bn_ar_res   = binary_load(W2BN_AR);
-  w2bn_aw_res   = binary_load(W2BN_AW);
-  w2bn_ag_res   = binary_load(W2BN_AG);
-  w2bn_ari_res  = binary_load(W2BN_ARI);
-  w2bn_awi_res  = binary_load(W2BN_AWI);
-  w2bn_agi_res  = binary_load(W2BN_AGI);
-
-  if ((war3_solo_res + war3_team_res + war3_ffa_res + war3_at_res +
-       w3xp_solo_res + w3xp_team_res + w3xp_ffa_res + w3xp_at_res +
-       star_ar_res   + star_aw_res   + star_ag_res  + star_cr_res + star_cw_res + star_cg_res +
-       sexp_ar_res   + sexp_aw_res   + sexp_ag_res  + sexp_cr_res + sexp_cw_res + sexp_cg_res +
-       w2bn_cr_res   + w2bn_cw_res   + w2bn_cg_res  +
-       w2bn_cri_res  + w2bn_cwi_res  + w2bn_cgi_res +
-       w2bn_ar_res   + w2bn_aw_res   + w2bn_ag_res  +
-       w2bn_ari_res  + w2bn_awi_res  + w2bn_agi_res ) == load_success)
-  {
-    eventlog(eventlog_level_trace,__FUNCTION__,"everything went smooth... taking shortcut");
-    return;
-  }
-
-  eventlog(eventlog_level_warn, __FUNCTION__, "binary ladders missing or incomplete, going to load all accounts to rebuild them");
-  if (accountlist_load_all(ST_FORCE)) {
-    eventlog(eventlog_level_error, __FUNCTION__, "error loading all accounts");
-    return;
-  }
-  HASHTABLE_TRAVERSE(accountlist(),curr)
-    {
-      if ((account=((t_account *)entry_get_data(curr))))
-	  {
-	      int rating, wins;
-	      int uid = account_get_uid(account);
-
-	      if ((war3_solo_res!=load_success) && ((xp = account_get_ladder_xp(account,CLIENTTAG_WARCRAFT3_UINT,ladder_id_solo))))
-		  {
-		  war3_ladder_add(&WAR3_solo_ladder,
-				  uid, xp,
-				  account_get_ladder_level(account,CLIENTTAG_WARCRAFT3_UINT,ladder_id_solo),
-				  account,0,CLIENTTAG_WARCRAFT3_UINT);
-		  }
-	      if ((war3_team_res!=load_success) && ((xp = account_get_ladder_xp(account,CLIENTTAG_WARCRAFT3_UINT,ladder_id_team))))
-		  {
-		  war3_ladder_add(&WAR3_team_ladder,
-				  uid, xp,
-				  account_get_ladder_level(account,CLIENTTAG_WARCRAFT3_UINT,ladder_id_team),
-				  account,0,CLIENTTAG_WARCRAFT3_UINT);
-
-		  }
-	      if ((war3_ffa_res!=load_success) && ((xp = account_get_ladder_xp(account,CLIENTTAG_WARCRAFT3_UINT,ladder_id_ffa))))
-		  {
-		  war3_ladder_add(&WAR3_ffa_ladder,
-				  uid, xp,
-				  account_get_ladder_level(account,CLIENTTAG_WARCRAFT3_UINT,ladder_id_ffa),
-				  account,0,CLIENTTAG_WARCRAFT3_UINT);
-		  }
-	      // user is part of a team
-	      /*
-	      if ((war3_at_res!=load_success) && ((teamcount = account_get_atteamcount(account,CLIENTTAG_WARCRAFT3_UINT))))
-		  {
-		  int counter;
-		  for (counter=1; counter<=teamcount; counter++)
-		    {
-		      if ((xp = account_get_atteamxp(account,counter,CLIENTTAG_WARCRAFT3_UINT)) &&
-				   account_get_atteammembers(account,counter,CLIENTTAG_WARCRAFT3_UINT))
-			  {
-			  war3_ladder_add(&WAR3_at_ladder,
-					  uid, xp,
-					  account_get_atteamlevel(account,counter,CLIENTTAG_WARCRAFT3_UINT),
-					  account,
-					  counter,CLIENTTAG_WARCRAFT3_UINT);
-			  }
-		    }
-		  }
-		  */
-	      if ((w3xp_solo_res!=load_success) && ((xp = account_get_ladder_xp(account,CLIENTTAG_WAR3XP_UINT,ladder_id_solo))))
-		  {
-		  war3_ladder_add(&W3XP_solo_ladder,
-				  uid, xp,
-				  account_get_ladder_level(account,CLIENTTAG_WAR3XP_UINT,ladder_id_solo),
-				  account,0,CLIENTTAG_WAR3XP_UINT);
-		  }
-	      if ((w3xp_team_res!=load_success) && ((xp = account_get_ladder_xp(account,CLIENTTAG_WAR3XP_UINT,ladder_id_team))))
-		  {
-		  war3_ladder_add(&W3XP_team_ladder,
-				  uid, xp,
-				  account_get_ladder_level(account,CLIENTTAG_WAR3XP_UINT,ladder_id_team),
-				  account,0,CLIENTTAG_WAR3XP_UINT);
-
-		  }
-	      if ((w3xp_ffa_res!=load_success) && ((xp = account_get_ladder_xp(account,CLIENTTAG_WAR3XP_UINT,ladder_id_ffa))))
-		  {
-		  war3_ladder_add(&W3XP_ffa_ladder,
-				  uid, xp,
-				  account_get_ladder_level(account,CLIENTTAG_WAR3XP_UINT,ladder_id_ffa),
-				  account,0,
-				  CLIENTTAG_WAR3XP_UINT);
-		  }
-	      // user is part of a team
-	      /*
-	      if ((w3xp_at_res!=load_success) && ((teamcount = account_get_atteamcount(account,CLIENTTAG_WAR3XP_UINT))))
-	 	  {
-		  int counter;
-		  for (counter=1; counter<=teamcount; counter++)
-		    {
-
-		      if ((xp = account_get_atteamxp(account,counter,CLIENTTAG_WAR3XP_UINT)) &&
-				   account_get_atteammembers(account,counter,CLIENTTAG_WAR3XP_UINT))
-			  {
-			  war3_ladder_add(&W3XP_at_ladder,
-					  uid, xp,
-					  account_get_atteamlevel(account,counter,CLIENTTAG_WAR3XP_UINT),
-					  account,
-					  counter,CLIENTTAG_WAR3XP_UINT);
-			  }
-		    }
-		  }
-		  */
-
-		  if ((rating = account_get_ladder_rating(account,CLIENTTAG_STARCRAFT_UINT,ladder_id_normal))>0)
-		  {
-		    wins   = account_get_ladder_wins(account,CLIENTTAG_STARCRAFT_UINT,ladder_id_normal);
-
-		    if (star_cr_res!=load_success)
-	     	    {
-		       war3_ladder_add(&STAR_current_rating, uid,wins,rating,account,0,CLIENTTAG_STARCRAFT_UINT);
-	 	    }
-
-		    if (star_cw_res!=load_success)
-	     	    {
-	 	       war3_ladder_add(&STAR_current_wins, uid,rating,wins,account,0,CLIENTTAG_STARCRAFT_UINT);
-	 	    }
-
-		    if (star_cg_res!=load_success)
-	     	    {
-	 	      int games = wins +
-		                  account_get_ladder_losses(account,CLIENTTAG_STARCRAFT_UINT,ladder_id_normal)+
-	                          account_get_ladder_disconnects(account,CLIENTTAG_STARCRAFT_UINT,ladder_id_normal);
-
-	 	      war3_ladder_add(&STAR_current_games, uid,rating,games,account,0,CLIENTTAG_STARCRAFT_UINT);
-	     	    }
-		  }
-
-		  if ((rating = account_get_ladder_active_rating(account,CLIENTTAG_STARCRAFT_UINT,ladder_id_normal))>0)
-		  {
-		    wins   = account_get_ladder_active_wins(account,CLIENTTAG_STARCRAFT_UINT,ladder_id_normal);
-
-	 	    if (star_ar_res!=load_success)
-	 	    {
-		      war3_ladder_add(&STAR_active_rating, uid,wins,rating,account,0,CLIENTTAG_STARCRAFT_UINT);
-	 	    }
-
-		    if (star_aw_res!=load_success)
-	     	    {
-		      war3_ladder_add(&STAR_active_wins, uid,rating,wins,account,0,CLIENTTAG_STARCRAFT_UINT);
-	 	    }
-
-		    if (star_ag_res!=load_success)
-	     	    {
-		      int games = wins +
-			     	  account_get_ladder_active_losses(account,CLIENTTAG_STARCRAFT_UINT,ladder_id_normal)+
-	                     	  account_get_ladder_active_disconnects(account,CLIENTTAG_STARCRAFT_UINT,ladder_id_normal);
-
-	 	      war3_ladder_add(&STAR_active_games, uid,rating,games,account,0,CLIENTTAG_STARCRAFT_UINT);
-	     	    }
-		  }
-
-		  if ((rating = account_get_ladder_rating(account,CLIENTTAG_BROODWARS_UINT,ladder_id_normal))>0)
-		  {
-		    wins = account_get_ladder_wins(account,CLIENTTAG_BROODWARS_UINT,ladder_id_normal);
-
-		    if (sexp_cr_res!=load_success)
-	     	    {
-		      war3_ladder_add(&SEXP_current_rating, uid,wins,rating,account,0,CLIENTTAG_BROODWARS_UINT);
-	 	    }
-
-		    if (sexp_cw_res!=load_success)
-	     	    {
-	 	      war3_ladder_add(&SEXP_current_wins, uid,rating,wins,account,0,CLIENTTAG_BROODWARS_UINT);
-	 	    }
-
-		    if (sexp_cg_res!=load_success)
-	     	    {
-	 	      int games = wins +
-		 		  account_get_ladder_losses(account,CLIENTTAG_BROODWARS_UINT,ladder_id_normal)+
-	         	          account_get_ladder_disconnects(account,CLIENTTAG_BROODWARS_UINT,ladder_id_normal);
-
-	 	      war3_ladder_add(&SEXP_current_games, uid,rating,games,account,0,CLIENTTAG_BROODWARS_UINT);
-	     	    }
-		  }
-
-		  if ((rating = account_get_ladder_active_rating(account,CLIENTTAG_BROODWARS_UINT,ladder_id_normal))>0)
-		  {
-		    wins = account_get_ladder_active_wins(account,CLIENTTAG_BROODWARS_UINT,ladder_id_normal);
-
-	 	    if (sexp_ar_res!=load_success)
-	 	    {
-		      war3_ladder_add(&SEXP_active_rating, uid,wins,rating,account,0,CLIENTTAG_BROODWARS_UINT);
-	 	    }
-
-		    if (sexp_aw_res!=load_success)
-	     	    {
-		      war3_ladder_add(&SEXP_active_wins, uid,rating,wins,account,0,CLIENTTAG_BROODWARS_UINT);
-	 	    }
-
-		    if (sexp_ag_res!=load_success)
-	     	    {
-		      int games = wins +
-			     	  account_get_ladder_active_losses(account,CLIENTTAG_BROODWARS_UINT,ladder_id_normal)+
-	                     	  account_get_ladder_active_disconnects(account,CLIENTTAG_BROODWARS_UINT,ladder_id_normal);
-
-	 	       war3_ladder_add(&SEXP_active_games, uid,rating,games,account,0,CLIENTTAG_BROODWARS_UINT);
-	     	    }
-		  }
-
-		  if ((rating = account_get_ladder_rating(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal))>0)
-		  {
-		    wins = account_get_ladder_wins(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal);
-
-		    if (w2bn_cr_res!=load_success)
-	     	    {
-		      war3_ladder_add(&W2BN_current_rating, uid,wins,rating,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	 	    }
-
-		    if (w2bn_cw_res!=load_success)
-	     	    {
-	 	      war3_ladder_add(&W2BN_current_wins, uid,rating,wins,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	 	    }
-
-		    if (w2bn_cg_res!=load_success)
-	     	    {
-	 	      int games = wins +
-		 		  account_get_ladder_losses(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal)+
-	         	          account_get_ladder_disconnects(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal);
-
-	 	      war3_ladder_add(&W2BN_current_games, uid,rating,games,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	     	    }
-		  }
-
-		  if ((rating = account_get_ladder_active_rating(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal))>0)
-		  {
-		    wins = account_get_ladder_active_wins(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal);
-
-		    if (w2bn_ar_res!=load_success)
-	     	    {
-		      war3_ladder_add(&W2BN_active_rating, uid,wins,rating,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	 	    }
-
-		    if (w2bn_aw_res!=load_success)
-	     	    {
-	 	      war3_ladder_add(&W2BN_active_wins, uid,rating,wins,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	 	    }
-
-		    if (w2bn_ag_res!=load_success)
-	     	    {
-	 	      int games = wins +
-		 		  account_get_ladder_active_losses(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal)+
-	         	          account_get_ladder_active_disconnects(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal);
-
-	 	      war3_ladder_add(&W2BN_active_games, uid,rating,games,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	     	    }
-		  }
-
-		  if ((rating = account_get_ladder_rating(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman))>0)
-		  {
-	            wins = account_get_ladder_wins(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman);
-
-		    if (w2bn_cri_res!=load_success)
-	     	    {
-		      war3_ladder_add(&W2BN_current_rating_ironman, uid,wins,rating,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	 	    }
-
-		    if (w2bn_cwi_res!=load_success)
-	     	    {
-	 	      war3_ladder_add(&W2BN_current_wins_ironman, uid,rating,wins,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	 	    }
-
-		    if (w2bn_cgi_res!=load_success)
-	     	    {
-	 	      int games = wins +
-		 		  account_get_ladder_losses(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman)+
-	         	          account_get_ladder_disconnects(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman);
-
-	 	      war3_ladder_add(&W2BN_current_games_ironman, uid,rating,games,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	     	    }
-		  }
-
-		  if ((rating = account_get_ladder_active_rating(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman))>0)
-		  {
-		    wins = account_get_ladder_active_wins(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman);
-
-		    if (w2bn_ari_res!=load_success)
-	     	    {
-		      war3_ladder_add(&W2BN_active_rating_ironman, uid,wins,rating,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	 	    }
-
-		    if (w2bn_awi_res!=load_success)
-	     	    {
-	 	      war3_ladder_add(&W2BN_active_wins_ironman, uid,rating,wins,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	 	    }
-
-		    if (w2bn_agi_res!=load_success)
-	     	    {
-	 	      int games = account_get_ladder_active_wins(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman)+
-		 		  account_get_ladder_active_losses(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman)+
-	         	          account_get_ladder_active_disconnects(account,CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman);
-
-	 	      war3_ladder_add(&W2BN_active_games_ironman, uid,rating, games,account,0,CLIENTTAG_WARCIIBNE_UINT);
-	     	    }
-		  }
-
-	   }
-    }
-}
-
-
+/*
 int standard_writer(std::FILE * fp, t_ladder * ladder, t_clienttag clienttag)
 {
     t_ladder_internal * pointer;
@@ -1484,22 +273,6 @@ int standard_writer(std::FILE * fp, t_ladder * ladder, t_clienttag clienttag)
 	rank++;
 	if (clienttag==CLIENTTAG_WARCRAFT3_UINT || clienttag==CLIENTTAG_WAR3XP_UINT)
 	{
-	    if (ladder==at_ladder(clienttag))
-	    {
-		// if in the same team as previous account
-		if ((pointer) && (pointer->next)
-		    && in_same_team(pointer->account,pointer->next->account,pointer->teamcount,pointer->next->teamcount,clienttag))
-		{
-		    rank--;
-		}
-		// other team... so write all team members names, xp and rank to file
-		else
-		{
-		    //std::fprintf(fp,"%s,%u,%u\n",account_get_atteammembers(pointer->account,pointer->teamcount,clienttag),pointer->xp,rank);
-		}
-	    }
-	    else
-	    // write username, xp and rank to file
 		std::fprintf(fp,"%s,%u,%u\n",account_get_name(pointer->account),pointer->xp,rank);
 	}
 	else if (clienttag==CLIENTTAG_STARCRAFT_UINT || clienttag==CLIENTTAG_BROODWARS_UINT || clienttag==CLIENTTAG_WARCIIBNE_UINT)
@@ -1513,154 +286,12 @@ int standard_writer(std::FILE * fp, t_ladder * ladder, t_clienttag clienttag)
   }
   return 0;
 }
-
-int XML_writer(std::FILE * fp, t_ladder * ladder, t_clienttag clienttag)
-  /* XML Ladder files
-   * added by jfro
-   * 1/2/2003
-   */
-{
-  t_ladder_internal * pointer;
-  unsigned int rank=0;
-  unsigned int level;
-  unsigned int wins;
-  unsigned int losses;
-  unsigned int discs;
-  unsigned int orc_wins,human_wins,undead_wins,nightelf_wins,random_wins;
-  unsigned int orc_losses,human_losses,undead_losses,nightelf_losses,random_losses;
-
-  std::fprintf(fp,"<?xml version=\"1.0\"?>\n<ladder>\n");
-  pointer = ladder->first;
-  while (pointer != NULL)
-  {
-     rank++;
-
-     if (clienttag==CLIENTTAG_WARCRAFT3_UINT || clienttag==CLIENTTAG_WAR3XP_UINT)
-     {
-
-     if (ladder==at_ladder(clienttag))
-     {
-       // if in the same team as previous account
-       if ((pointer) && (pointer->next)
-           && in_same_team(pointer->account,pointer->next->account,pointer->teamcount,pointer->next->teamcount,clienttag))
-	       rank--;
-       else
-	 {
-	   /* other team... so write all team members names, xp and rank to file
-	   std::fprintf(fp,"\t<team>\n");
-	   if (account_get_atteammembers(pointer->account,pointer->teamcount,clienttag)==NULL)
-	     {
-	       eventlog(eventlog_level_error,__FUNCTION__,"got invalid team, skipping");
-	       pointer=pointer->prev;
-	       continue;
-	     }
-
-	   members = xstrdup(account_get_atteammembers(pointer->account,pointer->teamcount,clienttag));
-	   for ( member = std::strtok(members," ");
-		 member;
-		 member = std::strtok(NULL," "))
-	       std::fprintf(fp,"\t\t<member>%s</member>\n",member);
-	   xfree(members);
-	   std::fprintf(fp,"\t\t<xp>%u</xp>\n\t\t<rank>%u</rank>\n\t</team>\n",pointer->xp,rank);
-	   */
-	 }
-     }
-     else {
-         if (ladder==solo_ladder(clienttag)) {
-           level = account_get_ladder_level(pointer->account,clienttag,ladder_id_solo);
-           wins = account_get_ladder_wins(pointer->account,clienttag,ladder_id_solo);
-           losses = account_get_ladder_losses(pointer->account,clienttag,ladder_id_solo);
-         }
-         else if (ladder==team_ladder(clienttag)) {
-           level = account_get_ladder_level(pointer->account,clienttag,ladder_id_team);
-           wins = account_get_ladder_wins(pointer->account,clienttag,ladder_id_team);
-           losses = account_get_ladder_losses(pointer->account,clienttag,ladder_id_team);
-         }
-         else if (ladder==ffa_ladder(clienttag)) {
-           level = account_get_ladder_level(pointer->account,clienttag,ladder_id_ffa);
-           wins = account_get_ladder_wins(pointer->account,clienttag,ladder_id_ffa);
-           losses = account_get_ladder_losses(pointer->account,clienttag,ladder_id_ffa);
-         }
-         else {
-           level = 0;
-           wins = 0;
-           losses = 0;
-         }
-         orc_wins = account_get_racewins(pointer->account,W3_RACE_ORCS,clienttag);
-         orc_losses = account_get_racelosses(pointer->account,W3_RACE_ORCS,clienttag);
-         undead_wins = account_get_racewins(pointer->account,W3_RACE_UNDEAD,clienttag);
-         undead_losses = account_get_racelosses(pointer->account,W3_RACE_UNDEAD,clienttag);
-         human_wins = account_get_racewins(pointer->account,W3_RACE_HUMANS,clienttag);
-         human_losses = account_get_racelosses(pointer->account,W3_RACE_HUMANS,clienttag);
-         nightelf_wins = account_get_racewins(pointer->account,W3_RACE_NIGHTELVES,clienttag);
-         nightelf_losses = account_get_racelosses(pointer->account,W3_RACE_NIGHTELVES,clienttag);
-         random_wins = account_get_racewins(pointer->account,W3_RACE_RANDOM,clienttag);
-         random_losses = account_get_racelosses(pointer->account,W3_RACE_RANDOM,clienttag);
-     // write username, xp and rank to file and everyhing else needed for nice ladder pages
-	 std::fprintf(fp,"\t<player>\n\t\t<name>%s</name>\n\t\t<level>%u</level>\n\t\t<xp>%u</xp>\n",
-                    account_get_name(pointer->account),level,pointer->xp);
-	 std::fprintf(fp,"\t\t<wins>%u</wins>\n\t\t<losses>%u</losses>\n\t\t<rank>%u</rank>\n",
-                    wins,losses,rank);
-	 std::fprintf(fp,"\t\t<races>\n\t\t\t<orc>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</orc>\n",
-                    orc_wins,orc_losses);
-	 std::fprintf(fp,"\t\t\t<human>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</human>\n",
-                    human_wins,human_losses);
-	 std::fprintf(fp,"\t\t\t<nightelf>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</nightelf>\n",
-		    nightelf_wins,nightelf_losses);
-	 std::fprintf(fp,"\t\t\t<undead>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</undead>\n",
-		    undead_wins,undead_losses);
-	 std::fprintf(fp,"\t\t\t<random>\n\t\t\t\t<wins>%u</wins>\n\t\t\t\t<losses>%u</losses>\n\t\t\t</random>\n\t\t</races>\n\t</player>\n",
-                    random_wins,random_losses);
-     }
-
-     } // end: if clienttag WAR3 or WAR3XP
-    else if (clienttag==CLIENTTAG_STARCRAFT_UINT || clienttag==CLIENTTAG_BROODWARS_UINT || clienttag==CLIENTTAG_WARCIIBNE_UINT)
-    {
-	wins = account_get_ladder_wins(pointer->account,ladder->clienttag,ladder->ladder_id);
-	losses = account_get_ladder_losses(pointer->account,ladder->clienttag,ladder->ladder_id);
-	discs = account_get_ladder_disconnects(pointer->account,ladder->clienttag,ladder->ladder_id);
-
-	std::fprintf(fp,"\t<player>\n\t\t<rank>%u</rank>\n\t\t<name>%s</name>\n\t\t<rating>%u</rating>\n",
-	    rank, account_get_name(pointer->account),pointer->level);
-	std::fprintf(fp,"\t\t<wins>%u</wins>\n\t\t<losses>%u</losses>\n\t\t<discs>%u</discs>\n\t</player>\n",
-                    wins,losses,discs);
-    }
-
-     pointer=pointer->prev;
-  }
-  std::fprintf(fp,"</ladder>\n");
-  return 0;
-}
-
-
-extern int ladder_write_to_file(char const * filename, t_ladder * ladder, t_clienttag clienttag)
-{
-  std::FILE * fp;
-
-  if (!filename)
-  {
-    eventlog(eventlog_level_error,__FUNCTION__,"got NULL filename");
-    return -1;
-  }
-
-  if (!(fp = std::fopen(filename,"w")))
-  {
-     eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)",filename,std::strerror(errno));
-     return -1;
-  }
-
-  if (prefs_get_XML_output_ladder())
-    XML_writer(fp,ladder,clienttag);
-  else
-    standard_writer(fp,ladder,clienttag);
-
-  std::fclose(fp);
-  return 0;
-}
+*/
 
 extern int ladders_write_to_file()
 {
 
+	/*
   ladder_write_to_file(WAR3_solo_filename, &WAR3_solo_ladder,CLIENTTAG_WARCRAFT3_UINT);
   ladder_write_to_file(WAR3_team_filename, &WAR3_team_ladder,CLIENTTAG_WARCRAFT3_UINT);
   ladder_write_to_file(WAR3_ffa_filename,  &WAR3_ffa_ladder, CLIENTTAG_WARCRAFT3_UINT);
@@ -1677,266 +308,13 @@ extern int ladders_write_to_file()
   ladder_write_to_file(W2BN_cr_filename,   &W2BN_current_rating,CLIENTTAG_WARCIIBNE_UINT);
   ladder_write_to_file(W2BN_ari_filename,  &W2BN_active_rating_ironman, CLIENTTAG_WARCIIBNE_UINT);
   ladder_write_to_file(W2BN_cri_filename,  &W2BN_current_rating_ironman,CLIENTTAG_WARCIIBNE_UINT);
-
+*/
   return 0;
 }
 
-extern char * create_filename(const char * path, const char * filename, const char * ending)
-{
-  char * result;
-
-  result = (char*)xmalloc(std::strlen(path)+1+std::strlen(filename)+std::strlen(ending)+1);
-  std::sprintf(result,"%s/%s%s",path,filename,ending);
-
-  return result;
-}
-
-static void dispose_filename(char * filename)
-{
-  if (filename) xfree(filename);
-}
-
-void create_filenames(void)
-{
-    // In the ladderdir are binary ladder files, the human readable ladderlist output
-    // is better in other place, in the outputdir [KWS]
-
-  if (prefs_get_XML_output_ladder())
-  {
-    WAR3_solo_filename = create_filename(prefs_get_outputdir(),WAR3_solo_file,xml_end);
-    WAR3_team_filename = create_filename(prefs_get_outputdir(),WAR3_team_file,xml_end);
-    WAR3_ffa_filename  = create_filename(prefs_get_outputdir(),WAR3_ffa_file,xml_end);
-    WAR3_at_filename   = create_filename(prefs_get_outputdir(),WAR3_at_file,xml_end);
-    W3XP_solo_filename = create_filename(prefs_get_outputdir(),W3XP_solo_file,xml_end);
-    W3XP_team_filename = create_filename(prefs_get_outputdir(),W3XP_team_file,xml_end);
-    W3XP_ffa_filename  = create_filename(prefs_get_outputdir(),W3XP_ffa_file,xml_end);
-    W3XP_at_filename   = create_filename(prefs_get_outputdir(),W3XP_at_file,xml_end);
-    STAR_ar_filename   = create_filename(prefs_get_outputdir(),STAR_ar_file,xml_end);
-    STAR_cr_filename   = create_filename(prefs_get_outputdir(),STAR_cr_file,xml_end);
-    SEXP_ar_filename   = create_filename(prefs_get_outputdir(),SEXP_ar_file,xml_end);
-    SEXP_cr_filename   = create_filename(prefs_get_outputdir(),SEXP_cr_file,xml_end);
-    W2BN_ar_filename   = create_filename(prefs_get_outputdir(),W2BN_ar_file,xml_end);
-    W2BN_cr_filename   = create_filename(prefs_get_outputdir(),W2BN_cr_file,xml_end);
-    W2BN_ari_filename  = create_filename(prefs_get_outputdir(),W2BN_ari_file,xml_end);
-    W2BN_cri_filename  = create_filename(prefs_get_outputdir(),W2BN_cri_file,xml_end);
-  }
-  else
-  {
-    WAR3_solo_filename = create_filename(prefs_get_outputdir(),WAR3_solo_file,std_end);
-    WAR3_team_filename = create_filename(prefs_get_outputdir(),WAR3_team_file,std_end);
-    WAR3_ffa_filename  = create_filename(prefs_get_outputdir(),WAR3_ffa_file,std_end);
-    WAR3_at_filename   = create_filename(prefs_get_outputdir(),WAR3_at_file,std_end);
-    W3XP_solo_filename = create_filename(prefs_get_outputdir(),W3XP_solo_file,std_end);
-    W3XP_team_filename = create_filename(prefs_get_outputdir(),W3XP_team_file,std_end);
-    W3XP_ffa_filename  = create_filename(prefs_get_outputdir(),W3XP_ffa_file,std_end);
-    W3XP_at_filename   = create_filename(prefs_get_outputdir(),W3XP_at_file,std_end);
-    STAR_ar_filename   = create_filename(prefs_get_outputdir(),STAR_ar_file,std_end);
-    STAR_cr_filename   = create_filename(prefs_get_outputdir(),STAR_cr_file,std_end);
-    SEXP_ar_filename   = create_filename(prefs_get_outputdir(),SEXP_ar_file,std_end);
-    SEXP_cr_filename   = create_filename(prefs_get_outputdir(),SEXP_cr_file,std_end);
-    W2BN_ar_filename   = create_filename(prefs_get_outputdir(),W2BN_ar_file,std_end);
-    W2BN_cr_filename   = create_filename(prefs_get_outputdir(),W2BN_cr_file,std_end);
-    W2BN_ari_filename  = create_filename(prefs_get_outputdir(),W2BN_ari_file,std_end);
-    W2BN_cri_filename  = create_filename(prefs_get_outputdir(),W2BN_cri_file,std_end);
-  }
-}
-
-extern void ladders_init(void)
-{
-  eventlog(eventlog_level_info,__FUNCTION__,"initializing war3 ladders");
-  ladder_init(&WAR3_solo_ladder,    WAR3_SOLO, CLIENTTAG_WARCRAFT3_UINT,ladder_id_solo);
-  ladder_init(&WAR3_team_ladder,    WAR3_TEAM, CLIENTTAG_WARCRAFT3_UINT,ladder_id_team);
-  ladder_init(&WAR3_ffa_ladder,     WAR3_FFA,  CLIENTTAG_WARCRAFT3_UINT,ladder_id_ffa);
-  ladder_init(&WAR3_at_ladder,      WAR3_AT,   CLIENTTAG_WARCRAFT3_UINT,ladder_id_none);
-  ladder_init(&W3XP_solo_ladder,    W3XP_SOLO, CLIENTTAG_WAR3XP_UINT,ladder_id_solo);
-  ladder_init(&W3XP_team_ladder,    W3XP_TEAM, CLIENTTAG_WAR3XP_UINT,ladder_id_team);
-  ladder_init(&W3XP_ffa_ladder,     W3XP_FFA,  CLIENTTAG_WAR3XP_UINT,ladder_id_ffa);
-  ladder_init(&W3XP_at_ladder,      W3XP_AT,   CLIENTTAG_WAR3XP_UINT,ladder_id_none);
-  ladder_init(&STAR_active_rating,  STAR_AR,   CLIENTTAG_STARCRAFT_UINT,ladder_id_normal);
-  ladder_init(&STAR_active_wins,    STAR_AW,   CLIENTTAG_STARCRAFT_UINT,ladder_id_normal);
-  ladder_init(&STAR_active_games,   STAR_AG,   CLIENTTAG_STARCRAFT_UINT,ladder_id_normal);
-  ladder_init(&STAR_current_rating, STAR_CR,   CLIENTTAG_STARCRAFT_UINT,ladder_id_normal);
-  ladder_init(&STAR_current_wins,   STAR_CW,   CLIENTTAG_STARCRAFT_UINT,ladder_id_normal);
-  ladder_init(&STAR_current_games,  STAR_CG,   CLIENTTAG_STARCRAFT_UINT,ladder_id_normal);
-  ladder_init(&SEXP_active_rating,  SEXP_AR,   CLIENTTAG_BROODWARS_UINT,ladder_id_normal);
-  ladder_init(&SEXP_active_wins,    SEXP_AW,   CLIENTTAG_BROODWARS_UINT,ladder_id_normal);
-  ladder_init(&SEXP_active_games,   SEXP_AG,   CLIENTTAG_BROODWARS_UINT,ladder_id_normal);
-  ladder_init(&SEXP_current_rating, SEXP_CR,   CLIENTTAG_BROODWARS_UINT,ladder_id_normal);
-  ladder_init(&SEXP_current_wins,   SEXP_CW,   CLIENTTAG_BROODWARS_UINT,ladder_id_normal);
-  ladder_init(&SEXP_current_games,  SEXP_CG,   CLIENTTAG_BROODWARS_UINT,ladder_id_normal);
-  ladder_init(&W2BN_current_rating,         W2BN_CR,   CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal);
-  ladder_init(&W2BN_current_wins,           W2BN_CW,   CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal);
-  ladder_init(&W2BN_current_games,          W2BN_CG,   CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal);
-  ladder_init(&W2BN_current_rating_ironman, W2BN_CRI,  CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman);
-  ladder_init(&W2BN_current_wins_ironman,   W2BN_CWI,  CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman);
-  ladder_init(&W2BN_current_games_ironman,  W2BN_CGI,  CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman);
-  ladder_init(&W2BN_active_rating,          W2BN_AR,   CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal);
-  ladder_init(&W2BN_active_wins,            W2BN_AW,   CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal);
-  ladder_init(&W2BN_active_games,           W2BN_AG,   CLIENTTAG_WARCIIBNE_UINT,ladder_id_normal);
-  ladder_init(&W2BN_active_rating_ironman,  W2BN_ARI,  CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman);
-  ladder_init(&W2BN_active_wins_ironman,    W2BN_AWI,  CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman);
-  ladder_init(&W2BN_active_games_ironman,   W2BN_AGI,  CLIENTTAG_WARCIIBNE_UINT,ladder_id_ironman);
-
-  create_filenames();
-}
-
-void dispose_filenames(void)
-{
-  dispose_filename(WAR3_solo_filename);
-  dispose_filename(WAR3_team_filename);
-  dispose_filename(WAR3_ffa_filename);
-  dispose_filename(WAR3_at_filename);
-  dispose_filename(W3XP_solo_filename);
-  dispose_filename(W3XP_team_filename);
-  dispose_filename(W3XP_ffa_filename);
-  dispose_filename(W3XP_at_filename);
-  dispose_filename(STAR_ar_filename);
-  dispose_filename(STAR_cr_filename);
-  dispose_filename(SEXP_ar_filename);
-  dispose_filename(SEXP_cr_filename);
-  dispose_filename(W2BN_ar_filename);
-  dispose_filename(W2BN_cr_filename);
-  dispose_filename(W2BN_ari_filename);
-  dispose_filename(W2BN_cri_filename);
-}
-
-extern void ladders_destroy(void)
-{
-  eventlog(eventlog_level_info,__FUNCTION__,"destroying war3 ladders");
-  ladder_destroy(&WAR3_solo_ladder);
-  ladder_destroy(&WAR3_team_ladder);
-  ladder_destroy(&WAR3_ffa_ladder);
-  ladder_destroy(&WAR3_at_ladder);
-  ladder_destroy(&W3XP_solo_ladder);
-  ladder_destroy(&W3XP_team_ladder);
-  ladder_destroy(&W3XP_ffa_ladder);
-  ladder_destroy(&W3XP_at_ladder);
-  ladder_destroy(&STAR_active_rating);
-  ladder_destroy(&STAR_active_wins);
-  ladder_destroy(&STAR_active_games);
-  ladder_destroy(&STAR_current_rating);
-  ladder_destroy(&STAR_current_wins);
-  ladder_destroy(&STAR_current_games);
-  ladder_destroy(&SEXP_active_rating);
-  ladder_destroy(&SEXP_active_wins);
-  ladder_destroy(&SEXP_active_games);
-  ladder_destroy(&SEXP_current_rating);
-  ladder_destroy(&SEXP_current_wins);
-  ladder_destroy(&SEXP_current_games);
-  ladder_destroy(&W2BN_current_rating);
-  ladder_destroy(&W2BN_current_wins);
-  ladder_destroy(&W2BN_current_games);
-  ladder_destroy(&W2BN_current_rating_ironman);
-  ladder_destroy(&W2BN_current_wins_ironman);
-  ladder_destroy(&W2BN_current_games_ironman);
-  ladder_destroy(&W2BN_active_rating);
-  ladder_destroy(&W2BN_active_wins);
-  ladder_destroy(&W2BN_active_games);
-  ladder_destroy(&W2BN_active_rating_ironman);
-  ladder_destroy(&W2BN_active_wins_ironman);
-  ladder_destroy(&W2BN_active_games_ironman);
-  dispose_filenames();
-}
-
-extern void ladder_reload_conf(void)
-{
-  dispose_filenames();
-  create_filenames();
-}
-
-int ladder_get_from_ladder(t_binary_ladder_types type, int rank,int * results)
-{
-  t_ladder * ladder;
-  t_ladder_internal * internal;
-
-  if (!(results))
-  {
-    eventlog(eventlog_level_error,__FUNCTION__,"got NULL results");
-    return -1;
-  }
-
-  if (!(ladder = binary_ladder_types_to_w3_ladder(type)))
-    return -1;
-
-  if (!(internal = ladder_get_rank_internal(ladder,rank,ladder_get_clienttag(ladder))))
-  {
-    return -1;
-  }
-
-  results[0] = internal->uid;
-  results[1] = internal->xp;
-  results[2] = internal->level;
-  results[3] = internal->teamcount;
-
-  return 0;
-}
-
-int ladder_put_into_ladder(t_binary_ladder_types type, int * values)
-{
-  t_ladder * ladder;
-  t_account * acct;
-
-  if (!(values))
-  {
-    eventlog(eventlog_level_error,__FUNCTION__,"got NULL values");
-    return -1;
-  }
-
-  if (!(ladder = binary_ladder_types_to_w3_ladder(type)))
-    return -1;
-
-  if ((acct = accountlist_find_account_by_uid(values[0])))
-    war3_ladder_add(ladder,values[0],values[1],values[2],acct,values[3],ladder_get_clienttag(ladder));
-  else
-    eventlog(eventlog_level_error,__FUNCTION__,"no account with this UID - skip");
-
-  return 0;
-}
-
-extern int ladder_make_active(t_ladder *current, t_ladder *active,int set_attributes)
-{
-  t_ladder_id id;
-  t_clienttag clienttag;
-  t_binary_ladder_types type;
-  t_ladder_internal * internal;
-  t_account * account;
-  char const * timestr;
-  t_bnettime bt;
-  int rank = 1;
-
-  id = active->ladder_id;
-  clienttag = active->clienttag;
-  type = active->type;
-
-  //FIXME: take care of ppl that might have drop'ed from ladder !!!
-  ladder_destroy(active);
-  ladder_init(active,type,clienttag,id);
-
-  while ((internal = ladder_get_rank_internal(current,rank,clienttag)))
-  {
-    account = internal->account;
-    war3_ladder_add(active,internal->uid,internal->xp,internal->level,account,0,clienttag);
-    if (set_attributes)
-    {
-      account_set_ladder_active_wins(account,clienttag,id,account_get_ladder_wins(account,clienttag,id));
-      account_set_ladder_active_losses(account,clienttag,id,account_get_ladder_losses(account,clienttag,id));
-      account_set_ladder_active_draws(account,clienttag,id,account_get_ladder_draws(account,clienttag,id));
-      account_set_ladder_active_disconnects(account,clienttag,id,account_get_ladder_disconnects(account,clienttag,id));
-      account_set_ladder_active_rating(account,clienttag,id,account_get_ladder_rating(account,clienttag,id));
-      account_set_ladder_active_rank(account,clienttag,id,account_get_ladder_rank(account,clienttag,id));
-      if (!(timestr = account_get_ladder_last_time(account,clienttag,id)))
-        timestr = BNETD_LADDER_DEFAULT_TIME;
-      bnettime_set_str(&bt,timestr);
-      account_set_ladder_active_last_time(account,clienttag,id,bt);
-    }
-    rank++;
-  }
-
-  //now traverse the current ladder and put everything into the active one....
-
-
-  return 0;
-}
+/* *********************************************************************************************************************
+ * handling of bnxpcalc and bnxplevel stuff (old code)
+ * *********************************************************************************************************************/
 
 extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
 {
@@ -2153,6 +531,866 @@ extern int ladder_war3_get_min_xp(unsigned int Level)
   return xplevels[Level-1].startxp;
 }
 
+
+/* *********************************************************************************************************************
+ * start of new ladder codes
+ * *********************************************************************************************************************/
+
+
+LadderKey::LadderKey(t_ladder_id ladderId_, t_clienttag clienttag_, t_ladder_sort ladderSort_, t_ladder_time ladderTime_)
+:ladderId(ladderId_), clienttag(clienttag_), ladderSort(ladderSort_), ladderTime(ladderTime_)
+{
+}
+
+
+LadderKey::~LadderKey() throw ()
+{}
+
+
+bool 
+LadderKey::operator== (const LadderKey& right) const
+{
+	return ((ladderId == right.ladderId) &&
+		(clienttag == right.clienttag) &&
+		(ladderSort == right.ladderSort) &&
+		(ladderTime == right.ladderTime));
+}
+
+
+bool 
+LadderKey::operator< (const LadderKey& right) const
+{
+	if (ladderId < right.ladderId) return true;
+	else if (clienttag < right.clienttag) return true;
+	else if (ladderSort < right.ladderSort) return true;
+	else if (ladderTime < right.ladderTime) return true;
+	else return false;
+}
+
+
+t_ladder_id 
+LadderKey::getLadderId() const
+{
+  return ladderId;
+}
+	        
+
+t_clienttag 
+LadderKey::getClienttag() const
+{
+	return clienttag;
+}
+
+
+t_ladder_sort 
+LadderKey::getLadderSort() const
+{
+	return ladderSort;
+}
+
+
+t_ladder_time 
+LadderKey::getLadderTime() const
+{
+	return ladderTime;
+}
+
+LadderKey
+LadderKey::getOpposingKey() const
+{
+	if (ladderTime == ladder_time_active)
+		return LadderKey(ladderId,clienttag,ladderSort,ladder_time_current);
+	else if (ladderTime == ladder_time_current)
+		return LadderKey(ladderId,clienttag,ladderSort,ladder_time_active);
+	else
+		return LadderKey(ladderId,clienttag,ladderSort,ladderTime);;
+}
+				
+
+LadderReferencedObject::LadderReferencedObject(t_account *account_)
+:account(account_)
+{
+	referenceType = referenceTypeAccount;
+}
+
+
+LadderReferencedObject::~LadderReferencedObject() throw()
+{ }
+
+
+bool
+LadderReferencedObject::getData(const LadderKey& ladderKey_, unsigned int& uid_, unsigned int& primary_, unsigned int& secondary_)
+{
+	// returns false in case of failures - and also when no need to add this referencedObject to ladder
+	t_clienttag clienttag = ladderKey_.getClienttag();
+	t_ladder_id ladderId = ladderKey_.getLadderId();
+	
+	if (referenceType == referenceTypeAccount)
+	{
+		uid_ = account_get_uid(account);
+		if (clienttag == CLIENTTAG_WARCRAFT3_UINT || clienttag == CLIENTTAG_WAR3XP_UINT)
+		{
+			if (!(primary_ = account_get_ladder_level(account,clienttag,ladderId)))
+				return false;
+			secondary_ = account_get_ladder_xp(account,clienttag,ladderId);
+			return true;
+		}else{
+			t_ladder_sort ladderSort = ladderKey_.getLadderSort();
+			// current ladders
+			if (ladderKey_.getLadderTime() == ladder_time_current)
+			{
+				unsigned int rating = account_get_ladder_rating(account,clienttag,ladderId);
+				if (!rating) return false;
+				switch (ladderSort)
+				{
+				case ladder_sort_highestrated:
+					primary_   = rating;
+					secondary_ = account_get_ladder_wins(account,clienttag,ladderId);
+					return true;
+				case ladder_sort_mostwins:
+					primary_   = account_get_ladder_wins(account,clienttag,ladderId);
+					secondary_ = rating;
+					return true;
+				case ladder_sort_mostgames:
+					primary_   = account_get_ladder_wins(account,clienttag,ladderId)+
+						     account_get_ladder_losses(account,clienttag,ladderId)+
+						     account_get_ladder_disconnects(account,clienttag,ladderId);
+					secondary_  = rating;
+					return true;
+				default:
+					return false;
+				}
+
+			}else{ // active ladders
+				unsigned int rating = account_get_ladder_active_rating(account,clienttag,ladderId);
+				if (!rating) return false;
+				switch (ladderSort)
+				{
+				case ladder_sort_highestrated:
+					primary_   = rating;
+					secondary_ = account_get_ladder_active_wins(account,clienttag,ladderId);
+					return true;
+				case ladder_sort_mostwins:
+					primary_   = account_get_ladder_active_wins(account,clienttag,ladderId);
+					secondary_ = rating;
+					return true;
+				case ladder_sort_mostgames:
+					primary_   = account_get_ladder_active_wins(account,clienttag,ladderId)+
+						     account_get_ladder_active_losses(account,clienttag,ladderId)+
+						     account_get_ladder_active_disconnects(account,clienttag,ladderId);
+					secondary_  = rating;
+					return true;
+				default:
+					return false;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+unsigned int
+LadderReferencedObject::getRank(const LadderKey& ladderKey_) const
+{
+        t_clienttag clienttag = ladderKey_.getClienttag();
+        t_ladder_id ladderId = ladderKey_.getLadderId();
+	t_ladder_time ladderTime = ladderKey_.getLadderTime();
+	t_ladder_sort ladderSort = ladderKey_.getLadderSort();
+
+        if (referenceType == referenceTypeAccount)
+        {
+		if (ladderSort==ladder_sort_default || ladderSort==ladder_sort_highestrated)
+		{
+			if (ladderTime==ladder_time_active)
+			{
+				return account_get_ladder_active_rank(account,clienttag,ladderId);
+			}else{
+				return account_get_ladder_rank(account,clienttag,ladderId);
+			}
+		}else{
+			// the account rank is only determined by highestrated/default ladder sort
+			return 0;
+		}
+	}
+}
+
+bool 
+LadderReferencedObject::setRank(const LadderKey& ladderKey_, unsigned int rank) const
+{
+        t_clienttag clienttag = ladderKey_.getClienttag();
+        t_ladder_id ladderId = ladderKey_.getLadderId();
+	t_ladder_time ladderTime = ladderKey_.getLadderTime();
+	t_ladder_sort ladderSort = ladderKey_.getLadderSort();
+
+        if (referenceType == referenceTypeAccount)
+        {
+		if (ladderSort==ladder_sort_default || ladderSort==ladder_sort_highestrated)
+		{
+			if (ladderTime==ladder_time_active)
+			{
+				account_set_ladder_active_rank(account,clienttag,ladderId,rank);
+			}else{
+				account_set_ladder_rank(account,clienttag,ladderId,rank);
+			}
+		}else{
+			// the account rank is only determined by highestrated/default ladder sort
+			return false;
+		}
+	}
+	return true;
+}
+
+
+void
+LadderReferencedObject::activate(const LadderKey& ladderKey_)
+{
+	if (referenceType == referenceTypeAccount)
+	{
+		if (ladderKey_.getLadderSort()==ladder_sort_highestrated)
+		{
+
+			t_clienttag clienttag = ladderKey_.getClienttag();
+			t_ladder_id ladderId = ladderKey_.getLadderId();
+  			char const * timestr;
+			t_bnettime bt;
+
+			account_set_ladder_active_wins(account,clienttag,ladderId,
+					account_get_ladder_wins(account,clienttag,ladderId));
+			account_set_ladder_active_losses(account,clienttag,ladderId,
+					account_get_ladder_losses(account,clienttag,ladderId));
+			account_set_ladder_active_draws(account,clienttag,ladderId,
+					account_get_ladder_draws(account,clienttag,ladderId));
+			account_set_ladder_active_disconnects(account,clienttag,ladderId,
+					account_get_ladder_disconnects(account,clienttag,ladderId));
+			account_set_ladder_active_rating(account,clienttag,ladderId,
+					account_get_ladder_rating(account,clienttag,ladderId));
+			account_set_ladder_active_rank(account,clienttag,ladderId,
+					account_get_ladder_rank(account,clienttag,ladderId));
+			if (!(timestr = account_get_ladder_last_time(account,clienttag,ladderId)))
+				timestr = BNETD_LADDER_DEFAULT_TIME;
+			bnettime_set_str(&bt,timestr);
+			account_set_ladder_active_last_time(account,clienttag,ladderId,bt);
+		}
+	}
+}
+		
+
+t_account *
+LadderReferencedObject::getAccount() const
+{
+	return account;
+}
+
+
+LadderEntry::LadderEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, LadderReferencedObject referencedObject_)
+:uid(uid_), primary(primary_), secondary(secondary_), referencedObject(referencedObject_)
+{
+	rank = 0;
+}
+
+
+LadderEntry::~LadderEntry() throw()
+{}
+
+
+unsigned int
+LadderEntry::getUid() const
+{
+	return uid;
+}
+
+
+unsigned int
+LadderEntry::getPrimary() const
+{
+	return primary;
+}
+
+
+unsigned int
+LadderEntry::getSecondary() const
+{
+	return secondary;
+}
+
+unsigned int
+LadderEntry::getRank() const
+{
+	return rank;
+}
+
+LadderReferencedObject* 
+LadderEntry::getReferencedObject()
+{
+	return &referencedObject;
+}
+
+
+bool
+LadderEntry::setRank(unsigned int rank_, const LadderKey& ladderKey_)
+{
+  if (referencedObject.getRank(ladderKey_) != rank_)
+  {
+    rank = rank_;
+    return referencedObject.setRank(ladderKey_,rank_);
+  }else{
+    return false;
+  }
+}
+
+
+void
+LadderEntry::update(unsigned int primary_, unsigned int secondary_)
+{
+	primary = primary_;
+	secondary = secondary_;
+}
+
+std::string
+LadderEntry::status() const
+{
+	std::ostringstream result;
+	result << uid << "," << primary << "," << secondary;
+		
+	return result.str();
+}
+
+bool 
+LadderEntry::operator== (const LadderEntry& right) const
+{
+  return ((uid == right.uid) &&
+	  (primary == right.primary) &&
+	  (secondary == right.secondary));
+}
+
+
+bool 
+LadderEntry::operator< (const LadderEntry& right) const
+{
+  if (primary!=right.primary)
+	  return (primary>right.primary);
+  else if (secondary!=right.secondary)
+	  return (secondary > right.secondary);
+  else
+	  return (uid > right.uid);
+}
+		
+
+
+LadderList::LadderList(LadderKey ladderKey_)
+:ladderKey(ladderKey_)
+{
+	dirty = true;
+
+        ladderFilename = clienttag_uint_to_str(ladderKey_.getClienttag());
+	ladderFilename += "_";
+	ladderFilename += bin_ladder_time_str[ladderKey_.getLadderTime()];
+	ladderFilename += bin_ladder_sort_str[ladderKey_.getLadderSort()];
+	ladderFilename += bin_ladder_id_str[ladderKey_.getLadderId()];
+	ladderFilename += "_LADDER";
+}
+
+
+LadderList::~LadderList() throw ()
+{}
+
+
+bool
+LadderList::load()
+{
+  return loadBinary();
+}
+
+
+bool
+LadderList::save()
+{
+  sortAndUpdate();
+  saveBinary();
+}
+
+
+void
+LadderList::sortAndUpdate()
+{
+  if (dirty)
+  {
+    unsigned int rank = 1;
+    unsigned int changed = 0;
+    LList::iterator endMarker = NULL;
+	  
+    eventlog(eventlog_level_trace,__FUNCTION__,"need to sort");
+    ladder.sort();
+
+    for(LList::iterator lit(ladder.begin()); lit!=ladder.end(); lit++, rank++)
+    {
+      if (rank <= MaxRankKeptInLadder){
+        if ((*lit).getRank() != rank)
+        {
+          if ((*lit).setRank(rank,ladderKey))
+	    changed++;
+	}
+      }else{
+        (*lit).setRank(0,ladderKey);
+	if (endMarker==NULL)
+	  endMarker = lit;
+      }
+    }
+  
+    if (endMarker!=NULL)
+      ladder.erase(endMarker,ladder.end());
+    
+    eventlog(eventlog_level_trace,__FUNCTION__,"adjusted rank for %u accounts",changed);
+    saved = false;
+    dirty = false;
+  }
+}
+
+
+const unsigned int  magick = 0xdeadbeef;
+
+bool
+LadderList::loadBinary()
+{
+  unsigned int values[4];
+  unsigned int uid, primary, secondary;
+  std::string filename;
+  unsigned int checksum;
+  unsigned count;
+  std::FILE * fp;
+
+  saved = false;
+
+  filename = prefs_get_ladderdir();
+  filename += "/";
+  filename += ladderFilename;
+
+  if (!(fp = std::fopen(filename.c_str(),"rb")))
+  {
+    eventlog(eventlog_level_info,__FUNCTION__,"could not open ladder file \"%s\" - maybe ladder still empty",filename.c_str(),std::strerror(errno));
+    return false;
+  }
+
+  if ((std::fread(values,sizeof(int),1,fp)!=1) ||  (values[0]!=magick))
+  {
+    eventlog(eventlog_level_error,__FUNCTION__,"ladder file not starting with the magick int");
+    std::fclose(fp);
+    return false;
+  }
+
+  checksum = 0;
+
+  while (std::fread(values,sizeof(int),4,fp)==4)
+  {
+	  //handle differently dependant on ladderKey->ladderId
+	  if (t_account* account =accountlist_find_account_by_uid(values[0]))
+	  {
+	     uid       = values[0];
+	     primary   = values[2];
+	     secondary = values[1];
+	     LadderReferencedObject reference(account);
+             addEntry(uid, primary, secondary, reference);
+	  }else{
+	    eventlog(eventlog_level_debug,__FUNCTION__,"no known entry for uid %u",values[0]);
+	  }
+    for (count=0;count<4;count++) checksum+=values[count];
+  }
+
+  std::fread(values,sizeof(int),1,fp);
+  if (std::feof(fp)==0)
+  {
+    eventlog(eventlog_level_error,__FUNCTION__,"got data past end.. fall back to old loading mode");
+    ladder.clear();
+    return false;
+
+  }
+  if (values[0]!=checksum)
+  {
+    eventlog(eventlog_level_error,__FUNCTION__,"ladder file has invalid checksum... fall back to old loading mode");
+    ladder.clear();
+    return false;
+  }
+
+  std::fclose(fp);
+  eventlog(eventlog_level_info,__FUNCTION__,"successfully loaded %s",filename.c_str());
+  saved = true;
+  return true;
+}
+
+bool
+LadderList::saveBinary()
+{ unsigned int results[4];
+  std::string filename;
+  unsigned int checksum;
+  std::FILE * fp;
+  
+
+  if (!saved){
+  
+    filename = prefs_get_ladderdir();
+    filename += "/";
+    filename += ladderFilename;
+
+
+    if (!(fp = std::fopen(filename.c_str(),"wb")))
+    {
+      eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)", filename.c_str(), std::strerror(errno));
+      return false;
+    }
+
+    results[0] = magick;
+    std::fwrite(results,sizeof(int),1,fp); //write the magick int as header
+
+    checksum = 0;
+
+    for(LList::const_iterator lit(ladder.begin()); lit!=ladder.end(); lit++)
+    {
+						 
+      results[0] = lit->getUid();
+      results[2] = lit->getPrimary();
+      results[1] = lit->getSecondary();
+      results[3] = 0;
+      std::fwrite(results,sizeof(int),4,fp);
+      for (int count=0;count<4;count++) checksum+=results[count];
+    }
+  
+  
+    //calculate a checksum over saved data
+
+    results[0] = checksum;
+    std::fwrite(results,sizeof(int),1,fp); // add checksum at the end
+
+    std::fclose(fp);
+
+    eventlog(eventlog_level_info,__FUNCTION__,"successfully saved %s",filename.c_str());
+    saved = true;
+  }
+  return true;
+}
+
+
+void
+LadderList::addEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, LadderReferencedObject& referencedObject_)
+{
+	LadderEntry entry(uid_, primary_ ,secondary_, referencedObject_);
+	ladder.push_back(entry);
+}
+
+
+void
+LadderList::updateEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, LadderReferencedObject& referencedObject_)
+{
+	LList::iterator lit(ladder.begin());
+	for(; lit!=ladder.end() && lit->getUid()!=uid_; lit++);
+
+	if (lit==ladder.end()) 
+	{
+		LadderEntry entry(uid_, primary_ ,secondary_, referencedObject_);
+		ladder.push_back(entry);
+	}else{
+		lit->update(primary_, secondary_);
+	}
+	dirty = true;
+}
+
+
+bool 
+LadderList::delEntry(unsigned int uid_)
+{
+
+	return true;
+}
+LadderReferencedObject*
+LadderList::getReferencedObject(unsigned int rank_)
+{
+	unsigned int rank;
+	LList::iterator lit(ladder.begin());
+	for(rank=1; lit!=ladder.end() && rank!=rank_; lit++,rank++);
+
+	if (lit==ladder.end())
+		return NULL;
+	else
+		return lit->getReferencedObject();
+
+}
+
+unsigned int 
+LadderList::getRank(unsigned int uid_)
+{
+	unsigned int rank;
+	LList::iterator lit(ladder.begin());
+	for(rank=1; lit!=ladder.end() && lit->getUid()!=uid_; lit++);
+
+	if (lit==ladder.end())
+		return 0;
+	else
+		return lit->getRank();
+}
+
+
+const LadderKey&
+LadderList::getLadderKey() const 
+{
+	return ladderKey;
+}
+
+
+void
+LadderList::activateFrom(LadderList * currentLadder_)
+{
+	for (LList::iterator lit(ladder.begin()); lit!=ladder.end(); lit++)
+	{
+		LadderReferencedObject* referencedObject = lit->getReferencedObject();
+		updateEntry(lit->getUid(),lit->getPrimary(),lit->getSecondary(),*referencedObject);
+		referencedObject->activate(ladderKey);
+	}
+	return;
+}
+
+
+void
+LadderList::writeStatusfile()
+{
+  std::string filename;
+  
+  filename = prefs_get_outputdir();
+  filename += "/";
+  filename += ladderFilename;
+
+  std::ofstream fp(filename.c_str());
+  
+  if (!(fp))
+  {
+    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)", filename.c_str(), std::strerror(errno));
+    return;
+  }
+  
+  for(LList::const_iterator lit(ladder.begin()); lit!=ladder.end(); lit++)
+  {
+    fp << lit->status() << "\n";
+  }
+
+}
+
+
+Ladders::Ladders()
+{
+  // WAR3 ladders
+  LadderKey WAR3_solo(ladder_id_solo, CLIENTTAG_WARCRAFT3_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(WAR3_solo,LadderList(WAR3_solo)));
+  
+  LadderKey WAR3_team(ladder_id_team, CLIENTTAG_WARCRAFT3_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(WAR3_team,LadderList(WAR3_team)));
+  
+  LadderKey WAR3_ffa(ladder_id_ffa, CLIENTTAG_WARCRAFT3_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(WAR3_ffa,LadderList(WAR3_ffa)));
+  
+  //W3XP ladders
+  LadderKey W3XP_solo(ladder_id_solo, CLIENTTAG_WAR3XP_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(W3XP_solo,LadderList(W3XP_solo)));
+  
+  LadderKey W3XP_team(ladder_id_team, CLIENTTAG_WAR3XP_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(W3XP_team,LadderList(W3XP_team)));
+
+  LadderKey W3XP_ffa(ladder_id_ffa, CLIENTTAG_WAR3XP_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(W3XP_ffa,LadderList(W3XP_ffa)));
+
+  //STAR ladders
+  LadderKey STAR_ar(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_highestrated, ladder_time_active);
+  ladderMap.insert(std::make_pair(STAR_ar,LadderList(STAR_ar)));
+
+  LadderKey STAR_aw(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_mostwins, ladder_time_active);
+  ladderMap.insert(std::make_pair(STAR_aw,LadderList(STAR_aw)));
+  
+  LadderKey STAR_ag(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_mostgames, ladder_time_active);
+  ladderMap.insert(std::make_pair(STAR_ag,LadderList(STAR_ag)));
+
+  LadderKey STAR_cr(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_highestrated, ladder_time_current);
+  ladderMap.insert(std::make_pair(STAR_cr,LadderList(STAR_cr)));
+
+  LadderKey STAR_cw(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_mostwins, ladder_time_current);
+  ladderMap.insert(std::make_pair(STAR_cw,LadderList(STAR_cw)));
+  
+  LadderKey STAR_cg(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_mostgames, ladder_time_current);
+  ladderMap.insert(std::make_pair(STAR_cg,LadderList(STAR_cg)));
+
+  //SEXP ladders
+  LadderKey SEXP_ar(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_highestrated, ladder_time_active);
+  ladderMap.insert(std::make_pair(SEXP_ar,LadderList(SEXP_ar)));
+
+  LadderKey SEXP_aw(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_mostwins, ladder_time_active);
+  ladderMap.insert(std::make_pair(SEXP_aw,LadderList(SEXP_aw)));
+  
+  LadderKey SEXP_ag(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_mostgames, ladder_time_active);
+  ladderMap.insert(std::make_pair(SEXP_ag,LadderList(SEXP_ag)));
+
+  LadderKey SEXP_cr(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_highestrated, ladder_time_current);
+  ladderMap.insert(std::make_pair(SEXP_cr,LadderList(SEXP_cr)));
+
+  LadderKey SEXP_cw(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_mostwins, ladder_time_current);
+  ladderMap.insert(std::make_pair(SEXP_cw,LadderList(SEXP_cw)));
+  
+  LadderKey SEXP_cg(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_mostgames, ladder_time_current);
+  ladderMap.insert(std::make_pair(SEXP_cg,LadderList(SEXP_cg)));
+
+  //W2BN ladders
+  LadderKey W2BN_ar(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_highestrated, ladder_time_active);
+  ladderMap.insert(std::make_pair(W2BN_ar,LadderList(W2BN_ar)));
+  
+  LadderKey W2BN_aw(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostwins, ladder_time_active);
+  ladderMap.insert(std::make_pair(W2BN_aw,LadderList(W2BN_aw)));
+  
+  LadderKey W2BN_ag(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostgames, ladder_time_active);
+  ladderMap.insert(std::make_pair(W2BN_ag,LadderList(W2BN_ag)));
+  
+  LadderKey W2BN_cr(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_highestrated, ladder_time_current);
+  ladderMap.insert(std::make_pair(W2BN_cr,LadderList(W2BN_cr)));
+  
+  LadderKey W2BN_cw(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostwins, ladder_time_current);
+  ladderMap.insert(std::make_pair(W2BN_cw,LadderList(W2BN_cw)));
+  
+  LadderKey W2BN_cg(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostgames, ladder_time_current);
+  ladderMap.insert(std::make_pair(W2BN_cg,LadderList(W2BN_cg)));
+  
+  LadderKey W2BN_ari(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_highestrated, ladder_time_active);
+  ladderMap.insert(std::make_pair(W2BN_ari,LadderList(W2BN_ari)));
+  
+  LadderKey W2BN_awi(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostwins, ladder_time_active);
+  ladderMap.insert(std::make_pair(W2BN_awi,LadderList(W2BN_awi)));
+  
+  LadderKey W2BN_agi(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostgames, ladder_time_active);
+  ladderMap.insert(std::make_pair(W2BN_agi,LadderList(W2BN_agi)));
+  
+  LadderKey W2BN_cri(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_highestrated, ladder_time_current);
+  ladderMap.insert(std::make_pair(W2BN_cri,LadderList(W2BN_cri)));
+  
+  LadderKey W2BN_cwi(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostwins, ladder_time_current);
+  ladderMap.insert(std::make_pair(W2BN_cwi,LadderList(W2BN_cwi)));
+  
+  LadderKey W2BN_cgi(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostgames, ladder_time_current);
+  ladderMap.insert(std::make_pair(W2BN_cgi,LadderList(W2BN_cgi)));
+
+}
+
+Ladders::~Ladders() throw ()
+{}
+
+
+LadderList*
+Ladders::getLadderList(LadderKey ladderKey_)
+{
+  KeyLadderMap::iterator kit(ladderMap.begin());
+  for (;kit!=ladderMap.end() && (!(ladderKey_==(*kit).first)); kit++);
+
+  if (kit==ladderMap.end())
+  {
+	eventlog(eventlog_level_error,__FUNCTION__,"found no matching ladderlist");
+	return NULL;
+  }else{
+	return &(*kit).second;
+  }
+}
+
+
+void
+Ladders::load()
+{
+  std::list<LadderList*> laddersToRebuild;
+  for(KeyLadderMap::iterator kit(ladderMap.begin()); kit!=ladderMap.end(); kit++)
+  {
+    if (!kit->second.load())
+    {
+      //loading failed, add to rebuild list
+      laddersToRebuild.push_back(&kit->second);
+    }
+  }
+
+  if (!laddersToRebuild.empty())
+    rebuild(laddersToRebuild);
+
+  update();
+}
+
+void
+Ladders::rebuild(std::list<LadderList*>& laddersToRebuild)
+{
+  t_entry * curr;
+  t_account * account;
+  unsigned int uid, primary, secondary;
+  
+  eventlog(eventlog_level_debug,__FUNCTION__,"start rebuilding ladders");
+  HASHTABLE_TRAVERSE(accountlist(),curr)
+    {
+      if ((account=((t_account *)entry_get_data(curr))))
+      {
+
+        LadderReferencedObject referencedObject(account);
+        for (std::list<LadderList*>::iterator lit(laddersToRebuild.begin()); lit!=laddersToRebuild.end(); lit++)
+        {
+		if (referencedObject.getData((*lit)->getLadderKey(),uid,primary,secondary))
+		{
+			(*lit)->addEntry(uid, primary, secondary, referencedObject);
+		}
+        }
+      }
+    }
+  eventlog(eventlog_level_debug,__FUNCTION__,"done rebuilding ladders");
+
+}
+
+void
+Ladders::update()
+{
+  for(KeyLadderMap::iterator kit(ladderMap.begin()); kit!=ladderMap.end(); kit++)
+  {
+    kit->second.sortAndUpdate();
+  }
+}
+
+
+void
+Ladders::activate()
+{
+  for(KeyLadderMap::iterator kit(ladderMap.begin()); kit!=ladderMap.end(); kit++)
+  {
+     if (kit->second.getLadderKey().getLadderTime()==ladder_time_active)
+     {
+       LadderList* activeLadder  = &kit->second;
+       LadderList* currentLadder = getLadderList(activeLadder->getLadderKey().getOpposingKey());
+       
+       if (currentLadder = NULL){
+	       eventlog(eventlog_level_error,__FUNCTION__,"found active ladder, but no matching current ladder");
+	       continue;
+       }
+       activeLadder->activateFrom(currentLadder);
+     }
+  }
+  update();
+}
+
+
+void
+Ladders::save()
+{
+  for(KeyLadderMap::iterator kit(ladderMap.begin()); kit!=ladderMap.end(); kit++)
+  {
+    kit->second.save();
+  }
+}
+
+
+void
+Ladders::status()
+{
+  for(KeyLadderMap::iterator kit(ladderMap.begin()); kit!=ladderMap.end(); kit++)
+  {
+    kit->second.writeStatusfile();
+  }
+}
+	
+
 }
 
 }
+
