@@ -18,18 +18,12 @@
  */
 #define TIMER_INTERNAL_ACCESS
 #include "common/setup_before.h"
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
+#include "timer.h"
+#include <cstdlib>
 #include "common/elist.h"
 #include "connection.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
-#include "timer.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
