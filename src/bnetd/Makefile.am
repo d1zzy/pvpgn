@@ -9,7 +9,7 @@ bnetd_SOURCES = account.cpp account_wrap.cpp adbanner.cpp alias_command.cpp anon
 	file_plain.cpp friends.cpp game.cpp game_conv.cpp handle_anongame.cpp \
 	handle_bnet.cpp handle_bot.cpp handle_d2cs.cpp handle_file.cpp handle_init.cpp \
 	handle_irc.cpp handle_telnet.cpp handle_udp.cpp helpfile.cpp ipban.cpp irc.cpp \
-	ladder_binary.cpp ladder.cpp ladder_calc.cpp mail.cpp main.cpp message.cpp news.cpp \
+	ladder.cpp ladder_calc.cpp mail.cpp main.cpp message.cpp news.cpp \
 	output.cpp prefs.cpp realm.cpp runprog.cpp server.cpp sql_dbcreator.cpp \
 	sql_mysql.cpp sql_odbc.cpp sql_pgsql.cpp sql_sqlite3.cpp storage.cpp \
 	storage_file.cpp storage_sql.cpp support.cpp team.cpp tick.cpp timer.cpp topic.cpp \
@@ -28,7 +28,7 @@ noinst_HEADERS = account.h account_wrap.h adbanner.h alias_command.h \
 	file_cdb.h file.h file_plain.h friends.h game_conv.h game.h ipban.h \
 	handle_anongame.h handle_bnet.h handle_bot.h handle_d2cs.h helpfile.h \
 	handle_file.h handle_init.h handle_irc.h handlers.h handle_telnet.h \
-	handle_udp.h irc.h ladder_binary.h ladder_calc.h ladder.h mail.h \
+	handle_udp.h irc.h ladder_calc.h ladder.h mail.h \
 	message.h news.h output.h prefs.h quota.h realm.h runprog.h server.h \
 	sql_dbcreator.h sql_mysql.h sql_odbc.h sql_pgsql.h sql_sqlite3.h \
 	storage_file.h storage.h storage_sql.h support.h team.h tick.h \

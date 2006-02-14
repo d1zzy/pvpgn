@@ -1326,7 +1326,7 @@ extern int anongame_stats(t_connection * c)
 	}
     }
     /* aaron: now update war3 ladders */
-    ladder_update_all_accounts();
+    ladders.update();
     return 1;
 }
 

@@ -2032,9 +2032,9 @@ extern int account_get_profile_calcs(t_account * account, int xp, unsigned int L
 extern int account_set_saveladderstats(t_account * account,unsigned int gametype, t_game_result result, unsigned int opponlevel, t_clienttag clienttag)
 {
 	unsigned int intrace;
-        int xpdiff,uid,level;
+        int xpdiff;
+	unsigned int uid, xp, level;
 	t_ladder_id id;
-	t_ladder * ladder;
 
 	if(!account) {
 		eventlog(eventlog_level_error, __FUNCTION__, "got NULL account");
@@ -2053,7 +2053,6 @@ extern int account_set_saveladderstats(t_account * account,unsigned int gametype
 	  case ANONGAME_TYPE_1V1: //1v1
 	  {
 	  	id = ladder_id_solo;
-		ladder = solo_ladder(clienttag);
 		break;
 	  }
 	  case ANONGAME_TYPE_2V2:
@@ -2068,14 +2067,12 @@ extern int account_set_saveladderstats(t_account * account,unsigned int gametype
 	  case ANONGAME_TYPE_3V3V3V3:
 	  {
 	  	id = ladder_id_team;
-		ladder = team_ladder(clienttag);
 		break;
 	  }
 
 	  case ANONGAME_TYPE_SMALL_FFA:
 	  {
 	  	id = ladder_id_ffa;
-		ladder = ffa_ladder(clienttag);
                 break;
 	  }
 	  default:
@@ -2097,8 +2094,11 @@ extern int account_set_saveladderstats(t_account * account,unsigned int gametype
 	account_update_xp(account,clienttag,result,opponlevel,&xpdiff,id);
 	account_adjust_ladder_level(account,clienttag,id);
 	level = account_get_ladder_level(account,clienttag,id);
-	if (war3_ladder_update(ladder,uid,xpdiff,level,account,0)!=0)
-	  war3_ladder_add(ladder,uid,account_get_ladder_xp(account,clienttag,id),level,account,0,clienttag);
+	xp    = account_get_ladder_xp(account,clienttag,id);
+	LadderList* ladderList = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_default,ladder_time_default));
+	LadderReferencedObject reference(account);
+	
+	ladderList->updateEntry(uid,level,xp, reference);
 
 	return 0;
 }

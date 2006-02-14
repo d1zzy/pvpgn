@@ -1249,6 +1249,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 		/* do this stuff in usersync periods */
 		clanlist_save();
 		gamelist_check_voidgame();
+		ladders.save();
 		next_savetime += prefs_get_user_sync_timer();
 	}
 	accountlist_save(FS_NONE);
@@ -1263,7 +1264,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 	if (prefs_get_war3_ladder_update_secs() && war3_ladder_updatetime+(std::time_t)prefs_get_war3_ladder_update_secs()<=now)
 	{
            war3_ladder_updatetime = now;
-	       ladders_write_to_file();
+	       ladders.status();
 	}
 
 	if (prefs_get_output_update_secs() && output_updatetime+(std::time_t)prefs_get_output_update_secs()<=now)
@@ -1331,8 +1332,6 @@ static void _server_mainloop(t_addrlist *laddrs)
 		eventlog(eventlog_level_error,__FUNCTION__,"could not load the helpfile");
 
 	    adbannerlist.reset(new AdBannerComponent(prefs_get_adfile()));
-
-	    ladder_reload_conf();
 
 	    if (prefs_get_track())
 		tracker_set_servers(prefs_get_trackserv_addrs());
