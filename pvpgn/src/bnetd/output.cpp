@@ -29,7 +29,6 @@
 
 #include "prefs.h"
 #include "game.h"
-#include "ladder.h"
 #include "channel.h"
 #include "connection.h"
 #include "server.h"
@@ -54,9 +53,9 @@ extern void output_init(void)
     eventlog(eventlog_level_info,__FUNCTION__,"initializing output file");
 
     if (prefs_get_XML_status_output())
-	status_filename = create_filename(prefs_get_outputdir(),"server",".xml"); // WarCraft III
+	status_filename = buildpath(prefs_get_outputdir(),"server.xml");
     else
-	status_filename = create_filename(prefs_get_outputdir(),"server",".dat"); // WarCraft III
+	status_filename = buildpath(prefs_get_outputdir(),"server.dat");
 
     return;
 }
