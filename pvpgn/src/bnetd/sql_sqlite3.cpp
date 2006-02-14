@@ -21,7 +21,7 @@
 #ifdef HAVE_SQLITE3_H
 # include <sqlite3.h>
 #endif
-#include <stdlib.h>
+#include <cstdlib>
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "storage_sql.h"

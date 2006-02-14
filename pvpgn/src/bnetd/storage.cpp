@@ -18,20 +18,8 @@
 
 #include "common/setup_before.h"
 #include "compat/strcasecmp.h"
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#ifdef STDC_HEADERS
-# include <stdlib.h>
-#else
-# ifdef HAVE_MALLOC_H
-#  include <malloc.h>
-# endif
-#endif
+#include <cstring>
+#include <cstdlib>
 
 #include "storage.h"
 #include "storage_file.h"
