@@ -22,7 +22,7 @@
 
 #include <windows.h>
 #include <richedit.h>
-#include <stdarg.h>
+#include <cstdarg>
 #include "common/eventlog.h"
 #include "common/setup_after.h"
 

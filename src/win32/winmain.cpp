@@ -21,7 +21,7 @@
 #pragma warning(disable : 4047)
 
 #include "common/setup_before.h"
-#include <stdio.h>
+#include <cstdio>
 #include <windows.h>
 #include <windowsx.h>
 #include <winuser.h>
