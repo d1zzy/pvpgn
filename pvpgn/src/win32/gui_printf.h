@@ -24,7 +24,7 @@
 #include "common/setup_before.h"
 
 #include <windows.h>
-#include <stdarg.h>
+#include <cstdarg>
 #include "common/eventlog.h"
 
 #include "common/setup_after.h"
