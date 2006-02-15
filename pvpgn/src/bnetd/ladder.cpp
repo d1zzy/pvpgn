@@ -743,7 +743,7 @@ LadderReferencedObject::setRank(const LadderKey& ladderKey_, unsigned int rank) 
 
 
 void
-LadderReferencedObject::activate(const LadderKey& ladderKey_)
+LadderReferencedObject::activate(const LadderKey& ladderKey_) const
 {
 	if (referenceType == referenceTypeAccount)
 	{
@@ -1072,7 +1072,7 @@ LadderList::saveBinary()
 
 
 void
-LadderList::addEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, LadderReferencedObject& referencedObject_)
+LadderList::addEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, const LadderReferencedObject& referencedObject_)
 {
 	LadderEntry entry(uid_, primary_ ,secondary_, referencedObject_);
 	ladder.push_back(entry);
@@ -1080,7 +1080,7 @@ LadderList::addEntry(unsigned int uid_, unsigned int primary_, unsigned int seco
 
 
 void
-LadderList::updateEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, LadderReferencedObject& referencedObject_)
+LadderList::updateEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, const LadderReferencedObject& referencedObject_)
 {
 	LList::iterator lit(ladder.begin());
 	for(; lit!=ladder.end() && lit->getUid()!=uid_; lit++);
@@ -1144,7 +1144,7 @@ LadderList::activateFrom(LadderList * currentLadder_)
 {
 	for (LList::iterator lit(ladder.begin()); lit!=ladder.end(); lit++)
 	{
-		LadderReferencedObject referencedObject = lit->getReferencedObject();
+		const LadderReferencedObject& referencedObject = lit->getReferencedObject();
 		updateEntry(lit->getUid(),lit->getPrimary(),lit->getSecondary(),referencedObject);
 		referencedObject.activate(ladderKey);
 	}

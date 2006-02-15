@@ -102,7 +102,7 @@ public:
 	unsigned int getRank(const LadderKey& ladderKey_) const;
 	bool setRank(const LadderKey& ladderKey_, unsigned int rank) const;
 	t_account* getAccount() const;
-	void activate(const LadderKey& ladderKey_);
+	void activate(const LadderKey& ladderKey_) const;
 private:
 	typedef enum { referenceTypeAccount, referenceTypeTeam, referenceTypeClan } t_referenceType;
 
@@ -140,8 +140,8 @@ public:
 	~LadderList() throw ();
 	bool load();
 	bool save();
-	void addEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, LadderReferencedObject& referencedObject_);
-	void updateEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, LadderReferencedObject& referencedObject_);
+	void addEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, const LadderReferencedObject& referencedObject_);
+	void updateEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, const LadderReferencedObject& referencedObject_);
 	bool delEntry(unsigned int uid_);
 	const LadderKey& getLadderKey() const;
 	void sortAndUpdate();
