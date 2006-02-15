@@ -608,14 +608,14 @@ LadderKey::getOpposingKey() const
 				
 
 LadderReferencedObject::LadderReferencedObject(t_account *account_)
-:account(account_)
+:referenceType(referenceTypeAccount), account(account_)
 {
-	referenceType = referenceTypeAccount;
 }
 
 
 LadderReferencedObject::~LadderReferencedObject() throw()
-{ }
+{
+}
 
 
 bool
@@ -784,14 +784,14 @@ LadderReferencedObject::getAccount() const
 
 
 LadderEntry::LadderEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, LadderReferencedObject referencedObject_)
-:uid(uid_), primary(primary_), secondary(secondary_), referencedObject(referencedObject_)
+:uid(uid_), primary(primary_), secondary(secondary_), rank(0), referencedObject(referencedObject_)
 {
-	rank = 0;
 }
 
 
 LadderEntry::~LadderEntry() throw()
-{}
+{
+}
 
 
 unsigned int
@@ -820,8 +820,8 @@ LadderEntry::getRank() const
 	return rank;
 }
 
-LadderReferencedObject& 
-LadderEntry::getReferencedObject()
+const LadderReferencedObject& 
+LadderEntry::getReferencedObject() const
 {
 	return referencedObject;
 }
@@ -879,10 +879,8 @@ LadderEntry::operator< (const LadderEntry& right) const
 
 
 LadderList::LadderList(LadderKey ladderKey_)
-:ladderKey(ladderKey_)
+:ladderKey(ladderKey_), dirty(true)
 {
-	dirty = true;
-
         ladderFilename = clienttag_uint_to_str(ladderKey_.getClienttag());
 	ladderFilename += "_";
 	ladderFilename += bin_ladder_time_str[ladderKey_.getLadderTime()];
@@ -893,7 +891,8 @@ LadderList::LadderList(LadderKey ladderKey_)
 
 
 LadderList::~LadderList() throw ()
-{}
+{
+}
 
 
 bool
@@ -927,14 +926,14 @@ LadderList::sortAndUpdate()
   {
     if (rank <= MaxRankKeptInLadder)
     {
-      if ((*lit).getRank() != rank)
+      if (lit->getRank() != rank)
       {
-        if ((*lit).setRank(rank,ladderKey))
+        if (lit->setRank(rank,ladderKey))
           changed++;
       }
     }else
     {
-      (*lit).setRank(0,ladderKey);
+      lit->setRank(0,ladderKey);
         if (endMarker==NULL)
 	  endMarker = lit;
       }
@@ -1105,25 +1104,25 @@ LadderList::delEntry(unsigned int uid_)
 }
 
 
-LadderReferencedObject*
-LadderList::getReferencedObject(unsigned int rank_)
+const LadderReferencedObject*
+LadderList::getReferencedObject(unsigned int rank_) const
 {
 	unsigned int rank;
-	LList::iterator lit(ladder.begin());
+	LList::const_iterator lit(ladder.begin());
 	for(rank=1; lit!=ladder.end() && rank!=rank_; lit++,rank++);
 
 	if (lit==ladder.end())
-		return NULL;
+		return 0;
 	else
 		return &lit->getReferencedObject();
 
 }
 
 unsigned int 
-LadderList::getRank(unsigned int uid_)
+LadderList::getRank(unsigned int uid_) const
 {
 	unsigned int rank;
-	LList::iterator lit(ladder.begin());
+	LList::const_iterator lit(ladder.begin());
 	for(rank=1; lit!=ladder.end() && lit->getUid()!=uid_; lit++);
 
 	if (lit==ladder.end())
@@ -1279,7 +1278,8 @@ Ladders::Ladders()
 }
 
 Ladders::~Ladders() throw ()
-{}
+{
+}
 
 
 LadderList*

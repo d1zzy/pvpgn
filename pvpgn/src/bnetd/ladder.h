@@ -119,7 +119,7 @@ public:
 	unsigned int getPrimary() const;
 	unsigned int getSecondary() const;
 	unsigned int getRank() const;
-	LadderReferencedObject& getReferencedObject();
+	const LadderReferencedObject& getReferencedObject() const;
 	bool setRank(unsigned int rank_, const LadderKey& ladderKey_);
 	void update(unsigned int primary, unsigned int secondary);
 	std::string status() const;
@@ -145,8 +145,8 @@ public:
 	bool delEntry(unsigned int uid_);
 	const LadderKey& getLadderKey() const;
 	void sortAndUpdate();
-	LadderReferencedObject* getReferencedObject(unsigned int rank);
-	unsigned int getRank(unsigned int uid_);
+	const LadderReferencedObject* getReferencedObject(unsigned int rank) const;
+	unsigned int getRank(unsigned int uid_) const;
 	void activateFrom(LadderList * currentLadder_);
 	void writeStatusfile();
 
