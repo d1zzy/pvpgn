@@ -119,7 +119,7 @@ public:
 	unsigned int getPrimary() const;
 	unsigned int getSecondary() const;
 	unsigned int getRank() const;
-	LadderReferencedObject* getReferencedObject();
+	LadderReferencedObject& getReferencedObject();
 	bool setRank(unsigned int rank_, const LadderKey& ladderKey_);
 	void update(unsigned int primary, unsigned int secondary);
 	std::string status() const;
