@@ -820,10 +820,10 @@ LadderEntry::getRank() const
 	return rank;
 }
 
-LadderReferencedObject* 
+LadderReferencedObject& 
 LadderEntry::getReferencedObject()
 {
-	return &referencedObject;
+	return referencedObject;
 }
 
 
@@ -914,26 +914,28 @@ LadderList::save()
 void
 LadderList::sortAndUpdate()
 {
-  if (dirty)
-  {
-    unsigned int rank = 1;
-    unsigned int changed = 0;
-    LList::iterator endMarker = NULL;
+  if (!(dirty))
+    return;
+  
+  unsigned int rank = 1;
+  unsigned int changed = 0;
+  LList::iterator endMarker = NULL;
 	  
-    eventlog(eventlog_level_trace,__FUNCTION__,"need to sort");
-    ladder.sort();
+  ladder.sort();
 
-    for(LList::iterator lit(ladder.begin()); lit!=ladder.end(); lit++, rank++)
+  for(LList::iterator lit(ladder.begin()); lit!=ladder.end(); lit++, rank++)
+  {
+    if (rank <= MaxRankKeptInLadder)
     {
-      if (rank <= MaxRankKeptInLadder){
-        if ((*lit).getRank() != rank)
-        {
-          if ((*lit).setRank(rank,ladderKey))
-	    changed++;
-	}
-      }else{
-        (*lit).setRank(0,ladderKey);
-	if (endMarker==NULL)
+      if ((*lit).getRank() != rank)
+      {
+        if ((*lit).setRank(rank,ladderKey))
+          changed++;
+      }
+    }else
+    {
+      (*lit).setRank(0,ladderKey);
+        if (endMarker==NULL)
 	  endMarker = lit;
       }
     }
@@ -941,10 +943,10 @@ LadderList::sortAndUpdate()
     if (endMarker!=NULL)
       ladder.erase(endMarker,ladder.end());
     
-    eventlog(eventlog_level_trace,__FUNCTION__,"adjusted rank for %u accounts",changed);
+    if ((changed))
+      eventlog(eventlog_level_trace,__FUNCTION__,"adjusted rank for %u accounts",changed);
     saved = false;
     dirty = false;
-  }
 }
 
 
@@ -1101,6 +1103,8 @@ LadderList::delEntry(unsigned int uid_)
 
 	return true;
 }
+
+
 LadderReferencedObject*
 LadderList::getReferencedObject(unsigned int rank_)
 {
@@ -1111,7 +1115,7 @@ LadderList::getReferencedObject(unsigned int rank_)
 	if (lit==ladder.end())
 		return NULL;
 	else
-		return lit->getReferencedObject();
+		return &lit->getReferencedObject();
 
 }
 
@@ -1141,9 +1145,9 @@ LadderList::activateFrom(LadderList * currentLadder_)
 {
 	for (LList::iterator lit(ladder.begin()); lit!=ladder.end(); lit++)
 	{
-		LadderReferencedObject* referencedObject = lit->getReferencedObject();
-		updateEntry(lit->getUid(),lit->getPrimary(),lit->getSecondary(),*referencedObject);
-		referencedObject->activate(ladderKey);
+		LadderReferencedObject referencedObject = lit->getReferencedObject();
+		updateEntry(lit->getUid(),lit->getPrimary(),lit->getSecondary(),referencedObject);
+		referencedObject.activate(ladderKey);
 	}
 	return;
 }
@@ -1166,9 +1170,10 @@ LadderList::writeStatusfile()
     return;
   }
   
-  for(LList::const_iterator lit(ladder.begin()); lit!=ladder.end(); lit++)
+  unsigned int rank = 1;
+  for(LList::const_iterator lit(ladder.begin()); lit!=ladder.end(); lit++, rank++)
   {
-    fp << lit->status() << "\n";
+    fp << rank << "," << lit->status() << "\n";
   }
 
 }
