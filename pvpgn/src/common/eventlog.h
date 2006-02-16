@@ -58,8 +58,8 @@ extern int eventlog_add_level(char const * levelname);
 extern int eventlog_del_level(char const * levelname);
 extern char const * eventlog_get_levelname_str(t_eventlog_level level);
 extern void eventlog_hexdump_data(void const * data, unsigned int len);
-extern void eventlog(t_eventlog_level level, char const * module, char const * fmt, ...);
-extern void eventlog_step(char const * filename, t_eventlog_level level, char const * module, char const * fmt, ...);
+extern void eventlog(t_eventlog_level level, char const * module, char const * fmt, ...) PRINTF_ATTR(3,4);
+extern void eventlog_step(char const * filename, t_eventlog_level level, char const * module, char const * fmt, ...) PRINTF_ATTR(4,5);
 
 #define FATAL0(fmt) eventlog(eventlog_level_fatal,__FUNCTION__,fmt)
 #define FATAL1(fmt,arg1) eventlog(eventlog_level_fatal,__FUNCTION__,fmt,arg1)
