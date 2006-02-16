@@ -3337,7 +3337,7 @@ static int _handle_admins_command(t_connection * c, char const *text)
 static int _handle_quit_command(t_connection * c, char const *text)
 {
     if (conn_get_game(c))
-	eventlog(eventlog_level_warn, __FUNCTION__,"[%d] user '%d' tried to disconnect while in game, cheat attempt ?", conn_get_socket(c), conn_get_loggeduser(c));
+	eventlog(eventlog_level_warn, __FUNCTION__,"[%d] user '%s' tried to disconnect while in game, cheat attempt ?", conn_get_socket(c), conn_get_loggeduser(c));
     else {
 	message_send_text(c,message_type_info,c,"Connection closed.");
 	conn_set_state(c,conn_state_destroy);
@@ -3802,7 +3802,6 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
   // --> aaron
   else if (clienttag==CLIENTTAG_WARCRAFT3_UINT || clienttag==CLIENTTAG_WAR3XP_UINT)
     {
-      unsigned int teamcount = 0;
       ladderList = ladders.getLadderList(LadderKey(ladder_id_solo, clienttag, ladder_sort_default, ladder_time_default));
       referencedObject = ladderList->getReferencedObject(rank);
       if ((referencedObject) && (account = referencedObject->getAccount()))

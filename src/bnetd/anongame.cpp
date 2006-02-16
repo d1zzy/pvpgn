@@ -246,7 +246,7 @@ static char *_get_map_from_prefs(int queue, t_uint32 cur_prefs, t_clienttag clie
     else if (clienttag == CLIENTTAG_WAR3XP_UINT)
 	default_map = "Maps\\(8)PlainsOfSnow.w3m";
     else {
-	eventlog(eventlog_level_error, __FUNCTION__, "invalid clienttag : %s", clienttag);
+	eventlog(eventlog_level_error, __FUNCTION__, "invalid clienttag : %s", clienttag_uint_to_str(clienttag));
 	return "Maps\\(8)PlainsOfSnow.w3m";
     }
 

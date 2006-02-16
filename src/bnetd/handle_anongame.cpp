@@ -635,7 +635,7 @@ static int _client_anongame_infos(t_connection * c, t_packet const * const packe
 		    packet_append_data(rpacket, tmpdata, tmplen);
 		    noitems++;
 		    server_tag_count++;
-		    eventlog(eventlog_level_debug,__FUNCTION__,"client_tag version=(0x%01x) request tagid=(0x%01x) tag=(%s)  tag_unk=(0x%04x)",conn_get_versionid(c),i,"CLIENT_FINDANONGAME_INFOTAG_URL",client_tag_unk);
+		    eventlog(eventlog_level_debug,__FUNCTION__,"client_tag request tagid=(0x%01x) tag=(%s)  tag_unk=(0x%04x)",i,"CLIENT_FINDANONGAME_INFOTAG_URL",client_tag_unk);
 		    break;
 		case CLIENT_FINDANONGAME_INFOTAG_MAP:
 		    bn_int_set((bn_int*)&server_tag_unk,0x70E2E0D5);

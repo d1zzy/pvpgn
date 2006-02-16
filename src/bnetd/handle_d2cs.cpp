@@ -124,7 +124,7 @@ static int on_d2cs_authreply(t_connection * c, t_packet const * packet)
 			return -1;
 		}
 		if (realm_get_active(realm)) { /* fail if realm already active */
-			eventlog(eventlog_level_error,__FUNCTION__, "cannot set realm name to %s (realm already active)");
+			eventlog(eventlog_level_error,__FUNCTION__, "cannot set realm name to %s (realm already active)",realmname);
 			return -1;
 		}
 		realm_set_name(realm,realmname);

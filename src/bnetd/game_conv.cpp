@@ -663,7 +663,7 @@ extern t_game_option bngoption_to_goption(t_clienttag clienttag, t_game_type gty
     }
     else
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"unknown game tag_uint_to_str(clienttag_str,clienttag) \"%s\" %u",clienttag,(unsigned int)gtype);
+	eventlog(eventlog_level_error,__FUNCTION__,"unknown game clienttag \"%s\" %u",tag_uint_to_str(clienttag_str,clienttag),(unsigned int)gtype);
 	return game_option_none;
     }
 }
