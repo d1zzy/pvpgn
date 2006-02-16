@@ -712,6 +712,7 @@ LadderReferencedObject::getRank(const LadderKey& ladderKey_) const
 			return 0;
 		}
 	}
+	return 0;
 }
 
 bool 
@@ -905,7 +906,7 @@ bool
 LadderList::save()
 {
   sortAndUpdate();
-  saveBinary();
+  return saveBinary();
 }
 
 
@@ -968,7 +969,7 @@ LadderList::loadBinary()
 
   if (!(fp = std::fopen(filename.c_str(),"rb")))
   {
-    eventlog(eventlog_level_info,__FUNCTION__,"could not open ladder file \"%s\" - maybe ladder still empty",filename.c_str(),std::strerror(errno));
+    eventlog(eventlog_level_info,__FUNCTION__,"could not open ladder file \"%s\" - maybe ladder still empty (std::fopen: %s)",filename.c_str(),std::strerror(errno));
     return false;
   }
 
@@ -1114,8 +1115,8 @@ LadderList::getReferencedObject(unsigned int rank_) const
 		return 0;
 	else
 		return &lit->getReferencedObject();
-
 }
+
 
 unsigned int 
 LadderList::getRank(unsigned int uid_) const

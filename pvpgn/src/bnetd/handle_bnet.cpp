@@ -3923,6 +3923,7 @@ static int _client_ladderreq(t_connection * c, t_packet const *const packet)
 			sort = ladder_sort_mostgames;
 			break;
 		default:
+			sort = ladder_sort_default;
 			eventlog(eventlog_level_error, __FUNCTION__, "[%d] got unknown value for ladderreq.type=%u", conn_get_socket(c), type);
 			error = true;
 	}
@@ -4069,7 +4070,6 @@ static int _client_laddersearchreq(t_connection * c, t_packet const *const packe
 	    LadderList * ladderList_active  = ladders.getLadderList(LadderKey(id,ctag,sort,ladder_time_active));
 	    LadderList * ladderList_current = ladders.getLadderList(LadderKey(id,ctag,sort,ladder_time_current));
 	    unsigned int uid = account_get_uid(account);
-	    const LadderReferencedObject * referencedObject;
 	    switch (type) {
 		case CLIENT_LADDERSEARCHREQ_TYPE_HIGHESTRATED:
 		case CLIENT_LADDERSEARCHREQ_TYPE_MOSTWINS:
