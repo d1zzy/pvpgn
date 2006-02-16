@@ -240,13 +240,14 @@ static char *_get_map_from_prefs(int queue, t_uint32 cur_prefs, t_clienttag clie
     int i, j = 0;
     char *default_map, *selected;
     char *res_maps[32];
+    char clienttag_str[5];
 
     if (clienttag == CLIENTTAG_WARCRAFT3_UINT)
 	default_map = "Maps\\(8)PlainsOfSnow.w3m";
     else if (clienttag == CLIENTTAG_WAR3XP_UINT)
 	default_map = "Maps\\(8)PlainsOfSnow.w3m";
     else {
-	eventlog(eventlog_level_error, __FUNCTION__, "invalid clienttag : %s", clienttag_uint_to_str(clienttag));
+	eventlog(eventlog_level_error, __FUNCTION__, "invalid clienttag : %s", tag_uint_to_str(clienttag_str,clienttag));
 	return "Maps\\(8)PlainsOfSnow.w3m";
     }
 
