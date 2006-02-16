@@ -73,7 +73,6 @@ Ladders ladders;
 extern int ladder_init_account(t_account * account, t_clienttag clienttag, t_ladder_id id)
 {
     unsigned int uid, rating;
-    char clienttag_str[5];
 
     if (!account)
     {
@@ -91,7 +90,7 @@ extern int ladder_init_account(t_account * account, t_clienttag clienttag, t_lad
 	if (account_get_ladder_wins(account,clienttag,id)+
 	    account_get_ladder_losses(account,clienttag,id)>0) /* no ladder games so far... */
 	{
-	    eventlog(eventlog_level_warn,__FUNCTION__,"account for \"%s\" (%s) has %u wins and %u losses but has zero rating",account_get_name(account),clienttag,account_get_ladder_wins(account,clienttag,id),account_get_ladder_losses(account,clienttag,id));
+	    eventlog(eventlog_level_warn,__FUNCTION__,"account for \"%s\" (%s) has %u wins and %u losses but has zero rating",account_get_name(account), clienttag_uint_to_str(clienttag), account_get_ladder_wins(account,clienttag,id), account_get_ladder_losses(account,clienttag,id));
 	    return -1;
 	}
 	account_adjust_ladder_rating(account,clienttag,id,prefs_get_ladder_init_rating());
@@ -109,7 +108,7 @@ extern int ladder_init_account(t_account * account, t_clienttag clienttag, t_lad
 	ladderlist_cg->updateEntry(uid,0,rating,reference);
 	ladderlist_cw->updateEntry(uid,0,rating,reference);
 	
-	eventlog(eventlog_level_info,__FUNCTION__,"initialized account for \"%s\" for \"%s\" ladder",account_get_name(account),tag_uint_to_str(clienttag_str,clienttag));
+	INFO2("initialized account for \"%s\" for \"%s\" ladder", account_get_name(account), clienttag_uint_to_str(clienttag));
     }
 
     return 0;
