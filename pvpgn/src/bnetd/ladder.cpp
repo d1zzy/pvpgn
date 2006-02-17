@@ -618,7 +618,7 @@ LadderReferencedObject::~LadderReferencedObject() throw()
 
 
 bool
-LadderReferencedObject::getData(const LadderKey& ladderKey_, unsigned int& uid_, unsigned int& primary_, unsigned int& secondary_)
+LadderReferencedObject::getData(const LadderKey& ladderKey_, unsigned int& uid_, unsigned int& primary_, unsigned int& secondary_) const
 {
 	// returns false in case of failures - and also when no need to add this referencedObject to ladder
 	t_clienttag clienttag = ladderKey_.getClienttag();
@@ -948,7 +948,6 @@ LadderList::sortAndUpdate()
     dirty = false;
 }
 
-
 const unsigned int  magick = 0xdeadbeef;
 
 bool
@@ -1142,7 +1141,7 @@ LadderList::getLadderKey() const
 void
 LadderList::activateFrom(LadderList * currentLadder_)
 {
-	for (LList::iterator lit(ladder.begin()); lit!=ladder.end(); lit++)
+	for (LList::const_iterator lit(ladder.begin()); lit!=ladder.end(); lit++)
 	{
 		const LadderReferencedObject& referencedObject = lit->getReferencedObject();
 		updateEntry(lit->getUid(),lit->getPrimary(),lit->getSecondary(),referencedObject);
@@ -1153,7 +1152,7 @@ LadderList::activateFrom(LadderList * currentLadder_)
 
 
 void
-LadderList::writeStatusfile()
+LadderList::writeStatusfile() const
 {
   std::string filename;
   
@@ -1386,9 +1385,9 @@ Ladders::save()
 
 
 void
-Ladders::status()
+Ladders::status() const
 {
-  for(KeyLadderMap::iterator kit(ladderMap.begin()); kit!=ladderMap.end(); kit++)
+  for(KeyLadderMap::const_iterator kit(ladderMap.begin()); kit!=ladderMap.end(); kit++)
   {
     kit->second.writeStatusfile();
   }
