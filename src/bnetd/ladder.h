@@ -98,7 +98,7 @@ class LadderReferencedObject
 public:
 	explicit LadderReferencedObject(t_account *account_);
 	~LadderReferencedObject() throw ();
-	bool getData(const LadderKey& ladderKey_, unsigned int& uid, unsigned int& primary, unsigned int& secondary_);
+	bool getData(const LadderKey& ladderKey_, unsigned int& uid, unsigned int& primary, unsigned int& secondary_) const;
 	unsigned int getRank(const LadderKey& ladderKey_) const;
 	bool setRank(const LadderKey& ladderKey_, unsigned int rank) const;
 	t_account* getAccount() const;
@@ -148,7 +148,7 @@ public:
 	const LadderReferencedObject* getReferencedObject(unsigned int rank) const;
 	unsigned int getRank(unsigned int uid_) const;
 	void activateFrom(LadderList * currentLadder_);
-	void writeStatusfile();
+	void writeStatusfile() const;
 
 private:
 	typedef std::list<LadderEntry> LList;
@@ -159,7 +159,6 @@ private:
 	std::string ladderFilename;
 	bool loadBinary();
 	bool saveBinary();
-
 };
 
 class Ladders
@@ -172,7 +171,7 @@ public:
 	void update();
 	void activate();
 	void save();
-	void status();
+	void status() const;
 private:
 	void rebuild(std::list<LadderList*>& laddersToRebuild);
 	typedef std::map<LadderKey, LadderList> KeyLadderMap;
