@@ -157,6 +157,9 @@ private:
 
 	/* used to access the elist_node<T> of a given T */
 	elist_node<T> T::* node;
+
+	elist(const elist&);
+	elist& operator=(const elist&);
 };
 
 typedef struct elist_struct {
