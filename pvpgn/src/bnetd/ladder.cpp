@@ -918,9 +918,9 @@ LadderList::sortAndUpdate()
   
   unsigned int rank = 1;
   unsigned int changed = 0;
-  LList::iterator endMarker = NULL;
+  LList::iterator endMarker = ladder.end();
 	  
-  ladder.sort();
+  sort(ladder.begin(),ladder.end());
 
   for(LList::iterator lit(ladder.begin()); lit!=ladder.end(); lit++, rank++)
   {
@@ -934,12 +934,12 @@ LadderList::sortAndUpdate()
     }else
     {
       lit->setRank(0,ladderKey);
-        if (endMarker==NULL)
+        if (endMarker==ladder.end())
 	  endMarker = lit;
       }
     }
   
-    if (endMarker!=NULL)
+    if (endMarker!=ladder.end())
       ladder.erase(endMarker,ladder.end());
     
     if ((changed))
@@ -1106,14 +1106,10 @@ LadderList::delEntry(unsigned int uid_)
 const LadderReferencedObject*
 LadderList::getReferencedObject(unsigned int rank_) const
 {
-	unsigned int rank;
-	LList::const_iterator lit(ladder.begin());
-	for(rank=1; lit!=ladder.end() && rank!=rank_; lit++,rank++);
-
-	if (lit==ladder.end())
+	if (rank_>ladder.size())
 		return 0;
-	else
-		return &lit->getReferencedObject();
+	else 
+		return &ladder[rank_-1].getReferencedObject();
 }
 
 
@@ -1282,7 +1278,7 @@ Ladders::~Ladders() throw ()
 
 
 LadderList*
-Ladders::getLadderList(LadderKey ladderKey_)
+Ladders::getLadderList(const LadderKey& ladderKey_)
 {
   KeyLadderMap::iterator kit(ladderMap.begin());
   for (;kit!=ladderMap.end() && (!(ladderKey_==(*kit).first)); kit++);
