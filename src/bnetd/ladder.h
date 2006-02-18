@@ -21,6 +21,7 @@
 
 #include "account.h"
 #include "common/tag.h"
+#include <vector>
 #include <list>
 #include <map>
 #include <string>
@@ -151,7 +152,7 @@ public:
 	void writeStatusfile() const;
 
 private:
-	typedef std::list<LadderEntry> LList;
+	typedef std::vector<LadderEntry> LList;
 	LadderKey ladderKey;
 	LList ladder;
 	bool dirty;
@@ -166,7 +167,7 @@ class Ladders
 public:
 	Ladders();
 	~Ladders() throw ();
-	LadderList* getLadderList(LadderKey ladderKey_);
+	LadderList* getLadderList(const LadderKey& ladderKey_);
 	void load();
 	void update();
 	void activate();
