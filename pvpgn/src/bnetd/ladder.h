@@ -160,6 +160,12 @@ private:
 	std::string ladderFilename;
 	bool loadBinary();
 	bool saveBinary();
+	void readdata(std::ifstream  &fp, unsigned int &data);
+	void readdata(std::ifstream  &fp, unsigned int data[], unsigned int membercount);
+	void writedata(std::ofstream &fp, unsigned int &data);
+	void writedata(std::ofstream &fp, const unsigned int &data);
+	void writedata(std::ofstream &fp, unsigned int data[], unsigned int membercount);
+
 };
 
 class Ladders

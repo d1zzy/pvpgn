@@ -900,10 +900,23 @@ LadderList::sortAndUpdate()
     dirty = false;
 }
 
+
 const unsigned int  magick = 0xdeadbeef;
 
-#define streamwrite(fp,data) fp.write((char*)(&data),sizeof(data))
-#define streamread(fp,data)  fp.read((char*)(&data),sizeof(data))
+
+inline void 
+LadderList::readdata(std::ifstream &fp, unsigned int &data)
+{
+	fp.read((char *)(&data),sizeof(unsigned int));
+}
+
+
+inline void 
+LadderList::readdata(std::ifstream &fp, unsigned int data[], unsigned int membercount)
+{
+	fp.read((char *)(data),sizeof(*data)*membercount);
+}
+
 
 bool
 LadderList::loadBinary()
@@ -922,8 +935,8 @@ LadderList::loadBinary()
     return false;
   }
 
-  unsigned int checksum;
-  streamread(fp,checksum);
+  unsigned int checksum=0;
+  readdata(fp,checksum);
   
   if (checksum != magick)
   {
@@ -959,7 +972,7 @@ LadderList::loadBinary()
   
   while (noe>=4)
   {
-	  streamread(fp,values);
+	  readdata(fp,values, 4);
 	  noe-=4;
 	  
 	  //handle differently dependant on ladderKey->ladderId
@@ -976,8 +989,8 @@ LadderList::loadBinary()
     for (int count=0;count<4;count++) checksum+=values[count];
   }
 
-  unsigned int filechecksum;
-  streamread(fp,filechecksum);
+  unsigned int filechecksum=0;
+  readdata(fp,filechecksum);
 
   if (filechecksum!=checksum)
   {
@@ -990,6 +1003,28 @@ LadderList::loadBinary()
   saved = true;
   return true;
 }
+
+
+inline void 
+LadderList::writedata(std::ofstream &fp, unsigned int &data)
+{
+	fp.write((char *)(&data),sizeof(unsigned int));
+}
+
+
+inline void 
+LadderList::writedata(std::ofstream &fp, const unsigned int &data)
+{
+	fp.write((char *)(&data),sizeof(unsigned int));
+}
+
+
+inline void 
+LadderList::writedata(std::ofstream &fp, unsigned int data[], unsigned int membercount)
+{
+	fp.write((char *)(data),sizeof(*data)*membercount);
+}
+
 
 bool
 LadderList::saveBinary()
@@ -1010,7 +1045,7 @@ LadderList::saveBinary()
     return false;
   }
 
-  streamwrite(fp,magick); //write the magick int as header
+  writedata(fp,magick); //write the magick int as header
 
   unsigned int checksum = 0;
   unsigned int results[4];
@@ -1021,13 +1056,13 @@ LadderList::saveBinary()
     results[1] = lit->getSecondary();
     results[2] = lit->getPrimary();
     results[3] = 0;
-    streamwrite(fp,results);
+    writedata(fp,results,4);
       
     //calculate a checksum over saved data
     for (int count=0;count<4;count++) checksum+=results[count];
   }
 
-  streamwrite(fp,checksum); // add checksum at the en
+  writedata(fp,checksum); // add checksum at the en
 
   saved = true;
   eventlog(eventlog_level_info,__FUNCTION__,"successfully saved %s",filename.c_str());
