@@ -32,6 +32,10 @@
 #include <map>
 #include <algorithm>
 
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
 #include "compat/strerror.h"
 #include "common/tag.h"
 #include "common/eventlog.h"
@@ -257,58 +261,6 @@ extern int ladder_check_map(char const * mapname, t_game_maptype maptype, t_clie
 	return 1;
 
     return 0;
-}
-
-
-/*
-int standard_writer(std::FILE * fp, t_ladder * ladder, t_clienttag clienttag)
-{
-    t_ladder_internal * pointer;
-    unsigned int rank=0;
-
-    pointer = ladder->first;
-    while (pointer != NULL)
-    {
-	rank++;
-	if (clienttag==CLIENTTAG_WARCRAFT3_UINT || clienttag==CLIENTTAG_WAR3XP_UINT)
-	{
-		std::fprintf(fp,"%s,%u,%u\n",account_get_name(pointer->account),pointer->xp,rank);
-	}
-	else if (clienttag==CLIENTTAG_STARCRAFT_UINT || clienttag==CLIENTTAG_BROODWARS_UINT || clienttag==CLIENTTAG_WARCIIBNE_UINT)
-	{
-	    std::fprintf(fp,"%u %s %u (%u / %u / %u)\n",rank, account_get_name(pointer->account),pointer->level,
-		account_get_ladder_wins(pointer->account,ladder->clienttag,ladder->ladder_id),
-		account_get_ladder_losses(pointer->account,ladder->clienttag,ladder->ladder_id),
-		account_get_ladder_disconnects(pointer->account,ladder->clienttag,ladder->ladder_id));
-	}
-	pointer=pointer->prev;
-  }
-  return 0;
-}
-*/
-
-extern int ladders_write_to_file()
-{
-
-	/*
-  ladder_write_to_file(WAR3_solo_filename, &WAR3_solo_ladder,CLIENTTAG_WARCRAFT3_UINT);
-  ladder_write_to_file(WAR3_team_filename, &WAR3_team_ladder,CLIENTTAG_WARCRAFT3_UINT);
-  ladder_write_to_file(WAR3_ffa_filename,  &WAR3_ffa_ladder, CLIENTTAG_WARCRAFT3_UINT);
-  ladder_write_to_file(WAR3_at_filename,   &WAR3_at_ladder,  CLIENTTAG_WARCRAFT3_UINT);
-  ladder_write_to_file(W3XP_solo_filename, &W3XP_solo_ladder,   CLIENTTAG_WAR3XP_UINT);
-  ladder_write_to_file(W3XP_team_filename, &W3XP_team_ladder,   CLIENTTAG_WAR3XP_UINT);
-  ladder_write_to_file(W3XP_ffa_filename,  &W3XP_ffa_ladder,    CLIENTTAG_WAR3XP_UINT);
-  ladder_write_to_file(W3XP_at_filename,   &W3XP_at_ladder,     CLIENTTAG_WAR3XP_UINT);
-  ladder_write_to_file(STAR_ar_filename,   &STAR_active_rating, CLIENTTAG_STARCRAFT_UINT);
-  ladder_write_to_file(STAR_cr_filename,   &STAR_current_rating,CLIENTTAG_STARCRAFT_UINT);
-  ladder_write_to_file(SEXP_ar_filename,   &SEXP_active_rating, CLIENTTAG_BROODWARS_UINT);
-  ladder_write_to_file(SEXP_cr_filename,   &SEXP_current_rating,CLIENTTAG_BROODWARS_UINT);
-  ladder_write_to_file(W2BN_ar_filename,   &W2BN_active_rating, CLIENTTAG_WARCIIBNE_UINT);
-  ladder_write_to_file(W2BN_cr_filename,   &W2BN_current_rating,CLIENTTAG_WARCIIBNE_UINT);
-  ladder_write_to_file(W2BN_ari_filename,  &W2BN_active_rating_ironman, CLIENTTAG_WARCIIBNE_UINT);
-  ladder_write_to_file(W2BN_cri_filename,  &W2BN_current_rating_ironman,CLIENTTAG_WARCIIBNE_UINT);
-*/
-  return 0;
 }
 
 /* *********************************************************************************************************************
@@ -950,39 +902,66 @@ LadderList::sortAndUpdate()
 
 const unsigned int  magick = 0xdeadbeef;
 
+#define streamwrite(fp,data) fp.write((char*)(&data),sizeof(data))
+#define streamread(fp,data)  fp.read((char*)(&data),sizeof(data))
+
 bool
 LadderList::loadBinary()
 {
-  unsigned int values[4];
-  unsigned int uid, primary, secondary;
-  std::string filename;
-  unsigned int checksum;
-  unsigned count;
-  std::FILE * fp;
-
   saved = false;
 
-  filename = prefs_get_ladderdir();
+  std::string filename = prefs_get_ladderdir();
   filename += "/";
   filename += ladderFilename;
 
-  if (!(fp = std::fopen(filename.c_str(),"rb")))
+  std::ifstream fp (filename.c_str(), std::ios::in | std::ios::binary);
+
+  if (!(fp))
   {
-    eventlog(eventlog_level_info,__FUNCTION__,"could not open ladder file \"%s\" - maybe ladder still empty (std::fopen: %s)",filename.c_str(),std::strerror(errno));
+    eventlog(eventlog_level_info,__FUNCTION__,"could not open ladder file \"%s\" - maybe ladder still empty (std::ifstream: %s)",filename.c_str(),std::strerror(errno));
     return false;
   }
 
-  if ((std::fread(values,sizeof(int),1,fp)!=1) ||  (values[0]!=magick))
+  unsigned int checksum;
+  streamread(fp,checksum);
+  
+  if (checksum != magick)
   {
-    eventlog(eventlog_level_error,__FUNCTION__,"ladder file not starting with the magick int");
-    std::fclose(fp);
+    eventlog(eventlog_level_error,__FUNCTION__,"%s not starting with magick",ladderFilename.c_str());
+    return false;
+  }
+
+  struct stat sfile;
+  if (stat(filename.c_str(), &sfile)<0)
+  {
+    eventlog(eventlog_level_error,__FUNCTION__,"failed to retrieve size of %s",ladderFilename.c_str());
+    return false;
+  }
+
+  unsigned int filesize = sfile.st_size;
+  if (filesize%sizeof(unsigned int)!=0)
+  {
+    eventlog(eventlog_level_error,__FUNCTION__,"%s has unexpected size of %u bytes (not multiple of sizeof(unsigned int)",ladderFilename.c_str(),filesize);
+    return false;
+  }
+
+  unsigned int noe = (filesize)/sizeof(unsigned int) - 2;
+
+  if (noe%4!=0)
+  {
+    eventlog(eventlog_level_error,__FUNCTION__,"%s has unexpected count of entries (%u) ",ladderFilename.c_str(),noe);
     return false;
   }
 
   checksum = 0;
-
-  while (std::fread(values,sizeof(int),4,fp)==4)
+  unsigned int values[4];
+  unsigned int uid, primary, secondary;
+  
+  while (noe>=4)
   {
+	  streamread(fp,values);
+	  noe-=4;
+	  
 	  //handle differently dependant on ladderKey->ladderId
 	  if (t_account* account =accountlist_find_account_by_uid(values[0]))
 	  {
@@ -994,25 +973,19 @@ LadderList::loadBinary()
 	  }else{
 	    eventlog(eventlog_level_debug,__FUNCTION__,"no known entry for uid %u",values[0]);
 	  }
-    for (count=0;count<4;count++) checksum+=values[count];
+    for (int count=0;count<4;count++) checksum+=values[count];
   }
 
-  std::fread(values,sizeof(int),1,fp);
-  if (std::feof(fp)==0)
-  {
-    eventlog(eventlog_level_error,__FUNCTION__,"got data past end.. fall back to old loading mode");
-    ladder.clear();
-    return false;
+  unsigned int filechecksum;
+  streamread(fp,filechecksum);
 
-  }
-  if (values[0]!=checksum)
+  if (filechecksum!=checksum)
   {
-    eventlog(eventlog_level_error,__FUNCTION__,"ladder file has invalid checksum... fall back to old loading mode");
+    eventlog(eventlog_level_error,__FUNCTION__,"%s has invalid checksum... fall back to old loading mode",ladderFilename.c_str());
     ladder.clear();
     return false;
   }
 
-  std::fclose(fp);
   eventlog(eventlog_level_info,__FUNCTION__,"successfully loaded %s",filename.c_str());
   saved = true;
   return true;
@@ -1020,52 +993,44 @@ LadderList::loadBinary()
 
 bool
 LadderList::saveBinary()
-{ unsigned int results[4];
-  std::string filename;
-  unsigned int checksum;
-  std::FILE * fp;
+{
+
+  if (saved)
+    return true;
   
+  std::string filename = prefs_get_ladderdir();
+  filename += "/";
+  filename += ladderFilename;
 
-  if (!saved){
-  
-    filename = prefs_get_ladderdir();
-    filename += "/";
-    filename += ladderFilename;
+  std::ofstream fp (filename.c_str(), std::ios::out | std::ios::binary);
 
-
-    if (!(fp = std::fopen(filename.c_str(),"wb")))
-    {
-      eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)", filename.c_str(), std::strerror(errno));
-      return false;
-    }
-
-    results[0] = magick;
-    std::fwrite(results,sizeof(int),1,fp); //write the magick int as header
-
-    checksum = 0;
-
-    for(LList::const_iterator lit(ladder.begin()); lit!=ladder.end(); lit++)
-    {
-						 
-      results[0] = lit->getUid();
-      results[2] = lit->getPrimary();
-      results[1] = lit->getSecondary();
-      results[3] = 0;
-      std::fwrite(results,sizeof(int),4,fp);
-      for (int count=0;count<4;count++) checksum+=results[count];
-    }
-  
-  
-    //calculate a checksum over saved data
-
-    results[0] = checksum;
-    std::fwrite(results,sizeof(int),1,fp); // add checksum at the end
-
-    std::fclose(fp);
-
-    eventlog(eventlog_level_info,__FUNCTION__,"successfully saved %s",filename.c_str());
-    saved = true;
+  if (!(fp))
+  {
+    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::ofstream: %s)", filename.c_str(), std::strerror(errno));
+    return false;
   }
+
+  streamwrite(fp,magick); //write the magick int as header
+
+  unsigned int checksum = 0;
+  unsigned int results[4];
+
+  for(LList::const_iterator lit(ladder.begin()); lit!=ladder.end(); lit++)
+  {
+    results[0] = lit->getUid();
+    results[1] = lit->getSecondary();
+    results[2] = lit->getPrimary();
+    results[3] = 0;
+    streamwrite(fp,results);
+      
+    //calculate a checksum over saved data
+    for (int count=0;count<4;count++) checksum+=results[count];
+  }
+
+  streamwrite(fp,checksum); // add checksum at the en
+
+  saved = true;
+  eventlog(eventlog_level_info,__FUNCTION__,"successfully saved %s",filename.c_str());
   return true;
 }
 
@@ -1160,7 +1125,7 @@ LadderList::writeStatusfile() const
   
   if (!(fp))
   {
-    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::fopen: %s)", filename.c_str(), std::strerror(errno));
+    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for writing (std::ofstream: %s)", filename.c_str(), std::strerror(errno));
     return;
   }
   
