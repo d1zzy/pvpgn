@@ -193,7 +193,7 @@ extern int ladder_update(t_clienttag clienttag, t_ladder_id id, unsigned int cou
 	    return -1;
 	}
 
-	return 0; /* no change in case of draw */
+	return -1; /* no change in case of draw */
     }
     if ((losers<1) || (winners<1) || (winners>1 && (winners!=losers)))
     {

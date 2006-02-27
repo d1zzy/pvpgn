@@ -788,7 +788,7 @@ static int game_report(t_game * game)
 		realcount,game->players,game->results,ladder_info,
 		discisloss?ladder_option_disconnectisloss:ladder_option_none)<0)
 	    {
-		eventlog(eventlog_level_error,__FUNCTION__,"unable to update ladder stats");
+		eventlog(eventlog_level_info,__FUNCTION__,"unable to update ladder stats");
 		xfree(ladder_info);
 		ladder_info = NULL;
 	    }
