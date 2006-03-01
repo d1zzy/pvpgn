@@ -108,9 +108,9 @@ extern int ladder_init_account(t_account * account, t_clienttag clienttag, t_lad
 
 	LadderReferencedObject reference(account);
 
-	ladderlist_cr->updateEntry(uid,rating,0,reference);
-	ladderlist_cg->updateEntry(uid,0,rating,reference);
-	ladderlist_cw->updateEntry(uid,0,rating,reference);
+	ladderlist_cr->updateEntry(uid,rating,0,0,reference);
+	ladderlist_cg->updateEntry(uid,0,rating,0,reference);
+	ladderlist_cw->updateEntry(uid,0,rating,0,reference);
 	
 	INFO2("initialized account for \"%s\" for \"%s\" ladder", account_get_name(account), clienttag_uint_to_str(clienttag));
     }
@@ -128,6 +128,7 @@ extern int ladder_update(t_clienttag clienttag, t_ladder_id id, unsigned int cou
     unsigned int winners=0;
     unsigned int losers=0;
     unsigned int draws=0;
+    unsigned int ratio=0;
 	int uid;
 
     if (count<1 || count>8)
@@ -215,7 +216,12 @@ extern int ladder_update(t_clienttag clienttag, t_ladder_id id, unsigned int cou
 	  account = players[curr];
 	  uid = account_get_uid(account);
 	  wins = account_get_ladder_wins(account,clienttag,id);
-	  games = wins + account_get_ladder_losses(account,clienttag,id) + account_get_ladder_disconnects(account,clienttag,id);
+	  games = wins + account_get_ladder_losses(account,clienttag,id) + 
+		  	 account_get_ladder_disconnects(account,clienttag,id) + 
+			 account_get_ladder_draws(account,clienttag,id);
+	  
+	  //reasonable close to 1000 ;-)
+	  ratio = (wins<<10)/games;
 	  
 	  account_adjust_ladder_rating(account,clienttag,id,info[curr].adj);
 	  unsigned int rating = account_get_ladder_rating(account,clienttag,id);
@@ -223,19 +229,13 @@ extern int ladder_update(t_clienttag clienttag, t_ladder_id id, unsigned int cou
 	  LadderReferencedObject reference(account);
 
 	  LadderList* ladderlist = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_highestrated, ladder_time_current));
-	  ladderlist->updateEntry(uid,rating,wins,reference);
+	  ladderlist->updateEntry(uid,rating,wins,ratio,reference);
 
-	  if (results[curr]!=game_result_draw)
-	  {
-	  	ladderlist = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostgames, ladder_time_current));
-		ladderlist->updateEntry(uid,games,rating,reference);
-	  }
+   	  ladderlist = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostgames, ladder_time_current));
+	  ladderlist->updateEntry(uid,games,rating,ratio,reference);
 
-	  if (results[curr]==game_result_win)
-	  {
-	  	ladderlist = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostwins, ladder_time_current));
-		ladderlist->updateEntry(uid,wins,rating,reference);
-	  }
+	  ladderlist = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostwins, ladder_time_current));
+	  ladderlist->updateEntry(uid,wins,rating,ratio,reference);
 	}
 
 	ladders.update();
@@ -570,7 +570,7 @@ LadderReferencedObject::~LadderReferencedObject() throw()
 
 
 bool
-LadderReferencedObject::getData(const LadderKey& ladderKey_, unsigned int& uid_, unsigned int& primary_, unsigned int& secondary_) const
+LadderReferencedObject::getData(const LadderKey& ladderKey_, unsigned int& uid_, unsigned int& primary_, unsigned int& secondary_, unsigned int& tertiary_) const
 {
 	// returns false in case of failures - and also when no need to add this referencedObject to ladder
 	t_clienttag clienttag = ladderKey_.getClienttag();
@@ -584,56 +584,50 @@ LadderReferencedObject::getData(const LadderKey& ladderKey_, unsigned int& uid_,
 			if (!(primary_ = account_get_ladder_level(account,clienttag,ladderId)))
 				return false;
 			secondary_ = account_get_ladder_xp(account,clienttag,ladderId);
+			tertiary_ = 0;
 			return true;
 		}else{
 			t_ladder_sort ladderSort = ladderKey_.getLadderSort();
+			unsigned int rating, wins, games;
 			// current ladders
 			if (ladderKey_.getLadderTime() == ladder_time_current)
 			{
-				unsigned int rating = account_get_ladder_rating(account,clienttag,ladderId);
+				rating = account_get_ladder_rating(account,clienttag,ladderId);
 				if (!rating) return false;
-				switch (ladderSort)
-				{
-				case ladder_sort_highestrated:
-					primary_   = rating;
-					secondary_ = account_get_ladder_wins(account,clienttag,ladderId);
-					return true;
-				case ladder_sort_mostwins:
-					primary_   = account_get_ladder_wins(account,clienttag,ladderId);
-					secondary_ = rating;
-					return true;
-				case ladder_sort_mostgames:
-					primary_   = account_get_ladder_wins(account,clienttag,ladderId)+
-						     account_get_ladder_losses(account,clienttag,ladderId)+
-						     account_get_ladder_disconnects(account,clienttag,ladderId);
-					secondary_  = rating;
-					return true;
-				default:
-					return false;
-				}
-
+				wins   = account_get_ladder_wins(account,clienttag,ladderId);
+				games  = wins +
+					 account_get_ladder_losses(account,clienttag,ladderId)+
+					 account_get_ladder_disconnects(account,clienttag,ladderId)+
+				         account_get_ladder_draws(account,clienttag,ladderId);
 			}else{ // active ladders
-				unsigned int rating = account_get_ladder_active_rating(account,clienttag,ladderId);
+				rating = account_get_ladder_active_rating(account,clienttag,ladderId);
 				if (!rating) return false;
-				switch (ladderSort)
-				{
-				case ladder_sort_highestrated:
-					primary_   = rating;
-					secondary_ = account_get_ladder_active_wins(account,clienttag,ladderId);
-					return true;
-				case ladder_sort_mostwins:
-					primary_   = account_get_ladder_active_wins(account,clienttag,ladderId);
-					secondary_ = rating;
-					return true;
-				case ladder_sort_mostgames:
-					primary_   = account_get_ladder_active_wins(account,clienttag,ladderId)+
-						     account_get_ladder_active_losses(account,clienttag,ladderId)+
-						     account_get_ladder_active_disconnects(account,clienttag,ladderId);
-					secondary_  = rating;
-					return true;
-				default:
-					return false;
-				}
+				wins   = account_get_ladder_active_wins(account,clienttag,ladderId);
+				games  = wins +
+			 		 account_get_ladder_active_losses(account,clienttag,ladderId)+
+					 account_get_ladder_active_disconnects(account,clienttag,ladderId)+
+					 account_get_ladder_active_draws(account,clienttag,ladderId);
+			}
+			unsigned int ratio  = (wins<<10)/games;
+			switch (ladderSort)
+			{
+			case ladder_sort_highestrated:
+				primary_   = rating;
+				secondary_ = wins;
+				tertiary_  = ratio;
+				return true;
+			case ladder_sort_mostwins:
+				primary_   = wins;
+				secondary_ = rating;
+				tertiary_  = ratio;
+				return true;
+			case ladder_sort_mostgames:
+				primary_   = games;
+				secondary_ = rating;
+				tertiary_  = ratio;
+				return true;
+			default:
+				return false;
 			}
 		}
 	}
@@ -668,7 +662,7 @@ LadderReferencedObject::getRank(const LadderKey& ladderKey_) const
 }
 
 bool 
-LadderReferencedObject::setRank(const LadderKey& ladderKey_, unsigned int rank) const
+LadderReferencedObject::setRank(const LadderKey& ladderKey_, unsigned int rank_) const
 {
         t_clienttag clienttag = ladderKey_.getClienttag();
         t_ladder_id ladderId = ladderKey_.getLadderId();
@@ -681,9 +675,9 @@ LadderReferencedObject::setRank(const LadderKey& ladderKey_, unsigned int rank) 
 		{
 			if (ladderTime==ladder_time_active)
 			{
-				account_set_ladder_active_rank(account,clienttag,ladderId,rank);
+				account_set_ladder_active_rank(account,clienttag,ladderId,rank_);
 			}else{
-				account_set_ladder_rank(account,clienttag,ladderId,rank);
+				account_set_ladder_rank(account,clienttag,ladderId,rank_);
 			}
 		}else{
 			// the account rank is only determined by highestrated/default ladder sort
@@ -735,8 +729,8 @@ LadderReferencedObject::getAccount() const
 }
 
 
-LadderEntry::LadderEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, LadderReferencedObject referencedObject_)
-:uid(uid_), primary(primary_), secondary(secondary_), rank(0), referencedObject(referencedObject_)
+LadderEntry::LadderEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, unsigned int tertiary_, LadderReferencedObject referencedObject_)
+:uid(uid_), primary(primary_), secondary(secondary_), tertiary(tertiary_), rank(0), referencedObject(referencedObject_)
 {
 }
 
@@ -766,11 +760,20 @@ LadderEntry::getSecondary() const
 	return secondary;
 }
 
+
+unsigned int
+LadderEntry::getTertiary() const
+{
+	return tertiary;
+}
+
+
 unsigned int
 LadderEntry::getRank() const
 {
 	return rank;
 }
+
 
 const LadderReferencedObject& 
 LadderEntry::getReferencedObject() const
@@ -793,17 +796,18 @@ LadderEntry::setRank(unsigned int rank_, const LadderKey& ladderKey_)
 
 
 void
-LadderEntry::update(unsigned int primary_, unsigned int secondary_)
+LadderEntry::update(unsigned int primary_, unsigned int secondary_, unsigned int tertiary_)
 {
 	primary = primary_;
 	secondary = secondary_;
+	tertiary = tertiary_;
 }
 
 std::string
 LadderEntry::status() const
 {
 	std::ostringstream result;
-	result << uid << "," << primary << "," << secondary;
+	result << uid << "," << primary << "," << secondary << "," << tertiary;
 		
 	return result.str();
 }
@@ -813,7 +817,8 @@ LadderEntry::operator== (const LadderEntry& right) const
 {
   return ((uid == right.uid) &&
 	  (primary == right.primary) &&
-	  (secondary == right.secondary));
+	  (secondary == right.secondary) &&
+	  (tertiary == right.tertiary));
 }
 
 
@@ -824,6 +829,8 @@ LadderEntry::operator< (const LadderEntry& right) const
 	  return (primary>right.primary);
   else if (secondary!=right.secondary)
 	  return (secondary > right.secondary);
+  else if (tertiary!=right.tertiary)
+	  return (tertiary > right.tertiary);
   else
 	  return (uid > right.uid);
 }
@@ -901,7 +908,7 @@ LadderList::sortAndUpdate()
 }
 
 
-const unsigned int  magick = 0xdeadbeef;
+const unsigned int  magick = 0xdeadc0de;
 
 
 inline void 
@@ -968,7 +975,7 @@ LadderList::loadBinary()
 
   checksum = 0;
   unsigned int values[4];
-  unsigned int uid, primary, secondary;
+  unsigned int uid, primary, secondary,tertiary;
   
   while (noe>=4)
   {
@@ -981,8 +988,9 @@ LadderList::loadBinary()
 	     uid       = values[0];
 	     primary   = values[2];
 	     secondary = values[1];
+	     tertiary  = values[3];
 	     LadderReferencedObject reference(account);
-             addEntry(uid, primary, secondary, reference);
+             addEntry(uid, primary, secondary, tertiary, reference);
 	  }else{
 	    eventlog(eventlog_level_debug,__FUNCTION__,"no known entry for uid %u",values[0]);
 	  }
@@ -1071,25 +1079,25 @@ LadderList::saveBinary()
 
 
 void
-LadderList::addEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, const LadderReferencedObject& referencedObject_)
+LadderList::addEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, unsigned int tertiary_, const LadderReferencedObject& referencedObject_)
 {
-	LadderEntry entry(uid_, primary_ ,secondary_, referencedObject_);
+	LadderEntry entry(uid_, primary_ ,secondary_, tertiary_, referencedObject_);
 	ladder.push_back(entry);
 }
 
 
 void
-LadderList::updateEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, const LadderReferencedObject& referencedObject_)
+LadderList::updateEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, unsigned int tertiary_, const LadderReferencedObject& referencedObject_)
 {
 	LList::iterator lit(ladder.begin());
 	for(; lit!=ladder.end() && lit->getUid()!=uid_; lit++);
 
 	if (lit==ladder.end()) 
 	{
-		LadderEntry entry(uid_, primary_ ,secondary_, referencedObject_);
+		LadderEntry entry(uid_, primary_ ,secondary_, tertiary_, referencedObject_);
 		ladder.push_back(entry);
 	}else{
-		lit->update(primary_, secondary_);
+		lit->update(primary_, secondary_, tertiary_);
 	}
 	dirty = true;
 }
@@ -1135,12 +1143,13 @@ LadderList::getLadderKey() const
 
 
 void
-LadderList::activateFrom(LadderList * currentLadder_)
+LadderList::activateFrom(const LadderList * currentLadder_)
 {
-	for (LList::const_iterator lit(ladder.begin()); lit!=ladder.end(); lit++)
+	const LList* currentList = &currentLadder_->ladder;
+	for (LList::const_iterator lit(currentList->begin()); lit!=currentList->end(); lit++)
 	{
 		const LadderReferencedObject& referencedObject = lit->getReferencedObject();
-		updateEntry(lit->getUid(),lit->getPrimary(),lit->getSecondary(),referencedObject);
+		updateEntry(lit->getUid(),lit->getPrimary(),lit->getSecondary(),lit->getTertiary(),referencedObject);
 		referencedObject.activate(ladderKey);
 	}
 	return;
@@ -1317,7 +1326,7 @@ Ladders::rebuild(std::list<LadderList*>& laddersToRebuild)
 {
   t_entry * curr;
   t_account * account;
-  unsigned int uid, primary, secondary;
+  unsigned int uid, primary, secondary, tertiary;
   
   eventlog(eventlog_level_debug,__FUNCTION__,"start rebuilding ladders");
   HASHTABLE_TRAVERSE(accountlist(),curr)
@@ -1328,9 +1337,9 @@ Ladders::rebuild(std::list<LadderList*>& laddersToRebuild)
         LadderReferencedObject referencedObject(account);
         for (std::list<LadderList*>::iterator lit(laddersToRebuild.begin()); lit!=laddersToRebuild.end(); lit++)
         {
-		if (referencedObject.getData((*lit)->getLadderKey(),uid,primary,secondary))
+		if (referencedObject.getData((*lit)->getLadderKey(),uid,primary,secondary,tertiary))
 		{
-			(*lit)->addEntry(uid, primary, secondary, referencedObject);
+			(*lit)->addEntry(uid, primary, secondary, tertiary, referencedObject);
 		}
         }
       }
@@ -1359,7 +1368,7 @@ Ladders::activate()
        LadderList* activeLadder  = &kit->second;
        LadderList* currentLadder = getLadderList(activeLadder->getLadderKey().getOpposingKey());
        
-       if (currentLadder = NULL){
+       if (currentLadder == NULL){
 	       eventlog(eventlog_level_error,__FUNCTION__,"found active ladder, but no matching current ladder");
 	       continue;
        }
