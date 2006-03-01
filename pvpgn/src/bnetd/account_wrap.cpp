@@ -2097,8 +2097,9 @@ extern int account_set_saveladderstats(t_account * account,unsigned int gametype
 	xp    = account_get_ladder_xp(account,clienttag,id);
 	LadderList* ladderList = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_default,ladder_time_default));
 	LadderReferencedObject reference(account);
-	
-	ladderList->updateEntry(uid,level,xp, reference);
+
+	//consider using wins count for tertiary attribute ?
+	ladderList->updateEntry(uid,level,xp,0,reference);
 
 	return 0;
 }

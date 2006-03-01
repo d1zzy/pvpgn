@@ -99,9 +99,9 @@ class LadderReferencedObject
 public:
 	explicit LadderReferencedObject(t_account *account_);
 	~LadderReferencedObject() throw ();
-	bool getData(const LadderKey& ladderKey_, unsigned int& uid, unsigned int& primary, unsigned int& secondary_) const;
+	bool getData(const LadderKey& ladderKey_, unsigned int& uid, unsigned int& primary_, unsigned int& secondary_, unsigned int& tertiary_) const;
 	unsigned int getRank(const LadderKey& ladderKey_) const;
-	bool setRank(const LadderKey& ladderKey_, unsigned int rank) const;
+	bool setRank(const LadderKey& ladderKey_, unsigned int rank_) const;
 	t_account* getAccount() const;
 	void activate(const LadderKey& ladderKey_) const;
 private:
@@ -114,15 +114,16 @@ private:
 class LadderEntry
 {
 public:	
-	LadderEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, LadderReferencedObject referencedObject_);
+	LadderEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, unsigned int tertiary_, LadderReferencedObject referencedObject_);
         ~LadderEntry() throw ();
 	unsigned int getUid() const;
 	unsigned int getPrimary() const;
 	unsigned int getSecondary() const;
+	unsigned int getTertiary() const;
 	unsigned int getRank() const;
 	const LadderReferencedObject& getReferencedObject() const;
 	bool setRank(unsigned int rank_, const LadderKey& ladderKey_);
-	void update(unsigned int primary, unsigned int secondary);
+	void update(unsigned int primary_, unsigned int secondary_, unsigned int tertiary_);
 	std::string status() const;
 	bool operator== (const LadderEntry& right) const;
 	bool operator< (const LadderEntry& right) const;
@@ -130,6 +131,7 @@ private:
 	unsigned int uid;
 	unsigned int primary;
 	unsigned int secondary;
+	unsigned int tertiary;
 	unsigned int rank;
 	LadderReferencedObject referencedObject;
 };
@@ -141,14 +143,14 @@ public:
 	~LadderList() throw ();
 	bool load();
 	bool save();
-	void addEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, const LadderReferencedObject& referencedObject_);
-	void updateEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, const LadderReferencedObject& referencedObject_);
+	void addEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, unsigned int tertiary_, const LadderReferencedObject& referencedObject_);
+	void updateEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, unsigned int tertiary_ ,const LadderReferencedObject& referencedObject_);
 	bool delEntry(unsigned int uid_);
 	const LadderKey& getLadderKey() const;
 	void sortAndUpdate();
 	const LadderReferencedObject* getReferencedObject(unsigned int rank) const;
 	unsigned int getRank(unsigned int uid_) const;
-	void activateFrom(LadderList * currentLadder_);
+	void activateFrom(const LadderList * currentLadder_);
 	void writeStatusfile() const;
 
 private:
