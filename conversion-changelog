@@ -1,0 +1,20 @@
+ PvPGN C++ conversion changelog
+================================
+
+What is this file all about?
+----------------------------
+As some of you might have noticed PvPGN is currently undergoing lots of changes 
+while the code is being converted from C to C++. This file is ment to keep
+track of the changes made -  and possible implications to users/admins.
+
+Changes:
+--------
+
+bnetd/ladder*:
+  - no longer supports output of xml ladder files (at least so far)
+
+bnetd/adbanner:
+  - requires changes in conf/ad.conf (unique id)
+
+common/fdwatch*:
+  - no functional changes
