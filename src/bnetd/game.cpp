@@ -578,8 +578,16 @@ static int game_evaluate_results(t_game * game)
     }
     else if ((disconnects>=draws) && (disconnects>=losses) && (disconnects>=wins))
     {
-      game->results[i] = game_result_disconnect; //consider disconnects the worst case...
-      eventlog(eventlog_level_debug,__FUNCTION__,"deciding to give \"disconnect\" to player %d",i);
+      if (game_discisloss(game))
+      {
+          game->results[i]=game_result_loss;         //losses are also bad...
+          eventlog(eventlog_level_debug,__FUNCTION__,"deciding to give \"loss\" to player %d (due to discisloss)",i);
+      }
+      else
+      {
+          game->results[i] = game_result_disconnect; //consider disconnects the worst case...
+          eventlog(eventlog_level_debug,__FUNCTION__,"deciding to give \"disconnect\" to player %d",i);
+      }
     }
     else if ((losses>=wins) && (losses>=draws))
     {
@@ -628,6 +636,60 @@ static int game_match_type(t_game_type type,const char *gametypes)
     return res;
 }
 
+static int game_sanity_check(t_game_result * results, t_account * * players, unsigned int count, unsigned int discisloss)
+{
+    unsigned int winners=0;
+    unsigned int losers=0;
+    unsigned int draws=0;
+    unsigned int discs=0;
+
+    for (unsigned int curr=0; curr<count; curr++)
+    {
+        if (!players[curr])
+	{
+	    eventlog(eventlog_level_error,__FUNCTION__,"got NULL player[%u] (of %u)",curr,count);
+	    return -1;
+	}
+
+        switch (results[curr])
+	{
+	case game_result_win:
+	    winners++;
+	    break;
+	case game_result_loss:
+	    losers++;
+	    break;
+	case game_result_draw:
+	    draws++;
+	    break;
+	case game_result_disconnect:
+	    discs++;
+	    break;
+	default:
+	    eventlog(eventlog_level_error,__FUNCTION__,"bad results[%u]=%u",curr,(unsigned int)results[curr]);
+	    return -1;
+	}
+    }
+
+    if (draws>0)
+    {
+        if (draws!=count)
+	{
+	    eventlog(eventlog_level_error,__FUNCTION__,"some, but not all players had a draw count=%u (winners=%u losers=%u draws=%u)",count,winners,losers,draws);
+	    return -1;
+	}
+        return 0; 
+    }
+
+    if ((discisloss) && ((losers<1) || (winners<1) || (winners>1 && (winners!=losers))))
+    {
+        eventlog(eventlog_level_info,__FUNCTION__,"missing winner or loser for count=%u (winners=%u losers=%u)",count,winners,losers);
+	return -1;
+    }
+    
+    return 0;
+}
+
 static int game_report(t_game * game)
 {
     std::FILE *          fp;
@@ -636,7 +698,6 @@ static int game_report(t_game * game)
     unsigned int    i;
     unsigned int    realcount;
     t_ladder_info * ladder_info=NULL;
-    int             discisloss;
     char            clienttag_str[5];
 
     if (!game)
@@ -664,11 +725,6 @@ static int game_report(t_game * game)
 	eventlog(eventlog_level_error,__FUNCTION__,"results array is NULL");
 	return -1;
     }
-
-    if (prefs_get_discisloss()==1 || game->option==game_option_ladder_countasloss)
-	discisloss = 1;
-    else
-	discisloss = 0;
 
     if (game->clienttag==CLIENTTAG_WARCRAFT3_UINT || game->clienttag==CLIENTTAG_WAR3XP_UINT)
     // war3 game reporting is done elsewhere, so we can skip this function
@@ -726,14 +782,19 @@ static int game_report(t_game * game)
 	    eventlog(eventlog_level_info,__FUNCTION__,"ignoring game");
 	    return -1;
 	}
+	
+        if (game_sanity_check(game->results, game->players, realcount, game_is_ladder(game) && game_discisloss(game))<0)
+        {
+	    eventlog(eventlog_level_info,__FUNCTION__,"game results ignored due to inconsistencies");
+	    game->bad = 1;
+        }
     }
 
     eventlog(eventlog_level_debug,__FUNCTION__,"realcount=%d count=%u",realcount,game->count);
 
     if (realcount>=1 && !game->bad)
     {
-	if (game_is_ladder(game)
-	    )
+	if (game_is_ladder(game))
 	{
 	    t_ladder_id id;
 
@@ -763,17 +824,8 @@ static int game_report(t_game * game)
 		    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_draw));
 		    break;
 		case game_result_disconnect:
-		    if (discisloss)
-		    {
-			account_inc_ladder_losses(game->players[i],game->clienttag,id);
-			account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_loss));
-		    }
-		    else
-		    {
-/* FIXME: do the first disconnect only stuff like below */
-			account_inc_ladder_disconnects(game->players[i],game->clienttag,id);
-			account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_disconnect));
-		    }
+		    account_inc_ladder_disconnects(game->players[i],game->clienttag,id);
+		    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_disconnect));
 		    break;
 		default:
 		    eventlog(eventlog_level_error,__FUNCTION__,"bad ladder game realplayer results[%u] = %u",i,game->results[i]);
@@ -785,8 +837,7 @@ static int game_report(t_game * game)
 
 	    ladder_info = (t_ladder_info*)xmalloc(sizeof(t_ladder_info)*realcount);
 	    if (ladder_update(game->clienttag,id,
-		realcount,game->players,game->results,ladder_info,
-		discisloss?ladder_option_disconnectisloss:ladder_option_none)<0)
+		realcount,game->players,game->results,ladder_info)<0)
 	    {
 		eventlog(eventlog_level_info,__FUNCTION__,"unable to update ladder stats");
 		xfree(ladder_info);
@@ -795,8 +846,6 @@ static int game_report(t_game * game)
 	}
 	else
 	{
-	    int disc_set=0;
-
 	    for (i=0; i<realcount; i++)
 	    {
 		switch (game->results[i])
@@ -814,31 +863,11 @@ static int game_report(t_game * game)
 		    account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_draw));
 		    break;
 		case game_result_disconnect:
-		    if (discisloss)
-		    {
-			account_inc_normal_losses(game->players[i],game->clienttag);
-			account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_loss));
-		    }
-		    else
-		    {
-/* FIXME: Is the missing player always the first one in this array?  It seems like it should be
-   the person that created the game */
-			if (!disc_set)
-			{
-			    account_inc_normal_disconnects(game->players[i],game->clienttag);
-			    disc_set = 1;
-			}
-			account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_disconnect));
-		    }
+		    account_inc_normal_disconnects(game->players[i],game->clienttag);
+		    account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_disconnect));
 		    break;
 		default:
 		    eventlog(eventlog_level_error,__FUNCTION__,"bad normal game realplayer results[%u] = %u",i,game->results[i]);
-/* FIXME: Jung-woo fixed this here but we should find out what value results[i] has...
-   and why "discisloss" isn't set above in game_result_disconnect */
-#if 0
-		    /* commented out for loose disconnect policy */
-		    /* account_inc_normal_disconnects(game->players[i],game->clienttag); */
-#endif
 		    account_inc_normal_disconnects(game->players[i],game->clienttag);
 		    account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_disconnect));
 		}
@@ -2213,6 +2242,25 @@ extern int game_is_ladder(t_game *game)
 	game_match_name(game_get_name(game),prefs_get_ladder_prefix())) return 1;
 
     return 0;
+}
+
+extern int game_discisloss(t_game *game)
+{
+    assert(game);
+
+    if (prefs_get_discisloss())
+        return 1;
+		
+    /* all normal ladder games provide discisloss option themselves */
+    if (game->type == game_type_ladder ||
+        game->type == game_type_ironman) return game->option==game_option_ladder_countasloss;
+
+    /* additional game types that are consideres ladder are always considered discasloss */
+    if (game_match_type(game_get_type(game),prefs_get_ladder_games()) &&
+	game_match_name(game_get_name(game),prefs_get_ladder_prefix())) return 1;
+    
+    /* all other games are handled as usual */
+    return  game->option==game_option_ladder_countasloss;
 }
 
 }

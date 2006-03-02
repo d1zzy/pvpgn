@@ -229,7 +229,7 @@ namespace pvpgn
 namespace bnetd
 {
 
-extern int ladder_update(t_clienttag clienttag, t_ladder_id id, unsigned int count, t_account * * players, t_game_result * results, t_ladder_info * info, t_ladder_option opns);
+extern int ladder_update(t_clienttag clienttag, t_ladder_id id, unsigned int count, t_account * * players, t_game_result * results, t_ladder_info * info);
 		
 extern int ladder_init_account(t_account * account, t_clienttag clienttag, t_ladder_id id);
 extern int ladder_check_map(char const * mapname, t_game_maptype maptype, t_clienttag clienttag);
