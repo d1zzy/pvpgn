@@ -537,6 +537,8 @@ static int game_evaluate_results(t_game * game)
       return -1;
   }
 
+  int discisloss = game_discisloss(game);
+
   for (i=0;i<game->count;i++)
   {
     wins = losses = draws = disconnects = reports = 0;
@@ -578,7 +580,7 @@ static int game_evaluate_results(t_game * game)
     }
     else if ((disconnects>=draws) && (disconnects>=losses) && (disconnects>=wins))
     {
-      if (game_discisloss(game))
+      if (discisloss)
       {
           game->results[i]=game_result_loss;         //losses are also bad...
           eventlog(eventlog_level_debug,__FUNCTION__,"deciding to give \"loss\" to player %d (due to discisloss)",i);
