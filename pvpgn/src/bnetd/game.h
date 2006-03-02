@@ -327,6 +327,7 @@ extern void game_set_flag(t_game * game, t_game_flag flag);
 extern t_game_flag game_get_flag(t_game const * game);
 extern int game_get_count_by_clienttag(t_clienttag ct);
 extern int game_is_ladder(t_game *game);
+extern int game_discisloss(t_game *game);
 
 }
 

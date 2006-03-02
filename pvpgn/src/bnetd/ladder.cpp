@@ -122,12 +122,9 @@ extern int ladder_init_account(t_account * account, t_clienttag clienttag, t_lad
 /*
  * Update player ratings, rankings, etc due to game results.
  */
-extern int ladder_update(t_clienttag clienttag, t_ladder_id id, unsigned int count, t_account * * players, t_game_result * results, t_ladder_info * info, t_ladder_option opns)
+extern int ladder_update(t_clienttag clienttag, t_ladder_id id, unsigned int count, t_account * * players, t_game_result * results, t_ladder_info * info)
 {
     unsigned int curr;
-    unsigned int winners=0;
-    unsigned int losers=0;
-    unsigned int draws=0;
     unsigned int ratio=0;
 	int uid;
 
@@ -154,51 +151,6 @@ extern int ladder_update(t_clienttag clienttag, t_ladder_id id, unsigned int cou
     if (!info)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL info");
-	return -1;
-    }
-
-    for (curr=0; curr<count; curr++)
-    {
-	if (!players[curr])
-	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"got NULL player[%u] (of %u)",curr,count);
-	    return -1;
-	}
-
-	switch (results[curr])
-	{
-	case game_result_win:
-	    winners++;
-	    break;
-	case game_result_loss:
-	    losers++;
-	    break;
-	case game_result_draw:
-	    draws++;
-	    break;
-	case game_result_disconnect:
-	    if (opns&ladder_option_disconnectisloss)
-		losers++;
-	    break;
-	default:
-	    eventlog(eventlog_level_error,__FUNCTION__,"bad results[%u]=%u",curr,(unsigned int)results[curr]);
-	    return -1;
-	}
-    }
-
-    if (draws>0)
-    {
-	if (draws!=count)
-	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"some, but not all players had a draw count=%u (winners=%u losers=%u draws=%u)",count,winners,losers,draws);
-	    return -1;
-	}
-
-	return -1; /* no change in case of draw */
-    }
-    if ((losers<1) || (winners<1) || (winners>1 && (winners!=losers)))
-    {
-	eventlog(eventlog_level_info,__FUNCTION__,"missing winner or loser for count=%u (winners=%u losers=%u draws=%u) - discarding result",count,winners,losers,draws);
 	return -1;
     }
 
