@@ -790,7 +790,7 @@ LadderEntry::operator< (const LadderEntry& right) const
 
 
 LadderList::LadderList(LadderKey ladderKey_)
-:ladderKey(ladderKey_), dirty(true)
+:ladderKey(ladderKey_), dirty(true),saved(false)
 {
         ladderFilename = clienttag_uint_to_str(ladderKey_.getClienttag());
 	ladderFilename += "_";
@@ -880,8 +880,6 @@ LadderList::readdata(std::ifstream &fp, unsigned int data[], unsigned int member
 bool
 LadderList::loadBinary()
 {
-  saved = false;
-
   std::string filename = prefs_get_ladderdir();
   filename += "/";
   filename += ladderFilename;
@@ -960,7 +958,6 @@ LadderList::loadBinary()
   }
 
   eventlog(eventlog_level_info,__FUNCTION__,"successfully loaded %s",filename.c_str());
-  saved = true;
   return true;
 }
 
@@ -1035,6 +1032,7 @@ LadderList::addEntry(unsigned int uid_, unsigned int primary_, unsigned int seco
 {
 	LadderEntry entry(uid_, primary_ ,secondary_, tertiary_, referencedObject_);
 	ladder.push_back(entry);
+	dirty = true;
 }
 
 
@@ -1271,6 +1269,7 @@ Ladders::load()
     rebuild(laddersToRebuild);
 
   update();
+  save();
 }
 
 void
