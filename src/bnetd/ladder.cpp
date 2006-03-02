@@ -1281,6 +1281,12 @@ Ladders::rebuild(std::list<LadderList*>& laddersToRebuild)
   unsigned int uid, primary, secondary, tertiary;
   
   eventlog(eventlog_level_debug,__FUNCTION__,"start rebuilding ladders");
+  
+  if (accountlist_load_all(ST_FORCE)) {
+    eventlog(eventlog_level_error, __FUNCTION__, "error loading all accounts");
+    return;
+  }
+    
   HASHTABLE_TRAVERSE(accountlist(),curr)
     {
       if ((account=((t_account *)entry_get_data(curr))))
