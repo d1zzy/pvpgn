@@ -20,6 +20,7 @@
 #include "common/setup_before.h"
 #include "storage_file.h"
 
+#include <sstream>
 #include <cstring>
 #include <cstdio>
 #include <cerrno>
@@ -313,7 +314,7 @@ static int file_read_attrs(t_storage_info * info, t_read_attr_func cb, void *dat
 	return -1;
     }
 
-    eventlog(eventlog_level_debug, __FUNCTION__, "loading \"%s\"", (char *) info);
+    eventlog(eventlog_level_debug, __FUNCTION__, "loading \"%s\"", reinterpret_cast<const char*>(info));
 
     if (file->read_attrs((const char *) info, cb, data))
     {
@@ -371,43 +372,32 @@ static t_storage_info *file_get_defacct(void)
 
 static int file_read_accounts(int flag,t_read_accounts_func cb, void *data)
 {
-    char const *dentry;
-    char *pathname;
-    t_pdir *accountdir;
+	if (!accountsdir) {
+		ERROR0("file storage not initilized");
+		return -1;
+	}
 
-    if (accountsdir == NULL)
-    {
-	eventlog(eventlog_level_error, __FUNCTION__, "file storage not initilized");
-	return -1;
-    }
+	if (!cb) {
+		ERROR0("got NULL callback");
+		return -1;
+	}
 
-    if (cb == NULL)
-    {
-	eventlog(eventlog_level_error, __FUNCTION__, "got NULL callback");
-	return -1;
-    }
+	try {
+		Directory accdir(accountsdir);
 
-    if (!(accountdir = p_opendir(accountsdir)))
-    {
-	eventlog(eventlog_level_error, __FUNCTION__, "unable to open user directory \"%s\" for reading (p_opendir: %s)", accountsdir, std::strerror(errno));
-	return -1;
-    }
+		char const *dentry;
+		while ((dentry = accdir.read())) {
+			std::ostringstream ostr;
+			ostr << accountsdir << '/' << dentry;
 
-    while ((dentry = p_readdir(accountdir)))
-    {
-	if (dentry[0] == '.')
-	    continue;
+			cb(xstrdup(ostr.str().c_str()), data);
+		}
+	} catch (const Directory::OpenError& ex) {
+		ERROR2("unable to open user directory \"%s\" for reading (error: %s)", accountsdir, ex.what());
+		return -1;
+	}
 
-	pathname = (char*)xmalloc(std::strlen(accountsdir) + 1 + std::strlen(dentry) + 1);	/* dir + / + file + NUL */
-	std::sprintf(pathname, "%s/%s", accountsdir, dentry);
-
-	cb(pathname, data);
-    }
-
-    if (p_closedir(accountdir) < 0)
-	eventlog(eventlog_level_error, __FUNCTION__, "unable to close user directory \"%s\" (p_closedir: %s)", accountsdir, std::strerror(errno));
-
-    return 0;
+	return 0;
 }
 
 static t_storage_info *file_read_account(const char *accname, unsigned uid)
@@ -450,7 +440,6 @@ static const char *file_escape_key(const char *key)
 static int file_load_clans(t_load_clans_func cb)
 {
     char const *dentry;
-    t_pdir *clandir;
     char *pathname;
     int clantag;
     t_clan *clan;
@@ -468,19 +457,14 @@ static int file_load_clans(t_load_clans_func cb)
 	return -1;
     }
 
-    if (!(clandir = p_opendir(clansdir)))
-    {
-	eventlog(eventlog_level_error, __FUNCTION__, "unable to open clan directory \"%s\" for reading (p_opendir: %s)", clansdir, std::strerror(errno));
-	return -1;
-    }
+	try {
+		Directory clandir(clansdir);
+
     eventlog(eventlog_level_trace, __FUNCTION__, "start reading clans");
 
     pathname = (char*)xmalloc(std::strlen(clansdir) + 1 + 4 + 1);
-    while ((dentry = p_readdir(clandir)) != NULL)
+    while ((dentry = clandir.read()))
     {
-	if (dentry[0] == '.')
-	    continue;
-
 	if (std::strlen(dentry) > 4)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "found too long clan filename in clandir \"%s\"", dentry);
@@ -605,10 +589,11 @@ static int file_load_clans(t_load_clans_func cb)
 
     xfree((void *) pathname);
 
-    if (p_closedir(clandir) < 0)
-    {
-	eventlog(eventlog_level_error, __FUNCTION__, "unable to close clan directory \"%s\" (p_closedir: %s)", clansdir, std::strerror(errno));
-    }
+	} catch(const Directory::OpenError& ex) {
+		ERROR2("unable to open clan directory \"%s\" for reading (error: %s)", clansdir, ex.what());
+		return -1;
+	}
+
     eventlog(eventlog_level_trace, __FUNCTION__, "finished reading clans");
 
     return 0;
@@ -675,7 +660,6 @@ static int file_remove_clanmember(int uid)
 static int file_load_teams(t_load_teams_func cb)
 {
     char const *dentry;
-    t_pdir *teamdir;
     char *pathname;
     unsigned int teamid;
     t_team *team;
@@ -692,19 +676,14 @@ static int file_load_teams(t_load_teams_func cb)
 	return -1;
     }
 
-    if (!(teamdir = p_opendir(teamsdir)))
-    {
-	eventlog(eventlog_level_error, __FUNCTION__, "unable to open team directory \"%s\" for reading (p_opendir: %s)", teamsdir, std::strerror(errno));
-	return -1;
-    }
-    eventlog(eventlog_level_trace, __FUNCTION__, "start reading teams");
+	try {
+		Directory teamdir(teamsdir);
+
+		eventlog(eventlog_level_trace, __FUNCTION__, "start reading teams");
 
     pathname = (char*)xmalloc(std::strlen(teamsdir) + 1 + 8 + 1);
-    while ((dentry = p_readdir(teamdir)) != NULL)
+    while ((dentry = teamdir.read()))
     {
-	if (dentry[0] == '.')
-	    continue;
-
 	if (std::strlen(dentry) != 8)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "found invalid team filename in teamdir \"%s\"", dentry);
@@ -821,10 +800,11 @@ static int file_load_teams(t_load_teams_func cb)
 
     xfree((void *) pathname);
 
-    if (p_closedir(teamdir) < 0)
-    {
-	eventlog(eventlog_level_error, __FUNCTION__, "unable to close team directory \"%s\" (p_closedir: %s)", teamsdir, std::strerror(errno));
-    }
+	} catch(const Directory::OpenError& ex) {
+		ERROR2("unable to open team directory \"%s\" for reading (error: %s)", teamsdir, ex.what());
+		return -1;
+	}
+
     eventlog(eventlog_level_trace, __FUNCTION__, "finished reading teams");
 
     return 0;

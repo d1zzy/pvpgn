@@ -149,7 +149,6 @@ static int on_client_createcharreq(t_connection * c, t_packet * packet)
 	char const	* charname;
 	char const	* account;
 	char            * path;
-	t_pdir          * dir;
 	t_sq		* sq;
 	unsigned int	reply;
 	unsigned short	status, chclass;
@@ -168,12 +167,12 @@ static int on_client_createcharreq(t_connection * c, t_packet * packet)
 
 	path=(char*)xmalloc(std::strlen(prefs_get_charinfo_dir())+1+std::strlen(account)+1);
 	d2char_get_infodir_name(path,account);
-	if (!(dir=p_opendir(path))) {
-	        eventlog(eventlog_level_info,__FUNCTION__,"(*%s) charinfo directory do not exist, building it",account);
+	try {
+		Directory dir(path);
+	} catch (const Directory::OpenError&) {
+		INFO1("(*%s) charinfo directory do not exist, building it",account);
 		p_mkdir(path,S_IRWXU);
 	}
-	else
-	  p_closedir(dir);
 	xfree(path);
 
 	if (d2char_create(account,charname,chclass,status)<0) {
@@ -805,7 +804,6 @@ static int on_client_charladderreq(t_connection * c, t_packet * packet)
 static int on_client_charlistreq(t_connection * c, t_packet * packet)
 {
 	t_packet		* rpacket;
-	t_pdir			* dir;
 	char const		* account;
 	char const		* charname;
 	char			* path;
@@ -833,12 +831,9 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 		packet_set_type(rpacket,D2CS_CLIENT_CHARLISTREPLY);
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.u1,0);
 		n=0;
-		if (!(dir=p_opendir(path))) {
-			eventlog(eventlog_level_info,__FUNCTION__,"(*%s) charinfo directory do not exist, building it",account);
-			p_mkdir(path,S_IRWXU);
-		} else {
-			while ((charname=p_readdir(dir))) {
-				if (charname[0]=='.') continue;
+		try {
+			Directory dir(path);
+			while ((charname=dir.read())) {
 				charinfo = (t_d2charinfo_file*)xmalloc(sizeof(t_d2charinfo_file));
 				if (d2charinfo_load(account,charname,charinfo)<0) {
 					eventlog(eventlog_level_error,__FUNCTION__,"error loading charinfo for %s(*%s)",charname,account);
@@ -855,7 +850,6 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 			} else {
 				bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar,0);
 			}
-			p_closedir(dir);
 			if (!std::strcmp(charlist_sort_order, "ASC"))
 			{
 			    t_elist * curr, * safe;
@@ -885,6 +879,9 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 
 			    }
 			}
+		} catch(const Directory::OpenError&) {
+			INFO1("(*%s) charinfo directory do not exist, building it",account);
+			p_mkdir(path,S_IRWXU);
 		}
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar,n);
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar2,n);
@@ -898,7 +895,6 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 {
 	t_packet		* rpacket;
-	t_pdir			* dir;
 	char const		* account;
 	char const		* charname;
 	char			* path;
@@ -934,13 +930,11 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 		packet_set_type(rpacket,D2CS_CLIENT_CHARLISTREPLY_110);
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply_110.u1,0);
 		n=0;
-		if (!(dir=p_opendir(path))) {
-			eventlog(eventlog_level_info,__FUNCTION__,"(*%s) charinfo directory do not exist, building it",account);
-			p_mkdir(path,S_IRWXU);
-		} else {
+		try {
+			Directory dir(path);
+
 			exp_time = prefs_get_char_expire_time();
-			while ((charname=p_readdir(dir))) {
-				if (charname[0]=='.') continue;
+			while ((charname=dir.read())) {
 				charinfo = (t_d2charinfo_file*)xmalloc(sizeof(t_d2charinfo_file));
 				if (d2charinfo_load(account,charname,charinfo)<0) {
 					eventlog(eventlog_level_error,__FUNCTION__,"error loading charinfo for %s(*%s)",charname,account);
@@ -960,7 +954,6 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 			if (n>=maxchar)
 				maxchar = 0;
 
-			p_closedir(dir);
 			if (!std::strcmp(charlist_sort_order, "ASC"))
 			{
 			    t_elist * curr, *safe;
@@ -997,6 +990,9 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 				xfree((void *)ccharlist);
 			    }
 			}
+		} catch (const Directory::OpenError&) {
+			INFO1("(*%s) charinfo directory do not exist, building it",account);
+			p_mkdir(path,S_IRWXU);
 		}
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar,n);
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar2,n);
@@ -1102,5 +1098,4 @@ static unsigned int d2cs_try_joingame(t_connection const * c, t_game const * gam
 }
 
 }
-
 }
