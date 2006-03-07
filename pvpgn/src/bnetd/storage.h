@@ -26,14 +26,13 @@
 #define ST_NONE		0
 #define ST_FORCE	1
 
-#define t_storage_info void
-
 namespace pvpgn
 {
 
 namespace bnetd
 {
 
+typedef const void t_storage_info;
 typedef int (*t_read_attr_func)(const char *, const char *, void *);
 typedef int (*t_read_accounts_func)(t_storage_info *, void*);
 typedef int (*t_load_clans_func)(void*);
