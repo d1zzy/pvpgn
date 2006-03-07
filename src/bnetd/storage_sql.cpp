@@ -159,7 +159,7 @@ static t_storage_info *sql_create_account(char const *username)
     snprintf(query, sizeof(query), "INSERT INTO %sBNET ("SQL_UID_FIELD",username) VALUES('%u','%s')", tab_prefix, uid, user);
     if (sql->query(query))
     {
-	eventlog(eventlog_level_error, __FUNCTION__, "user insert failed (query: '')", query);
+	eventlog(eventlog_level_error, __FUNCTION__, "user insert failed (query: '%s')", query);
 	goto err_info;
     }
 
@@ -168,7 +168,7 @@ static t_storage_info *sql_create_account(char const *username)
     snprintf(query, sizeof(query), "INSERT INTO %sprofile ("SQL_UID_FIELD") VALUES('%u')", tab_prefix, uid);
     if (sql->query(query))
     {
-	eventlog(eventlog_level_error, __FUNCTION__, "user insert failed (query: '')", query);
+	eventlog(eventlog_level_error, __FUNCTION__, "user insert failed (query: '%s')", query);
 	goto err_info;
     }
 
@@ -177,7 +177,7 @@ static t_storage_info *sql_create_account(char const *username)
     snprintf(query, sizeof(query), "INSERT INTO %sRecord ("SQL_UID_FIELD") VALUES('%u')", tab_prefix, uid);
     if (sql->query(query))
     {
-	eventlog(eventlog_level_error, __FUNCTION__, "user insert failed (query: '')", query);
+	eventlog(eventlog_level_error, __FUNCTION__, "user insert failed (query: '%s')", query);
 	goto err_info;
     }
 
@@ -186,7 +186,7 @@ static t_storage_info *sql_create_account(char const *username)
     snprintf(query, sizeof(query), "INSERT INTO %sfriend ("SQL_UID_FIELD") VALUES('%u')", tab_prefix, uid);
     if (sql->query(query))
     {
-	eventlog(eventlog_level_error, __FUNCTION__, "user insert failed (query: '')", query);
+	eventlog(eventlog_level_error, __FUNCTION__, "user insert failed (query: '%s')", query);
 	goto err_info;
     }
 
