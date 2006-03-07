@@ -176,9 +176,14 @@ extern char * message_format_line(t_connection const * c, char const * in)
 		break;
 
             case 'm':
-	    	std::sprintf(&out[outpos],"%s",check_mail(c));
+            {
+            	unsigned mails = check_mail(c);
+            	if (mails > 0)
+			std::sprintf(&out[outpos], "You have %u message(s) in your mailbox.", mails);
+		else std::strcpy(&out[outpos], "You have no mail.");
 		outpos += std::strlen(&out[outpos]);
                 break;
+            }
 
 	    case 'r':
 		std::strncpy(&out[outpos],addr_num_to_ip_str(conn_get_addr(c)),MAX_INC-1);

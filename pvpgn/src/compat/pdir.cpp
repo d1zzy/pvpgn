@@ -17,214 +17,103 @@
  */
 #define PDIR_INTERNAL_ACCESS
 #include "common/setup_before.h"
-
 #include "pdir.h"
 
-#include <cstddef>
-#include <cstdlib>
 #include <cstring>
-#include <cerrno>
 
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_DIRENT_H
-# include <dirent.h>
-#else
-# ifdef HAVE_SYS_NDIR_H
-#  include <sys/ndir.h>
-# endif
-# if HAVE_SYS_DIR_H
-#  include <sys/dir.h>
-# endif
-# if HAVE_NDIR_H
-#  include <ndir.h>
-# endif
-# define dirent direct
-#endif
-#ifdef WIN32
-# include <io.h> /* for _findfirst(), _findnext(), etc */
-#endif
-#include "compat/strerror.h"
 #include "common/eventlog.h"
-#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 
 namespace pvpgn
 {
 
-extern t_pdir * p_opendir(const char * path) {
+Directory::Directory(const std::string& path_)
+:path(path_)
+{
 #ifdef WIN32
-   char npath[_MAX_PATH];
-#endif
-   t_pdir * pdir;
+	if (path.size() + 1 + 3 >= _MAX_PATH)
+		throw std::runtime_error("pvpgn::Directory::Directory(): WIN32: path too long");
+	path += "/*.*";
 
-   if (path==NULL) {
-      eventlog(eventlog_level_error,__FUNCTION__,"got NULL path");
-      return NULL;
-   }
-/*   while(path[strlen(path)]=='/') path[strlen(path)]='\0'; */
-   /* win32 can use slash in addition to backslash  */
-   pdir=(t_pdir*)xmalloc(sizeof(t_pdir));
-
-#ifdef WIN32
-   if (strlen(path)+1+3+1>_MAX_PATH) {
-      eventlog(eventlog_level_error,__FUNCTION__,"WIN32: path too long");
-      xfree(pdir);
-      return NULL;
-   }
-   strcpy(npath, path);
-   strcat(npath, "/*.*");
-   pdir->path=xstrdup(npath);
-
-   pdir->status = 0;
-   memset(&pdir->fileinfo, 0, sizeof(pdir->fileinfo)); /* no need for compat because WIN32 always has memset() */
-   pdir->lFindHandle = _findfirst(npath, &pdir->fileinfo);
-   if (pdir->lFindHandle < 0) {
-      xfree((void *)pdir->path); /* avoid warning */
-      xfree(pdir);
-      return NULL;
-   }
-
+	status = 0;
+	std::memset(&fileinfo, 0, sizeof(fileinfo));
+	lFindHandle = _findfirst(path.c_str(), &fileinfo);
+	if (lFindHandle < 0)
+		throw OpenError(path);
 #else /* POSIX style */
-
-   pdir->path=xstrdup(path);
-   if ((pdir->dir=opendir(path))==NULL) {
-      xfree((void *)pdir->path); /* avoid warning */
-      xfree(pdir);
-      return NULL;
-   }
-
+	if (!(dir=opendir(path.c_str())))
+		throw OpenError(path);
 #endif /* WIN32-POSIX */
-
-   return pdir;
 }
 
-
-extern int p_rewinddir(t_pdir * pdir) {
-   if (pdir==NULL) {
-      eventlog(eventlog_level_error,__FUNCTION__,"got NULL pdir");
-      return -1;
-   }
-   if (pdir->path==NULL) {
-      eventlog(eventlog_level_error,__FUNCTION__,"got pdir with NULL path");
-      return -1;
-   }
+Directory::~Directory() throw()
+{
 #ifdef WIN32
-   /* i dont have any win32 around so i dont know if io.h has any rewinddir equivalent */
-   /* FIXME: for the time being ill just close and reopen it */
-   if (pdir->status!=-1)
-   {
-       if (pdir->lFindHandle<0) {
-	   eventlog(eventlog_level_error,__FUNCTION__,"WIN32: got negative lFindHandle");
-	   return -1;
-       }
-       _findclose(pdir->lFindHandle);
-   }
-   pdir->status = 0;
-   std::memset(&pdir->fileinfo, 0, sizeof(pdir->fileinfo)); /* no need for compat because WIN32 always has memset() */
-   pdir->lFindHandle = _findfirst(pdir->path, &pdir->fileinfo);
-   if (pdir->lFindHandle < 0) {
-      pdir->status = -1;
-      return -1;
-   }
+	if (status!=-1)
+		_findclose(pdir->lFindHandle);
 #else /* POSIX */
-   if (pdir->dir==NULL) {
-      eventlog(eventlog_level_error,__FUNCTION__,"POSIX: got pdir with NULL dir");
-      return -1;
-   }
-   rewinddir(pdir->dir);
-#endif
-   return 0;
+	closedir(dir);
+#endif /* WIN32-POSIX */
 }
 
-
-extern char const * p_readdir(t_pdir * pdir) {
-   if (pdir==NULL) {
-      eventlog(eventlog_level_error,__FUNCTION__,"got NULL pdir");
-      return NULL;
-   }
-   if (pdir->path==NULL) {
-      eventlog(eventlog_level_error,__FUNCTION__,"got pdir with NULL path");
-      return NULL;
-   }
+void
+Directory::rewind()
+{
 #ifdef WIN32
-   switch (pdir->status)
-   {
-   default:
-   case -1: /* couldn't rewind */
-       eventlog(eventlog_level_error,__FUNCTION__,"got pdir with status -1");
-       return NULL;
-   case 0: /* freshly opened */
-       pdir->status = 1;
-       return pdir->fileinfo.name;
-   case 1: /* reading */
-       if (_findnext(pdir->lFindHandle, &pdir->fileinfo)<0)
-       {
-	   pdir->status = 2;
-	   return NULL;
-       }
-       else
-	   return pdir->fileinfo.name;
-       break;
-   case 2: /* EOF */
-       return NULL;
-   }
-#else /* POSIX */
-   {
-	struct dirent * dentry;
-
-	if (pdir->dir==NULL) {
-	    eventlog(eventlog_level_error,__FUNCTION__,"POSIX: got pdir with NULL dir");
-	    return NULL;
+	/* i dont have any win32 around so i dont know if io.h has any rewinddir equivalent */
+	/* FIXME: for the time being ill just close and reopen it */
+	if (status!=-1) {
+		_findclose(lFindHandle);
 	}
-	if ((dentry=readdir(pdir->dir))==NULL)
-	    return NULL;
-	return dentry->d_name;
-   }
-#endif /* WIN32-POSIX */
+	status = 0;
+	std::memset(&fileinfo, 0, sizeof(fileinfo));
+	lFindHandle = _findfirst(path.c_str(), &fileinfo);
+	if (lFindHandle < 0) {
+		ERROR0("WIN32: couldn't rewind directory");
+		status = -1;
+	}
+#else /* POSIX */
+	rewinddir(dir);
+#endif
 }
 
 
-extern int p_closedir(t_pdir * pdir) {
-   int ret;
-
-   if (pdir==NULL) {
-      eventlog(eventlog_level_error,__FUNCTION__,"got NULL pdir");
-      return -1;
-   }
-   if (pdir->path==NULL) {
-      eventlog(eventlog_level_error,__FUNCTION__,"got pdir with NULL path");
-      return -1;
-   }
+char const *
+Directory::read()
+{
+	const char * result;
 
 #ifdef WIN32
-   if (pdir->status!=-1)
-   {
-       if (pdir->lFindHandle<0) {
-	   eventlog(eventlog_level_info,__FUNCTION__,"WIN32: got NULL findhandle");
-	   return -1;
-       }
-       _findclose(pdir->lFindHandle); /* FIXME: what does _findclose() return on error? */
-   }
-   ret = 0;
+	switch (status) {
+	default:
+	case -1: /* couldn't rewind */
+		ERROR0("got status -1");
+		return 0;
+	case 0: /* freshly opened */
+		status = 1;
+		result = pdir->fileinfo.name;
+		break;
+	case 1: /* reading */
+		if (_findnext(pdir->lFindHandle, &pdir->fileinfo)<0) {
+			status = 2;
+			return 0;
+		} else result = pdir->fileinfo.name;
+		break;
+	case 2: /* EOF */
+		return 0;
+	}
 #else /* POSIX */
-   if (pdir->dir==NULL) {
-      eventlog(eventlog_level_info,__FUNCTION__,"POSIX: got NULL dir");
-      return -1;
-   }
-# ifdef CLOSEDIR_VOID
-    closedir(pdir->dir);
-    ret = 0;
-# else
-    ret = closedir(pdir->dir);
-# endif
+	struct dirent *dentry = readdir(dir);
+	if (!dentry) return 0;
+
+	result = dentry->d_name;
 #endif /* WIN32-POSIX */
 
-   xfree((void *)pdir->path); /* avoid warning */
-   xfree(pdir);
-   return ret;
+	if (result && !(strcmp(result, ".") && strcmp(result, "..")))
+		/* here we presume we don't get an infinite number of "." or ".." ;) */
+		return read();
+	return result;
 }
 
 }
