@@ -96,6 +96,7 @@ extern int account_inc_normal_losses(t_account * account, t_clienttag clienttag)
 extern int account_set_normal_losses(t_account * account, t_clienttag clienttag, unsigned losses);
 extern unsigned int account_get_normal_draws(t_account * account, t_clienttag clienttag);
 extern int account_inc_normal_draws(t_account * account, t_clienttag clienttag);
+extern int account_set_normal_draws(t_account * account, t_clienttag clienttag, unsigned draws);
 extern unsigned int account_get_normal_disconnects(t_account * account, t_clienttag clienttag);
 extern int account_inc_normal_disconnects(t_account * account, t_clienttag clienttag);
 extern int account_set_normal_disconnects(t_account * account, t_clienttag clienttag,unsigned discs);
@@ -124,6 +125,7 @@ extern int account_inc_ladder_wins(t_account * account, t_clienttag clienttag, t
 extern int account_set_ladder_wins(t_account * account, t_clienttag clienttag, t_ladder_id id,unsigned wins);
 extern unsigned int account_get_ladder_losses(t_account * account, t_clienttag clienttag, t_ladder_id id);
 extern int account_inc_ladder_draws(t_account * account, t_clienttag clienttag, t_ladder_id id);
+extern int account_set_ladder_draws(t_account * account, t_clienttag clienttag, t_ladder_id id,unsigned draws);
 extern unsigned int account_get_ladder_draws(t_account * account, t_clienttag clienttag, t_ladder_id id);
 extern int account_inc_ladder_losses(t_account * account, t_clienttag clienttag, t_ladder_id id);
 extern int account_set_ladder_losses(t_account * account, t_clienttag clienttag, t_ladder_id id,unsigned losses);
