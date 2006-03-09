@@ -4601,22 +4601,84 @@ static void _reset_d1_stats(t_account *account, t_clienttag ctag, t_connection *
 
 static void _reset_scw2_stats(t_account *account, t_clienttag ctag, t_connection *c)
 {
+    LadderList* ladderList;
+    unsigned int uid = account_get_uid(account);
+    
     account_set_normal_wins(account,ctag,0);
     account_set_normal_losses(account,ctag,0);
+    account_set_normal_draws(account,ctag,0);
     account_set_normal_disconnects(account,ctag,0);
 
+    // normal, current
     if (account_get_ladder_rating(account,ctag,ladder_id_normal)>0) {
 	account_set_ladder_wins(account,ctag,ladder_id_normal,0);
 	account_set_ladder_losses(account,ctag,ladder_id_normal,0);
+	account_set_ladder_draws(account,ctag,ladder_id_normal,0);
 	account_set_ladder_disconnects(account,ctag,ladder_id_normal,0);
 	account_set_ladder_rating(account,ctag,ladder_id_normal,0);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_highestrated,ladder_time_current));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_mostwins,ladder_time_current));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_mostgames,ladder_time_current));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
     }
 
+    // ironman, current
     if (account_get_ladder_rating(account,ctag,ladder_id_ironman)>0) {
 	account_set_ladder_wins(account,ctag,ladder_id_ironman,0);
 	account_set_ladder_losses(account,ctag,ladder_id_ironman,0);
+	account_set_ladder_draws(account,ctag,ladder_id_ironman,0);
 	account_set_ladder_disconnects(account,ctag,ladder_id_ironman,0);
 	account_set_ladder_rating(account,ctag,ladder_id_ironman,0);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_highestrated,ladder_time_current));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_mostwins,ladder_time_current));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_mostgames,ladder_time_current));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
+    }
+
+    // normal, active
+    if (account_get_ladder_active_rating(account,ctag,ladder_id_normal)>0) {
+	account_set_ladder_active_wins(account,ctag,ladder_id_normal,0);
+	account_set_ladder_active_losses(account,ctag,ladder_id_normal,0);
+	account_set_ladder_active_draws(account,ctag,ladder_id_normal,0);
+	account_set_ladder_active_disconnects(account,ctag,ladder_id_normal,0);
+	account_set_ladder_active_rating(account,ctag,ladder_id_normal,0);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_highestrated,ladder_time_active));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_mostwins,ladder_time_active));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_mostgames,ladder_time_active));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
+    }
+
+    // ironman, active
+    if (account_get_ladder_active_rating(account,ctag,ladder_id_ironman)>0) {
+	account_set_ladder_active_wins(account,ctag,ladder_id_ironman,0);
+	account_set_ladder_active_losses(account,ctag,ladder_id_ironman,0);
+	account_set_ladder_active_draws(account,ctag,ladder_id_ironman,0);
+	account_set_ladder_active_disconnects(account,ctag,ladder_id_ironman,0);
+	account_set_ladder_active_rating(account,ctag,ladder_id_ironman,0);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_highestrated,ladder_time_active));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_mostwins,ladder_time_active));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
+	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_mostgames,ladder_time_active));
+	if (ladderList != NULL) 
+		ladderList->delEntry(uid);
     }
 
     std::sprintf(msgtemp,"Resetted %s's %s Stats",account_get_name(account),clienttag_get_title(ctag));
@@ -4625,23 +4687,35 @@ static void _reset_scw2_stats(t_account *account, t_clienttag ctag, t_connection
 
 static void _reset_w3_stats(t_account *account, t_clienttag ctag, t_connection *c)
 {
+    LadderList* ladderList;
+    unsigned int uid = account_get_uid(account);
+    
     account_set_ladder_level(account,ctag,ladder_id_solo,0);
     account_set_ladder_xp(account,ctag,ladder_id_solo,0);
     account_set_ladder_wins(account,ctag,ladder_id_solo,0);
     account_set_ladder_losses(account,ctag,ladder_id_solo,0);
     account_set_ladder_rank(account,ctag,ladder_id_solo,0);
+    ladderList = ladders.getLadderList(LadderKey(ladder_id_solo,ctag,ladder_sort_default,ladder_time_default));
+    if (ladderList != NULL) 
+	ladderList->delEntry(uid);
 
     account_set_ladder_level(account,ctag,ladder_id_team,0);
     account_set_ladder_xp(account,ctag,ladder_id_team,0);
     account_set_ladder_wins(account,ctag,ladder_id_team,0);
     account_set_ladder_losses(account,ctag,ladder_id_team,0);
     account_set_ladder_rank(account,ctag,ladder_id_team,0);
+    ladderList = ladders.getLadderList(LadderKey(ladder_id_team,ctag,ladder_sort_default,ladder_time_default));
+    if (ladderList != NULL) 
+	ladderList->delEntry(uid);
 
     account_set_ladder_level(account,ctag,ladder_id_ffa,0);
     account_set_ladder_xp(account,ctag,ladder_id_ffa,0);
     account_set_ladder_wins(account,ctag,ladder_id_ffa,0);
     account_set_ladder_losses(account,ctag,ladder_id_ffa,0);
     account_set_ladder_rank(account,ctag,ladder_id_ffa,0);
+    ladderList = ladders.getLadderList(LadderKey(ladder_id_ffa,ctag,ladder_sort_default,ladder_time_default));
+    if (ladderList != NULL) 
+	ladderList->delEntry(uid);
     // this would now need a way to delete the team for all members now
     //account_set_atteamcount(account,ctag,0);
 
@@ -4716,6 +4790,8 @@ static int _handle_clearstats_command(t_connection *c, char const *text)
 
     if (all || ctag == CLIENTTAG_WAR3XP_UINT)
 	_reset_w3_stats(account,CLIENTTAG_WAR3XP_UINT,c);
+
+    ladders.update();
 
     return 0;
 }

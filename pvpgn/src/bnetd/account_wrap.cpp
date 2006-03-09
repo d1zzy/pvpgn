@@ -552,6 +552,21 @@ extern int account_inc_normal_draws(t_account * account, t_clienttag clienttag)
 }
 
 
+extern int account_set_normal_draws(t_account * account, t_clienttag clienttag,unsigned draws)
+{
+    char key[256];
+    char clienttag_str[5];
+
+    if (!clienttag) {
+	eventlog(eventlog_level_error,__FUNCTION__,"got bad clienttag");
+	return -1;
+    }
+    std::sprintf(key,"Record\\%s\\0\\draws",tag_uint_to_str(clienttag_str,clienttag));
+    return account_set_numattr(account,key,draws);
+}
+
+
+
 extern unsigned int account_get_normal_disconnects(t_account * account, t_clienttag clienttag)
 {
     char key[256];
@@ -956,6 +971,20 @@ extern int account_inc_ladder_draws(t_account * account, t_clienttag clienttag, 
     }
     std::sprintf(key,"Record\\%s\\%d\\draws",tag_uint_to_str(clienttag_str,clienttag),(int)id);
     return account_set_numattr(account,key,account_get_ladder_draws(account,clienttag,id)+1);
+}
+
+
+extern int account_set_ladder_draws(t_account * account, t_clienttag clienttag, t_ladder_id id,unsigned draws)
+{
+    char key[256];
+    char clienttag_str[5];
+
+    if (!clienttag) {
+       eventlog(eventlog_level_error,__FUNCTION__,"got bad clienttag");
+       return -1;
+    }
+    std::sprintf(key,"Record\\%s\\%s\\draws",tag_uint_to_str(clienttag_str,clienttag),ladder_id_str[(int)id]);
+    return account_set_numattr(account,key,draws);
 }
 
 

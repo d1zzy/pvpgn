@@ -1056,8 +1056,18 @@ LadderList::updateEntry(unsigned int uid_, unsigned int primary_, unsigned int s
 bool 
 LadderList::delEntry(unsigned int uid_)
 {
+	LList::iterator lit(ladder.begin());
+	for(; lit!=ladder.end() && lit->getUid()!=uid_; lit++);
 
-	return true;
+	if (lit==ladder.end())
+		return false; //account not on ladder
+	else{
+
+		lit->setRank(0,ladderKey);
+		ladder.erase(lit);
+		dirty = true;
+		return true;
+	}
 }
 
 
