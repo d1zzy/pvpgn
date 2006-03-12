@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001  Dizzy
+ * Copyright (C) 2001,2006  Dizzy
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -53,17 +53,20 @@ public:
 		~OpenError() throw() {}
 	};
 
-	explicit Directory(const std::string& fname);
+	explicit Directory(const std::string& fname, bool lazyread = false);
 	~Directory() throw();
 	void rewind();
-	char const * read();
+	char const * read() const;
+	void open(const std::string& fname, bool lazyread = false);
+	operator bool() const;
 
 private:
 	std::string        path;
+	bool lazyread;
 #ifdef WIN32
 	long               lFindHandle;
 	struct _finddata_t fileinfo;
-	int                status; /* -1 == failure, 0 == freshly opened, 1 == opened and read, 2 == eof */
+	mutable int        status; /* -1 == failure, 0 == freshly opened, 1 == opened and read, 2 == eof */
 #else /* POSIX */
 	DIR *              dir;
 #endif
@@ -71,6 +74,7 @@ private:
 	/* do not allow copying for the time being */
 	Directory(const Directory&);
 	Directory& operator=(const Directory&);
+	void close();
 };
 
 }
