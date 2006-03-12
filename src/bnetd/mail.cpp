@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001  Dizzy
+ * Copyright (C) 2001,2006  Dizzy
  * Copyright (C) 2004  Donny Redmond (dredmond@linuxmail.org)
  *
  * This program is free software; you can redistribute it and/or
@@ -83,7 +83,7 @@ Mail::timestamp() const
 }
 
 Mailbox::Mailbox(unsigned uid_)
-:uid(uid_), path(buildPath(prefs_get_maildir())), mdir(openDir())
+:uid(uid_), path(buildPath(prefs_get_maildir())), mdir(path, true)
 {
 }
 
@@ -95,25 +95,13 @@ Mailbox::buildPath(const std::string& root) const
 	return ostr.str();
 }
 
-std::auto_ptr<Directory>
-Mailbox::openDir() const
-{
-	std::auto_ptr<Directory> dir;
-	try {
-		dir.reset(new Directory(path));
-	} catch (const Directory::OpenError& ex) {
-	}
-
-	return dir;
-}
-
-std::auto_ptr<Directory>
+void
 Mailbox::createOpenDir()
 {
 	p_mkdir(prefs_get_maildir(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 	p_mkdir(path.c_str(), S_IRWXU | S_IXGRP | S_IRGRP | S_IROTH | S_IXOTH);
 
-	return openDir();
+	mdir.open(path, false);
 }
 
 Mailbox::~Mailbox() throw()
@@ -123,40 +111,32 @@ Mailbox::~Mailbox() throw()
 unsigned
 Mailbox::size() const
 {
-	/* consider NULL mdir as empty mailbox */
-	if (!mdir.get()) return 0;
+	mdir.rewind();
 
-	mdir->rewind();
-
-	char const * dentry;
 	unsigned count = 0;
-	while ((dentry=mdir->read())) if (dentry[0]!='.') count++;
+	while ((mdir.read())) count++;
 	return count;
 }
 
 bool
 Mailbox::empty() const
 {
-	/* consider NULL mdir as empty mailbox */
-	if (!mdir.get()) return true;
+	mdir.rewind();
 
-	mdir->rewind();
-
-	char const * dentry;
-	while ((dentry=mdir->read())) if (dentry[0]!='.') return false;
+	if (mdir.read()) return false;
 	return true;
 }
 
 void
 Mailbox::deliver(const std::string& sender, const std::string& mess)
 {
-	if (!mdir.get()) {
-		mdir = createOpenDir();
-		if (!mdir.get()) {
-			ERROR0("could not write into directory");
-			throw DeliverError("could not write into directory");
+	if (!mdir)
+		try {
+			createOpenDir();
+		} catch(const Directory::OpenError&) {
+			ERROR1("could not (re)open directory: '%s'", path.c_str());
+			throw DeliverError("could not (re)open directory: " + path);
 		}
-	}
 
 	std::ostringstream ostr;
 	ostr << path << '/' << std::setfill('0') << std::setw(15) << static_cast<unsigned long>(std::time(0));
@@ -191,14 +171,9 @@ Mailbox::read(const std::string& fname, const std::time_t& timestamp) const
 Mail
 Mailbox::read(unsigned int idx) const
 {
-	if (!mdir.get()) {
-		INFO0("mail not found");
-		throw ReadError("mail not found");
-	}
-
-	mdir->rewind();
-	const char * dentry = mdir->read();
-	for(unsigned i = 0; i < idx && (dentry = mdir->read());)
+	mdir.rewind();
+	const char * dentry = mdir.read();
+	for(unsigned i = 0; i < idx && (dentry = mdir.read());)
 		if (dentry[0] != '.') ++i;
 	if (!dentry) {
 		INFO0("mail not found");
@@ -215,18 +190,13 @@ Mailbox::read(unsigned int idx) const
 void
 Mailbox::readAll(MailList& dest) const
 {
-	if (!mdir.get()) {
-		/* no maildir, so emulate like empty maildir */
-		return;
-	}
-
-	mdir->rewind();
+	mdir.rewind();
 
 	std::string fname(path);
 	fname += '/';
 
 	const char* dentry;
-	while((dentry = mdir->read())) {
+	while((dentry = mdir.read())) {
 		if (dentry[0] == '.') continue;
 
 		try {
@@ -240,14 +210,9 @@ Mailbox::readAll(MailList& dest) const
 void
 Mailbox::erase(unsigned int idx)
 {
-	if (!mdir.get()) {
-		WARN0("index out of range");
-		return;
-	}
-
-	mdir->rewind();
-	const char* dentry = mdir->read();
-	for(unsigned i = 0; i < idx && (dentry = mdir->read());)
+	mdir.rewind();
+	const char* dentry = mdir.read();
+	for(unsigned i = 0; i < idx && (dentry = mdir.read());)
 		if (dentry[0] != '.') ++i;
 
 	if (!dentry) {
@@ -266,18 +231,13 @@ Mailbox::erase(unsigned int idx)
 void
 Mailbox::clear()
 {
-	if (!mdir.get()) {
-		/* nothing to clear */
-		return;
-	}
-
 	std::string fname(path);
 	fname += '/';
 
-	mdir->rewind();
+	mdir.rewind();
 
 	const char* dentry;
-	while((dentry = mdir->read())) {
+	while((dentry = mdir.read())) {
 		std::remove((fname + dentry).c_str());
 	}
 }

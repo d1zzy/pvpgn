@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001            Dizzy
+ * Copyright (C) 2001,2006       Dizzy
  * Copyright (C) 2004            Donny Redmond (dredmond@linuxmail.org)
  *
  * This program is free software; you can redistribute it and/or
@@ -94,11 +94,10 @@ public:
 private:
 	unsigned uid;
 	const std::string path;
-	std::auto_ptr<Directory> mdir;
+	mutable Directory mdir;
 
 	std::string buildPath(const std::string& root) const;
-	std::auto_ptr<Directory> openDir() const;
-	std::auto_ptr<Directory> createOpenDir();
+	void createOpenDir();
 	Mail read(const std::string& fname, const std::time_t& timestamp) const;
 
 	Mailbox(const Mailbox&);
