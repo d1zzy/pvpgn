@@ -34,7 +34,7 @@ namespace bnetd
 class AdBanner
 {
 public:
-	AdBanner(unsigned id_, bn_int extag, unsigned delay_, unsigned next_, const std::string& fname, const std::string& link_, t_clienttag client_);
+	AdBanner(unsigned id_, bn_int extag, unsigned delay_, unsigned next_, const std::string& fname, const std::string& link_, t_clienttag client_, t_gamelang lang_);
 	~AdBanner() throw();
 
 	unsigned getId() const;
@@ -43,6 +43,7 @@ public:
 	char const * getFilename() const;
 	char const * getLink() const;
 	t_clienttag getClient() const;
+	t_gamelang getGameLang() const;
 
 private:
 	unsigned id;
@@ -52,6 +53,7 @@ private:
 	const std::string filename;
 	const std::string link;
 	t_clienttag client;
+	t_gamelang lang;
 };
 
 class AdBannerComponent
@@ -60,22 +62,27 @@ public:
 	explicit AdBannerComponent(const std::string& fname);
 	~AdBannerComponent() throw();
 
-	const AdBanner* pick(t_clienttag ctag, unsigned prev_id) const;
-	const AdBanner* find(t_clienttag ctag, unsigned id) const;
+	typedef std::pair<t_clienttag, t_gamelang> AdKey;
+	const AdBanner* pick(t_clienttag ctag, t_gamelang lang, unsigned prev_id) const;
+	const AdBanner* find(t_clienttag ctag, t_gamelang lang, unsigned id) const;
 
 private:
 	typedef std::map<unsigned, AdBanner> AdIdMap;
-	typedef std::map<t_clienttag, AdIdMap> AdCtagMap;
+	typedef std::map<AdKey, AdIdMap> AdCtagMap;
 	typedef std::map<unsigned, AdIdMap::const_iterator> AdIdRefMap;
-	typedef std::map<t_clienttag, AdIdRefMap> AdCtagRefMap;
+	typedef std::map<AdKey, AdIdRefMap> AdCtagRefMap;
 
 	AdCtagMap adlist;
 	AdCtagRefMap adlist_init;
 	AdCtagRefMap adlist_start;
 	AdCtagRefMap adlist_norm;
 
-	const AdBanner* findRandom(const AdCtagRefMap& where, t_clienttag ctag) const;
-	void insert(AdCtagRefMap& where, const std::string& fname, unsigned id, unsigned delay, const std::string& link, unsigned next_id, const std::string& client);
+	const AdBanner* pick(AdKey adKey, unsigned prev_id) const;
+	const AdBanner* find(AdKey adKey, unsigned id) const;
+	const AdBanner* finder(AdKey adKey, unsigned id) const;
+	const AdBanner* findRandom(const AdCtagRefMap& where, AdKey adKey) const;
+	const AdBanner* randomFinder(const AdCtagRefMap& where, AdKey adKey) const;
+	void insert(AdCtagRefMap& where, const std::string& fname, unsigned id, unsigned delay, const std::string& link, unsigned next_id, const std::string& client, const std::string& lang);
 };
 
 extern scoped_ptr<AdBannerComponent> adbannerlist;
