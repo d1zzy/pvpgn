@@ -15,6 +15,7 @@ bnetd/ladder*:
 
 bnetd/adbanner:
   - requires changes in conf/ad.conf (unique id)
+  - requires changes in conf/ad.conf (language tag)
 
 common/fdwatch*:
   - no functional changes
