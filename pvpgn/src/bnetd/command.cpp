@@ -371,7 +371,7 @@ static const t_command_table_row standard_command_table[] =
 	{ "/uptime"             , _handle_uptime_command },
 	{ "/stats"              , _handle_stats_command },
 	{ "/astat"              , _handle_stats_command },
-	{ "/std::time"               , _handle_time_command },
+	{ "/time"               , _handle_time_command },
         { "/channel"            , _handle_channel_command },
 	{ "/join"               , _handle_channel_command },
 	{ "/rejoin"             , _handle_rejoin_command },
@@ -1331,7 +1331,7 @@ static int _handle_friends_command(t_connection * c, char const * text)
 	msg = skip_command(text);
 	/* if the message test is empty then ignore command */
 	if (msg[0]=='\0') {
-	    message_send_text(c,message_type_info,c,"Did not message any friends. Type some text next std::time.");
+	    message_send_text(c,message_type_info,c,"Did not message any friends. Type some text next time.");
 	    return 0;
 	}
 
