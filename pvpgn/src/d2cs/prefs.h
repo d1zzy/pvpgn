@@ -61,6 +61,7 @@ extern unsigned int prefs_get_game_maxlifetime(void);
 extern char const * prefs_get_ladder_dir(void);
 extern char const * d2cs_prefs_get_loglevels(void);
 extern unsigned int prefs_allow_gamelist_showall(void);
+extern unsigned int prefs_hide_pass_games(void);
 extern unsigned int prefs_allow_gamelimit(void);
 extern unsigned int prefs_check_multilogin(void);
 extern char const * prefs_get_d2gs_password(void);
