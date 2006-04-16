@@ -62,7 +62,8 @@ typedef enum
     ladder_id_ironman=3,
     ladder_id_solo=5,
     ladder_id_team=6,
-    ladder_id_ffa=7
+    ladder_id_ffa=7,
+    ladder_id_ateam=8
 } t_ladder_id;
 
 extern char * ladder_id_str[];
@@ -74,6 +75,7 @@ typedef enum
     ladder_option_disconnectisloss=1
 } t_ladder_option;
 
+typedef enum { referenceTypeAccount, referenceTypeTeam, referenceTypeClan } t_referenceType;
 
 class LadderKey
 {
@@ -98,17 +100,20 @@ class LadderReferencedObject
 {
 public:
 	explicit LadderReferencedObject(t_account *account_);
+	explicit LadderReferencedObject(t_team *team_);
 	~LadderReferencedObject() throw ();
 	bool getData(const LadderKey& ladderKey_, unsigned int& uid, unsigned int& primary_, unsigned int& secondary_, unsigned int& tertiary_) const;
 	unsigned int getRank(const LadderKey& ladderKey_) const;
 	bool setRank(const LadderKey& ladderKey_, unsigned int rank_) const;
 	t_account* getAccount() const;
+	t_team* getTeam() const;
 	void activate(const LadderKey& ladderKey_) const;
+	const t_referenceType getReferenceType() const;
 private:
-	typedef enum { referenceTypeAccount, referenceTypeTeam, referenceTypeClan } t_referenceType;
 
 	t_referenceType referenceType;
 	t_account * account;
+	t_team * team;
 };
 
 class LadderEntry
@@ -139,7 +144,7 @@ private:
 class LadderList
 {
 public:
-	explicit LadderList(LadderKey ladderkey_);
+	explicit LadderList(LadderKey ladderkey_, t_referenceType referenceType_);
 	~LadderList() throw ();
 	bool load();
 	bool save();
@@ -147,6 +152,7 @@ public:
 	void updateEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, unsigned int tertiary_ ,const LadderReferencedObject& referencedObject_);
 	bool delEntry(unsigned int uid_);
 	const LadderKey& getLadderKey() const;
+	const t_referenceType getReferenceType() const;
 	void sortAndUpdate();
 	const LadderReferencedObject* getReferencedObject(unsigned int rank) const;
 	unsigned int getRank(unsigned int uid_) const;
@@ -160,6 +166,7 @@ private:
 	bool dirty;
 	bool saved;
 	std::string ladderFilename;
+	t_referenceType referenceType;
 	bool loadBinary();
 	bool saveBinary();
 	void readdata(std::ifstream  &fp, unsigned int &data);

@@ -100,6 +100,7 @@ extern int team_get_wins(t_team * team);
 extern int team_get_losses(t_team * team);
 extern int team_get_xp(t_team * team);
 extern int team_get_level(t_team * team);
+extern int team_set_rank(t_team * team, unsigned int rank);
 extern int team_get_rank(t_team * team);
 extern std::time_t team_get_lastgame(t_team * team);
 
