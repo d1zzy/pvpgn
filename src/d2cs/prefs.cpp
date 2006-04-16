@@ -64,6 +64,7 @@ static struct
         unsigned int    maxgamelist;
         unsigned int    max_game_idletime;
         unsigned int    gamelist_showall;
+	unsigned int    hide_pass_games;
         unsigned int    game_maxlifetime;
         unsigned int    allow_gamelimit;
         unsigned int    allow_newchar;
@@ -150,6 +151,9 @@ static int conf_setdef_max_game_idletime(void);
 
 static int conf_set_gamelist_showall(const char* valstr);
 static int conf_setdef_gamelist_showall(void);
+
+static int conf_set_hide_pass_games(const char* valstr);
+static int conf_setdef_hide_pass_games(void);
 
 static int conf_set_game_maxlifetime(const char* valstr);
 static int conf_setdef_game_maxlifetime(void);
@@ -256,6 +260,7 @@ static t_conf_entry prefs_conf_table[]={
     { "maxgamelist",            conf_set_maxgamelist,            NULL,    conf_setdef_maxgamelist},
     { "max_game_idletime",      conf_set_max_game_idletime,      NULL,    conf_setdef_max_game_idletime},
     { "gamelist_showall",       conf_set_gamelist_showall,       NULL,    conf_setdef_gamelist_showall},
+    { "hide_pass_games",        conf_set_hide_pass_games,        NULL,    conf_setdef_hide_pass_games},
     { "game_maxlifetime",       conf_set_game_maxlifetime,       NULL,    conf_setdef_game_maxlifetime},
     { "allow_gamelimit",        conf_set_allow_gamelimit,        NULL,    conf_setdef_allow_gamelimit},
     { "allow_newchar",          conf_set_allow_newchar,          NULL,    conf_setdef_allow_newchar},
@@ -808,6 +813,22 @@ static int conf_set_gamelist_showall(const char* valstr)
 static int conf_setdef_gamelist_showall(void)
 {
 	return conf_set_bool(&prefs_conf.gamelist_showall,NULL,0);
+}
+
+
+extern unsigned int prefs_hide_pass_games(void)
+{
+	return prefs_conf.hide_pass_games;
+}
+
+static int conf_set_hide_pass_games(const char* valstr)
+{
+	return conf_set_bool(&prefs_conf.hide_pass_games,valstr,0);
+}
+
+static int conf_setdef_hide_pass_games(void)
+{
+	return conf_set_bool(&prefs_conf.hide_pass_games,NULL,0);
 }
 
 

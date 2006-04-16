@@ -460,6 +460,9 @@ static int on_client_gamelistreq(t_connection * c, t_packet * packet)
 		if (!prefs_allow_gamelist_showall()) {
 			if (conn_get_charinfo_difficulty(c)!=game_get_gameflag_difficulty(game)) continue;
 		}
+		if (prefs_hide_pass_games())
+			if (d2cs_game_get_pass(game)) continue;
+
 		if (d2cs_try_joingame(c,game,"")!=D2CS_CLIENT_JOINGAMEREPLY_SUCCEED) continue;
 		if ((rpacket=packet_create(packet_class_d2cs))) {
 			packet_set_size(rpacket,sizeof(t_d2cs_client_gamelistreply));
