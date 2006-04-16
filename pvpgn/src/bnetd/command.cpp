@@ -45,6 +45,7 @@
 #include "common/queue.h"
 #include "common/bn_type.h"
 #include "common/xalloc.h"
+#include "common/xstr.h"
 #include "common/trans.h"
 #include "common/lstr.h"
 
@@ -3631,6 +3632,7 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
   unsigned int rank;
   unsigned int i,j;
   t_account *  account;
+  t_team * team;
   t_clienttag clienttag;
   const LadderReferencedObject* referencedObject;
   LadderList* ladderList;
@@ -3844,23 +3846,25 @@ static int _handle_ladderinfo_command(t_connection * c, char const *text)
 	std::sprintf(msgtemp,"WarCraft3 FFA   %5u: <none>",rank);
       message_send_text(c,message_type_info,c,msgtemp);
 
-      /*
-      if ((account = ladder_get_account(at_ladder(clienttag),rank,&teamcount,clienttag)))
-	{
-	  if (account_get_atteammembers(account,teamcount,clienttag))
+      ladderList = ladders.getLadderList(LadderKey(ladder_id_ateam, clienttag, ladder_sort_default, ladder_time_default));
+      referencedObject = ladderList->getReferencedObject(rank);
+      if ((referencedObject) && (team = referencedObject->getTeam()))
+      {
+	    t_xstr * membernames = xstr_alloc();
+	    for (unsigned char i=0; i<team_get_size(team);i++){
+		    xstr_cat_str(membernames, account_get_name(team_get_member(team,i)));
+		    if ((i)) xstr_cat_char(membernames,',');
+	    }
 	    std::sprintf(msgtemp,"WarCraft3 AT Team   %5u: %-80.80s %u/%u/0",
 		    rank,
-		    account_get_atteammembers(account,teamcount,clienttag),
-		    account_get_atteamwin(account,teamcount,clienttag),
-		    account_get_atteamloss(account,teamcount,clienttag));
-
-	  else
-	    std::sprintf(msgtemp,"WarCraft3 AT Team   %5u: <invalid team info>",rank);
+		    xstr_get_str(membernames),
+		    team_get_wins(team),
+		    team_get_losses(team));
+	    xstr_free(membernames);
 	}
       else
 	std::sprintf(msgtemp,"WarCraft3 AT Team  %5u: <none>",rank);
       message_send_text(c,message_type_info,c,msgtemp);
-      */
     }
   //<---
   else

@@ -48,6 +48,7 @@
 #include "account_wrap.h"
 #include "prefs.h"
 #include "ladder_calc.h"
+#include "team.h"
 #include "common/setup_after.h"
 
 #define MaxRankKeptInLadder 1000
@@ -64,7 +65,7 @@ static t_xplevel_entry * xplevels;
 int w3_xpcalc_maxleveldiff;
 
 char * ladder_id_str[] = {"0","1","","3","","solo","team","ffa"};
-char * bin_ladder_id_str[] = {"","","","I","","SOLO","TEAM","FFA"};
+char * bin_ladder_id_str[] = {"","","","I","","SOLO","TEAM","FFA","AT"};
 char * bin_ladder_sort_str[] = { "R", "W", "G", ""};
 char * bin_ladder_time_str[] = { "A", "C", ""};
 
@@ -511,7 +512,13 @@ LadderKey::getOpposingKey() const
 				
 
 LadderReferencedObject::LadderReferencedObject(t_account *account_)
-:referenceType(referenceTypeAccount), account(account_)
+:referenceType(referenceTypeAccount), account(account_), team(NULL)
+{
+}
+
+
+LadderReferencedObject::LadderReferencedObject(t_team *team_)
+:referenceType(referenceTypeTeam), account(NULL), team(team_)
 {
 }
 
@@ -583,6 +590,15 @@ LadderReferencedObject::getData(const LadderKey& ladderKey_, unsigned int& uid_,
 			}
 		}
 	}
+	else if (referenceType == referenceTypeTeam)
+	{
+		uid_    = team_get_teamid(team);
+		if (!(primary_ = team_get_level(team)))
+			return false;
+		secondary_ = team_get_xp(team);
+		tertiary_ = 0;
+		return true;
+	}
 
 	return false;
 }
@@ -609,6 +625,9 @@ LadderReferencedObject::getRank(const LadderKey& ladderKey_) const
 			// the account rank is only determined by highestrated/default ladder sort
 			return 0;
 		}
+	}else if (referenceType == referenceTypeTeam)
+	{
+		return team_get_rank(team);
 	}
 	return 0;
 }
@@ -635,6 +654,9 @@ LadderReferencedObject::setRank(const LadderKey& ladderKey_, unsigned int rank_)
 			// the account rank is only determined by highestrated/default ladder sort
 			return false;
 		}
+	}else if (referenceType == referenceTypeTeam)
+	{
+		team_set_rank(team,rank_);
 	}
 	return true;
 }
@@ -672,12 +694,31 @@ LadderReferencedObject::activate(const LadderKey& ladderKey_) const
 		}
 	}
 }
+
+
+const t_referenceType
+LadderReferencedObject::getReferenceType() const
+{
+	return referenceType;
+}
 		
 
 t_account *
 LadderReferencedObject::getAccount() const
 {
-	return account;
+	if (referenceType == referenceTypeAccount)
+		return account;
+	else
+		return NULL;
+}
+
+t_team * 
+LadderReferencedObject::getTeam() const
+{
+	if (referenceType == referenceTypeTeam)
+		return team;
+	else
+		return NULL;
 }
 
 
@@ -789,8 +830,8 @@ LadderEntry::operator< (const LadderEntry& right) const
 		
 
 
-LadderList::LadderList(LadderKey ladderKey_)
-:ladderKey(ladderKey_), dirty(true),saved(false)
+LadderList::LadderList(LadderKey ladderKey_, t_referenceType referenceType_)
+:ladderKey(ladderKey_), dirty(true),saved(false),referenceType(referenceType)
 {
         ladderFilename = clienttag_uint_to_str(ladderKey_.getClienttag());
 	ladderFilename += "_";
@@ -1030,6 +1071,12 @@ LadderList::saveBinary()
 void
 LadderList::addEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, unsigned int tertiary_, const LadderReferencedObject& referencedObject_)
 {
+	if (referenceType != referencedObject_.getReferenceType())
+	{
+		eventlog(eventlog_level_error,__FUNCTION__,"referenceType of LadderList and referencedObject do mismatch");
+		return;
+	}
+
 	LadderEntry entry(uid_, primary_ ,secondary_, tertiary_, referencedObject_);
 	ladder.push_back(entry);
 	dirty = true;
@@ -1039,6 +1086,12 @@ LadderList::addEntry(unsigned int uid_, unsigned int primary_, unsigned int seco
 void
 LadderList::updateEntry(unsigned int uid_, unsigned int primary_, unsigned int secondary_, unsigned int tertiary_, const LadderReferencedObject& referencedObject_)
 {
+	if (referenceType != referencedObject_.getReferenceType())
+	{
+		eventlog(eventlog_level_error,__FUNCTION__,"referenceType of LadderList and referencedObject do mismatch");
+		return;
+	}
+
 	LList::iterator lit(ladder.begin());
 	for(; lit!=ladder.end() && lit->getUid()!=uid_; lit++);
 
@@ -1102,6 +1155,14 @@ LadderList::getLadderKey() const
 }
 
 
+const t_referenceType
+LadderList::getReferenceType() const
+{
+
+	return referenceType;
+}
+
+
 void
 LadderList::activateFrom(const LadderList * currentLadder_)
 {
@@ -1146,98 +1207,105 @@ Ladders::Ladders()
 {
   // WAR3 ladders
   LadderKey WAR3_solo(ladder_id_solo, CLIENTTAG_WARCRAFT3_UINT, ladder_sort_default, ladder_time_default);
-  ladderMap.insert(std::make_pair(WAR3_solo,LadderList(WAR3_solo)));
+  ladderMap.insert(std::make_pair(WAR3_solo,LadderList(WAR3_solo, referenceTypeAccount)));
   
   LadderKey WAR3_team(ladder_id_team, CLIENTTAG_WARCRAFT3_UINT, ladder_sort_default, ladder_time_default);
-  ladderMap.insert(std::make_pair(WAR3_team,LadderList(WAR3_team)));
+  ladderMap.insert(std::make_pair(WAR3_team,LadderList(WAR3_team, referenceTypeAccount)));
   
   LadderKey WAR3_ffa(ladder_id_ffa, CLIENTTAG_WARCRAFT3_UINT, ladder_sort_default, ladder_time_default);
-  ladderMap.insert(std::make_pair(WAR3_ffa,LadderList(WAR3_ffa)));
+  ladderMap.insert(std::make_pair(WAR3_ffa,LadderList(WAR3_ffa, referenceTypeAccount)));
+
+  LadderKey WAR3_ateam(ladder_id_ateam, CLIENTTAG_WARCRAFT3_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(WAR3_ateam,LadderList(WAR3_ateam, referenceTypeTeam)));
+
   
   //W3XP ladders
   LadderKey W3XP_solo(ladder_id_solo, CLIENTTAG_WAR3XP_UINT, ladder_sort_default, ladder_time_default);
-  ladderMap.insert(std::make_pair(W3XP_solo,LadderList(W3XP_solo)));
+  ladderMap.insert(std::make_pair(W3XP_solo,LadderList(W3XP_solo, referenceTypeAccount)));
   
   LadderKey W3XP_team(ladder_id_team, CLIENTTAG_WAR3XP_UINT, ladder_sort_default, ladder_time_default);
-  ladderMap.insert(std::make_pair(W3XP_team,LadderList(W3XP_team)));
+  ladderMap.insert(std::make_pair(W3XP_team,LadderList(W3XP_team, referenceTypeAccount)));
 
   LadderKey W3XP_ffa(ladder_id_ffa, CLIENTTAG_WAR3XP_UINT, ladder_sort_default, ladder_time_default);
-  ladderMap.insert(std::make_pair(W3XP_ffa,LadderList(W3XP_ffa)));
+  ladderMap.insert(std::make_pair(W3XP_ffa,LadderList(W3XP_ffa, referenceTypeAccount)));
+
+  LadderKey W3XP_ateam(ladder_id_ateam, CLIENTTAG_WAR3XP_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(W3XP_ateam,LadderList(W3XP_ateam, referenceTypeTeam)));
 
   //STAR ladders
   LadderKey STAR_ar(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_highestrated, ladder_time_active);
-  ladderMap.insert(std::make_pair(STAR_ar,LadderList(STAR_ar)));
+  ladderMap.insert(std::make_pair(STAR_ar,LadderList(STAR_ar, referenceTypeAccount)));
 
   LadderKey STAR_aw(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_mostwins, ladder_time_active);
-  ladderMap.insert(std::make_pair(STAR_aw,LadderList(STAR_aw)));
+  ladderMap.insert(std::make_pair(STAR_aw,LadderList(STAR_aw, referenceTypeAccount)));
   
   LadderKey STAR_ag(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_mostgames, ladder_time_active);
-  ladderMap.insert(std::make_pair(STAR_ag,LadderList(STAR_ag)));
+  ladderMap.insert(std::make_pair(STAR_ag,LadderList(STAR_ag, referenceTypeAccount)));
 
   LadderKey STAR_cr(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_highestrated, ladder_time_current);
-  ladderMap.insert(std::make_pair(STAR_cr,LadderList(STAR_cr)));
+  ladderMap.insert(std::make_pair(STAR_cr,LadderList(STAR_cr, referenceTypeAccount)));
 
   LadderKey STAR_cw(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_mostwins, ladder_time_current);
-  ladderMap.insert(std::make_pair(STAR_cw,LadderList(STAR_cw)));
+  ladderMap.insert(std::make_pair(STAR_cw,LadderList(STAR_cw, referenceTypeAccount)));
   
   LadderKey STAR_cg(ladder_id_normal, CLIENTTAG_STARCRAFT_UINT, ladder_sort_mostgames, ladder_time_current);
-  ladderMap.insert(std::make_pair(STAR_cg,LadderList(STAR_cg)));
+  ladderMap.insert(std::make_pair(STAR_cg,LadderList(STAR_cg, referenceTypeAccount)));
 
   //SEXP ladders
   LadderKey SEXP_ar(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_highestrated, ladder_time_active);
-  ladderMap.insert(std::make_pair(SEXP_ar,LadderList(SEXP_ar)));
+  ladderMap.insert(std::make_pair(SEXP_ar,LadderList(SEXP_ar, referenceTypeAccount)));
 
   LadderKey SEXP_aw(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_mostwins, ladder_time_active);
-  ladderMap.insert(std::make_pair(SEXP_aw,LadderList(SEXP_aw)));
+  ladderMap.insert(std::make_pair(SEXP_aw,LadderList(SEXP_aw, referenceTypeAccount)));
   
   LadderKey SEXP_ag(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_mostgames, ladder_time_active);
-  ladderMap.insert(std::make_pair(SEXP_ag,LadderList(SEXP_ag)));
+  ladderMap.insert(std::make_pair(SEXP_ag,LadderList(SEXP_ag, referenceTypeAccount)));
 
   LadderKey SEXP_cr(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_highestrated, ladder_time_current);
-  ladderMap.insert(std::make_pair(SEXP_cr,LadderList(SEXP_cr)));
+  ladderMap.insert(std::make_pair(SEXP_cr,LadderList(SEXP_cr, referenceTypeAccount)));
 
   LadderKey SEXP_cw(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_mostwins, ladder_time_current);
-  ladderMap.insert(std::make_pair(SEXP_cw,LadderList(SEXP_cw)));
+  ladderMap.insert(std::make_pair(SEXP_cw,LadderList(SEXP_cw, referenceTypeAccount)));
   
   LadderKey SEXP_cg(ladder_id_normal, CLIENTTAG_BROODWARS_UINT, ladder_sort_mostgames, ladder_time_current);
-  ladderMap.insert(std::make_pair(SEXP_cg,LadderList(SEXP_cg)));
+  ladderMap.insert(std::make_pair(SEXP_cg,LadderList(SEXP_cg, referenceTypeAccount)));
 
   //W2BN ladders
   LadderKey W2BN_ar(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_highestrated, ladder_time_active);
-  ladderMap.insert(std::make_pair(W2BN_ar,LadderList(W2BN_ar)));
+  ladderMap.insert(std::make_pair(W2BN_ar,LadderList(W2BN_ar, referenceTypeAccount)));
   
   LadderKey W2BN_aw(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostwins, ladder_time_active);
-  ladderMap.insert(std::make_pair(W2BN_aw,LadderList(W2BN_aw)));
+  ladderMap.insert(std::make_pair(W2BN_aw,LadderList(W2BN_aw, referenceTypeAccount)));
   
   LadderKey W2BN_ag(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostgames, ladder_time_active);
-  ladderMap.insert(std::make_pair(W2BN_ag,LadderList(W2BN_ag)));
+  ladderMap.insert(std::make_pair(W2BN_ag,LadderList(W2BN_ag, referenceTypeAccount)));
   
   LadderKey W2BN_cr(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_highestrated, ladder_time_current);
-  ladderMap.insert(std::make_pair(W2BN_cr,LadderList(W2BN_cr)));
+  ladderMap.insert(std::make_pair(W2BN_cr,LadderList(W2BN_cr, referenceTypeAccount)));
   
   LadderKey W2BN_cw(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostwins, ladder_time_current);
-  ladderMap.insert(std::make_pair(W2BN_cw,LadderList(W2BN_cw)));
+  ladderMap.insert(std::make_pair(W2BN_cw,LadderList(W2BN_cw, referenceTypeAccount)));
   
   LadderKey W2BN_cg(ladder_id_normal, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostgames, ladder_time_current);
-  ladderMap.insert(std::make_pair(W2BN_cg,LadderList(W2BN_cg)));
+  ladderMap.insert(std::make_pair(W2BN_cg,LadderList(W2BN_cg, referenceTypeAccount)));
   
   LadderKey W2BN_ari(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_highestrated, ladder_time_active);
-  ladderMap.insert(std::make_pair(W2BN_ari,LadderList(W2BN_ari)));
+  ladderMap.insert(std::make_pair(W2BN_ari,LadderList(W2BN_ari, referenceTypeAccount)));
   
   LadderKey W2BN_awi(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostwins, ladder_time_active);
-  ladderMap.insert(std::make_pair(W2BN_awi,LadderList(W2BN_awi)));
+  ladderMap.insert(std::make_pair(W2BN_awi,LadderList(W2BN_awi, referenceTypeAccount)));
   
   LadderKey W2BN_agi(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostgames, ladder_time_active);
-  ladderMap.insert(std::make_pair(W2BN_agi,LadderList(W2BN_agi)));
+  ladderMap.insert(std::make_pair(W2BN_agi,LadderList(W2BN_agi, referenceTypeAccount)));
   
   LadderKey W2BN_cri(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_highestrated, ladder_time_current);
-  ladderMap.insert(std::make_pair(W2BN_cri,LadderList(W2BN_cri)));
+  ladderMap.insert(std::make_pair(W2BN_cri,LadderList(W2BN_cri, referenceTypeAccount)));
   
   LadderKey W2BN_cwi(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostwins, ladder_time_current);
-  ladderMap.insert(std::make_pair(W2BN_cwi,LadderList(W2BN_cwi)));
+  ladderMap.insert(std::make_pair(W2BN_cwi,LadderList(W2BN_cwi, referenceTypeAccount)));
   
   LadderKey W2BN_cgi(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostgames, ladder_time_current);
-  ladderMap.insert(std::make_pair(W2BN_cgi,LadderList(W2BN_cgi)));
+  ladderMap.insert(std::make_pair(W2BN_cgi,LadderList(W2BN_cgi, referenceTypeAccount)));
 
 }
 
@@ -1304,6 +1372,12 @@ Ladders::rebuild(std::list<LadderList*>& laddersToRebuild)
         LadderReferencedObject referencedObject(account);
         for (std::list<LadderList*>::iterator lit(laddersToRebuild.begin()); lit!=laddersToRebuild.end(); lit++)
         {
+		// only do handle referenceTypeAccount ladders here
+		if ((*lit)->getReferenceType() != referenceTypeAccount)
+		{
+			continue;
+		}
+
 		if (referencedObject.getData((*lit)->getLadderKey(),uid,primary,secondary,tertiary))
 		{
 			(*lit)->addEntry(uid, primary, secondary, tertiary, referencedObject);
@@ -1311,6 +1385,10 @@ Ladders::rebuild(std::list<LadderList*>& laddersToRebuild)
         }
       }
     }
+
+  // now we would need to traverse teamlist, too.
+  // how about comletly moving this code into team?
+
   eventlog(eventlog_level_debug,__FUNCTION__,"done rebuilding ladders");
 
 }

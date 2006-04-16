@@ -360,6 +360,7 @@ t_clienttag team_get_clienttag(t_team * team)
 
     return team->clienttag;
 }
+
 unsigned char team_get_size(t_team * team)
 {
     assert(team);
@@ -393,6 +394,13 @@ int team_get_level(t_team * team)
     assert(team);
 
     return team->level;
+}
+
+int team_set_rank(t_team * team, unsigned int rank)
+{
+   assert(team);
+   team->rank = rank;
+   return 0;
 }
 
 int team_get_rank(t_team * team)
@@ -526,11 +534,11 @@ int team_set_saveladderstats(t_team * team, unsigned int gametype, int result, u
   team_update_xp(team, result, opponlevel,&xpdiff);
   team_update_level(team);
   team_update_lastgame(team);
-  level = team_get_level(team);
-  /*
-  if (war3_ladder_update(at_ladder(clienttag),uid,xpdiff,level,account,0)!=0)
-    war3_ladder_add(at_ladder(clienttag),uid,account_get_atteamxp(account,current_teamnum,clienttag),level,account,0,clienttag);
-    */
+
+  LadderList* ladderList = ladders.getLadderList(LadderKey(ladder_id_ateam,clienttag,ladder_sort_default,ladder_time_default));
+  LadderReferencedObject reference(team);
+  ladderList->updateEntry(team->teamid,team->level,team->xp,0,reference);
+
   storage->write_team(team);
 
 
