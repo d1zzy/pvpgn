@@ -871,16 +871,6 @@ typedef struct
 #define SERVER_AUTHREPLY1_MESSAGE_BADVERSION  0x00000000
 #define SERVER_AUTHREPLY1_MESSAGE_UPDATE      0x00000001 /* initiate auto-update */
 #define SERVER_AUTHREPLY1_MESSAGE_OK          0x00000002
-/* anything other than these is considered to be ok */
-/* Hmm... Blizzard messed up and changed the meanings of the flags in LoD 108.
- * they seem to be moving to "zero is success" so they can have multiple error
- * messages.  109 fixes it because they introduced new packets to replace
- * these. */
-#define SERVER_AUTHREPLY1_D2XP_MESSAGE_OK         0x00000001
-#define SERVER_AUTHREPLY1_D2XP_MESSAGE_BADVERSION 0x00000000 /* Battle.net is unable to properly identify you application version. */
-#define SERVER_AUTHREPLY1_D2XP_MESSAGE_UPDATE     0x00000000 /* FIXME: there doesn't seem to be an update reply... should we send a different packet or should we be appending a string to this reply or .... */
-#define SERVER_AUTHREPLY1_D2XP_MESSAGE_BADKEY     0x00000002 /* This application was installed with a CD key which is not authorized Battle.net use. */
-/* anything 3 and higher seems to be considered the same as BADVERSION */
 /******************************************************/
 
 
