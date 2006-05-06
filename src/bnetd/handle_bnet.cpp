@@ -662,10 +662,7 @@ static int _client_progident(t_connection * c, t_packet const *const packet)
 	if ((rpacket = packet_create(packet_class_bnet))) {
 	    packet_set_size(rpacket, sizeof(t_server_authreply1));
 	    packet_set_type(rpacket, SERVER_AUTHREPLY1);
-	    if (bn_int_get(packet->u.client_progident.clienttag) == CLIENTTAG_DIABLO2XP_UINT)
-		bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_D2XP_MESSAGE_OK);
-	    else
-		bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_OK);
+	    bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_OK);
 	    packet_append_string(rpacket, "");
 	    packet_append_string(rpacket, "");	/* FIXME: what's the second string for? */
 	    conn_push_outqueue(c, rpacket);
@@ -1049,10 +1046,7 @@ static int _client_authreq1(t_connection * c, t_packet const *const packet)
 
 	    if (failed) {
 		conn_set_state(c, conn_state_untrusted);
-		if (bn_int_get(packet->u.client_progident.clienttag) == CLIENTTAG_DIABLO2XP_UINT)
-		    bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_D2XP_MESSAGE_BADVERSION);
-		else
-		    bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_BADVERSION);
+		bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_BADVERSION);
 		packet_append_string(rpacket, "");
 	    } else {
 		char *mpqfilename;
@@ -1062,17 +1056,11 @@ static int _client_authreq1(t_connection * c, t_packet const *const packet)
 		/* Only handle updates when there is an update file available. */
 		if (mpqfilename != NULL) {
 		    eventlog(eventlog_level_info, __FUNCTION__, "[%d] an upgrade for version %s is available \"%s\"", conn_get_socket(c), versioncheck_get_versiontag(conn_get_versioncheck(c)), mpqfilename);
-		    if (bn_int_get(packet->u.client_progident.clienttag) == CLIENTTAG_DIABLO2XP_UINT)
-			bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_D2XP_MESSAGE_UPDATE);
-		    else
-			bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_UPDATE);
+		    bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_UPDATE);
 		    packet_append_string(rpacket, mpqfilename);
 		} else {
 		    eventlog(eventlog_level_info, __FUNCTION__, "[%d] no upgrade for %s is available", conn_get_socket(c), versioncheck_get_versiontag(conn_get_versioncheck(c)));
-		    if (bn_int_get(packet->u.client_progident.clienttag) == CLIENTTAG_DIABLO2XP_UINT)
-			bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_D2XP_MESSAGE_OK);
-		    else
-			bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_OK);
+		    bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_OK);
 		    packet_append_string(rpacket, "");
 		}
 
@@ -3927,7 +3915,7 @@ static int _client_ladderreq(t_connection * c, t_packet const *const packet)
 			eventlog(eventlog_level_error, __FUNCTION__, "[%d] got unknown value for ladderreq.type=%u", conn_get_socket(c), type);
 			error = true;
 	}
-	
+
 	LadderList* ladderList_active = NULL;
 	LadderList* ladderList_current = NULL;
 
@@ -3936,14 +3924,14 @@ static int _client_ladderreq(t_connection * c, t_packet const *const packet)
 	ladderList_active = ladders.getLadderList(LadderKey(id,clienttag,sort,ladder_time_active));
 	ladderList_current = ladders.getLadderList(LadderKey(id,clienttag,sort,ladder_time_current));
 	}
-	
+
 	for (i = start; i < start + count; i++) {
-		
+
 
 		const LadderReferencedObject* referencedObject = NULL;
 		account = NULL;
 		if (!error){
-			
+
 		    	if (!(referencedObject = ladderList_active->getReferencedObject(i+1)))
 			    	referencedObject = ladderList_current->getReferencedObject(i+1);
 		}
