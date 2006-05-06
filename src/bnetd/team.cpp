@@ -509,7 +509,7 @@ int team_update_level(t_team * team)
 int team_set_saveladderstats(t_team * team, unsigned int gametype, int result, unsigned int opponlevel,t_clienttag clienttag)
 {
   unsigned int intrace;
-  int xpdiff,level;
+  int xpdiff;
   int i;
   t_account * account;
 
