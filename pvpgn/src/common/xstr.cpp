@@ -36,7 +36,7 @@ namespace pvpgn
 /* enlarge "dst" enough so it can hold more "size" characters (not including terminator) */
 static void xstr_enlarge(t_xstr* dst, int size)
 {
-	if (dst->alen - dst->ulen < size + 1) {
+	if (dst->alen < dst->ulen + size + 1) {
 		int nalen = ((dst->ulen + size + 10) / XSTR_INCREMENT + 1) * XSTR_INCREMENT;
 
 		dst->str = (char*)xrealloc(dst->str, nalen);
