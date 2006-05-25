@@ -11,7 +11,7 @@ ResourceIncludes=
 MakeIncludes=
 Compiler=
 CppCompiler=
-Linker=-lws2_32 -llibz_@@_
+Linker=-lws2_32 -lz_@@_
 IsCpp=1
 Icon=
 ExeOutput=..\bin
@@ -27,7 +27,7 @@ SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=0000000000000000000000
 CustomMakefile=
-PrivateResource=PvPGNConsole_private.rc
+PrivateResource=
 
 [Unit1]
 FileName=..\src\bnetd\watch.cpp
