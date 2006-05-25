@@ -56,7 +56,7 @@ public:
 	explicit Directory(const std::string& fname, bool lazyread = false);
 	~Directory() throw();
 	void rewind();
-	char const * read();
+	char const * read() const;
 	void open(const std::string& fname, bool lazyread = false);
 	operator bool() const;
 
@@ -65,7 +65,7 @@ private:
 	bool lazyread;
 #ifdef WIN32
 	long               lFindHandle;
-	struct _finddata_t fileinfo;
+	mutable struct _finddata_t fileinfo;
 	mutable int        status; /* -1 == failure, 0 == freshly opened, 1 == opened and read, 2 == eof */
 #else /* POSIX */
 	DIR *              dir;
