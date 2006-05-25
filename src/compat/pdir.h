@@ -56,7 +56,7 @@ public:
 	explicit Directory(const std::string& fname, bool lazyread = false);
 	~Directory() throw();
 	void rewind();
-	char const * read() const;
+	char const * read();
 	void open(const std::string& fname, bool lazyread = false);
 	operator bool() const;
 

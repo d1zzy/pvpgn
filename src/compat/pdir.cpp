@@ -94,7 +94,7 @@ Directory::rewind()
 
 
 char const *
-Directory::read() const
+Directory::read()
 {
 	const char * result;
 
