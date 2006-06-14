@@ -552,7 +552,7 @@ static int sd_tcpinput(t_connection * c)
     switch (net_recv_packet(csocket,packet,&currsize))
     {
     case -1:
-	eventlog(eventlog_level_debug,__FUNCTION__,"[%d] read FAILED (closing connection)",conn_get_socket(c));
+	eventlog(eventlog_level_debug,__FUNCTION__,"[%d] read returned -1 (closing connection)",conn_get_socket(c));
 	/* marking connection as "destroyed", memory will be freed later */
 	conn_set_state(c, conn_state_destroy);
 	return -2;
