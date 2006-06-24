@@ -13,9 +13,14 @@ Changes:
 bnetd/ladder*:
   - no longer supports output of xml ladder files (at least so far)
 
+bnetd/mail
+
 bnetd/adbanner:
   - requires changes in conf/ad.conf (unique id)
   - requires changes in conf/ad.conf (language tag)
 
 common/fdwatch*:
   - no functional changes
+
+compat/pdir
+  - converted to "Directory" class
