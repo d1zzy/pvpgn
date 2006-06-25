@@ -1,10 +1,12 @@
 ##############################################################################
-# bnetd.conf  -  Configuration file for the Unix Battle.net daemon           #
+# bnetd.conf  -  Configuration file for the main PvPGN service               #
 #----------------------------------------------------------------------------#
 #                                                                            #
-# This file is an example configuration and may require modification to      #
-# suit your needs or your site.  Blank lines and lines starting with a "#"   #
-# are ignored.  Use quotes around values that contain spaces.                #
+# ############ READ THIS ######### READ THIS ########## READ THIS ############
+# This file is an example configuration that should work UNMODIFIED for most #
+# of the PvPGN setups and may require modification to suit your needs.       #
+# Blank lines and everything after a "#" are ignored.  Use quotes around     #
+# values that contain spaces.                                                #
 #                                                                            #
 ##############################################################################
 
