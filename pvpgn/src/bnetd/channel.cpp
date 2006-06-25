@@ -478,7 +478,7 @@ extern int channel_add_connection(t_channel * channel, t_connection * connection
     		message_send_text(user,message_type_join,connection,NULL);
         }
 
-    /* please don't std::remove this notice */
+    /* please don't remove this notice */
     if (channel->log)
 	message_send_text(connection,message_type_info,connection,prefs_get_log_notice());
 

@@ -323,7 +323,7 @@ extern int handle_telnet_packet(t_connection * c, t_packet const * const packet)
 
 		if ((channel = conn_get_channel(c)))
 		    channel_message_log(channel,c,1,linestr);
-		/* we don't std::log game commands currently */
+		/* we don't log game commands currently */
 
 		if (linestr[0]=='/')
 		    handle_command(c,linestr);
