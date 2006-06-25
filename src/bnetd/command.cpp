@@ -2092,29 +2092,23 @@ static int _handle_channel_command(t_connection * c, char const *text)
        return 0;
      }
 
-   if(strcasecmp(text,"Arranged Teams")==0)
-     {
-//       if(account_get_auth_admin(conn_get_account(c))>0)
-//	 {
-//	   message_send_text(c,message_type_error,c,"Please do not talk in channel Arranged Teams");
-//	   message_send_text(c,message_type_error,c,"This channel is dedicated for the preparation of");
-//	   message_send_text(c,message_type_error,c,"Arranged Team Games.");
-//	 }
-//       else
-//	 {
+   if (!conn_get_game(c)) {
+	if(strcasecmp(text,"Arranged Teams")==0)
+	{
 	   message_send_text(c,message_type_error,c,"Channel Arranged Teams is a RESTRICTED Channel!");
 	   return 0;
-//	 }
-     }
+	}
 
-   if ((channel = conn_get_channel(c)) && (strcasecmp(channel_get_name(channel),text)==0))
-     return 0; // we don't have to do anything, we are allready in this channel
+	if ((channel = conn_get_channel(c)) && (strcasecmp(channel_get_name(channel),text)==0))
+		return 0; // we don't have to do anything, we are allready in this channel
 
-   if (conn_set_channel(c,text)<0)
-     conn_set_channel(c,CHANNEL_NAME_BANNED); /* should not fail */
-   if ((conn_get_clienttag(c) == CLIENTTAG_WARCRAFT3_UINT) || (conn_get_clienttag(c) == CLIENTTAG_WAR3XP_UINT))
-     conn_update_w3_playerinfo(c);
-   command_set_flags(c);
+	if (conn_set_channel(c,text)<0)
+		conn_set_channel(c,CHANNEL_NAME_BANNED); /* should not fail */
+	if ((conn_get_clienttag(c) == CLIENTTAG_WARCRAFT3_UINT) || (conn_get_clienttag(c) == CLIENTTAG_WAR3XP_UINT))
+		conn_update_w3_playerinfo(c);
+	command_set_flags(c);
+   } else 
+   	message_send_text(c,message_type_error,c,"Command disabled while inside a game.");
 
    return 0;
  }
