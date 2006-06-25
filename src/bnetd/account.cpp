@@ -575,8 +575,8 @@ static t_account * accountlist_add_account(t_account * account)
         return NULL;
     }
     if (uid<1) {
-	eventlog(eventlog_level_error,__FUNCTION__,"got bad account (bad uid), fix it!");
-	uid = maxuserid + 1;
+    	ERROR1("got bad account (bad uid) for \"%s\", fix it!", username);
+	return NULL;
     }
 
     /* check whether the account limit was reached */
