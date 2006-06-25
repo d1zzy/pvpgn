@@ -14,28 +14,44 @@
 #-------------------------------------------------------------------------------#
 #										#
 # Your realm server name							#
+# Here you put the value of the first column from the realm line in realm.conf
+# Example, if you have the line
+# "MyRealm" "My Super Realm" <someIP>:6113
+# in realm.conf then here you put realmname = "MyRealm"
 realmname		=	D2CS
 
 # This is a comma delimited list of hostnames that the server should
-# listen on.  It might be useful to make an internal-only server on a
-# gateway machine for example.  If the list is not set or if it has a
-# entry with no host component, the server will bind to that port on all
-# interfaces.
+# listen on.  Generally, YOU DONT NEED TO TOUCH THIS but it might be useful 
+# to make an internal-only server on a gateway machine for example.  If the 
+# list is not set or if it has a entry with no host component, the server will 
+# bind to that port on all interfaces.
 # d2cs default listening port is 6113
 # WARNING!! DO NOT USE "127.0.0.1" or "localhost" !!!
 servaddrs		=	0.0.0.0:6113
 
-# This is a comma delimited list of game servers
+# This is a comma delimited list of game servers. Put here the IPs
+# (without ports) of the machines running d2gs. If you run d2gs on the same 
+# machine as d2cs you put the IP of that machine here.
+# Example: gameservlist = 192.168.1.10
+# (if you have a d2gs running on a machine with the IP 192.168.1.10)
+#
+# YOU MUST CHANGE THIS OR D2CS WON'T WORK PROPERLY
+#
 # WARNING!! DO NOT USE "127.0.0.1" or "localhost" !!!
-#gameservlist		=	your.gameserver,another.gameserver
+gameservlist		=	<d2gs-IP>,<another-d2gs-IP>
 
-# This is bnetd server address with port 
+# Put here the address and port of the machine running bnetd (or pvpgn.exe). 
+# If you run d2cs on the same machine as bnetd (or pvpgn.exe) then here you 
+# put the IP of that machine.
+#
+# YOU MUST CHANGE THIS OR D2CS WON'T WORK PROPERLY
+#
 # bnetd default listening port is 6112
 # WARNING!! DO NOT USE "127.0.0.1" or "localhost" !!!
-#bnetdaddr		=	xxx.xxx.xxx.xxx:6112
+bnetdaddr		=	<bnetd-IP>:6112
 
 # Set this to the maximum number of concurrent connections allowed on 
-# this server.
+# this server. DO NOT TOUCH UNLESS STRICTLY NECESSARY!
 max_connections = 1000
 
 # This sets the realm to Classic or LOD or Both
