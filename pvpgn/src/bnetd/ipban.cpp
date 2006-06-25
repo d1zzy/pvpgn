@@ -84,7 +84,7 @@ extern int ipbanlist_destroy(void)
 		continue;
 	    }
 	    if (list_remove_elem(ipbanlist_head,&curr)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
 	    ipban_unload_entry(entry);
 	}
 	if (list_destroy(ipbanlist_head)<0)
@@ -445,7 +445,7 @@ extern int ipbanlist_unload_expired(void)
 	    eventlog(eventlog_level_debug,__FUNCTION__,"removing item: %s",entry->info1);
 	    removed = 1;
 	    if (list_remove_elem(ipbanlist_head,&curr)<0)
-		eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item");
+		eventlog(eventlog_level_error,__FUNCTION__,"could not remove item");
 	    else
 		ipban_unload_entry(entry);
 	}
@@ -588,7 +588,7 @@ static int ipban_func_del(t_connection * c, char const * cp)
 	    {
 		counter++;
 		if (list_remove_elem(ipbanlist_head,&curr)<0)
-		    eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item");
+		    eventlog(eventlog_level_error,__FUNCTION__,"could not remove item");
 		else
 		    ipban_unload_entry(entry);
 	    }
@@ -628,7 +628,7 @@ static int ipban_func_del(t_connection * c, char const * cp)
 		return -1;
 	    }
 	    if (list_remove_elem(ipbanlist_head,&curr)<0)
-	        eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item");
+	        eventlog(eventlog_level_error,__FUNCTION__,"could not remove item");
 	    else
 	    {
 	        ipban_unload_entry(entry);

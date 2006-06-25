@@ -117,7 +117,7 @@ extern int sq_destroy(t_sq * sq,t_elem ** curr)
 {
 	ASSERT(sq,-1);
 	if (list_remove_data(sqlist_head,sq,curr)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove server queue from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"error remove server queue from list");
 		return -1;
 	}
 	if (sq->packet) packet_del_ref(sq->packet);

@@ -84,7 +84,7 @@ extern int gq_destroy(t_gq * gq, t_elem ** elem)
 {
 	ASSERT(gq,-1);
 	if (list_remove_data(gqlist_head,gq,elem)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove game queue from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"error remove game queue from list");
 		return -1;
 	}
 	if (gq->packet) packet_del_ref(gq->packet);

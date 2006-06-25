@@ -242,7 +242,7 @@ extern int main(int argc, char * * argv)
 	cleanup();
 	if (pidfile) {
 		if (std::remove(pidfile)<0)
-			eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove pid file \"%s\" (std::remove: %s)",pidfile,std::strerror(errno));
+			eventlog(eventlog_level_error,__FUNCTION__,"could not remove pid file \"%s\" (std::remove: %s)",pidfile,std::strerror(errno));
 		xfree((void *)pidfile); /* avoid warning */
 	}
 	config_cleanup();
