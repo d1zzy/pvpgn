@@ -12,17 +12,22 @@
 # Server Major Settings								#
 #-------------------------------------------------------------------------------#
 # This is a comma delimited list of hostnames that the server should
-# listen on.  It might be useful to make an internal-only server on a
-# gateway machine for example.  If the list is not set or if it has a
-# entry with no host component, the server will bind to that port on all
-# interfaces.
-# dbs default listening port is 6114
+# listen on.  Generally, YOU DONT NEED TO TOUCH THIS but it might be useful 
+# to make an internal-only server on a gateway machine for example.  If the 
+# list is not set or if it has a entry with no host component, the server will 
+# bind to that port on all interfaces.
+# d2dbs default listening port is 6114
 # WARNING!! DO NOT USE "127.0.0.1" or "localhost" !!!
 servaddrs	= 0.0.0.0:6114
 
-# This is a comma delimited list of game servers
+# Put here EXACTLY the same thing you put in d2cs.conf gameservlist setting.
+# For more information about this setting consult the d2cs.conf comments
+# above it.
+#
+# YOU MUST CHANGE THIS OR D2DBS WON'T WORK PROPERLY
+#
 # WARNING!! DO NOT USE "127.0.0.1" or "localhost" !!!
-#gameservlist	= your.gameserver,another.gameserver
+gameservlist            =       <d2gs-IP>,<another-d2gs-IP>
 
 #										#
 #################################################################################
