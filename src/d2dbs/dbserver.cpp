@@ -173,7 +173,7 @@ int dbs_server_setup_fdsets(t_psock_fd_set * pReadFDs, t_psock_fd_set * pWriteFD
 
 	PSOCK_FD_ZERO(pReadFDs);
 	PSOCK_FD_ZERO(pWriteFDs);
-	PSOCK_FD_ZERO(pExceptFDs); /* FIXME: don't check these... std::remove this code */
+	PSOCK_FD_ZERO(pExceptFDs); /* FIXME: don't check these... remove this code */
 	/* Add the listener socket to the read and except FD sets, if there is one. */
 	if (lsocket >= 0) {
 		PSOCK_FD_SET(lsocket, pReadFDs);

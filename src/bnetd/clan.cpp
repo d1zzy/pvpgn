@@ -1283,7 +1283,7 @@ extern int clan_remove_member(t_clan * clan, t_clanmember * member)
 	return -1;
     if (list_remove_data(clan->members, member, &elem) < 0)
     {
-	eventlog(eventlog_level_error, __FUNCTION__, "could not std::remove member");
+	eventlog(eventlog_level_error, __FUNCTION__, "could not remove member");
 	return -1;
     }
     if (member->memberacc != NULL)

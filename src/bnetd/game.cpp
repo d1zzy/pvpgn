@@ -680,7 +680,7 @@ static int game_sanity_check(t_game_result * results, t_account * * players, uns
 	    eventlog(eventlog_level_error,__FUNCTION__,"some, but not all players had a draw count=%u (winners=%u losers=%u draws=%u)",count,winners,losers,draws);
 	    return -1;
 	}
-        return 0; 
+        return 0;
     }
 
     if ((discisloss) && ((losers<1) || (winners<1) || (winners>1 && (winners!=losers))))
@@ -688,7 +688,7 @@ static int game_sanity_check(t_game_result * results, t_account * * players, uns
         eventlog(eventlog_level_info,__FUNCTION__,"missing winner or loser for count=%u (winners=%u losers=%u)",count,winners,losers);
 	return -1;
     }
-    
+
     return 0;
 }
 
@@ -784,7 +784,7 @@ static int game_report(t_game * game)
 	    eventlog(eventlog_level_info,__FUNCTION__,"ignoring game");
 	    return -1;
 	}
-	
+
         if (game_sanity_check(game->results, game->players, realcount, game_is_ladder(game) && game_discisloss(game))<0)
         {
 	    eventlog(eventlog_level_info,__FUNCTION__,"game results ignored due to inconsistencies");
@@ -1653,7 +1653,7 @@ extern int game_del_player(t_game * game, t_connection * c)
        conn_set_leavegamewhisper_ack(c,1); //1 = already whispered. We reset this each std::time user joins a channel
      }
 
-    eventlog(eventlog_level_debug,__FUNCTION__,"game \"%s\" has ref=%u, count=%u; trying to std::remove player \"%s\"",game_get_name(game),game->ref,game->count,account_get_name(account));
+    eventlog(eventlog_level_debug,__FUNCTION__,"game \"%s\" has ref=%u, count=%u; trying to remove player \"%s\"",game_get_name(game),game->ref,game->count,account_get_name(account));
 
     for (i=0; i<game->count; i++)
 	if (game->players[i]==account && game->connections[i])
@@ -2252,7 +2252,7 @@ extern int game_discisloss(t_game *game)
 
     if (prefs_get_discisloss())
         return 1;
-		
+
     /* all normal ladder games provide discisloss option themselves */
     if (game->type == game_type_ladder ||
         game->type == game_type_ironman) return game->option==game_option_ladder_countasloss;
@@ -2260,7 +2260,7 @@ extern int game_discisloss(t_game *game)
     /* additional game types that are consideres ladder are always considered discasloss */
     if (game_match_type(game_get_type(game),prefs_get_ladder_games()) &&
 	game_match_name(game_get_name(game),prefs_get_ladder_prefix())) return 1;
-    
+
     /* all other games are handled as usual */
     return  game->option==game_option_ladder_countasloss;
 }

@@ -432,7 +432,7 @@ void pvpgn_greeting(void)
 	{
         eventlog(eventlog_level_info,__FUNCTION__,"running on %s %s %s (%s)",utsbuf.sysname, utsbuf.version, utsbuf.release, utsbuf.machine);
     }
- 
+
     printf("You are currently Running "PVPGN_SOFTWARE" "PVPGN_VERSION"\n");
     printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
     printf("If you need support:\n");
@@ -517,7 +517,7 @@ try {
 // Delete pidfile
     if (pidfile) {
 	if (std::remove(pidfile)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove pid file \"%s\" (std::remove: %s)",pidfile,std::strerror(errno));
+	    eventlog(eventlog_level_error,__FUNCTION__,"could not remove pid file \"%s\" (std::remove: %s)",pidfile,std::strerror(errno));
 	xfree((void *)pidfile); /* avoid warning */
     }
 

@@ -177,7 +177,7 @@ extern int d2gs_destroy(t_d2gs * gs, t_elem ** curr)
 {
 	ASSERT(gs,-1);
 	if (list_remove_data(d2gslist_head,gs,curr)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove gs from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"error remove gs from list");
 		return -1;
 	}
 	if (gs->active && gs->connection) {

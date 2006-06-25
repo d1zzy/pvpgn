@@ -430,7 +430,7 @@ extern int d2cs_conn_destroy(t_connection * c, t_elem ** curr)
 	ASSERT(c,-1);
 	if (c->state==conn_state_destroying) return 0;
 	if (hashtable_remove_data(connlist_head,c,c->sessionnum_hash)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove connection from list");
+		eventlog(eventlog_level_error,__FUNCTION__,"error remove connection from list");
 		return -1;
 	}
 	c->state=conn_state_destroying;
@@ -484,7 +484,7 @@ extern int d2cs_conn_set_state(t_connection * c, t_conn_state state)
 	    list_append_data(connlist_dead, c);
 	} else if (state != conn_state_destroy && c->state == conn_state_destroy) {
 	    if (list_remove_data(connlist_dead, c, &curr)) {
-		eventlog(eventlog_level_error, __FUNCTION__, "could not std::remove dead connection");
+		eventlog(eventlog_level_error, __FUNCTION__, "could not remove dead connection");
 		return -1;
 	    }
 	}
@@ -649,7 +649,7 @@ extern int d2cs_conn_set_charname(t_connection * c, char const * charname)
 	if (charname) temp=xstrdup(charname);
 	if (c->charname) {
 		if (hashtable_remove_data(conn_charname_list_head,c,c->charname_hash) <0) {
-			eventlog(eventlog_level_error,__FUNCTION__,"error std::remove charname %s from list",charname);
+			eventlog(eventlog_level_error,__FUNCTION__,"error remove charname %s from list",charname);
 			if (temp) xfree((void *)temp);
 			return -1;
 		}

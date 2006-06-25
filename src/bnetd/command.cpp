@@ -920,7 +920,7 @@ static int _handle_devoice_command(t_connection * c, char const * text)
 	}
 	else
 	{
-	    std::sprintf(msgtemp,"You must be at least Channel Admin to std::remove %s from the VOP list",username);
+	    std::sprintf(msgtemp,"You must be at least Channel Admin to remove %s from the VOP list",username);
 	}
 	done = 1;
     }
@@ -1204,17 +1204,6 @@ static int _handle_friends_command(t_connection * c, char const * text)
 
     text = skip_command(text);;
 
-    if(text[0]=='\0' || strstart(text,"help")==0 || strstart(text, "h")==0) {
-	message_send_text(c,message_type_info,c,"Friends List (Used in Arranged Teams and finding online friends.)");
-	message_send_text(c,message_type_info,c,"Type: /f add <username> (adds a friend to your list)");
-	message_send_text(c,message_type_info,c,"Type: /f del <username> (removes a friend from your list)");
-	message_send_text(c,message_type_info,c,"Type: /f promote <username> (promote a friend in your list)");
-	message_send_text(c,message_type_info,c,"Type: /f demote <username> (demote a friend in your list)");
-	message_send_text(c,message_type_info,c,"Type: /f list (shows your full friends list)");
-	message_send_text(c,message_type_info,c,"Type: /f msg (whispers a message to all your friends at once)");
-	return 0;
-    }
-
     if (strstart(text,"add")==0 || strstart(text,"a")==0) {
 	char msgtemp[MAX_MESSAGE_LEN];
 	t_packet 	* rpacket;
@@ -1316,11 +1305,7 @@ static int _handle_friends_command(t_connection * c, char const * text)
 
 	conn_push_outqueue(c,rpacket);
 	packet_del_ref(rpacket);
-
-	return 0;
-    }
-
-    if (strstart(text,"msg")==0 || strstart(text,"w")==0 || strstart(text,"whisper")==0 || strstart(text,"m")==0)
+    } else if (strstart(text,"msg")==0 || strstart(text,"w")==0 || strstart(text,"whisper")==0 || strstart(text,"m")==0)
     {
 	char const *msg;
 	int cnt = 0;
@@ -1357,11 +1342,7 @@ static int _handle_friends_command(t_connection * c, char const * text)
 	    message_send_text(c,message_type_friendwhisperack,c,msg);
         else
 	    message_send_text(c,message_type_info,c,"All your friends are offline.");
-
-	return 0;
-    }
-
-    if (strstart(text,"r")==0 || strstart(text,"std::remove")==0
+    } else if (strstart(text,"r")==0 || strstart(text,"remove")==0
 	|| strstart(text,"del")==0 || strstart(text,"delete")==0) {
 
 	int num;
@@ -1371,7 +1352,7 @@ static int _handle_friends_command(t_connection * c, char const * text)
 	text = skip_command(text);
 
 	if (text[0]=='\0') {
-	    message_send_text(c,message_type_info,c,"usage: /f std::remove <username>");
+	    message_send_text(c,message_type_info,c,"usage: /f remove <username>");
 	    return 0;
 	}
 
@@ -1398,9 +1379,7 @@ static int _handle_friends_command(t_connection * c, char const * text)
 
     		return 0;
 	}
-    }
-
-    if (strstart(text,"p")==0 || strstart(text,"promote")==0) {
+    } else if (strstart(text,"p")==0 || strstart(text,"promote")==0) {
 	int num;
 	int n;
 	char msgtemp[MAX_MESSAGE_LEN];
@@ -1444,10 +1423,7 @@ static int _handle_friends_command(t_connection * c, char const * text)
 		packet_del_ref(rpacket);
 		return 0;
 	    }
-	return 0;
-    }
-
-    if (strstart(text,"d")==0 || strstart(text,"demote")==0) {
+    } else if (strstart(text,"d")==0 || strstart(text,"demote")==0) {
 	int num;
 	int n;
 	char msgtemp[MAX_MESSAGE_LEN];
@@ -1491,10 +1467,7 @@ static int _handle_friends_command(t_connection * c, char const * text)
 		packet_del_ref(rpacket);
 		return 0;
 	    }
-	return 0;
-    }
-
-    if (strstart(text,"list")==0 || strstart(text,"l")==0) {
+    } else if (strstart(text,"list")==0 || strstart(text,"l")==0) {
 	char const * frienduid;
 	char status[128];
 	char software[64];
@@ -1557,8 +1530,14 @@ static int _handle_friends_command(t_connection * c, char const * text)
 	}
 	message_send_text(c,message_type_info,c,"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 	message_send_text(c,message_type_info,c,"End of Friends List");
-
-	return 0;
+    } else {
+	message_send_text(c,message_type_info,c,"Friends List (Used in Arranged Teams and finding online friends.)");
+	message_send_text(c,message_type_info,c,"Type: /f add <username> (adds a friend to your list)");
+	message_send_text(c,message_type_info,c,"Type: /f del <username> (removes a friend from your list)");
+	message_send_text(c,message_type_info,c,"Type: /f promote <username> (promote a friend in your list)");
+	message_send_text(c,message_type_info,c,"Type: /f demote <username> (demote a friend in your list)");
+	message_send_text(c,message_type_info,c,"Type: /f list (shows your full friends list)");
+	message_send_text(c,message_type_info,c,"Type: /f msg (whispers a message to all your friends at once)");
     }
 
     return 0;
@@ -2107,7 +2086,7 @@ static int _handle_channel_command(t_connection * c, char const *text)
 	if ((conn_get_clienttag(c) == CLIENTTAG_WARCRAFT3_UINT) || (conn_get_clienttag(c) == CLIENTTAG_WAR3XP_UINT))
 		conn_update_w3_playerinfo(c);
 	command_set_flags(c);
-   } else 
+   } else
    	message_send_text(c,message_type_error,c,"Command disabled while inside a game.");
 
    return 0;
@@ -3267,7 +3246,7 @@ static int _handle_finger_command(t_connection * c, char const *text)
 }
 
 /*
- * rewrote command /operator to add and std::remove operator status [Omega]
+ * rewrote command /operator to add and remove operator status [Omega]
  *
  * Fixme: rewrite /operators to show Currently logged on Server and/or Channel operators ...??
  */
@@ -4601,7 +4580,7 @@ static void _reset_scw2_stats(t_account *account, t_clienttag ctag, t_connection
 {
     LadderList* ladderList;
     unsigned int uid = account_get_uid(account);
-    
+
     account_set_normal_wins(account,ctag,0);
     account_set_normal_losses(account,ctag,0);
     account_set_normal_draws(account,ctag,0);
@@ -4615,13 +4594,13 @@ static void _reset_scw2_stats(t_account *account, t_clienttag ctag, t_connection
 	account_set_ladder_disconnects(account,ctag,ladder_id_normal,0);
 	account_set_ladder_rating(account,ctag,ladder_id_normal,0);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_highestrated,ladder_time_current));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_mostwins,ladder_time_current));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_mostgames,ladder_time_current));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
     }
 
@@ -4633,13 +4612,13 @@ static void _reset_scw2_stats(t_account *account, t_clienttag ctag, t_connection
 	account_set_ladder_disconnects(account,ctag,ladder_id_ironman,0);
 	account_set_ladder_rating(account,ctag,ladder_id_ironman,0);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_highestrated,ladder_time_current));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_mostwins,ladder_time_current));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_mostgames,ladder_time_current));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
     }
 
@@ -4651,13 +4630,13 @@ static void _reset_scw2_stats(t_account *account, t_clienttag ctag, t_connection
 	account_set_ladder_active_disconnects(account,ctag,ladder_id_normal,0);
 	account_set_ladder_active_rating(account,ctag,ladder_id_normal,0);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_highestrated,ladder_time_active));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_mostwins,ladder_time_active));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_normal,ctag,ladder_sort_mostgames,ladder_time_active));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
     }
 
@@ -4669,13 +4648,13 @@ static void _reset_scw2_stats(t_account *account, t_clienttag ctag, t_connection
 	account_set_ladder_active_disconnects(account,ctag,ladder_id_ironman,0);
 	account_set_ladder_active_rating(account,ctag,ladder_id_ironman,0);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_highestrated,ladder_time_active));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_mostwins,ladder_time_active));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
 	ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman,ctag,ladder_sort_mostgames,ladder_time_active));
-	if (ladderList != NULL) 
+	if (ladderList != NULL)
 		ladderList->delEntry(uid);
     }
 
@@ -4687,14 +4666,14 @@ static void _reset_w3_stats(t_account *account, t_clienttag ctag, t_connection *
 {
     LadderList* ladderList;
     unsigned int uid = account_get_uid(account);
-    
+
     account_set_ladder_level(account,ctag,ladder_id_solo,0);
     account_set_ladder_xp(account,ctag,ladder_id_solo,0);
     account_set_ladder_wins(account,ctag,ladder_id_solo,0);
     account_set_ladder_losses(account,ctag,ladder_id_solo,0);
     account_set_ladder_rank(account,ctag,ladder_id_solo,0);
     ladderList = ladders.getLadderList(LadderKey(ladder_id_solo,ctag,ladder_sort_default,ladder_time_default));
-    if (ladderList != NULL) 
+    if (ladderList != NULL)
 	ladderList->delEntry(uid);
 
     account_set_ladder_level(account,ctag,ladder_id_team,0);
@@ -4703,7 +4682,7 @@ static void _reset_w3_stats(t_account *account, t_clienttag ctag, t_connection *
     account_set_ladder_losses(account,ctag,ladder_id_team,0);
     account_set_ladder_rank(account,ctag,ladder_id_team,0);
     ladderList = ladders.getLadderList(LadderKey(ladder_id_team,ctag,ladder_sort_default,ladder_time_default));
-    if (ladderList != NULL) 
+    if (ladderList != NULL)
 	ladderList->delEntry(uid);
 
     account_set_ladder_level(account,ctag,ladder_id_ffa,0);
@@ -4712,7 +4691,7 @@ static void _reset_w3_stats(t_account *account, t_clienttag ctag, t_connection *
     account_set_ladder_losses(account,ctag,ladder_id_ffa,0);
     account_set_ladder_rank(account,ctag,ladder_id_ffa,0);
     ladderList = ladders.getLadderList(LadderKey(ladder_id_ffa,ctag,ladder_sort_default,ladder_time_default));
-    if (ladderList != NULL) 
+    if (ladderList != NULL)
 	ladderList->delEntry(uid);
     // this would now need a way to delete the team for all members now
     //account_set_atteamcount(account,ctag,0);

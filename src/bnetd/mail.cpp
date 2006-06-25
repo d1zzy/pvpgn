@@ -225,7 +225,7 @@ Mailbox::erase(unsigned int idx)
 	fname += dentry;
 
 	if (std::remove(fname.c_str()) < 0)
-		INFO2("could not std::remove file \"%s\" (std::remove: %s)", fname.c_str(), std::strerror(errno));
+		INFO2("could not remove file \"%s\" (std::remove: %s)", fname.c_str(), std::strerror(errno));
 }
 
 void

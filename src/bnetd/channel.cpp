@@ -266,7 +266,7 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
 
     if (list_remove_data(channellist_head,channel,curr)<0)
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
+        eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
         return -1;
     }
 
@@ -281,7 +281,7 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
 	else
 	    xfree((void *)banned); /* avoid warning */
 	if (list_remove_elem(channel->banlist,&ban)<0)
-	    eventlog(eventlog_level_error,__FUNCTION__,"unable to std::remove item from list");
+	    eventlog(eventlog_level_error,__FUNCTION__,"unable to remove item from list");
     }
     list_destroy(channel->banlist);
 
@@ -764,7 +764,7 @@ extern int channel_unban_user(t_channel * channel, char const * user)
         {
             if (list_remove_elem(channel->banlist,&curr)<0)
             {
-                eventlog(eventlog_level_error,__FUNCTION__,"unable to std::remove item from list");
+                eventlog(eventlog_level_error,__FUNCTION__,"unable to remove item from list");
                 return -1;
             }
             xfree((void *)banned); /* avoid warning */
@@ -1125,7 +1125,7 @@ extern int channellist_reload(void)
 	    member = member->next;
 	  }
 
-	  /* Second pass - std::remove connections from channel */
+	  /* Second pass - remove connections from channel */
 	  member = old_channel->memberlist;
 	  while (member)
 	  {
@@ -1194,7 +1194,7 @@ extern int channellist_reload(void)
 	  xfree((void*)channel->shortname);
 
 	if (list_remove_data(channellist_old,channel,&curr)<0)
-	  eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
+	  eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
 	xfree((void*)channel);
 
       }

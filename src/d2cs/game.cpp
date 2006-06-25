@@ -202,7 +202,7 @@ extern int game_destroy(t_game * game, t_elem ** elem)
 		gamelist_curr_elem=elem_get_next_const(gamelist_head,gamelist_curr_elem);
 	}
 	if (list_remove_data(gamelist_head,game,elem)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove game %s on game list",game->name);
+		eventlog(eventlog_level_error,__FUNCTION__,"error remove game %s on game list",game->name);
 		return -1;
 	}
 	total_game--;
@@ -284,7 +284,7 @@ extern int game_del_character(t_game * game, char const * charname)
 		return -1;
 	}
 	if (list_remove_data(game->charlist,charinfo,&elem)) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error std::remove character %s from game %s",charname,game->name);
+		eventlog(eventlog_level_error,__FUNCTION__,"error remove character %s from game %s",charname,game->name);
 		return -1;
 	}
 	if (charinfo->charname) xfree((void *)charinfo->charname);

@@ -475,7 +475,7 @@ extern int characterlist_destroy(void)
             }
 
             if (list_remove_elem(characterlist_head,&curr)<0)
-                eventlog(eventlog_level_error,__FUNCTION__,"could not std::remove item from list");
+                eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
             xfree(ch);
         }
 
