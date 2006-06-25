@@ -575,7 +575,7 @@ static t_account * accountlist_add_account(t_account * account)
         return NULL;
     }
     if (uid<1) {
-    	ERROR1("got bad account (bad uid) for \"%s\", fix it!", username);
+    	ERROR2("got bad account (bad uid: %u) for \"%s\", fix it!", uid, username);
 	return NULL;
     }
 
