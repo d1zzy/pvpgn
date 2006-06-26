@@ -17,6 +17,7 @@
 #ifndef INCLUDED_CLAN_TYPES
 #define INCLUDED_CLAN_TYPES
 
+#include "common/tag.h"
 #ifdef JUST_NEED_TYPES
 # include "common/bn_type.h"
 # include "connection.h"
@@ -26,6 +27,7 @@
 # include "common/bn_type.h"
 # include "connection.h"
 # include "common/packet.h"
+# include "common/tag.h"
 # undef JUST_NEED_TYPES
 #endif
 
@@ -48,11 +50,13 @@ namespace pvpgn
 namespace bnetd
 {
 
+typedef t_tag t_clantag;
+
 typedef struct clan
 #ifdef CLAN_INTERNAL_ACCESS
 {
     unsigned int clanid;
-    int clantag;
+    t_clantag tag;
     char const *clanname;
     std::time_t creation_time;
     char const *clan_motd;
@@ -118,7 +122,7 @@ extern int clanlist_unload(void);
 extern int clanlist_remove_clan(t_clan * clan);
 extern int clanlist_add_clan(t_clan * clan);
 extern t_clan *clanlist_find_clan_by_clanid(unsigned cid);
-extern t_clan *clanlist_find_clan_by_clantag(int clantag);
+extern t_clan *clanlist_find_clan_by_clantag(t_clantag clantag);
 
 
 extern t_account *clanmember_get_account(t_clanmember * member);
@@ -135,14 +139,14 @@ extern int clanmember_on_change_status(t_clanmember * member);
 extern const char *clanmember_get_online_status_by_connection(t_connection * conn, char *status);
 extern int clanmember_on_change_status_by_connection(t_connection * conn);
 
-extern t_clan *clan_create(t_account * chieftain_acc, int clantag, const char *clanname, const char *motd);
+extern t_clan *clan_create(t_account * chieftain_acc, t_clantag clantag, const char *clanname, const char *motd);
 extern int clan_destroy(t_clan * clan);
 
 extern int clan_unload_members(t_clan * clan);
 extern int clan_remove_all_members(t_clan * clan);
 
 extern int clan_save(t_clan * clan);
-extern int clan_remove(int clantag);
+extern int clan_remove(t_clantag clantag);
 
 extern int clan_get_created(t_clan * clan);
 extern int clan_set_created(t_clan * clan, int created);
@@ -152,7 +156,7 @@ extern char clan_get_channel_type(t_clan * clan);
 extern int clan_set_channel_type(t_clan * clan, char channel_type);
 extern t_list *clan_get_members(t_clan * clan);
 extern char const *clan_get_name(t_clan * clan);
-extern int clan_get_clantag(t_clan * clan);
+extern t_clantag clan_get_clantag(t_clan * clan);
 extern char const *clan_get_motd(t_clan * clan);
 extern int clan_set_motd(t_clan * clan, const char *motd);
 extern unsigned int clan_get_clanid(t_clan * clan);
@@ -178,7 +182,8 @@ extern int clan_change_member_status(t_connection * c, t_packet const *const pac
 extern int clan_send_motd_reply(t_connection * c, t_packet const *const packet);
 extern int clan_save_motd_chg(t_connection * c, t_packet const *const packet);
 
-extern int str_to_clantag(const char *str);
+extern t_clantag str_to_clantag(const char *str);
+extern const char* clantag_to_str(t_clantag tag);
 
 }
 

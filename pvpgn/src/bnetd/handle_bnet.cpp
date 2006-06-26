@@ -2515,8 +2515,7 @@ static int _client_claninforeq(t_connection * c, t_packet const *const packet)
     t_account *account;
     t_clanmember *clanmember;
     t_clan *clan;
-    int clantag1;
-    int clantag2;
+    t_clantag clantag1, clantag2;
 
     if (packet_get_size(packet) < sizeof(t_client_claninforeq)) {
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLANINFOREQ packet (expected %u bytes, got %u)", conn_get_socket(c), sizeof(t_client_claninforeq), packet_get_size(packet));
@@ -3072,7 +3071,7 @@ static int _client_joinchannel(t_connection * c, t_packet const *const packet)
     char const *cname;
     int found = 1;
     t_clan *user_clan;
-    int clantag;
+    t_clantag clantag;
     t_uint32 clienttag;
     t_channel *channel;
 
@@ -3110,10 +3109,7 @@ static int _client_joinchannel(t_connection * c, t_packet const *const packet)
 		if ((user_clan = account_get_clan(account)) && (clantag = clan_get_clantag(user_clan)))
 		{
 			std::ostringstream ostr;
-			ostr << "Clan " << static_cast<char>(clantag >> 24)
-			                << static_cast<char>((clantag >> 16) & 0xff)
-			                << static_cast<char>((clantag >> 8) & 0xff)
-			                << static_cast<char>(clantag & 0xff);
+			ostr << "Clan " << clantag_to_str(clantag);
 			tmpstr = ostr.str();
 			cname = tmpstr.c_str();
 		}
@@ -4337,7 +4333,7 @@ static int _client_w3xp_clan_createinvitereq(t_connection * c, t_packet const *c
     if ((rpacket = packet_create(packet_class_bnet))) {
 	const char *clanname;
 	const char *username;
-	int clantag;
+	t_clantag clantag;
 	unsigned offset = sizeof(t_client_w3xp_clan_createinvitereq);
 	t_clan *clan;
 	clanname = packet_get_str_const(packet, offset, CLAN_NAME_MAX);
@@ -4572,7 +4568,7 @@ static int _client_w3xp_clan_invitereq(t_connection * c, t_packet const *const p
 {
     t_packet *rpacket;
     t_clan *clan;
-    int clantag;
+    t_clantag clantag;
     const char *username;
     t_connection *conn;
 
@@ -4627,11 +4623,11 @@ static int _client_w3xp_clan_invitereply(t_connection * c, t_packet const *const
     if ((conn = connlist_find_connection_by_accountname(username)) != NULL) {
 	if ((status == W3XP_CLAN_INVITEREPLY_ACCEPT) && (clan = account_get_clan(conn_get_account(conn)))) {
 	    char channelname[10];
-	    int clantag;
+	    t_clantag clantag;
 	    if (clan_get_member_count(clan) < prefs_get_clan_max_members()) {
 		t_clanmember *member = clan_add_member(clan, conn_get_account(c), 1);
 		if ((member != NULL) && (clantag = clan_get_clantag(clan))) {
-		    snprintf(channelname, sizeof(channelname), "Clan %c%c%c%c", (clantag >> 24), (clantag >> 16) & 0xff, (clantag >> 8) & 0xff, clantag & 0xff);
+		    snprintf(channelname, sizeof(channelname), "Clan %s", clantag_to_str(clantag));
 		    if (conn_get_channel(c)) {
 			conn_update_w3_playerinfo(c);
 			channel_set_userflags(c);
