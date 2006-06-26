@@ -2037,7 +2037,7 @@ static int _handle_time_command(t_connection * c, char const *text)
 
   btsystem = bnettime();
 
-  /* Battle.net std::time: Wed Jun 23 15:15:29 */
+  /* Battle.net time: Wed Jun 23 15:15:29 */
   btlocal = bnettime_add_tzbias(btsystem,local_tzbias());
   now = bnettime_to_time(btlocal);
   if (!(tmnow = std::gmtime(&now)))
@@ -2050,9 +2050,9 @@ static int _handle_time_command(t_connection * c, char const *text)
       btlocal = bnettime_add_tzbias(btsystem,conn_get_tzbias(c));
       now = bnettime_to_time(btlocal);
       if (!(tmnow = std::gmtime(&now)))
-	std::strcpy(msgtemp,"Your local std::time: ?");
+	std::strcpy(msgtemp,"Your local time: ?");
       else
-	std::strftime(msgtemp,sizeof(msgtemp),"Your local std::time: %a %b %d %H:%M:%S",tmnow);
+	std::strftime(msgtemp,sizeof(msgtemp),"Your local time: %a %b %d %H:%M:%S",tmnow);
       message_send_text(c,message_type_info,c,msgtemp);
     }
 
