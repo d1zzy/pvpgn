@@ -482,7 +482,7 @@ static int file_load_clans(t_load_clans_func cb)
 	}
 
 	clan = (t_clan*)xmalloc(sizeof(t_clan));
-	clan->clantag = clantag;
+	clan->tag = clantag;
 
 	if (!std::fgets(line, 1024, fp))
 	{
@@ -608,7 +608,7 @@ static int file_write_clan(void *data)
     t_clan *clan = (t_clan *) data;
 
     clanfile = (char*)xmalloc(std::strlen(clansdir) + 1 + 4 + 1);
-    std::sprintf(clanfile, "%s/%c%c%c%c", clansdir, clan->clantag >> 24, (clan->clantag >> 16) & 0xff, (clan->clantag >> 8) & 0xff, clan->clantag & 0xff);
+    std::sprintf(clanfile, "%s/%s", clansdir, clantag_to_str(clan->tag));
 
     if ((fp = std::fopen(clanfile, "w")) == NULL)
     {
@@ -641,7 +641,7 @@ static int file_remove_clan(int clantag)
     char *tempname;
 
     tempname = (char*)xmalloc(std::strlen(clansdir) + 1 + 4 + 1);
-    std::sprintf(tempname, "%s/%c%c%c%c", clansdir, clantag >> 24, (clantag >> 16) & 0xff, (clantag >> 8) & 0xff, clantag & 0xff);
+    std::sprintf(tempname, "%s/%s", clansdir, clantag_to_str(clantag));
     if (std::remove((const char *) tempname) < 0)
     {
 	eventlog(eventlog_level_error, __FUNCTION__, "could not delete clan file \"%s\" (std::remove: %s)", (char *) tempname, std::strerror(errno));
