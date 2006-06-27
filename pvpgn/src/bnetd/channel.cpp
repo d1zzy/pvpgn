@@ -1398,9 +1398,7 @@ extern t_channel * channellist_find_channel_by_name(char const * name, char cons
 		 * channel that would otherwise match. */
                 if ( ((!channel->country && !foundlang) || !country ||
 		      (channel->country && country && (std::strcmp(channel->country, country)==0))) &&
-	             ((!channel->realmname && !realmname) ||
-		      (channel->realmname && realmname && (std::strcmp(channel->realmname, realmname)==0))) )
-
+	             (!channel->realmname || !realmname || !std::strcmp(channel->realmname, realmname)) )
 		{
 		    if (channel->maxmembers==-1 || channel->currmembers<channel->maxmembers)
 		    {
