@@ -400,7 +400,7 @@ extern int sql_load_clans(t_load_clans_func cb)
 		return -1;
 	    }
 
-	    clan->clantag = std::atoi(row[1]);
+	    clan->tag = std::atoi(row[1]);
 
 	    clan->clanname = xstrdup(row[2]);
 	    clan->clan_motd = xstrdup(row[3]);
@@ -490,9 +490,9 @@ extern int sql_write_clan(void *data)
 	num = std::atol(row[0]);
 	sql->free_result(result);
 	if (num < 1)
-	    snprintf(query, sizeof(query), "INSERT INTO %sclan (cid, short, name, motd, creation_time) VALUES('%u', '%d', '%s', '%s', '%u')", tab_prefix, clan->clanid, clan->clantag, clan->clanname, clan->clan_motd, (unsigned) clan->creation_time);
+	    snprintf(query, sizeof(query), "INSERT INTO %sclan (cid, short, name, motd, creation_time) VALUES('%u', '%d', '%s', '%s', '%u')", tab_prefix, clan->clanid, clan->tag, clan->clanname, clan->clan_motd, (unsigned) clan->creation_time);
 	else
-	    snprintf(query, sizeof(query), "UPDATE %sclan SET short='%d', name='%s', motd='%s', creation_time='%u' WHERE cid='%u'", tab_prefix, clan->clantag, clan->clanname, clan->clan_motd, (unsigned) clan->creation_time, clan->clanid);
+	    snprintf(query, sizeof(query), "UPDATE %sclan SET short='%d', name='%s', motd='%s', creation_time='%u' WHERE cid='%u'", tab_prefix, clan->tag, clan->clanname, clan->clan_motd, (unsigned) clan->creation_time, clan->clanid);
 	if (sql->query(query) < 0)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"%s\"", query);
