@@ -3057,12 +3057,24 @@ extern unsigned int prefs_get_clan_max_members(void)
 
 static int conf_set_clan_max_members(const char *valstr)
 {
-    return conf_set_int(&prefs_runtime_config.clan_max_members,valstr,0);
+	int rez = conf_set_int(&prefs_runtime_config.clan_max_members,valstr,0);
+
+	if (!rez && valstr) {
+		if (prefs_runtime_config.clan_max_members < CLAN_MIN_MEMBERS) {
+			WARN1("Cannot set clan max members to %u lower than 10, setting to 10.", prefs_runtime_config.clan_max_members);
+			prefs_runtime_config.clan_max_members = CLAN_MIN_MEMBERS;
+		} else if (prefs_runtime_config.clan_max_members > CLAN_MAX_MEMBERS) {
+			WARN1("Cannot set clan max members to %u higher than 100, setting to 100.", prefs_runtime_config.clan_max_members);
+			prefs_runtime_config.clan_max_members = CLAN_MAX_MEMBERS;
+		}
+	}
+
+	return rez;
 }
 
 static int conf_setdef_clan_max_members(void)
 {
-    return conf_set_int(&prefs_runtime_config.clan_max_members,NULL,CLAN_MAX_MEMBERS);
+    return conf_set_int(&prefs_runtime_config.clan_max_members,NULL,CLAN_DEFAULT_MAX_MEMBERS);
 }
 
 static const char* conf_get_clan_max_members(void)
