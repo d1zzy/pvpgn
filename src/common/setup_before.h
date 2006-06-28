@@ -153,7 +153,10 @@ const char * const BNETD_TOURNAMENT_FILE = "conf/tournament.conf";
 const char * const BNETD_ALIASFILE = "conf/bnalias.conf";
 /* time limit for new member as newer(whom cannot be promoted) in clan, (hrs) */
 const unsigned CLAN_NEWER_TIME = 168;
-const unsigned CLAN_MAX_MEMBERS = 50;
+const unsigned CLAN_DEFAULT_MAX_MEMBERS = 50;
+/* hardcoded limits in the client */
+const unsigned CLAN_MIN_MEMBERS = 10;
+const unsigned CLAN_MAX_MEMBERS = 100;
 
 const unsigned MAX_FRIENDS = 20;
 

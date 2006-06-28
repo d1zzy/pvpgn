@@ -582,7 +582,7 @@ XML_status_output = false
 # default value 168(7 days). If set to 0, all new members could be promote in no time
 clan_newer_time = 0
 
-# max members count allowed in a clan, set between 10&255, default 50.
+# max members count allowed in a clan, set between 10 and 100, default 50.
 clan_max_members = 50
 
 # Default clan channel status when create a clan, 1 for private, 0 for public
