@@ -295,7 +295,7 @@ extern int sql_read_accounts(int flag,t_read_accounts_func cb, void *data)
     /* don't actually load anything here if ST_FORCE is not set as SQL is indexed */
     if (!FLAG_ISSET(flag,ST_FORCE)) return 1;
 
-    snprintf(query, sizeof(query), "SELECT "SQL_UID_FIELD" FROM %sBNET", tab_prefix);
+    snprintf(query, sizeof(query), "SELECT DISTINCT("SQL_UID_FIELD") FROM %sBNET", tab_prefix);
     if ((result = sql->query_res(query)) != NULL)
     {
 	if (sql->num_rows(result) <= 1)
