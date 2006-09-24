@@ -59,6 +59,16 @@ extern int d2charlist_add_char(t_elist * list_head, t_d2charinfo_file * charinfo
 	    }
             elist_add_tail(curr,&charlist->list);
         }
+        else if (strcasecmp(d2char_sort, "ctime")==0)
+        {
+            elist_for_each(curr,list_head)
+            {
+               ccharlist = elist_entry(curr,t_d2charlist,list);
+               if (bn_int_get(charinfo->header.create_time) < bn_int_get(ccharlist->charinfo->header.create_time))
+                   break;
+            }
+            elist_add_tail(curr,&charlist->list);
+        }
 	else if (strcasecmp(d2char_sort, "mtime")==0)
 	{
 	    elist_for_each(curr,list_head)
