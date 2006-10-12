@@ -831,7 +831,7 @@ LadderEntry::operator< (const LadderEntry& right) const
 
 
 LadderList::LadderList(LadderKey ladderKey_, t_referenceType referenceType_)
-:ladderKey(ladderKey_), dirty(true),saved(false),referenceType(referenceType)
+:ladderKey(ladderKey_), dirty(true),saved(false),referenceType(referenceType_)
 {
         ladderFilename = clienttag_uint_to_str(ladderKey_.getClienttag());
 	ladderFilename += "_";
