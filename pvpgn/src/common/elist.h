@@ -138,11 +138,11 @@ public:
 	}
 
 	bool empty() {
-		return head.prev() == head.next();
+		return &head == head.next();
 	}
 
 	T& front() const { return head.next()->info(); }
-	T& back() const { return head.back()->info(); }
+	T& back() const { return head.prev()->info(); }
 
 	iterator begin() {
 		return iterator(head.next());
