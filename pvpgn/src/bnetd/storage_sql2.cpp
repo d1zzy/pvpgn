@@ -400,7 +400,7 @@ static t_storage_info * sql2_read_account(const char *name, unsigned uid)
         char *user = xstrdup(name);
         strlower(user);
 
-	snprintf(query, sizeof(query), "SELECT " SQL_UID_FIELD " FROM %sBNET WHERE name = 'username' AND VALUE ='%s'", tab_prefix, user);
+	snprintf(query, sizeof(query), "SELECT " SQL_UID_FIELD " FROM %sBNET WHERE name = 'username' AND value ='%s'", tab_prefix, user);
 	xfree(user);
     } else
 	snprintf(query, sizeof(query), "SELECT " SQL_UID_FIELD " FROM %sBNET WHERE " SQL_UID_FIELD "= '%u'", tab_prefix, uid);
