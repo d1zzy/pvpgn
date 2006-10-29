@@ -319,7 +319,7 @@ static t_attr *sql_read_attr(t_storage_info * info, const char *key)
 	return NULL;
     }
 
-    snprintf(query, sizeof(query), "SELECT \"%s\" FROM %s%s WHERE " SQL_UID_FIELD " = %u", col, tab_prefix, tab, uid);
+    snprintf(query, sizeof(query), "SELECT %s FROM %s%s WHERE " SQL_UID_FIELD " = %u", col, tab_prefix, tab, uid);
     if ((result = sql->query_res(query)) == NULL)
 	return NULL;
 
@@ -422,14 +422,14 @@ int sql_write_attrs(t_storage_info * info, const t_hlist *attrs)
 
 	sql->escape_string(escape, safeval, std::strlen(safeval));
 
-	snprintf(query, sizeof(query), "UPDATE %s%s SET \"%s\" = '%s' WHERE "SQL_UID_FIELD" = '%u'", tab_prefix, tab, col, escape, uid);
+	snprintf(query, sizeof(query), "UPDATE %s%s SET %s = '%s' WHERE "SQL_UID_FIELD" = '%u'", tab_prefix, tab, col, escape, uid);
 //      eventlog(eventlog_level_trace, "db_set", "update query: %s", query);
 
 	if (sql->query(query) || !sql->affected_rows()) {
 	    char query2[512];
 
 //	    eventlog(eventlog_level_debug, __FUNCTION__, "trying to insert new column %s", col);
-	    snprintf(query2, sizeof(query2), "ALTER TABLE %s%s ADD COLUMN \"%s\" VARCHAR(128)", tab_prefix, tab, col);
+	    snprintf(query2, sizeof(query2), "ALTER TABLE %s%s ADD COLUMN %s VARCHAR(128)", tab_prefix, tab, col);
 
 //          eventlog(eventlog_level_trace, __FUNCTION__, "alter query: %s", query2);
 	    sql->query(query2);
@@ -438,7 +438,7 @@ int sql_write_attrs(t_storage_info * info, const t_hlist *attrs)
 //          eventlog(eventlog_level_trace, "db_set", "retry insert query: %s", query);
 	    if (sql->query(query) || !sql->affected_rows()) {
 		// Tried everything, now trying to insert that user to the table for the first time
-		snprintf(query2, sizeof(query2), "INSERT INTO %s%s ("SQL_UID_FIELD",\"%s\") VALUES ('%u','%s')", tab_prefix, tab, col, uid, escape);
+		snprintf(query2, sizeof(query2), "INSERT INTO %s%s ("SQL_UID_FIELD",%s) VALUES ('%u','%s')", tab_prefix, tab, col, uid, escape);
 //              eventlog(eventlog_level_error, __FUNCTION__, "update failed so tried INSERT for the last chance");
 		if (sql->query(query2))
 		{

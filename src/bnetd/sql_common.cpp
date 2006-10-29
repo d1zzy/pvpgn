@@ -35,15 +35,6 @@
 #include "common/flags.h"
 #include "common/list.h"
 #include "common/tag.h"
-/*
-#include "compat/strdup.h"
-#include "compat/strncasecmp.h"
-#include "common/util.h"
-#include "common/xalloc.h"
-#include "common/elist.h"
-
-#include "connection.h"
-*/
 #define CLAN_INTERNAL_ACCESS
 #define TEAM_INTERNAL_ACCESS
 #include "team.h"
