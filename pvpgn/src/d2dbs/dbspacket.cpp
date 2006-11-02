@@ -685,17 +685,13 @@ extern int dbs_packet_handle(t_d2dbs_connection* conn)
 /* FIXME: we should save client ipaddr into c->ipaddr after accept */
 static int dbs_verify_ipaddr(char const * addrlist,t_d2dbs_connection * c)
 {
-	struct	in_addr		in;
 	char			* adlist;
-	char const		* ipaddr;
 	char			* s, * temp;
 	t_elem			* elem;
 	t_d2dbs_connection	* tempc;
 	unsigned int		valid;
 	unsigned int		resolveipaddr;
 
-	in.s_addr=htonl(c->ipaddr);
-	ipaddr=inet_ntoa(in);
 	adlist = xstrdup(addrlist);
 	temp=adlist;
 	valid=0;
@@ -703,14 +699,14 @@ static int dbs_verify_ipaddr(char const * addrlist,t_d2dbs_connection * c)
 		host_lookup(s, &resolveipaddr);
 		if(resolveipaddr == 0) continue;
 
-		if (!std::strcmp(ipaddr, (const char *)addr_num_to_ip_str(resolveipaddr))) {
+		if (c->ipaddr == resolveipaddr) {
 			valid=1;
 			break;
 		}
 	}
 	xfree(adlist);
 	if (valid) {
-		eventlog(eventlog_level_info,__FUNCTION__,"ip address %s is valid",ipaddr);
+		eventlog(eventlog_level_info,__FUNCTION__,"ip address %s is valid",addr_num_to_ip_str(c->ipaddr));
 		LIST_TRAVERSE(dbs_server_connection_list,elem)
 		{
 			if (!(tempc=(t_d2dbs_connection*)elem_get_data(elem))) continue;
@@ -723,7 +719,7 @@ static int dbs_verify_ipaddr(char const * addrlist,t_d2dbs_connection * c)
 		c->verified = 1;
 		return 0;
 	} else {
-		eventlog(eventlog_level_info,__FUNCTION__,"ip address %s is invalid",ipaddr);
+		eventlog(eventlog_level_info,__FUNCTION__,"ip address %s is invalid",addr_num_to_ip_str(c->ipaddr));
 	}
 	return -1;
 }
