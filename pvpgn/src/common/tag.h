@@ -79,7 +79,29 @@ typedef t_tag		t_gamelang;
 
 #define CLIENTTAG_IIRC              "IIRC"/* IRC */
 #define CLIENTTAG_IIRC_UINT         0x49495243
-#define CLIENTTAG_WWOL              "WWOL"/* Westwood Online */
+
+/* Westwood Online tags: */
+#define CLIENTTAG_WCHAT             "WCHT" /* Westwood Chat */
+#define CLIENTTAG_WCHAT_UINT        0x57434854
+#define CLIENTTAG_TIBERNSUN         "TSUN" /* Tiberian Sun */
+#define CLIENTTAG_TIBERNSUN_UINT    0x5453554E
+#define CLIENTTAG_TIBSUNXP          "TSXP" /* Tiberian Sun Extension Pack */
+#define CLIENTTAG_TIBSUNXP_UINT     0x54535850
+#define CLIENTTAG_REDALERT2         "RAL2" /* Red Alert 2 */
+#define CLIENTTAG_REDALERT2_UINT    0x52414C32
+#define CLIENTTAG_DUNE2000          "DN2K" /* Dune 2000 */
+#define CLIENTTAG_DUNE2000_UINT     0x444E324B
+#define CLIENTTAG_NOX               "NOXX" /* NOX */
+#define CLIENTTAG_NOX_UINT          0x4E4F5858
+#define CLIENTTAG_NOXQUEST          "NOXQ" /* NOX Quest*/
+#define CLIENTTAG_NOXQUEST_UINT     0x4E4F5851
+#define CLIENTTAG_RENEGADE          "RNGD" /* C&C Renegade */
+#define CLIENTTAG_RENEGADE_UINT     0x524E4744
+#define CLIENTTAG_YURISREV          "YURI" /* Yuri's Revenge */
+#define CLIENTTAG_YURISREV_UINT     0x59555249
+#define CLIENTTAG_EMPERORBD         "EMPR" /* Emperor: Battle for Dune */
+#define CLIENTTAG_EMPERORBD_UINT    0x454D5052
+#define CLIENTTAG_WWOL              "WWOL" /* Other Westwood Online games */
 #define CLIENTTAG_WWOL_UINT         0x57574F4C
 
 /* BNETD-specific software tags - we try to use lowercase to avoid collisions  */

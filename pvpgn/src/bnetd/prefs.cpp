@@ -160,6 +160,7 @@ static struct {
     char const * irc_network_name;
 
     char const * woladdrs;
+    char const * wservaddrs;
     char const * woltimezone;
     char const * wollongitude;
     char const * wollatitude;
@@ -634,6 +635,10 @@ static int conf_set_irc_network_name(const char *valstr);
 static const char *conf_get_irc_network_name(void);
 
 
+static int conf_setdef_wserv_addrs(void);
+static int conf_set_wserv_addrs(const char *valstr);
+static const char *conf_get_wserv_addrs(void);
+
 static int conf_setdef_wol_addrs(void);
 static int conf_set_wol_addrs(const char *valstr);
 static const char *conf_get_wol_addrs(void);
@@ -771,6 +776,7 @@ static t_conf_entry conf_table[] =
     { "ladder_prefix",		conf_set_ladder_prefix,	       conf_get_ladder_prefix,conf_setdef_ladder_prefix},
     { "irc_network_name",		conf_set_irc_network_name,	       conf_get_irc_network_name, conf_setdef_irc_network_name},
 
+    { "wservaddrs",		conf_set_wserv_addrs,	       conf_get_wserv_addrs, conf_setdef_wserv_addrs},
     { "woladdrs",		conf_set_wol_addrs,	       conf_get_wol_addrs, conf_setdef_wol_addrs},
     { "woltimezone",		conf_set_wol_timezone,         conf_get_wol_timezone, conf_setdef_wol_timezone},
     { "wollongitude",		conf_set_wol_longitude,             conf_get_wol_longitude, conf_setdef_wol_longitude},
@@ -3315,6 +3321,26 @@ static const char* conf_get_irc_network_name(void)
 /**
 *  Westwood Online Extensions
 */
+extern char const * prefs_get_wserv_addrs(void)
+{
+    return prefs_runtime_config.wservaddrs;
+}
+
+static int conf_set_wserv_addrs(const char *valstr)
+{
+    return conf_set_str(&prefs_runtime_config.wservaddrs,valstr,NULL);
+}
+
+static int conf_setdef_wserv_addrs(void)
+{
+    return conf_set_str(&prefs_runtime_config.wservaddrs,NULL,BNETD_WOL_ADDRS);
+}
+
+static const char* conf_get_wserv_addrs(void)
+{
+    return prefs_runtime_config.wservaddrs;
+}
+
 extern char const * prefs_get_wol_addrs(void)
 {
     return prefs_runtime_config.woladdrs;

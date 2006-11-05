@@ -10,6 +10,9 @@ track of the changes made -  and possible implications to users/admins.
 Changes:
 --------
 
+bnetd/handle_irc*, bnetd_handle_wol*, bnetd/irc.*:
+  - merged WOL specific patch (better WOL support, cleaner code seperation)
+
 bnetd/ladder*:
   - no longer supports output of xml ladder files (at least so far)
 

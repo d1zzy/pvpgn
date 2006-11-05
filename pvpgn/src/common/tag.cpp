@@ -73,6 +73,26 @@ extern char const * clienttag_uint_to_str(t_clienttag clienttag)
 	    	return CLIENTTAG_WAR3XP;
     	case CLIENTTAG_IIRC_UINT:
              return CLIENTTAG_IIRC;
+        case CLIENTTAG_WCHAT_UINT:
+             return CLIENTTAG_WCHAT;             
+        case CLIENTTAG_TIBERNSUN_UINT:
+             return CLIENTTAG_TIBERNSUN;
+         case CLIENTTAG_TIBSUNXP_UINT:
+             return CLIENTTAG_TIBSUNXP;
+        case CLIENTTAG_REDALERT2_UINT:
+             return CLIENTTAG_REDALERT2;
+        case CLIENTTAG_DUNE2000_UINT:
+             return CLIENTTAG_DUNE2000;
+        case CLIENTTAG_NOX_UINT:
+             return CLIENTTAG_NOX;
+        case CLIENTTAG_NOXQUEST_UINT:
+             return CLIENTTAG_NOXQUEST;
+        case CLIENTTAG_RENEGADE_UINT:
+             return CLIENTTAG_RENEGADE;
+        case CLIENTTAG_YURISREV_UINT:
+             return CLIENTTAG_YURISREV;
+        case CLIENTTAG_EMPERORBD_UINT:
+             return CLIENTTAG_EMPERORBD;     
         case CLIENTTAG_WWOL_UINT:
              return CLIENTTAG_WWOL;
 	    default:
@@ -184,6 +204,16 @@ extern int tag_check_client(t_tag tag_uint)
 	case CLIENTTAG_WARCRAFT3_UINT:
 	case CLIENTTAG_WAR3XP_UINT:
     case CLIENTTAG_IIRC_UINT:
+    case CLIENTTAG_WCHAT_UINT:
+    case CLIENTTAG_TIBERNSUN_UINT:
+    case CLIENTTAG_TIBSUNXP_UINT:
+    case CLIENTTAG_REDALERT2_UINT:
+    case CLIENTTAG_DUNE2000_UINT:
+    case CLIENTTAG_NOX_UINT:
+    case CLIENTTAG_NOXQUEST_UINT:
+    case CLIENTTAG_RENEGADE_UINT:
+    case CLIENTTAG_YURISREV_UINT:
+    case CLIENTTAG_EMPERORBD_UINT:
     case CLIENTTAG_WWOL_UINT:
 	    return 1;
 	default:
@@ -243,6 +273,26 @@ extern char const * clienttag_get_title(t_clienttag clienttag)
         return "Chat";
       case CLIENTTAG_IIRC_UINT:
         return "Internet Relay Chat";
+      case CLIENTTAG_WCHAT_UINT:
+        return "Westwood Chat";
+      case CLIENTTAG_TIBERNSUN_UINT:
+        return "Tiberian Sun";
+      case CLIENTTAG_TIBSUNXP_UINT:
+        return "Tiberian Sun: Firestorm";
+      case CLIENTTAG_REDALERT2_UINT:
+        return "Red Alert 2";
+      case CLIENTTAG_DUNE2000_UINT:
+        return "Dune 2000";
+      case CLIENTTAG_NOX_UINT:
+        return "Nox";
+      case CLIENTTAG_NOXQUEST_UINT:
+        return "Nox Quest";
+      case CLIENTTAG_RENEGADE_UINT:
+        return "Renegade";
+      case CLIENTTAG_YURISREV_UINT:
+        return "Yuri's Revenge";
+      case CLIENTTAG_EMPERORBD_UINT:
+        return "Emepror: Battle for Dune";
       case CLIENTTAG_WWOL_UINT:
         return "Westwood Online";
       default:

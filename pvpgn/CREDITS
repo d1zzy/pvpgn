@@ -16,12 +16,14 @@ PROGRAMMING CONTRIBUTORS
 
 	Bryan Biedenkapp (gatekeep@gmail.com)
 	 Westwood Online (WOL) support. Lot's of IRC fixes and enhancements. 
-	 WOL and IRC maintainer.
 
 	pandaemonium a.k.a. aaron
 	 W3 ladders, binary ladders, commands aliases, channel topics, 
 	 channel tmp ops/voices, anongame infos language support, SQL db 
 	 creator, bnchat cleanup, WIN32 build files maintenance and lots others.
+
+	Pelish (pelish@gmail.com)
+	 WOL/IRC rework and many bugfixes
 
 	Soar
 	 Clans, friends codes optimization, D2 stuff, w3 gameinfo etc.

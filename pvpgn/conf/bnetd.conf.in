@@ -506,12 +506,14 @@ initkill_timer = 120
 
 # NOTE: WOL support is still experimental!
 
-# This specifies the addresses where IRC connections should be accepted. See
+# This specifies the addresses where WOL connections should be accepted. See
 # the description of servaddrs for formatting information. Leave this field
-# blank if you do not want to accept IRC connections.  If the port is not
-# specifed then 4005 will be used. Note: DO NOT SET THE PORT TO ANYTHING OTHER
-# THEN 4005, WOL WILL FAIL IF YOU DO!
-#woladdrs = ":4005"
+# blank if you do not want to accept WOL connections. If the WSERV port is not
+# specifed then 4005 and WOL port is not specifed then 4000 will be used. 
+# Note: DO NOT SET THE PORT TO ANYTHING OTHER THEN 4005 and 4000, WOL WILL FAIL IF YOU DO!
+
+#woladdrs = ":4000"
+#wservaddrs = ":4005"
 
 # Just leave these as default (unless you know the timezone, longitiude and latitude
 # of your server

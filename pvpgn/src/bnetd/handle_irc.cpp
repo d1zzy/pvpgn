@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2001  Marco Ziech (mmz@gmx.net)
  * Copyright (C) 2005  Bryan Biedenkapp (gatekeep@gmail.com)
+ * Copyright (C) 2006  Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -81,26 +82,6 @@ static int _handle_whois_command(t_connection * conn, int numparams, char ** par
 static int _handle_part_command(t_connection * conn, int numparams, char ** params, char * text);
 
 
-static int _handle_cvers_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_verchk_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_lobcount_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_whereto_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_apgar_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_serial_command(t_connection * conn, int numparams, char ** params, char * text);
-
-static int _handle_squadinfo_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_setopt_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_setcodepage_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_setlocale_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_getcodepage_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_getlocale_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_joingame_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_gameopt_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_finduserex_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_page_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_startg_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_listsearch_command(t_connection * conn, int numparams, char ** params, char * text);
-
 /* state "connected" handlers */
 static const t_irc_command_table_row irc_con_command_table[] =
 {
@@ -112,13 +93,6 @@ static const t_irc_command_table_row irc_con_command_table[] =
 	{ "PRIVMSG"		, _handle_privmsg_command },
 	{ "NOTICE"		, _handle_notice_command },
 	{ "QUIT"		, _handle_quit_command },
-
-	{ "CVERS"		, _handle_cvers_command },
-	{ "VERCHK"		, _handle_verchk_command },
-	{ "LOBCOUNT"	, _handle_lobcount_command },
-	{ "WHERETO"		, _handle_whereto_command },
-	{ "APGAR"		, _handle_apgar_command },
-	{ "SERIAL"		, _handle_serial_command },
 
 	{ NULL			, NULL }
 };
@@ -136,19 +110,6 @@ static const t_irc_command_table_row irc_log_command_table[] =
 	{ "ISON"		, _handle_ison_command },
 	{ "WHOIS"		, _handle_whois_command },
 	{ "PART"		, _handle_part_command },
-
-	{ "SQUADINFO"	, _handle_squadinfo_command },
-	{ "SETOPT"		, _handle_setopt_command },
-	{ "SETCODEPAGE"	, _handle_setcodepage_command },
-	{ "SETLOCALE"	, _handle_setlocale_command },
-	{ "GETCODEPAGE"	, _handle_getcodepage_command },
-	{ "GETLOCALE"	, _handle_getlocale_command },
-	{ "JOINGAME"	, _handle_joingame_command },
-	{ "GAMEOPT"		, _handle_gameopt_command },
-	{ "FINDUSEREX"	, _handle_finduserex_command },
-	{ "PAGE"		, _handle_page_command },
-	{ "STARTG"		, _handle_startg_command },
-	{ "LISTSEARCH"	, _handle_listsearch_command },
 
 	{ NULL			, NULL }
 };
@@ -313,6 +274,81 @@ static int handle_irc_line(t_connection * conn, char const * ircline)
     return 0;
 }
 
+static int handle_irc_welcome(t_connection * conn)
+{
+    char temp[MAX_IRC_MESSAGE_LEN];
+    std::time_t temptime;
+    char const * tempname;
+    char const * temptimestr;
+    char const * filename;
+    std::FILE *fp;
+    char * line, * formatted_line;
+    char send_line[MAX_IRC_MESSAGE_LEN];
+    char motd_failed = 0;
+
+    if (!conn) {
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
+	return -1;
+    }
+
+    tempname = conn_get_loggeduser(conn);
+
+    if ((34+std::strlen(tempname)+1)<=MAX_IRC_MESSAGE_LEN)
+        std::sprintf(temp,":Welcome to the %s IRC Network %s",prefs_get_irc_network_name(), tempname);
+    else
+        std::sprintf(temp,":Maximum length exceeded");
+    irc_send(conn,RPL_WELCOME,temp);
+
+    if ((14+std::strlen(server_get_hostname())+10+std::strlen(PVPGN_SOFTWARE" "PVPGN_VERSION)+1)<=MAX_IRC_MESSAGE_LEN)
+        std::sprintf(temp,":Your host is %s, running "PVPGN_SOFTWARE" "PVPGN_VERSION,server_get_hostname());
+    else
+        std::sprintf(temp,":Maximum length exceeded");
+    irc_send(conn,RPL_YOURHOST,temp);
+
+    temptime = server_get_starttime(); /* FIXME: This should be build time */
+    temptimestr = std::ctime(&temptime);
+    if ((25+std::strlen(temptimestr)+1)<=MAX_IRC_MESSAGE_LEN)
+        std::sprintf(temp,":This server was created %s",temptimestr); /* FIXME: is ctime() portable? */
+    else
+        std::sprintf(temp,":Maximum length exceeded");
+    irc_send(conn,RPL_CREATED,temp);
+
+    /* we don't give mode information on MYINFO we give it on ISUPPORT */
+    if ((std::strlen(server_get_hostname())+7+std::strlen(PVPGN_SOFTWARE" "PVPGN_VERSION)+9+1)<=MAX_IRC_MESSAGE_LEN)
+        std::sprintf(temp,"%s "PVPGN_SOFTWARE" "PVPGN_VERSION" - -",server_get_hostname());
+    else
+        std::sprintf(temp,":Maximum length exceeded");
+    irc_send(conn,RPL_MYINFO,temp);
+
+    std::sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
+    MAX_CHARNAME_LEN, MAX_TOPIC_LEN, MAX_CHANNELNAME_LEN, prefs_get_irc_network_name());
+
+    if((std::strlen(temp))<=MAX_IRC_MESSAGE_LEN)
+        irc_send(conn,RPL_ISUPPORT,temp);
+    else {
+        std::sprintf(temp,":Maximum length exceeded");
+        irc_send(conn,RPL_ISUPPORT,temp);
+    }
+
+    irc_send_motd(conn);
+
+    irc_send_cmd(conn,"NOTICE",":This is an experimental service.");
+
+    conn_set_state(conn,conn_state_bot_password);
+    if (connlist_find_connection_by_accountname(conn_get_loggeduser(conn))) {
+    	irc_send_cmd(conn,"NOTICE","This account is already logged in, use another account.");
+	return -1;
+    }
+
+    if (conn_get_ircpass(conn)) {
+	irc_send_cmd(conn,"NOTICE",":Trying to authenticate with PASS ...");
+	irc_authenticate(conn,conn_get_ircpass(conn));
+    } else {
+    	irc_send_cmd(conn,"NOTICE",":No PASS command received. Please identify yourself by /msg NICKSERV identify <password>.");
+    }
+    return 0;
+}
+
 extern int handle_irc_packet(t_connection * conn, t_packet const * const packet)
 {
     unsigned int i;
@@ -323,8 +359,7 @@ extern int handle_irc_packet(t_connection * conn, t_packet const * const packet)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return -1;
     }
-    if ((conn_get_class(conn) != conn_class_irc) &&
-		(conn_get_class(conn) != conn_class_wol)) {
+    if (conn_get_class(conn) != conn_class_irc) {
 	eventlog(eventlog_level_error,__FUNCTION__,"FIXME: handle_irc_packet without any reason (conn->class != conn_class_irc)");
 	return -1;
     }
@@ -386,7 +421,7 @@ static int _handle_nick_command(t_connection * conn, int numparams, char ** para
 	    else
 	        irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to NICK");
 	    if ((conn_get_user(conn))&&(conn_get_loggeduser(conn)))
-			irc_welcome(conn); /* only send the welcome if we have USER and NICK */
+			handle_irc_welcome(conn); /* only send the welcome if we have USER and NICK */
 	}
 	return 0;
 }
@@ -408,53 +443,16 @@ static int _handle_user_command(t_connection * conn, int numparams, char ** para
 	    user = params[0];
 	    realname = text;
 
-		if (conn_get_wol(conn) == 1) {
-			user = (char *)conn_get_loggeduser(conn);
-			realname = (char *)conn_get_loggeduser(conn);
-
-        	if (conn_get_user(conn)) {
-		irc_send(conn,ERR_ALREADYREGISTRED,":You are already registred");
-        }
-			else {
-				eventlog(eventlog_level_debug,__FUNCTION__,"[%d][** WOL **] got USER: user=\"%s\"",conn_get_socket(conn),user);
-
-                a = accountlist_find_account(user);
-                if (!a) {
-                   if((conn_get_wol(conn) == 1)) {
-                        t_account * tempacct;
-                        t_hash pass_hash;
-                        char * pass = "supersecret";
-
-            			for (unsigned j=0; j<std::strlen(pass); j++)
-            				if (std::isupper((int)pass[j])) pass[j] = std::tolower((int)pass[j]);
-
-            			bnet_hash(&pass_hash,std::strlen(pass),pass);
-
-            			tempacct = accountlist_create_account(user,hash_get_str(pass_hash));
-            			if (!tempacct) {
-                            return 0;
-            			}
-                   }
-                }
-
+		if (conn_get_user(conn)) {
+			irc_send(conn,ERR_ALREADYREGISTRED,":You are already registred");
+		}
+		else {
+			eventlog(eventlog_level_debug,__FUNCTION__,"[%d] got USER: user=\"%s\" realname=\"%s\"",conn_get_socket(conn),user,realname);
 			conn_set_user(conn,user);
 			conn_set_owner(conn,realname);
 			if (conn_get_loggeduser(conn))
-				irc_welcome(conn); /* only send the welcome if we have USER and NICK */
-	    	}
-    	}
-		else {
-			if (conn_get_user(conn)) {
-				irc_send(conn,ERR_ALREADYREGISTRED,":You are already registred");
-			}
-			else {
-				eventlog(eventlog_level_debug,__FUNCTION__,"[%d] got USER: user=\"%s\" realname=\"%s\"",conn_get_socket(conn),user,realname);
-				conn_set_user(conn,user);
-				conn_set_owner(conn,realname);
-				if (conn_get_loggeduser(conn))
-					irc_welcome(conn); /* only send the welcome if we have USER and NICK */
-    		}
-		}
+			   handle_irc_welcome(conn); /* only send the welcome if we have USER and NICK */
+   		}
    	}
 	else {
 	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to USER");
@@ -464,9 +462,6 @@ static int _handle_user_command(t_connection * conn, int numparams, char ** para
 
 static int _handle_ping_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-	if((conn_get_wol(conn) == 1))
-	    return 0;
-
 	/* Dizzy: just ignore this because RFC says we should not reply client PINGs
 	 * NOTE: RFC2812 doesn't seem to be very expressive about this ... */
 	if (numparams)
@@ -478,9 +473,6 @@ static int _handle_ping_command(t_connection * conn, int numparams, char ** para
 
 static int _handle_pong_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-	if((conn_get_wol(conn) == 1))
-	    return 0;
-
 	/* NOTE: RFC2812 doesn't seem to be very expressive about this ... */
 	if (conn_get_ircping(conn)==0) {
 	    eventlog(eventlog_level_warn,__FUNCTION__,"[%d] PONG without PING",conn_get_socket(conn));
@@ -725,87 +717,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 {
     char temp[MAX_IRC_MESSAGE_LEN];
 
-	irc_send(conn,RPL_LISTSTART,"Channel :Users  Name"); /* backward compatibility */
-	if((conn_get_wol(conn) == 1)) {
- 	    t_elem const * curr;
-
-	    if(std::strcmp(params[0], "0") == 0) {
-			/* HACK: Currently, this is the best way to set the game type... */
-			conn_wol_set_game_type(conn,std::atoi(params[1]));
-
-			eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Channel]");
-   	    LIST_TRAVERSE_CONST(channellist(),curr)
-		{
-    	    		t_channel const * channel = (t_channel const *)elem_get_data(curr);
-	        	char const * tempname;
-
-	        	tempname = irc_convert_channel(channel);
-
-				if(std::strstr(tempname,"Lob") != NULL) {
-					eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Channel: \"Lob\"] (%s)",tempname);
-					if (std::strlen(tempname)+1+20+1+1<MAX_IRC_MESSAGE_LEN)
-						snprintf(temp, sizeof(temp), "%s %u 0 388",tempname,channel_get_length(channel));
-   					else
-   						eventlog(eventlog_level_warn,__FUNCTION__,"LISTREPLY length exceeded");
-
-					irc_send(conn,RPL_CHANNEL,temp);
-				}
-    		}
-	    }
-	    /**
-        *  18 = Tiberian Sun game channels, 21 = Red alert 1 channels,
-		*  33 = Red alert 2 channels, 41 = Yuri's Revenge
-		*/
-	    else if((std::strcmp(params[0], "18") == 0) ||
-				(std::strcmp(params[0], "21") == 0) ||
-				(std::strcmp(params[0], "33") == 0) ||
-				(std::strcmp(params[0], "41"))) {
-    		eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Game]");
-   			LIST_TRAVERSE_CONST(channellist(),curr)
-			{
-    		    t_channel const * channel = (const t_channel*)elem_get_data(curr);
-			    t_connection * m;
-        	    char const * tempname;
-				char * topic = channel_get_topic(channel_get_name(channel));
-
-        	    tempname = irc_convert_channel(channel);
-				if(std::strstr(tempname,"_game") != NULL) {
-					m = channel_get_first(channel);
-					if(channel_wol_get_game_type(channel) == conn_wol_get_game_type(conn)) {
-						eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] List [Channel: \"_game\"] (%s)",tempname);
-
-						if (topic) {
-	    						eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] List [Channel: \"_game\"] %s %u 0 %u %u 0 %u 128::%s",tempname,
-										 channel_get_length(channel),channel_wol_get_game_type(channel),channel_wol_get_game_tournament(channel),
-										 channel_wol_get_game_ownerip(channel),topic);
-								/**
-								*  The layout of the game list entry is something like this:
-                                *
-								*   #game_channel_name users unknown gameType gameIsTournment unknown longIP 128::topic
-								*/
-	        		if (std::strlen(tempname)+1+20+1+1+std::strlen(topic)<MAX_IRC_MESSAGE_LEN)
-	    							snprintf(temp, sizeof(temp), "%s %u 0 %u %u 0 %u 128::%s",tempname,
-											channel_get_length(channel),channel_wol_get_game_type(channel),channel_wol_get_game_tournament(channel),
-											channel_wol_get_game_ownerip(channel),topic);
-	        		else
-	            			eventlog(eventlog_level_warn,__FUNCTION__,"LISTREPLY length exceeded");
-			}
-						else {
-        						if (std::strlen(tempname)+1+20+1+1<MAX_IRC_MESSAGE_LEN)
-	    							snprintf(temp, sizeof(temp), "%s %u 0 %u %u 0 %u 128::",tempname,channel_get_length(channel),channel_wol_get_game_type(channel),
-											channel_wol_get_game_tournament(channel),channel_wol_get_game_ownerip(channel));
-			else
-            							eventlog(eventlog_level_warn,__FUNCTION__,"LISTREPLY length exceeded");
-						}
-					}
-					irc_send(conn,RPL_GAME_CHANNEL,temp);
-				}
-			}
-		}
-
-    	irc_send(conn,RPL_LISTEND,":End of LIST command");
-    	return 0;
-	}
+	irc_send(conn,RPL_LISTSTART,"Channel :Users Names"); /* backward compatibility */
 
 	if (numparams==0) {
  	    t_elem const * curr;
@@ -882,11 +794,6 @@ static int _handle_topic_command(t_connection * conn, int numparams, char ** par
 {
 	char ** e = NULL;
 
-	if((conn_get_wol(conn) == 1)) {
-	    t_channel * channel = conn_get_channel(conn);
-	    channel_set_topic(channel_get_name(channel),text,NO_SAVE_TOPIC);
-	}
-
 	if (params!=NULL) e = irc_get_listelems(params[0]);
 
 	if ((e)&&(e[0])) {
@@ -940,49 +847,35 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 				t_channel * channel;
 				channel = conn_get_channel(conn);
 
-			    if ((conn_get_wol(conn) == 1)) {
-					channel_set_userflags(conn);
-					message_send_text(conn,message_type_join,conn,NULL); /* we have to send the JOIN acknowledgement */
-					ircname=irc_convert_channel(channel);
+				if (channel!=old_channel) {
+				char * topic;
+				
+				channel_set_userflags(conn);
+				message_send_text(conn,message_type_join,conn,NULL); /* we have to send the JOIN acknowledgement */
+				ircname=irc_convert_channel(channel);
 
-	    				irc_send_rpl_namreply(conn,channel);
+				if ((topic = channel_get_topic(channel_get_name(channel)))) {
+						if ((std::strlen(ircname)+1+1+std::strlen(topic)+1)<MAX_IRC_MESSAGE_LEN) {
+						snprintf(temp, sizeof(temp), "%s :%s", ircname, topic);
+						irc_send(conn,RPL_TOPIC,temp);
+				    }
 
-					if ((std::strlen(ircname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
-						snprintf(temp, sizeof(temp), "%s :End of NAMES list",ircname);
-						irc_send(conn,RPL_ENDOFNAMES,temp);
+						if ((std::strlen(ircname)+1+std::strlen("FIXME 0")+1)<MAX_IRC_MESSAGE_LEN) {
+						snprintf(temp, sizeof(temp), "%s FIXME 0",ircname);
+						irc_send(conn,RPL_TOPICWHOTIME,temp); /* FIXME: this in an undernet extension but other servers support it too */
 					}
-			    }
-			    else {
-					if (channel!=old_channel) {
-					char * topic;
-
-					channel_set_userflags(conn);
-					message_send_text(conn,message_type_join,conn,NULL); /* we have to send the JOIN acknowledgement */
-					ircname=irc_convert_channel(channel);
-
-						if ((topic = channel_get_topic(channel_get_name(channel)))) {
-							if ((std::strlen(ircname)+1+1+std::strlen(topic)+1)<MAX_IRC_MESSAGE_LEN) {
-							snprintf(temp, sizeof(temp), "%s :%s", ircname, topic);
-							irc_send(conn,RPL_TOPIC,temp);
-						}
-
-							if ((std::strlen(ircname)+1+std::strlen("FIXME 0")+1)<MAX_IRC_MESSAGE_LEN) {
-							snprintf(temp, sizeof(temp), "%s FIXME 0",ircname);
-							irc_send(conn,RPL_TOPICWHOTIME,temp); /* FIXME: this in an undernet extension but other servers support it too */
-						}
-					}
-					else
-						irc_send(conn,RPL_NOTOPIC,":No topic is set");
-
+				}
+				else
+					irc_send(conn,RPL_NOTOPIC,":No topic is set");
+					
 					irc_send_rpl_namreply(conn,channel);
 					irc_send(conn,RPL_ENDOFNAMES,":End of NAMES list");
 
-						if (old_channel_name) {
+					if (old_channel_name) {
 						irc_send_cmd2(conn,conn_get_loggeduser(conn),"PART",old_channel_name,"only one channel at once");
 					}
-		    		}
-			}
-			}
+	    		}
+		}
 			if (old_channel_name) xfree((void *)old_channel_name);
 		}
     		if (e)
@@ -1136,476 +1029,8 @@ static int _handle_whois_command(t_connection * conn, int numparams, char ** par
 
 static int _handle_part_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-    if ((conn_get_wol(conn) == 1))
-		if ((conn_wol_get_ingame(conn) == 1))
-			conn_wol_set_ingame(conn,0);
-
     message_send_text(conn,message_type_part,conn,NULL);
     return 0;
-}
-
-/**
-*  Westwood Online Extensions
-*/
-static int _handle_cvers_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	// Ignore command
-	return 0;
-}
-
-static int _handle_verchk_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	// Ignore command
-	return 0;
-}
-
-static int _handle_lobcount_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-    // Ignore command but, return 1
-	irc_send(conn,RPL_LOBCOUNT,"1");
-	return 0;
-}
-
-static int _handle_whereto_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	// Ignore command, but output proper server information...
-	char temp[MAX_IRC_MESSAGE_LEN];
-
-	// Casted to avoid warnings
-	const char * ircip = addr_num_to_ip_str(conn_get_real_local_addr(conn));
-	const char * ircname = prefs_get_servername();
-	const char * irctimezone = prefs_get_wol_timezone();
-	const char * irclong = prefs_get_wol_longitude();
-	const char * irclat = prefs_get_wol_latitude();
-
-	snprintf(temp, sizeof(temp), ":%s %d '0:%s' %s %s %s", ircip, BNETD_WOL_PORT, ircname, irctimezone, irclong, irclat);
-	irc_send(conn,RPL_IRCSERV,temp);
-	snprintf(temp, sizeof(temp), ":%s %d 'Live chat server' %s %s %s", ircip, BNETD_IRC_PORT, irctimezone, irclong, irclat);
-	irc_send(conn,RPL_IRCSERV,temp);
-
-	snprintf(temp, sizeof(temp), ":%s %d 'Gameres server' %s %s %s", ircip, BNETD_WOL_PORT, irctimezone, irclong, irclat);
-	irc_send(conn,RPL_GAMERESSERV,temp);
-	snprintf(temp, sizeof(temp), ":%s %d 'Ladder server' %s %s %s", ircip, BNETD_WOL_PORT, irctimezone, irclong, irclat);
-	irc_send(conn,RPL_LADDERSERV,temp);
-
-	irc_send(conn,RPL_ENDSERVLIST,"");
-	return 0;
-}
-
-static int _handle_apgar_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	char * apgar = NULL;
-
-	if((numparams>=1)&&params[0]) {
-	    apgar = params[0];
-	    conn_wol_set_apgar(conn,apgar);
-	}
-
-	return 0;
-}
-
-static int _handle_serial_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-    // Ignore command
-	return 0;
-}
-
-static int _handle_squadinfo_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	// FIXME: Not implemented
-	return 0;
-}
-
-static int _handle_setopt_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	// Ignore this command
-
-	return 0;
-}
-
-static int _handle_setcodepage_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	char * codepage = NULL;
-
-	if((numparams>=1)&&params[0]) {
-	    codepage = params[0];
-	    conn_wol_set_codepage(conn,std::atoi(codepage));
-	}
-	irc_send(conn,RPL_SET_CODEPAGE,codepage);
-	return 0;
-}
-
-static int _handle_setlocale_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	char * locale = NULL;
-
-	if((numparams>=1)&&params[0]) {
-	    locale = params[0];
-	    conn_wol_set_locale(conn,std::atoi(locale));
-	}
-	irc_send(conn,RPL_SET_LOCALE,locale);
-	return 0;
-}
-
-static int _handle_getcodepage_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	char temp[MAX_IRC_MESSAGE_LEN];
-	char _temp[MAX_IRC_MESSAGE_LEN];
-
-	std::memset(temp,0,sizeof(temp));
-	std::memset(_temp,0,sizeof(_temp));
-
-	if((numparams>=1)) {
-	    int i;
-	    for (i=0; i<numparams; i++) {
-    		t_connection * user;
-            int codepage;
-    		char const * name;
-
-    		if((user = connlist_find_connection_by_accountname(params[i]))) {
-    		    codepage = conn_wol_get_codepage(user);
-    		    name = conn_get_chatname(user);
-
-    		    snprintf(_temp, sizeof(_temp), "%s`%u", name, codepage);
-    		    std::strcat(temp,_temp);
-    		    if(i < numparams-1)
-    			     std::strcat(temp,"`");
-    		}
-	    }
-   	    irc_send(conn,RPL_GET_CODEPAGE,temp);
-	}
-	return 0;
-}
-
-static int _handle_getlocale_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	char temp[MAX_IRC_MESSAGE_LEN];
-	char _temp[MAX_IRC_MESSAGE_LEN];
-
-	std::memset(temp,0,sizeof(temp));
-	std::memset(_temp,0,sizeof(_temp));
-
-	if((numparams>=1)) {
-	    int i;
-	    for (i=0; i<numparams; i++) {
-    		t_connection * user;
-    		int locale;
-    		char const * name;
-
-    		if((user = connlist_find_connection_by_accountname(params[i]))) {
-    		    locale = conn_wol_get_locale(user);
-    		    name = conn_get_chatname(user);
-
-    		    snprintf(_temp, sizeof(_temp), "%s`%u", name, locale);
-    		    std::strcat(temp,_temp);
-    		    if(i < numparams-1)
-           			std::strcat(temp,"`");
-    		}
-	    }
-   	    irc_send(conn,RPL_GET_LOCALE,temp);
-	}
-	return 0;
-}
-
-static int _handle_joingame_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	char _temp[MAX_IRC_MESSAGE_LEN];
-
-	std::memset(_temp,0,sizeof(_temp));
-
-	/**
-	*  Basically this has 2 modes, Join Game and Create Game output is pretty much
-	*  the same...input and output of JOINGAME is listed below. By the way, there is a
-	*  hack in here, for Red Alert 1, it use's JOINGAME for some reason to join a lobby channel.
-	*
-	*   Here is the input expected:
-	*   JOINGAME #user's_game unknown numberOfPlayers gameType unknown unknown gameIsTournament unknown password
-	*
-	*   Heres the output expected:
-	*   user!WWOL@hostname JOINGAME unknown numberOfPlayers gameType unknown clanID longIP gameIsTournament :#game_channel_name
-	*/
-	if((numparams==2)) {
-	    char ** e;
-
-	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME: * Join * (%s, %s)",
-		     params[0],params[1]);
-
-	    e = irc_get_listelems(params[0]);
-	    if ((e)&&(e[0])) {
-    		char const * ircname = irc_convert_ircname(e[0]);
-    		char * old_channel_name = NULL;
-	   	 	t_channel * old_channel = conn_get_channel(conn);
-
-			if (old_channel)
-   	  		   old_channel_name = xstrdup(irc_convert_channel(old_channel));
-
-			if ((!(ircname)) || (conn_set_channel(conn,ircname)<0))	{
-				irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed");
-			}
-			else {
-				t_channel * channel;
-				char const * gameOptions;
-				int gameType;
-
-				conn_wol_set_ingame(conn,1);
-
-				channel = conn_get_channel(conn);
-				gameOptions = channel_wol_get_game_options(channel);
-				gameType = channel_wol_get_game_type(channel);
-
-
-				if (gameType == conn_wol_get_game_type(conn)) {
-				    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME [Game Options] (%s) [Game Type] (%u) [Game Owner] (%s)",gameOptions,gameType,channel_wol_get_game_owner(channel));
-
-				    if (channel!=old_channel) {
-		    			char temp[MAX_IRC_MESSAGE_LEN];
-
-    					channel_set_userflags(conn);
-    					message_send_text(conn,message_wol_joingame,conn,gameOptions); /* we have to send the JOINGAME acknowledgement */
-    					ircname=irc_convert_channel(channel);
-
-    					irc_send_rpl_namreply(conn,channel);
-
-   	    				if ((std::strlen(ircname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
-    						snprintf(temp, sizeof(temp), "%s :End of NAMES list",ircname);
-    						irc_send(conn,RPL_ENDOFNAMES,temp);
-    					}
-	    		    }
-				}
-				else {
-				    irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed");
-				}
-			}
-			if (old_channel_name) xfree((void *)old_channel_name);
-		}
-    		if (e)
-		    irc_unget_listelems(e);
-    	    return 0;
-	}
-	/**
-	* HACK: Check for 3 params, because in that case we must be running RA1
-	* then just forward to _handle_join_command
-	*/
-	else if((numparams==3)) {
-	    _handle_join_command(conn,numparams,params,text);
-	}
-	else if((numparams>=8)) {
-	    char ** e;
-
-	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME: * Create * (%s, %s)",
-		     params[0],params[1]);
-
-	    snprintf(_temp, sizeof(_temp), "%s %s %s %s 0 %u %s :%s",params[1],params[2],params[3],params[4],conn_get_addr(conn),params[6],params[0]);
-	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME [Game Options] (%s)",_temp);
-
-	    e = irc_get_listelems(params[0]);
-	    if ((e)&&(e[0])) {
-    		char const * ircname = irc_convert_ircname(e[0]);
-    		char * old_channel_name = NULL;
-	   	 	t_channel * old_channel = conn_get_channel(conn);
-
-			if (old_channel)
-			  old_channel_name = xstrdup(irc_convert_channel(old_channel));
-
-			if ((!(ircname)) || (conn_set_channel(conn,ircname)<0))	{
-				irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed"); /* FIXME: be more precise; what is the real error code for that? */
-			}
-			else {
-				t_channel * channel;
-
-				channel = conn_get_channel(conn);
-				if (channel!=old_channel) {
-	    			char temp[MAX_IRC_MESSAGE_LEN];
-					char * topic;
-
-					channel_set_userflags(conn);
-					channel_wol_set_game_options(channel,_temp);
-					channel_wol_set_game_owner(channel,conn_get_chatname(conn));
-					channel_wol_set_game_ownerip(channel,conn_get_addr(conn));
-					channel_wol_set_game_type(channel,conn_wol_get_game_type(conn));
-					channel_wol_set_game_tournament(channel,std::atoi(params[6]));
-
-					message_send_text(conn,message_wol_joingame,conn,_temp); /* we have to send the JOINGAME acknowledgement */
-					ircname=irc_convert_channel(channel);
-
-					if ((topic = channel_get_topic(channel_get_name(channel)))) {
-						if ((std::strlen(ircname)+1+1+std::strlen(topic)+1)<MAX_IRC_MESSAGE_LEN) {
-							snprintf(temp, sizeof(temp), "%s :%s", ircname, topic);
-							irc_send(conn,RPL_TOPIC,temp);
-						}
-					}
-
-	    			irc_send_rpl_namreply(conn,channel);
-
-    				if ((std::strlen(ircname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
-						snprintf(temp, sizeof(temp), "%s :End of NAMES list", ircname);
-						irc_send(conn,RPL_ENDOFNAMES,temp);
-					}
-	    		}
-			}
-			if (old_channel_name) xfree((void *)old_channel_name);
-		}
-		if (e)
-	       irc_unget_listelems(e);
-	}
-	else
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to JOINGAME");
-	return 0;
-}
-
-static int _handle_gameopt_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	char temp[MAX_IRC_MESSAGE_LEN];
-
- 	/**
- 	*  Basically this has 2 modes, Game Owner Change and Game Joinee Change what the output
- 	*  on this does is pretty much unknown, we just dump this to the client to deal with...
- 	*
- 	*	Heres the output expected (from game owner):
- 	*	user!WWOL@hostname GAMEOPT #game_channel_name :gameOptions
- 	*
- 	*	Heres the output expected (from game joinee):
- 	*	user!WWOL@hostname GAMEOPT game_owner_name :gameOptions
- 	*/
-	if ((numparams>=1)&&(text)) {
-	    int i;
-	    char ** e;
-
-	    e = irc_get_listelems(params[0]);
-	    /* FIXME: support wildcards! */
-
-	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] GAMEOPT: (%s :%s)",params[0],text);
-	    conn_wol_set_game_options(conn,text);
-
-	    for (i=0;((e)&&(e[i]));i++) {
-    		if (e[i][0]=='#') {
-    		    /* game owner change */
-    		    t_channel * channel;
-
-    		    if ((channel = channellist_find_channel_by_name(irc_convert_ircname(params[0]),NULL,NULL))) {
-        			snprintf(temp, sizeof(temp), ":%s", text);
-        			channel_message_send(channel,message_wol_gameopt_owner,conn,temp);
-    		    }
-    		    else {
-        			irc_send(conn,ERR_NOSUCHCHANNEL,":No such channel");
-    		    }
-    		}
-    		else
-    		{
-    		    /* user change */
-    		    t_connection * user;
-
-    		    if ((user = connlist_find_connection_by_accountname(e[i]))) {
-        			snprintf(temp, sizeof(temp), ":%s", text);
-        			message_send_text(user,message_wol_gameopt_join,conn,temp);
-    		    }
-    		    else {
-          			irc_send(conn,ERR_NOSUCHNICK,":No such user");
-    		    }
-    		}
-	    }
-	}
-	else
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to GAMEOPT");
-	return 0;
-}
-
-static int _handle_finduserex_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	char _temp[MAX_IRC_MESSAGE_LEN];
-	char const * ircname = NULL;
-
-	std::memset(_temp,0,sizeof(_temp));
-
-	if ((numparams>=1)) {
-	    t_connection * user;
-
-	    if((user = connlist_find_connection_by_accountname(params[0]))) {
-     		ircname = irc_convert_channel(conn_get_channel(user));
-	    }
-
-	    snprintf(_temp, sizeof(_temp), "0 :%s,0", ircname);
-	    irc_send(conn,RPL_FIND_USER_EX,_temp);
-    }
-	return 0;
-}
-
-static int _handle_page_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	char _temp[MAX_IRC_MESSAGE_LEN];
-
-	std::memset(_temp,0,sizeof(_temp));
-
-	if ((numparams>=1)&&(text)) {
-	    t_connection * user;
-
-	    snprintf(_temp, sizeof(_temp), ":%s", text);
-	    if((user = connlist_find_connection_by_accountname(params[0]))) {
-     		message_send_text(user,message_wol_page,conn,_temp);
-	    }
-	}
-	return 0;
-}
-
-static int _handle_startg_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	char temp[MAX_IRC_MESSAGE_LEN];
-	char _temp_a[MAX_IRC_MESSAGE_LEN];
-	t_channel * channel;
-
-	std::time_t now;
-
- 	/**
- 	*  Heres the output expected (this can have up-to 8 entries (ie 8 players):
-    *  (we are assuming for this example that user1 is the game owner)
-    *
- 	*   user1!WWOL@hostname STARTG u :user1 xxx.xxx.xxx.xxx user2 xxx.xxx.xxx.xxx :gameNumber cTime
- 	*/
-	if((numparams>=1)) {
-	    int i;
-	    char ** e;
-
-	    std::memset(temp,0,sizeof(temp));
-	    std::memset(_temp_a,0,sizeof(_temp_a));
-
-	    e = irc_get_listelems(params[1]);
-	    /* FIXME: support wildcards! */
-
-	    std::strcat(temp,":");
-	    for (i=0;((e)&&(e[i]));i++) {
-    		t_connection * user;
-    		const char * addr = NULL;
-
-    		if((user = connlist_find_connection_by_accountname(e[i]))) {
-    		    addr = addr_num_to_ip_str(conn_get_addr(user));
-    		}
-    		snprintf(_temp_a, sizeof(_temp_a), "%s %s ", e[i], addr);
-    		std::strcat(temp,_temp_a);
-	    }
-
-        std::strcat(temp,":");
-        std::strcat(temp,"1337"); /* yes, ha ha funny, i just don't generate game numbers yet */
-        std::strcat(temp," ");
-
-        now = std::time(NULL);
-        std::strcat(temp,std::ctime(&now));
-
-	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] STARTG: (%s)",temp);
-
-	    if ((channel = channellist_find_channel_by_name(irc_convert_ircname(params[0]),NULL,NULL))) {
-     		channel_message_send(channel,message_wol_start_game,conn,temp);
-	    }
-	    else {
-     		irc_send(conn,ERR_NOSUCHCHANNEL,":No such channel");
-	    }
-	}
-   	return 0;
-}
-
-static int _handle_listsearch_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	// FIXME: Not implemented
-	return 0;
 }
 
 }

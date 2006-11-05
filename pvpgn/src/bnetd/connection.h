@@ -72,6 +72,7 @@ typedef enum
     conn_class_telnet,
     conn_class_irc,     /* Internet Relay Chat */
     conn_class_wol,     /* Westwood Online */
+    conn_class_wserv,   /* Westwood Server */
     conn_class_d2cs_bnetd,
     conn_class_w3route,
     conn_class_none
