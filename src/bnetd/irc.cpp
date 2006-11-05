@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2001  Marco Ziech (mmz@gmx.net)
  * Copyright (C) 2005  Bryan Biedenkapp (gatekeep@gmail.com)
+ * Copyright (C) 2006  Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -194,13 +195,15 @@ extern int irc_send_ping(t_connection * conn)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
 	return -1;
     }
+
+   if ((conn_get_clienttag(conn) != CLIENTTAG_WCHAT_UINT) && 
+       (conn_get_clienttag(conn) != CLIENTTAG_IIRC_UINT))
+        return 0;
+
     if (!(p = packet_create(packet_class_raw))) {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create packet");
 	return -1;
     }
-
-    if((conn_get_wol(conn) == 1))
-        return 0;
 
     conn_set_ircping(conn,get_ticks());
     if (conn_get_state(conn)==conn_state_bot_username)
@@ -249,6 +252,7 @@ extern int irc_send_pong(t_connection * conn, char const * params)
 
 extern int irc_authenticate(t_connection * conn, char const * passhash)
 {
+    char temp[MAX_IRC_MESSAGE_LEN];
     t_hash h1;
     t_hash h2;
     t_account * a;
@@ -295,18 +299,20 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
     	    }
 
     	    if(tempapgar == NULL) {
-                irc_send_cmd(conn,"NOTICE",":Authentication failed."); /* bad APGAR */
+                std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
+                irc_send_cmd(conn,"ERROR",temp);                 /* bad APGAR */
                 conn_increment_passfail_count(conn);
                 return 0;
             }
-
+            
     	    if(std::strcmp(temphash,tempapgar) == 0) {
                 conn_login(conn,a,username);
     	        conn_set_state(conn,conn_state_loggedin);
-        	    conn_set_clienttag(conn,CLIENTTAG_WWOL_UINT); /* WWOL hope here is ok */
         		return 1;
     	    }
     	    else {
+                std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
+                irc_send_cmd(conn,"ERROR",temp);                 /* bad APGAR */
         		conn_increment_passfail_count(conn);
         		return 0;
     	    }
@@ -325,116 +331,6 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
             irc_send_cmd(conn,"NOTICE",":Authentication failed."); /* wrong password */
 	    conn_increment_passfail_count(conn);
         }
-    }
-    return 0;
-}
-
-extern int irc_welcome(t_connection * conn)
-{
-    char temp[MAX_IRC_MESSAGE_LEN];
-    std::time_t temptime;
-    char const * tempname;
-    char const * temptimestr;
-    char const * filename;
-    std::FILE *fp;
-    char * line, * formatted_line;
-    char send_line[MAX_IRC_MESSAGE_LEN];
-    char motd_failed = 0;
-
-    if (!conn) {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
-	return -1;
-    }
-
-    tempname = conn_get_loggeduser(conn);
-
-    if ((34+std::strlen(tempname)+1)<=MAX_IRC_MESSAGE_LEN)
-        std::sprintf(temp,":Welcome to the %s IRC Network %s",prefs_get_irc_network_name(), tempname);
-    else
-        std::sprintf(temp,":Maximum length exceeded");
-    irc_send(conn,RPL_WELCOME,temp);
-
-    if ((14+std::strlen(server_get_hostname())+10+std::strlen(PVPGN_SOFTWARE" "PVPGN_VERSION)+1)<=MAX_IRC_MESSAGE_LEN)
-        std::sprintf(temp,":Your host is %s, running "PVPGN_SOFTWARE" "PVPGN_VERSION,server_get_hostname());
-    else
-        std::sprintf(temp,":Maximum length exceeded");
-    irc_send(conn,RPL_YOURHOST,temp);
-
-    temptime = server_get_starttime(); /* FIXME: This should be build time */
-    temptimestr = std::ctime(&temptime);
-    if ((25+std::strlen(temptimestr)+1)<=MAX_IRC_MESSAGE_LEN)
-        std::sprintf(temp,":This server was created %s",temptimestr); /* FIXME: is ctime() portable? */
-    else
-        std::sprintf(temp,":Maximum length exceeded");
-    irc_send(conn,RPL_CREATED,temp);
-
-    /* we don't give mode information on MYINFO we give it on ISUPPORT */
-    if ((std::strlen(server_get_hostname())+7+std::strlen(PVPGN_SOFTWARE" "PVPGN_VERSION)+9+1)<=MAX_IRC_MESSAGE_LEN)
-        std::sprintf(temp,"%s "PVPGN_SOFTWARE" "PVPGN_VERSION" - -",server_get_hostname());
-    else
-        std::sprintf(temp,":Maximum length exceeded");
-    irc_send(conn,RPL_MYINFO,temp);
-
-    if((conn_get_wol(conn) == 1))
-        std::sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
-        WOL_NICKNAME_LEN, MAX_TOPIC_LEN, MAX_CHANNELNAME_LEN, prefs_get_irc_network_name());
-    else
-        std::sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
-        MAX_CHARNAME_LEN, MAX_TOPIC_LEN, MAX_CHANNELNAME_LEN, prefs_get_irc_network_name());
-
-    if((std::strlen(temp))<=MAX_IRC_MESSAGE_LEN)
-        irc_send(conn,RPL_ISUPPORT,temp);
-    else {
-        std::sprintf(temp,":Maximum length exceeded");
-        irc_send(conn,RPL_ISUPPORT,temp);
-    }
-
-    if ((3+std::strlen(server_get_hostname())+22+1)<=MAX_IRC_MESSAGE_LEN)
-    	std::sprintf(temp,":- %s, "PVPGN_SOFTWARE" "PVPGN_VERSION", built on %s",server_get_hostname(),temptimestr);
-    else
-        std::sprintf(temp,":Maximum length exceeded");
-    irc_send(conn,RPL_MOTDSTART,temp);
-
-    if ((filename = prefs_get_motdfile())) {
-	 if ((fp = std::fopen(filename,"r"))) {
-	  while ((line=file_get_line(fp))) {
-		if ((formatted_line = message_format_line(conn,line))) {
-		  formatted_line[0]=' ';
-		  std::sprintf(send_line,":-%s",formatted_line);
-		  irc_send(conn,RPL_MOTD,send_line);
-		  xfree(formatted_line);
-		}
-	  }
-
-	  file_get_line(NULL); // clear file_get_line buffer
-	  std::fclose(fp);
-	}
-	 else
-	 	motd_failed = 1;
-   }
-   else
-     motd_failed = 1;
-
-    if (motd_failed) {
-      irc_send(conn,RPL_MOTD,":- Failed to load motd, sending default motd              ");
-      irc_send(conn,RPL_MOTD,":- ====================================================== ");
-      irc_send(conn,RPL_MOTD,":-                 http://www.pvpgn.org                   ");
-      irc_send(conn,RPL_MOTD,":- ====================================================== ");
-    }
-    irc_send(conn,RPL_ENDOFMOTD,":End of /MOTD command");
-    irc_send_cmd(conn,"NOTICE",":This is an experimental service.");
-
-    conn_set_state(conn,conn_state_bot_password);
-    if (connlist_find_connection_by_accountname(conn_get_loggeduser(conn))) {
-    	irc_send_cmd(conn,"NOTICE","This account is already logged in, use another account.");
-	return -1;
-    }
-
-    if (conn_get_ircpass(conn)) {
-	irc_send_cmd(conn,"NOTICE",":Trying to authenticate with PASS ...");
-	irc_authenticate(conn,conn_get_ircpass(conn));
-    } else {
-    	irc_send_cmd(conn,"NOTICE",":No PASS command received. Please identify yourself by /msg NICKSERV identify <password>.");
     }
     return 0;
 }
@@ -793,18 +689,30 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	from.user = ctag;
     	from.host = addr_num_to_ip_str(conn_get_addr(me));
 
-	    if((conn_get_wol(me) == 1))
+	    if((conn_get_wol(me) == 1) && (conn_get_clienttag(me) != CLIENTTAG_WCHAT_UINT))
 	    {
         	char temp[MAX_IRC_MESSAGE_LEN];
     		std::memset(temp,0,sizeof(temp));
 
     		/**
-            *  For WOL the channel JOIN output must be like the following:
-    		*   user!WWOL@hostname JOIN :clanID,longIP channelName
+            *  For WOLv2 the channel JOIN output must be like the following:
+    		*  user!WWOL@hostname JOIN :clanID,longIP channelName
     		*/
     		std::sprintf(temp,":0,%u",conn_get_addr(me));
     		msg = irc_message_preformat(&from,"JOIN",temp,irc_convert_channel(conn_get_channel(me)));
+	    	conn_unget_chatname(me,from.nick);
+    	    break;
 	    }
+	    else if (conn_get_clienttag(me) == CLIENTTAG_WCHAT_UINT) {
+            char temp[MAX_IRC_MESSAGE_LEN];
+    		std::memset(temp,0,sizeof(temp));
+    		if (conn_wol_get_ingame(me) == 1)
+                msg = irc_message_preformat(&from,"JOINGAME",":",irc_convert_channel(conn_get_channel(me)));
+            else
+                msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(conn_get_channel(me)));
+            conn_unget_chatname(me,from.nick);
+            break;
+        }
 	    else
     	msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(conn_get_channel(me)));
     	conn_unget_chatname(me,from.nick);
@@ -890,8 +798,8 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     case message_wol_joingame:
     	from.nick = conn_get_chatname(me);
     	from.user = ctag;
-    	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"JOINGAME",text,"\r");
+     	from.host = addr_num_to_ip_str(conn_get_addr(me));
+    	msg = irc_message_preformat(&from,"JOINGAME","\r",text);
     	conn_unget_chatname(me,from.nick);
     	break;
     case message_wol_gameopt_owner:
@@ -919,9 +827,16 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	from.nick = conn_get_chatname(me);
     	from.user = ctag;
     	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"PAGE","u",text);
+    	msg = irc_message_preformat(&from,"PAGE","",text);
     	conn_unget_chatname(me,from.nick);
     	break;
+    case message_wol_advertr:
+    	from.nick = conn_get_chatname(me);
+    	from.user = ctag;
+    	from.host = addr_num_to_ip_str(conn_get_addr(me));
+    	msg = irc_message_preformat(&from,"ADVERTR","\r",text);
+    	conn_unget_chatname(me,from.nick);
+    break;
     default:
     	eventlog(eventlog_level_warn,__FUNCTION__,"%d not yet implemented",type);
 	return -1;
@@ -981,16 +896,16 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
 	if ((std::strlen(temp)+((!first)?(1):(0))+std::strlen(flg)+std::strlen(name)+1)<=sizeof(temp)) {
 	    if (!first) std::strcat(temp," ");
 
-    	    if((conn_get_wol(c) == 1))
-    	    {
-        		if((conn_wol_get_ingame(c) == 0))
-        		{
-                    if ((flags & MF_BLIZZARD))
-        			   std::strcat(temp,"@");
-        		    if ((flags & MF_BNET) || (flags & MF_GAVEL))
-        			   std::strcat(temp,"@");
-        		}
-                std::sprintf(temp,"%s%s,0,%u",temp,name,conn_get_addr(m));
+            if((conn_get_wol(c) == 1)) {
+                if ((channel_wol_get_game_owner(channel) != NULL) && (std::strcmp(channel_wol_get_game_owner(channel),name) == 0)) {
+                            std::strcat(temp,"@");
+                    }
+                if (conn_get_clienttag(c) != CLIENTTAG_WCHAT_UINT) {
+                    std::sprintf(temp,"%s%s,0,%u",temp,name,conn_get_addr(m));
+                }
+                else {
+                    std::sprintf(temp,"%s%s",temp,name);
+                }
     	    }
     	    else
     	    {
@@ -1102,6 +1017,54 @@ extern int irc_who(t_connection * c, char const * name)
 	    return irc_who_connection(c,info);
     }
     return 0;
+}
+
+extern int irc_send_motd(t_connection * conn)
+{
+    char const * tempname;
+    char const * filename;
+    std::FILE *fp;
+    char * line, * formatted_line;
+    char send_line[MAX_IRC_MESSAGE_LEN];
+    char motd_failed = 0;
+
+    if (!conn) {
+	   eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
+	   return -1;
+    }
+
+    tempname = conn_get_loggeduser(conn);
+    
+    irc_send(conn,RPL_MOTDSTART,":-");
+
+    if ((filename = prefs_get_motdfile())) {
+	 if ((fp = std::fopen(filename,"r"))) {
+	  while ((line=file_get_line(fp))) {
+		if ((formatted_line = message_format_line(conn,line))) {
+		  formatted_line[0]=' ';
+		  std::sprintf(send_line,":-%s",formatted_line);
+		  irc_send(conn,RPL_MOTD,send_line);
+		  xfree(formatted_line);
+		}
+	  }
+
+	  file_get_line(NULL); // clear file_get_line buffer
+	  std::fclose(fp);
+	}
+	 else
+	 	motd_failed = 1;
+   }
+   else
+      motd_failed = 1;
+
+   if (motd_failed) {
+      irc_send(conn,RPL_MOTD,":- Failed to load motd, sending default motd              ");
+      irc_send(conn,RPL_MOTD,":- ====================================================== ");
+      irc_send(conn,RPL_MOTD,":-                 http://www.pvpgn.org                   ");
+      irc_send(conn,RPL_MOTD,":- ====================================================== ");
+   }
+   irc_send(conn,RPL_ENDOFMOTD,":End of /MOTD command");
+   return 0;
 }
 
 }

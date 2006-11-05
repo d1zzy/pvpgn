@@ -60,6 +60,7 @@
 #include "handle_init.h"
 #include "handle_d2cs.h"
 #include "handle_irc.h"
+#include "handle_wol.h"
 #include "handle_udp.h"
 #include "anongame.h"
 #include "clan.h"
@@ -201,6 +202,8 @@ static char const * laddr_type_get_str(t_laddr_type laddr_type)
 	return "irc";
     case laddr_type_wol:
 	return "wol";
+    case laddr_type_wserv:
+	return "wserv";
     case laddr_type_telnet:
 	return "telnet";
     default:
@@ -349,6 +352,10 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 	    break;
 	case laddr_type_wol:
 	    conn_set_class(c,conn_class_wol);
+	    conn_set_state(c,conn_state_connected);
+	    break;
+	case laddr_type_wserv:
+	    conn_set_class(c,conn_class_wserv);
 	    conn_set_state(c,conn_state_connected);
 	    break;
 	case laddr_type_w3route:
@@ -522,6 +529,7 @@ static int sd_tcpinput(t_connection * c)
 	case conn_class_bot:
 	case conn_class_irc:
 	case conn_class_wol:
+	case conn_class_wserv:
 	case conn_class_telnet:
 	    if (!(packet = packet_create(packet_class_raw)))
 	    {
@@ -636,8 +644,11 @@ static int sd_tcpinput(t_connection * c)
 		    ret = handle_file_packet(c,packet);
 		    break;
 		case conn_class_irc:
-		case conn_class_wol:
 		    ret = handle_irc_packet(c,packet);
+		    break;
+		case conn_class_wserv:
+		case conn_class_wol:
+		    ret = handle_wol_packet(c,packet);
 		    break;
 		case conn_class_w3route:
 		    ret = handle_w3route_packet(c,packet);
@@ -1449,6 +1460,14 @@ extern int server_process(void)
     if (_setup_add_addrs(&laddrs, prefs_get_wol_addrs(),INADDR_ANY,BNETD_WOL_PORT, laddr_type_wol))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create %s server address list from \"%s\"",laddr_type_get_str(laddr_type_wol),prefs_get_wol_addrs());
+	_shutdown_addrs(laddrs);
+	return -1;
+    }
+    
+    /* Append list of addresses to listen for WSERV IRC connections */
+    if (_setup_add_addrs(&laddrs, prefs_get_wserv_addrs(),INADDR_ANY,BNETD_WSERV_PORT, laddr_type_wserv))
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"could not create %s server address list from \"%s\"",laddr_type_get_str(laddr_type_wserv),prefs_get_wserv_addrs());
 	_shutdown_addrs(laddrs);
 	return -1;
     }

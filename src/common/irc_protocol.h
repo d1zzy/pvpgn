@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2001  Marco Ziech (mmz@gmx.net)
  * Copyright (C) 2005  Bryan Biedenkapp (gatekeep@gmail.com)
+ * Copyright (C) 2006  Ondrej Pelikan (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -326,27 +327,40 @@
 /**
 * Westwood Online Extensions
 */
+#define RPL_GET_LOCALE	     309
+#define RPL_SET_LOCALE	     310
+
 #define RPL_GAME_CHANNEL     326
 #define RPL_CHANNEL			 327
 
 #define RPL_GET_CODEPAGE     328	
 #define RPL_SET_CODEPAGE     329
 
-#define RPL_GET_LOCALE	     309
-#define RPL_SET_LOCALE	     310
+#define RPL_GET_BUDDY        333
 
 #define RPL_BATTLECLAN	     358
 
+#define RPL_VERCHK_NONREQ    379  /* for WCHAT */
+
 #define RPL_FIND_USER_EX     398
 
-#define RPL_UPDATE_RECORD    602
+#define RPL_GET_INSIDER      399
 
-#define RPL_IRCSERV			 605
+#define RPL_UPDATE_NONEX     602  /* for WOL */
+
+#define RPL_WOLSERV          605
+#define RPL_UPDATE_EXIST     606  /* for WOL */
 #define RPL_ENDSERVLIST	     607
 #define RPL_GAMERESSERV	     608
 #define RPL_LADDERSERV	     609
 
 #define RPL_LOBCOUNT	     610
+
+#define RPL_MANGLERSERV	     612
+
+#define RPL_PINGSERVER	     615
+
+#define RPL_IDNOEXIST        439
 
 /** error's */
 /*
