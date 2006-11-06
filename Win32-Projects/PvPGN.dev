@@ -1,7 +1,7 @@
 [Project]
 FileName=PvPGN.dev
 Name=PvPGN
-UnitCount=266
+UnitCount=268
 Type=0
 Ver=1
 ObjFiles=
@@ -2708,9 +2708,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit267]
-FileName=..\src\common\rcm.cpp
-CompileCpp=0
-Folder=common/Source Files
+FileName=..\src\bnetd\handle_wol.h
+CompileCpp=1
+Folder=bnetd/Header Files
 Compile=1
 Link=1
 Priority=1000
@@ -2718,9 +2718,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit268]
-FileName=..\src\bnetd\attr.h
-CompileCpp=0
-Folder=bnetd/Header Files
+FileName=..\src\bnetd\handle_wol.cpp
+CompileCpp=1
+Folder=bnetd/Source Files
 Compile=1
 Link=1
 Priority=1000
