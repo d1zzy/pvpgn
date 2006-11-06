@@ -44,6 +44,8 @@
 #include "account_wrap.h"
 #include "prefs.h"
 #include "tick.h"
+#include "handle_irc.h"
+#include "handle_wol.h"
 #include "command_groups.h"
 #include "common/setup_after.h"
 
@@ -129,61 +131,6 @@ extern int irc_send(t_connection * conn, int code, char const * params)
     }
     std::sprintf(temp,"%03u",code);
     return irc_send_cmd(conn,temp,params);
-}
-
-extern int irc_send_cmd2(t_connection * conn, char const * prefix, char const * command, char const * postfix, char const * comment)
-{
-    t_packet * p;
-    char data[MAX_IRC_MESSAGE_LEN+1];
-    unsigned len;
-
-    if (!conn) {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
-	return -1;
-    }
-    if (!prefix)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL prefix");
-	return -1;
-    }
-    if (!command) {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL command");
-	return -1;
-    }
-    if (!postfix)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL postfix");
-	return -1;
-    }
-
-    if (!(p = packet_create(packet_class_raw))) {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not create packet");
-	return -1;
-    }
-
-    if (comment) {
-        len = 1+std::strlen(prefix)+1+std::strlen(command)+1+std::strlen(postfix)+2+std::strlen(comment)+1+2;
-    	if (len > MAX_IRC_MESSAGE_LEN) {
-	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%u bytes)",len);
-	    return -1;
-	}
-	else
-	    std::sprintf(data,":%s %s %s :%s\r\n",prefix,command,postfix,comment);
-    } else {
-        len = 1+std::strlen(prefix)+1+std::strlen(command)+1+std::strlen(postfix)+1+2;
-    	if (len > MAX_IRC_MESSAGE_LEN) {
-	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%u bytes)",len);
-	    return -1;
-	}
-	else
-	std::sprintf(data,":%s %s %s\r\n",prefix,command,postfix);
-    }
-    packet_set_size(p,0);
-    packet_append_data(p,data,len);
-    // eventlog(eventlog_level_debug,__FUNCTION__,"[%d] sent \"%s\"",conn_get_socket(conn),data);
-    conn_push_outqueue(conn,p);
-    packet_del_ref(p);
-    return 0;
 }
 
 extern int irc_send_ping(t_connection * conn)
@@ -277,15 +224,15 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
     }
     a = accountlist_find_account(username);
     if (!a) {
-    	irc_send_cmd(conn,"NOTICE",":Authentication failed."); /* user does not exist */
+            message_send_text(conn,message_type_notice,NULL,"Authentication failed.");
 	return 0;
     }
 
     if (connlist_find_connection_by_account(a) && prefs_get_kick_old_login()==0) {
-            irc_send_cmd(conn,"NOTICE",":Authentication rejected (already logged in) ");
+            message_send_text(conn,message_type_notice,NULL,"Authentication rejected (already logged in) ");
     }
     else if (account_get_auth_lock(a)==1) {
-            irc_send_cmd(conn,"NOTICE",":Authentication rejected (account is locked) ");
+            message_send_text(conn,message_type_notice,NULL,"Authentication rejected (account is locked) ");
     }
     else
     {
@@ -300,7 +247,7 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
 
     	    if(tempapgar == NULL) {
                 std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
-                irc_send_cmd(conn,"ERROR",temp);                 /* bad APGAR */
+                message_send_text(conn,message_type_error,conn,temp);  /* bad APGAR */
                 conn_increment_passfail_count(conn);
                 return 0;
             }
@@ -312,7 +259,7 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
     	    }
     	    else {
                 std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
-                irc_send_cmd(conn,"ERROR",temp);                 /* bad APGAR */
+                message_send_text(conn,message_type_error,conn,temp);  /* bad APGAR */
         		conn_increment_passfail_count(conn);
         		return 0;
     	    }
@@ -325,10 +272,10 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
             conn_login(conn,a,username);
             conn_set_state(conn,conn_state_loggedin);
             conn_set_clienttag(conn,CLIENTTAG_IIRC_UINT); /* IIRC hope here is ok */
-            irc_send_cmd(conn,"NOTICE",":Authentication successful. You are now logged in.");
+            message_send_text(conn,message_type_notice,NULL,"Authentication successful. You are now logged in.");
 	    return 1;
         } else {
-            irc_send_cmd(conn,"NOTICE",":Authentication failed."); /* wrong password */
+            message_send_text(conn,message_type_notice,NULL,"Authentication failed."); /* wrong password */
 	    conn_increment_passfail_count(conn);
         }
     }
@@ -627,9 +574,9 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
     }
     else
     e1_2 = NULL;
-
+    
     if (e3[0]=='\0') { /* fill in recipient */
-    	if ((tname = conn_get_chatname(dest)))
+    	if ((tname = conn_get_loggeduser(dest)))
     	    toname = tname;
     } else
     	toname = e3;
@@ -737,13 +684,13 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	    }
 	    else
 	    {
-		from.nick = server_get_hostname();
-		from.host = server_get_hostname();
+                from.nick = server_get_hostname();
+                from.host = server_get_hostname();
 	    }
 
-            from.user = ctag;
+        from.user = ctag;
 
-    	    if (type==message_type_talk)
+        if (type==message_type_talk)
     	    	dest = irc_convert_channel(conn_get_channel(me)); /* FIXME: support more channels and choose right one! */
 	    else
 	        dest = ""; /* will be replaced with username in postformat */
@@ -786,12 +733,46 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	/* ignore it */
 	break;
     case message_type_mode:
-	from.nick = conn_get_chatname(me);
-	from.user = ctag;
-	from.host = addr_num_to_ip_str(conn_get_addr(me));
-	msg = irc_message_preformat(&from,"MODE","\r",text);
-	conn_unget_chatname(me,from.nick);
+	    from.nick = conn_get_chatname(me);
+	    from.user = ctag;
+	    from.host = addr_num_to_ip_str(conn_get_addr(me));
+	    msg = irc_message_preformat(&from,"MODE","\r",text);
+	    conn_unget_chatname(me,from.nick);
+    break;
+	case message_type_nick:
+	{
+
+        from.nick = conn_get_loggeduser(me);
+        from.host = addr_num_to_ip_str(conn_get_addr(me));
+        from.user = ctag;
+        msg = irc_message_preformat(&from,"NICK","\r",text);
+
+	}
+    break;
+    case message_type_notice:
+	{
+         
+   	    char temp[MAX_IRC_MESSAGE_LEN];
+	    std::sprintf(temp,":%s",text);
+
+
+        if (me && conn_get_chatname(me))
+	    {
+    	        from.nick = conn_get_chatname(me);
+    	        from.host = addr_num_to_ip_str(conn_get_addr(me));
+    	        from.user = ctag;
+        	    msg = irc_message_preformat(&from,"NOTICE","",temp);
+	    }
+	    else
+	    {
+	            msg = irc_message_preformat(NULL,"NOTICE","",temp);
+	    }
+	    
+	    
+
+	}
 	break;
+
    	/**
    	*  Westwood Online Extensions
    	*/
@@ -1065,6 +1046,47 @@ extern int irc_send_motd(t_connection * conn)
    }
    irc_send(conn,RPL_ENDOFMOTD,":End of /MOTD command");
    return 0;
+}
+
+int irc_welcome(t_connection * conn){
+    if (conn_get_wol(conn))
+       handle_wol_welcome(conn);
+    else
+       handle_irc_welcome(conn);
+}
+
+extern int _handle_nick_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+    char temp[MAX_IRC_MESSAGE_LEN];
+	/* FIXME: more strict param checking */
+
+	if ((conn_get_loggeduser(conn))&&
+	    (conn_get_state(conn)!=conn_state_bot_password &&
+	     conn_get_state(conn)!=conn_state_bot_username)) {
+	    irc_send(conn,ERR_RESTRICTED,":You can't change your nick after login");
+	}
+	else {
+	    if ((params)&&(params[0])) {
+			if (conn_get_loggeduser(conn)){
+                snprintf(temp, sizeof(temp),":%s",params[0]);
+			    message_send_text(conn,message_type_nick,conn,temp);
+             }
+			conn_set_loggeduser(conn,params[0]);
+	    }
+	    else if (text) {
+			if (conn_get_loggeduser(conn)){
+                snprintf(temp, sizeof(temp),":%s",text);
+			    message_send_text(conn,message_type_nick,conn,temp);
+             }
+			conn_set_loggeduser(conn,text);
+	    }
+	    else
+	        irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to NICK");
+	        
+	    if ((conn_get_user(conn))&&(conn_get_loggeduser(conn)))
+			irc_welcome(conn); /* only send the welcome if we have USER and NICK */
+	}
+	return 0;
 }
 
 }
