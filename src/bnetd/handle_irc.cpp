@@ -60,7 +60,6 @@ typedef struct {
 	t_irc_command    irc_command_handler;
 } t_irc_command_table_row;
 
-static int _handle_nick_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_user_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_ping_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_pong_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -274,7 +273,7 @@ static int handle_irc_line(t_connection * conn, char const * ircline)
     return 0;
 }
 
-static int handle_irc_welcome(t_connection * conn)
+extern int handle_irc_welcome(t_connection * conn)
 {
     char temp[MAX_IRC_MESSAGE_LEN];
     std::time_t temptime;
@@ -332,19 +331,19 @@ static int handle_irc_welcome(t_connection * conn)
 
     irc_send_motd(conn);
 
-    irc_send_cmd(conn,"NOTICE",":This is an experimental service.");
+    message_send_text(conn,message_type_notice,NULL,"This is an experimental service");
 
     conn_set_state(conn,conn_state_bot_password);
     if (connlist_find_connection_by_accountname(conn_get_loggeduser(conn))) {
-    	irc_send_cmd(conn,"NOTICE","This account is already logged in, use another account.");
+       message_send_text(conn,message_type_notice,NULL,"This account is already logged in, use another account.");
 	return -1;
     }
 
     if (conn_get_ircpass(conn)) {
-	irc_send_cmd(conn,"NOTICE",":Trying to authenticate with PASS ...");
+        message_send_text(conn,message_type_notice,NULL,"Trying to authenticate with PASS ...");
 	irc_authenticate(conn,conn_get_ircpass(conn));
     } else {
-    	irc_send_cmd(conn,"NOTICE",":No PASS command received. Please identify yourself by /msg NICKSERV identify <password>.");
+        message_send_text(conn,message_type_notice,NULL,"No PASS command received. Please identify yourself by /msg NICKSERV identify <password>.");
     }
     return 0;
 }
@@ -396,34 +395,6 @@ extern int handle_irc_packet(t_connection * conn, t_packet const * const packet)
     }
     conn_set_ircline(conn,ircline); /* write back current status */
     return 0;
-}
-
-static int _handle_nick_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	/* FIXME: more strict param checking */
-
-	if ((conn_get_loggeduser(conn))&&
-	    (conn_get_state(conn)!=conn_state_bot_password &&
-	     conn_get_state(conn)!=conn_state_bot_username)) {
-	    irc_send(conn,ERR_RESTRICTED,":You can't change your nick after login");
-	}
-	else {
-	    if ((params)&&(params[0])) {
-			if (conn_get_loggeduser(conn))
-			    irc_send_cmd2(conn,conn_get_loggeduser(conn),"NICK","",params[0]);
-			conn_set_loggeduser(conn,params[0]);
-	    }
-	    else if (text) {
-			if (conn_get_loggeduser(conn))
-			    irc_send_cmd2(conn,conn_get_loggeduser(conn),"NICK","",text);
-			conn_set_loggeduser(conn,text);
-	    }
-	    else
-	        irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to NICK");
-	    if ((conn_get_user(conn))&&(conn_get_loggeduser(conn)))
-			handle_irc_welcome(conn); /* only send the welcome if we have USER and NICK */
-	}
-	return 0;
 }
 
 static int _handle_user_command(t_connection * conn, int numparams, char ** params, char * text)
@@ -560,13 +531,13 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
  		    				irc_authenticate(conn,hash_get_str(h));
  					    }
 							else {
-								irc_send_cmd(conn,"NOTICE",":Syntax: IDENTIFY <password> (max 16 characters)");
+                                 message_send_text(conn,message_type_notice,NULL,"Syntax: IDENTIFY <password> (max 16 characters)");
 					    }
 					    break;
 					}
 					case conn_state_loggedin:
 					{
-					    irc_send_cmd(conn,"NOTICE",":You don't need to IDENTIFY");
+                         message_send_text(conn,message_type_notice,NULL,"You don't need to IDENTIFY");
 					    break;
 					}
 					default: ;
@@ -586,7 +557,7 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 					}
 
 					if (!pass || pass[0]=='\0' || (std::strlen(pass)>16) ) {
-						message_send_text(conn,message_type_error,conn,":Syntax: REGISTER <password> (max 16 characters)");
+						message_send_text(conn,message_type_error,conn,"Syntax: REGISTER <password> (max 16 characters)");
 						break;
 					}
 
@@ -614,10 +585,9 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 				}
 				else {
 					char tmp[MAX_IRC_MESSAGE_LEN+1];
-
- 					irc_send_cmd(conn,"NOTICE",":Invalid arguments for NICKSERV");
+                    message_send_text(conn,message_type_notice,NULL,"Invalid arguments for NICKSERV");
 					snprintf(tmp, sizeof(tmp), ":Unrecognized command \"%s\"", text);
-					irc_send_cmd(conn,"NOTICE",tmp);
+                    message_send_text(conn,message_type_notice,NULL,tmp);
  				}
  	        }
 			else if (conn_get_state(conn)==conn_state_loggedin) {
@@ -679,7 +649,7 @@ static int _handle_notice_command(t_connection * conn, int numparams, char ** pa
 				t_connection * user;
 
 				if ((user = connlist_find_connection_by_accountname(e[i]))) {
-					irc_send_cmd2(user,conn_get_loggeduser(conn),"NOTICE",conn_get_loggeduser(user),text);
+                          message_send_text(user,message_type_notice,conn,text);
 				}
 				else {
 					irc_send(conn,ERR_NOSUCHNICK,":No such user");
@@ -872,7 +842,8 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 					irc_send(conn,RPL_ENDOFNAMES,":End of NAMES list");
 
 					if (old_channel_name) {
-						irc_send_cmd2(conn,conn_get_loggeduser(conn),"PART",old_channel_name,"only one channel at once");
+                        snprintf(temp,sizeof(temp),"%s :%s", old_channel_name,"only one channel at once");
+                        message_send_text(conn,message_type_part,conn,temp);
 					}
 	    		}
 		}

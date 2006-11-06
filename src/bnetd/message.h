@@ -58,6 +58,12 @@ typedef enum
     message_type_emote,
     message_type_uniqueid,
     message_type_mode,
+    
+    /**
+    *  IRC specific messages
+    */
+    message_type_nick,
+    message_type_notice,
 
     /**
     *  Westwood Online Extensions

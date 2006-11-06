@@ -32,6 +32,7 @@ namespace bnetd
 {
 
 extern int handle_wol_packet(t_connection * conn,t_packet const * const packet);
+extern int handle_wol_welcome(t_connection * conn);
 
 }
 
