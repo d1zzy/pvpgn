@@ -257,7 +257,7 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 	return -1;
     }
 
-    /* dont accept new connections while shutdowning */
+    /* dont accept new connections while shutting down */
     if (curr_exittime) {
 	psock_shutdown(csocket,PSOCK_SHUT_RDWR);
 	psock_close(csocket);
@@ -548,8 +548,7 @@ static int sd_tcpinput(t_connection * c)
 
 	default:
 	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] connection has bad class (closing connection)",conn_get_socket(c));
-	    /* marking connection as "destroyed", memory will be freed later */
-		conn_set_state(c, conn_state_destroy);
+	    conn_close_read(c);
 	    return -2;
 	}
 	conn_put_in_queue(c,packet);
@@ -561,8 +560,7 @@ static int sd_tcpinput(t_connection * c)
     {
     case -1:
 	eventlog(eventlog_level_debug,__FUNCTION__,"[%d] read returned -1 (closing connection)",conn_get_socket(c));
-	/* marking connection as "destroyed", memory will be freed later */
-	conn_set_state(c, conn_state_destroy);
+	conn_close_read(c);
 	return -2;
 
     case 0: /* still working on it */
@@ -660,8 +658,7 @@ static int sd_tcpinput(t_connection * c)
 		packet_del_ref(packet);
 		if (ret<0)
 		{
-			/* marking connection as "destroyed", memory will be freed later  */
-			conn_set_state(c, conn_state_destroy);
+		    conn_close_read(c);
 		    return -2;
 		}
 	    }
