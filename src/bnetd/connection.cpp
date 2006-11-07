@@ -3239,6 +3239,23 @@ extern int conn_add_fdwatch(t_connection *c, fdwatch_handler handle)
 }
 
 
+extern void conn_close_read(t_connection *c)
+{
+    assert(c);
+    conn_set_state(c, conn_state_destroy);
+
+    /* only if we still got output packets remove the read availability
+     * from fdwatch, we are NOT allowed to remove all availability or
+     * remove it completely from fdwatch while handling read, also
+     * if the connection has no output packets is ok to leave it
+     * in read availability check cause it will be closed immediately
+     * in connlist_reap() anyway
+     */
+    if (conn_peek_outqueue(c))
+	fdwatch_update_fd(c->socket.fdw_idx, fdwatch_type_write);
+}
+
+
 extern int conn_get_user_count_by_clienttag(t_clienttag ct)
 {
    t_connection * conn;

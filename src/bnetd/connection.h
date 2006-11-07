@@ -340,6 +340,7 @@ extern int conn_push_outqueue(t_connection * c, t_packet * packet);
 extern t_packet * conn_peek_outqueue(t_connection * c);
 extern t_packet * conn_pull_outqueue(t_connection * c);
 extern int conn_clear_outqueue(t_connection * c);
+extern void conn_close_read(t_connection * c);
 extern int conn_check_ignoring(t_connection const * c, char const * me) ;
 extern t_account * conn_get_account(t_connection const * c) ;
 extern void conn_login(t_connection * c, t_account * account, const char *loggeduser);
