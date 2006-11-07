@@ -2136,6 +2136,18 @@ extern int conn_push_outqueue(t_connection * c, t_packet * packet)
     return 0;
 }
 
+extern int conn_clear_outqueue(t_connection * c)
+{
+    if (!c)
+    {
+        eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection");
+        return -1;
+    }
+
+    queue_clear(&c->protocol.queues.outqueue);
+    return 0;
+}
+
 extern t_packet * conn_peek_outqueue(t_connection * c)
 {
     if (!c)
@@ -3276,7 +3288,9 @@ extern void connlist_reap(void)
 
 	if (!c)
 	    eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in conn_dead list");
-	else conn_destroy(c,&curr,DESTROY_FROM_DEADLIST); /* also removes from conn_dead list and fdwatch */
+	else if (!conn_peek_outqueue(c)) {
+	    conn_destroy(c,&curr,DESTROY_FROM_DEADLIST); /* also removes from conn_dead list and fdwatch */
+	}
     }
 }
 

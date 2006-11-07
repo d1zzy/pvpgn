@@ -692,7 +692,8 @@ static int sd_tcpoutput(t_connection * c)
 	switch (net_send_packet(csocket,packet,&currsize)) /* avoid warning */
 	{
 	case -1:
-		/* marking connection as "destroyed", memory will be freed later */
+	/* marking connection as "destroyed", memory will be freed later */
+	    conn_clear_outqueue(c);
 	    conn_set_state(c, conn_state_destroy);
 	    return -2;
 
