@@ -271,14 +271,6 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 	return -1;
     }
 
-    if ((prefs_get_max_conns_per_IP()!=0) &&
-	(connlist_count_connections(ntohl(caddr.sin_addr.s_addr)) > prefs_get_max_conns_per_IP()))
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"[%d] too many connections from address %s (closing connection)",csocket,inet_ntoa(caddr.sin_addr));
-	psock_close(csocket);
-	return -1;
-    }
-
     eventlog(eventlog_level_info,__FUNCTION__,"[%d] accepted connection from %s on %s",csocket,addr_num_to_addr_str(ntohl(caddr.sin_addr.s_addr),ntohs(caddr.sin_port)),tempa);
 
     if (prefs_get_use_keepalive())

@@ -24,6 +24,7 @@
 #include "common/bn_type.h"
 #include "common/addr.h"
 
+#include "prefs.h"
 #include "connection.h"
 #include "realm.h"
 #include "handle_d2cs.h"
@@ -52,6 +53,13 @@ extern int handle_init_packet(t_connection * c, t_packet const * const packet)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad packet (class %d)",conn_get_socket(c),(int)packet_get_class(packet));
         return -1;
+    }
+    if ((prefs_get_max_conns_per_IP()!=0) &&
+		bn_byte_get(packet->u.client_initconn.cclass)!=CLIENT_INITCONN_CLASS_D2CS_BNETD &&
+		(connlist_count_connections(conn_get_addr(c)) > prefs_get_max_conns_per_IP()))
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"[%d] too many connections from address %s (closing connection)",conn_get_socket(c),addr_num_to_addr_str(conn_get_addr(c),conn_get_port(c)));
+	return -1;
     }
 
     switch (packet_get_type(packet))
