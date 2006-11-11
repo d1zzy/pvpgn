@@ -97,14 +97,30 @@ int output_standard_writer(std::FILE * fp)
     char const		*channel_name;
     int			number;
     char		clienttag_str[5];
+    int uptime = server_get_uptime();
 
     if (prefs_get_XML_status_output())
     {
-	std::fprintf(fp,"<?xml version=\"1.0\"?>\n<status>\n");
+        int seconds;
+	int minutes;
+	int hours;
+	int days;
+
+        days = (uptime/(60*60*24));
+        hours = (uptime/(60*60)) % 24;
+        minutes = (uptime/60) % 60;
+        seconds = uptime % 60;
+
+        std::fprintf(fp,"<?xml version=\"1.0\"?>\n<status>\n");
         std::fprintf(fp,"\t\t<Version>%s</Version>\n",PVPGN_VERSION);
-	std::fprintf(fp,"\t\t<Uptime>%s</Uptime>\n",seconds_to_timestr(server_get_uptime()));
-	std::fprintf(fp,"\t\t<Users>\n");
-	std::fprintf(fp,"\t\t<Number>%d</Number>\n",connlist_login_get_length());
+        std::fprintf(fp,"\t\t<Uptime>\n");
+        std::fprintf(fp,"\t\t\t<Days>%d</Days>\n",days);
+        std::fprintf(fp,"\t\t\t<Hours>%d</Hours>\n",hours);
+        std::fprintf(fp,"\t\t\t<Minutes>%d</Minutes>\n",minutes);
+        std::fprintf(fp,"\t\t\t<Seconds>%d</Seconds>\n",seconds);
+        std::fprintf(fp,"\t\t</Uptime>\n");
+        std::fprintf(fp,"\t\t<Users>\n");
+        std::fprintf(fp,"\t\t<Number>%d</Number>\n",connlist_login_get_length());
 
 	LIST_TRAVERSE_CONST(connlist(),curr)
 	{
@@ -136,7 +152,7 @@ int output_standard_writer(std::FILE * fp)
     }
     else
     {
-	std::fprintf(fp,"[STATUS]\nVersion=%s\nUptime=%s\nGames=%d\nUsers=%d\nChannels=%d\nUserAccounts=%d\n",PVPGN_VERSION,seconds_to_timestr(server_get_uptime()),gamelist_get_length(),connlist_login_get_length(),channellist_get_length(),accountlist_get_length()); // Status
+	std::fprintf(fp,"[STATUS]\nVersion=%s\nUptime=%s\nGames=%d\nUsers=%d\nChannels=%d\nUserAccounts=%d\n",PVPGN_VERSION,seconds_to_timestr(uptime),gamelist_get_length(),connlist_login_get_length(),channellist_get_length(),accountlist_get_length()); // Status
 	std::fprintf(fp,"[CHANNELS]\n");
 	number=1;
 	LIST_TRAVERSE_CONST(channellist(),curr)
