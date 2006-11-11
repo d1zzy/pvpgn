@@ -74,6 +74,7 @@ typedef enum
     message_wol_start_game,
     message_wol_page,
     message_wol_advertr,
+    message_wol_chanchk,
 
     message_type_null
 } t_message_type;

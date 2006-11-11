@@ -3931,6 +3931,52 @@ extern char const * conn_wol_get_game_options(t_connection * c)
     return c->protocol.wol.gameOptions;
 }
 
+extern void conn_wol_set_findme(t_connection * c, int findme)
+{
+    if (!c)
+    {
+    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
+    	return;
+    }
+
+    if (findme)
+        c->protocol.wol.findme = findme;
+}
+
+extern int conn_wol_get_findme(t_connection * c)
+{
+    if (!c)
+    {
+    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
+    	return -1;
+    }
+
+    return c->protocol.wol.findme;
+}
+
+extern void conn_wol_set_pageme(t_connection * c, int pageme)
+{
+    if (!c)
+    {
+    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
+    	return;
+    }
+
+    if (pageme)
+        c->protocol.wol.pageme = pageme;
+}
+
+extern int conn_wol_get_pageme(t_connection * c)
+{
+    if (!c)
+    {
+    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
+    	return -1;
+    }
+
+    return c->protocol.wol.pageme;
+}
+
 }
 
 }
