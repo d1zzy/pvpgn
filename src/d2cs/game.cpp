@@ -366,7 +366,8 @@ extern unsigned int game_get_maxlevel(t_game const * game)
 
 	ASSERT(game,0);
 	maxlevel=game->charlevel+game->leveldiff;
-	if (maxlevel>0xff) maxlevel=0xff;
+	if (maxlevel>prefs_get_game_maxlevel())
+        maxlevel=prefs_get_game_maxlevel();
 	return maxlevel;
 }
 

@@ -197,6 +197,12 @@ d2gs_password		=	""
 # Maxinum number of second that a game will be shown on list( zero = infinite )
 game_maxlifetime	=	0
 
+# Maximum level allowed in this (realm) game.
+# Normal games have a max level 99, while the internal field size limit is 255.
+# Extreme game MODs may have higher values, but be warned:
+# !!! Use them at your own risk !!!
+# game_maxlevel       = 255
+
 # A game will be automatically destroied after how long time idle
 max_game_idletime	=	0
 
