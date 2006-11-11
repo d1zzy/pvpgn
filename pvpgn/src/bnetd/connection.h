@@ -193,13 +193,12 @@ typedef struct connection
 	} w3;
 	struct {
 	    int ingame;				        /* Are we in a game channel? */
-
 	    int codepage;
 	    int locale;
 	    int gameType;
-
+	    int findme;                     /* Allow others to find me? */
+	    int pageme;                     /* Allow others to page me? */
 	    char const * apgar;			    /* WOL User Password (encrypted) */
-
 	    char const * gameOptions;		/* Game Options */
 	} wol;
 	int			cr_time;
@@ -457,6 +456,12 @@ extern int conn_wol_get_game_type(t_connection * c);
 
 extern void conn_wol_set_game_options(t_connection * c, char const * gameOptions);
 extern char const * conn_wol_get_game_options(t_connection * c);
+
+extern void conn_wol_set_findme(t_connection * c, int findme);
+extern int conn_wol_get_findme(t_connection * c);
+
+extern void conn_wol_set_pageme(t_connection * c, int pageme);
+extern int conn_wol_get_pageme(t_connection * c);
 
 }
 
