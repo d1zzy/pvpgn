@@ -441,6 +441,7 @@ use_keepalive = false
 
 # Limit maximum number of connections per IP (0 = unlimited)
 # this feature is new, so no recommended value so far
+# (d2cs connections are exempted from this limitation)
 max_conns_per_IP = 0
 
 # This is a comma delimited list of hostnames that the server should
