@@ -655,13 +655,13 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
             t_channel * channel;
     		std::memset(temp,0,sizeof(temp));
     		
-   			channel = conn_get_channel(me);
+   		channel = conn_get_channel(me);
     		if (conn_wol_get_ingame(me) == 1) {
     		    std::sprintf(temp,"2 %u %u 1 1 %u :%u",channel_get_length(channel),channel_wol_get_game_type(channel),channel_wol_get_game_tournament(channel));
-                msg = irc_message_preformat(&from,"JOINGAME",temp,irc_convert_channel(conn_get_channel(me)));
+                msg = irc_message_preformat(&from,"JOINGAME",temp,irc_convert_channel(channel));
             }
             else
-                msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(conn_get_channel(me)));
+                msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(channel));
             conn_unget_chatname(me,from.nick);
             break;
         }
