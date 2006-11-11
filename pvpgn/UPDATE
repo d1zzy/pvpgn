@@ -14,6 +14,12 @@ NOTE: If updating through several versions (example if updating from 1.7.1 to
 version in between and including the last one (ex. you have to go through 
 1.7.1 to 1.7.2 update info, then 1.7.2 to 1.7.3, and so on until 1.7.4 to 1.7.5)
 
+ Updating from 1.99.0-CVS
+=========================
+Configuration files changed:
+- conf/d2cs.conf : added optional: "game_maxlevel" config option which
+	which needs to be given in the case of Diablo MODs with a level > 255
+
  Updating from 1.7.9 to 1.7.10
 ===============================
 Configuration files changed:

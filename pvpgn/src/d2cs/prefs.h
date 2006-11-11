@@ -58,6 +58,7 @@ extern unsigned int prefs_get_d2gs_version(void);
 extern unsigned int prefs_get_ladderlist_count(void);
 extern unsigned int prefs_get_d2ladder_refresh_interval(void);
 extern unsigned int prefs_get_game_maxlifetime(void);
+extern unsigned int prefs_get_game_maxlevel(void);
 extern char const * prefs_get_ladder_dir(void);
 extern char const * d2cs_prefs_get_loglevels(void);
 extern unsigned int prefs_allow_gamelist_showall(void);
