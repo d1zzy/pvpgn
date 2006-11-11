@@ -535,7 +535,12 @@ static int on_client_gameinforeq(t_connection * c, t_packet * packet)
 			}
 			packet_append_string(rpacket,info->charname);
 			bn_byte_set(&rpacket->u.d2cs_client_gameinforeply.chclass[n],info->chclass);
+			/* GUI is limited to a max level of 255 */
+			if (info->level < 255) {
 			bn_byte_set(&rpacket->u.d2cs_client_gameinforeply.level[n],info->level);
+			} else {
+				bn_byte_set(&rpacket->u.d2cs_client_gameinforeply.level[n], 255);
+			}
 			n++;
 		}
 		END_LIST_TRAVERSE_DATA_CONST()
