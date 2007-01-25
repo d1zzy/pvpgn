@@ -2156,7 +2156,9 @@ extern t_packet * conn_peek_outqueue(t_connection * c)
         return NULL;
     }
 
-    return queue_peek_packet((t_queue const * const *)&c->protocol.queues.outqueue);
+    if (c->protocol.queues.outqueue)
+	return queue_peek_packet((t_queue const * const *)&c->protocol.queues.outqueue);
+    else return 0;
 }
 
 extern t_packet * conn_pull_outqueue(t_connection * c)
