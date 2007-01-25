@@ -185,6 +185,9 @@ extern void queue_clear(t_queue * * queue)
 
 	if ((*queue)->ring) xfree((void*)((*queue)->ring));
 	xfree((void*)(*queue));
+	/* poison the queue, this should make invalid
+	 * accessed queues crash earlier */
+	*queue = 0;
     }
 }
 
