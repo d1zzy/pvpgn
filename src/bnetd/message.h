@@ -75,6 +75,8 @@ typedef enum
     message_wol_page,
     message_wol_advertr,
     message_wol_chanchk,
+    message_wol_kick,
+    message_wol_userip,
 
     message_type_null
 } t_message_type;

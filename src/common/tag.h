@@ -87,6 +87,8 @@ typedef t_tag		t_gamelang;
 #define CLIENTTAG_TIBERNSUN_UINT    0x5453554E
 #define CLIENTTAG_TIBSUNXP          "TSXP" /* Tiberian Sun Extension Pack */
 #define CLIENTTAG_TIBSUNXP_UINT     0x54535850
+#define CLIENTTAG_REDALERT          "RALT" /* Red Alert 1 */
+#define CLIENTTAG_REDALERT_UINT     0x52414C54
 #define CLIENTTAG_REDALERT2         "RAL2" /* Red Alert 2 */
 #define CLIENTTAG_REDALERT2_UINT    0x52414C32
 #define CLIENTTAG_DUNE2000          "DN2K" /* Dune 2000 */

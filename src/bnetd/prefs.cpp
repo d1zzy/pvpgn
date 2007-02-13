@@ -161,6 +161,7 @@ static struct {
 
     char const * woladdrs;
     char const * wservaddrs;
+    char const * wgameresaddrs;
     char const * woltimezone;
     char const * wollongitude;
     char const * wollatitude;
@@ -634,6 +635,9 @@ static int conf_setdef_irc_network_name(void);
 static int conf_set_irc_network_name(const char *valstr);
 static const char *conf_get_irc_network_name(void);
 
+static int conf_setdef_wgameres_addrs(void);
+static int conf_set_wgameres_addrs(const char *valstr);
+static const char *conf_get_wgameres_addrs(void);
 
 static int conf_setdef_wserv_addrs(void);
 static int conf_set_wserv_addrs(const char *valstr);
@@ -776,6 +780,7 @@ static t_conf_entry conf_table[] =
     { "ladder_prefix",		conf_set_ladder_prefix,	       conf_get_ladder_prefix,conf_setdef_ladder_prefix},
     { "irc_network_name",		conf_set_irc_network_name,	       conf_get_irc_network_name, conf_setdef_irc_network_name},
 
+    { "wgameresaddrs",		conf_set_wgameres_addrs,	       conf_get_wgameres_addrs, conf_setdef_wgameres_addrs},
     { "wservaddrs",		conf_set_wserv_addrs,	       conf_get_wserv_addrs, conf_setdef_wserv_addrs},
     { "woladdrs",		conf_set_wol_addrs,	       conf_get_wol_addrs, conf_setdef_wol_addrs},
     { "woltimezone",		conf_set_wol_timezone,         conf_get_wol_timezone, conf_setdef_wol_timezone},
@@ -3321,6 +3326,26 @@ static const char* conf_get_irc_network_name(void)
 /**
 *  Westwood Online Extensions
 */
+extern char const * prefs_get_wgameres_addrs(void)
+{
+    return prefs_runtime_config.wgameresaddrs;
+}
+
+static int conf_set_wgameres_addrs(const char *valstr)
+{
+    return conf_set_str(&prefs_runtime_config.wgameresaddrs,valstr,NULL);
+}
+
+static int conf_setdef_wgameres_addrs(void)
+{
+    return conf_set_str(&prefs_runtime_config.wgameresaddrs,NULL,BNETD_WOL_ADDRS);
+}
+
+static const char* conf_get_wgameres_addrs(void)
+{
+    return prefs_runtime_config.wgameresaddrs;
+}
+
 extern char const * prefs_get_wserv_addrs(void)
 {
     return prefs_runtime_config.wservaddrs;
@@ -3360,7 +3385,6 @@ static const char* conf_get_wol_addrs(void)
 {
     return prefs_runtime_config.woladdrs;
 }
-
 
 static int  conf_set_wol_timezone(const char *valstr)
 {
