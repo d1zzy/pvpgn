@@ -181,6 +181,7 @@ extern char const * prefs_get_irc_network_name(void);
 /**
 *  Westwood Online Extensions
 */
+extern char const * prefs_get_wgameres_addrs(void);
 extern char const * prefs_get_wserv_addrs(void);
 extern char const * prefs_get_wol_addrs(void);
 extern char const * prefs_get_wol_timezone(void);

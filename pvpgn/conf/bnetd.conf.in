@@ -515,6 +515,7 @@ initkill_timer = 120
 
 #woladdrs = ":4000"
 #wservaddrs = ":4005"
+#wgameresaddrs = ":4807"
 
 # Just leave these as default (unless you know the timezone, longitiude and latitude
 # of your server

@@ -237,6 +237,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 
     channel->gameType = 0;
     channel->gameTournament = 0;
+    channel->gameExtension = NULL;
 
     channel->gameOptions = NULL;
 
@@ -271,6 +272,9 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
     }
 
     eventlog(eventlog_level_info,__FUNCTION__,"destroying channel \"%s\"",channel->name);
+
+    if (channel->gameExtension)
+        xfree(channel->gameExtension);
 
     LIST_TRAVERSE(channel->banlist,ban)
     {
@@ -1263,6 +1267,19 @@ extern int channel_get_max(t_channel const * channel)
   return channel->maxmembers;
 }
 
+extern int channel_set_max(t_channel * channel, int maxmembers)
+{
+	if (!channel)
+	{
+	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
+	  return 0;
+	}
+
+	if (maxmembers)
+ 	   channel->maxmembers = maxmembers;
+    return 1;
+}
+
 extern int channel_get_curr(t_channel const * channel)
 {
   if (!channel)
@@ -1668,6 +1685,34 @@ extern int channel_wol_set_game_options(t_channel * channel, char const * gameOp
 
 	return 1;
 }
+
+extern char const * channel_wol_get_game_extension(t_channel const * channel)
+{
+	if (!channel)
+	{
+	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
+	  return NULL;
+	}
+
+    return channel->gameExtension;
+}
+
+extern int channel_wol_set_game_extension(t_channel * channel, char const * gameExtension)
+{
+	if (!channel)
+	{
+	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
+	  return -1;
+	}
+
+	if (channel->gameExtension)
+	    xfree(channel->gameExtension);
+
+	channel->gameExtension = gameExtension ? xstrdup(gameExtension) : 0;
+
+	return 0;
+}
+
 
 }
 

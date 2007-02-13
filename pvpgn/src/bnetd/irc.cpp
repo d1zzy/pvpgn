@@ -143,8 +143,8 @@ extern int irc_send_ping(t_connection * conn)
 	return -1;
     }
 
-   if ((conn_get_clienttag(conn) != CLIENTTAG_WCHAT_UINT) && 
-       (conn_get_clienttag(conn) != CLIENTTAG_IIRC_UINT))
+    if ((conn_get_clienttag(conn) != CLIENTTAG_WCHAT_UINT) && 
+        (conn_get_clienttag(conn) != CLIENTTAG_IIRC_UINT))
         return 0;
 
     if (!(p = packet_create(packet_class_raw))) {
@@ -495,23 +495,24 @@ static char * irc_message_preformat(t_irc_message_from const * from, char const 
     char * msg;
 
     if (!command) {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL command");
-	return NULL;
+	    eventlog(eventlog_level_error,__FUNCTION__,"got NULL command");
+	    return NULL;
     }
     if (from) {
-	if ((!from->nick)||(!from->user)||(!from->host)) {
-	    eventlog(eventlog_level_error,__FUNCTION__,"got malformed from");
-	    return NULL;
-	}
-	myfrom = (char*)xmalloc(std::strlen(from->nick)+1+std::strlen(from->user)+1+std::strlen(from->host)+1); /* nick + "!" + user + "@" + host + "\0" */
-	std::sprintf(myfrom,"%s!%s@%s",from->nick,from->user,from->host);
+	    if ((!from->nick)||(!from->user)||(!from->host)) {
+	        eventlog(eventlog_level_error,__FUNCTION__,"got malformed from");
+	        return NULL;
+	    }
+	    myfrom = (char*)xmalloc(std::strlen(from->nick)+1+std::strlen(from->user)+1+std::strlen(from->host)+1); /* nick + "!" + user + "@" + host + "\0" */
+	    std::sprintf(myfrom,"%s!%s@%s",from->nick,from->user,from->host);
     } else
     	myfrom = xstrdup(server_get_hostname());
     if (dest)
     	mydest = dest;
+    	
     if (text)
     	mytext = text;
-
+    	
     len = 1+std::strlen(myfrom)+1+
     	  std::strlen(command)+1+
     	  std::strlen(mydest)+1+
@@ -519,6 +520,7 @@ static char * irc_message_preformat(t_irc_message_from const * from, char const 
 
 
     msg = (char*)xmalloc(len);
+    
     std::sprintf(msg,":%s\n%s\n%s\n%s",myfrom,command,mydest,mytext);
     xfree(myfrom);
     return msg;
@@ -534,6 +536,7 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
     char * e4;
     char const * tname = NULL;
     char const * toname = "AUTH"; /* fallback name */
+    char * temp;
 
     if (!packet) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
@@ -582,16 +585,18 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
     	toname = e3;
 
     if (std::strcmp(toname,"\r")==0) {
-	toname = ""; /* HACK: the target field is really empty */
-    }
+    	toname = ""; /* HACK: the target field is really empty */
+    	temp = "";
+    } else 
+    	temp = " ";
 
-    if (std::strlen(e1)+1+std::strlen(e2)+1+std::strlen(toname)+1+std::strlen(e4)+2+1 <= MAX_IRC_MESSAGE_LEN) {
+    if (std::strlen(e1)+1+std::strlen(e2)+1+std::strlen(toname)+std::strlen(temp)+std::strlen(e4)+2+1 <= MAX_IRC_MESSAGE_LEN) {
 	char msg[MAX_IRC_MESSAGE_LEN+1];
 
 	if (e1_2)
-	    std::sprintf(msg,"%s@hidden %s %s %s\r\n",e1,e2,toname,e4);
+	    std::sprintf(msg,"%s@hidden %s %s%s%s\r\n",e1,e2,toname,temp,e4);
 	else
-	    std::sprintf(msg,"%s %s %s %s\r\n",e1,e2,toname,e4);
+	    std::sprintf(msg,"%s %s %s%s%s\r\n",e1,e2,toname,temp,e4);
 	eventlog(eventlog_level_debug,__FUNCTION__,"sent \"%s\"",msg);
 	packet_set_size(packet,0);
 	packet_append_data(packet,msg,std::strlen(msg));
@@ -813,22 +818,29 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	from.nick = conn_get_chatname(me);
     	from.user = ctag;
     	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"PAGE","",text);
+    	msg = irc_message_preformat(&from,"PAGE",NULL,text);
     	conn_unget_chatname(me,from.nick);
     	break;
     case message_wol_advertr:
-    	from.nick = conn_get_chatname(me);
-    	from.user = ctag;
-    	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"ADVERTR","\r",text);
-    	conn_unget_chatname(me,from.nick);
+    	msg = irc_message_preformat(NULL,"ADVERTR","\r",text);
+    	break;
    	case message_wol_chanchk:
+        msg = irc_message_preformat(NULL,"CHANCHK","\r",text);
+        break;
+   	case message_wol_kick:
     	from.nick = conn_get_chatname(me);
     	from.user = ctag;
     	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"CHANCHK","\r",text);
+    	msg = irc_message_preformat(&from,"KICK","\r",text);
     	conn_unget_chatname(me,from.nick);
-    break;
+        break;
+   	case message_wol_userip:
+    	from.nick = conn_get_chatname(me);
+    	from.user = ctag;
+    	from.host = addr_num_to_ip_str(conn_get_addr(me));
+    	msg = irc_message_preformat(&from,"USERIP","\r",text);
+    	conn_unget_chatname(me,from.nick);
+        break;
     default:
     	eventlog(eventlog_level_warn,__FUNCTION__,"%d not yet implemented",type);
 	return -1;
@@ -890,8 +902,12 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
 
             if((conn_get_wol(c) == 1)) {
                 if ((channel_wol_get_game_owner(channel) != NULL) && (std::strcmp(channel_wol_get_game_owner(channel),name) == 0)) {
-                            std::strcat(temp,"@");
+                       std::strcat(temp,"@");
                     }
+                else if ((conn_wol_get_ingame(c) == 0)) {
+                   	if (flags & MF_BLIZZARD)
+		               std::strcat(temp,"@");
+               }
                 if (conn_get_clienttag(c) != CLIENTTAG_WCHAT_UINT) {
                     std::sprintf(temp,"%s%s,0,%u",temp,name,conn_get_addr(m));
                 }
@@ -901,8 +917,8 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
     	    }
     	    else
     	    {
-	    std::strcat(temp,flg);
-	    std::strcat(temp,name);
+	            std::strcat(temp,flg);
+	            std::strcat(temp,name);
     	    }
 
 	    first = 0;

@@ -336,6 +336,8 @@
 #define RPL_SET_CODEPAGE     329
 
 #define RPL_GET_BUDDY        333
+#define RPL_ADD_BUDDY        334
+#define RPL_DEL_BUDDY        335
 
 #define RPL_BATTLECLAN	     358
 
@@ -360,7 +362,7 @@
 
 #define RPL_PINGSERVER	     615
 
-#define RPL_IDNOEXIST        439
+#define ERR_IDNOEXIST        439
 
 /** error's */
 /*

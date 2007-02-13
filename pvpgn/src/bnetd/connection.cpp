@@ -114,7 +114,7 @@ static void conn_send_welcome(t_connection * c)
 
     if (c->protocol.cflags & conn_flags_welcomed)
 	return;
-    if ((conn_get_class(c)==conn_class_irc)||(conn_get_class(c)==conn_class_wol)||(conn_get_class(c)==conn_class_wserv))
+    if ((conn_get_class(c)==conn_class_irc)||(conn_get_class(c)==conn_class_wol)||(conn_get_class(c)==conn_class_wserv)||(conn_get_class(c)==conn_class_wgameres))
     {
 	c->protocol.cflags|= conn_flags_welcomed;
 	return;
@@ -196,7 +196,7 @@ extern void conn_test_latency(t_connection * c, std::time_t now, t_timer_data de
     	return;					// state_destroy: do nothing
 
 
-    if ((conn_get_class(c)==conn_class_irc)||(conn_get_class(c)==conn_class_wol)||(conn_get_class(c)==conn_class_wserv)) {
+    if ((conn_get_class(c)==conn_class_irc)||(conn_get_class(c)==conn_class_wol)||(conn_get_class(c)==conn_class_wserv)||(conn_get_class(c)==conn_class_wgameres)) {
     	/* We should start pinging the client after we received the first line ... */
     	/* NOTE: RFC2812 only suggests that PINGs are being sent
     	 * if no other activity is detected. However it explecitly
@@ -282,6 +282,8 @@ extern char const * conn_class_get_str(t_conn_class cclass)
     return "wol";
 	case conn_class_wserv:
     return "wserv";
+	case conn_class_wgameres:
+    return "wgameres";
     case conn_class_none:
 	return "none";
 	case conn_class_w3route:
@@ -1948,8 +1950,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
       message_send_text(c,message_type_info,c,msgtemp);
     }
 
-    if (channel_get_topic(channel_get_name(c->protocol.chat.channel)) && ((conn_get_class(c)!=conn_class_irc) ||
-        (conn_get_class(c)!=conn_class_wol) || (conn_get_class(c)!=conn_class_wserv)))
+    if (channel_get_topic(channel_get_name(c->protocol.chat.channel)) && ((conn_get_class(c)!=conn_class_irc)))
     {
       char msgtemp[MAX_MESSAGE_LEN];
 
@@ -3500,7 +3501,9 @@ extern unsigned int connlist_login_get_length(void)
     {
 	c = (const t_connection*)elem_get_data(curr);
 	if ((c->protocol.state==conn_state_loggedin)&&
-	    ((c->protocol.cclass==conn_class_bnet)||(c->protocol.cclass==conn_class_bot)||(c->protocol.cclass==conn_class_telnet)||(c->protocol.cclass==conn_class_irc)||(c->protocol.cclass==conn_class_wol)||(c->protocol.cclass==conn_class_wserv)))
+	    ((c->protocol.cclass==conn_class_bnet)||(c->protocol.cclass==conn_class_bot)||(c->protocol.cclass==conn_class_telnet)
+          ||(c->protocol.cclass==conn_class_irc)||(c->protocol.cclass==conn_class_wol)||(c->protocol.cclass==conn_class_wserv)
+          ||(c->protocol.cclass==conn_class_wgameres)))
 	    count++;
     }
 
@@ -3950,7 +3953,7 @@ extern int conn_wol_get_findme(t_connection * c)
     if (!c)
     {
     	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
-    	return -1;
+    	return 0;
     }
 
     return c->protocol.wol.findme;
@@ -3973,7 +3976,7 @@ extern int conn_wol_get_pageme(t_connection * c)
     if (!c)
     {
     	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
-    	return -1;
+    	return 0;
     }
 
     return c->protocol.wol.pageme;

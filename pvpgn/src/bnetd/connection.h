@@ -70,9 +70,10 @@ typedef enum
     conn_class_file,
     conn_class_bot,
     conn_class_telnet,
-    conn_class_irc,     /* Internet Relay Chat */
-    conn_class_wol,     /* Westwood Online */
-    conn_class_wserv,   /* Westwood Server */
+    conn_class_irc,        /* Internet Relay Chat */
+    conn_class_wol,        /* Westwood IRC */
+    conn_class_wserv,      /* Westwood servserv */
+    conn_class_wgameres,   /* Westwood gameres */
     conn_class_d2cs_bnetd,
     conn_class_w3route,
     conn_class_none

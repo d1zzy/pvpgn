@@ -77,8 +77,10 @@ extern char const * clienttag_uint_to_str(t_clienttag clienttag)
              return CLIENTTAG_WCHAT;             
         case CLIENTTAG_TIBERNSUN_UINT:
              return CLIENTTAG_TIBERNSUN;
-         case CLIENTTAG_TIBSUNXP_UINT:
+        case CLIENTTAG_TIBSUNXP_UINT:
              return CLIENTTAG_TIBSUNXP;
+        case CLIENTTAG_REDALERT_UINT:
+             return CLIENTTAG_REDALERT;
         case CLIENTTAG_REDALERT2_UINT:
              return CLIENTTAG_REDALERT2;
         case CLIENTTAG_DUNE2000_UINT:
@@ -96,12 +98,12 @@ extern char const * clienttag_uint_to_str(t_clienttag clienttag)
         case CLIENTTAG_WWOL_UINT:
              return CLIENTTAG_WWOL;
 	    default:
-		return CLIENTTAG_UNKNOWN;
+             return CLIENTTAG_UNKNOWN;
 	}
 }
 
 /*****/
-/* make all letters in string upper case - used in command.c*/
+/* make all letters in string upper case - used in command.cpp*/
 extern t_tag tag_case_str_to_uint(char const * tag_str)
 {
     unsigned int i, len;
@@ -207,6 +209,7 @@ extern int tag_check_client(t_tag tag_uint)
     case CLIENTTAG_WCHAT_UINT:
     case CLIENTTAG_TIBERNSUN_UINT:
     case CLIENTTAG_TIBSUNXP_UINT:
+    case CLIENTTAG_REDALERT_UINT:
     case CLIENTTAG_REDALERT2_UINT:
     case CLIENTTAG_DUNE2000_UINT:
     case CLIENTTAG_NOX_UINT:
@@ -279,6 +282,8 @@ extern char const * clienttag_get_title(t_clienttag clienttag)
         return "Tiberian Sun";
       case CLIENTTAG_TIBSUNXP_UINT:
         return "Tiberian Sun: Firestorm";
+      case CLIENTTAG_REDALERT_UINT:
+        return "Red Alert";
       case CLIENTTAG_REDALERT2_UINT:
         return "Red Alert 2";
       case CLIENTTAG_DUNE2000_UINT:
