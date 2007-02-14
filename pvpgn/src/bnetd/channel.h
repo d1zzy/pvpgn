@@ -97,14 +97,14 @@ typedef struct channel
     /**
     *  Westwood Online Extensions
     */
-    char const *      gameOwner;
+    char *            gameOwner;
     int               gameOwnerIP;
 
     int               gameType;
     int               gameTournament;
-    char const *      gameExtension;
+    char *            gameExtension;
 
-    char const *      gameOptions;
+    char *            gameOptions;
 }
 #endif
 t_channel;
