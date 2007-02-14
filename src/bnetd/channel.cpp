@@ -273,8 +273,14 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
 
     eventlog(eventlog_level_info,__FUNCTION__,"destroying channel \"%s\"",channel->name);
 
+    if (channel->gameOptions)
+        xfree(channel->gameOptions);
+
     if (channel->gameExtension)
         xfree(channel->gameExtension);
+
+    if (channel->gameOwner)
+        xfree(channel->gameOwner);
 
     LIST_TRAVERSE(channel->banlist,ban)
     {
@@ -1563,152 +1569,170 @@ extern char const * channel_wol_get_game_owner(t_channel const * channel)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
-	  return NULL;
+	  ERROR0("got NULL channel");
+	  return 0;
 	}
 
-    return channel->gameOwner;
+	return channel->gameOwner;
 }
 
 extern int channel_wol_set_game_owner(t_channel * channel, char const * gameOwner)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
-	  return 0;
+	  ERROR0("got NULL channel");
+	  return -1;
+	}
+
+	if (!gameOwner)
+	{
+	  ERROR0("got NULL gameOwner");
+	  return -1;
 	}
 
 	if (channel->gameOwner)
-	    xfree((void *)channel->gameOwner); /* avoid warning */
+	    xfree(channel->gameOwner);
 	channel->gameOwner = xstrdup(gameOwner);
 
-	return 1;
+	return 0;
 }
 
 extern int channel_wol_get_game_ownerip(t_channel const * channel)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
+	  ERROR0("got NULL channel");
 	  return -1;
 	}
 
-    return channel->gameOwnerIP;
+	return channel->gameOwnerIP;
 }
 
 extern int channel_wol_set_game_ownerip(t_channel * channel, int gameOwnerIP)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
-	  return 0;
+	  ERROR0("got NULL channel");
+	  return -1;
 	}
 
 	if (gameOwnerIP)
   	   channel->gameOwnerIP = gameOwnerIP;
 
-	return 1;
+	return 0;
 }
 
 extern int channel_wol_get_game_type(t_channel const * channel)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
+	  ERROR0("got NULL channel");
 	  return -1;
 	}
 
-    return channel->gameType;
+	return channel->gameType;
 }
 
 extern int channel_wol_set_game_type(t_channel * channel, int gameType)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
-	  return 0;
+	  ERROR0("got NULL channel");
+	  return -1;
 	}
 
 	if (gameType)
   	   channel->gameType = gameType;
 
-	return 1;
+	return 0;
 }
 
 extern int channel_wol_get_game_tournament(t_channel const * channel)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
+	  ERROR0("got NULL channel");
 	  return -1;
 	}
 
-    return channel->gameTournament;
+	return channel->gameTournament;
 }
 
 extern int channel_wol_set_game_tournament(t_channel * channel, int gameTournament)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
-	  return 0;
+	  ERROR0("got NULL channel");
+	  return -1;
 	}
 
 	if (gameTournament)
  	   channel->gameTournament = gameTournament;
 
-	return 1;
+	return 0;
 }
 
 extern char const * channel_wol_get_game_options(t_channel const * channel)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
-	  return NULL;
+	  ERROR0("got NULL channel");
+	  return 0;
 	}
 
-    return channel->gameOptions;
+	return channel->gameOptions;
 }
 
 extern int channel_wol_set_game_options(t_channel * channel, char const * gameOptions)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
-	  return 0;
+	  ERROR0("got NULL channel");
+	  return -1;
+	}
+
+	if (!gameOptions)
+	{
+	  ERROR0("got NULL gameOptions");
+	  return -1;
 	}
 
 	if (channel->gameOptions)
-	    xfree((void *)channel->gameOptions); /* avoid warning */
+	    xfree(channel->gameOptions);
 	channel->gameOptions = xstrdup(gameOptions);
 
-	return 1;
+	return 0;
 }
 
 extern char const * channel_wol_get_game_extension(t_channel const * channel)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
-	  return NULL;
+	  ERROR0("got NULL channel");
+	  return 0;
 	}
 
-    return channel->gameExtension;
+	return channel->gameExtension;
 }
 
 extern int channel_wol_set_game_extension(t_channel * channel, char const * gameExtension)
 {
 	if (!channel)
 	{
-	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
+	  ERROR0("got NULL channel");
+	  return -1;
+	}
+
+	if (!gameExtension)
+	{
+	  ERROR0("got NULL gameExtension");
 	  return -1;
 	}
 
 	if (channel->gameExtension)
 	    xfree(channel->gameExtension);
 
-	channel->gameExtension = gameExtension ? xstrdup(gameExtension) : 0;
+	channel->gameExtension = xstrdup(gameExtension);
 
 	return 0;
 }
