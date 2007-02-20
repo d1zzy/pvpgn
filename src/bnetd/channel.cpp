@@ -82,7 +82,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
     }
     if (clienttag && std::strlen(clienttag)!=4)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"client tag has bad length (%u chars)",std::strlen(clienttag));
+	eventlog(eventlog_level_error,__FUNCTION__,"client tag has bad length (%lu chars)",std::strlen(clienttag));
 	return NULL;
     }
 

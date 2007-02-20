@@ -279,11 +279,6 @@ extern int handle_irc_welcome(t_connection * conn)
     std::time_t temptime;
     char const * tempname;
     char const * temptimestr;
-    char const * filename;
-    std::FILE *fp;
-    char * line, * formatted_line;
-    char send_line[MAX_IRC_MESSAGE_LEN];
-    char motd_failed = 0;
 
     if (!conn) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
@@ -408,7 +403,6 @@ static int _handle_user_command(t_connection * conn, int numparams, char ** para
 	/* Don't bother with, params 1 and 2 anymore they don't contain what they should. */
 	char * user = NULL;
 	char * realname = NULL;
-	t_account * a;
 
 	if ((numparams>=3)&&(params[0])&&(text)) {
 	    user = params[0];
@@ -819,7 +813,7 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 
 				if (channel!=old_channel) {
 				char * topic;
-				
+
 				channel_set_userflags(conn);
 				message_send_text(conn,message_type_join,conn,NULL); /* we have to send the JOIN acknowledgement */
 				ircname=irc_convert_channel(channel);
@@ -837,7 +831,7 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 				}
 				else
 					irc_send(conn,RPL_NOTOPIC,":No topic is set");
-					
+
 					irc_send_rpl_namreply(conn,channel);
 					irc_send(conn,RPL_ENDOFNAMES,":End of NAMES list");
 

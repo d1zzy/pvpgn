@@ -1632,7 +1632,7 @@ extern int handle_w3route_packet(t_connection * c, t_packet const *const packet)
     if (packet_get_type(packet) == CLIENT_W3ROUTE_REQ) {
 	t_connection *oldc;
 
-	eventlog(eventlog_level_trace, __FUNCTION__, "[%d] sizeof t_client_w3route_req %d", conn_get_socket(c), sizeof(t_client_w3route_req));
+	eventlog(eventlog_level_trace, __FUNCTION__, "[%d] sizeof t_client_w3route_req %lu", conn_get_socket(c), sizeof(t_client_w3route_req));
 	username = packet_get_str_const(packet, sizeof(t_client_w3route_req), MAX_USERNAME_LEN);
 	eventlog(eventlog_level_info, __FUNCTION__, "[%d] got username '%s'", conn_get_socket(c), username);
 	gamec = connlist_find_connection_by_accountname(username);

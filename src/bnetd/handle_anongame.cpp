@@ -76,7 +76,7 @@ static int _client_anongame_profile_clan(t_connection * c, t_packet const * cons
 
     if (packet_get_size(packet)<sizeof(t_client_findanongame_profile_clan))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad ANONGAME_PROFILE_CLAN packet (expected %u bytes, got %u)",conn_get_socket(c), sizeof(t_client_findanongame_profile_clan), packet_get_size(packet));
+	eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad ANONGAME_PROFILE_CLAN packet (expected %lu bytes, got %u)",conn_get_socket(c), sizeof(t_client_findanongame_profile_clan), packet_get_size(packet));
 	return -1;
     }
 
@@ -871,7 +871,7 @@ static unsigned int _tournament_time_convert(unsigned int time)
     unsigned int tmp1, tmp2, tmp3;
 
     tmp1 = time-1059179400;	/* 0x3F21CB88  */
-    tmp2 = tmp1*0.59604645;
+    tmp2 = static_cast<unsigned int>(tmp1*0.59604645);
     tmp3 = tmp2+3276999960U;
     /*eventlog(eventlog_level_trace,__FUNCTION__,"time: 0x%08x, tmp1: 0x%08x, tmp2 0x%08x, tmp3 0x%08x",time,tmp1,tmp2,tmp3);*/
 

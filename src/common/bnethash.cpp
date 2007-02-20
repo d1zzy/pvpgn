@@ -232,7 +232,7 @@ extern int hash_set_str(t_hash * hash, char const * str)
     }
     if (std::strlen(str)!=5*8)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"got string with length %u (should be %u)",std::strlen(str),5*8);
+	eventlog(eventlog_level_error,__FUNCTION__,"got string with length %lu (should be %u)",std::strlen(str),5*8);
         return -1;
     }
 

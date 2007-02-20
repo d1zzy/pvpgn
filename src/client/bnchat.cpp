@@ -1674,7 +1674,7 @@ extern int main(int argc, char * argv[])
 			if (packet_get_size(rpacket)<sizeof(t_server_echoreq))
 			{
 		            munge(&client);
-			    std::printf("Got bad SERVER_ECHOREQ packet (expected %u bytes, got %u)\n",sizeof(t_server_echoreq),packet_get_size(rpacket));
+			    std::printf("Got bad SERVER_ECHOREQ packet (expected %lu bytes, got %u)\n",sizeof(t_server_echoreq),packet_get_size(rpacket));
 			    break;
 			}
 
@@ -1717,7 +1717,7 @@ extern int main(int argc, char * argv[])
 			if (packet_get_size(rpacket)<sizeof(t_server_w3xp_clan_invitereq))
 			{
 		            munge(&client);
-			    std::printf("Got bad SERVER_W3XP_CLAN_INVITEREQ packet (expected %u bytes, got %u)\n",sizeof(t_server_w3xp_clan_invitereq),packet_get_size(rpacket));
+			    std::printf("Got bad SERVER_W3XP_CLAN_INVITEREQ packet (expected %lu bytes, got %u)\n",sizeof(t_server_w3xp_clan_invitereq),packet_get_size(rpacket));
 			    break;
 			}
 
@@ -1759,7 +1759,7 @@ extern int main(int argc, char * argv[])
 			if (packet_get_size(rpacket)<sizeof(t_server_w3xp_clanmemberupdate))
 			{
 		            munge(&client);
-			    std::printf("Got bad SERVER_W3XP_CLANMEMBERUPDATE packet (expected %u bytes, got %u)\n",sizeof(t_server_w3xp_clanmemberupdate),packet_get_size(rpacket));
+			    std::printf("Got bad SERVER_W3XP_CLANMEMBERUPDATE packet (expected %lu bytes, got %u)\n",sizeof(t_server_w3xp_clanmemberupdate),packet_get_size(rpacket));
 			    break;
 			}
 
@@ -1921,7 +1921,7 @@ extern int main(int argc, char * argv[])
 			if (packet_get_size(rpacket)<sizeof(t_server_message))
 			{
 		            munge(&client);
-			    std::printf("Got bad SERVER_MESSAGE packet (expected %u bytes, got %u)",sizeof(t_server_message),packet_get_size(rpacket));
+			    std::printf("Got bad SERVER_MESSAGE packet (expected %lu bytes, got %u)",sizeof(t_server_message),packet_get_size(rpacket));
 			    break;
 			}
 
@@ -1938,7 +1938,7 @@ extern int main(int argc, char * argv[])
 			    if (!(message = packet_get_str_const(rpacket,sizeof(t_server_message)+std::strlen(speaker)+1,1024)))
 			    {
 		                munge(&client);
-				std::printf("Got SERVER_MESSAGE packet with bad or missing message (speaker=\"%s\" start=%u len=%u)\n",speaker,sizeof(t_server_message)+std::strlen(speaker)+1,packet_get_size(rpacket));
+				std::printf("Got SERVER_MESSAGE packet with bad or missing message (speaker=\"%s\" start=%lu len=%u)\n",speaker,sizeof(t_server_message)+std::strlen(speaker)+1,packet_get_size(rpacket));
 				break;
 			    }
 
