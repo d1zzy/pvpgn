@@ -662,7 +662,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 
    		channel = conn_get_channel(me);
     		if (conn_wol_get_ingame(me) == 1) {
-    		    std::sprintf(temp,"2 %u %u 1 1 %u :%u",channel_get_length(channel),channel_wol_get_game_type(channel),channel_wol_get_game_tournament(channel));
+    		    std::sprintf(temp,"2 %u %u 1 1 %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel), channel_wol_get_game_tournament(channel), irc_convert_channel(channel));
                 msg = irc_message_preformat(&from,"JOINGAME",temp,irc_convert_channel(channel));
             }
             else
