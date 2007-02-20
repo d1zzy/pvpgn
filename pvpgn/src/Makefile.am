@@ -1,26 +1,17 @@
+SUBDIRS = compat common tinycdb win32 bntrackd client bnpass bniutils autoconf
+
 if COND_BNETD
-MAYBE_BNETD = bnetd
-else
-MAYBE_BNETD =
+SUBDIRS += bnetd
 endif
 
 if COND_D2CS
-MAYBE_D2CS = d2cs
-else
-MAYBE_D2CS =
+SUBDIRS += d2cs
 endif
 
 if COND_D2DBS
-MAYBE_D2DBS = d2dbs
-else
-MAYBE_D2DBS =
+SUBDIRS += d2dbs
 endif
 
 if COND_BNPCAP
-MAYBE_BNPCAP = bnpcap
-else
-MAYBE_BNPCAP =
+SUBDIRS += bnpcap
 endif
-
-SUBDIRS = compat common tinycdb win32 $(MAYBE_BNETD) $(MAYBE_D2CS) $(MAYBE_D2DBS) \
-	bntrackd client bnpass bniutils $(MAYBE_BNPCAP) autoconf
