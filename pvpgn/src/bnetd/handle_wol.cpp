@@ -66,7 +66,6 @@ static int _handle_ping_command(t_connection * conn, int numparams, char ** para
 static int _handle_pong_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_pass_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_privmsg_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_notice_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_quit_command(t_connection * conn, int numparams, char ** params, char * text);
 
 static int _handle_list_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -170,12 +169,12 @@ static const t_wol_command_table_row wol_log_command_table[] =
 static int handle_wol_set_clienttag (t_connection * conn, int sku)
 {
    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] SKU: %d",sku);
-   
+
     /**
     *  Here is table of SKU and by this SKU setting CLIENTTAG
     *  SKU is from Autoupdate FTP and from windows registry
     */
-   
+
    switch (sku) {
       case 1000:  /* Westwood Chat */
            conn_set_clienttag(conn,CLIENTTAG_WCHAT_UINT);
@@ -201,7 +200,7 @@ static int handle_wol_set_clienttag (t_connection * conn, int sku)
       case 3078:
       case 3081:
       case 3082:
-           conn_set_clienttag(conn,CLIENTTAG_RENEGADE_UINT); 
+           conn_set_clienttag(conn,CLIENTTAG_RENEGADE_UINT);
            return 0;
       case 3584:  /* Dune 2000 */
       case 3586:
@@ -413,7 +412,6 @@ static int handle_wol_line(t_connection * conn, char const * wolline)
 
 	if (handle_wol_con_command(conn, command, numparams, params, text)!=-1) {}
     else if (conn_get_state(conn)!=conn_state_loggedin) {
-	     char temp[MAX_IRC_MESSAGE_LEN+1];
     } else {
         /* command is handled later */
 	unrecognized_before = 1;
@@ -440,7 +438,7 @@ static int handle_wol_line(t_connection * conn, char const * wolline)
 extern int handle_wol_welcome(t_connection * conn)
 {
     /* This function need rewrite */
-    
+
     irc_send_motd(conn);
 
     conn_set_state(conn,conn_state_bot_password);
@@ -634,11 +632,11 @@ static int _handle_pong_command(t_connection * conn, int numparams, char ** para
 
 static int _handle_pass_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-    /** 
+    /**
      * PASS isnt used in WOL (only for backwrd compatibility client sent PASS supersecret
      * real password sent client by apgar command
      */
-     
+
 	if ((!conn_get_ircpass(conn))&&(conn_get_state(conn)==conn_state_bot_username)) {
 		t_hash h;
 
@@ -659,9 +657,9 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 {
      /**
       * D1zzy: Here will be "/" commands ("/help"...) and NICSERV will be deleted.
-      * ACTION messages will not be in WOLv1 and Dune 2000 sended by server (client add this message automaticaly) 
+      * ACTION messages will not be in WOLv1 and Dune 2000 sended by server (client add this message automaticaly)
       */
-    
+
 	if ((numparams>=1)&&(text))
 	{
 	    int i;
@@ -805,7 +803,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 
 	irc_send(conn,RPL_LISTSTART,"Channel :Users Names"); /* backward compatibility */
     t_elem const * curr;
- 	    
+
     if (numparams == 0) {
         /* This is Westwood Chat LIST command */
         /* FIXME: We send only chat channels (no gamechannels for CnC, RedAlert and CnC Sole Survivor) */
@@ -814,19 +812,18 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
         LIST_TRAVERSE_CONST(channellist(),curr) {
    	         t_channel const * channel = (const t_channel*)elem_get_data(curr);
              char const * tempname;
-		     char * topic = channel_get_topic(channel_get_name(channel));
 
              tempname = irc_convert_channel(channel);
 
              if (std::strstr(tempname,"_game") == NULL) {
                 sprintf(temp,"%s %u ",tempname,channel_get_length(channel));
 
-                if ((channel_get_clienttag(channel) != NULL) && 
+                if ((channel_get_clienttag(channel) != NULL) &&
                    (std::strcmp(channel_get_clienttag(channel), clienttag_uint_to_str(CLIENTTAG_WCHAT_UINT)) == 0 ))
                     std::strcat(temp,"1");  /* WestwoodChat Icon before chanelname */
-                else 
+                else
                     std::strcat(temp,"0");  /* No WestwoodChat Icon before chanelname */
-                 
+
                 std::strcat(temp,":");
                 irc_send(conn,RPL_CHANNEL,temp);
              }
@@ -842,11 +839,10 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 		{
     		t_channel const * channel = (t_channel const *)elem_get_data(curr);
        	    char const * tempname;
-       	    char const * num;
 
 	        tempname = irc_convert_channel(channel);
 
-            if ((channel_get_clienttag(channel) != NULL) && 
+            if ((channel_get_clienttag(channel) != NULL) &&
                 (std::strcmp(channel_get_clienttag(channel), clienttag_uint_to_str(conn_get_clienttag(conn))) == 0)) {
 			    if((std::strstr(tempname,"Lob") != NULL) || (std::strstr(tempname,"Emperor") != NULL)) {
                      eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Channel: \"Lob\"] (%s)",tempname);
@@ -863,8 +859,8 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
     *  Known channel game types:
     *  0 = Westwood Chat channels, 1 = Command & Conquer Win95 channels, 2 = Red Alert Win95 channels,
     *  3 = Red Alert Counterstrike channels, 4 = Red Alert Aftermath channels, 5 = CnC Sole Survivor channels,
-    *  12 = C&C Renegade channels, 14 = Dune 2000 channels, 16 = Nox channels, 18 = Tiberian Sun channels, 
-    *  21 = Red Alert 1 v 3.03 channels, 31 = Emperor: Battle for Dune, 33 = Red Alert 2, 
+    *  12 = C&C Renegade channels, 14 = Dune 2000 channels, 16 = Nox channels, 18 = Tiberian Sun channels,
+    *  21 = Red Alert 1 v 3.03 channels, 31 = Emperor: Battle for Dune, 33 = Red Alert 2,
     *  37 = Nox Quest channels, 39 = C&C Renegade Quickgame channels, 41 = Yuri's Revenge
 	*/
     if ((numparams == 0) ||
@@ -886,12 +882,12 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 				char * topic = channel_get_topic(channel_get_name(channel));
 
         	    tempname = irc_convert_channel(channel);
-        	    
+
 				if((channel_wol_get_game_type(channel) != 0)) {
 					m = channel_get_first(channel);
 					if((channel_wol_get_game_type(channel) == conn_wol_get_game_type(conn)) || ((numparams == 0))) {
 						eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] List [Channel: \"_game\"] (%s)",tempname);
-						
+
 						eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] List [Channel: \"_game\"] %s %u 0 %u %u %s %u 128::",tempname,
 									 channel_get_length(channel),channel_wol_get_game_type(channel),channel_wol_get_game_tournament(channel),
 									 channel_wol_get_game_extension(channel),channel_wol_get_game_ownerip(channel));
@@ -902,7 +898,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 									 channel_wol_get_game_extension(channel),channel_wol_get_game_ownerip(channel),topic);
 							/**
 							*  The layout of the game list entry is something like this:
-                            *  
+                            *
 							*   #game_channel_name users unknown gameType gameIsTournment gameExtension longIP 128::topic
 							*/
 	        		        if (std::strlen(tempname)+1+20+1+1+std::strlen(topic)<MAX_IRC_MESSAGE_LEN)
@@ -972,7 +968,7 @@ static int _handle_topic_command(t_connection * conn, int numparams, char ** par
 static int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text)
 {
     /* NOTICE: Move this function to IRC Common file!!! */
-    
+
 	if (numparams>=1) {
 	    char ** e;
 
@@ -1078,29 +1074,29 @@ static int _handle_cvers_command(t_connection * conn, int numparams, char ** par
 	*  Heres the imput expected:
 	*  CVERS [oldvernum] [SKU]
 	*
-	*  SKU is specific number for any WOL game (Tiberian sun, RedAlert 2 etc.) 
+	*  SKU is specific number for any WOL game (Tiberian sun, RedAlert 2 etc.)
 	*  This is the best way to set clienttag, because CVERS is the first command which
 	*  client send to server.
 	*/
-	
+
 	if (numparams == 2) {
         handle_wol_set_clienttag (conn, std::atoi(params[1]));
  	    return 0;
     }
-    
+
     return -1;
 }
 
 static int _handle_verchk_command(t_connection * conn, int numparams, char ** params, char * text)
 {
     char temp[MAX_IRC_MESSAGE_LEN];
-    
+
     /**
     *  Heres the imput expected:
     *  vercheck [SKU] [version]
     *
     *  Here are two standart outputs expected:
-    *  
+    *
     *  Update NON-existant:
     *  For WSERVER:
     *  :[servername] 602 [username] :Update record non-existant
@@ -1111,7 +1107,7 @@ static int _handle_verchk_command(t_connection * conn, int numparams, char ** pa
     *  For WSERVER:
     *  :[servername] 606 [username] :[ftpserveraddr] [ftpusername] [ftppaswd] [directori] [file.rtp] [newversion] [SKU] REQ
     */
-    
+
     if (conn_get_class(conn) == conn_class_wserv) {
         // FIXME: We send only update non-existant now!
         // THIS is point for autoupdate!!!
@@ -1119,7 +1115,7 @@ static int _handle_verchk_command(t_connection * conn, int numparams, char ** pa
         eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] VERCHK :Update record non-existant");
         irc_send(conn,RPL_UPDATE_NONEX,":Update record non-existant");
       	return 0;
-    } 
+    }
     else {
         handle_wol_set_clienttag (conn, std::atoi(params[0]));
         snprintf(temp, sizeof(temp), ":none none none 1 %s NONREQ", params[0]);
@@ -1177,7 +1173,7 @@ static int _handle_whereto_command(t_connection * conn, int numparams, char ** p
 	irc_send(conn,RPL_GAMERESSERV,temp);
 	snprintf(temp, sizeof(temp), ":%s %d 'Ladder server' %s %s %s", wolip, BNETD_WGAMERES_PORT, woltimezone, wollong, wollat);
 	irc_send(conn,RPL_LADDERSERV,temp);
-	
+
 	return 0;
 }
 
@@ -1225,7 +1221,7 @@ static int _handle_setopt_command(t_connection * conn, int numparams, char ** pa
     *   First parameter: 16 == FindDisabled 17 == FindEnabled
     *   Second parameter: 32 == PageDisabled 33 == PageEnabled
     */
-    
+
     char ** elems;
 
     elems = irc_get_listelems(params[0]);
@@ -1237,7 +1233,7 @@ static int _handle_setopt_command(t_connection * conn, int numparams, char ** pa
 
 	if (elems)
 	     irc_unget_listelems(elems);
- 
+
 	return 0;
 }
 
@@ -1327,8 +1323,6 @@ static int _handle_getlocale_command(t_connection * conn, int numparams, char **
 
 static int _handle_getinsider_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-	char temp[MAX_IRC_MESSAGE_LEN];
-
     /* Ignore command but, return pramas[1] */
 
     eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] GETINSIDER %s",params[1]);
@@ -1388,9 +1382,9 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 		            irc_unget_listelems(e);
 			     return 0;
             }
-			
+
 			conn_wol_set_ingame(conn,1);
-			
+
 			if (old_channel)
    	  		   old_channel_name = xstrdup(irc_convert_channel(old_channel));
 
@@ -1412,14 +1406,14 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
    					channel_set_userflags(conn);
    					message_send_text(conn,message_wol_joingame,conn,gameOptions); /* we have to send the JOINGAME acknowledgement */
    					wolname=irc_convert_channel(channel);
-                        
+
 					if ((topic = channel_get_topic(channel_get_name(channel)))) {
 						if ((std::strlen(wolname)+1+1+std::strlen(topic)+1)<MAX_IRC_MESSAGE_LEN) {
 							snprintf(temp, sizeof(temp), "%s :%s", wolname, topic);
 							irc_send(conn,RPL_TOPIC,temp);
 						}
 					}
-                       
+
   					irc_send_rpl_namreply(conn,channel);
 
     				if ((std::strlen(wolname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
@@ -1446,11 +1440,10 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	}
 	else if((numparams>=7)) {
 	    char ** e;
-	    int i;
 
 	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME: * Create * (%s, %s)",
 		     params[0],params[1]);
-        
+
         if((numparams==7)) {
             /* Westwood Chat JOINGAME Cereate */
        	    snprintf(_temp, sizeof(_temp), "%s %s %s %s 0 %s :%s",params[1],params[2],params[3],params[4],params[6],params[0]);
@@ -1469,7 +1462,7 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 
 			if (old_channel)
 			  old_channel_name = xstrdup(irc_convert_channel(old_channel));
-			  
+
 /* This will be in future: Start GAME (no start channel) */
 //			if ((!(wolname)) || ((conn_set_game(conn, wolname, "", "", game_type_none, 0))<0)) {
 //				irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed"); /* FIXME: be more precise; what is the real error code for that? */
@@ -1543,9 +1536,9 @@ static int _handle_gameopt_command(t_connection * conn, int numparams, char ** p
   		    /* we only send text to another client */
    		    t_connection * user;
    		    t_channel * channel;
-   		    
+
    		    channel = conn_get_channel(conn);
-   		    
+
    		    for (user = channel_get_first(channel);user;user = channel_get_next()) {
 	           char const * name = conn_get_chatname(user);
 	           if (std::strcmp(conn_get_chatname(conn),name) != 0) {
@@ -1553,7 +1546,7 @@ static int _handle_gameopt_command(t_connection * conn, int numparams, char ** p
 	              message_send_text(user,message_wol_gameopt_join,conn,temp);
                }
    		    }
-       
+
        return 0;
     }
 	if ((numparams>=1)&&(text)) {
@@ -1685,7 +1678,7 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
     *   WOLv2:
  	*   user1!WWOL@hostname STARTG u :user1 xxx.xxx.xxx.xxx user2 xxx.xxx.xxx.xxx :gameNumber time_t
  	*/
- 	
+
 	if((numparams>=1)) {
 	    int i;
 	    char ** e;
@@ -1699,13 +1692,13 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
         if (e) {
            for (numelems=0;e[numelems];numelems++);
         }
-        
+
         std::strcat(temp,":");
-        
+
  	    if (numelems == 1) {
   		    t_connection * user;
    		    channel = conn_get_channel(conn);
-   		    
+
    		    for (user = channel_get_first(channel);user;user = channel_get_next()) {
 	           char const * name = conn_get_chatname(user);
 	           if (std::strcmp(conn_get_chatname(conn),name) != 0) {
@@ -1725,17 +1718,17 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
    		        std::strcat(temp,_temp_a);
             }
         }
-        
+
         std::strcat(temp,":");
         std::strcat(temp,"1337"); /* yes, ha ha funny, i just don't generate game numbers yet */
         std::strcat(temp," ");
 
         now = std::time(NULL);
-        snprintf(_temp_a, sizeof(_temp_a), "%u", now);
+        snprintf(_temp_a, sizeof(_temp_a), "%lu", now);
         std::strcat(temp,_temp_a);
-            
+
 	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] STARTG: (%s)",temp);
-	    
+
         for (i=0;((e)&&(e[i]));i++) {
    		        t_connection * user;
    		        if((user = connlist_find_connection_by_accountname(e[i]))) {
@@ -1758,7 +1751,7 @@ static int _handle_listsearch_command(t_connection * conn, int numparams, char *
 static int _handle_advertr_command(t_connection * conn, int numparams, char ** params, char * text)
 {
     char temp[MAX_IRC_MESSAGE_LEN];
-   
+
    	std::memset(temp,0,sizeof(temp));
 
  	/**
@@ -1773,9 +1766,9 @@ static int _handle_advertr_command(t_connection * conn, int numparams, char ** p
 
     snprintf(temp,sizeof(temp),"5 ");
  	std::strcat(temp,params[0]);
- 	
+
 	message_send_text(conn,message_wol_advertr,conn,temp);
-    
+
 	return 0;
 }
 
@@ -1819,7 +1812,7 @@ static int _handle_getbuddy_command(t_connection * conn, int numparams, char ** 
 
 	std::memset(temp,0,sizeof(temp));
 	std::memset(_temp,0,sizeof(_temp));
-          
+
     /**
  	*  Heres the output expected
  	*  :[servername] 333 [user] [buddy_name1]`[buddy_name2]`
@@ -1827,12 +1820,12 @@ static int _handle_getbuddy_command(t_connection * conn, int numparams, char ** 
  	*  Without names:
     *  :[servername] 333 [user]
  	*/
- 	
+
     my_acc = conn_get_account(conn);
 	num = account_get_friendcount(my_acc);
 
 	flist=account_get_friends(my_acc);
-	
+
 	if(flist!=NULL) {
         for (i=0; i<num; i++) {
     		if ((!(uid = account_get_friend(my_acc,i))) || (!(fr = friendlist_find_uid(flist,uid))))
@@ -1844,7 +1837,7 @@ static int _handle_getbuddy_command(t_connection * conn, int numparams, char ** 
     		friend_name = account_get_name(friend_acc);
 		    snprintf(_temp, sizeof(_temp), "%s`", friend_name);
    		    std::strcat(temp,_temp);
-        }            
+        }
     }
     eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] GETBUDDY (%s)",temp);
 	irc_send(conn,RPL_GET_BUDDY,temp);
@@ -1857,10 +1850,9 @@ static int _handle_addbuddy_command(t_connection * conn, int numparams, char ** 
     char const * friend_name;
     t_account * my_acc;
     t_account * friend_acc;
-    int num;
 
    	std::memset(temp,0,sizeof(temp));
-    
+
     /**
  	*  Heres the imput expected
  	*  ADDBUDDY [buddy_name]
@@ -1874,12 +1866,12 @@ static int _handle_addbuddy_command(t_connection * conn, int numparams, char ** 
 
    	friend_acc = accountlist_find_account(friend_name);
     account_add_friend(my_acc, friend_acc);
-    
+
    	/* FIXME: Check if add friend is done if not then send right message */
 
     snprintf(temp,sizeof(temp),"%s", friend_name);
 	irc_send(conn,RPL_ADD_BUDDY,temp);
-	
+
 	return 0;
 }
 
@@ -1889,9 +1881,9 @@ static int _handle_delbuddy_command(t_connection * conn, int numparams, char ** 
     char const * friend_name;
     t_account * my_acc;
     int num;
-    
+
    	std::memset(temp,0,sizeof(temp));
-    
+
     /**
  	*  Heres the imput expected
  	*  DELBUDDY [buddy_name]
@@ -1899,14 +1891,14 @@ static int _handle_delbuddy_command(t_connection * conn, int numparams, char ** 
  	*  Heres the output expected
  	*  :[servername] 335 [user] [buddy_name]
  	*/
- 	
+
  	friend_name = params[0];
     my_acc = conn_get_account(conn);
-    
+
  	num = account_remove_friend2(my_acc, friend_name);
 
   	/**
-    *  FIXME: Check if remove friend is done if not then send right message 
+    *  FIXME: Check if remove friend is done if not then send right message
     *  Btw I dont know another then RPL_DEL_BUDDY message yet lol.
     */
 
@@ -1923,7 +1915,7 @@ static int _handle_time_command(t_connection * conn, int numparams, char ** para
    	std::memset(temp,0,sizeof(temp));
     now = std::time(NULL);
 
-    snprintf(temp,sizeof(temp),"irc.westwood.com :%u", now);
+    snprintf(temp,sizeof(temp),"irc.westwood.com :%lu", now);
 	irc_send(conn,RPL_TIME,temp);
     return 0;
 }
@@ -1944,7 +1936,7 @@ static int _handle_kick_command(t_connection * conn, int numparams, char ** para
     */
 
 	flags = conn_get_flags(conn);
-	
+
 	if (!flags & MF_BLIZZARD) {
 	    snprintf(temp,sizeof(temp),"That command is for Admins/Operators only.");
         message_send_text(conn,message_type_whisper,conn,temp);
@@ -1974,13 +1966,13 @@ static int _handle_mode_command(t_connection * conn, int numparams, char ** para
 
    	std::memset(temp,0,sizeof(temp));
     t_channel * channel;
-	
-    /** 
+
+    /**
     * FIXME: CHECK IF USER IS OPERATOR
     * because in WOLv1 is used mode command to add OP or Voice to another user !!!!
     * in WOLv2 is used for change game mode (cooperative, free for all...)
     */
-    
+
 	if ((channel = channellist_find_channel_by_name(irc_convert_ircname(params[0]),NULL,NULL))) {
         snprintf(temp,sizeof(temp),"%s %s %s", params[0], params[1], params[2]);
    	    channel_message_send(channel,message_type_mode,conn,temp);
@@ -2025,9 +2017,9 @@ static int _handle_userip_command(t_connection * conn, int numparams, char ** pa
     char temp[MAX_IRC_MESSAGE_LEN];
     t_connection * user;
     const char * addr = NULL;
-    
+
    	std::memset(temp,0,sizeof(temp));
-   	
+
     if((user = connlist_find_connection_by_accountname(params[0]))) {
         addr = addr_num_to_ip_str(conn_get_addr(user));
         snprintf(temp,sizeof(temp),"%s",addr);

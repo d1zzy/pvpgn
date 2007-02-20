@@ -51,7 +51,7 @@ extern int handle_udp_packet(int usock, unsigned int src_addr, unsigned short sr
     case SERVER_UDPTEST: /* we might get these if a client is running on the same machine as us */
 	if (packet_get_size(packet)<sizeof(t_server_udptest))
 	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad UDPTEST packet (expected %u bytes, got %u)",usock,sizeof(t_server_udptest),packet_get_size(packet));
+	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad UDPTEST packet (expected %lu bytes, got %u)",usock,sizeof(t_server_udptest),packet_get_size(packet));
 	    return -1;
 	}
 	eventlog(eventlog_level_debug,__FUNCTION__,"[%d] got UDPTEST packet from %s (myself?)",usock,addr_num_to_addr_str(src_addr,src_port));
@@ -60,7 +60,7 @@ extern int handle_udp_packet(int usock, unsigned int src_addr, unsigned short sr
     case CLIENT_UDPPING:
 	if (packet_get_size(packet)<sizeof(t_client_udpping))
 	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad UDPPING packet (expected %u bytes, got %u)",usock,sizeof(t_client_udpping),packet_get_size(packet));
+	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad UDPPING packet (expected %lu bytes, got %u)",usock,sizeof(t_client_udpping),packet_get_size(packet));
 	    return -1;
 	}
 	eventlog(eventlog_level_debug,__FUNCTION__,"[%d] got udpping unknown1=%u",usock,bn_int_get(packet->u.client_udpping.unknown1));
@@ -69,7 +69,7 @@ extern int handle_udp_packet(int usock, unsigned int src_addr, unsigned short sr
     case CLIENT_SESSIONADDR1:
 	if (packet_get_size(packet)<sizeof(t_client_sessionaddr1))
 	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad SESSIONADDR1 packet (expected %u bytes, got %u)",usock,sizeof(t_client_sessionaddr1),packet_get_size(packet));
+	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad SESSIONADDR1 packet (expected %lu bytes, got %u)",usock,sizeof(t_client_sessionaddr1),packet_get_size(packet));
 	    return -1;
 	}
 
@@ -96,7 +96,7 @@ extern int handle_udp_packet(int usock, unsigned int src_addr, unsigned short sr
     case CLIENT_SESSIONADDR2:
 	if (packet_get_size(packet)<sizeof(t_client_sessionaddr2))
 	{
-	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad SESSIONADDR2 packet (expected %u bytes, got %u)",usock,sizeof(t_client_sessionaddr2),packet_get_size(packet));
+	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] got bad SESSIONADDR2 packet (expected %lu bytes, got %u)",usock,sizeof(t_client_sessionaddr2),packet_get_size(packet));
 	    return -1;
 	}
 

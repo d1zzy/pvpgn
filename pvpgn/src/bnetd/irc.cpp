@@ -143,7 +143,7 @@ extern int irc_send_ping(t_connection * conn)
 	return -1;
     }
 
-    if ((conn_get_clienttag(conn) != CLIENTTAG_WCHAT_UINT) && 
+    if ((conn_get_clienttag(conn) != CLIENTTAG_WCHAT_UINT) &&
         (conn_get_clienttag(conn) != CLIENTTAG_IIRC_UINT))
         return 0;
 
@@ -251,7 +251,7 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
                 conn_increment_passfail_count(conn);
                 return 0;
             }
-            
+
     	    if(std::strcmp(temphash,tempapgar) == 0) {
                 conn_login(conn,a,username);
     	        conn_set_state(conn,conn_state_loggedin);
@@ -509,10 +509,10 @@ static char * irc_message_preformat(t_irc_message_from const * from, char const 
     	myfrom = xstrdup(server_get_hostname());
     if (dest)
     	mydest = dest;
-    	
+
     if (text)
     	mytext = text;
-    	
+
     len = 1+std::strlen(myfrom)+1+
     	  std::strlen(command)+1+
     	  std::strlen(mydest)+1+
@@ -520,7 +520,7 @@ static char * irc_message_preformat(t_irc_message_from const * from, char const 
 
 
     msg = (char*)xmalloc(len);
-    
+
     std::sprintf(msg,":%s\n%s\n%s\n%s",myfrom,command,mydest,mytext);
     xfree(myfrom);
     return msg;
@@ -577,7 +577,7 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
     }
     else
     e1_2 = NULL;
-    
+
     if (e3[0]=='\0') { /* fill in recipient */
     	if ((tname = conn_get_loggeduser(dest)))
     	    toname = tname;
@@ -587,7 +587,7 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
     if (std::strcmp(toname,"\r")==0) {
     	toname = ""; /* HACK: the target field is really empty */
     	temp = "";
-    } else 
+    } else
     	temp = " ";
 
     if (std::strlen(e1)+1+std::strlen(e2)+1+std::strlen(toname)+std::strlen(temp)+std::strlen(e4)+2+1 <= MAX_IRC_MESSAGE_LEN) {
@@ -659,7 +659,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
             char temp[MAX_IRC_MESSAGE_LEN];
             t_channel * channel;
     		std::memset(temp,0,sizeof(temp));
-    		
+
    		channel = conn_get_channel(me);
     		if (conn_wol_get_ingame(me) == 1) {
     		    std::sprintf(temp,"2 %u %u 1 1 %u :%u",channel_get_length(channel),channel_wol_get_game_type(channel),channel_wol_get_game_tournament(channel));
@@ -761,7 +761,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     break;
     case message_type_notice:
 	{
-         
+
    	    char temp[MAX_IRC_MESSAGE_LEN];
 	    std::sprintf(temp,":%s",text);
 
@@ -777,8 +777,8 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	    {
 	            msg = irc_message_preformat(NULL,"NOTICE","",temp);
 	    }
-	    
-	    
+
+
 
 	}
 	break;
@@ -1042,7 +1042,7 @@ extern int irc_send_motd(t_connection * conn)
     }
 
     tempname = conn_get_loggeduser(conn);
-    
+
     irc_send(conn,RPL_MOTDSTART,":-");
 
     if ((filename = prefs_get_motdfile())) {
@@ -1080,6 +1080,8 @@ int irc_welcome(t_connection * conn){
        handle_wol_welcome(conn);
     else
        handle_irc_welcome(conn);
+
+    return 0;
 }
 
 extern int _handle_nick_command(t_connection * conn, int numparams, char ** params, char * text)
@@ -1109,7 +1111,7 @@ extern int _handle_nick_command(t_connection * conn, int numparams, char ** para
 	    }
 	    else
 	        irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to NICK");
-	        
+
 	    if ((conn_get_user(conn))&&(conn_get_loggeduser(conn)))
 			irc_welcome(conn); /* only send the welcome if we have USER and NICK */
 	}

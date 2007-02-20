@@ -397,7 +397,7 @@ static int bnpcap_conn_packet(unsigned int sip, unsigned short sport, unsigned i
 		  return -1;
 	       }
 	       if ((off != packet_get_size(p))&&(bnpcap_dodebug)) {
-		  eventlog(eventlog_level_warn,__FUNCTION__,"packet size differs (%d != %d) (offset=0x%04x)",off,packet_get_size(p),datap-data);
+		  eventlog(eventlog_level_warn,__FUNCTION__,"packet size differs (%d != %d) (offset=0x%04lx)",off,packet_get_size(p),datap-data);
 		  hexdump(stderr,data,len);
 /*		  std::memcpy(packet_get_raw_data(p,0),data,packet_get_size(p)); */
 	       }

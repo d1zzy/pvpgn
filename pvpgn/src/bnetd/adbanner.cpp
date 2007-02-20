@@ -65,11 +65,11 @@ const AdBanner*
 AdBannerComponent::find(AdKey adKey, unsigned id) const
 {
 	const AdBanner* result;
-	if (result =  finder(adKey,id))
+	if ((result =  finder(adKey,id)))
 		return result;
-	else if (result = finder(std::make_pair(adKey.first,0),id))
+	else if ((result = finder(std::make_pair(adKey.first,0),id)))
 		return result;
-	else if (result = finder(std::make_pair(0,adKey.second),id))
+	else if ((result = finder(std::make_pair(0,adKey.second),id)))
 		return result;
 	else
 		return finder(std::make_pair(0,0),id);
@@ -168,16 +168,16 @@ AdBannerComponent::findRandom(const AdCtagRefMap& where, AdKey adKey) const
 {
 	const AdBanner* result;
 	// first try language and client specific ad
-	if (result = randomFinder(where,adKey))
+	if ((result = randomFinder(where,adKey)))
 		return result;
 	// then try discarding language
-	else if (result = randomFinder(where, std::make_pair(adKey.first,0)))
+	else if ((result = randomFinder(where, std::make_pair(adKey.first,0))))
 		return result;
 	// now discard client
-	else if (result = randomFinder(where, std::make_pair(0,adKey.second)))
+	else if ((result = randomFinder(where, std::make_pair(0,adKey.second))))
 		return result;
 	// and finally look for a totally unspecific ad
-	else 
+	else
 		return randomFinder(where, std::make_pair(0,0));
 
 }
