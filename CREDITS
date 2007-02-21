@@ -10,6 +10,9 @@ PROGRAMMING CONTRIBUTORS
 	AmAdEuS a.k.a. amadeo
 	 WIN32GUI-mod, WIN32-Installer, WIN32 services code, initial IRC mods
 
+	Andreas Pickart a.k.a. apic (apic@lehm.name) - initial War3 work, 
+	w3route and anongame support, initial MySQL storage support and others
+
 	Dizzy 
 	 Project release engineering, general code maintenance, storage 
 	 development, fdwatch development, some documentation and lots others.
