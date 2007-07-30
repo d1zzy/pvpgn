@@ -12,6 +12,8 @@ clients (thus it supports all BNETD supported clients plus the most recent
 ones). 
 
 The list of supported clients and their minimum verion required is:
+Battle.net online games:
+------------------------
 - Diablo 1 v1.09
 - Starcraft v1.08
 - BroodWar v1.08
@@ -20,6 +22,21 @@ The list of supported clients and their minimum verion required is:
 - Diablo 2 LOD v1.10
 - Warcraft III Reign Of Chaos v1.13
 - Warcraft III Frozen Throne v1.13
+Westwood Online games:
+----------------------
+- Westwood Chat client v4.221
+- Command & Conquer Win95 v1.04a (under the Westwood Chat)
+- Red Alert Win95 v2.00 (under the Westwood Chat)
+- Red Alert Win95 v3.03
+- Dune 2000 v1.06
+- Tiberian Sun v2.03 ST-10
+- Tiberian Sun Firestorm v2.03 ST-10
+- Red Alert 2 v1.006
+- Yuri's Revenge v1.001
+- Nox v1.02b
+- Nox Quest v1.02b
+- Emperor: Battle for Dune v1.09
+- Renegade v1.037
 
 -----
 
