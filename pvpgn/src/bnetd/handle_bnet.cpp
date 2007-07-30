@@ -4617,8 +4617,12 @@ static int _client_w3xp_clan_invitereply(t_connection * c, t_packet const *const
     }
 
     offset = sizeof(t_client_w3xp_clan_invitereply);
-    username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
+    if (!(username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN))) {
+        eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad W3XP CLAN_INVITEREPLY packet (missing username)", conn_get_socket(c));
+	return -1;
+    }
     offset += (std::strlen(username) + 1);
+
     status = *((char *) packet_get_data_const(packet, offset, 1));
     if ((conn = connlist_find_connection_by_accountname(username)) != NULL) {
 	if ((status == W3XP_CLAN_INVITEREPLY_ACCEPT) && (clan = account_get_clan(conn_get_account(conn)))) {
