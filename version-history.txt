@@ -12,6 +12,9 @@ PvPGN Version History:
   -- Added support for battle clans
   -- Added various protocol related fixes
 
+[VCHECK]
+  -- Added WAR3/W3XP IX86 1.21 vcheck entries
+
 [MISC]
   -- Added /clan whisper subcommand
 
