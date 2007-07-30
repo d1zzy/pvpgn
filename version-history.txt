@@ -1,10 +1,82 @@
 PvPGN Version History:
 
+ Changelog for SVN TRUNK (since 1.8.1)
+=========================================
+ -- The list of changes mentioned in here is most propably incomplete.
+ For more details also take a peek view into conversion-changelog.
 
- ChangeLog for 1.7.10 (since 1.7.9)
+[WOL]
+  -- Disable account creation via irc/wol when new_accounts=false
+  -- Added address translation for WOL servserv addresses
+  -- Added support to allow/deny WOL clients in bnconf.conf
+  -- Added support for battle clans
+  -- Added various protocol related fixes
+
+ ChangeLog for 1.8.1 (since 1.8.0)
+=========================================
+
+[WOL]
+  -- fixed bug trying to join unexistent games
+  -- fixed bug overflowing the max players game limit
+  -- fixed bug of not showing Yuri's revenge channels
+  -- added address translation support to servserv sent addresses
+
+[WAR3]
+  -- fixed possible server crash on ill-formated clan invitation reply packet
+
+[MISC]
+  -- fixed d2dbs accepting d2gs connections from any ip
+  -- fixed IRC /notice disc bug
+  -- fixed warning and reactivated reconnecting when using mysql>=5.0.13
+  -- fixed SC:BW string representation from "StarCraft: Broodwars"
+  to "StarCraft: Brood War" (to better match battle.net behaviour)
+  -- fixed possible server crash caused by /ipban command
+
+ ChangeLog for 1.8.0 (since 1.8.0rc2)
+=========================================
+[VCHECK]
+  -- added sc/bw 1.13f/1.14 version check entries
+  -- added WAR3/W3XP IX86 1.20d/1.20e vcheck entries
+
+[D2]
+  -- cleaned up some mess about dealing with D2 1.08 auth reply packets which 
+  we don't need to support according to our minimum D2 version required
+  -- fixed joining of D2 channels by non-D2 clients
+
+[WOL]
+  -- fixed a bug where players couldn't join newly created channels
+
+[MISC]
+  -- fixed logging of invalid strings for client tags
+  -- fixed /ladderinfo command, fix usage of uninitilized variables
+  -- fixed corruption of account data when using files storage and when there 
+  where already broken UID accounts
+  -- fixed the clan max members to be 100 not 255
+  -- fixed loading of all accounts in sql2 (ex. when doing a ladder rebuild)
+  -- reverted dynamic SQL lib support that was creating problems
+  -- properly fixed "sql" ("sql2" is not affected) friend list bugs (reverted 
+  the old fix which was creating new problems); might still be problems if
+  using old versions of sqlite3 (that dont support ` quoting) or using ODBC
+  -- fixed connection loss problems with mysql>=5.0.12 (mysql versions starting 
+  with 5.0.3 but lower than 5.0.12 will still have the issue, upgrade mysql!)
+
+
+ Changelog for 1.8.0rc2 (since 1.8.0rc1)
+=========================================
+[SQL]
+  -- fixed friendslist-related (my)SQL problems
+  
+[VERSIONCHECK]
+  -- added W3 1.20c entries
+
+[MISC]
+  -- updated bnmaps.conf with the latest Battle.net maps
+
+ ChangeLog for 1.8.0rc1 (since 1.7.9)
 =======================================
 [SQL]
   -- inserted additional indices for BNET table in sql2 layout
+  -- added runtime loading of shared library files (DLLs)
 
 [SC/BW/W2BNE]
   -- fixed problem with parsing gameresults with unexpected order of players
@@ -18,8 +90,10 @@ PvPGN Version History:
 [VERSIONCHECK]
   -- added SC/BW 1.13e entries (XMAC & PMAC)
   -- added D2/D2XP 1.11b entries
-  -- added W3 1.20b entried
-  
+  -- added W3 1.20b entries
+
+[MISC]
+  -- enforce limit for topic message max length
 
  ChangeLog for 1.7.9 (since 1.7.8)
 =======================================
