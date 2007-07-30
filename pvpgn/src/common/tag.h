@@ -2,6 +2,7 @@
  * Copyright (C) 1998  Mark Baysinger (mbaysing@ucsd.edu)
  * Copyright (C) 1998,1999,2000  Ross Combs (rocombs@cs.nmsu.edu)
  * Copyright (C) 2004 CreepLord (creeplord@pvpgn.org)
+ * Copyright (C) 2007  Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -161,6 +162,7 @@ extern int	tag_check_arch(t_tag tag_uint);
 extern int	tag_check_client(t_tag tag_uint);
 extern int	tag_check_gamelang(t_tag tag_uint);
 extern int	tag_check_in_list(t_clienttag clienttag,const char * list);
+extern t_clienttag tag_sku_to_uint (int sku);
 
 }
 

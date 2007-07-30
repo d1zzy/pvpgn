@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2001  Marco Ziech (mmz@gmx.net)
  * Copyright (C) 2005  Bryan Biedenkapp (gatekeep@gmail.com)
- * Copyright (C) 2006  Ondrej Pelikan (pelish@gmail.com)
+ * Copyright (C) 2006,2007  Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -341,6 +341,7 @@
 
 #define RPL_BATTLECLAN	     358
 
+#define RPL_BAD_LOGIN        378
 #define RPL_VERCHK_NONREQ    379  /* for WOL */
 
 #define RPL_FIND_USER        388
@@ -358,8 +359,9 @@
 #define RPL_GAMERESSERV	     608
 #define RPL_LADDERSERV	     609
 #define RPL_LOBCOUNT	     610
-
-#define RPL_MANGLERSERV	     612
+#define RPL_WDTSERV          611
+#define RPL_MANGLERSERV      612
+#define RPL_TICKETSERV       613
 
 #define RPL_PINGSERVER	     615
 

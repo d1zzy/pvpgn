@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2004	Aaron
  * Copyright (C) 2004	CreepLord (creeplord@pvpgn.org)
+ * Copyright (C) 2007	Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -345,6 +346,112 @@ extern int tag_check_in_list(t_clienttag clienttag, char const * list)
   ok:
     xfree((void *) p);
     return 0;
+}
+
+extern t_clienttag tag_sku_to_uint (int sku)
+{
+  /**
+   *  Here is table of Westwood Online SKUs and by this SKU returning CLIENTTAG
+   *  SKUs are from Autoupdate FTP and from windows registry
+   */
+    
+   if (!sku)
+   {
+        ERROR0("got NULL sku");
+        return CLIENTTAG_UNKNOWN_UINT;
+   }
+
+   switch (sku) {
+      case 1000:  /* Westwood Chat */
+           return CLIENTTAG_WCHAT_UINT;
+      case 1003:  /* Command & Conquer */
+           return CLIENTTAG_WCHAT_UINT;
+//           return CLIENTTAG_CNCONQUER_UINT;
+      case 1005:  /* Red Alert 1 v2.00 (Westwood Chat Version) */
+      case 1006:
+      case 1007:
+      case 1008:
+           return CLIENTTAG_WCHAT_UINT;
+//           return CLIENTTAG_REDALERT_UINT;
+      case 1040:  /* C&C Sole Survivor */
+           return CLIENTTAG_WCHAT_UINT;
+//           return CLIENTTAG_CNCSOLES_UINT;
+      case 3072:  /* C&C Renegade */
+      case 3074:
+      case 3075:
+      case 3078:
+      case 3081:
+      case 3082:
+//      case 16780288: /* renegade ladder players */
+           return CLIENTTAG_RENEGADE_UINT;
+      case 3584:  /* Dune 2000 */
+      case 3586:
+      case 3587:
+      case 3589:
+      case 3591:
+           return CLIENTTAG_DUNE2000_UINT;
+      case 4096:  /* Nox */
+      case 4098:
+      case 4099:
+      case 4101:
+      case 4102:
+      case 4105:
+           return CLIENTTAG_NOX_UINT;
+      case 4608:  /* Tiberian Sun */
+      case 4610:
+      case 4611:
+      case 4615:
+           return CLIENTTAG_TIBERNSUN_UINT;
+      case 5376:  /* Red Alert 1 v3.03 (4 Players Internet Version) */
+      case 5378:
+      case 5379:
+           return CLIENTTAG_REDALERT_UINT;
+      case 7168:  /* Tiberian Sun: Firestorm */
+      case 7170:
+      case 7171:
+      case 7175:
+      case 7424:
+      case 7426:
+      case 7427:
+      case 7431:
+           return CLIENTTAG_TIBSUNXP_UINT;
+      case 7936:  /* Emperor: Battle for Dune */
+      case 7938:
+      case 7939:
+      case 7945:
+      case 7946:
+           return CLIENTTAG_EMPERORBD_UINT;
+      case 8448:  /* Red Alert 2 */
+      case 8450:
+      case 8451:
+      case 8457:
+      case 8458:
+      case 8960:
+      case 8962:
+      case 8963:
+      case 8969:
+      case 8970:
+           return CLIENTTAG_REDALERT2_UINT;
+      case 9472:  /* Nox Quest */
+      case 9474:
+      case 9475:
+      case 9477:
+      case 9478:
+      case 9481:
+           return CLIENTTAG_NOXQUEST_UINT;
+      case 10496:  /* Yuri's Revenge */
+      case 10498:
+      case 10499:
+      case 10505:
+      case 10506:
+           return CLIENTTAG_YURISREV_UINT;
+      case 12288:  /* C&C Renegade Free Dedicated Server */
+           return CLIENTTAG_RENEGADE_UINT; //FIXME: SET NEW CLIENTTAG FOR RENEGADE FDS
+      case 32512:  /* Westwood Online API */
+           return CLIENTTAG_WWOL_UINT;
+      default:  /* Unknown Westwood Online game -> is anyone SKU that we havent??? */
+           return CLIENTTAG_WWOL_UINT;
+   }
 }
 
 }
