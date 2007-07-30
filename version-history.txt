@@ -12,6 +12,9 @@ PvPGN Version History:
   -- Added support for battle clans
   -- Added various protocol related fixes
 
+[MISC]
+  -- Added /clan whisper subcommand
+
  ChangeLog for 1.8.1 (since 1.8.0)
 =========================================
 

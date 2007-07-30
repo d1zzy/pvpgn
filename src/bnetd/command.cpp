@@ -536,22 +536,54 @@ static int _handle_clan_command(t_connection * c, char const * text)
   t_clanmember * member;
   t_clan * clan;
 
-  text = skip_command(text);
-
-  if ( text[0] == '\0' )
-    {
-      message_send_text(c,message_type_info,c,"usage:");
-      message_send_text(c,message_type_info,c,"/clan public  /clan pub");
-      message_send_text(c,message_type_info,c,"Opens the clan channel up to the public so that anyone may enter.");
-      message_send_text(c,message_type_info,c,"/clan private  /clan priv");
-      message_send_text(c,message_type_info,c,"Closes the clan channel such that only members of the clan may enter.");
-      message_send_text(c,message_type_info,c,"/clan motd MESSAGE");
-      message_send_text(c,message_type_info,c,"Update the clan message of the day to MESSAGE.");
-      return 0;
+  if((acc = conn_get_account(c)) && (member = account_get_clanmember(acc)) && (clan = clanmember_get_clan(member))) {
+    text = skip_command(text);
+    if ( text[0] == '\0' ) {
+         message_send_text(c,message_type_info,c,"usage:");
+         message_send_text(c,message_type_info,c,"/clan msg MESSAGE");
+         message_send_text(c,message_type_info,c,"Whispers a message to all your fellow clan members.");
+         if (clanmember_get_status(member)>=CLAN_SHAMAN) {
+           message_send_text(c,message_type_info,c,"/clan public  /clan pub");
+           message_send_text(c,message_type_info,c,"Opens the clan channel up to the public so that anyone may enter.");
+           message_send_text(c,message_type_info,c,"/clan private  /clan priv");
+           message_send_text(c,message_type_info,c,"Closes the clan channel such that only members of the clan may enter.");
+           message_send_text(c,message_type_info,c,"/clan motd MESSAGE");
+           message_send_text(c,message_type_info,c,"Update the clan message of the day to MESSAGE.");
+        }
+        return 0;
     }
+    if (strstart(text,"msg")==0 || strstart(text,"m")==0 || strstart(text,"w")==0 || strstart(text,"whisper")==0) {
+        char const *msg = skip_command(text);
+        if(msg[0]=='\0') {
+          message_send_text(c,message_type_info,c,"usage:");
+          message_send_text(c,message_type_info,c,"/clan msg MESSAGE");
+          message_send_text(c,message_type_info,c,"Whispers a message to all your fellow clan members.");
+        }
+        else {
+          int counter = 0;
+          t_list * cl_member_list = clan_get_members(clan);
+          t_elem * curr;
+          t_connection * dest_conn;
+          t_clanmember * dest_member;
 
-  if((acc = conn_get_account(c)) && (member = account_get_clanmember(acc)) && (clan = clanmember_get_clan(member)))
-  {
+          LIST_TRAVERSE(cl_member_list,curr) {
+    	        if (!(dest_member = (t_clanmember*)elem_get_data(curr))) {
+    	           eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
+    	           continue;
+    	        }
+
+                if ((dest_conn = clanmember_get_conn(dest_member)) && (dest_conn != c)) {
+                   message_send_text(dest_conn,message_type_whisper,c,msg);
+                   counter++;
+                }
+          }
+          if(counter)
+             message_send_text(c,message_type_info,c,"Message was sent to all currently available clan members.");
+          else
+             message_send_text(c,message_type_info,c,"All fellow members of your clan are currently offline.");
+        }
+    }
+    else
     if(clanmember_get_status(member)>=CLAN_SHAMAN)
     {
       if (strstart(text,"public")==0 || strstart(text,"pub")==0) {
