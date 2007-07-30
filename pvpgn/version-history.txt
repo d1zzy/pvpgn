@@ -17,6 +17,7 @@ PvPGN Version History:
 
 [MISC]
   -- Added /clan whisper subcommand
+  -- Enforce (stricter) limit for maximum channel name length 
 
  ChangeLog for 1.8.1 (since 1.8.0)
 =========================================

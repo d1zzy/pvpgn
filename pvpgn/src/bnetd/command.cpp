@@ -2110,6 +2110,12 @@ static int _handle_channel_command(t_connection * c, char const *text)
 	   return 0;
 	}
 
+	if (!(std::strlen(text) < MAX_CHANNELNAME_LEN))
+	{
+		message_send_text(c,message_type_error,c,"max channel name length exceeded (max %d symbols)", MAX_CHANNELNAME_LEN-1);
+		return 0;
+	}
+
 	if ((channel = conn_get_channel(c)) && (strcasecmp(channel_get_name(channel),text)==0))
 		return 0; // we don't have to do anything, we are allready in this channel
 
