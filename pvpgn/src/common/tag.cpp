@@ -23,6 +23,7 @@
 #include <cctype>
 
 #include "common/eventlog.h"
+#include "common/xalloc.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -303,6 +304,47 @@ extern char const * clienttag_get_title(t_clienttag clienttag)
       default:
         return "Unknown";
    }
+}
+
+extern int tag_check_in_list(t_clienttag clienttag, char const * list)
+{
+   /* checks if a clienttag is in the list
+    * @clienttag : clienttag integer to check
+    * if it's allowed returns 0
+    * if it's not allowed returns -1
+    */
+    char *p, *q;
+
+    /* by default allow all */
+    if (!list)
+	return 0;
+
+    /* this shortcut check should make server as fast as before if
+     * the configuration is left in default mode */
+    if (!strcasecmp(list, "all"))
+	return 0;
+
+    p =  xstrdup(list);
+    do {
+	q = std::strchr(p, ',');
+	if (q)
+	    *q = '\0';
+	if (!strcasecmp(p, "all"))
+	    goto ok;
+	if (std::strlen(p) != 4)
+	    continue;
+	if (clienttag == tag_case_str_to_uint(p))
+	    goto ok;		/* client is in list */
+	if (q)
+	    p = q + 1;
+    } while (q);
+    xfree((void *) p);
+
+    return -1;			/* client is NOT in list */
+
+  ok:
+    xfree((void *) p);
+    return 0;
 }
 
 }

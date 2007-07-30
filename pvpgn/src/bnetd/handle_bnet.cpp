@@ -334,48 +334,6 @@ static int handle(const t_htable_row * htable, int type, t_connection * c, t_pac
     return res;
 }
 
-/* checks if a clienttag is in the allowed_clients list
- * @ctag : clienttag integer to check
- * if it's allowed returns 0
- * if it's not allowed returns -1
- */
-static int _check_allowed_client(t_clienttag ctag)
-{
-    char *list, *p, *q;
-
-    /* by default allow all */
-    if (!prefs_get_allowed_clients())
-	return 0;
-
-    /* this shortcut check should make server as fast as before if
-     * the configuration is left in default mode */
-    if (!strcasecmp(prefs_get_allowed_clients(), "all"))
-	return 0;
-
-    list = xstrdup(prefs_get_allowed_clients());
-    p = list;
-    do {
-	q = std::strchr(p, ',');
-	if (q)
-	    *q = '\0';
-	if (!strcasecmp(p, "all"))
-	    goto ok;
-	if (std::strlen(p) != 4)
-	    continue;
-	if (ctag == tag_case_str_to_uint(p))
-	    goto ok;		/* client allowed */
-	if (q)
-	    p = q + 1;
-    } while (q);
-    xfree((void *) list);
-
-    return -1;			/* client NOT allowed */
-
-  ok:
-    xfree((void *) list);
-    return 0;
-}
-
 /* handlers for bnet packets */
 static int _client_unknown_1b(t_connection * c, t_packet const *const packet)
 {
@@ -565,7 +523,7 @@ static int _client_countryinfo109(t_connection * c, t_packet const *const packet
 	}
 
 	/* check if it's an allowed client type */
-	if (_check_allowed_client(bn_int_get(packet->u.client_countryinfo_109.clienttag))) {
+	if (tag_check_in_list(bn_int_get(packet->u.client_countryinfo_109.clienttag),prefs_get_allowed_clients())) {
 	    conn_set_state(c, conn_state_destroy);
 	    return 0;
 	}
@@ -646,7 +604,7 @@ static int _client_progident(t_connection * c, t_packet const *const packet)
 	return -1;
     }
 
-    if (_check_allowed_client(bn_int_get(packet->u.client_progident.clienttag))) {
+    if (tag_check_in_list(bn_int_get(packet->u.client_progident.clienttag),prefs_get_allowed_clients())) {
 	conn_set_state(c, conn_state_destroy);
 	return 0;
     }
@@ -3032,7 +2990,7 @@ static int _client_progident2(t_connection * c, t_packet const *const packet)
 
     /* d2 uses this packet with clienttag = 0 to request the channel list */
     if (bn_int_get(packet->u.client_progident2.clienttag)) {
-	if (_check_allowed_client(bn_int_get(packet->u.client_progident2.clienttag))) {
+	if (tag_check_in_list(bn_int_get(packet->u.client_progident2.clienttag),prefs_get_allowed_clients())) {
 	    conn_set_state(c, conn_state_destroy);
 	    return 0;
 	}
@@ -4218,7 +4176,7 @@ static int _client_changeclient(t_connection * c, t_packet const *const packet)
 	return -1;
     }
 
-    if (_check_allowed_client(bn_int_get(packet->u.client_changeclient.clienttag))) {
+    if (tag_check_in_list(bn_int_get(packet->u.client_changeclient.clienttag),prefs_get_allowed_clients())) {
 	conn_set_state(c, conn_state_destroy);
 	return 0;
     }

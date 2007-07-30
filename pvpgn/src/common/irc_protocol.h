@@ -349,10 +349,11 @@
 #define RPL_FIND_USER_EX     398
 #define RPL_GET_INSIDER      399
 
-#define RPL_UPDATE_NONEX     602  /* for WOL serv */
+#define RPL_UPDATE_NONEX     602  /* for servserv */
+#define RPL_UPDATE_EXIST     603  /* for servserv */
 
 #define RPL_WOLSERV          605
-#define RPL_UPDATE_EXIST     606  /* for WOL serv */
+#define RPL_UPDATE_FTP       606  /* for servserv FTP message */
 #define RPL_QUIT             607
 #define RPL_GAMERESSERV	     608
 #define RPL_LADDERSERV	     609

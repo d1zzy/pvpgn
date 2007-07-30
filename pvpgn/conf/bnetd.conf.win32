@@ -147,8 +147,8 @@ tosfile = "tos.txt"
 #----------------------------------------------------------------------------#
 
 # This option lists the client types allowed to connect (only valid for 
-# the bnet protocol). The list is a comma separated list of any of the 
-# following elements: 
+# the bnet and wol protocol). The list is a comma separated list of any of
+# the following elements: 
 # all  : all client types allowed (default)
 # chat : client type "CHAT" allowed (used by some bot software)
 # dshr : client type Diablo 1 Shareware
@@ -161,6 +161,16 @@ tosfile = "tos.txt"
 # d2xp : client type Diablo 2 LOD
 # war3 : client type Warcraft III (Reign Of Chaos)
 # w3xp : client type Warcraft III Frozen Throne
+# tsun : client type Tiberian Sun
+# tsxp : client type Tiberian Sun Firestorm
+# ralt : client type Red Alert (with 4 players internet patche)
+# ral2 : client type Red Alert 2
+# dn2k : client type Dune 2000
+# noxx : client type Nox
+# noxq : client type Nox Quest
+# rngd : client type Renegade
+# yuri : client type Yuri's Revenge
+# empr : client type Emperor: Battle for Dune
 #
 # Example: allowed_clients = war3,w3xp
 allowed_clients = all
