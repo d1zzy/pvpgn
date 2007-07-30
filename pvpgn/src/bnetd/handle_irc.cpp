@@ -550,11 +550,15 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 						break;
 					}
 
+					if(!prefs_get_allow_new_accounts()){
+						message_send_text(conn,message_type_error,conn,"Account creation is not allowed");
+						break;
+					}
+
 					if (!pass || pass[0]=='\0' || (std::strlen(pass)>16) ) {
 						message_send_text(conn,message_type_error,conn,"Syntax: REGISTER <password> (max 16 characters)");
 						break;
 					}
-
 
 					for (j=0; j<std::strlen(pass); j++)
 						if (std::isupper((int)pass[j])) pass[j] = std::tolower((int)pass[j]);
