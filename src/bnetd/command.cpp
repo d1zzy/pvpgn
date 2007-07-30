@@ -2112,7 +2112,7 @@ static int _handle_channel_command(t_connection * c, char const *text)
 
 	if (!(std::strlen(text) < MAX_CHANNELNAME_LEN))
 	{
-		message_send_text(c,message_type_error,c,"max channel name length exceeded (max %d symbols)", MAX_CHANNELNAME_LEN-1);
+		message_send_text(c,message_type_error,c,"max channel name length exceeded (max 31 symbols)");
 		return 0;
 	}
 
