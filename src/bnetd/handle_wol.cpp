@@ -33,6 +33,7 @@
 #include "common/util.h"
 #include "common/list.h"
 #include "common/addr.h"
+#include "common/trans.h"
 
 #include "prefs.h"
 #include "command.h"
@@ -1095,17 +1096,16 @@ static int _handle_verchk_command(t_connection * conn, int numparams, char ** pa
     *  Heres the imput expected:
     *  vercheck [SKU] [version]
     *
-    *  Here are two standart outputs expected:
+    *  Here are two standart outputs expected - first for WOL second for ServServ server:
     *
-    *  Update NON-existant:
-    *  For WSERVER:
-    *  :[servername] 602 [username] :Update record non-existant
-    *  For WOL:
+    *  For WOL server (update non-existant):
     *  :[servername] 379 [username] :none none none 1 [SKU] NONREQ
     *
-    *  Update existant:
-    *  For WSERVER:
+    *  For ServServ sever (update non-existant):
+    *  :[servername] 602 [username] :Update record non-existant
+    *  For ServServ sever (update existant):
     *  :[servername] 606 [username] :[ftpserveraddr] [ftpusername] [ftppaswd] [directori] [file.rtp] [newversion] [SKU] REQ
+    *  :[servername] 603 [username] :You must update before connecting!
     */
 
     if (conn_get_class(conn) == conn_class_wserv) {
@@ -1123,6 +1123,7 @@ static int _handle_verchk_command(t_connection * conn, int numparams, char ** pa
         irc_send(conn,RPL_VERCHK_NONREQ,temp);
       	return 0;
     }
+
  	return 0;
 }
 
@@ -1138,37 +1139,49 @@ static int _handle_whereto_command(t_connection * conn, int numparams, char ** p
 	char temp[MAX_IRC_MESSAGE_LEN];
 
 	/* Casted to avoid warnings */
-	const char * wolip = addr_num_to_ip_str(conn_get_real_local_addr(conn));
+	const char * wolip;
 	const char * wolname = prefs_get_servername();
 	const char * woltimezone = prefs_get_wol_timezone();
 	const char * wollong = prefs_get_wol_longitude();
 	const char * wollat = prefs_get_wol_latitude();
+	
+    {			/* trans support */
+       unsigned short port = conn_get_real_local_port(conn);
+       unsigned int addr = conn_get_real_local_addr(conn);
 
-    /* D1zzy: This is good way to disable any game - we dont send available server (RPL_WOLSERV) */
+       trans_net(conn_get_addr(conn), &addr, &port);
 
-    /*  This is for anyone game but not for Emperor */
-    if (conn_get_clienttag(conn) != CLIENTTAG_EMPERORBD_UINT) {
-	   snprintf(temp, sizeof(temp), ":%s %d '0:%s' %s %s %s", wolip, BNETD_WOL_PORT, wolname, woltimezone, wollong, wollat);
-	   irc_send(conn,RPL_WOLSERV,temp);
+       wolip = addr_num_to_ip_str(addr);
     }
 
-   /*  Only for Emperor: Battle for Dune */
-    if (conn_get_clienttag(conn) == CLIENTTAG_EMPERORBD_UINT) {
-	   snprintf(temp, sizeof(temp), ":%s %d '0:Emperor %s' %s %s %s", wolip, BNETD_WOL_PORT, wolname, woltimezone, wollong, wollat);
+    /* Check if it's an allowed client type */
+    if (!tag_check_in_list(conn_get_clienttag(conn), prefs_get_allowed_clients())) {
+       /*  This is for anyone game but not for Emperor */
+       if (conn_get_clienttag(conn) != CLIENTTAG_EMPERORBD_UINT) {
+	      snprintf(temp, sizeof(temp), ":%s %d '0:%s' %s %s %s", wolip, BNETD_WOL_PORT, wolname, woltimezone, wollong, wollat);
+	      irc_send(conn,RPL_WOLSERV,temp);
+       }
+
+       /*  Only for Emperor: Battle for Dune */
+       if (conn_get_clienttag(conn) == CLIENTTAG_EMPERORBD_UINT) {
+	      snprintf(temp, sizeof(temp), ":%s %d '0:Emperor %s' %s %s %s", wolip, BNETD_WOL_PORT, wolname, woltimezone, wollong, wollat);
+          irc_send(conn,RPL_WOLSERV,temp);
+       }
+
+       /*  Only for CnC Renegade */
+       if (conn_get_clienttag(conn) == CLIENTTAG_RENEGADE_UINT) {
+	      snprintf(temp, sizeof(temp), ":%s 0 'Ping server' %s %s %s", wolip, woltimezone, wollong, wollat);
+	      irc_send(conn,RPL_PINGSERVER,temp);
+	      //I dont know for what is this server...? (used in renegade and yuri)
+	      //snprintf(temp, sizeof(temp), ":%s 4321 'Port Mangler' %s %s %s", wolip, woltimezone, wollong, wollat);
+	      //irc_send(conn,RPL_MANGLERSERV,temp);
+       }
+
+       /*  There are servers for anyone game */
+       snprintf(temp, sizeof(temp), ":%s %d 'Live chat server' %s %s %s", wolip, BNETD_WOL_PORT, woltimezone, wollong, wollat);
        irc_send(conn,RPL_WOLSERV,temp);
     }
-
-    /*  Only for CnC Renegade */
-    if (conn_get_clienttag(conn) == CLIENTTAG_RENEGADE_UINT) {
-	   snprintf(temp, sizeof(temp), ":%s 0 'Ping server' %s %s %s", wolip, woltimezone, wollong, wollat);
-	   irc_send(conn,RPL_PINGSERVER,temp);
-	   //snprintf(temp, sizeof(temp), ":%s 4321 'Port Mangler' %s %s %s", wolip, woltimezone, wollong, wollat); //I dont know for what is this server...?
-	   //irc_send(conn,RPL_MANGLERSERV,temp);
-    }
-
-    /*  This will be for anyone game */
-	snprintf(temp, sizeof(temp), ":%s %d 'Live chat server' %s %s %s", wolip, BNETD_WOL_PORT, woltimezone, wollong, wollat);
-	irc_send(conn,RPL_WOLSERV,temp);
+    /* If game is not allowed than we still send this servers */
 	snprintf(temp, sizeof(temp), ":%s %d 'Gameres server' %s %s %s", wolip, BNETD_WGAMERES_PORT, woltimezone, wollong, wollat);
 	irc_send(conn,RPL_GAMERESSERV,temp);
 	snprintf(temp, sizeof(temp), ":%s %d 'Ladder server' %s %s %s", wolip, BNETD_WGAMERES_PORT, woltimezone, wollong, wollat);
