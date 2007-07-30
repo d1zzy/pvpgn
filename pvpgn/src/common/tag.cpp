@@ -269,7 +269,7 @@ extern char const * clienttag_get_title(t_clienttag clienttag)
       case CLIENTTAG_SHAREWARE_UINT:
         return "Starcraft (Shareware)";
       case CLIENTTAG_BROODWARS_UINT:
-        return "Starcraft: BroodWars";
+        return "Starcraft: Brood War";
       case CLIENTTAG_STARCRAFT_UINT:
         return "Starcraft";
       case CLIENTTAG_BNCHATBOT_UINT:
