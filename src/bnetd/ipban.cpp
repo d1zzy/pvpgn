@@ -714,6 +714,9 @@ static int ipban_func_check(t_connection * c, char const * cp)
 
 static int ipban_identical_entry(t_ipban_entry * e1, t_ipban_entry * e2)
 {
+    if (e1->type != e2->type)
+        return 0;
+
     switch (e2->type)
     {
 	case ipban_type_exact:
