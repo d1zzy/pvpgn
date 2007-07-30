@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2001  Marco Ziech (mmz@gmx.net)
  * Copyright (C) 2005  Bryan Biedenkapp (gatekeep@gmail.com)
- * Copyright (C) 2006  Pelish (pelish@gmail.com)
+ * Copyright (C) 2006,2007  Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,6 +34,7 @@
 #include "common/xalloc.h"
 #include "common/addr.h"
 #include "common/tag.h"
+#include "common/list.h"
 #include "common/util.h"
 
 #include "message.h"
@@ -47,6 +48,8 @@
 #include "handle_irc.h"
 #include "handle_wol.h"
 #include "command_groups.h"
+#include "topic.h"
+#include "clan.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -224,7 +227,7 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
     }
     a = accountlist_find_account(username);
     if (!a) {
-            message_send_text(conn,message_type_notice,NULL,"Authentication failed.");
+        message_send_text(conn,message_type_notice,NULL,"Authentication failed.");
 	return 0;
     }
 
@@ -246,8 +249,9 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
     	    }
 
     	    if(tempapgar == NULL) {
-                std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
-                message_send_text(conn,message_type_error,conn,temp);  /* bad APGAR */
+                irc_send(conn,RPL_BAD_LOGIN,":You have specified an invalid password for that nickname."); /* bad APGAR */
+                //std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
+                //message_send_text(conn,message_type_error,conn,temp);
                 conn_increment_passfail_count(conn);
                 return 0;
             }
@@ -258,8 +262,9 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
         		return 1;
     	    }
     	    else {
-                std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
-                message_send_text(conn,message_type_error,conn,temp);  /* bad APGAR */
+                irc_send(conn,RPL_BAD_LOGIN,":You have specified an invalid password for that nickname."); /* bad APGAR */
+                //std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
+                ///message_send_text(conn,message_type_error,conn,temp);
         		conn_increment_passfail_count(conn);
         		return 0;
     	    }
@@ -644,13 +649,21 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	    if((conn_get_wol(me) == 1) && (conn_get_clienttag(me) != CLIENTTAG_WCHAT_UINT))
 	    {
         	char temp[MAX_IRC_MESSAGE_LEN];
+    		t_clan * clan;
+    		unsigned int clanid = 0;
     		std::memset(temp,0,sizeof(temp));
 
     		/**
             *  For WOLv2 the channel JOIN output must be like the following:
     		*  user!WWOL@hostname JOIN :clanID,longIP channelName
     		*/
-    		std::sprintf(temp,":0,%u",conn_get_addr(me));
+
+    		clan = account_get_clan(conn_get_account(me));
+
+    		if (clan)
+    			clanid = clan_get_clanid(clan);
+
+    		std::sprintf(temp,":%u,%u",clanid,conn_get_addr(me));
     		msg = irc_message_preformat(&from,"JOIN",temp,irc_convert_channel(conn_get_channel(me)));
 	    	conn_unget_chatname(me,from.nick);
     	    break;
@@ -907,9 +920,16 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
                 else if ((conn_wol_get_ingame(c) == 0)) {
                    	if (flags & MF_BLIZZARD)
 		               std::strcat(temp,"@");
-               }
+                }
                 if (conn_get_clienttag(c) != CLIENTTAG_WCHAT_UINT) {
-                    std::sprintf(temp,"%s%s,0,%u",temp,name,conn_get_addr(m));
+                    /* BATTLECLAN Support */
+                    t_clan * clan = account_get_clan(conn_get_account(m));
+                    unsigned int clanid = 0;
+
+                    if (clan)
+                        clanid = clan_get_clanid(clan);
+
+                    std::sprintf(temp,"%s%s,%u,%u",temp,name,clanid,conn_get_addr(m));
                 }
                 else {
                     std::sprintf(temp,"%s%s",temp,name);
@@ -1115,6 +1135,90 @@ extern int _handle_nick_command(t_connection * conn, int numparams, char ** para
 	    if ((conn_get_user(conn))&&(conn_get_loggeduser(conn)))
 			irc_welcome(conn); /* only send the welcome if we have USER and NICK */
 	}
+	return 0;
+}
+
+extern int _handle_topic_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+	char ** e = NULL;
+
+	if((conn_get_wol(conn) == 1)) {
+	    t_channel * channel = conn_get_channel(conn);
+	    channel_set_topic(channel_get_name(channel),text,NO_SAVE_TOPIC);
+	}
+
+	if (params!=NULL) e = irc_get_listelems(params[0]);
+
+	if ((e)&&(e[0])) {
+		t_channel *channel = conn_get_channel(conn);
+
+		if (channel) {
+			char * topic;
+			char temp[MAX_IRC_MESSAGE_LEN];
+			char const * ircname = irc_convert_ircname(e[0]);
+
+			if ((ircname) && (strcasecmp(channel_get_name(channel),ircname)==0)) {
+				if ((topic = channel_get_topic(channel_get_name(channel)))) {
+			  		snprintf(temp, sizeof(temp), "%s :%s", irc_convert_channel(channel), topic);
+			    		irc_send(conn,RPL_TOPIC,temp);
+				}
+				else
+			    		irc_send(conn,RPL_NOTOPIC,":No topic is set");
+			}
+			else
+				irc_send(conn,ERR_NOTONCHANNEL,":You are not on that channel");
+		}
+		else {
+			irc_send(conn,ERR_NOTONCHANNEL,":You're not on a channel");
+		}
+		irc_unget_listelems(e);
+	}
+	else
+		irc_send(conn,ERR_NEEDMOREPARAMS,":too few arguments to TOPIC");
+	return 0;
+}
+
+extern int _handle_names_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+	t_channel * channel;
+
+    if (numparams>=1) {
+		char ** e;
+		char const * ircname;
+		char const * verytemp;
+		char temp[MAX_IRC_MESSAGE_LEN];
+		int i;
+
+		e = irc_get_listelems(params[0]);
+		for (i=0;((e)&&(e[i]));i++) {
+			verytemp = irc_convert_ircname(e[i]);
+
+			if (!verytemp)
+				continue; /* something is wrong with the name ... */
+			channel = channellist_find_channel_by_name(verytemp,NULL,NULL);
+			if (!channel)
+				continue; /* channel doesn't exist */
+			irc_send_rpl_namreply(conn,channel);
+			ircname=irc_convert_channel(channel);
+			if ((std::strlen(ircname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
+				snprintf(temp, sizeof(temp), "%s :End of NAMES list",ircname);
+				irc_send(conn,RPL_ENDOFNAMES,temp);
+			}
+			else
+				irc_send(conn,RPL_ENDOFNAMES,":End of NAMES list");
+		}
+		if (e)
+		irc_unget_listelems(e);
+    }
+	else if (numparams==0) {
+		t_elem const * curr;
+		LIST_TRAVERSE_CONST(channellist(),curr)
+		{
+			channel = (t_channel*)elem_get_data(curr);
+			irc_send_rpl_namreply(conn,channel);
+		}
+		irc_send(conn,RPL_ENDOFNAMES,"* :End of NAMES list");
+    }
 	return 0;
 }
 

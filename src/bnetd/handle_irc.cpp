@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2001  Marco Ziech (mmz@gmx.net)
  * Copyright (C) 2005  Bryan Biedenkapp (gatekeep@gmail.com)
- * Copyright (C) 2006  Pelish (pelish@gmail.com)
+ * Copyright (C) 2006,2007  Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -71,9 +71,7 @@ static int _handle_quit_command(t_connection * conn, int numparams, char ** para
 
 static int _handle_who_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_list_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_topic_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_names_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_userhost_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_ison_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -758,41 +756,6 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 	return 0;
 }
 
-static int _handle_topic_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	char ** e = NULL;
-
-	if (params!=NULL) e = irc_get_listelems(params[0]);
-
-	if ((e)&&(e[0])) {
-		t_channel *channel = conn_get_channel(conn);
-
-		if (channel) {
-			char * topic;
-			char temp[MAX_IRC_MESSAGE_LEN];
-			char const * ircname = irc_convert_ircname(e[0]);
-
-			if ((ircname) && (strcasecmp(channel_get_name(channel),ircname)==0)) {
-				if ((topic = channel_get_topic(channel_get_name(channel)))) {
-			  		snprintf(temp, sizeof(temp), "%s :%s", ircname, topic);
-			    		irc_send(conn,RPL_TOPIC,temp);
-				}
-				else
-			    		irc_send(conn,RPL_NOTOPIC,":No topic is set");
-			}
-			else
-				irc_send(conn,ERR_NOTONCHANNEL,":You are not on that channel");
-		}
-		else {
-			irc_send(conn,ERR_NOTONCHANNEL,":You're not on a channel");
-		}
-		irc_unget_listelems(e);
-	}
-	else
-		irc_send(conn,ERR_NEEDMOREPARAMS,":too few arguments to TOPIC");
-	return 0;
-}
-
 static int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text)
 {
 	if (numparams>=1) {
@@ -852,50 +815,6 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 	}
 	else
 	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to JOIN");
-	return 0;
-}
-
-static int _handle_names_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	t_channel * channel;
-
-    if (numparams>=1) {
-		char ** e;
-		char const * ircname;
-		char const * verytemp;
-		char temp[MAX_IRC_MESSAGE_LEN];
-		int i;
-
-		e = irc_get_listelems(params[0]);
-		for (i=0;((e)&&(e[i]));i++) {
-			verytemp = irc_convert_ircname(e[i]);
-
-			if (!verytemp)
-				continue; /* something is wrong with the name ... */
-			channel = channellist_find_channel_by_name(verytemp,NULL,NULL);
-			if (!channel)
-				continue; /* channel doesn't exist */
-			irc_send_rpl_namreply(conn,channel);
-			ircname=irc_convert_channel(channel);
-			if ((std::strlen(ircname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
-				snprintf(temp, sizeof(temp), "%s :End of NAMES list",ircname);
-				irc_send(conn,RPL_ENDOFNAMES,temp);
-			}
-			else
-				irc_send(conn,RPL_ENDOFNAMES,":End of NAMES list");
-		}
-		if (e)
-		irc_unget_listelems(e);
-    }
-	else if (numparams==0) {
-		t_elem const * curr;
-		LIST_TRAVERSE_CONST(channellist(),curr)
-		{
-			channel = (t_channel*)elem_get_data(curr);
-			irc_send_rpl_namreply(conn,channel);
-		}
-		irc_send(conn,RPL_ENDOFNAMES,"* :End of NAMES list");
-    }
 	return 0;
 }
 
