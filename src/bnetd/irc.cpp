@@ -799,6 +799,13 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
    	/**
    	*  Westwood Online Extensions
    	*/
+    case message_type_host:
+	    from.nick = conn_get_chatname(me);
+	    from.user = ctag;
+	    from.host = addr_num_to_ip_str(conn_get_addr(me));
+	    msg = irc_message_preformat(&from,"HOST","\r",text);
+	    conn_unget_chatname(me,from.nick);
+    	break;
     case message_wol_joingame:
     	from.nick = conn_get_chatname(me);
     	from.user = ctag;
