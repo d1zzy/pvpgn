@@ -1,7 +1,7 @@
 [Project]
 FileName=PvPGNConsole.dev
 Name=PvPGNConsole
-UnitCount=262
+UnitCount=266
 Type=1
 Ver=1
 ObjFiles=
@@ -2668,8 +2668,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit263]
-FileName=..\src\common\rcm.cpp
-CompileCpp=0
+FileName=..\src\common\sql_common.cpp
+CompileCpp=1
 Folder=common/Source Files
 Compile=1
 Link=1
@@ -2678,8 +2678,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit264]
-FileName=..\src\bnetd\attr.h
-CompileCpp=0
+FileName=..\src\bnetd\sql_common.h
+CompileCpp=1
 Folder=bnetd/Header Files
 Compile=1
 Link=1
@@ -2688,9 +2688,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit265]
-FileName=..\src\bnetd\attrlayer.h
-CompileCpp=0
-Folder=bnetd/Header Files
+FileName=..\src\bnetd\storage_sql2.cpp
+CompileCpp=1
+Folder=bnetd/Source Files
 Compile=1
 Link=1
 Priority=1000
@@ -2698,179 +2698,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit266]
-FileName=..\src\bnetd\attrgroup.h
-CompileCpp=0
-Folder=bnetd/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit267]
-FileName=..\src\bnetd\attrlayer.cpp
-CompileCpp=0
-Folder=bnetd/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit268]
-FileName=..\src\bnetd\attrgroup.cpp
-CompileCpp=0
-Folder=bnetd/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit269]
-FileName=..\src\bnetd\cmdline.h
-CompileCpp=0
-Folder=bnetd/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit270]
-FileName=..\src\bnetd\cmdline.cpp
-CompileCpp=0
-Folder=bnetd/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit271]
-FileName=..\src\common\conf.h
-CompileCpp=0
-Folder=common/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit272]
-FileName=..\src\common\conf.cpp
-CompileCpp=0
-Folder=common/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit273]
-FileName=..\src\common\systemerror.h
+FileName=..\src\bnetd\storage_sql2.h
 CompileCpp=1
-Folder=common/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit274]
-FileName=..\src\common\systemerror.cpp
-CompileCpp=1
-Folder=common/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit275]
-FileName=..\src\bnetd\attrgroup.h
-CompileCpp=0
 Folder=bnetd/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit276]
-FileName=..\src\bnetd\attrlayer.cpp
-CompileCpp=0
-Folder=bnetd/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit277]
-FileName=..\src\bnetd\attrgroup.cpp
-CompileCpp=0
-Folder=bnetd/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit278]
-FileName=..\src\bnetd\cmdline.h
-CompileCpp=0
-Folder=bnetd/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit279]
-FileName=..\src\bnetd\cmdline.cpp
-CompileCpp=0
-Folder=bnetd/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit280]
-FileName=..\src\common\conf.h
-CompileCpp=0
-Folder=common/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit281]
-FileName=..\src\common\conf.cpp
-CompileCpp=0
-Folder=common/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit282]
-FileName=..\src\common\systemerror.h
-CompileCpp=1
-Folder=common/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit283]
-FileName=..\src\common\systemerror.cpp
-CompileCpp=1
-Folder=common/Source Files
 Compile=1
 Link=1
 Priority=1000
