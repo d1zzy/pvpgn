@@ -2670,7 +2670,7 @@ BuildCmd=
 [Unit263]
 FileName=..\src\bnetd\sql_common.cpp
 CompileCpp=1
-Folder=common/Source Files
+Folder=bnetd/Source Files
 Compile=1
 Link=1
 Priority=1000
