@@ -1159,13 +1159,14 @@ static int _handle_setcodepage_command(t_connection * conn, int numparams, char 
 
 static int _handle_setlocale_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-	char * locale = NULL;
+	t_account * account = conn_get_account(conn);
+	int locale;
 
 	if((numparams>=1)&&params[0]) {
-	    locale = params[0];
-	    conn_wol_set_locale(conn,std::atoi(locale));
+       locale = std::atoi(params[0]);
+       account_set_locale(account,locale);
 	}
-	irc_send(conn,RPL_SET_LOCALE,locale);
+	irc_send(conn,RPL_SET_LOCALE,params[0]);
 	return 0;
 }
 
@@ -1210,21 +1211,22 @@ static int _handle_getlocale_command(t_connection * conn, int numparams, char **
 	if((numparams>=1)) {
 	    int i;
 	    for (i=0; i<numparams; i++) {
-    		t_connection * user;
+    		t_account * account;
     		int locale;
     		char const * name;
 
-    		if((user = connlist_find_connection_by_accountname(params[i]))) {
-    		    locale = conn_wol_get_locale(user);
-    		    name = conn_get_chatname(user);
-
-    		    snprintf(_temp, sizeof(_temp), "%s`%u", name, locale);
+    		if(account = accountlist_find_account(params[i])) {
+    		    locale = account_get_locale(account);
+    		    if (!locale)
+    		       locale = 0;
+    		    snprintf(_temp, sizeof(_temp), "%s`%u", params[i], locale);
     		    std::strcat(temp,_temp);
     		    if(i < numparams-1)
            			std::strcat(temp,"`");
     		}
 	    }
-   	    irc_send(conn,RPL_GET_LOCALE,temp);
+	    DEBUG1("[** WOL **] GETLOCALE %s",temp);
+	    irc_send(conn,RPL_GET_LOCALE,temp);
 	}
 	return 0;
 }
@@ -1924,8 +1926,8 @@ static int _handle_host_command(t_connection * conn, int numparams, char ** para
    	std::memset(temp,0,sizeof(temp));
 
 	if ((user = connlist_find_connection_by_accountname(params[0]))) {
-        snprintf(temp,sizeof(temp),"I am hosting at %s", text);
-        message_send_text(user,message_type_whisper,conn,temp);
+        snprintf(temp,sizeof(temp),": %s", text);
+        message_send_text(user,message_type_host,conn,temp);
 	}
 	else {
 		irc_send(conn,ERR_NOSUCHNICK,":No such user");

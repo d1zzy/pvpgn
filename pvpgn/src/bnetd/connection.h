@@ -195,7 +195,6 @@ typedef struct connection
 	struct {
 	    int ingame;				        /* Are we in a game channel? */
 	    int codepage;
-	    int locale;
 	    int gameType;
 	    int findme;                     /* Allow others to find me? */
 	    int pageme;                     /* Allow others to page me? */
@@ -435,32 +434,20 @@ extern char const * conn_get_tmpVOICE_channel(t_connection * c);
 extern t_elist *conn_get_timer(t_connection * c);
 extern int conn_add_fdwatch(t_connection *c, fdwatch_handler handle);
 
-/**
-*  Westwood Online Extensions
-*/
+/* Westwood Online Extensions */
 extern int conn_get_wol(t_connection * c);
-
 extern void conn_wol_set_ingame(t_connection * c, int wol_ingame);
 extern int conn_wol_get_ingame(t_connection * c);
-
 extern void conn_wol_set_apgar(t_connection * c, char const * apgar);
 extern char const * conn_wol_get_apgar(t_connection * c);
-
 extern void conn_wol_set_codepage(t_connection * c, int codepage);
 extern int conn_wol_get_codepage(t_connection * c);
-
-extern void conn_wol_set_locale(t_connection * c, int locale);
-extern int conn_wol_get_locale(t_connection * c);
-
 extern void conn_wol_set_game_type(t_connection * c, int gameType);
 extern int conn_wol_get_game_type(t_connection * c);
-
 extern void conn_wol_set_game_options(t_connection * c, char const * gameOptions);
 extern char const * conn_wol_get_game_options(t_connection * c);
-
 extern void conn_wol_set_findme(t_connection * c, int findme);
 extern int conn_wol_get_findme(t_connection * c);
-
 extern void conn_wol_set_pageme(t_connection * c, int pageme);
 extern int conn_wol_get_pageme(t_connection * c);
 

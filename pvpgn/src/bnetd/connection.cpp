@@ -410,11 +410,9 @@ extern t_connection * conn_create(int tsock, int usock, unsigned int real_local_
     temp->protocol.wol.ingame			         = 0;
 
     temp->protocol.wol.codepage			         = 0;
-    temp->protocol.wol.locale			         = 0;
     temp->protocol.wol.gameType			         = 0;
 
     temp->protocol.wol.apgar			         = NULL;
-
     temp->protocol.wol.gameOptions		         = NULL;
 
 
@@ -3859,29 +3857,6 @@ extern int conn_wol_get_codepage(t_connection * c)
     }
 
     return c->protocol.wol.codepage;
-}
-
-extern void conn_wol_set_locale(t_connection * c, int locale)
-{
-    if (!c)
-    {
-    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
-    	return;
-    }
-
-    if (locale)
-        c->protocol.wol.locale = locale;
-}
-
-extern int conn_wol_get_locale(t_connection * c)
-{
-    if (!c)
-    {
-    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
-    	return -1;
-    }
-
-    return c->protocol.wol.locale;
 }
 
 extern void conn_wol_set_game_type(t_connection * c, int gameType)
