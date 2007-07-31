@@ -1,7 +1,7 @@
 [Project]
 FileName=PvPGN.dev
 Name=PvPGN
-UnitCount=268
+UnitCount=272
 Type=0
 Ver=1
 ObjFiles=
@@ -2728,9 +2728,9 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit269]
-FileName=..\src\bnetd\attrlayer.h
-CompileCpp=0
-Folder=bnetd/Header Files
+FileName=..\src\bnetd\sql_common.cpp
+CompileCpp=1
+Folder=bnetd/Source Files
 Compile=1
 Link=1
 Priority=1000
@@ -2738,8 +2738,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit270]
-FileName=..\src\bnetd\attrgroup.h
-CompileCpp=0
+FileName=..\src\bnetd\sql_common.h
+CompileCpp=1
 Folder=bnetd/Header Files
 Compile=1
 Link=1
@@ -2748,28 +2748,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit271]
-FileName=..\src\bnetd\attrlayer.cpp
-CompileCpp=0
-Folder=bnetd/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit272]
-FileName=..\src\bnetd\attrgroup.cpp
-CompileCpp=0
-Folder=bnetd/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit273]
-FileName=..\src\bnetd\cmdline.h
-CompileCpp=0
+FileName=..\src\bnetd\storage_sql2.h
+CompileCpp=1
 Folder=bnetd/Header Files
 Compile=1
 Link=1
@@ -2777,160 +2757,10 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit274]
-FileName=..\src\bnetd\cmdline.cpp
-CompileCpp=0
+[Unit272]
+FileName=..\src\bnetd\storage_sql2.cpp
+CompileCpp=1
 Folder=bnetd/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit275]
-FileName=..\src\common\conf.h
-CompileCpp=0
-Folder=common/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit276]
-FileName=..\src\common\conf.cpp
-CompileCpp=0
-Folder=common/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit277]
-FileName=..\src\common\systemerror.h
-Folder=common/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-CompileCpp=1
-
-[Unit278]
-FileName=..\src\common\systemerror.cpp
-CompileCpp=1
-Folder=common/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit279]
-FileName=..\src\win32\gui_printf.cpp
-CompileCpp=1
-Folder=win32/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit280]
-FileName=..\src\win32\gui_printf.h
-CompileCpp=1
-Folder=win32/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit281]
-FileName=..\src\common\conf.cpp
-CompileCpp=0
-Folder=common/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit282]
-FileName=..\src\common\systemerror.h
-CompileCpp=1
-Folder=common/Header Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit283]
-FileName=..\src\common\systemerror.cpp
-CompileCpp=1
-Folder=common/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit284]
-FileName=..\src\zlib\pvpgn_zutil.c
-CompileCpp=1
-Folder=zlib/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit285]
-FileName=..\src\zlib\pvpgn_adler32.c
-CompileCpp=1
-Folder=zlib/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit286]
-FileName=..\src\zlib\pvpgn_deflate.c
-CompileCpp=1
-Folder=zlib/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit287]
-FileName=..\src\zlib\pvpgn_trees.c
-CompileCpp=1
-Folder=zlib/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit288]
-FileName=..\src\win32\gui_printf.cpp
-CompileCpp=1
-Folder=win32/Source Files
-Compile=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit289]
-FileName=..\src\win32\gui_printf.h
-CompileCpp=1
-Folder=win32/Header Files
 Compile=1
 Link=1
 Priority=1000
