@@ -58,7 +58,7 @@ namespace bnetd
 /* [quetzal] 20020827 - this one get modified by anongame_queue player when there're enough
  * players and map has been chosen based on their preferences. otherwise its NULL
  */
-static char *mapname = NULL;
+static const char *mapname = NULL;
 
 static int players[ANONGAME_TYPES] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 static t_connection *player[ANONGAME_TYPES][ANONGAME_MAX_GAMECOUNT];
@@ -75,7 +75,7 @@ static char const *_conn_get_versiontag(t_connection * c);
 
 static int _anongame_gametype_to_queue(int type, int gametype);
 static int _anongame_level_by_queue(t_connection * c, int queue);
-static char *_get_map_from_prefs(int queue, t_uint32 cur_prefs, t_clienttag clienttag);
+static const char * _get_map_from_prefs(int queue, t_uint32 cur_prefs, t_clienttag clienttag);
 static unsigned int _anongame_get_gametype_tab(int queue);
 
 static int _anongame_totalplayers(int queue);
@@ -235,10 +235,10 @@ static int _anongame_level_by_queue(t_connection * c, int queue)
     }
 }
 
-static char *_get_map_from_prefs(int queue, t_uint32 cur_prefs, t_clienttag clienttag)
+static const char * _get_map_from_prefs(int queue, t_uint32 cur_prefs, t_clienttag clienttag)
 {
     int i, j = 0;
-    char *default_map, *selected;
+    const char *default_map, *selected;
     char *res_maps[32];
     char clienttag_str[5];
 

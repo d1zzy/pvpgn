@@ -58,7 +58,7 @@ typedef struct s_versioncheck
 {
     char const * eqn;
     char const * mpqfile;
-    char *	 versiontag;
+    char const * versiontag;
 }
 #endif
 t_versioncheck;

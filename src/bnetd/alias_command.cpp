@@ -291,7 +291,7 @@ static int do_alias(t_connection * c, char const * cmd, char const * text)
             {
 		char * msgtmp;
 		char * tmp2;
-		char * cmd = "%C";
+		const char * cmd = "%C";
 		match = 1;
 
 		if ((msgtmp = replace_args(output->line,offsets,numargs+1,text)))

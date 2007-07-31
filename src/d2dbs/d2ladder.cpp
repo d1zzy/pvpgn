@@ -44,7 +44,7 @@ t_d2ladderlist    	* d2ladder_list = NULL;
 unsigned long 		d2ladder_maxtype;
 int 			d2ladder_change_count=0;
 int			d2ladder_need_rebuild = 0;
-char                    * XMLname = "d2ladder.xml";
+const char              * XMLname = "d2ladder.xml";
 
 
 int d2ladderlist_init(void);

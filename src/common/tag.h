@@ -156,8 +156,8 @@ extern char const * clienttag_get_title(t_clienttag clienttag);
 
 extern t_tag	tag_str_to_uint(char const * tag_str);
 extern t_tag	tag_case_str_to_uint(char const * tag_str);
-extern char *	tag_uint_to_str(char * tag_str, t_tag tag_uint);
-extern char *	tag_uint_to_revstr(char * tag_str, t_tag tag_uint);
+extern const char * tag_uint_to_str(char * tag_str, t_tag tag_uint);
+extern const char * tag_uint_to_revstr(char * tag_str, t_tag tag_uint);
 extern int	tag_check_arch(t_tag tag_uint);
 extern int	tag_check_client(t_tag tag_uint);
 extern int	tag_check_gamelang(t_tag tag_uint);

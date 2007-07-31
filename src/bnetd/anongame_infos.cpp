@@ -407,7 +407,7 @@ static int anongame_infos_destroy(t_anongame_infos * anongame_infos)
     return 0;
 }
 
-static int anongame_infos_set_str(char **dst, const char *src, char *errstr)
+static int anongame_infos_set_str(char **dst, const char *src, const char *errstr)
 {
     char *temp;
 
@@ -1590,7 +1590,7 @@ static int anongame_infos_data_load(void)
     };
 
     /* hack to give names for new gametypes untill there added to anongame_infos.c */
-    char *anongame_gametype_names[ANONGAME_TYPES] = {
+    const char * anongame_gametype_names[ANONGAME_TYPES] = {
 	"One vs. One",
 	"Two vs. Two",
 	"Three vs. Three",

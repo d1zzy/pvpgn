@@ -541,7 +541,7 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
     char * e4;
     char const * tname = NULL;
     char const * toname = "AUTH"; /* fallback name */
-    char * temp;
+    const char * temp;
 
     if (!packet) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
