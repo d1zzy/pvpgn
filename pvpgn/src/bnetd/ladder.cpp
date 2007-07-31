@@ -64,10 +64,10 @@ static t_xpcalc_entry  * xpcalc;
 static t_xplevel_entry * xplevels;
 int w3_xpcalc_maxleveldiff;
 
-char * ladder_id_str[] = {"0","1","","3","","solo","team","ffa"};
-char * bin_ladder_id_str[] = {"","","","I","","SOLO","TEAM","FFA","AT"};
-char * bin_ladder_sort_str[] = { "R", "W", "G", ""};
-char * bin_ladder_time_str[] = { "A", "C", ""};
+const char * ladder_id_str[] = {"0","1","","3","","solo","team","ffa"};
+const char * bin_ladder_id_str[] = {"","","","I","","SOLO","TEAM","FFA","AT"};
+const char * bin_ladder_sort_str[] = { "R", "W", "G", ""};
+const char * bin_ladder_time_str[] = { "A", "C", ""};
 
 Ladders ladders;
 

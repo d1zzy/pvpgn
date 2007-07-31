@@ -44,7 +44,7 @@ typedef enum
     ladder_sort_default
 } t_ladder_sort;
 
-extern char * bin_ladder_sort_str[];
+extern const char * bin_ladder_sort_str[];
 
 typedef enum
 {
@@ -53,7 +53,7 @@ typedef enum
     ladder_time_default
 } t_ladder_time;
 
-extern char * bin_ladder_time_str[];
+extern const char * bin_ladder_time_str[];
 
 typedef enum
 {
@@ -66,8 +66,8 @@ typedef enum
     ladder_id_ateam=8
 } t_ladder_id;
 
-extern char * ladder_id_str[];
-extern char * bin_ladder_id_str[];
+const extern char * ladder_id_str[];
+const extern char * bin_ladder_id_str[];
 
 typedef enum
 {

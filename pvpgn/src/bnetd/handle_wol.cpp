@@ -431,10 +431,12 @@ static int _handle_user_command(t_connection * conn, int numparams, char ** para
                    if((conn_get_wol(conn) == 1)) {
                         t_account * tempacct;
                         t_hash pass_hash;
-                        char * pass = "supersecret";
+                        const char * pass = "supersecret";
 
+				/* no need to std::tolower a known contant lowercase string
             			for (unsigned j=0; j<std::strlen(pass); j++)
             				if (std::isupper((int)pass[j])) pass[j] = std::tolower((int)pass[j]);
+				*/
 
             			bnet_hash(&pass_hash,std::strlen(pass),pass);
 

@@ -47,7 +47,7 @@ namespace pvpgn
 namespace bnetd
 {
 
-static unsigned int char_icon_to_uint(char * icon);
+static unsigned int char_icon_to_uint(const char * icon);
 
 extern unsigned int account_get_numattr_real(t_account * account, char const * key, char const * fn, unsigned int ln)
 {
@@ -2242,7 +2242,7 @@ extern char const * account_get_user_icon( t_account * account, t_clienttag clie
 // Night Elves - Wisp, Archer, Druid of the Claw, Priestess of the Moon, Furion Stormrage, Nothing
 // Demons - Nothing, ???(wich unit is nfgn), Infernal, Doom Guard, Pit Lord/Manaroth, Archimonde
 // ADDED TFT ICON BY DJP 07/16/2003
-static char * profile_code[12][6] = {
+static const char * profile_code[12][6] = {
 	    {NULL  , "ngrd", "nadr", "nrdr", "nbwm", NULL  },
 	    {"hpea", "hfoo", "hkni", "Hamg", "nmed", NULL  },
 	    {"opeo", "ogru", "otau", "Ofar", "Othr", NULL  },
@@ -2303,7 +2303,7 @@ extern unsigned int account_get_icon_profile(t_account * account, t_clienttag cl
 extern unsigned int account_icon_to_profile_icon(char const * icon,t_account * account, t_clienttag ctag)
 {
 	char tmp_icon[4];
-	char * result;
+	const char * result;
 	int number_ctag=0;
 
 	if (icon==NULL) return account_get_icon_profile(account,ctag);
@@ -2351,7 +2351,7 @@ extern int account_is_operator_or_admin(t_account * account, char const * channe
 
 }
 
-static unsigned int char_icon_to_uint(char * icon)
+static unsigned int char_icon_to_uint(const char * icon)
 {
     unsigned int value;
 

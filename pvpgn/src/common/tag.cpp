@@ -151,7 +151,7 @@ extern t_tag tag_str_to_uint(char const * tag_str)
  *
  * Nothing to malloc, nothing to free
  */
-extern char * tag_uint_to_str(char * tag_str, t_tag tag_uint)
+extern const char * tag_uint_to_str(char * tag_str, t_tag tag_uint)
 {
     if (!tag_uint) /* return "UNKN" if tag_uint = 0 */
 	return TAG_UNKNOWN;
@@ -164,7 +164,7 @@ extern char * tag_uint_to_str(char * tag_str, t_tag tag_uint)
     return tag_str;
 }
 
-extern char * tag_uint_to_revstr(char * tag_str, t_tag tag_uint)
+extern const char * tag_uint_to_revstr(char * tag_str, t_tag tag_uint)
 {
     if (!tag_uint) /* return "UNKN" if tag_uint = 0 */
 	return TAG_UNKNOWN;

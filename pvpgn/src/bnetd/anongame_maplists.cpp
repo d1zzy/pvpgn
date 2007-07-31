@@ -47,12 +47,12 @@ static char	maplists_war3[ANONGAME_TYPES][MAXMAPS_PER_QUEUE+1];
 static char	maplists_w3xp[ANONGAME_TYPES][MAXMAPS_PER_QUEUE+1];
 
 static int	_maplists_type_get_queue(const char * type);
-static char *	_maplists_queue_get_type(int queue);
+static const char * _maplists_queue_get_type(int queue);
 
 static void	_maplists_add_map(t_clienttag clienttag, char * mapname, int queue);
 
 /*****/
-static char *	queue_names[ANONGAME_TYPES] = {
+static const char * queue_names[ANONGAME_TYPES] = {
 	"1v1","2v2","3v3","4v4","sffa","at2v2","tffa","at3v3","at4v4",
 	"TY",
 	"5v5","6v6","2v2v2","3v3v3","4v4v4","2v2v2v2","3v3v3v3",
@@ -71,7 +71,7 @@ static int _maplists_type_get_queue(const char * type)
 }
 
 
-static char * _maplists_queue_get_type(int queue)
+static const char * _maplists_queue_get_type(int queue)
 {
     return queue_names[queue];
 }
