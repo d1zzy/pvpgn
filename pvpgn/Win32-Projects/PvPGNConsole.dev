@@ -2668,7 +2668,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit263]
-FileName=..\src\common\sql_common.cpp
+FileName=..\src\bnetd\sql_common.cpp
 CompileCpp=1
 Folder=common/Source Files
 Compile=1
