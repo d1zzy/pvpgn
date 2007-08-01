@@ -17,7 +17,6 @@ PvPGN Version History:
 
 [MISC]
   -- Added /clan whisper subcommand
-  -- Enforce (stricter) limit for maximum channel name length 
 
  ChangeLog for 1.8.1 (since 1.8.0)
 =========================================
@@ -38,6 +37,7 @@ PvPGN Version History:
   -- fixed SC:BW string representation from "StarCraft: Broodwars"
   to "StarCraft: Brood War" (to better match battle.net behaviour)
   -- fixed possible server crash caused by /ipban command
+  -- Enforce (stricter) limit for maximum channel name length 
 
  ChangeLog for 1.8.0 (since 1.8.0rc2)
 =========================================
