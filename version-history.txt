@@ -37,7 +37,7 @@ PvPGN Version History:
 
 [VCHECK]
   -- added WAR3/W3XP IX86 1.21 vcheck entries
-  -- added sc/bw IX86 1.15 version check entries
+  -- added sc/bw IX86 and XMAC 1.15 version check entries
 
  ChangeLog for 1.8.0 (since 1.8.0rc2)
 =========================================
