@@ -50,6 +50,12 @@ extern int account_set_boolattr(t_account * account, char const * key, int val);
 extern char const * account_get_pass(t_account * account);
 extern int account_set_pass(t_account * account, char const * passhash1);
 
+extern char const * account_get_salt(t_account * account);
+extern int account_set_salt(t_account * account, char const * salt);
+
+extern char const * account_get_verifier(t_account * account);
+extern int account_set_verifier(t_account * account, char const * verifier);
+
 /* authorization */
 extern int account_get_auth_admin(t_account * account, char const * channelname);
 extern int account_set_auth_admin(t_account * account, char const * channelname, int val);
