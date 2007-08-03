@@ -1630,7 +1630,7 @@ typedef struct
 typedef struct
 {
     t_bnet_header h;
-    bn_byte        unknown[32];
+    bn_byte        client_public_key[32];
     /* player name */
 } PACKED_ATTR() t_client_loginreq_w3;
 /******************************************************/
@@ -1652,7 +1652,8 @@ typedef struct
     t_bnet_header h;
     bn_int       message;
     /* seems to be response to client-challenge */
-    bn_int       unknown[16];
+    bn_byte       salt[32];
+    bn_byte       server_public_key[32];
 } PACKED_ATTR() t_server_loginreply_w3;
 #define SERVER_LOGINREPLY_W3_MESSAGE_SUCCESS 0x00000000
 #define SERVER_LOGINREPLY_W3_MESSAGE_ALREADY 0x00000001 /* Account already logged on */
@@ -1689,7 +1690,7 @@ Packet #13
 typedef struct
 {
     t_bnet_header h;
-    bn_int	client_password_proof[5];
+    bn_byte	client_password_proof[20];
 } PACKED_ATTR() t_client_logonproofreq;
 
 #define SERVER_LOGONPROOFREPLY 0x54ff
@@ -1697,7 +1698,7 @@ typedef struct
 {
    t_bnet_header h;
    bn_int	response;
-   bn_int	server_password_proof[5];
+   bn_byte	server_password_proof[20];
 } PACKED_ATTR() t_server_logonproofreply;
 #define SERVER_LOGONPROOFREPLY_RESPONSE_OK 0x00000000
 #define SERVER_LOGONPROOFREPLY_RESPONSE_BADPASS 0x00000002
@@ -1719,7 +1720,8 @@ typedef struct
 typedef struct
 {
 	t_bnet_header h;
-	bn_byte       unknown[64];
+	bn_byte       salt[32];
+	bn_byte       password_verifier[32];
 	/* player name */
 } PACKED_ATTR() t_client_createaccount_w3;
 /******************************************************/
