@@ -159,6 +159,26 @@ extern int account_set_pass(t_account * account, char const * passhash1)
     return account_set_strattr(account,"BNET\\acct\\passhash1",passhash1);
 }
 
+extern char const * account_get_salt(t_account * account)
+{
+    return account_get_strattr(account,"BNET\\acct\\salt");
+}
+
+extern int account_set_salt(t_account * account, char const * salt)
+{
+    return account_set_strattr(account,"BNET\\acct\\salt",salt);
+}
+
+extern char const * account_get_verifier(t_account * account)
+{
+    return account_get_strattr(account,"BNET\\acct\\verifier");
+}
+
+extern int account_set_verifier(t_account * account, char const * verifier)
+{
+    return account_set_strattr(account,"BNET\\acct\\verifier",verifier);
+}
+
 
 /****************************************************************/
 

@@ -853,7 +853,6 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 					snprintf(temp, sizeof(temp), "%s :End of NAMES list",wolname);
 					irc_send(conn,RPL_ENDOFNAMES,temp);
 				}
-			    }
 			}
 		}
     		if (e)
@@ -878,8 +877,7 @@ static int _handle_part_command(t_connection * conn, int numparams, char ** para
 	if ((conn_wol_get_ingame(conn) == 1)) {
 		conn_wol_set_ingame(conn,0);
     }
-    message_send_text(conn,message_type_part,conn,NULL);
-	conn_set_channel(conn, NULL);                        /* In WOL we disconecting from the channel */
+    conn_set_channel(conn, NULL);                        /* In WOL we disconecting from the channel */
     return 0;
 }
 

@@ -907,7 +907,7 @@ static int _handle_whois_command(t_connection * conn, int numparams, char ** par
 
 static int _handle_part_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-    message_send_text(conn,message_type_part,conn,NULL);
+    conn_set_channel(conn, NULL);
     return 0;
 }
 
