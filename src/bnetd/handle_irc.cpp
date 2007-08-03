@@ -803,8 +803,8 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 					irc_send(conn,RPL_ENDOFNAMES,":End of NAMES list");
 
 					if (old_channel_name) {
-                        snprintf(temp,sizeof(temp),"%s :%s", old_channel_name,"only one channel at once");
-                        message_send_text(conn,message_type_part,conn,temp);
+                        			snprintf(temp,sizeof(temp),"%s :%s", old_channel_name,"only one channel at once");
+                        			message_send_text(conn,message_type_part,conn,temp);
 					}
 	    		}
 		}
