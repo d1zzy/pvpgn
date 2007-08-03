@@ -691,11 +691,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	from.nick = conn_get_chatname(me);
     	from.user = ctag;
     	from.host = addr_num_to_ip_str(conn_get_addr(me));
-	eventlog(eventlog_level_debug,__FUNCTION__,"mtp: %s",text);
-	if (text)
-    		msg = irc_message_preformat(&from,"PART","\r",text);
-	else
-    		msg = irc_message_preformat(&from,"PART","\r",irc_convert_channel(conn_get_channel(me)));
+    	msg = irc_message_preformat(&from,"PART","\r",irc_convert_channel(conn_get_channel(me)));
     	conn_unget_chatname(me,from.nick);
     	break;
     case message_type_talk:

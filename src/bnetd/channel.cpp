@@ -480,13 +480,7 @@ extern int channel_add_connection(t_channel * channel, t_connection * connection
 	channel_update_userflags(connection);
     }
 
-    if(!(channel_get_flags(channel) & channel_flags_thevoid))
-        for (user=channel_get_first(channel); user; user=channel_get_next())
-        {
-	    message_send_text(connection,message_type_adduser,user,NULL);
-    	    if (user!=connection)
-    		message_send_text(user,message_type_join,connection,NULL);
-        }
+    channel_message_send(channel,message_type_join,connection,NULL);
 
     /* please don't remove this notice */
     if (channel->log)
@@ -664,7 +658,8 @@ extern void channel_message_send(t_channel const * channel, t_message_type type,
     }
 
     if(channel_get_flags(channel) & channel_flags_thevoid) // no talking in the void
-	return;
+        if (type!=message_type_join && type!=message_type_part) // but we need join/part (at least for self)
+            return;
 
     if(channel_get_flags(channel) & channel_flags_moderated) // moderated channel - only admins,OPs and voices may talk
     {
@@ -689,8 +684,10 @@ extern void channel_message_send(t_channel const * channel, t_message_type type,
     tname = conn_get_chatname(me);
     for (c=channel_get_first(channel); c; c=channel_get_next())
     {
-	if (c==me && (type==message_type_talk || type==message_type_join || type==message_type_part || type==message_wol_gameopt_owner))
+	if (c==me && (type==message_type_talk || type==message_wol_gameopt_owner))
 	    continue; /* ignore ourself */
+	if (c!=me && (channel_get_flags(channel) & channel_flags_thevoid) && type!=message_type_join && type!=message_type_part)
+            continue; /* make sure we get join/part infos for self even in void */
 	if ((type==message_type_talk || type==message_type_whisper || type==message_type_emote || type==message_type_broadcast) &&
 	    conn_check_ignoring(c,tname)==1)
 	    continue; /* ignore squelched players */
