@@ -394,7 +394,7 @@ extern t_connection * conn_create(int tsock, int usock, unsigned int real_local_
     temp->protocol.queues.outsizep               = 0;
     temp->protocol.queues.inqueue                = NULL;
     temp->protocol.queues.insize                 = 0;
-    temp->protocol.loggeduser			 = NULL;
+    temp->protocol.loggeduser                    = NULL;
     temp->protocol.d2.realm                      = NULL;
     rcm_regref_init(&temp->protocol.d2.realm_regref,&conn_set_realm_cb,temp);
     temp->protocol.d2.character                  = NULL;
@@ -409,8 +409,10 @@ extern t_connection * conn_create(int tsock, int usock, unsigned int real_local_
 
     temp->protocol.wol.ingame			         = 0;
 
-    temp->protocol.wol.codepage			         = 0;
-    temp->protocol.wol.gameType			         = 0;
+    temp->protocol.wol.codepage	                 = 0;
+    temp->protocol.wol.gameType                  = 0;
+    temp->protocol.wol.pageme                    = 33;
+    temp->protocol.wol.findme                    = 17;
 
     temp->protocol.wol.apgar			         = NULL;
     temp->protocol.wol.gameOptions		         = NULL;

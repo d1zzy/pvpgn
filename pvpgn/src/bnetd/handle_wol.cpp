@@ -551,8 +551,8 @@ static int _handle_pass_command(t_connection * conn, int numparams, char ** para
 static int _handle_privmsg_command(t_connection * conn, int numparams, char ** params, char * text)
 {
      /**
-      * D1zzy: Here will be "/" commands ("/help"...) and NICSERV will be deleted.
-      * ACTION messages will not be in WOLv1 and Dune 2000 sended by server (client add this message automaticaly)
+      * Pelish: FIXME delete NICSERV and add support for matchbot.
+      * ACTION messages is not in WOLv1 and Dune 2000 sended by server (client add this messages automaticaly)
       */
 
 	if ((numparams>=1)&&(text))
@@ -665,8 +665,14 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 							channel_message_send(channel,message_type_emote,conn,text);
 						}
 						else {
-							channel_message_log(channel, conn, 1, text);
-							channel_message_send(channel,message_type_talk,conn,text);
+                            if (text[0] == '/') {
+                                /* "/" commands (like "/help..." */
+                                handle_command(conn, text);
+                            }
+                            else {
+                                channel_message_log(channel, conn, 1, text);
+                                channel_message_send(channel,message_type_talk,conn,text);
+                            }
 						}
 					}
 					else {
@@ -1529,8 +1535,6 @@ static int _handle_page_command(t_connection * conn, int numparams, char ** para
 	if ((numparams>=1)&&(text)) {
 	    t_connection * user;
 
-	    snprintf(_temp, sizeof(_temp), ":%s", text);
-
 	    if (std::strcmp(params[0], "0") == 0) {
             /* PAGE for MY BATTLECLAN */
             t_clan * clan = account_get_clan(conn_get_account(conn));
@@ -1543,7 +1547,7 @@ static int _handle_page_command(t_connection * conn, int numparams, char ** para
                    t_clanmember * member = (t_clanmember*)elem_get_data(curr);
 
                    if ((user = clanmember_get_conn(member))&&(conn_wol_get_pageme(user) == 33));
-                       message_send_text(user,message_wol_page,conn,_temp);
+                       message_send_text(user,message_type_page,conn,text);
                }
             }
             else
@@ -1551,7 +1555,7 @@ static int _handle_page_command(t_connection * conn, int numparams, char ** para
             return 0;
         }
 	    else if((user = connlist_find_connection_by_accountname(params[0]))&&(conn_wol_get_pageme(user) == 33)) {
-     		message_send_text(user,message_wol_page,conn,_temp);
+     		message_send_text(user,message_type_page,conn,text);
      		snprintf(_temp, sizeof(_temp), "0 :"); /* Page was succesfull */
 	    }
 	    else
