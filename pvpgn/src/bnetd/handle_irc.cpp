@@ -764,11 +764,7 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 	    e = irc_get_listelems(params[0]);
 	    if ((e)&&(e[0])) {
 	    		char const * ircname = irc_convert_ircname(e[0]);
-	    		char * old_channel_name = NULL;
 	   	 	t_channel * old_channel = conn_get_channel(conn);
-
-			if (old_channel)
-			  old_channel_name = xstrdup(irc_convert_channel(old_channel));
 
 			if ((!(ircname)) || (conn_set_channel(conn,ircname)<0)) {
 				irc_send(conn,ERR_NOSUCHCHANNEL,":JOIN failed"); /* FIXME: be more precise; what is the real error code for that? */
@@ -782,7 +778,6 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 				char * topic;
 
 				channel_set_userflags(conn);
-				message_send_text(conn,message_type_join,conn,NULL); /* we have to send the JOIN acknowledgement */
 				ircname=irc_convert_channel(channel);
 
 				if ((topic = channel_get_topic(channel_get_name(channel)))) {
@@ -799,16 +794,11 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 				else
 					irc_send(conn,RPL_NOTOPIC,":No topic is set");
 
-					irc_send_rpl_namreply(conn,channel);
-					irc_send(conn,RPL_ENDOFNAMES,":End of NAMES list");
+				irc_send_rpl_namreply(conn,channel);
+				irc_send(conn,RPL_ENDOFNAMES,":End of NAMES list");
 
-					if (old_channel_name) {
-                        			snprintf(temp,sizeof(temp),"%s :%s", old_channel_name,"only one channel at once");
-                        			message_send_text(conn,message_type_part,conn,temp);
-					}
 	    		}
 		}
-			if (old_channel_name) xfree((void *)old_channel_name);
 		}
     		if (e)
 			irc_unget_listelems(e);

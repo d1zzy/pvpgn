@@ -834,11 +834,7 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 	    e = irc_get_listelems(params[0]);
 	    if ((e)&&(e[0])) {
 	    		char const * wolname = irc_convert_ircname(e[0]);
-	    		char * old_channel_name = NULL;
 	   	 	t_channel * old_channel = conn_get_channel(conn);
-
-			if (old_channel)
-			  old_channel_name = xstrdup(irc_convert_channel(old_channel));
 
 			if ((!(wolname)) || (conn_set_channel(conn,wolname)<0)) {
 				irc_send(conn,ERR_NOSUCHCHANNEL,":JOIN failed"); /* FIXME: be more precise; what is the real error code for that? */
@@ -848,52 +844,17 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 				t_channel * channel;
 				channel = conn_get_channel(conn);
 
-			    if ((conn_get_wol(conn) == 1)) {
-					channel_set_userflags(conn);
-					message_send_text(conn,message_type_join,conn,NULL); /* we have to send the JOIN acknowledgement */
-					wolname=irc_convert_channel(channel);
+				channel_set_userflags(conn);
+				wolname=irc_convert_channel(channel);
 
-	    				irc_send_rpl_namreply(conn,channel);
+	    			irc_send_rpl_namreply(conn,channel);
 
-					if ((std::strlen(wolname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
-						snprintf(temp, sizeof(temp), "%s :End of NAMES list",wolname);
-						irc_send(conn,RPL_ENDOFNAMES,temp);
-					}
+				if ((std::strlen(wolname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
+					snprintf(temp, sizeof(temp), "%s :End of NAMES list",wolname);
+					irc_send(conn,RPL_ENDOFNAMES,temp);
+				}
 			    }
-			    else {
-					if (channel!=old_channel) {
-					char * topic;
-
-					channel_set_userflags(conn);
-
-					message_send_text(conn,message_type_join,conn,NULL); /* we have to send the JOIN acknowledgement */
-					wolname=irc_convert_channel(channel);
-
-						if ((topic = channel_get_topic(channel_get_name(channel)))) {
-							if ((std::strlen(wolname)+1+1+std::strlen(topic)+1)<MAX_IRC_MESSAGE_LEN) {
-							snprintf(temp, sizeof(temp), "%s :%s", wolname, topic);
-							irc_send(conn,RPL_TOPIC,temp);
-						}
-
-							if ((std::strlen(wolname)+1+std::strlen("FIXME 0")+1)<MAX_IRC_MESSAGE_LEN) {
-							snprintf(temp, sizeof(temp), "%s FIXME 0",wolname);
-							irc_send(conn,RPL_TOPICWHOTIME,temp); /* FIXME: this in an undernet extension but other servers support it too */
-						}
-					}
-					else
-						irc_send(conn,RPL_NOTOPIC,":No topic is set");
-
-					irc_send_rpl_namreply(conn,channel);
-					irc_send(conn,RPL_ENDOFNAMES,":End of NAMES list");
-
-						if (old_channel_name) {
-                        snprintf(temp,sizeof(temp),"%s :%s", old_channel_name,"only one channel at once");
-                        message_send_text(conn,message_type_part,conn,temp);
-					}
-		    		}
 			}
-			}
-			if (old_channel_name) xfree((void *)old_channel_name);
 		}
     		if (e)
 			irc_unget_listelems(e);
