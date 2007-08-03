@@ -700,38 +700,43 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	    char const * dest;
 	    char temp[MAX_IRC_MESSAGE_LEN];
 
-	    if (me)
-	    {
+	    if (me) {
     	        from.nick = conn_get_chatname(me);
     	        from.host = addr_num_to_ip_str(conn_get_addr(me));
 	    }
-	    else
-	    {
+	    else {
                 from.nick = server_get_hostname();
                 from.host = server_get_hostname();
 	    }
-
         from.user = ctag;
 
         if (type==message_type_talk)
-    	    	dest = irc_convert_channel(conn_get_channel(me)); /* FIXME: support more channels and choose right one! */
+            dest = irc_convert_channel(conn_get_channel(me)); /* FIXME: support more channels and choose right one! */
 	    else
-	        dest = ""; /* will be replaced with username in postformat */
+            dest = ""; /* will be replaced with username in postformat */
+
 	    std::sprintf(temp,":%s",text);
-    	    msg = irc_message_preformat(&from,"PRIVMSG",dest,temp);
+
+	    if ((conn_get_wol(me) != 1) && (conn_get_wol(dst) == 1) && (conn_wol_get_pageme(dst))
+             && (type==message_type_whisper) && (conn_get_channel(me)!=(conn_get_channel(dst))))
+            msg = irc_message_preformat(&from,"PAGE",NULL,temp);
+        else
+            msg = irc_message_preformat(&from,"PRIVMSG",dest,temp);
+
 	    if (me)
-    	        conn_unget_chatname(me,from.nick);
-    	}
-        break;
+    	    conn_unget_chatname(me,from.nick);
+    }
+    break;
     case message_type_emote:
     	{
-    	    char const * dest;
+	    char const * dest;
 	    char temp[MAX_IRC_MESSAGE_LEN];
 
-    	    /* "\001ACTION " + text + "\001" + \0 */
+	    /* "\001ACTION " + text + "\001" + \0 */
 	    if ((8+std::strlen(text)+1+1)<=MAX_IRC_MESSAGE_LEN) {
 		std::sprintf(temp,":\001ACTION %s\001",text);
-	    } else {
+	    }
+        else {
 		std::sprintf(temp,":\001ACTION (maximum message length exceeded)\001");
 	    }
     	    from.nick = conn_get_chatname(me);
@@ -749,7 +754,10 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	{
 	    char temp[MAX_IRC_MESSAGE_LEN];
 	    std::sprintf(temp,":%s",text);
-	    msg = irc_message_preformat(NULL,"NOTICE",NULL,temp);
+        if ((type==message_type_info || type==message_type_error) && (conn_get_wol(dst) == 1))
+            msg = irc_message_preformat(NULL,"PAGE",NULL,temp);
+        else
+	        msg = irc_message_preformat(NULL,"NOTICE",NULL,temp);
 	}
 	break;
     case message_type_channel:
@@ -764,20 +772,16 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     break;
 	case message_type_nick:
 	{
-
         from.nick = conn_get_loggeduser(me);
         from.host = addr_num_to_ip_str(conn_get_addr(me));
         from.user = ctag;
         msg = irc_message_preformat(&from,"NICK","\r",text);
-
 	}
     break;
     case message_type_notice:
 	{
-
    	    char temp[MAX_IRC_MESSAGE_LEN];
 	    std::sprintf(temp,":%s",text);
-
 
         if (me && conn_get_chatname(me))
 	    {
@@ -790,9 +794,6 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	    {
 	            msg = irc_message_preformat(NULL,"NOTICE","",temp);
 	    }
-
-
-
 	}
 	break;
 
@@ -806,6 +807,17 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	    msg = irc_message_preformat(&from,"HOST","\r",text);
 	    conn_unget_chatname(me,from.nick);
     	break;
+   	case message_type_page:
+    {
+   	    char temp[MAX_IRC_MESSAGE_LEN];
+	    from.nick = conn_get_chatname(me);
+	    from.user = ctag;
+	    from.host = addr_num_to_ip_str(conn_get_addr(me));
+	    std::sprintf(temp,":%s",text);
+        msg = irc_message_preformat(&from,"PAGE",NULL,temp);
+	    conn_unget_chatname(me,from.nick);
+    	break;
+    }
     case message_wol_joingame:
     	from.nick = conn_get_chatname(me);
     	from.user = ctag;
@@ -832,13 +844,6 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	from.user = ctag;
     	from.host = addr_num_to_ip_str(conn_get_addr(me));
     	msg = irc_message_preformat(&from,"STARTG","u",text);
-    	conn_unget_chatname(me,from.nick);
-    	break;
-    case message_wol_page:
-    	from.nick = conn_get_chatname(me);
-    	from.user = ctag;
-    	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"PAGE",NULL,text);
     	conn_unget_chatname(me,from.nick);
     	break;
     case message_wol_advertr:

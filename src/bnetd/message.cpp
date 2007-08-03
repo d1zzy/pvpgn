@@ -101,6 +101,26 @@ static char const * message_type_get_str(t_message_type type)
          return "nick";
     case message_type_mode:
          return "mode";
+    case message_type_host:
+	 return "host";
+    case message_type_page:
+	 return "page";
+    case message_wol_joingame:
+	 return "wol_joingame";
+    case message_wol_gameopt_owner:
+	 return "wol_gameopt_owner";
+    case message_wol_gameopt_join:
+	 return "wol_gameopt_join";
+    case message_wol_start_game:
+	 return "wol_start_game";
+    case message_wol_advertr:
+	 return "wol_advertr";
+    case message_wol_chanchk:
+	 return "wol_chanchk";
+    case message_wol_kick:
+	 return "wol_kick";
+    case message_wol_userip:
+	 return "wol_userip";
     case message_type_null:
         return "null";
     default:
@@ -351,7 +371,8 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	}
 	break;
     case message_type_whisper:
-    case message_type_notice:         
+    case message_type_notice:
+    case message_type_page:
 	if (!text)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"got NULL text for %s",message_type_get_str(type));
@@ -727,7 +748,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 	    }
 	    break;
 	case message_type_whisper:
-    case message_type_notice:         
+    case message_type_notice:
+    case message_type_page:
 	    if (!text)
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL text for %s",message_type_get_str(type));
@@ -1002,7 +1024,8 @@ static int message_bnet_format(t_packet * packet, t_message_type type, t_connect
 	}
 	break;
     case message_type_whisper:
-    case message_type_notice:         
+    case message_type_notice:
+    case message_type_page:
 	if (!text)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"got NULL text for %s",message_type_get_str(type));
