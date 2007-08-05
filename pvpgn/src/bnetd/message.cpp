@@ -362,7 +362,6 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection for %s",message_type_get_str(type));
 	    return -1;
 	}
-	if (me != dst)
 	{
 	    char const * tname;
 
@@ -741,9 +740,6 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection for %s",message_type_get_str(type));
 		return -1;
 	    }
-	    if (me==dst)
-                return -1;
-	    else
 	    {
 		char const * tname;
 
@@ -1021,9 +1017,6 @@ static int message_bnet_format(t_packet * packet, t_message_type type, t_connect
         bn_int_set(&packet->u.server_message.type,SERVER_MESSAGE_TYPE_PART);
 	bn_int_set(&packet->u.server_message.flags,conn_get_flags(me)|dstflags);
 	bn_int_set(&packet->u.server_message.latency,conn_get_latency(me));
-	if (me==dst)
-            return -1;
-	else
 	{
 	    char const * tname;
 
