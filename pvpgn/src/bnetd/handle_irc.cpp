@@ -795,8 +795,6 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 					irc_send(conn,RPL_NOTOPIC,":No topic is set");
 
 				irc_send_rpl_namreply(conn,channel);
-				irc_send(conn,RPL_ENDOFNAMES,":End of NAMES list");
-
 	    		}
 		}
 		}

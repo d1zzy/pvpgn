@@ -681,6 +681,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
             else
                 msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(channel));
             conn_unget_chatname(me,from.nick);
+	    irc_send_rpl_namreply(me,channel);
             break;
         }
 	    else
@@ -879,21 +880,17 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     return -1;
 }
 
-extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
-{
+int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
     char temp[MAX_IRC_MESSAGE_LEN];
     char const * ircname;
     int first = 1;
     t_connection * m;
 
-    if (!c) {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
-	return -1;
-    }
     if (!channel) {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
 	return -1;
     }
+
     std::memset(temp,0,sizeof(temp));
     ircname = irc_convert_channel(channel);
     if (!ircname) {
@@ -958,6 +955,37 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
 	conn_unget_chatname(m,name);
     }
     irc_send(c,RPL_NAMREPLY,temp);
+}
+
+extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
+{
+    char temp[MAX_IRC_MESSAGE_LEN];
+    char const * ircname;
+
+    if (!c) {
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
+	return -1;
+    }
+
+    if (channel) {
+        ircname = irc_convert_channel(channel);
+        if (!ircname) {
+	    eventlog(eventlog_level_error,__FUNCTION__,"channel has NULL ircname");
+	    return -1;
+        }
+        irc_send_rpl_namreply_internal(c, channel);
+        std:sprintf(temp, "%32s :End of NAMES list", ircname);
+    } else {
+        t_elem const * curr;
+        LIST_TRAVERSE_CONST(channellist(),curr)
+        {
+            channel = (t_channel*)elem_get_data(curr);
+            irc_send_rpl_namreply_internal(c, channel);
+        }
+	std::sprintf(temp, "* :End of NAMES list", ircname);
+    }
+
+    irc_send(c, RPL_ENDOFNAMES, temp);
     return 0;
 }
 
@@ -1211,25 +1239,12 @@ extern int _handle_names_command(t_connection * conn, int numparams, char ** par
 			if (!channel)
 				continue; /* channel doesn't exist */
 			irc_send_rpl_namreply(conn,channel);
-			ircname=irc_convert_channel(channel);
-			if ((std::strlen(ircname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
-				snprintf(temp, sizeof(temp), "%s :End of NAMES list",ircname);
-				irc_send(conn,RPL_ENDOFNAMES,temp);
-			}
-			else
-				irc_send(conn,RPL_ENDOFNAMES,":End of NAMES list");
 		}
 		if (e)
 		irc_unget_listelems(e);
     }
 	else if (numparams==0) {
-		t_elem const * curr;
-		LIST_TRAVERSE_CONST(channellist(),curr)
-		{
-			channel = (t_channel*)elem_get_data(curr);
-			irc_send_rpl_namreply(conn,channel);
-		}
-		irc_send(conn,RPL_ENDOFNAMES,"* :End of NAMES list");
+		irc_send_rpl_namreply(conn, NULL);
     }
 	return 0;
 }

@@ -880,10 +880,10 @@ static int _handle_quit_command(t_connection * conn, int numparams, char ** para
 
 static int _handle_part_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-	if ((conn_wol_get_ingame(conn) == 1)) {
-		conn_wol_set_ingame(conn,0);
+    if ((conn_wol_get_ingame(conn) == 1)) {
+        conn_wol_set_ingame(conn,0);
     }
-    conn_set_channel(conn, NULL);                        /* In WOL we disconecting from the channel */
+    conn_set_channel(conn, NULL);
     return 0;
 }
 
@@ -1304,10 +1304,6 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 
   					irc_send_rpl_namreply(conn,channel);
 
-    				if ((std::strlen(wolname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
-   						snprintf(temp, sizeof(temp), "%s :End of NAMES list",wolname);
-   						irc_send(conn,RPL_ENDOFNAMES,temp);
-   					}
 				}
 				else {
 				    irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed");
@@ -1390,10 +1386,6 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 
 	    			irc_send_rpl_namreply(conn,channel);
 
-    				if ((std::strlen(wolname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
-						snprintf(temp, sizeof(temp), "%s :End of NAMES list", wolname);
-						irc_send(conn,RPL_ENDOFNAMES,temp);
-					}
 	    		}
 			}
 			if (old_channel_name) xfree((void *)old_channel_name);
