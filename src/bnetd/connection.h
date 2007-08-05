@@ -433,6 +433,7 @@ extern int conn_set_tmpVOICE_channel(t_connection * c, char const * tmpVOICE_cha
 extern char const * conn_get_tmpVOICE_channel(t_connection * c);
 extern t_elist *conn_get_timer(t_connection * c);
 extern int conn_add_fdwatch(t_connection *c, fdwatch_handler handle);
+extern int conn_is_irc_variant(t_connection * c);
 
 /* Westwood Online Extensions */
 extern int conn_get_wol(t_connection * c);

@@ -3769,6 +3769,24 @@ static void connarray_del_conn(unsigned index)
     elist_add_tail(&arrayflist,&curr->freelist);
 }
 
+extern int conn_is_irc_variant(t_connection * c)
+{
+    if (!c)
+    {
+    	eventlog(eventlog_level_error,__FUNCTION__,"get NULL conn");
+    	return -1;
+    }
+
+	if ( (c->protocol.cclass==conn_class_irc) ||
+             (c->protocol.cclass==conn_class_wol) ||
+             (c->protocol.cclass==conn_class_wserv) ||
+             (c->protocol.cclass==conn_class_wgameres)
+	   )
+	   return 1;
+
+    return 0;
+}
+
 /**
 *  Westwood Online Extensions
 */

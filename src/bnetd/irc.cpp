@@ -905,6 +905,7 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
 	return -1;
     }
     /* FIXME: Add per user flags (@(op) and +(voice))*/
+    if (!channel_get_flags(channel) & channel_flags_thevoid)
     for (m = channel_get_first(channel);m;m = channel_get_next()) {
 	char const * name = conn_get_chatname(m);
 	char flg[5] = "";
