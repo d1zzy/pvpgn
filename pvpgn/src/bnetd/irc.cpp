@@ -646,46 +646,45 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	from.user = ctag;
     	from.host = addr_num_to_ip_str(conn_get_addr(me));
 
-	    if((conn_get_wol(me) == 1) && (conn_get_clienttag(me) != CLIENTTAG_WCHAT_UINT))
-	    {
-        	char temp[MAX_IRC_MESSAGE_LEN];
-    		t_clan * clan;
-    		unsigned int clanid = 0;
-    		std::memset(temp,0,sizeof(temp));
-
-    		/**
+	if((conn_get_wol(me) == 1) && (conn_get_clienttag(me) != CLIENTTAG_WCHAT_UINT))
+	{
+            char temp[MAX_IRC_MESSAGE_LEN];
+    	    t_clan * clan;
+    	    unsigned int clanid = 0;
+    	    std::memset(temp,0,sizeof(temp));
+	    
+	    /**
             *  For WOLv2 the channel JOIN output must be like the following:
-    		*  user!WWOL@hostname JOIN :clanID,longIP channelName
-    		*/
+    	    *  user!WWOL@hostname JOIN :clanID,longIP channelName
+            */
 
-    		clan = account_get_clan(conn_get_account(me));
+    	    clan = account_get_clan(conn_get_account(me));
 
-    		if (clan)
-    			clanid = clan_get_clanid(clan);
+    	    if (clan)
+    	        clanid = clan_get_clanid(clan);
 
-    		std::sprintf(temp,":%u,%u",clanid,conn_get_addr(me));
-    		msg = irc_message_preformat(&from,"JOIN",temp,irc_convert_channel(conn_get_channel(me)));
-	    	conn_unget_chatname(me,from.nick);
-    	    break;
-	    }
-	    else if (conn_get_clienttag(me) == CLIENTTAG_WCHAT_UINT) {
+            std::sprintf(temp,":%u,%u",clanid,conn_get_addr(me));
+    	    msg = irc_message_preformat(&from,"JOIN",temp,irc_convert_channel(conn_get_channel(me)));
+        }
+        else if (conn_get_clienttag(me) == CLIENTTAG_WCHAT_UINT) {
             char temp[MAX_IRC_MESSAGE_LEN];
             t_channel * channel;
-    		std::memset(temp,0,sizeof(temp));
+    	    std::memset(temp,0,sizeof(temp));
 
-   		channel = conn_get_channel(me);
-    		if (conn_wol_get_ingame(me) == 1) {
-    		    std::sprintf(temp,"2 %u %u 1 1 %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel), channel_wol_get_game_tournament(channel), irc_convert_channel(channel));
+            channel = conn_get_channel(me);
+            if (conn_wol_get_ingame(me) == 1) {
+                std::sprintf(temp,"2 %u %u 1 1 %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel), channel_wol_get_game_tournament(channel), irc_convert_channel(channel));
                 msg = irc_message_preformat(&from,"JOINGAME",temp,irc_convert_channel(channel));
             }
             else
+	    {
                 msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(channel));
-            conn_unget_chatname(me,from.nick);
-	    irc_send_rpl_namreply(me,channel);
-            break;
+	    }
         }
-	    else
-    	msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(conn_get_channel(me)));
+        else {
+            msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(conn_get_channel(me)));
+        }
+        irc_send_rpl_namreply(me,channel);
     	conn_unget_chatname(me,from.nick);
     	break;
     case message_type_part:
@@ -713,18 +712,18 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 
         if (type==message_type_talk)
             dest = irc_convert_channel(conn_get_channel(me)); /* FIXME: support more channels and choose right one! */
-	    else
+        else
             dest = ""; /* will be replaced with username in postformat */
 
-	    std::sprintf(temp,":%s",text);
+        std::sprintf(temp,":%s",text);
 
-	    if ((conn_get_wol(me) != 1) && (conn_get_wol(dst) == 1) && (conn_wol_get_pageme(dst))
+        if ((conn_get_wol(me) != 1) && (conn_get_wol(dst) == 1) && (conn_wol_get_pageme(dst))
              && (type==message_type_whisper) && (conn_get_channel(me)!=(conn_get_channel(dst))))
             msg = irc_message_preformat(&from,"PAGE",NULL,temp);
         else
             msg = irc_message_preformat(&from,"PRIVMSG",dest,temp);
 
-	    if (me)
+        if (me)
     	    conn_unget_chatname(me,from.nick);
     }
     break;
