@@ -642,9 +642,13 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 		/* when we do it somewhere else, then we can also make sure to not get our logs spammed */
 		break;
     case message_type_join:
+    {
+        t_channel * channel;
     	from.nick = conn_get_chatname(me);
     	from.user = ctag;
     	from.host = addr_num_to_ip_str(conn_get_addr(me));
+
+        channel = conn_get_channel(me);
 
 	if((conn_get_wol(me) == 1) && (conn_get_clienttag(me) != CLIENTTAG_WCHAT_UINT))
 	{
@@ -664,14 +668,12 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	        clanid = clan_get_clanid(clan);
 
             std::sprintf(temp,":%u,%u",clanid,conn_get_addr(me));
-    	    msg = irc_message_preformat(&from,"JOIN",temp,irc_convert_channel(conn_get_channel(me)));
+    	    msg = irc_message_preformat(&from,"JOIN",temp,irc_convert_channel(channel));
         }
         else if (conn_get_clienttag(me) == CLIENTTAG_WCHAT_UINT) {
             char temp[MAX_IRC_MESSAGE_LEN];
-            t_channel * channel;
     	    std::memset(temp,0,sizeof(temp));
 
-            channel = conn_get_channel(me);
             if (conn_wol_get_ingame(me) == 1) {
                 std::sprintf(temp,"2 %u %u 1 1 %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel), channel_wol_get_game_tournament(channel), irc_convert_channel(channel));
                 msg = irc_message_preformat(&from,"JOINGAME",temp,irc_convert_channel(channel));
@@ -682,10 +684,11 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	    }
         }
         else {
-            msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(conn_get_channel(me)));
+            msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(channel));
         }
         irc_send_rpl_namreply(me,channel);
     	conn_unget_chatname(me,from.nick);
+    }
     	break;
     case message_type_part:
     	from.nick = conn_get_chatname(me);
@@ -982,7 +985,7 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
             channel = (t_channel*)elem_get_data(curr);
             irc_send_rpl_namreply_internal(c, channel);
         }
-	std::sprintf(temp, "* :End of NAMES list", ircname);
+	std::sprintf(temp, "* :End of NAMES list");
     }
 
     irc_send(c, RPL_ENDOFNAMES, temp);
