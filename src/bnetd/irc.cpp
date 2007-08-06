@@ -686,8 +686,6 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         else {
             msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(channel));
         }
-        if (me==dst)
-	    irc_send_rpl_namreply(dst,channel);
     	conn_unget_chatname(me,from.nick);
     }
     	break;
@@ -799,6 +797,13 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	            msg = irc_message_preformat(NULL,"NOTICE","",temp);
 	    }
 	}
+	break;
+    case message_type_namreply:
+        t_channel * channel;
+
+        channel = conn_get_channel(me);
+
+        irc_send_rpl_namreply(dst,channel);
 	break;
 
    	/**

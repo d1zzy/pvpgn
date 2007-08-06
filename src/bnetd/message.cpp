@@ -99,6 +99,8 @@ static char const * message_type_get_str(t_message_type type)
         return "notice";
     case message_type_nick:
          return "nick";
+    case message_type_namreply:
+         return "namreply";
     case message_type_mode:
          return "mode";
     case message_type_host:
