@@ -893,8 +893,6 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
 	return -1;
     }
 
-    eventlog(eventlog_level_debug,__FUNCTION__,"got called");
-
     std::memset(temp,0,sizeof(temp));
     ircname = irc_convert_channel(channel);
     if (!ircname) {
