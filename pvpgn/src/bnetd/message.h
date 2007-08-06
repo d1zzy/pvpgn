@@ -64,6 +64,7 @@ typedef enum
     */
     message_type_nick,
     message_type_notice,
+    message_type_namreply,
 
     /**
     *  Westwood Online Extensions
