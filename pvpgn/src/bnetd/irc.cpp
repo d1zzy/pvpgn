@@ -650,7 +650,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 
         channel = conn_get_channel(me);
 
-	if((conn_get_wol(me) == 1) && (conn_get_clienttag(me) != CLIENTTAG_WCHAT_UINT))
+	if((conn_get_wol(dst) == 1) && (conn_get_clienttag(dst) != CLIENTTAG_WCHAT_UINT))
 	{
             char temp[MAX_IRC_MESSAGE_LEN];
     	    t_clan * clan;
@@ -670,7 +670,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
             std::sprintf(temp,":%u,%u",clanid,conn_get_addr(me));
     	    msg = irc_message_preformat(&from,"JOIN",temp,irc_convert_channel(channel));
         }
-        else if (conn_get_clienttag(me) == CLIENTTAG_WCHAT_UINT) {
+        else if (conn_get_clienttag(dst) == CLIENTTAG_WCHAT_UINT) {
             char temp[MAX_IRC_MESSAGE_LEN];
     	    std::memset(temp,0,sizeof(temp));
 
@@ -686,7 +686,8 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         else {
             msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(channel));
         }
-        irc_send_rpl_namreply(me,channel);
+        if (me==dst)
+	    irc_send_rpl_namreply(dst,channel);
     	conn_unget_chatname(me,from.nick);
     }
     	break;
@@ -906,8 +907,11 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
 	eventlog(eventlog_level_warn,__FUNCTION__,"maximum message length exceeded");
 	return -1;
     }
+
+eventlog(eventlog_level_debug,__FUNCTION__,"about to add users");
+
     /* FIXME: Add per user flags (@(op) and +(voice))*/
-    if (!channel_get_flags(channel) & channel_flags_thevoid)
+    if (!(channel_get_flags(channel) & channel_flags_thevoid))
     for (m = channel_get_first(channel);m;m = channel_get_next()) {
 	char const * name = conn_get_chatname(m);
 	char flg[5] = "";
@@ -977,7 +981,7 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
 	    return -1;
         }
         irc_send_rpl_namreply_internal(c, channel);
-        std:sprintf(temp, "%32s :End of NAMES list", ircname);
+        std:sprintf(temp, "%.32s :End of NAMES list", ircname);
     } else {
         t_elem const * curr;
         LIST_TRAVERSE_CONST(channellist(),curr)
