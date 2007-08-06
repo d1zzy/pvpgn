@@ -853,12 +853,6 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 				channel_set_userflags(conn);
 				wolname=irc_convert_channel(channel);
 
-	    			irc_send_rpl_namreply(conn,channel);
-
-				if ((std::strlen(wolname)+1+std::strlen(":End of NAMES list")+1)<MAX_IRC_MESSAGE_LEN) {
-					snprintf(temp, sizeof(temp), "%s :End of NAMES list",wolname);
-					irc_send(conn,RPL_ENDOFNAMES,temp);
-				}
 			}
 		}
     		if (e)
