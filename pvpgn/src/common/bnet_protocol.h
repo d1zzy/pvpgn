@@ -1774,10 +1774,12 @@ typedef struct
 {
     t_bnet_header h;
     bn_int        message;
+    /* reason for account lock */
 } PACKED_ATTR() t_server_loginreply2;
-#define SERVER_LOGINREPLY2_MESSAGE_SUCCESS 0x00000000
-#define SERVER_LOGINREPLY2_MESSAGE_ALREADY 0x00000001 /* Account already exists */
-#define SERVER_LOGINREPLY2_MESSAGE_BADPASS 0x00000002 /* Bad password */
+#define SERVER_LOGINREPLY2_MESSAGE_SUCCESS  0x00000000
+#define SERVER_LOGINREPLY2_MESSAGE_NONEXIST 0x00000001 /* Account does not exist */
+#define SERVER_LOGINREPLY2_MESSAGE_BADPASS  0x00000002 /* Bad password */
+#define SERVER_LOGINREPLY2_MESSAGE_LOCKED   0x00000006 /* Account is locked */
 /******************************************************/
 
 
