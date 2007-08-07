@@ -774,10 +774,10 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     break;
 	case message_type_nick:
 	{
-        from.nick = conn_get_loggeduser(me);
-        from.host = addr_num_to_ip_str(conn_get_addr(me));
-        from.user = ctag;
-        msg = irc_message_preformat(&from,"NICK","\r",text);
+            from.nick = conn_get_loggeduser(me);
+            from.host = addr_num_to_ip_str(conn_get_addr(me));
+            from.user = ctag;
+            msg = irc_message_preformat(&from,"NICK","\r",text);
 	}
     break;
     case message_type_notice:
@@ -810,79 +810,79 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
    	*  Westwood Online Extensions
    	*/
     case message_type_host:
-	    from.nick = conn_get_chatname(me);
-	    from.user = ctag;
-	    from.host = addr_num_to_ip_str(conn_get_addr(me));
-	    msg = irc_message_preformat(&from,"HOST","\r",text);
-	    conn_unget_chatname(me,from.nick);
+        from.nick = conn_get_chatname(me);
+        from.user = ctag;
+        from.host = addr_num_to_ip_str(conn_get_addr(me));
+        msg = irc_message_preformat(&from,"HOST","\r",text);
+        conn_unget_chatname(me,from.nick);
     	break;
-   	case message_type_page:
-    {
-   	    char temp[MAX_IRC_MESSAGE_LEN];
-	    from.nick = conn_get_chatname(me);
-	    from.user = ctag;
-	    from.host = addr_num_to_ip_str(conn_get_addr(me));
-	    std::sprintf(temp,":%s",text);
-        msg = irc_message_preformat(&from,"PAGE",NULL,temp);
-	    conn_unget_chatname(me,from.nick);
-    	break;
-    }
+    case message_type_page:
+        {
+            char temp[MAX_IRC_MESSAGE_LEN];
+            from.nick = conn_get_chatname(me);
+            from.user = ctag;
+            from.host = addr_num_to_ip_str(conn_get_addr(me));
+            std::sprintf(temp,":%s",text);
+            msg = irc_message_preformat(&from,"PAGE",NULL,temp);
+            conn_unget_chatname(me,from.nick);
+        }
+    break;
     case message_wol_joingame:
-    	from.nick = conn_get_chatname(me);
-    	from.user = ctag;
-     	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"JOINGAME","\r",text);
-    	conn_unget_chatname(me,from.nick);
-    	break;
+        from.nick = conn_get_chatname(me);
+        from.user = ctag;
+        from.host = addr_num_to_ip_str(conn_get_addr(me));
+        msg = irc_message_preformat(&from,"JOINGAME","\r",text);
+        conn_unget_chatname(me,from.nick);
+        break;
     case message_wol_gameopt_owner:
-    	from.nick = conn_get_chatname(me);
-    	from.user = ctag;
-    	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"GAMEOPT",irc_convert_channel(conn_get_channel(me)),text);
-    	conn_unget_chatname(me,from.nick);
-    	break;
+        from.nick = conn_get_chatname(me);
+        from.user = ctag;
+        from.host = addr_num_to_ip_str(conn_get_addr(me));
+        msg = irc_message_preformat(&from,"GAMEOPT",irc_convert_channel(conn_get_channel(me)),text);
+        conn_unget_chatname(me,from.nick);
+        break;
     case message_wol_gameopt_join:
-    	from.nick = conn_get_chatname(me);
-    	from.user = ctag;
-    	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"GAMEOPT",channel_wol_get_game_owner(conn_get_channel(me)),text);
-    	conn_unget_chatname(me,from.nick);
-    	break;
+        from.nick = conn_get_chatname(me);
+        from.user = ctag;
+        from.host = addr_num_to_ip_str(conn_get_addr(me));
+        msg = irc_message_preformat(&from,"GAMEOPT",channel_wol_get_game_owner(conn_get_channel(me)),text);
+        conn_unget_chatname(me,from.nick);
+        break;
     case message_wol_start_game:
-    	from.nick = conn_get_chatname(me);
-    	from.user = ctag;
-    	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"STARTG","u",text);
-    	conn_unget_chatname(me,from.nick);
-    	break;
+        from.nick = conn_get_chatname(me);
+        from.user = ctag;
+        from.host = addr_num_to_ip_str(conn_get_addr(me));
+        msg = irc_message_preformat(&from,"STARTG","u",text);
+        conn_unget_chatname(me,from.nick);
+        break;
     case message_wol_advertr:
-    	msg = irc_message_preformat(NULL,"ADVERTR","\r",text);
-    	break;
-   	case message_wol_chanchk:
+        msg = irc_message_preformat(NULL,"ADVERTR","\r",text);
+        break;
+   case message_wol_chanchk:
         msg = irc_message_preformat(NULL,"CHANCHK","\r",text);
         break;
-   	case message_wol_kick:
-    	from.nick = conn_get_chatname(me);
-    	from.user = ctag;
-    	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"KICK","\r",text);
-    	conn_unget_chatname(me,from.nick);
+   case message_wol_kick:
+        from.nick = conn_get_chatname(me);
+        from.user = ctag;
+        from.host = addr_num_to_ip_str(conn_get_addr(me));
+        msg = irc_message_preformat(&from,"KICK","\r",text);
+        conn_unget_chatname(me,from.nick);
         break;
-   	case message_wol_userip:
-    	from.nick = conn_get_chatname(me);
-    	from.user = ctag;
-    	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"USERIP","\r",text);
-    	conn_unget_chatname(me,from.nick);
+   case message_wol_userip:
+        from.nick = conn_get_chatname(me);
+        from.user = ctag;
+        from.host = addr_num_to_ip_str(conn_get_addr(me));
+        msg = irc_message_preformat(&from,"USERIP","\r",text);
+        conn_unget_chatname(me,from.nick);
         break;
     default:
-    	eventlog(eventlog_level_warn,__FUNCTION__,"%d not yet implemented",type);
-	return -1;
+        eventlog(eventlog_level_warn,__FUNCTION__,"%d not yet implemented",type);
+        return -1;
     }
 
     if (msg) {
-	packet_append_string(packet,msg);
-	xfree(msg);
+        packet_append_string(packet,msg);
+        xfree(msg);
         return 0;
     }
     return -1;
