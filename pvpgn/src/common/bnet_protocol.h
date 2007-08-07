@@ -1690,7 +1690,7 @@ Packet #13
 typedef struct
 {
     t_bnet_header h;
-    bn_byte	client_password_proof[20];
+    bn_int	client_password_proof[5];
 } PACKED_ATTR() t_client_logonproofreq;
 
 #define SERVER_LOGONPROOFREPLY 0x54ff
