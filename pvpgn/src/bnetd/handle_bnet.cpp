@@ -1745,8 +1745,7 @@ static int _client_logonproofreq(t_connection * c, t_packet const *const packet)
     {
 	char const *username;
 	t_account *account;
-	bn_byte server_password_proof[20];
-	int i;
+	int server_password_proof[5];
 
 	eventlog(eventlog_level_info, __FUNCTION__, "[%d] logon proof requested", conn_get_socket(c));
 
@@ -1759,8 +1758,11 @@ static int _client_logonproofreq(t_connection * c, t_packet const *const packet)
 
 	bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_BADPASS);
 
-	for (i = 0; i < 20; i++)
-	    bn_byte_set(&rpacket->u.server_logonproofreply.server_password_proof[i], bn_byte_get(server_password_proof[i]));
+        bn_int_set(&rpacket->u.server_logonproofreply.server_password_proof[0], server_password_proof[0]);
+        bn_int_set(&rpacket->u.server_logonproofreply.server_password_proof[1], server_password_proof[1]);
+        bn_int_set(&rpacket->u.server_logonproofreply.server_password_proof[2], server_password_proof[2]);
+        bn_int_set(&rpacket->u.server_logonproofreply.server_password_proof[3], server_password_proof[3]);
+        bn_int_set(&rpacket->u.server_logonproofreply.server_password_proof[4], server_password_proof[4]);
 
 	if (!(username = conn_get_loggeduser(c))) {
 	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) got NULL username, 0x54ff before 0x53ff?", conn_get_socket(c));
