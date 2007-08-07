@@ -1698,7 +1698,7 @@ typedef struct
 {
    t_bnet_header h;
    bn_int	response;
-   bn_byte	server_password_proof[20];
+   bn_int	server_password_proof[5];
 } PACKED_ATTR() t_server_logonproofreply;
 #define SERVER_LOGONPROOFREPLY_RESPONSE_OK 0x00000000
 #define SERVER_LOGONPROOFREPLY_RESPONSE_BADPASS 0x00000002
