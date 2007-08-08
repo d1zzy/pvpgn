@@ -775,27 +775,10 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 				channel = conn_get_channel(conn);
 
 				if (channel!=old_channel) {
-				char * topic;
-
-				channel_set_userflags(conn);
-				ircname=irc_convert_channel(channel);
-
-				if ((topic = channel_get_topic(channel_get_name(channel)))) {
-						if ((std::strlen(ircname)+1+1+std::strlen(topic)+1)<MAX_IRC_MESSAGE_LEN) {
-						snprintf(temp, sizeof(temp), "%s :%s", ircname, topic);
-						irc_send(conn,RPL_TOPIC,temp);
-				    }
-
-						if ((std::strlen(ircname)+1+std::strlen("FIXME 0")+1)<MAX_IRC_MESSAGE_LEN) {
-						snprintf(temp, sizeof(temp), "%s FIXME 0",ircname);
-						irc_send(conn,RPL_TOPICWHOTIME,temp); /* FIXME: this in an undernet extension but other servers support it too */
-					}
+				    channel_set_userflags(conn);
 				}
-				else
-					irc_send(conn,RPL_NOTOPIC,":No topic is set");
 
 	    		}
-		}
 		}
     		if (e)
 			irc_unget_listelems(e);
