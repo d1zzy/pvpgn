@@ -1276,22 +1276,13 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 			    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME [Game Options] (%s) [Game Owner] (%s)",gameOptions,channel_wol_get_game_owner(channel));
 
 			    if (channel!=old_channel) {
-	    			char temp[MAX_IRC_MESSAGE_LEN];
-
    					channel_set_userflags(conn);
 //   					message_send_text(conn,message_wol_joingame,conn,gameOptions); /* we have to send the JOINGAME acknowledgement */
    					channel_message_send(channel,message_wol_joingame,conn,gameOptions);
-   					wolname=irc_convert_channel(channel);
 
-					if ((topic = channel_get_topic(channel_get_name(channel)))) {
-						if ((std::strlen(wolname)+1+1+std::strlen(topic)+1)<MAX_IRC_MESSAGE_LEN) {
-							snprintf(temp, sizeof(temp), "%s :%s", wolname, topic);
-							irc_send(conn,RPL_TOPIC,temp);
-						}
-					}
+					irc_send_topic(conn, channel);
 
   					irc_send_rpl_namreply(conn,channel);
-
 				}
 				else {
 				    irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed");

@@ -797,12 +797,23 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	}
 	break;
     case message_type_namreply:
-        t_channel * channel;
+        {
+            t_channel * channel;
 
-        channel = conn_get_channel(me);
+            channel = conn_get_channel(me);
 
-        irc_send_rpl_namreply(dst,channel);
+            irc_send_rpl_namreply(dst,channel);
+	}
 	break;
+    case message_type_topic:
+        {
+            t_channel * channel;
+
+            channel = conn_get_channel(me);
+
+            irc_send_topic(dst,channel);
+	}
+        break;
 
    	/**
    	*  Westwood Online Extensions
@@ -1191,6 +1202,20 @@ extern int _handle_nick_command(t_connection * conn, int numparams, char ** para
 	return 0;
 }
 
+int irc_send_topic(t_connection * c, t_channel const * channel){
+    char * topic;
+    char temp[MAX_IRC_MESSAGE_LEN];
+
+    if ((topic = channel_get_topic(channel_get_name(channel)))) {
+        snprintf(temp, sizeof(temp), "%s :%s", irc_convert_channel(channel), topic);
+        irc_send(c, RPL_TOPIC, temp);
+    }
+    else
+    {
+        irc_send(c, RPL_NOTOPIC, ":No topic is set");
+    }
+}
+
 extern int _handle_topic_command(t_connection * conn, int numparams, char ** params, char * text)
 {
 	char ** e = NULL;
@@ -1206,17 +1231,10 @@ extern int _handle_topic_command(t_connection * conn, int numparams, char ** par
 		t_channel *channel = conn_get_channel(conn);
 
 		if (channel) {
-			char * topic;
-			char temp[MAX_IRC_MESSAGE_LEN];
 			char const * ircname = irc_convert_ircname(e[0]);
 
 			if ((ircname) && (strcasecmp(channel_get_name(channel),ircname)==0)) {
-				if ((topic = channel_get_topic(channel_get_name(channel)))) {
-			  		snprintf(temp, sizeof(temp), "%s :%s", irc_convert_channel(channel), topic);
-			    		irc_send(conn,RPL_TOPIC,temp);
-				}
-				else
-			    		irc_send(conn,RPL_NOTOPIC,":No topic is set");
+			    irc_send_topic(conn, channel);
 			}
 			else
 				irc_send(conn,ERR_NOTONCHANNEL,":You are not on that channel");
