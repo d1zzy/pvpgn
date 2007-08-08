@@ -711,7 +711,6 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 
     if (numparams == 0) {
         /* This is Westwood Chat LIST command */
-        /* FIXME: We send only chat channels (no gamechannels for CnC, RedAlert and CnC Sole Survivor) */
         eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST WCHAT");
 
         LIST_TRAVERSE_CONST(channellist(),curr) {
@@ -846,13 +845,7 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 				irc_send(conn,ERR_NOSUCHCHANNEL,":JOIN failed"); /* FIXME: be more precise; what is the real error code for that? */
 			}
 			else {
-    			char temp[MAX_IRC_MESSAGE_LEN];
-				t_channel * channel;
-				channel = conn_get_channel(conn);
-
 				channel_set_userflags(conn);
-				wolname=irc_convert_channel(channel);
-
 			}
 		}
     		if (e)
@@ -1286,7 +1279,8 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	    			char temp[MAX_IRC_MESSAGE_LEN];
 
    					channel_set_userflags(conn);
-   					message_send_text(conn,message_wol_joingame,conn,gameOptions); /* we have to send the JOINGAME acknowledgement */
+//   					message_send_text(conn,message_wol_joingame,conn,gameOptions); /* we have to send the JOINGAME acknowledgement */
+   					channel_message_send(channel,message_wol_joingame,conn,gameOptions);
    					wolname=irc_convert_channel(channel);
 
 					if ((topic = channel_get_topic(channel_get_name(channel)))) {
@@ -1332,6 +1326,8 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
         }
 	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME [Game Options] (%s)",_temp);
 
+		conn_wol_set_ingame(conn,1);
+
 	    e = irc_get_listelems(params[0]);
 	    if ((e)&&(e[0])) {
     		char const * wolname = irc_convert_ircname(e[0]);
@@ -1366,7 +1362,8 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 					channel_set_max(channel,std::atoi(params[2]));
 					channel_wol_set_game_type(channel,std::atoi(params[3]));
 					channel_wol_set_game_tournament(channel,std::atoi(params[6]));
-                    channel_wol_set_game_extension(channel,params[7]);
+                    if (params[7])
+                        channel_wol_set_game_extension(channel,params[7]);
 
 					message_send_text(conn,message_wol_joingame,conn,_temp); /* we have to send the JOINGAME acknowledgement */
 					wolname=irc_convert_channel(channel);
