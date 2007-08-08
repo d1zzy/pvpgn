@@ -3812,8 +3812,7 @@ extern void conn_wol_set_ingame(t_connection * c, int ingame)
     	return;
     }
 
-    if (ingame)
-      c->protocol.wol.ingame = ingame;
+    c->protocol.wol.ingame = ingame;
 }
 
 extern int conn_wol_get_ingame(t_connection * c)
@@ -3864,8 +3863,7 @@ extern void conn_wol_set_codepage(t_connection * c, int codepage)
         return;
     }
 
-    if (codepage)
-       c->protocol.wol.codepage = codepage;
+    c->protocol.wol.codepage = codepage;
 }
 
 extern int conn_wol_get_codepage(t_connection * c)
@@ -3887,8 +3885,7 @@ extern void conn_wol_set_game_type(t_connection * c, int gameType)
         return;
     }
 
-    if (gameType)
-        c->protocol.wol.gameType = gameType;
+    c->protocol.wol.gameType = gameType;
 }
 
 extern int conn_wol_get_game_type(t_connection * c)
@@ -3939,8 +3936,7 @@ extern void conn_wol_set_findme(t_connection * c, int findme)
     	return;
     }
 
-    if (findme)
-        c->protocol.wol.findme = findme;
+    c->protocol.wol.findme = findme;
 }
 
 extern int conn_wol_get_findme(t_connection * c)
@@ -3962,8 +3958,7 @@ extern void conn_wol_set_pageme(t_connection * c, int pageme)
     	return;
     }
 
-    if (pageme)
-        c->protocol.wol.pageme = pageme;
+    c->protocol.wol.pageme = pageme;
 }
 
 extern int conn_wol_get_pageme(t_connection * c)

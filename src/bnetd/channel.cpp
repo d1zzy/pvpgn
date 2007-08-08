@@ -483,14 +483,20 @@ extern int channel_add_connection(t_channel * channel, t_connection * connection
         for (user=channel_get_first(channel); user; user=channel_get_next())
         {
              message_send_text(connection,message_type_adduser,user,NULL);
-	     message_send_text(user,message_type_join,connection,NULL);
+             /* In WOL gamechannels we send JOINGAME ack explicitely to self */
+             if (conn_wol_get_ingame(connection)==0)
+                 message_send_text(user,message_type_join,connection,NULL);
         }
-    else
-	message_send_text(connection,message_type_join,connection,NULL);
+    else {
+        if (conn_wol_get_ingame(connection)==0)
+            message_send_text(connection,message_type_join,connection,NULL);
+    }
 
-    if (conn_is_irc_variant(connection))
+    if (conn_is_irc_variant(connection)) {
+        if (conn_wol_get_ingame(connection)==0)
         message_send_text(connection,message_type_namreply,connection,NULL);
-
+    }
+     conn_wol_set_ingame(connection,0);
     /* please don't remove this notice */
     if (channel->log)
 	message_send_text(connection,message_type_info,connection,prefs_get_log_notice());

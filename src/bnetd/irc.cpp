@@ -650,14 +650,13 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 
         channel = conn_get_channel(me);
 
-	if((conn_get_wol(dst) == 1) && (conn_get_clienttag(dst) != CLIENTTAG_WCHAT_UINT))
-	{
+        if((conn_get_wol(dst) == 1) && (conn_get_clienttag(dst) != CLIENTTAG_WCHAT_UINT)) {
             char temp[MAX_IRC_MESSAGE_LEN];
     	    t_clan * clan;
     	    unsigned int clanid = 0;
     	    std::memset(temp,0,sizeof(temp));
-	    
-	    /**
+
+            /**
             *  For WOLv2 the channel JOIN output must be like the following:
     	    *  user!WWOL@hostname JOIN :clanID,longIP channelName
             */
@@ -675,11 +674,10 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	    std::memset(temp,0,sizeof(temp));
 
             if (conn_wol_get_ingame(me) == 1) {
-                std::sprintf(temp,"2 %u %u 1 1 %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel), channel_wol_get_game_tournament(channel), irc_convert_channel(channel));
+                std::sprintf(temp,"2 %u %u 1 1 %u :", channel_get_length(channel), channel_wol_get_game_type(channel), channel_wol_get_game_tournament(channel));
                 msg = irc_message_preformat(&from,"JOINGAME",temp,irc_convert_channel(channel));
             }
-            else
-	    {
+            else {
                 msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(channel));
 	    }
         }
@@ -931,7 +929,6 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
 		std::strcat(flg,"+");
 	if ((std::strlen(temp)+((!first)?(1):(0))+std::strlen(flg)+std::strlen(name)+1)<=sizeof(temp)) {
 	    if (!first) std::strcat(temp," ");
-
             if((conn_get_wol(c) == 1)) {
                 if ((channel_wol_get_game_owner(channel) != NULL) && (std::strcmp(channel_wol_get_game_owner(channel),name) == 0)) {
                        std::strcat(temp,"@");
@@ -942,20 +939,22 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
                 }
                 if (conn_get_clienttag(c) != CLIENTTAG_WCHAT_UINT) {
                     /* BATTLECLAN Support */
+                    char _temp[MAX_IRC_MESSAGE_LEN];
+                    std::memset(_temp,0,sizeof(_temp));
                     t_clan * clan = account_get_clan(conn_get_account(m));
                     unsigned int clanid = 0;
 
                     if (clan)
                         clanid = clan_get_clanid(clan);
 
-                    std::sprintf(temp,"%s%s,%u,%u",temp,name,clanid,conn_get_addr(m));
+                    std::sprintf(_temp,"%s,%u,%u",name,clanid,conn_get_addr(m));
+                    std::strcat(temp,_temp);
                 }
                 else {
-                    std::sprintf(temp,"%s%s",temp,name);
+                    std::strcat(temp,name);
                 }
     	    }
-    	    else
-    	    {
+    	    else {
 	            std::strcat(temp,flg);
 	            std::strcat(temp,name);
     	    }
@@ -1105,6 +1104,7 @@ extern int irc_send_motd(t_connection * conn)
     char * line, * formatted_line;
     char send_line[MAX_IRC_MESSAGE_LEN];
     char motd_failed = 0;
+    bool first = true;
 
     if (!conn) {
 	   eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
@@ -1113,14 +1113,17 @@ extern int irc_send_motd(t_connection * conn)
 
     tempname = conn_get_loggeduser(conn);
 
-    irc_send(conn,RPL_MOTDSTART,":-");
-
     if ((filename = prefs_get_motdfile())) {
 	 if ((fp = std::fopen(filename,"r"))) {
 	  while ((line=file_get_line(fp))) {
 		if ((formatted_line = message_format_line(conn,line))) {
 		  formatted_line[0]=' ';
 		  std::sprintf(send_line,":-%s",formatted_line);
+		  if (first) {
+		      irc_send(conn,RPL_MOTDSTART,send_line);
+		      first = false;
+          }
+          else
 		  irc_send(conn,RPL_MOTD,send_line);
 		  xfree(formatted_line);
 		}
@@ -1136,7 +1139,7 @@ extern int irc_send_motd(t_connection * conn)
       motd_failed = 1;
 
    if (motd_failed) {
-      irc_send(conn,RPL_MOTD,":- Failed to load motd, sending default motd              ");
+      irc_send(conn,RPL_MOTDSTART,":- Failed to load motd, sending default motd              ");
       irc_send(conn,RPL_MOTD,":- ====================================================== ");
       irc_send(conn,RPL_MOTD,":-                 http://www.pvpgn.org                   ");
       irc_send(conn,RPL_MOTD,":- ====================================================== ");
