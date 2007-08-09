@@ -7,7 +7,6 @@ PvPGN Version History:
 
 [WOL]
   -- disable account creation via irc/wol when new_accounts=false
-  -- added address translation for WOL servserv addresses
   -- added support to allow/deny WOL clients in bnconf.conf
   -- added support for battle clans
   -- added various protocol related fixes
