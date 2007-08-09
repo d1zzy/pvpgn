@@ -2440,7 +2440,7 @@ extern int account_get_locale(t_account * account)
 {
 	if(!account) {
 		ERROR0("got NULL account");
-		return NULL;
+		return 0;
 	}
 
     return account_get_numattr(account,"WOL\\acct\\locale");

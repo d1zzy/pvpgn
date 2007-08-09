@@ -239,8 +239,6 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
     channel->gameTournament = 0;
     channel->gameExtension = NULL;
 
-    channel->gameOptions = NULL;
-
     list_append_data(channellist_head,channel);
 
     eventlog(eventlog_level_debug,__FUNCTION__,"channel created successfully");
@@ -272,9 +270,6 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
     }
 
     eventlog(eventlog_level_info,__FUNCTION__,"destroying channel \"%s\"",channel->name);
-
-    if (channel->gameOptions)
-        xfree(channel->gameOptions);
 
     if (channel->gameExtension)
         xfree(channel->gameExtension);
@@ -1682,38 +1677,6 @@ extern int channel_wol_set_game_tournament(t_channel * channel, int gameTourname
 
 	if (gameTournament)
  	   channel->gameTournament = gameTournament;
-
-	return 0;
-}
-
-extern char const * channel_wol_get_game_options(t_channel const * channel)
-{
-	if (!channel)
-	{
-	  ERROR0("got NULL channel");
-	  return 0;
-	}
-
-	return channel->gameOptions;
-}
-
-extern int channel_wol_set_game_options(t_channel * channel, char const * gameOptions)
-{
-	if (!channel)
-	{
-	  ERROR0("got NULL channel");
-	  return -1;
-	}
-
-	if (!gameOptions)
-	{
-	  ERROR0("got NULL gameOptions");
-	  return -1;
-	}
-
-	if (channel->gameOptions)
-	    xfree(channel->gameOptions);
-	channel->gameOptions = xstrdup(gameOptions);
 
 	return 0;
 }

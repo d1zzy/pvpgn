@@ -103,8 +103,6 @@ typedef struct channel
     int               gameType;
     int               gameTournament;
     char *            gameExtension;
-
-    char *            gameOptions;
 }
 #endif
 t_channel;
@@ -188,9 +186,6 @@ extern int channel_wol_set_game_type(t_channel * channel, int gameType);
 
 extern int channel_wol_get_game_tournament(t_channel const * channel);
 extern int channel_wol_set_game_tournament(t_channel * channel, int tournament);
-
-extern char const * channel_wol_get_game_options(t_channel const * channel);
-extern int channel_wol_set_game_options(t_channel * channel, char const * gameOptions);
 
 extern char const * channel_wol_get_game_extension(t_channel const * channel);
 extern int channel_wol_set_game_extension(t_channel * channel, char const * gameExtension);
