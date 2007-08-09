@@ -669,24 +669,12 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
             std::sprintf(temp,":%u,%u",clanid,conn_get_addr(me));
     	    msg = irc_message_preformat(&from,"JOIN",temp,irc_convert_channel(channel));
         }
-        else if (conn_get_clienttag(dst) == CLIENTTAG_WCHAT_UINT) {
-            char temp[MAX_IRC_MESSAGE_LEN];
-    	    std::memset(temp,0,sizeof(temp));
-
-            if (conn_wol_get_ingame(me) == 1) {
-                std::sprintf(temp,"2 %u %u 1 1 %u :", channel_get_length(channel), channel_wol_get_game_type(channel), channel_wol_get_game_tournament(channel));
-                msg = irc_message_preformat(&from,"JOINGAME",temp,irc_convert_channel(channel));
-            }
-            else {
-                msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(channel));
-	    }
-        }
         else {
             msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(channel));
         }
     	conn_unget_chatname(me,from.nick);
     }
-    	break;
+    break;
     case message_type_part:
     	from.nick = conn_get_chatname(me);
     	from.user = ctag;
@@ -835,7 +823,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
             msg = irc_message_preformat(&from,"PAGE",NULL,temp);
             conn_unget_chatname(me,from.nick);
         }
-    break;
+        break;
     case message_wol_joingame:
         from.nick = conn_get_chatname(me);
         from.user = ctag;

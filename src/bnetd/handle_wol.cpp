@@ -786,12 +786,10 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 				char * topic = channel_get_topic(channel_get_name(channel));
 
         	    tempname = irc_convert_channel(channel);
-
+        	    
 				if((channel_wol_get_game_type(channel) != 0)) {
 					m = channel_get_first(channel);
 					if((channel_wol_get_game_type(channel) == conn_wol_get_game_type(conn)) || ((numparams == 0))) {
-						eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] List [Channel: \"_game\"] (%s)",tempname);
-
 						eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] List [Channel: \"_game\"] %s %u 0 %u %u %s %u 128::",tempname,
 									 channel_get_length(channel),channel_wol_get_game_type(channel),channel_wol_get_game_tournament(channel),
 									 channel_wol_get_game_extension(channel),channel_wol_get_game_ownerip(channel));
@@ -1236,8 +1234,6 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	    if ((e)&&(e[0])) {
     		char const * wolname = irc_convert_ircname(e[0]);
     		char * old_channel_name = NULL;
-   			char temp[MAX_IRC_MESSAGE_LEN];
-			char * topic;
 			t_channel * channel;
 	   	 	t_channel * old_channel = conn_get_channel(conn);
 
@@ -1251,8 +1247,8 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
             }
 
             if (channel_get_length(channel) == channel_get_max(channel)) {
-	   	 	     snprintf(temp, sizeof(temp), "%s :Channel is full",e[0]);
-                 irc_send(conn,ERR_CHANNELISFULL,temp);
+	   	 	     snprintf(_temp, sizeof(_temp), "%s :Channel is full",e[0]);
+                 irc_send(conn,ERR_CHANNELISFULL,_temp);
 			     if (e)
 		            irc_unget_listelems(e);
 			     return 0;
@@ -1268,17 +1264,30 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 				conn_wol_set_ingame(conn,0);
 			}
 			else {
-				char const * gameOptions;
-
     			channel = conn_get_channel(conn);
-				gameOptions = channel_wol_get_game_options(channel);
-
-			    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME [Game Options] (%s) [Game Owner] (%s)",gameOptions,channel_wol_get_game_owner(channel));
 
 			    if (channel!=old_channel) {
+                    if (conn_get_clienttag(conn) == CLIENTTAG_WCHAT_UINT) {
+                        /* WOLv1 JOINGAME message */
+                        std::sprintf(_temp,"2 %u %u 1 1 %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel),
+                                    channel_wol_get_game_tournament(channel), irc_convert_channel(channel));
+                    }
+                    else {
+                        /* WOLv2 JOINGAME message with BATTLECLAN support */
+                        t_clan * clan = account_get_clan(conn_get_account(conn));
+                        unsigned int clanid = 0;
+
+                        if (clan)
+                            clanid = clan_get_clanid(clan);
+
+                        std::sprintf(_temp,"1 %u %u 1 %u %u %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel),
+                                     clanid, conn_get_addr(conn), channel_wol_get_game_tournament(channel), irc_convert_channel(channel));
+                    }
+
+                    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME [Game Options] (%s) [Game Owner] (%s)",_temp,channel_wol_get_game_owner(channel));
    					channel_set_userflags(conn);
-//   					message_send_text(conn,message_wol_joingame,conn,gameOptions); /* we have to send the JOINGAME acknowledgement */
-   					channel_message_send(channel,message_wol_joingame,conn,gameOptions);
+                    /* we have to send the JOINGAME acknowledgement */
+   					channel_message_send(channel,message_wol_joingame,conn,_temp);
 
 					irc_send_topic(conn, channel);
 
@@ -1308,12 +1317,17 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 		     params[0],params[1]);
 
         if((numparams==7)) {
-            /* Westwood Chat JOINGAME Cereate */
+            /* WOLv1 JOINGAME Create */
        	    snprintf(_temp, sizeof(_temp), "%s %s %s %s 0 %s :%s",params[1],params[2],params[3],params[4],params[6],params[0]);
         }
-            /* Westwood Online JOINGAME Create */
+            /* WOLv2 JOINGAME Create */
         else if((numparams>=8)) {
-            snprintf(_temp, sizeof(_temp), "%s %s %s %s 0 %u %s :%s",params[1],params[2],params[3],params[4],conn_get_addr(conn),params[6],params[0]);
+            t_clan * clan = account_get_clan(conn_get_account(conn));
+            unsigned int clanid = 0;
+
+            if (clan)
+                clanid = clan_get_clanid(clan);
+            snprintf(_temp, sizeof(_temp), "%s %s %s %s %u %u %s :%s",params[1],params[2],params[3],params[4],clanid,conn_get_addr(conn),params[6],params[0]);
         }
 	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME [Game Options] (%s)",_temp);
 
@@ -1342,29 +1356,21 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 
 				channel = conn_get_channel(conn);
 				if (channel!=old_channel) {
-	    			char temp[MAX_IRC_MESSAGE_LEN];
-					char * topic;
-
 					channel_set_userflags(conn);
-					channel_wol_set_game_options(channel,_temp);
 					channel_wol_set_game_owner(channel,conn_get_chatname(conn));
 					channel_wol_set_game_ownerip(channel,conn_get_addr(conn));
-				    /* HACK: Currently, this is the best way to set the channel game type... */
 					channel_set_max(channel,std::atoi(params[2]));
+				    /* HACK: Currently, this is the best way to set the channel game type... */
 					channel_wol_set_game_type(channel,std::atoi(params[3]));
 					channel_wol_set_game_tournament(channel,std::atoi(params[6]));
                     if (params[7])
                         channel_wol_set_game_extension(channel,params[7]);
+                    else
+                        channel_wol_set_game_extension(channel,"0");
 
 					message_send_text(conn,message_wol_joingame,conn,_temp); /* we have to send the JOINGAME acknowledgement */
-					wolname=irc_convert_channel(channel);
 
-					if ((topic = channel_get_topic(channel_get_name(channel)))) {
-						if ((std::strlen(wolname)+1+1+std::strlen(topic)+1)<MAX_IRC_MESSAGE_LEN) {
-							snprintf(temp, sizeof(temp), "%s :%s", wolname, topic);
-							irc_send(conn,RPL_TOPIC,temp);
-						}
-					}
+	    			irc_send_topic(conn, channel);
 
 	    			irc_send_rpl_namreply(conn,channel);
 
