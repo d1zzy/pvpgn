@@ -1558,6 +1558,13 @@ static int _client_loginreq2(t_connection * c, t_packet const *const packet)
     {
 	char const *username;
 	t_account *account;
+	char supports_locked_reply = 0;
+	t_clienttag clienttag = conn_get_clienttag(c);
+
+	if (clienttag == CLIENTTAG_DIABLO2XP_UINT || clienttag == CLIENTTAG_DIABLO2DV_UINT){
+	  if (conn_get_versionid(c) >= 0x0000000b)
+	    supports_locked_reply = 1;
+	}
 
 	if (!(username = packet_get_str_const(packet, sizeof(t_client_loginreq2), MAX_USERNAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad LOGINREQ2 (missing or too long username)", conn_get_socket(c));
@@ -1573,8 +1580,13 @@ static int _client_loginreq2(t_connection * c, t_packet const *const packet)
 	if (prefs_get_max_concurrent_logins() > 0) {
 	    if (prefs_get_max_concurrent_logins() <= connlist_login_get_length()) {
 		eventlog(eventlog_level_error, __FUNCTION__, "[%d] login denied, too many concurrent logins. max: %d. current: %d.", conn_get_socket(c), prefs_get_max_concurrent_logins(), connlist_login_get_length());
-		bn_int_set(&rpacket->u.server_loginreply2.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
-		packet_append_string(rpacket, "Too many concurrent logins. Try again later.");
+		if (supports_locked_reply) {
+		    bn_int_set(&rpacket->u.server_loginreply2.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
+		    packet_append_string(rpacket, "Too many concurrent logins. Try again later.");
+		}
+		else {
+		    bn_int_set(&rpacket->u.server_loginreply2.message, SERVER_LOGINREPLY2_MESSAGE_BADPASS);
+		}
 		return -1;
 	    }
 	}
@@ -1587,16 +1599,31 @@ static int _client_loginreq2(t_connection * c, t_packet const *const packet)
 	/* already logged in */
 	else if (connlist_find_connection_by_account(account) && prefs_get_kick_old_login() == 0) {
 	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (already logged in)", conn_get_socket(c), username);
-	    bn_int_set(&rpacket->u.server_loginreply2.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
-	    packet_append_string(rpacket, "This account is allready logged in.");
+	    if (supports_locked_reply) {
+	        bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
+	        packet_append_string(rpacket, "This account is allready logged in.");
+	    }
+	    else {
+	        bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_BADPASS);
+	    }
 	} else if (account_get_auth_bnetlogin(account) == 0) {	/* default to true */
 	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (no bnet access)", conn_get_socket(c), username);
-	    bn_int_set(&rpacket->u.server_loginreply2.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
-	    packet_append_string(rpacket, "This account is barred from bnet access.");
+	    if (supports_locked_reply) {
+	        bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
+	        packet_append_string(rpacket, "This account is barred from bnet access.");
+	    }
+	    else {
+	        bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_BADPASS);
+	    }
 	} else if (account_get_auth_lock(account) == 1) {	/* default to false */
 	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
-	    bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
-	    packet_append_string(rpacket, "This account has been locked.");
+	    if (supports_locked_reply) {
+	        bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
+	        packet_append_string(rpacket, "This account has been locked.");
+	    }
+	    else {
+	        bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_BADPASS);
+	    }
 	} else if (conn_get_sessionkey(c) != bn_int_get(packet->u.client_loginreq2.sessionkey)) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] login for \"%s\" refused (expected session key 0x%08x, got 0x%08x)", conn_get_socket(c), username, conn_get_sessionkey(c), bn_int_get(packet->u.client_loginreq2.sessionkey));
 	    bn_int_set(&rpacket->u.server_loginreply2.message, SERVER_LOGINREPLY2_MESSAGE_BADPASS);
