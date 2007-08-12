@@ -1,7 +1,7 @@
 [Project]
 FileName=PvPGN.dev
 Name=PvPGN
-UnitCount=272
+UnitCount=274
 Type=0
 Ver=1
 ObjFiles=
@@ -2759,6 +2759,26 @@ BuildCmd=
 
 [Unit272]
 FileName=..\src\bnetd\storage_sql2.cpp
+CompileCpp=1
+Folder=bnetd/Source Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit273]
+FileName=..\src\bnetd\handle_irc_common.h
+CompileCpp=1
+Folder=bnetd/Header Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit274]
+FileName=..\src\bnetd\handle_irc_common.cpp
 CompileCpp=1
 Folder=bnetd/Source Files
 Compile=1

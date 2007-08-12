@@ -59,8 +59,7 @@
 #include "handle_file.h"
 #include "handle_init.h"
 #include "handle_d2cs.h"
-#include "handle_irc.h"
-#include "handle_wol.h"
+#include "handle_irc_common.h"
 #include "handle_udp.h"
 #include "anongame.h"
 #include "clan.h"
@@ -341,15 +340,9 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 	switch (laddr_info->type)
 	{
 	case laddr_type_irc:
-	    conn_set_class(c,conn_class_irc);
-	    conn_set_state(c,conn_state_connected);
-	    break;
 	case laddr_type_wol:
-	    conn_set_class(c,conn_class_wol);
-	    conn_set_state(c,conn_state_connected);
-	    break;
 	case laddr_type_wserv:
-	    conn_set_class(c,conn_class_wserv);
+	    conn_set_class(c,conn_class_ircinit);
 	    conn_set_state(c,conn_state_connected);
 	    break;
 	case laddr_type_wgameres:
@@ -525,6 +518,7 @@ static int sd_tcpinput(t_connection * c)
 	    }
 	    break;
 	case conn_class_bot:
+	case conn_class_ircinit:
 	case conn_class_irc:
 	case conn_class_wol:
 	case conn_class_wserv:
@@ -640,13 +634,12 @@ static int sd_tcpinput(t_connection * c)
 		case conn_class_file:
 		    ret = handle_file_packet(c,packet);
 		    break;
+		case conn_class_ircinit:
 		case conn_class_irc:
-		    ret = handle_irc_packet(c,packet);
-		    break;
-		case conn_class_wgameres:
 		case conn_class_wserv:
 		case conn_class_wol:
-		    ret = handle_wol_packet(c,packet);
+		case conn_class_wgameres: /* NOTICE: Will be handled in other file */
+		    ret = handle_irc_common_packet(c,packet);
 		    break;
 		case conn_class_w3route:
 		    ret = handle_w3route_packet(c,packet);
