@@ -176,7 +176,7 @@ static const t_wol_command_table_row wol_log_command_table[] =
 	{ NULL			, NULL }
 };
 
-static int handle_wol_con_command(t_connection * conn, char const * command, int numparams, char ** params, char * text)
+extern int handle_wol_con_command(t_connection * conn, char const * command, int numparams, char ** params, char * text)
 {
   t_wol_command_table_row const *p;
 
@@ -189,7 +189,7 @@ static int handle_wol_con_command(t_connection * conn, char const * command, int
   return -1;
 }
 
-static int handle_wol_log_command(t_connection * conn, char const * command, int numparams, char ** params, char * text)
+extern int handle_wol_log_command(t_connection * conn, char const * command, int numparams, char ** params, char * text)
 {
   t_wol_command_table_row const *p;
 
@@ -200,131 +200,6 @@ static int handle_wol_log_command(t_connection * conn, char const * command, int
 	}
   }
   return -1;
-}
-
-static int handle_wol_line(t_connection * conn, char const * wolline)
-{
-	/* [:prefix] <command> [[param1] [param2] ... [paramN]] [:<text>] */
-    char * line; /* copy of wolline */
-    char * prefix = NULL; /* optional; mostly NULL */
-    char * command; /* mandatory */
-    char ** params = NULL; /* optional (array of params) */
-    char * text = NULL; /* optional */
-	char * bnet_command = NULL;  /* amadeo: used for battle.net.commands */
-    int unrecognized_before = 0;
-	int linelen; /* amadeo: counter for stringlenghts */
-
-    int numparams = 0;
-    char * tempparams;
-	int i;
- 	char paramtemp[MAX_IRC_MESSAGE_LEN*2];
-	int first = 1;
-
-    if (!conn) {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
-	return -1;
-    }
-    if (!wolline) {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL wolline");
-	return -1;
-    }
-    if (wolline[0] == '\0') {
-	eventlog(eventlog_level_error,__FUNCTION__,"got empty wolline");
-	return -1;
-    }
-	//amadeo: code was sent by some unknown fellow of pvpgn, prevents buffer-overflow for
-	// too long wol-lines
-
-    if (std::strlen(wolline)>254) {
-        char * tmp = (char *)wolline;
-	eventlog(eventlog_level_warn,__FUNCTION__,"line to long, truncation...");
-	tmp[254]='\0';
-    }
-
-    line = xstrdup(wolline);
-
-    /* split the message */
-    if (line[0] == ':') {
-	/* The prefix is optional and is rarely provided */
-	prefix = line;
-	if (!(command = std::strchr(line,' '))) {
-	    eventlog(eventlog_level_warn,__FUNCTION__,"got malformed line (missing command)");
-	    xfree(line);
-	    return -1;
-	}
-	*command++ = '\0';
-    }
-	else {
-	/* In most cases command is the first thing on the line */
-	command = line;
-    }
-
-    tempparams = std::strchr(command,' ');
-    if (tempparams) {
-	*tempparams++ = '\0';
-	 if (tempparams[0]==':') {
-	    text = tempparams+1; /* theres just text, no params. skip the colon */
-	} else {
-	    for (i=0;tempparams[i]!='\0';i++) {
-	    	if ((tempparams[i]==' ')&&(tempparams[i+1]==':')) {
-		    text = tempparams+i;
-		    *text++ = '\0';
-		    text++; /* skip the colon */
-		    break; /* text found, stop search */
-	    	}
-	    }
-	    params = irc_get_paramelems(tempparams);
-	}
-    }
-
-    if (params) {
-	/* count parameters */
-	for (numparams=0;params[numparams];numparams++);
-    }
-
-	std::memset(paramtemp,0,sizeof(paramtemp));
-    	for (i=0;((numparams>0)&&(params[i]));i++) {
-		if (!first)
-			std::strcat(paramtemp," ");
-	    std::strcat(paramtemp,"\"");
-	    std::strcat(paramtemp,params[i]);
-	    std::strcat(paramtemp,"\"");
-	    first = 0;
-    	}
-
-    	eventlog(eventlog_level_debug,__FUNCTION__,"[%d] got \"%s\" \"%s\" [%s] \"%s\"",conn_get_socket(conn),((prefix)?(prefix):("")),command,paramtemp,((text)?(text):("")));
-
-    if (conn_get_state(conn)==conn_state_connected) {
-	t_timer_data temp;
-
-	conn_set_state(conn,conn_state_bot_username);
-	temp.n = prefs_get_irc_latency();
-	conn_test_latency(conn,std::time(NULL),temp);
-    }
-
-	if (handle_wol_con_command(conn, command, numparams, params, text)!=-1) {}
-    else if (conn_get_state(conn)!=conn_state_loggedin) {
-    } else {
-        /* command is handled later */
-	unrecognized_before = 1;
-    }
-    /* --- The following should only be executable after login --- */
-    if ((conn_get_state(conn)==conn_state_loggedin)&&(unrecognized_before)) {
-
-		if (handle_wol_log_command(conn, command, numparams, params, text)!=-1) {}
-		else if ((strstart(command,"LAG")!=0)&&(strstart(command,"JOIN")!=0)){
-			linelen = std::strlen (wolline);
-			bnet_command = (char*)xmalloc(linelen + 2);
-			bnet_command[0]='/';
-			std::strcpy(bnet_command + 1, wolline);
-			handle_command(conn,bnet_command);
-			xfree((void*)bnet_command);
-		}
-    } /* loggedin */
-    if (params)
-	irc_unget_paramelems(params);
-    xfree(line);
-    return 0;
 }
 
 extern int handle_wol_welcome(t_connection * conn)
@@ -347,55 +222,6 @@ extern int handle_wol_welcome(t_connection * conn)
     	    message_send_text(conn,message_type_notice,NULL,"No PASS command received. Please identify yourself by /msg NICKSERV identify <password>.");
     }
 
-    return 0;
-}
-
-extern int handle_wol_packet(t_connection * conn, t_packet const * const packet)
-{
-    unsigned int i;
-    char wolline[MAX_IRC_MESSAGE_LEN];
-    char const * data;
-
-    if (!packet) {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
-	return -1;
-    }
-    if (conn_get_class(conn) != conn_class_wol && conn_get_class(conn) != conn_class_wserv && conn_get_class(conn) != conn_class_wgameres) {
-	eventlog(eventlog_level_error,__FUNCTION__,"FIXME: handle_wol_packet without any reason (conn->class != conn_class_wol && conn->class != conn_class_wserv)");
-	return -1;
-    }
-
-    /* eventlog(eventlog_level_debug,__FUNCTION__,"got \"%s\"",packet_get_raw_data_const(packet,0)); */
-
-    std::memset(wolline,0,sizeof(wolline));
-    data = conn_get_ircline(conn); /* fetch current status */
-    if (data)
-	std::strcpy(wolline,data);
-    unsigned wolpos = std::strlen(wolline);
-    data = (const char *)packet_get_raw_data_const(packet,0);
-    for (i=0; i < packet_get_size(packet); i++) {
-	if ((data[i] == '\r')||(data[i] == '\0')) {
-	    /* kindly ignore \r and NUL ... */
-	} else if (data[i] == '\n') {
-	    /* end of line */
-	    handle_wol_line(conn,wolline);
-	    std::memset(wolline,0,sizeof(wolline));
-	    wolpos = 0;
-	} else {
-	    if (wolpos < MAX_IRC_MESSAGE_LEN-1)
-		wolline[wolpos++] = data[i];
-	    else {
-		wolpos++; /* for the statistic :) */
-	    	eventlog(eventlog_level_warn,__FUNCTION__,"[%d] client exceeded maximum allowed message length by %d characters",conn_get_socket(conn),wolpos-MAX_IRC_MESSAGE_LEN);
-		if (wolpos > 100 + MAX_IRC_MESSAGE_LEN) {
-		    /* automatic flood protection */
-		    eventlog(eventlog_level_error,__FUNCTION__,"[%d] excess flood",conn_get_socket(conn));
-		    return -1;
-		}
-	    }
-	}
-    }
-    conn_set_ircline(conn,wolline); /* write back current status */
     return 0;
 }
 

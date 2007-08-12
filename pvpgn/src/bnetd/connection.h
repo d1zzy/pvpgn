@@ -70,6 +70,7 @@ typedef enum
     conn_class_file,
     conn_class_bot,
     conn_class_telnet,
+    conn_class_ircinit,    /* IRC based protocol INIT*/
     conn_class_irc,        /* Internet Relay Chat */
     conn_class_wol,        /* Westwood IRC */
     conn_class_wserv,      /* Westwood servserv */

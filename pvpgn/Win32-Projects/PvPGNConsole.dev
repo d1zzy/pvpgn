@@ -1,7 +1,7 @@
 [Project]
 FileName=PvPGNConsole.dev
 Name=PvPGNConsole
-UnitCount=266
+UnitCount=268
 Type=1
 Ver=1
 ObjFiles=
@@ -2701,6 +2701,26 @@ BuildCmd=
 FileName=..\src\bnetd\storage_sql2.h
 CompileCpp=1
 Folder=bnetd/Header Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit267]
+FileName=..\src\bnetd\handle_irc_common.h
+CompileCpp=1
+Folder=bnetd/Header Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit268]
+FileName=..\src\bnetd\handle_irc_common.cpp
+CompileCpp=1
+Folder=bnetd/Source Files
 Compile=1
 Link=1
 Priority=1000
