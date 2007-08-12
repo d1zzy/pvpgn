@@ -31,9 +31,14 @@
 namespace pvpgn
 {
 
+typedef enum {
+    do_blizzard_hash,
+    do_sha1_hash
+} t_hash_variant;
+
 static void hash_init(t_hash * hash);
 static void do_hash(t_hash * hash, t_uint32 * tmp);
-static void hash_set_16(t_uint32 * dst, unsigned char const * src, unsigned int count);
+static void hash_set_16(t_uint32 * dst, unsigned char const * src, unsigned int count, t_hash_variant hash_variant);
 
 
 static void hash_init(t_hash * hash)
@@ -46,13 +51,16 @@ static void hash_init(t_hash * hash)
 }
 
 
-static void do_hash(t_hash * hash, t_uint32 * tmp)
+static void do_hash(t_hash * hash, t_uint32 * tmp, t_hash_variant hash_variant)
 {
     unsigned int i;
     t_uint32     a,b,c,d,e,g;
 
     for (i=0; i<64; i++)
-	tmp[i+16] = ROTL32(1,tmp[i] ^ tmp[i+8] ^ tmp[i+2] ^ tmp[i+13]);
+        if (hash_variant == do_blizzard_hash)
+            tmp[i+16] = ROTL32(1,tmp[i] ^ tmp[i+8] ^ tmp[i+2] ^ tmp[i+13]);
+	else
+            tmp[i+16] = ROTL32(tmp[i] ^ tmp[i+8] ^ tmp[i+2] ^ tmp[i+13],1);
 
     a = (*hash)[0];
     b = (*hash)[1];
@@ -110,28 +118,66 @@ static void do_hash(t_hash * hash, t_uint32 * tmp)
 
 /*
  * Fill 16 elements of the array of 32 bit values with the bytes from
- * dst up to count in little endian order. Fill left over space with
- * zeros
+ * dst up to count in little endian order. Fill left over space with 
+ * zeros. In case of SHA1 hash variant a binary 1 is appended after
+ * the actual data.
  */
-static void hash_set_16(t_uint32 * dst, unsigned char const * src, unsigned int count)
+static void hash_set_16(t_uint32 * dst, unsigned char const * src, unsigned int count, 
+                             t_hash_variant hash_variant)
 {
     unsigned int i;
     unsigned int pos;
 
     for (pos=0,i=0; i<16; i++)
     {
-	dst[i] = 0;
-        if (pos<count)
-	    dst[i] |= ((t_uint32)src[pos]);
+        dst[i] = 0;
+
+        if (hash_variant == do_blizzard_hash) {
+            if (pos<count)
+	        dst[i] |= ((t_uint32)src[pos]);
+	}
+	else {
+            if (pos<count)
+	        dst[i] |= ((t_uint32)src[pos])<<24;
+	    else if (pos==count)
+	        dst[i] |= ((t_uint32)0x80000000);
+	}
 	pos++;
-        if (pos<count)
-	    dst[i] |= ((t_uint32)src[pos])<<8;
+
+        if (hash_variant == do_blizzard_hash) {
+            if (pos<count)
+	        dst[i] |= ((t_uint32)src[pos])<<8;
+	}
+	else {
+            if (pos<count)
+	        dst[i] |= ((t_uint32)src[pos])<<16;
+	    else if (pos==count)
+	        dst[i] |= ((t_uint32)0x800000);
+	}
 	pos++;
-        if (pos<count)
-	    dst[i] |= ((t_uint32)src[pos])<<16;
+
+        if (hash_variant == do_blizzard_hash) {
+            if (pos<count)
+	        dst[i] |= ((t_uint32)src[pos])<<16;
+	}
+	else {
+            if (pos<count)
+	        dst[i] |= ((t_uint32)src[pos])<<8;
+	    else if (pos==count)
+	        dst[i] |= ((t_uint32)0x8000);
+	}
 	pos++;
-        if (pos<count)
-	    dst[i] |= ((t_uint32)src[pos])<<24;
+
+        if (hash_variant == do_blizzard_hash) {
+            if (pos<count)
+	        dst[i] |= ((t_uint32)src[pos])<<24;
+	}
+	else {
+            if (pos<count)
+	        dst[i] |= ((t_uint32)src[pos]);
+	    else if (pos==count)
+	        dst[i] |= ((t_uint32)0x80);
+	}
 	pos++;
     }
 }
@@ -164,8 +210,8 @@ extern int bnet_hash(t_hash * hashout, unsigned int size, void const * datain)
 	else
 	    inc = size;
 
-	hash_set_16(tmp,data,inc);
-	do_hash(hashout,tmp);
+	hash_set_16(tmp,data,inc,do_blizzard_hash);
+	do_hash(hashout,tmp,do_blizzard_hash);
 
 	data += inc;
 	size -= inc;
@@ -174,6 +220,84 @@ extern int bnet_hash(t_hash * hashout, unsigned int size, void const * datain)
     return 0;
 }
 
+static void hash_set_length(t_uint32 * dst, unsigned int size){
+  t_uint32 size_high = 0;
+  t_uint32 size_low  = 0;
+  unsigned int counter;
+  for (counter=0; counter<size; counter++){
+      size_low += 8;
+      if (size_low==0)
+        size_high++;
+  }
+
+  dst[14] |= ((size_high >> 24) & 0xff) <<24;
+  dst[14] |= ((size_high >> 16) & 0xff) <<16;
+  dst[14] |= ((size_high >> 8) & 0xff) <<8;
+  dst[14] |= ((size_high ) & 0xff);
+
+  dst[15] |= ((size_low >> 24) & 0xff) <<24;
+  dst[15] |= ((size_low >> 16) & 0xff) <<16;
+  dst[15] |= ((size_low >> 8) & 0xff) <<8;
+  dst[15] |= ((size_low ) & 0xff);
+}
+
+
+extern int sha1_hash(t_hash * hashout, unsigned int size, void const * datain)
+{
+    t_uint32              tmp[64+16];
+    unsigned char const * data;
+    unsigned int          inc;
+    unsigned int          orgSize;
+
+    if (!hashout || !*hashout)
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hashout");
+	return -1;
+    }
+    if (size>0 && !datain)
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL datain with size=%u",size);
+	return -1;
+    }
+
+    hash_init(hashout);
+    orgSize = size;
+
+    data = (const unsigned char*)datain;
+    while (size>0)
+    {
+	if (size>=64)
+	    inc = 64;
+	else
+	    inc = size;
+
+	if (size>=64)
+	{
+	    hash_set_16(tmp,data,inc, do_sha1_hash);
+	    do_hash(hashout,tmp, do_sha1_hash);
+	}
+	else if (size>55){
+
+            hash_set_16(tmp,data,inc, do_sha1_hash);
+	    do_hash(hashout,tmp, do_sha1_hash);
+
+            // now use blizz variant as we only wanna fill in zeros
+	    hash_set_16(tmp,data,0, do_blizzard_hash);
+	    hash_set_length(tmp,orgSize);
+	    do_hash(hashout,tmp, do_sha1_hash);
+	}
+	else{
+	    hash_set_16(tmp,data,inc, do_sha1_hash);
+            hash_set_length(tmp,orgSize);
+	    do_hash(hashout,tmp, do_sha1_hash);
+	}
+
+	data += inc;
+	size -= inc;
+    }
+
+    return 0;
+}
 
 extern int hash_eq(t_hash const h1, t_hash const h2)
 {
