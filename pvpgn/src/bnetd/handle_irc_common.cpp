@@ -217,16 +217,16 @@ static int handle_irc_common_line(t_connection * conn, char const * ircline)
 
     	eventlog(eventlog_level_debug,__FUNCTION__,"[%d] got \"%s\" \"%s\" [%s] \"%s\"",conn_get_socket(conn),((prefix)?(prefix):("")),command,paramtemp,((text)?(text):("")));
 
+    if (conn_get_class(conn) == conn_class_ircinit) {
+	    handle_irc_common_set_class(conn, command, numparams, params, text);
+    }
+
     if (conn_get_state(conn)==conn_state_connected) {
 	t_timer_data temp;
 
 	conn_set_state(conn,conn_state_bot_username);
 	temp.n = prefs_get_irc_latency();
 	conn_test_latency(conn,std::time(NULL),temp);
-    }
-
-    if (conn_get_class(conn) == conn_class_ircinit) {
-	    handle_irc_common_set_class(conn, command, numparams, params, text);
     }
 
 	if (handle_irc_common_con_command(conn, command, numparams, params, text)!=-1) {}
