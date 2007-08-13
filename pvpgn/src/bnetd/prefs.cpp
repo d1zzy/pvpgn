@@ -159,6 +159,7 @@ static struct {
     unsigned int sync_on_logoff;
     char const * irc_network_name;
 
+    char const * apiregaddrs;
     char const * woladdrs;
     char const * wservaddrs;
     char const * wgameresaddrs;
@@ -635,6 +636,10 @@ static int conf_setdef_irc_network_name(void);
 static int conf_set_irc_network_name(const char *valstr);
 static const char *conf_get_irc_network_name(void);
 
+static int conf_setdef_apireg_addrs(void);
+static int conf_set_apireg_addrs(const char *valstr);
+static const char *conf_get_apireg_addrs(void);
+
 static int conf_setdef_wgameres_addrs(void);
 static int conf_set_wgameres_addrs(const char *valstr);
 static const char *conf_get_wgameres_addrs(void);
@@ -780,6 +785,7 @@ static t_conf_entry conf_table[] =
     { "ladder_prefix",		conf_set_ladder_prefix,	       conf_get_ladder_prefix,conf_setdef_ladder_prefix},
     { "irc_network_name",		conf_set_irc_network_name,	       conf_get_irc_network_name, conf_setdef_irc_network_name},
 
+    { "apiregaddrs",		conf_set_apireg_addrs,	       conf_get_apireg_addrs, conf_setdef_apireg_addrs},
     { "wgameresaddrs",		conf_set_wgameres_addrs,	       conf_get_wgameres_addrs, conf_setdef_wgameres_addrs},
     { "wservaddrs",		conf_set_wserv_addrs,	       conf_get_wserv_addrs, conf_setdef_wserv_addrs},
     { "woladdrs",		conf_set_wol_addrs,	       conf_get_wol_addrs, conf_setdef_wol_addrs},
@@ -3326,6 +3332,26 @@ static const char* conf_get_irc_network_name(void)
 /**
 *  Westwood Online Extensions
 */
+extern char const * prefs_get_apireg_addrs(void)
+{
+    return prefs_runtime_config.apiregaddrs;
+}
+
+static int conf_set_apireg_addrs(const char *valstr)
+{
+    return conf_set_str(&prefs_runtime_config.apiregaddrs,valstr,NULL);
+}
+
+static int conf_setdef_apireg_addrs(void)
+{
+    return conf_set_str(&prefs_runtime_config.apiregaddrs,NULL,BNETD_APIREG_ADDRS);
+}
+
+static const char* conf_get_apireg_addrs(void)
+{
+    return prefs_runtime_config.apiregaddrs;
+}
+
 extern char const * prefs_get_wgameres_addrs(void)
 {
     return prefs_runtime_config.wgameresaddrs;

@@ -85,6 +85,7 @@
 #include "team.h"
 #include "realm.h"
 #include "topic.h"
+#include "handle_apireg.h"
 #include "common/setup_after.h"
 
 /* out of memory safety */
@@ -319,6 +320,7 @@ int pre_server_startup(void)
     timerlist_create();
     server_set_hostname();
     channellist_create();
+    apireglist_create();
     if (helpfile_init(prefs_get_helpfile())<0)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load helpfile");
     ipbanlist_create();
@@ -392,6 +394,7 @@ void post_server_shutdown(int status)
     	    ipbanlist_save(prefs_get_ipbanfile());
     	    ipbanlist_destroy();
     	    helpfile_unload();
+	    apireglist_destroy();
     	    channellist_destroy();
 	    server_clear_hostname();
     	    timerlist_destroy();
