@@ -88,7 +88,8 @@ extern unsigned int maxuserid;
 
 extern int accountlist_reload(void);
 extern int account_check_name(char const * name);
-extern unsigned int account_get_uid(t_account const * account);
+#define account_get_uid(A) account_get_uid_real(A,__FILE__,__LINE__)
+extern unsigned int account_get_uid_real(t_account const * account, char const * fn, unsigned int ln);
 extern int account_match(t_account * account, char const * username);
 extern int account_save(t_account *account, unsigned flags);
 extern char const * account_get_strattr_real(t_account * account, char const * key, char const * fn, unsigned int ln);
