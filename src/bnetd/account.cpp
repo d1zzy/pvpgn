@@ -178,10 +178,10 @@ static void account_destroy(t_account * account)
 }
 
 
-extern unsigned int account_get_uid(t_account const * account)
+extern unsigned int account_get_uid_real(t_account const * account, char const * fn, unsigned int ln)
 {
     if (!account) {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL account");
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL account (from %s:%u)",fn,ln);
 	return 0;
     }
 
