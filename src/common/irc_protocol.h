@@ -33,7 +33,7 @@
 /* IRC Defines */
 #define WOL_NICKNAME_LEN 9
 
-#define CHANNEL_PREFIX "(ov)@+"
+#define CHANNEL_PREFIX "(ohv)@%+"
 #define CHANNEL_TYPE   "#"
 
 /* Reply Defines */

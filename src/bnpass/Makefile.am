@@ -1,8 +1,13 @@
 AM_CPPFLAGS=-I$(top_srcdir)/src
 
-bin_PROGRAMS = bnpass
+bin_PROGRAMS = bnpass sha1pass
 
 bnpass_SOURCES = bnpass.cpp
 
 bnpass_LDADD = $(top_builddir)/src/common/libcommon.a \
+	$(top_builddir)/src/compat/libcompat.a
+
+sha1pass_SOURCES = sha1pass.cpp
+
+sha1pass_LDADD = $(top_builddir)/src/common/libcommon.a \
 	$(top_builddir)/src/compat/libcompat.a

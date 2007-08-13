@@ -170,6 +170,17 @@ const char * const BNETD_WAR3_ICON_FILE = "icons-WAR3.bni";
 const char * const BNETD_STAR_ICON_FILE = "icons_STAR.bni";
 const char * const BNETD_MPQ_FILE = "autoupdate";
 
+/* Westwood Online default configuration values */
+const char * const BNETD_APIREG_ADDRS = "";
+const int BNETD_APIREG_PORT = 5400;
+const char * const BNETD_WOL_ADDRS = "";
+const int BNETD_WOL_PORT = 4000;
+const char * const BNETD_WSERV_ADDRS = "";
+const int BNETD_WSERV_PORT = 4005;
+const char * const BNETD_WGAMERES_ADDRS = "";
+const int BNETD_WGAMERES_PORT = 4807;
+
+
 /* other default configuration values */
 const char * const BNETD_LOG_LEVELS = "warn,error";
 const char * const BNETD_SERV_ADDRS = ""; /* this means none */
@@ -180,12 +191,6 @@ const char * const BNETD_SERVERNAME = "PvPGN Realm";
 const char * const BNETD_IRC_ADDRS = ""; /* this means none */
 const int BNETD_IRC_PORT = 6667; /* used if port not specified */
 const char * const BNETD_IRC_NETWORK_NAME  = "PvPGN";
-const char * const BNETD_WOL_ADDRS = "";
-const int BNETD_WOL_PORT = 4000;
-const char * const BNETD_WSERV_ADDRS = "";
-const int BNETD_WSERV_PORT = 4005;
-const char * const BNETD_WGAMERES_ADDRS = "";
-const int BNETD_WGAMERES_PORT = 4807;
 const char * const BNETD_TRACK_ADDRS = "track.pvpgn.org";
 const int BNETD_TRACK_PORT = 6114; /* use this port if not specified */
 const int BNETD_DEF_TEST_PORT = 6112; /* default guess for UDP test port */

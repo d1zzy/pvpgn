@@ -61,6 +61,7 @@
 #include "handle_d2cs.h"
 #include "handle_irc_common.h"
 #include "handle_udp.h"
+#include "handle_apireg.h"
 #include "anongame.h"
 #include "clan.h"
 #include "attrlayer.h"
@@ -203,6 +204,8 @@ static char const * laddr_type_get_str(t_laddr_type laddr_type)
 	return "wol";
     case laddr_type_wserv:
 	return "wserv";
+    case laddr_type_apireg:
+	return "apireg";
     case laddr_type_wgameres:
 	return "wgameres";
     case laddr_type_telnet:
@@ -343,6 +346,10 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 	case laddr_type_wol:
 	case laddr_type_wserv:
 	    conn_set_class(c,conn_class_ircinit);
+	    conn_set_state(c,conn_state_connected);
+	    break;
+	case laddr_type_apireg:
+	    conn_set_class(c,conn_class_apireg);
 	    conn_set_state(c,conn_state_connected);
 	    break;
 	case laddr_type_wgameres:
@@ -522,6 +529,7 @@ static int sd_tcpinput(t_connection * c)
 	case conn_class_irc:
 	case conn_class_wol:
 	case conn_class_wserv:
+ 	case conn_class_apireg:
 	case conn_class_wgameres:
 	case conn_class_telnet:
 	    if (!(packet = packet_create(packet_class_raw)))
@@ -640,6 +648,9 @@ static int sd_tcpinput(t_connection * c)
 		case conn_class_wol:
 		case conn_class_wgameres: /* NOTICE: Will be handled in other file */
 		    ret = handle_irc_common_packet(c,packet);
+		    break;
+		case conn_class_apireg:
+		    ret = handle_apireg_packet(c,packet);
 		    break;
 		case conn_class_w3route:
 		    ret = handle_w3route_packet(c,packet);
@@ -1454,7 +1465,7 @@ extern int server_process(void)
 	_shutdown_addrs(laddrs);
 	return -1;
     }
-    
+
     /* Append list of addresses to listen for WSERV IRC connections */
     if (_setup_add_addrs(&laddrs, prefs_get_wserv_addrs(),INADDR_ANY,BNETD_WSERV_PORT, laddr_type_wserv))
     {
@@ -1462,7 +1473,15 @@ extern int server_process(void)
 	_shutdown_addrs(laddrs);
 	return -1;
     }
-    
+
+    /* Append list of addresses to listen for APIREGISER connections */
+    if (_setup_add_addrs(&laddrs, prefs_get_apireg_addrs(),INADDR_ANY,BNETD_APIREG_PORT, laddr_type_apireg))
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"could not create %s server address list from \"%s\"",laddr_type_get_str(laddr_type_apireg),prefs_get_apireg_addrs());
+	_shutdown_addrs(laddrs);
+	return -1;
+    }
+
     /* Append list of addresses to listen for WGAMERES connections */
     if (_setup_add_addrs(&laddrs, prefs_get_wgameres_addrs(),INADDR_ANY,BNETD_WGAMERES_PORT, laddr_type_wgameres))
     {

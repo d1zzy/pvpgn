@@ -278,16 +278,18 @@ extern char const * conn_class_get_str(t_conn_class cclass)
 	return "telnet";
     case conn_class_irc:
 	return "irc";
-	case conn_class_wol:
-    return "wol";
-	case conn_class_wserv:
-    return "wserv";
-	case conn_class_wgameres:
-    return "wgameres";
+    case conn_class_wol:
+        return "wol";
+    case conn_class_wserv:
+        return "wserv";
+    case conn_class_apireg:
+        return "apireg";
+    case conn_class_wgameres:
+        return "wgameres";
     case conn_class_none:
-	return "none";
-	case conn_class_w3route:
-	return "w3route";
+        return "none";
+    case conn_class_w3route:
+        return "w3route";
     default:
 	return "UNKNOWN";
     }

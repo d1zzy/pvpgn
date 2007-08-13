@@ -36,6 +36,7 @@ typedef enum
     laddr_type_irc,   	/* Internet Relay Chat service (port is varying; mostly on port 6667 or 7000) */
     laddr_type_wol,	    /* Westwood Online (IRC) Chat Services (port is 4000) */
     laddr_type_wserv,   /* Westwood servserv (IRC) Services (port is 4005) */
+    laddr_type_apireg,  /* Westwood API Register Services (port is 5700) */
     laddr_type_wgameres,/* Westwood gameres Services (port is 4807) */
     laddr_type_telnet 	/* telnet service (usually on port 23) */
 } t_laddr_type;
