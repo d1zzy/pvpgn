@@ -631,6 +631,11 @@ extern void conn_destroy(t_connection * c, t_elem ** elem, int conn_or_dead_list
     if (c->protocol.chat.irc.ircpass)
 	xfree((void *)c->protocol.chat.irc.ircpass); /* avoid warning */
 
+    if (c->protocol.wol.apgar)
+		xfree((void *)c->protocol.wol.apgar); /* avoid warning */
+    if (c->protocol.wol.gameOptions)
+    	xfree((void *)c->protocol.wol.gameOptions); /* avoid warning */
+
     /* ADDED BY UNDYING SOULZZ 4/8/02 */
     if (c->protocol.w3.w3_playerinfo)
 	xfree((void *)c->protocol.w3.w3_playerinfo); /* avoid warning */
