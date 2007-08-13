@@ -1,7 +1,7 @@
 [Project]
 FileName=PvPGNConsole.dev
 Name=PvPGNConsole
-UnitCount=268
+UnitCount=272
 Type=1
 Ver=1
 ObjFiles=
@@ -2727,3 +2727,42 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
+[Unit269]
+FileName=..\src\common\wolhash.h
+CompileCpp=1
+Folder=common/Header Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit270]
+FileName=..\src\common\wolhash.cpp
+CompileCpp=1
+Folder=common/Source Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit271]
+FileName=..\src\bnetd\handle_apireg.h
+CompileCpp=1
+Folder=bnetd/Header Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit272]
+FileName=..\src\bnetd\handle_apireg.cpp
+CompileCpp=1
+Folder=bnetd/Source Files
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=

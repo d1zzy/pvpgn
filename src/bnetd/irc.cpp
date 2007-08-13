@@ -982,7 +982,7 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
 	    return -1;
         }
         irc_send_rpl_namreply_internal(c, channel);
-        std:sprintf(temp, "%.32s :End of NAMES list", ircname);
+        std::sprintf(temp, "%.32s :End of NAMES list", ircname);
     } else {
         t_elem const * curr;
         LIST_TRAVERSE_CONST(channellist(),curr)
