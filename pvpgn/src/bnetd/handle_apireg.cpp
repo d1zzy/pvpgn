@@ -773,8 +773,8 @@ static int _handle_request_apiregtag(t_apiregmember * apiregmember, char * param
 	   return -1;
 	}
 
-    if (apiregmember->parentemail)
-    	xfree((void *)apiregmember->parentemail);   /* avoid warning */
+    if (apiregmember->request)
+    	xfree((void *)apiregmember->request);   /* avoid warning */
 
 	if (param)
  	   apiregmember->request = xstrdup(param);
