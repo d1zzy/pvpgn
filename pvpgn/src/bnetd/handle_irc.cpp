@@ -179,8 +179,8 @@ extern int handle_irc_welcome(t_connection * conn)
         std::sprintf(temp,":Maximum length exceeded");
     irc_send(conn,RPL_MYINFO,temp);
 
-    std::sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX="CHANNEL_PREFIX" CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
-    MAX_CHARNAME_LEN, MAX_TOPIC_LEN, MAX_CHANNELNAME_LEN, prefs_get_irc_network_name());
+    std::sprintf(temp,"NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX=%s CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
+    MAX_CHARNAME_LEN, MAX_TOPIC_LEN, MAX_CHANNELNAME_LEN, CHANNEL_PREFIX, prefs_get_irc_network_name());
 
     if((std::strlen(temp))<=MAX_IRC_MESSAGE_LEN)
         irc_send(conn,RPL_ISUPPORT,temp);
