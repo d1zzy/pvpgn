@@ -13,6 +13,7 @@ PvPGN Version History:
 
 [MISC]
   -- added /clan whisper subcommand
+
  ChangeLog for 1.8.1 (since 1.8.0)
 =========================================
 
@@ -21,6 +22,8 @@ PvPGN Version History:
   -- fixed bug overflowing the max players game limit
   -- fixed bug of not showing Yuri's revenge channels
   -- added address translation support to servserv sent addresses
+  -- added support for usage of /commands
+  -- added apireg support
 
 [WAR3]
   -- fixed possible server crash on ill-formated clan invitation reply packet
