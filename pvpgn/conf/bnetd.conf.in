@@ -417,6 +417,11 @@ hashtable_size = 61
 # default setting is "-_[]" as it was previous versions
 account_allowed_symbols = "-_[]"
 
+# This setting affects users that login with their uid rather than their 
+# username. If set to true their displayed username will be forcefully 
+# converted to their registered account name.
+account_force_username = false
+
 # maximum number of friends a user can add to there friends list
 # default setting is 20
 max_friends = 20

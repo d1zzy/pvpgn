@@ -306,7 +306,7 @@ extern int handle_telnet_packet(t_connection * c, t_packet const * const packet)
 			conn_push_outqueue(c,rpacket);
 			packet_del_ref(rpacket);
 		    }
-		    message_send_text(c,message_type_uniqueid,c,account_get_name(account));
+		    message_send_text(c,message_type_uniqueid,c,loggeduser);
 
 		    conn_login(c,account,loggeduser);
 

@@ -139,6 +139,7 @@ static struct {
     unsigned int XML_output_ladder;
     unsigned int XML_status_output;
     char const * account_allowed_symbols;
+    unsigned int account_force_username;
     char const * command_groups_file;
     char const * tournament_file;
     char const * aliasfile;
@@ -564,6 +565,10 @@ static int conf_set_account_allowed_symbols(const char *valstr);
 static const char *conf_get_account_allowed_symbols(void);
 static int conf_setdef_account_allowed_symbols(void);
 
+static int conf_set_account_force_username(const char *valstr);
+static const char *conf_get_account_force_username(void);
+static int conf_setdef_account_force_username(void);
+
 static int conf_set_command_groups_file(const char *valstr);
 static const char *conf_get_command_groups_file(void);
 static int conf_setdef_command_groups_file(void);
@@ -766,6 +771,7 @@ static t_conf_entry conf_table[] =
     { "XML_output_ladder",      conf_set_XML_output_ladder,    conf_get_XML_output_ladder,conf_setdef_XML_output_ladder},
     { "XML_status_output",      conf_set_XML_status_output,    conf_get_XML_status_output,conf_setdef_XML_status_output},
     { "account_allowed_symbols",conf_set_account_allowed_symbols,conf_get_account_allowed_symbols,conf_setdef_account_allowed_symbols},
+    { "account_force_username", conf_set_account_force_username,conf_get_account_force_username,conf_setdef_account_force_username},
     { "command_groups_file",	conf_set_command_groups_file,  conf_get_command_groups_file,conf_setdef_command_groups_file},
     { "tournament_file",	conf_set_tournament_file,      conf_get_tournament_file,conf_setdef_tournament_file},
     { "aliasfile"          ,    conf_set_aliasfile,            conf_get_aliasfile,    conf_setdef_aliasfile},
@@ -2919,6 +2925,26 @@ static const char* conf_get_account_allowed_symbols(void)
 	return prefs_runtime_config.account_allowed_symbols;
 }
 
+
+extern unsigned int prefs_get_account_force_username(void)
+{
+	return prefs_runtime_config.account_force_username;
+}
+
+static int conf_set_account_force_username(const char *valstr)
+{
+    return conf_set_bool(&prefs_runtime_config.account_force_username,valstr,0);
+}
+
+static int conf_setdef_account_force_username(void)
+{
+    return conf_set_bool(&prefs_runtime_config.account_force_username,NULL,0);
+}
+
+static const char* conf_get_account_force_username(void)
+{
+    return conf_get_bool(prefs_runtime_config.account_force_username);
+}
 
 extern char const * prefs_get_command_groups_file(void)
 {
