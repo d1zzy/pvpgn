@@ -2476,6 +2476,7 @@ typedef struct
 #define W3_RACE_ORCS				2
 #define W3_RACE_UNDEAD				8
 #define W3_RACE_NIGHTELVES			4
+#define W3_RACE_DEMONS				16
 
 #define W3_ICON_RANDOM				0 /* - Although when client presses random in PG and it sends "32" its "0" for icon */
 #define W3_ICON_HUMANS				1
