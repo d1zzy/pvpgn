@@ -152,6 +152,7 @@ extern int prefs_get_XML_output_ladder(void) ;
 extern int prefs_get_XML_status_output(void) ;
 
 extern char const * prefs_get_account_allowed_symbols(void) ;
+extern unsigned int prefs_get_account_force_username(void);
 
 extern char const * prefs_get_command_groups_file(void) ;
 extern char const * prefs_get_tournament_file(void) ;

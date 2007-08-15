@@ -1494,7 +1494,28 @@ extern int conn_set_loggeduser(t_connection * c, char const * username)
     assert(c != NULL);
     assert(username != NULL);
 
-    temp = xstrdup(username);
+    if (username[0]!='#')
+        temp = xstrdup(username);
+    else {
+        unsigned int userid=0;
+	str_to_uint(&username[1],&userid);
+	if (userid!=0){
+	    if (prefs_get_account_force_username()){
+	        t_account* account = accountlist_find_account_by_uid(userid);
+	        temp = xstrdup(account_get_name(account));
+	    }
+	    else{
+	        char uid_string[MAX_USERNAME_LEN];
+		sprintf(uid_string,"#%i",userid);
+		temp = xstrdup(uid_string);
+	    }
+	}
+	else{  //theoretically this should never happen...
+	    eventlog(eventlog_level_error,__FUNCTION__,"got invalid numeric uid \"%s\"",username);
+	    // set value that would have been set prior to this bugfix...
+            temp = xstrdup(username);
+        }
+    }
     if (c->protocol.loggeduser) xfree((void*)c->protocol.loggeduser);
 
     c->protocol.loggeduser = temp;

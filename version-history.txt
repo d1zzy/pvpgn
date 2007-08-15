@@ -37,6 +37,8 @@ PvPGN Version History:
   to "StarCraft: Brood War" (to better match battle.net behaviour)
   -- fixed possible server crash caused by /ipban command
   -- enforce (stricter) limit for maximum channel name length 
+  -- fixed problems caused by login via uid
+  -- added new "account_force_username" option to bnetd.conf
 
 [VCHECK]
   -- added WAR3/W3XP IX86 1.21 vcheck entries
