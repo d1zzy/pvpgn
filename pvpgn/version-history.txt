@@ -27,6 +27,7 @@ PvPGN Version History:
 
 [WAR3]
   -- fixed possible server crash on ill-formated clan invitation reply packet
+  -- properly display tourney wins/losses in account profile
 
 [MISC]
   -- fixed d2dbs accepting d2gs connections from any ip

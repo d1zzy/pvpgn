@@ -212,16 +212,18 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 	int ffalevel=account_get_ladder_level(account,ctag,ladder_id_ffa);
 	int ffarank=account_get_ladder_rank(account,ctag,ladder_id_ffa);
 
-	int humanwins=account_get_racewins(account,1,ctag);
-	int humanlosses=account_get_racelosses(account,1,ctag);
-	int orcwins=account_get_racewins(account,2,ctag);
-	int orclosses=account_get_racelosses(account,2,ctag);
-	int undeadwins=account_get_racewins(account,8,ctag);
-	int undeadlosses=account_get_racelosses(account,8,ctag);
-	int nightelfwins=account_get_racewins(account,4,ctag);
-	int nightelflosses=account_get_racelosses(account,4,ctag);
-	int randomwins=account_get_racewins(account,0,ctag);
-	int randomlosses=account_get_racelosses(account,0,ctag);
+	int humanwins=account_get_racewins(account,W3_RACE_HUMANS,ctag);
+	int humanlosses=account_get_racelosses(account,W3_RACE_HUMANS,ctag);
+	int orcwins=account_get_racewins(account,W3_RACE_ORCS,ctag);
+	int orclosses=account_get_racelosses(account,W3_RACE_ORCS,ctag);
+	int undeadwins=account_get_racewins(account,W3_RACE_UNDEAD,ctag);
+	int undeadlosses=account_get_racelosses(account,W3_RACE_UNDEAD,ctag);
+	int nightelfwins=account_get_racewins(account,W3_RACE_NIGHTELVES,ctag);
+	int nightelflosses=account_get_racelosses(account,W3_RACE_NIGHTELVES,ctag);
+	int randomwins=account_get_racewins(account,W3_RACE_RANDOM,ctag);
+	int randomlosses=account_get_racelosses(account,W3_RACE_RANDOM,ctag);
+	int tourneywins=account_get_racewins(account,W3_RACE_DEMONS,ctag);
+	int tourneylosses=account_get_racelosses(account,W3_RACE_DEMONS,ctag);
 
 	unsigned char rescount;
 
@@ -317,8 +319,10 @@ static int _client_anongame_profile(t_connection * c, t_packet const * const pac
 	packet_append_data(rpacket,&temp,2); //elf wins
 	bn_int_set((bn_int*)&temp,nightelflosses);
 	packet_append_data(rpacket,&temp,2); //elf losses
-	temp=0;
-	packet_append_data(rpacket,&temp,4);
+	bn_int_set((bn_int*)&temp,tourneywins);
+	packet_append_data(rpacket,&temp,2); //tourney wins
+	bn_int_set((bn_int*)&temp,tourneylosses);
+	packet_append_data(rpacket,&temp,2); //tourney losses
 	//end of normal stats - Start of AT stats
 
 	/* 1 byte team count place holder, set later */
@@ -453,7 +457,7 @@ static int _client_anongame_get_icon(t_connection * c, t_packet const * const pa
 	// FIXED BY DJP 07/16/2003 FOR 110 CHANGE ( TOURNEY & RACE WINS ) + Table_witdh
 	short icon_req_race_wins;
 	short icon_req_tourney_wins;
-        int race[]={W3_RACE_RANDOM,W3_RACE_HUMANS,W3_RACE_ORCS,W3_RACE_UNDEAD,W3_RACE_NIGHTELVES,W3_ICON_DEMONS};
+        int race[]={W3_RACE_RANDOM,W3_RACE_HUMANS,W3_RACE_ORCS,W3_RACE_UNDEAD,W3_RACE_NIGHTELVES,W3_RACE_DEMONS};
         char race_char[6] ={'R','H','O','U','N','D'};
         char icon_pos[5] ={'2','3','4','5','6',};
         char table_width = 6;

@@ -1831,17 +1831,16 @@ extern char const * race_get_str(unsigned int race)
 	case W3_RACE_HUMANS:
 	    return "humans";
 	case W3_RACE_UNDEAD:
+	case W3_ICON_UNDEAD:
 	    return "undead";
 	case W3_RACE_NIGHTELVES:
 	    return "nightelves";
 	case W3_RACE_RANDOM:
-	    return "random";
-	case W3_ICON_UNDEAD:
-		return "undead";
 	case W3_ICON_RANDOM:
-		return "random";
+	    return "random";
+	case W3_RACE_DEMONS:
 	case W3_ICON_DEMONS:
-		return "demons";
+	    return "demons";
 	default:
 	    eventlog(eventlog_level_warn,__FUNCTION__,"unknown race: %x", race);
 	    return NULL;
