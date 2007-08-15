@@ -6,10 +6,13 @@ PvPGN Version History:
  For more details also take a peek view into conversion-changelog.
 
 [WOL]
+  -- completed support for all WOL clients (read IGNOREME.TXT)
   -- disable account creation via irc/wol when new_accounts=false
   -- added support to allow/deny WOL clients in bnconf.conf
   -- added support for battle clans
   -- added various protocol related fixes
+  -- added apireg support
+  -- added support for BattleClans
 
 [MISC]
   -- added /clan whisper subcommand
@@ -23,7 +26,6 @@ PvPGN Version History:
   -- fixed bug of not showing Yuri's revenge channels
   -- added address translation support to servserv sent addresses
   -- added support for usage of /commands
-  -- added apireg support
 
 [WAR3]
   -- fixed possible server crash on ill-formated clan invitation reply packet

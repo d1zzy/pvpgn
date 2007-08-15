@@ -377,27 +377,24 @@ static int handle_apireg_line(t_connection * conn, char const * apiregline)
 	    WARN0("line to long, truncation...");
 	    tmp[254]='\0';
     }
-    
+
     if (!apiregmember) {
         apiregmember = apiregmember_create(conn);
     }
-
     line = xstrdup(apiregline);
 
-    /* split the message */
-    
+    /* split the line */
     tag = line;
     param = std::strchr(tag,'=');
     if (param)
         *param++ = '\0';
 
-	eventlog(eventlog_level_error,__FUNCTION__,"(%s)NICK:%s/BMONTH:%s/BDAY:%s",tag,apiregmember_get_newnick(apiregmember),apiregmember_get_bmonth(apiregmember),apiregmember_get_bday(apiregmember));
-    
+
+    eventlog(eventlog_level_debug,__FUNCTION__,"[%d] got \"%s\" [%s]",conn_get_socket(conn),tag,((param)?(param):("")));
+
     if (handle_apireg_tag(apiregmember, tag, param)!=-1) {}
-    
-    
     xfree(line);
-    
+
     return 0;
 }
 
@@ -478,7 +475,7 @@ static int apireg_send(t_connection * conn, char const * command)
     
     packet_set_size(p,0);
     packet_append_data(p,data,len);
-    ERROR2("[%d] sent \"%s\"",conn_get_socket(conn),data);
+    DEBUG2("[%d] sent \"%s\"",conn_get_socket(conn),data);
     conn_push_outqueue(conn,p);
     packet_del_ref(p);
 
@@ -583,7 +580,7 @@ static int _handle_sku_apiregtag(t_apiregmember * apiregmember, char * param)
 	   return -1;
 	}
 
-/* We have SKUs */
+	/* We have SKUs */
 
 	return 0;
 }
@@ -595,7 +592,7 @@ static int _handle_ver_apiregtag(t_apiregmember * apiregmember, char * param)
 	   return -1;
 	}
 
-/* We have VERs */
+	/* We have VERs */
 
 	return 0;
 }
@@ -782,6 +779,11 @@ static int _handle_request_apiregtag(t_apiregmember * apiregmember, char * param
 	return 0;
 }
 
+/*static char _handle_apireg_message_format(char const * hresult, char const * message, char const * newnick, char const * newpass, char const * age, char const * consent)
+{
+    
+}*/
+
 static int _handle_end_apiregtag(t_apiregmember * apiregmember, char * param)
 {
 	char data[MAX_IRC_MESSAGE_LEN];
@@ -793,10 +795,10 @@ static int _handle_end_apiregtag(t_apiregmember * apiregmember, char * param)
 	char const * newpass = apiregmember_get_newpass(apiregmember);
 	char const * email = apiregmember_get_email(apiregmember);
 //    char const * newpass2 = apiregmember_get_newpass2(apiregmember);
-	char hresult[11];
+	char hresult[12];
 	char message[MAX_IRC_MESSAGE_LEN];
-	char age[7];
-	char consent[11];
+	char age[8];
+	char consent[12];
 
    	std::memset(data,0,sizeof(data));
    	std::memset(temp,0,sizeof(temp));
@@ -806,74 +808,72 @@ static int _handle_end_apiregtag(t_apiregmember * apiregmember, char * param)
    	std::memset(age,0,sizeof(age));
    	std::memset(consent,0,sizeof(consent));
 
-   	std::snprintf(hresult,sizeof(hresult),"0");
-   	std::snprintf(message,sizeof(message),"((Message))");
-   	std::snprintf(age,sizeof(age),"((Age))");
-    std::snprintf(consent,sizeof(consent),"((Consent))");
+   	snprintf(hresult,sizeof(hresult),"0");
+   	snprintf(message,sizeof(message),"((Message))");
+   	snprintf(age,sizeof(age),"((Age))");
+    snprintf(consent,sizeof(consent),"((Consent))");
 
 //   	if (!newnick)
-//   	   std::snprintf(newnick,sizeof(newnick),"((NewNick))");
+//   	   snprintf(newnick,sizeof(newnick),"((NewNick))");
 
 //   	if (!newpass)
-//   	   std::snprintf(newpass,sizeof(newpass),"((NewPass))");
+//   	   snprintf(newpass,sizeof(newpass),"((NewPass))");
 
 //   	if (!email)
-//   	   std::snprintf(email,sizeof(email),"((Email))");
+//   	   snprintf(email,sizeof(email),"((Email))");
 
 	DEBUG3("APIREG:/%s/%s/%s/",apiregmember_get_request(apiregmember),apiregmember_get_newnick(apiregmember),apiregmember_get_newpass(apiregmember));
 	
-    //if(!prefs_get_allow_new_accounts()){
-    //message_send_text(conn,message_type_error,conn,"Account creation is not allowed");
-    //break;
-    //std::snprintf(message,sizeof(message),"Account creation is not allowed");
-    //std::snprintf(hresult,sizeof(hresult),"-2147221248");
-
     if (std::strcmp(apiregmember_get_request(apiregmember), REQUEST_AGEVERIFY) == 0) {
-        std::snprintf(data,sizeof(data),"HRESULT=%s\nMessage=%s\nNewNick=((NewNick))\nNewPass=((NewPass))\n",hresult,message);
+        snprintf(data,sizeof(data),"HRESULT=%s\nMessage=%s\nNewNick=((NewNick))\nNewPass=((NewPass))\n",hresult,message);
         /* FIXME: Count real age here! */
-   	    std::snprintf(age,sizeof(age),"28"); /* FIXME: Here must be counted age */
-        std::snprintf(temp,sizeof(temp),"Age=%s\nConsent=((Consent))\nEND\r",age);
+   	    snprintf(age,sizeof(age),"28"); /* FIXME: Here must be counted age */
+        snprintf(temp,sizeof(temp),"Age=%s\nConsent=((Consent))\nEND\r",age);
         std::strcat(data,temp);
        	apireg_send(apiregmember_get_conn(apiregmember),data);
        	return 0;
     }
     else if (std::strcmp(apiregmember_get_request(apiregmember), REQUEST_GETNICK) == 0) {
-         /*std::snprintf(message,sizeof(message),"Account creation is not allowed");
-  	     /*std::snprintf(hresult,sizeof(hresult),"-2147221248");
-        /* Chceck */
-           account = accountlist_find_account(newnick);
-           if (!account) {  // done, we can create new account
-              t_account * tempacct;
-              t_hash bnet_pass_hash;
-              t_wolhash wol_pass_hash;
+        if(!prefs_get_allow_new_accounts()){
+            snprintf(message,sizeof(message),"Account creation is not allowed");
+            snprintf(hresult,sizeof(hresult),"-2147221248");
+        }
+        else {
+            /* Chceck */
+            account = accountlist_find_account(newnick);
+            if (!account) {  /* done, we can create new account */
+                t_account * tempacct;
+                t_hash bnet_pass_hash;
+                t_wolhash wol_pass_hash;
 
-              // Here we will also check serials and/or emails...
+                /* Here we can also check serials and/or emails... */
 
-        	  bnet_hash(&bnet_pass_hash,std::strlen(newpass),newpass);
-              wol_hash(&wol_pass_hash,std::strlen(newpass),newpass);
+                bnet_hash(&bnet_pass_hash,std::strlen(newpass),newpass);
+                wol_hash(&wol_pass_hash,std::strlen(newpass),newpass);
 
-              tempacct = accountlist_create_account(newnick,hash_get_str(bnet_pass_hash));
+                tempacct = accountlist_create_account(newnick,hash_get_str(bnet_pass_hash));
 
-              if (!tempacct) {
-                  // ERROR: Account is not created! - Why? :)
-                  return 0;
-              }
-              else {
-                  // HASH WOL PASSWORD and save it!
-                  eventlog(eventlog_level_error,__FUNCTION__,"WOLHASH: %s",wol_pass_hash);
-                  account_set_wol_apgar(tempacct,wol_pass_hash);
-                  account_set_email(tempacct,apiregmember_get_email(apiregmember));
-                  std::snprintf(message,sizeof(message),"Welcome in the amazing world of PvPGN! Your login can be used for all PvPGN Supported games!");
-              }
-           }
-           else {
-              // Account with this NICK is alredy created!
-              std::snprintf(hresult,sizeof(hresult),"-2147221248");
-              std::snprintf(message,sizeof(message),"That login is already in use! Please try another NICK name.");
-           }
-        std::snprintf(data,sizeof(data),"HRESULT=%s\nMessage=%s\nNewNick=%s\nNewPass=%s\nAge=%s\nConsent=0\nEND\r",hresult,message,newnick,newpass,age,consent);
-       	apireg_send(apiregmember_get_conn(apiregmember),data);
-       	return 0;
+                if (!tempacct) {
+                    // ERROR: Account is not created! - Why? :)
+                    return 0;
+                }
+                else {
+                    eventlog(eventlog_level_debug,__FUNCTION__,"WOLHASH: %s",wol_pass_hash);
+                    account_set_wol_apgar(tempacct,wol_pass_hash);
+                    account_set_email(tempacct,apiregmember_get_email(apiregmember));
+                    snprintf(message,sizeof(message),"Welcome in the amazing world of PvPGN! Your login can be used for all PvPGN Supported games!");
+                    snprintf(hresult,sizeof(hresult),"0");
+                }
+            }
+            else {
+                /* Account with that login is already in use! */
+                snprintf(message,sizeof(message),"That login is already in use! Please try another NICK name.");
+                snprintf(hresult,sizeof(hresult),"-2147221248");
+            }
+        }
+        snprintf(data,sizeof(data),"HRESULT=%s\nMessage=%s\nNewNick=%s\nNewPass=%s\nAge=%s\nConsent=0\nEND\r",hresult,message,newnick,newpass,age,consent);
+        apireg_send(apiregmember_get_conn(apiregmember),data);
+        return 0;
     }
     else {
         /* Error: Unknown request - closing connection */
