@@ -882,7 +882,7 @@ extern int main(int argc, char * argv[])
 		std::strchr(user.player,'>')  ||
 		std::strchr(user.player,'?'))
 	    {
-		std::printf("The special characters #%%&*\\\",</>? are allowed in usernames. Try again.\n");
+		std::printf("The special characters #%%&*\\\",</>? are not allowed in usernames. Try again.\n");
 	    }
 	    if (std::strlen(user.player)>=MAX_USERNAME_LEN)
 	    {
