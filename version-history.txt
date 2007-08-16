@@ -41,6 +41,7 @@ PvPGN Version History:
   -- enforce (stricter) limit for maximum channel name length 
   -- fixed problems caused by login via uid
   -- added new "account_force_username" option to bnetd.conf
+  -- fixed malformed tracker packets on 64bit machines
 
 [VCHECK]
   -- added WAR3/W3XP IX86 1.21 vcheck entries
