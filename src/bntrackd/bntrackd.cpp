@@ -37,6 +37,7 @@
 #include "common/xalloc.h"
 #include "common/util.h"
 #include "common/version.h"
+#include "common/bn_type.h"
 #include "common/setup_after.h"
 
 using namespace pvpgn;
@@ -74,19 +75,21 @@ typedef struct
 int server_process(int sockfd);
 void usage(char const * progname);
 void getprefs(int argc, char * argv[]);
-void fixup_str(char * str);
+void fixup_str(bn_byte * str, unsigned int size);
 
 
 /******************************************************************************
  * GLOBAL VARIABLES
  *****************************************************************************/
 t_prefs prefs;
+t_list *           serverlist_head;
 }
 
 
 extern int main(int argc, char * argv[])
 {
     int sockfd;
+    int result;
 
     if (argc<1 || !argv || !argv[0])
     {
@@ -218,8 +221,23 @@ extern int main(int argc, char * argv[])
 	}
     }
 
-    if (server_process(sockfd)<0)
+    if (!(serverlist_head = list_create()))
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"could not create server list");
+	return EXIT_FAILURE;;
+    }
+
+
+    result=server_process(sockfd);
+
+
+    if (serverlist_head != NULL){
+        list_destroy(serverlist_head);
+    }
+
+    if (result<0)
 	return EXIT_FAILURE;
+
     return EXIT_SUCCESS;
 }
 
@@ -227,7 +245,6 @@ namespace {
 
 int server_process(int sockfd)
 {
-    t_list *           serverlist_head;
     t_elem *           curr;
     t_server *         server;
     struct sockaddr_in cliaddr;
@@ -237,12 +254,6 @@ int server_process(int sockfd)
     std::FILE *             outfile;
     psock_t_socklen    len;
     t_trackpacket      packet;
-
-    if (!(serverlist_head = list_create()))
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not create server list");
-	return -1;
-    }
 
     /* the main loop */
     last = std::time(NULL) - prefs.update;
@@ -274,41 +285,41 @@ int server_process(int sockfd)
 		   if (prefs.XML_mode == 1)
 		  {
 		    std::fprintf(outfile,"<server>\n\t<address>%s</address>\n",inet_ntoa(server->address));
-		    std::fprintf(outfile,"\t<port>%hu</port>\n",(unsigned short)ntohs(server->info.port));
+		    std::fprintf(outfile,"\t<port>%hu</port>\n",bn_short_nget(server->info.port));
 		    std::fprintf(outfile,"\t<location>%s</location>\n",server->info.server_location);
 		    std::fprintf(outfile,"\t<software>%s</software>\n",server->info.software);
 		    std::fprintf(outfile,"\t<version>%s</version>\n",server->info.version);
-		    std::fprintf(outfile,"\t<users>%lu</users>\n",(unsigned long)ntohl(server->info.users));
-		    std::fprintf(outfile,"\t<channels>%lu</channels>\n",(unsigned long)ntohl(server->info.channels));
-		    std::fprintf(outfile,"\t<games>%lu</games>\n",(unsigned long)ntohl(server->info.games));
+		    std::fprintf(outfile,"\t<users>%lu</users>\n",bn_int_nget(server->info.users));
+		    std::fprintf(outfile,"\t<channels>%lu</channels>\n",bn_int_nget(server->info.channels));
+		    std::fprintf(outfile,"\t<games>%lu</games>\n",bn_int_nget(server->info.games));
 		    std::fprintf(outfile,"\t<description>%s</description>\n",server->info.server_desc);
 		    std::fprintf(outfile,"\t<platform>%s</platform>\n",server->info.platform);
 		    std::fprintf(outfile,"\t<url>%s</url>\n",server->info.server_url);
 		    std::fprintf(outfile,"\t<contact_name>%s</contact_name>\n",server->info.contact_name);
 		    std::fprintf(outfile,"\t<contact_email>%s</contact_email>\n",server->info.contact_email);
-		    std::fprintf(outfile,"\t<uptime>%lu</uptime>\n",(unsigned long)ntohl(server->info.uptime));
-		    std::fprintf(outfile,"\t<total_games>%lu</total_games>\n",(unsigned long)ntohl(server->info.total_games));
-		    std::fprintf(outfile,"\t<logins>%lu</logins>\n",(unsigned long)ntohl(server->info.total_logins));
+		    std::fprintf(outfile,"\t<uptime>%lu</uptime>\n",bn_int_nget(server->info.uptime));
+		    std::fprintf(outfile,"\t<total_games>%lu</total_games>\n",bn_int_nget(server->info.total_games));
+		    std::fprintf(outfile,"\t<logins>%lu</logins>\n",bn_int_nget(server->info.total_logins));
 		    std::fprintf(outfile,"</server>\n");
 		  }
 		  else
 		  {
 		    std::fprintf(outfile,"%s\n##\n",inet_ntoa(server->address));
-		    std::fprintf(outfile,"%hu\n##\n",(unsigned short)ntohs(server->info.port));
+		    std::fprintf(outfile,"%hu\n##\n",bn_short_nget(server->info.port));
 		    std::fprintf(outfile,"%s\n##\n",server->info.server_location);
 		    std::fprintf(outfile,"%s\n##\n",server->info.software);
 		    std::fprintf(outfile,"%s\n##\n",server->info.version);
-		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.users));
-		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.channels));
-		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.games));
+		    std::fprintf(outfile,"%lu\n##\n",bn_int_nget(server->info.users));
+		    std::fprintf(outfile,"%lu\n##\n",bn_int_nget(server->info.channels));
+		    std::fprintf(outfile,"%lu\n##\n",bn_int_nget(server->info.games));
 		    std::fprintf(outfile,"%s\n##\n",server->info.server_desc);
 		    std::fprintf(outfile,"%s\n##\n",server->info.platform);
 		    std::fprintf(outfile,"%s\n##\n",server->info.server_url);
 		    std::fprintf(outfile,"%s\n##\n",server->info.contact_name);
 		    std::fprintf(outfile,"%s\n##\n",server->info.contact_email);
-		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.uptime));
-		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.total_games));
-		    std::fprintf(outfile,"%lu\n##\n",(unsigned long)ntohl(server->info.total_logins));
+		    std::fprintf(outfile,"%lu\n##\n",bn_int_nget(server->info.uptime));
+		    std::fprintf(outfile,"%lu\n##\n",bn_int_nget(server->info.total_games));
+		    std::fprintf(outfile,"%lu\n##\n",bn_int_nget(server->info.total_logins));
 		    std::fprintf(outfile,"###\n");
 		  }
 		}
@@ -346,32 +357,24 @@ int server_process(int sockfd)
 	    if (psock_recvfrom(sockfd,&packet,sizeof(packet),0,(struct sockaddr *)&cliaddr,&len)>=0)
 	    {
 
-		if (ntohs(packet.packet_version)>=TRACK_VERSION)
+		if (bn_short_nget(packet.packet_version)>=TRACK_VERSION)
 		{
-		    packet.software[sizeof(packet.software)-1] = '\0';
-		    if (std::strstr(packet.software,"##"))
-			fixup_str(packet.software);
-		    packet.version[sizeof(packet.version)-1] = '\0';
-		    if (std::strstr(packet.version,"##"))
-			fixup_str(packet.version);
-		    packet.platform[sizeof(packet.platform)-1] = '\0';
-		    if (std::strstr(packet.platform,"##"))
-			fixup_str(packet.platform);
-		    packet.server_desc[sizeof(packet.server_desc)-1] = '\0';
-		    if (std::strstr(packet.server_desc,"##"))
-			fixup_str(packet.server_desc);
-		    packet.server_location[sizeof(packet.server_location)-1] = '\0';
-		    if (std::strstr(packet.server_location,"##"))
-			fixup_str(packet.server_location);
-		    packet.server_url[sizeof(packet.server_url)-1] = '\0';
-		    if (std::strstr(packet.server_url,"##"))
-			fixup_str(packet.server_url);
-		    packet.contact_name[sizeof(packet.contact_name)-1] = '\0';
-		    if (std::strstr(packet.contact_name,"##"))
-			fixup_str(packet.contact_name);
-		    packet.contact_email[sizeof(packet.contact_email)-1] = '\0';
-		    if (std::strstr(packet.contact_email,"##"))
-			fixup_str(packet.contact_email);
+		    bn_byte_set(&packet.software[sizeof(packet.software)-1],'\0');
+		    fixup_str(packet.software,sizeof(packet.software));
+		    bn_byte_set(&packet.version[sizeof(packet.version)-1],'\0');
+		    fixup_str(packet.version,sizeof(packet.version));
+		    bn_byte_set(&packet.platform[sizeof(packet.platform)-1],'\0');
+		    fixup_str(packet.platform,sizeof(packet.platform));
+		    bn_byte_set(&packet.server_desc[sizeof(packet.server_desc)-1],'\0');
+		    fixup_str(packet.server_desc,sizeof(packet.server_desc));
+		    bn_byte_set(&packet.server_location[sizeof(packet.server_location)-1],'\0');
+		    fixup_str(packet.server_location,sizeof(packet.server_location));
+		    bn_byte_set(&packet.server_url[sizeof(packet.server_url)-1],'\0');
+		    fixup_str(packet.server_url,sizeof(packet.server_url));
+		    bn_byte_set(&packet.contact_name[sizeof(packet.contact_name)-1],'\0');
+		    fixup_str(packet.contact_name,sizeof(packet.contact_name));
+		    bn_byte_set(&packet.contact_email[sizeof(packet.contact_email)-1],'\0');
+		    fixup_str(packet.contact_email,sizeof(packet.contact_email));
 
 		    /* Find this server's slot */
 		    LIST_TRAVERSE(serverlist_head,curr)
@@ -380,7 +383,7 @@ int server_process(int sockfd)
 
 			if (!std::memcmp(&server->address,&cliaddr.sin_addr,sizeof(struct in_addr)))
 			{
-			    if (ntohl(packet.flags)&TF_SHUTDOWN)
+			    if (bn_int_nget(packet.flags)&TF_SHUTDOWN)
 			    {
 				list_remove_elem(serverlist_head,&curr);
 				xfree(server);
@@ -396,7 +399,7 @@ int server_process(int sockfd)
 		    }
 
 		    /* Not found? Make a new slot */
-		    if (!(ntohl(packet.flags)&TF_SHUTDOWN) && !curr)
+		    if (!(bn_int_nget(packet.flags)&TF_SHUTDOWN) && !curr)
 		    {
 			server = (t_server*)xmalloc(sizeof(t_server));
 			server->address = cliaddr.sin_addr;
@@ -423,9 +426,9 @@ int server_process(int sockfd)
 			     " total_games=%lu"
 			     " total_logins=%lu",
 			     inet_ntoa(cliaddr.sin_addr),
-			     ntohs(packet.packet_version),
-			     (unsigned long)ntohl(packet.flags),
-			     ntohs(packet.port),
+			     bn_short_nget(packet.packet_version),
+			     bn_int_nget(packet.flags),
+			     bn_short_nget(packet.port),
 			     packet.software,
 			     packet.version,
 			     packet.platform,
@@ -434,9 +437,9 @@ int server_process(int sockfd)
 			     packet.server_url,
 			     packet.contact_name,
 			     packet.contact_email,
-			     (unsigned long)ntohl(packet.uptime),
-			     (unsigned long)ntohl(packet.total_games),
-			     (unsigned long)ntohl(packet.total_logins));
+			     bn_int_nget(packet.uptime),
+			     bn_int_nget(packet.total_games),
+			     bn_int_nget(packet.total_logins));
 		}
 
 	    }
@@ -729,14 +732,16 @@ void getprefs(int argc, char * argv[])
 }
 
 
-void fixup_str(char * str)
+void fixup_str(bn_byte * str, unsigned int size)
 {
-    char         prev;
+    bn_byte         prev;
     unsigned int i;
 
-    for (prev='\0',i=0; i<std::strlen(str); prev=str[i],i++)
-	if (prev=='#' && str[i]=='#')
-	    str[i] = '%';
+    bn_byte_set(&prev,'\0');
+
+    for (i=0; i<size, bn_byte_get(str[i])!='\0'; bn_byte_set(&prev,bn_byte_get(str[i])),i++)
+	if (bn_byte_get(prev)=='#' && bn_byte_get(str[i])=='#')
+	    bn_byte_set(&str[i],'%');
 }
 
 }
