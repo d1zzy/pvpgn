@@ -35,33 +35,8 @@
 #include "common/list.h"
 #include "common/addr.h"
 #include "common/tracker.h"
+#include "common/bn_type.h"
 
-/*
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-#ifdef HAVE_SYS_PARAM_H
-# include <sys/param.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-
-#include "compat/netinet_in.h"
-#include "compat/psock.h"
-#include "compat/socket.h"
-#include "compat/send.h"
-#include "compat/uname.h"
-#include "common/version.h"
-#include "common/tracker.h"
-
-#define TRACKER_INTERNAL_ACCESS
-#define SERVER_INTERNAL_ACCESS
-#include "tracker.h"
-*/
 #include "prefs.h"
 #include "connection.h"
 #include "channel.h"
@@ -126,53 +101,56 @@ extern int tracker_send_report(t_addrlist const * laddrs)
 
     if (addrlist_get_length(track_servers)>0)
     {
-	packet.packet_version = htons((unsigned short)TRACK_VERSION);
+        std::memset(&packet,0,sizeof(packet));
+	bn_short_nset(&packet.packet_version,(unsigned short)TRACK_VERSION);
 	/* packet.port is set below */
-	packet.flags = 0;
-	std::strncpy(packet.server_location,
+	bn_int_nset(&packet.flags, 0);
+	std::strncpy((char *)packet.server_location,
 		prefs_get_location(),
 		sizeof(packet.server_location));
-	packet.server_location[sizeof(packet.server_location)-1] = '\0';
-	std::strncpy(packet.software,
+	bn_byte_set(&packet.server_location[sizeof(packet.server_location)-1],'\0');
+	std::strncpy((char *)packet.software,
 		PVPGN_SOFTWARE,
 		sizeof(packet.software));
-	std::strncpy(packet.version,
+	bn_byte_set(&packet.software[sizeof(packet.software)-1],'\0');
+	std::strncpy((char *)packet.version,
 		PVPGN_VERSION,
 		sizeof(packet.version));
-	std::strncpy(packet.server_desc,
+	bn_byte_set(&packet.version[sizeof(packet.version)-1],'\0');
+	std::strncpy((char *)packet.server_desc,
 		prefs_get_description(),
 		sizeof(packet.server_desc));
-	packet.server_desc[sizeof(packet.server_desc)-1] = '\0';
-	std::strncpy(packet.server_url,
+	bn_byte_set(&packet.server_desc[sizeof(packet.server_desc)-1],'\0');
+	std::strncpy((char *)packet.server_url,
 		prefs_get_url(),
 		sizeof(packet.server_url));
-	packet.server_url[sizeof(packet.server_url)-1] = '\0';
-	std::strncpy(packet.contact_name,
+	bn_byte_set(&packet.server_url[sizeof(packet.server_url)-1],'\0');
+	std::strncpy((char *)packet.contact_name,
 		prefs_get_contact_name(),
 		sizeof(packet.contact_name));
-	packet.contact_name[sizeof(packet.contact_name)-1] = '\0';
-	std::strncpy(packet.contact_email,
+	bn_byte_set(&packet.contact_name[sizeof(packet.contact_name)-1],'\0');
+	std::strncpy((char *)packet.contact_email,
 		prefs_get_contact_email(),
 		sizeof(packet.contact_email));
-	packet.contact_email[sizeof(packet.contact_email)-1] = '\0';
-	packet.users = htonl(connlist_login_get_length());
-	packet.channels = htonl(channellist_get_length());
-	packet.games = htonl(gamelist_get_length());
-	packet.uptime = htonl(server_get_uptime());
-	packet.total_logins = htonl(connlist_total_logins());
-	packet.total_games = htonl(gamelist_total_games());
+	bn_byte_set(&packet.contact_email[sizeof(packet.contact_email)-1],'\0');
+	bn_int_nset(&packet.users,connlist_login_get_length());
+	bn_int_nset(&packet.channels,channellist_get_length());
+	bn_int_nset(&packet.games,gamelist_get_length());
+	bn_int_nset(&packet.uptime,server_get_uptime());
+	bn_int_nset(&packet.total_logins,connlist_total_logins());
+	bn_int_nset(&packet.total_games,gamelist_total_games());
 
 	if (uname(&utsbuf)<0)
 	{
 	    eventlog(eventlog_level_warn,__FUNCTION__,"could not get platform info (uname: %s)",pstrerror(errno));
-	    std::strncpy(packet.platform,"",sizeof(packet.platform));
+	    std::strncpy((char *)packet.platform,"",sizeof(packet.platform));
 	}
 	else
 	{
-	    std::strncpy(packet.platform,
+	    std::strncpy((char *)packet.platform,
 		    utsbuf.sysname,
 		    sizeof(packet.platform));
-	    packet.platform[sizeof(packet.platform)-1] = '\0';
+	    bn_byte_set(&packet.platform[sizeof(packet.platform)-1],'\0');
 	}
 
 	LIST_TRAVERSE_CONST(laddrs,currl)
@@ -187,7 +165,7 @@ extern int tracker_send_report(t_addrlist const * laddrs)
 	    if (laddr_info->type!=laddr_type_bnet)
 		continue; /* don't report IRC, telnet, and other non-game ports */
 
-	    packet.port = htons(addr_get_port(addrl));
+	    bn_short_nset(&packet.port,addr_get_port(addrl));
 
 	    LIST_TRAVERSE_CONST(track_servers,currt)
 	    {
