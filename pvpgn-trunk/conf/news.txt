@@ -1,0 +1,26 @@
+{10/01/2004}
+Welcome To The Player-vs-Player Gaming Network!
+Bringing Emulation To New Levels!
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=
+
+** IF YOU EXPERIENCE PROBLEMS USING THIS SERVER PLEASE REPORT IT TO THE **
+*********  ADMINISTRATOR OF THE SERVER NOT TO THE PVPGN TEAM  ************
+
+Project development homepage: http://pvpgn.berlios.de
+
+Support channels (ONLY for the admins):
+========================================
+1. BugTracker (preffered support method):
+http://sourceforge.net/tracker/?atid=470605&group_id=53514&func=browse
+
+2. Mailing List: pvpgn-users@lists.sourceforge.net (to subscribe go here 
+http://lists.sourceforge.net/lists/listinfo/pvpgn-users )
+
+3. Forums: http://forums.pvpgn.org
+
+4. IRC live support: #pvpgn on irc.pvpgn.org
+
+Enjoy!
+The PvPGN Team
+http://www.PvPGN.org
