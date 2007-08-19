@@ -282,17 +282,9 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 
     va_start(args,fmt);
 
-#ifdef HAVE_VPRINTF
     std::vfprintf(eventstrm,fmt,args);
 #ifdef WIN32_GUI
     gui_lvprintf(level,fmt,args);
-#endif
-#else
-# if HAVE__DOPRNT
-    _doprnt(fmt,args,eventstrm);
-# else
-    std::fprintf(eventstrm,"sorry, vfprintf() and _doprnt() are not available on this system");
-# endif
 #endif
     va_end(args);
     std::fprintf(eventstrm,"\n");
@@ -303,15 +295,7 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
     if (eventlog_debugmode) {
 	    std::printf("%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
     	va_start(args,fmt);
-#ifdef HAVE_VPRINTF
 	std::vprintf(fmt,args);
-#else
-# if HAVE__DOPRNT
-    	_doprnt(fmt,args,stdout);
-# else
-	std::printf("sorry, vfprintf() and _doprnt() are not available on this system");
-# endif
-#endif
     	va_end(args);
 	std::printf("\n");
 	std::fflush(stdout);
@@ -358,15 +342,7 @@ extern void eventlog_step(char const * filename, t_eventlog_level level, char co
 
     std::fprintf(fp,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
     va_start(args,fmt);
-#ifdef HAVE_VPRINTF
     std::vfprintf(fp,fmt,args);
-#else
-# if HAVE__DOPRNT
-    _doprnt(fmt,args,fp);
-# else
-    std::fprintf(fp,"sorry, vfprintf() and _doprnt() are not available on this system");
-# endif
-#endif
     va_end(args);
     std::fprintf(fp,"\n");
     std::fclose(fp);
