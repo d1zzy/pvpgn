@@ -76,7 +76,7 @@ t_column * create_column(char * name, char * value, char * mode, char * extra_cm
   }
 
   return column;
-};
+}
 
 void dispose_column(t_column * column)
 {
