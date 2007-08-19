@@ -1,0 +1,8 @@
+add_library(tinycdb cdb_find.cpp cdb_findnext.cpp cdb_hash.cpp cdb_init.cpp 
+cdb_make_add.cpp cdb_make.cpp cdb_make_find.cpp cdb_make_put.cpp cdb_seek.cpp 
+cdb_seq.cpp cdb_unpack.cpp)
+
+add_executable(bncdb cdb.cpp)
+target_link_libraries(bncdb tinycdb 
+${CMAKE_BINARY_DIR}/src/common/libcommon.a
+${CMAKE_BINARY_DIR}/src/compat/libcompat.a )
