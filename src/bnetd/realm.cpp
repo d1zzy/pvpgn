@@ -30,6 +30,8 @@
 #include "common/addr.h"
 #include "common/util.h"
 
+#include "compat/strcasecmp.h"
+
 #include "connection.h"
 #include "common/setup_after.h"
 

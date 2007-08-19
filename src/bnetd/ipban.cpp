@@ -27,6 +27,8 @@
 #include <cctype>
 
 #include "compat/strsep.h"
+#include "compat/strcasecmp.h"
+
 #include "common/list.h"
 #include "common/util.h"
 #include "common/eventlog.h"

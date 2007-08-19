@@ -27,8 +27,10 @@
 # include "config.h"
 #endif
 
-#ifdef WIN32
-# include "win32/configwin.h"
+#ifndef CMAKE_BULD
+# ifdef WIN32
+#  include "win32/configwin.h"
+# endif
 #endif
 
 /* This file contains compile-time configuration parameters including

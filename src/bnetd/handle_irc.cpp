@@ -34,6 +34,8 @@
 #include "common/list.h"
 #include "common/addr.h"
 
+#include "compat/snprintf.h"
+
 #include "prefs.h"
 #include "command.h"
 #include "irc.h"

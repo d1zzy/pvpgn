@@ -10,7 +10,6 @@
 #include <cerrno>
 
 #include "common/xalloc.h"
-#include "compat/pgetopt.h"
 #include "cdb.h"
 #include "common/setup_after.h"
 

@@ -23,6 +23,7 @@
 #include <cstring>
 
 #include "compat/strcasecmp.h"
+#include "compat/strncasecmp.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "prefs.h"

@@ -26,6 +26,7 @@
 #include "compat/mkdir.h"
 #include "compat/pdir.h"
 #include "compat/psock.h"
+#include "compat/statmacros.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/d2cs_d2dbs_ladder.h"

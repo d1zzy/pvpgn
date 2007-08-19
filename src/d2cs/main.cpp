@@ -39,6 +39,7 @@
 #endif
 
 #include "compat/stdfileno.h"
+#include "compat/pgetpid.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/trans.h"
@@ -121,7 +122,7 @@ static char * write_to_pidfile(void)
 			xfree((void *)pidfile); /* avoid warning */
 			return NULL;
 		} else {
-			std::fprintf(fp,"%u",(unsigned int)getpid());
+			std::fprintf(fp,"%u",(unsigned int)pgetpid());
 			if (std::fclose(fp)<0)
 				eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (std::fclose: %s)",pidfile,std::strerror(errno));
 		}

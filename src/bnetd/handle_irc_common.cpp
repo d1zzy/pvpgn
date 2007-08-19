@@ -28,6 +28,8 @@
 #include "common/util.h"
 #include "common/irc_protocol.h"
 
+#include "compat/snprintf.h"
+
 #include "handle_irc.h"
 #include "handle_wol.h"
 

@@ -26,6 +26,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cerrno>
+#include <algorithm>
 
 #include "compat/strcasecmp.h"
 #include "compat/mkdir.h"
@@ -100,7 +101,6 @@ Mailbox::createOpenDir()
 {
 	p_mkdir(prefs_get_maildir(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 	p_mkdir(path.c_str(), S_IRWXU | S_IXGRP | S_IRGRP | S_IROTH | S_IXOTH);
-
 	mdir.open(path, false);
 }
 

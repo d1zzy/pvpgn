@@ -28,6 +28,9 @@
 #include "common/tag.h"
 #include "common/bn_type.h"
 #include "common/xalloc.h"
+#ifdef WIN32
+# define ZLIB_WINAPI
+#endif
 #include "zlib.h"
 #include "tournament.h"
 #include "anongame_maplists.h"

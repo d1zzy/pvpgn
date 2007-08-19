@@ -35,6 +35,8 @@
 #include "common/addr.h"
 #include "common/trans.h"
 
+#include "compat/snprintf.h"
+
 #include "prefs.h"
 #include "command.h"
 #include "irc.h"

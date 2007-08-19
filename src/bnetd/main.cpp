@@ -45,6 +45,7 @@
 #include "compat/stdfileno.h"
 #include "compat/psock.h"
 #include "compat/uname.h"
+#include "compat/pgetpid.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/fdwatch.h"
@@ -270,7 +271,7 @@ char * write_to_pidfile(void)
 	xfree((void *)pidfile); /* avoid warning */
 	return NULL;
     } else {
-	std::fprintf(fp,"%u",(unsigned int)getpid());
+	std::fprintf(fp,"%u",(unsigned int)pgetpid());
 	if (std::fclose(fp)<0)
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (std::fclose: %s)",pidfile,std::strerror(errno));
     }
@@ -426,7 +427,7 @@ void pvpgn_greeting(void)
 {
     struct utsname     utsbuf;
 #ifdef HAVE_GETPID
-    eventlog(eventlog_level_info,__FUNCTION__,PVPGN_SOFTWARE" version "PVPGN_VERSION" process %u",(unsigned int)getpid());
+    eventlog(eventlog_level_info,__FUNCTION__,PVPGN_SOFTWARE" version "PVPGN_VERSION" process %u",(unsigned int)pgetpid());
 #else
     eventlog(eventlog_level_info,__FUNCTION__,PVPGN_SOFTWARE" version "PVPGN_VERSION);
 #endif

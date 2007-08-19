@@ -26,6 +26,9 @@
 #include <ctime>
 #include <cstdlib>
 
+#include "compat/snprintf.h"
+#include "compat/strcasecmp.h"
+
 #include "common/irc_protocol.h"
 #include "common/packet.h"
 #include "common/eventlog.h"
@@ -1202,6 +1205,7 @@ int irc_send_topic(t_connection * c, t_channel const * channel){
     {
         irc_send(c, RPL_NOTOPIC, ":No topic is set");
     }
+	return 0;
 }
 
 extern int _handle_topic_command(t_connection * conn, int numparams, char ** params, char * text)

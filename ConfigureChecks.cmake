@@ -8,6 +8,7 @@ include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckTypeSizeCXX)
 include(CheckCXXCompilerFlag)
+include(CheckCXXSourceCompiles)
 
 check_include_files_cxx("cassert;cctype;cerrno;cmath;climits;csignal;cstdarg;cstddef;cstdio;cstdlib;cstring;ctime;deque;exception;fstream;iomanip;iostream;limits;list;map;memory;sstream;stdexcept;string;utility;vector" HAVE_STD_HEADERS)
 if(NOT HAVE_STD_HEADERS)
@@ -49,6 +50,8 @@ check_include_file_cxx(sys/epoll.h HAVE_SYS_EPOLL_H)
 check_include_file_cxx(sys/resource.h HAVE_SYS_RESOURCE_H)
 check_include_file_cxx(sqlite3.h HAVE_SQLITE3_H)
 check_include_file_cxx(pcap.h HAVE_PCAP_H)
+check_include_file_cxx(windows.h HAVE_WINDOWS_H)
+check_include_file_cxx(winsock2.h HAVE_WINSOCK2_H)
 
 check_type_size_cxx("unsigned char" SIZEOF_UNSIGNED_CHAR)
 check_type_size_cxx("unsigned short" SIZEOF_UNSIGNED_SHORT)
@@ -122,7 +125,16 @@ check_function_exists(snprintf HAVE_SNPRINTF)
 check_function_exists(_snprintf HAVE__SNPRINTF)
 check_function_exists(setpgrp HAVE_SETPGRP)
 
+check_cxx_source_compiles(
+ "
+ #include <direct.h>
+ // this declaration will fail when there already exists a non const char** version which returns size_t
+ int main() { mkdir(\"\"); return 0; }
+ "
+MKDIR_TAKES_ONE_ARG)
+
 find_package(ZLIB REQUIRED)
+INCLUDE_DIRECTORIES(${ZLIB_INCLUDE_DIR})
 check_library_exists(pcap pcap_open_offline "" HAVE_LIBPCAP)
 
 #storage module checks
@@ -135,7 +147,7 @@ endif(WITH_SQLITE3)
 
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-check_cxx_compiler_flag("-Wall" WITH_FLAG_WALL)
+#check_cxx_compiler_flag("-Wall" WITH_FLAG_WALL)
 
 if(WITH_ANSI)
     check_cxx_compiler_flag("-pedantic -ansi" WITH_FLAG_ANSIPEDANTIC)
