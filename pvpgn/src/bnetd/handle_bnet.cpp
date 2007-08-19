@@ -24,11 +24,12 @@
 #include "handle_bnet.h"
 
 #include <sstream>
-#include <string>
+#include <cstring>
 #include <cstring>
 #include <cctype>
 
 #include "compat/strcasecmp.h"
+#include "compat/strncasecmp.h"
 #include "compat/snprintf.h"
 #include "common/packet.h"
 #include "common/eventlog.h"

@@ -14,3 +14,7 @@ storage_sql2.cpp sql_common.cpp handle_wol.cpp handle_irc_common.cpp
 handle_apireg.cpp)
 target_link_libraries(bnetd compat common tinycdb 
 ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES})
+
+IF(WIN32)
+target_link_libraries(bnetd win32 ws2_32)
+ENDIF(WIN32)

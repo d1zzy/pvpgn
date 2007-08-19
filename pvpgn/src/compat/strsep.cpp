@@ -17,16 +17,10 @@
  */
 #include "common/setup_before.h"
 #ifndef HAVE_STRSEP
-
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "compat/strchr.h"
 #include "strsep.h"
+
+#include <cstring>
+
 #include "common/setup_after.h"
 
 
@@ -44,7 +38,7 @@ extern char * strsep(char * * str, char const * delims)
 
     /* FIXME: optimiz case of 1 char delims (maybe not worth the effort) */
     for (; **str!='\0'; (*str)++)
-        if (strchr(delims,**str))
+		if (std::strchr(delims,**str))
         {
             **str = '\0'; /* terminate token */
             (*str)++; /* remember the position of the next char */

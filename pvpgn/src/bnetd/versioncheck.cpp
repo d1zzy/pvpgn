@@ -203,7 +203,7 @@ t_parsed_exeinfo * parse_exeinfo(char const * exeinfo)
         t1.tm_isdst = -1;
 
         exeinfo    = strreverse((char *)exeinfo);
-        if (!(marker     = std::strchr(exeinfo,' ')))
+        if (!(marker = std::strchr((char *)exeinfo,' ')))
         {
 	  xfree((void *)parsed_exeinfo->exe);
 	  xfree((void *)parsed_exeinfo);

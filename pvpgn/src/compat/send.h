@@ -25,7 +25,12 @@
 # include <cstddef>
 # define send(s, b, l, f) sendto(s, b, l, f, NULL, NULL)
 #else
-# error "This program requires sendto()"
+# ifdef HAVE_WINSOCK2_H
+#  include <winsock2.h>
+#  define send(s, b, l, f) sendto(s, b, l, f, NULL, NULL)
+# else
+#   error "This program requires sendto()"
+# endif
 #endif
 
 #endif

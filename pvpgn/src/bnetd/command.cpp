@@ -32,6 +32,7 @@
 #include <cstdlib>
 
 #include "compat/strcasecmp.h"
+#include "compat/snprintf.h"
 #include "common/tag.h"
 #include "common/util.h"
 #include "common/version.h"
@@ -4499,7 +4500,7 @@ static int _handle_topic_command(t_connection * c, char const * text)
     for (tmp--;tmp[0]==' ';tmp--);
     tmp[1]='\0';
     topic++;
-    tmp  = std::strchr(topic,'"');
+    tmp  = std::strchr((char *)topic,'"');
     if (tmp) tmp[0]='\0';
   }
 

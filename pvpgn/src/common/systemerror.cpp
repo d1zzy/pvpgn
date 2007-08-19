@@ -19,7 +19,7 @@
 #include "common/setup_before.h"
 #include "systemerror.h"
 
-#include <string.h>
+#include <string>
 
 #include "compat/strerror.h"
 #include "common/setup_after.h"

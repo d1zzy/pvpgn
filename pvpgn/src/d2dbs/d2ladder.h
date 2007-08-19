@@ -19,6 +19,7 @@
 #define INCLUDED_D2LADDER_H
 
 #include <cstdio>
+#include <cstddef>
 #include "common/list.h"
 #include "common/d2cs_d2dbs_ladder.h"
 #define JUST_NEED_TYPES

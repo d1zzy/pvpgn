@@ -17,16 +17,11 @@
  */
 #include "common/setup_before.h"
 #ifndef HAVE_STRCASECMP
+#include "strncasecmp.h"
 
 #include <ctype.h>
-#ifdef HAVE_STRING_H
-# include <string.h>
-#else
-# ifdef HAVE_STRINGS_H
-#  include <strings.h>
-# endif
-#endif
-#include "strncasecmp.h"
+#include <cstring>
+
 #include "common/setup_after.h"
 
 

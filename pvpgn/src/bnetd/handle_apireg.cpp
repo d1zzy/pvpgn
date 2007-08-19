@@ -30,6 +30,9 @@
 #include "common/list.h"
 #include "common/packet.h"
 
+#include "compat/strcasecmp.h"
+#include "compat/snprintf.h"
+
 #include "prefs.h"
 #include "irc.h"
 #include "account.h"

@@ -23,7 +23,7 @@ namespace pvpgn
 namespace bnetd
 {
 
-typedef struct topic
+typedef struct s_topic
 #ifdef TOPIC_INTERNAL_ACCESS
 {
   char *   channel_name;

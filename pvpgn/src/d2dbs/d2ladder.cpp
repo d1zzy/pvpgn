@@ -786,7 +786,7 @@ int d2ladder_checksum(unsigned char const * data, unsigned int len,unsigned int 
 int d2ladder_checksum_set(void)
 {
 	std::FILE		* fdladder;
-	off_t		filesize;
+	long		filesize;
 	int		curlen,readlen,len;
 	unsigned char * buffer;
 	bn_int		checksum;
@@ -800,7 +800,7 @@ int d2ladder_checksum_set(void)
 	std::fseek(fdladder,0,SEEK_END);
 	filesize=std::ftell(fdladder);
 	std::rewind(fdladder);
-	if(filesize==(off_t)-1) {
+	if(filesize==-1) {
 		eventlog(eventlog_level_error,__FUNCTION__,"lseek() error in ladder file %s",d2ladder_ladder_file);
 		std::fclose(fdladder);
 		return -1;
@@ -839,7 +839,7 @@ int d2ladder_checksum_set(void)
 int d2ladder_checksum_check(void)
 {
 	std::FILE		* fdladder;
-	off_t		filesize;
+	long		filesize;
 	int		curlen,readlen,len;
 	unsigned char	* buffer;
 	int		checksum,oldchecksum;
@@ -854,7 +854,7 @@ int d2ladder_checksum_check(void)
 	std::fseek(fdladder,0,SEEK_END);
 	filesize=std::ftell(fdladder);
 	std::rewind(fdladder);
-	if(filesize==(off_t)-1) {
+	if(filesize==-1) {
 		eventlog(eventlog_level_error,__FUNCTION__,"lseek() error in  ladder file %s",d2ladder_ladder_file);
 		std::fclose(fdladder);
 		return -1;

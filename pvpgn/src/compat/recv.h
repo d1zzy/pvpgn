@@ -25,7 +25,12 @@
 # include <cstddef>
 # define recv(s, b, l, f) recvfrom(s, b, l, f, NULL, NULL)
 #else
-# error "This program requires recvfrom()"
+# ifdef HAVE_WINSOCK2_H
+#  include <winsock2.h>
+#  define recv(s, b, l, f) recvfrom(s, b, l, f, NULL, NULL)
+# else
+#   error "This program requires recvfrom()"
+# endif
 #endif
 
 #endif

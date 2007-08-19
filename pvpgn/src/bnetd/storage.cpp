@@ -53,7 +53,7 @@ extern int storage_init(const char *spath)
     }
 
     temp = xstrdup(spath);
-    if ((p = std::strchr(spath, ':')) == NULL) {
+    if ((p = std::strchr((char *)spath, ':')) == NULL) {
 	eventlog(eventlog_level_error, __FUNCTION__, "malformed storage_path , driver not found");
 	xfree((void*)temp);
 	return -1;

@@ -23,6 +23,7 @@
 
 #include <cstddef>
 #include <cassert>
+#include <cctype>
 
 #include "compat/strdup.h"
 #include "compat/strcasecmp.h"

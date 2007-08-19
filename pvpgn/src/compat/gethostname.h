@@ -23,14 +23,15 @@
  * the socket stuff under Windows.  This tries to hide that.
  */
 
-#ifdef WIN32
-# include <winsock2.h>
-#endif
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifndef HAVE_GETHOSTNAME
-# error "This program requires gethostname()"
+#ifdef HAVE_WINSOCK2_H
+# include <winsock2.h>
+#else
+# ifndef HAVE_GETHOSTNAME 
+#  error "This program requires gethostname()"
+# endif
 #endif
 
 #endif
