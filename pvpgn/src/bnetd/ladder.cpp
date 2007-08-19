@@ -27,7 +27,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <string>
+#include <cstring>
 #include <list>
 #include <map>
 #include <algorithm>
@@ -464,11 +464,14 @@ LadderKey::operator== (const LadderKey& right) const
 bool 
 LadderKey::operator< (const LadderKey& right) const
 {
-	if (ladderId < right.ladderId) return true;
-	else if (clienttag < right.clienttag) return true;
-	else if (ladderSort < right.ladderSort) return true;
-	else if (ladderTime < right.ladderTime) return true;
-	else return false;
+	if (ladderId != right.ladderId)
+		return (ladderId < right.ladderId);
+	else if (clienttag != right.clienttag)
+		return (clienttag < right.clienttag);
+	else if (ladderSort != right.ladderSort)
+		return ladderSort < right.ladderSort;
+	else 
+		return (ladderTime < right.ladderTime);
 }
 
 
