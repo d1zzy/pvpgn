@@ -9,6 +9,7 @@
 #include <cstring>
 #include <cerrno>
 
+#include "compat/pgetopt.h"
 #include "common/xalloc.h"
 #include "cdb.h"
 #ifdef HAVE_UNISTD_H
