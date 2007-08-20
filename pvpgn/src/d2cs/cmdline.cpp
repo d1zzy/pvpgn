@@ -18,6 +18,7 @@
  */
 #include "common/setup_before.h"
 #include "setup.h"
+#include "cmdline.h"
 
 #include <cstdio>
 
