@@ -1,7 +1,12 @@
+# put in this file everything that needs to be setup depending
+# on the target architecture
+
+# our own modules
 set(CMAKE_MODULE_PATH
   ${CMAKE_SOURCE_DIR}/cmake/Modules
 )
 
+# include used modules
 include(CheckIncludeFileCXX)
 include(CheckIncludeFilesCXX)
 include(CheckFunctionExists)
@@ -9,6 +14,48 @@ include(CheckLibraryExists)
 include(CheckTypeSizeCXX)
 include(CheckCXXCompilerFlag)
 include(CheckMkdirArgs)
+
+# library checks
+find_package(ZLIB REQUIRED)
+check_library_exists(pcap pcap_open_offline "" HAVE_LIBPCAP)
+check_library_exists(nsl gethostbyname "" HAVE_LIBNSL)
+check_library_exists(socket socket "" HAVE_LIBSOCKET)
+check_library_exists(resolv inet_aton "" HAVE_LIBRESOLV)
+check_library_exists(bind __inet_aton "" HAVE_LIBBIND)
+
+# storage module checks
+if(WITH_MYSQL)
+    find_package(MySQL REQUIRED)
+endif(WITH_MYSQL)
+if(WITH_SQLITE3)
+    find_package(SQLite3 REQUIRED)
+endif(WITH_SQLITE3)
+
+# if any of nsl or socket exists we need to make sure the following tests
+# use them otherwise some functions may not be found
+if(HAVE_LIBNSL)
+	SET(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} nsl)
+	SET(NETWORK_LIBRARIES ${NETWORK_LIBRARIES} nsl)
+endif(HAVE_LIBNSL)
+if(HAVE_LIBSOCKET)
+	SET(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} socket)
+	SET(NETWORK_LIBRARIES ${NETWORK_LIBRARIES} socket)
+endif(HAVE_LIBSOCKET)
+if(HAVE_LIBRESOLV)
+	SET(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} resolv)
+	SET(NETWORK_LIBRARIES ${NETWORK_LIBRARIES} resolv)
+endif(HAVE_LIBRESOLV)
+if(HAVE_LIBBIND)
+	# this is used for BeOS BONE, when someone will want
+	# to test pvpgn with cmake on BeOS please contact us
+	SET(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} bind)
+	SET(NETWORK_LIBRARIES ${NETWORK_LIBRARIES} bind)
+endif(HAVE_LIBBIND)
+
+# for win32 unconditionally add network library linking to "ws_32"
+if(WIN32)
+	SET(NETWORK_LIBRARIES ${NETWORK_LIBRARIES} ws_32)
+endif(WIN32)
 
 check_include_files_cxx("cassert;cctype;cerrno;cmath;climits;csignal;cstdarg;cstddef;cstdio;cstdlib;cstring;ctime;deque;exception;fstream;iomanip;iostream;limits;list;map;memory;sstream;stdexcept;string;utility;vector" HAVE_STD_HEADERS)
 if(NOT HAVE_STD_HEADERS)
@@ -141,17 +188,6 @@ else(HAVE_WINSOCK2_H)
 endif(HAVE_WINSOCK2_H)
 
 check_mkdir_args(MKDIR_TAKES_ONE_ARG)
-
-find_package(ZLIB REQUIRED)
-check_library_exists(pcap pcap_open_offline "" HAVE_LIBPCAP)
-
-#storage module checks
-if(WITH_MYSQL)
-    find_package(MySQL REQUIRED)
-endif(WITH_MYSQL)
-if(WITH_SQLITE3)
-    find_package(SQLite3 REQUIRED)
-endif(WITH_SQLITE3)
 
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
