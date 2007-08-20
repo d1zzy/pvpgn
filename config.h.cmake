@@ -1,8 +1,6 @@
 #ifndef PVPGN_CONFIG_H
 #define PVPGN_CONFIG_H
 
-#define CMAKE_BUILD
-
 #cmakedefine HAVE_FCNTL_H
 #cmakedefine HAVE_SYS_TIME_H
 #cmakedefine HAVE_SYS_SELECT_H
@@ -40,7 +38,6 @@
 #cmakedefine HAVE_PCAP_H
 #cmakedefine HAVE_WINDOWS_H
 #cmakedefine HAVE_WINSOCK2_H
-
 
 #cmakedefine SIZEOF_UNSIGNED_CHAR ${SIZEOF_UNSIGNED_CHAR}
 #cmakedefine SIZEOF_UNSIGNED_SHORT ${SIZEOF_UNSIGNED_SHORT}

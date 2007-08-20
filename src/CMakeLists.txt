@@ -1,17 +1,14 @@
 #first setup the includes and link paths
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} 
+	${CMAKE_SOURCE_DIR}/src ${ZLIB_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR}
+	${SQLITE3_INCLUDE_DIR})
 
-if(MYSQL_INCLUDE_DIR)
-    include_directories(${MYSQL_INCLUDE_DIR})
-endif(MYSQL_INCLUDE_DIR)
-if(SQLITE3_INCLUDE_DIR)
-    include_directories(${SQLITE3_INCLUDE_DIR})
-endif(SQLITE3_INCLUDE_DIR)
-
+# the following line makes sure all targets will lookup local libraries
+# when referenced by short names
 link_directories(${CMAKE_BINARY_DIR}/src/common 
-${CMAKE_BINARY_DIR}/src/compat
-${CMAKE_BINARY_DIR}/src/tinycdb
-${CMAKE_BINARY_DIR}/src/win32)
+	${CMAKE_BINARY_DIR}/src/compat
+	${CMAKE_BINARY_DIR}/src/tinycdb
+	${CMAKE_BINARY_DIR}/src/win32)
 
 #this is needed to be compatible with existent code
 add_definitions("-DHAVE_CONFIG_H")
@@ -31,14 +28,7 @@ if(SQLITE3_FOUND)
     add_definitions("-DWITH_SQL_SQLITE3")
 endif(SQLITE3_FOUND)
 
-add_subdirectory(compat)
-add_subdirectory(common)
-add_subdirectory(tinycdb)
-add_subdirectory(win32)
-add_subdirectory(bntrackd)
-add_subdirectory(client)
-add_subdirectory(bniutils)
-add_subdirectory(bnpass)
+subdirs(compat common tinycdb win32 bntrackd client bniutils bnpass)
 
 if(WITH_BNETD)
     add_subdirectory(bnetd)
