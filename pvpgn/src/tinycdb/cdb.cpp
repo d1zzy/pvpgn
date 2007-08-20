@@ -11,6 +11,9 @@
 
 #include "common/xalloc.h"
 #include "cdb.h"
+#ifdef HAVE_UNISTD_H
+ #include <unistd.h>
+#endif
 #include "common/setup_after.h"
 
 using namespace pvpgn;

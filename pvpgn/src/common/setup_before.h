@@ -25,11 +25,11 @@
 /* get autoconf defines */
 #ifdef HAVE_CONFIG_H
 # include "config.h"
-#endif
-
-#ifndef CMAKE_BULD
+#else
 # ifdef WIN32
 #  include "win32/configwin.h"
+# else
+#  error "No config.h but not building on WIN32, how to configure the system?"
 # endif
 #endif
 
