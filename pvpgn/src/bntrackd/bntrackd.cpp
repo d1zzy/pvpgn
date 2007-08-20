@@ -31,6 +31,7 @@
 #include "compat/stdfileno.h"
 #include "compat/psock.h"
 #include "compat/inet_ntoa.h"
+#include "compat/pgetpid.h"
 #include "common/tracker.h"
 #include "common/eventlog.h"
 #include "common/list.h"
@@ -177,7 +178,7 @@ extern int main(int argc, char * argv[])
         }
         else
         {
-            std::fprintf(fp,"%u",(unsigned int)getpid());
+            std::fprintf(fp,"%u",(unsigned int)pgetpid());
             if (std::fclose(fp)<0)
                 eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (std::fclose: %s)",prefs.pidfile,std::strerror(errno));
         }
@@ -188,7 +189,7 @@ extern int main(int argc, char * argv[])
     }
 
 #ifdef HAVE_GETPID
-    eventlog(eventlog_level_info,__FUNCTION__,"bntrackd version "PVPGN_VERSION" process %u",(unsigned int)getpid());
+    eventlog(eventlog_level_info,__FUNCTION__,"bntrackd version "PVPGN_VERSION" process %u",(unsigned int)pgetpid());
 #else
     eventlog(eventlog_level_info,__FUNCTION__,"bntrackd version "PVPGN_VERSION);
 #endif
