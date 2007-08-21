@@ -7,6 +7,7 @@ set(CMAKE_MODULE_PATH
 )
 
 # include used modules
+include(DefineInstallationPaths)
 include(CheckIncludeFileCXX)
 include(CheckIncludeFilesCXX)
 include(CheckFunctionExists)
