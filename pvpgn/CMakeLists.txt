@@ -20,4 +20,4 @@ option(WITH_SQLITE3 "include SQLite3 user accounts support" OFF)
 
 include(ConfigureChecks.cmake)
 
-add_subdirectory(src)
+subdirs(src conf man files)

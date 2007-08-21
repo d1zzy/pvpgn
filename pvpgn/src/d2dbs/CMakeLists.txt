@@ -4,3 +4,5 @@ add_executable(d2dbs
 	dbspacket.h handle_signal.cpp handle_signal.h main.cpp prefs.cpp 
 	prefs.h setup.h version.h)
 target_link_libraries(d2dbs common compat win32 ${NETWORK_LIBRARIES})
+
+install(TARGETS d2dbs DESTINATION ${SBINDIR})
