@@ -29,3 +29,5 @@ add_executable(bnetd
 	udptest_send.h versioncheck.cpp versioncheck.h watch.cpp watch.h)
 target_link_libraries(bnetd compat common tinycdb win32 ${NETWORK_LIBRARIES}
 ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES})
+
+install(TARGETS bnetd DESTINATION ${SBINDIR})

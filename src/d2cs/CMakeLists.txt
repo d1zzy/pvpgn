@@ -8,3 +8,5 @@ add_executable(d2cs
 	net.h prefs.cpp prefs.h s2s.cpp s2s.h server.cpp server.h 
 	serverqueue.cpp serverqueue.h setup.h version.h)
 target_link_libraries(d2cs common compat win32 ${NETWORK_LIBRARIES})
+
+install(TARGETS d2cs DESTINATION ${SBINDIR})

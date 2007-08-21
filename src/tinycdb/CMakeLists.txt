@@ -4,3 +4,5 @@ add_library(tinycdb
 	cdb_seek.cpp cdb_seq.cpp cdb_unpack.cpp)
 add_executable(bncdb cdb.cpp)
 target_link_libraries(bncdb tinycdb common compat )
+
+install(TARGETS bncdb DESTINATION ${BINDIR})

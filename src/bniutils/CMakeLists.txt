@@ -12,3 +12,5 @@ target_link_libraries(bnibuild common compat)
 
 add_executable(tgainfo tgainfo.cpp fileio.cpp fileio.h tga.cpp tga.h)
 target_link_libraries(tgainfo common compat)
+
+install(TARGETS bnilist bni2tga bniextract bnibuild tgainfo DESTINATION ${BINDIR})

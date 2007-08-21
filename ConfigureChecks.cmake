@@ -16,6 +16,13 @@ include(CheckTypeSizeCXX)
 include(CheckCXXCompilerFlag)
 include(CheckMkdirArgs)
 
+# setup short variable path names
+set(BINDIR ${BIN_INSTALL_DIR})
+set(SBINDIR ${SBIN_INSTALL_DIR})
+set(SYSCONFDIR ${SYSCONF_INSTALL_DIR})
+set(LOCALSTATEDIR ${LOCALSTATE_INSTALL_DIR})
+set(MANDIR ${MAN_INSTALL_DIR})
+
 # library checks
 find_package(ZLIB REQUIRED)
 check_library_exists(pcap pcap_open_offline "" HAVE_LIBPCAP)
