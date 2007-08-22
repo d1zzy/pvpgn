@@ -1,3 +1,5 @@
+add_definitions("-DBNETD_DEFAULT_CONF_FILE=\\\"${SYSCONFDIR}/bnetd.conf\\\"")
+
 add_executable(bnetd
 	account.cpp account.h account_wrap.cpp account_wrap.h adbanner.cpp
 	adbanner.h alias_command.cpp alias_command.h anongame.cpp
@@ -28,6 +30,6 @@ add_executable(bnetd
 	tournament.cpp tournament.h tracker.cpp tracker.h udptest_send.cpp 
 	udptest_send.h versioncheck.cpp versioncheck.h watch.cpp watch.h)
 target_link_libraries(bnetd common compat tinycdb win32 ${NETWORK_LIBRARIES}
-${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES})
+    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES})
 
 install(TARGETS bnetd DESTINATION ${SBINDIR})
