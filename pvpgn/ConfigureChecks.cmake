@@ -60,9 +60,9 @@ if(HAVE_LIBBIND)
 	SET(NETWORK_LIBRARIES ${NETWORK_LIBRARIES} bind)
 endif(HAVE_LIBBIND)
 
-# for win32 unconditionally add network library linking to "ws_32"
+# for win32 unconditionally add network library linking to "ws2_32"
 if(WIN32)
-	SET(NETWORK_LIBRARIES ${NETWORK_LIBRARIES} ws_32)
+	SET(NETWORK_LIBRARIES ${NETWORK_LIBRARIES} ws2_32)
 endif(WIN32)
 
 check_include_files_cxx("cassert;cctype;cerrno;cmath;climits;csignal;cstdarg;cstddef;cstdio;cstdlib;cstring;ctime;deque;exception;fstream;iomanip;iostream;limits;list;map;memory;sstream;stdexcept;string;utility;vector" HAVE_STD_HEADERS)
@@ -170,7 +170,7 @@ check_function_exists(_snprintf HAVE__SNPRINTF)
 check_function_exists(setpgrp HAVE_SETPGRP)
 check_function_exists(inet_aton HAVE_INET_ATON)
 
-# winsock2.h and ws_32 should provide these
+# winsock2.h and ws2_32 should provide these
 if(HAVE_WINSOCK2_H)
 	set(HAVE_GETHOSTNAME ON)
 	set(HAVE_SELECT ON)
