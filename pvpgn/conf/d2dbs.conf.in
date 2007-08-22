@@ -54,14 +54,14 @@ loglevels = fatal,error,warn,info,debug,trace
 # File and Path section								#
 # Use absolute paths in these lines to avoid problems!				#
 #-------------------------------------------------------------------------------#
-logfile		=	/usr/local/var/d2dbs.log
-logfile-gs	=	/usr/local/var/d2dbs-gs.log
-charsavedir	=	/usr/local/var/charsave
-charinfodir	=	/usr/local/var/charinfo
-ladderdir	=	/usr/local/var/ladders
-bak_charsavedir	=	/usr/local/var/bak/charsave
-bak_charinfodir	=	/usr/local/var/bak/charinfo
-#pidfile	=	/usr/local/var/d2dbs.pid
+logfile		=	${LOCALSTATEDIR}/d2dbs.log
+logfile-gs	=	${LOCALSTATEDIR}/d2dbs-gs.log
+charsavedir	=	${LOCALSTATEDIR}/charsave
+charinfodir	=	${LOCALSTATEDIR}/charinfo
+ladderdir	=	${LOCALSTATEDIR}/ladders
+bak_charsavedir	=	${LOCALSTATEDIR}/bak/charsave
+bak_charinfodir	=	${LOCALSTATEDIR}/bak/charinfo
+#pidfile	=	${LOCALSTATEDIR}/d2dbs.pid
 
 #										#
 #################################################################################

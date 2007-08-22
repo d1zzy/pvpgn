@@ -1,7 +1,7 @@
 # generate the config files replacing the path variables
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bnetd.conf.cmake ${CMAKE_CURRENT_BINARY_DIR}/bnetd.conf)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/d2cs.conf.cmake ${CMAKE_CURRENT_BINARY_DIR}/d2cs.conf)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/d2dbs.conf.cmake ${CMAKE_CURRENT_BINARY_DIR}/d2dbs.conf)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/bnetd.conf.in ${CMAKE_CURRENT_BINARY_DIR}/bnetd.conf)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/d2cs.conf.in ${CMAKE_CURRENT_BINARY_DIR}/d2cs.conf)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/d2dbs.conf.in ${CMAKE_CURRENT_BINARY_DIR}/d2dbs.conf)
 
 if(WITH_BNETD)
     set(BNETD_CONFS bnetd.conf ad.conf anongame_infos.conf address_translation.conf 

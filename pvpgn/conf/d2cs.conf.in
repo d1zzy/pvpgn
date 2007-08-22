@@ -102,16 +102,16 @@ loglevels = fatal,error,warn,info,debug,trace
 # Use absolute paths in these lines to avoid problems!				#
 #-------------------------------------------------------------------------------#
 #										#
-logfile			=	/usr/local/var/d2cs.log
-charsavedir		=	/usr/local/var/charsave
-charinfodir		=	/usr/local/var/charinfo
-bak_charsavedir		=	/usr/local/var/bak/charsave
-bak_charinfodir		=	/usr/local/var/bak/charinfo
-ladderdir		=	/usr/local/var/ladders
-newbiefile		=	/usr/local/var/files/newbie.save
-transfile		=	/usr/local/etc/address_translation.conf
-d2gsconffile		=	/usr/local/etc/d2server.ini
-#pidfile		=	/usr/local/var/d2cs.pid
+logfile			=	${LOCALSTATEDIR}/d2cs.log
+charsavedir		=	${LOCALSTATEDIR}/charsave
+charinfodir		=	${LOCALSTATEDIR}/charinfo
+bak_charsavedir		=	${LOCALSTATEDIR}/bak/charsave
+bak_charinfodir		=	${LOCALSTATEDIR}/bak/charinfo
+ladderdir		=	${LOCALSTATEDIR}/ladders
+newbiefile		=	${LOCALSTATEDIR}/files/newbie.save
+transfile		=	${SYSCONFDIR}/address_translation.conf
+d2gsconffile		=	${SYSCONFDIR}/d2server.ini
+#pidfile		=	${LOCALSTATEDIR}/d2cs.pid
 
 #										#
 #################################################################################

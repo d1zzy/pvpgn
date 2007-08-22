@@ -52,22 +52,22 @@
 # - "prefix" : prefix to use for all pvpgn tables (default "")               #
 #                                                                            #
 # Examples:                                                                  #
-# storage_path = file:mode=plain;dir=/usr/local/var/users;clan=/usr/local/var/clans;team=/usr/local/var/teams;default=/usr/local/etc/bnetd_default_user.plain
-# storage_path = file:mode=cdb;dir=/usr/local/var/userscdb;clan=/usr/local/var/clans;team=/usr/local/var/teams;default=/usr/local/etc/bnetd_default_user.cdb
+# storage_path = file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}/clans;team=${LOCALSTATEDIR}/teams;default=${SYSCONFDIR}/bnetd_default_user.plain
+# storage_path = file:mode=cdb;dir=${LOCALSTATEDIR}/userscdb;clan=${LOCALSTATEDIR}/clans;team=${LOCALSTATEDIR}/teams;default=${SYSCONFDIR}/bnetd_default_user.cdb
 # storage_path = sql:mode=mysql;host=127.0.0.1;name=PVPGN;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn_
 # storage_path = sql:mode=pgsql;host=127.0.0.1;name=pvpgn;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn_
-# storage_path = sql:mode=sqlite3;name=/usr/local/var/users.db;default=0;prefix=pvpgn_
+# storage_path = sql:mode=sqlite3;name=${LOCALSTATEDIR}/users.db;default=0;prefix=pvpgn_
 # storage_path = sql:mode=odbc;name=PVPGN;prefix=pvpgn_
 #
 # WARNING!! you MUST change "DBlayoutfile" bellow configuration directive to 
 # sql_DB_layout2.conf to be able to use "sql2" !!!
 # storage_path = sql2:mode=mysql;host=127.0.0.1;name=PVPGN;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn2_
 # storage_path = sql2:mode=pgsql;host=127.0.0.1;name=pvpgn;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn2_
-# storage_path = sql2:mode=sqlite3;name=/usr/local/var/users.db;default=0;prefix=pvpgn2_
+# storage_path = sql2:mode=sqlite3;name=${LOCALSTATEDIR}/users.db;default=0;prefix=pvpgn2_
 # storage_path = sql2:mode=odbc;name=PVPGN;prefix=pvpgn2_
 #----------------------------------------------------------------------------#
 
-storage_path = file:mode=plain;dir=/usr/local/var/users;clan=/usr/local/var/clans;team=/usr/local/var/teams;default=/usr/local/etc/bnetd_default_user.plain
+storage_path = file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}/clans;team=${LOCALSTATEDIR}/teams;default=${SYSCONFDIR}/bnetd_default_user.plain
 
 #                                                                            #
 ##############################################################################
@@ -78,35 +78,35 @@ storage_path = file:mode=plain;dir=/usr/local/var/users;clan=/usr/local/var/clan
 # Use absolute paths in these lines to avoid problems!                       #
 #----------------------------------------------------------------------------#
 
-filedir     = /usr/local/var/files
-reportdir   = /usr/local/var/reports
-chanlogdir  = /usr/local/var/chanlogs
-motdfile    = /usr/local/etc/bnmotd.txt
-issuefile   = /usr/local/etc/bnissue.txt
-channelfile = /usr/local/etc/channel.conf
-newsfile    = /usr/local/etc/news.txt
-adfile      = /usr/local/etc/ad.conf
-topicfile   = /usr/local/etc/topics.conf
-ipbanfile   = /usr/local/etc/bnban.conf
-helpfile    = /usr/local/etc/bnhelp.conf
-mpqfile     = /usr/local/etc/autoupdate.conf
-logfile     = /usr/local/var/bnetd.log
-realmfile   = /usr/local/etc/realm.conf
-maildir     = /usr/local/var/bnmail
-versioncheck_file = /usr/local/etc/versioncheck.conf
-mapsfile    = /usr/local/etc/bnmaps.conf
-xplevelfile = /usr/local/etc/bnxplevel.conf
-xpcalcfile  = /usr/local/etc/bnxpcalc.conf
-#pidfile    = /usr/local/var/bnetd.pid
-ladderdir   = /usr/local/var/ladders
-command_groups_file = /usr/local/etc/command_groups.conf
-tournament_file = /usr/local/etc/tournament.conf
-statusdir   = /usr/local/var/status
-aliasfile   = /usr/local/etc/bnalias.conf
-anongame_infos_file = /usr/local/etc/anongame_infos.conf
-DBlayoutfile = /usr/local/etc/sql_DB_layout.conf
-supportfile = /usr/local/etc/supportfile.conf
-transfile   = /usr/local/etc/address_translation.conf
+filedir     = ${LOCALSTATEDIR}/files
+reportdir   = ${LOCALSTATEDIR}/reports
+chanlogdir  = ${LOCALSTATEDIR}/chanlogs
+motdfile    = ${SYSCONFDIR}/bnmotd.txt
+issuefile   = ${SYSCONFDIR}/bnissue.txt
+channelfile = ${SYSCONFDIR}/channel.conf
+newsfile    = ${SYSCONFDIR}/news.txt
+adfile      = ${SYSCONFDIR}/ad.conf
+topicfile   = ${SYSCONFDIR}/topics.conf
+ipbanfile   = ${SYSCONFDIR}/bnban.conf
+helpfile    = ${SYSCONFDIR}/bnhelp.conf
+mpqfile     = ${SYSCONFDIR}/autoupdate.conf
+logfile     = ${LOCALSTATEDIR}/bnetd.log
+realmfile   = ${SYSCONFDIR}/realm.conf
+maildir     = ${LOCALSTATEDIR}/bnmail
+versioncheck_file = ${SYSCONFDIR}/versioncheck.conf
+mapsfile    = ${SYSCONFDIR}/bnmaps.conf
+xplevelfile = ${SYSCONFDIR}/bnxplevel.conf
+xpcalcfile  = ${SYSCONFDIR}/bnxpcalc.conf
+#pidfile    = ${LOCALSTATEDIR}/bnetd.pid
+ladderdir   = ${LOCALSTATEDIR}/ladders
+command_groups_file = ${SYSCONFDIR}/command_groups.conf
+tournament_file = ${SYSCONFDIR}/tournament.conf
+statusdir   = ${LOCALSTATEDIR}/status
+aliasfile   = ${SYSCONFDIR}/bnalias.conf
+anongame_infos_file = ${SYSCONFDIR}/anongame_infos.conf
+DBlayoutfile = ${SYSCONFDIR}/sql_DB_layout.conf
+supportfile = ${SYSCONFDIR}/supportfile.conf
+transfile   = ${SYSCONFDIR}/address_translation.conf
 
 fortunecmd  = /usr/games/fortune
 

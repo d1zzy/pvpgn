@@ -33,12 +33,12 @@ dist_sysconf_DATA = $(bnetd_confs) $(d2cs_confs) $(d2dbs_confs)
 EXTRA_DIST = $(bnetd_extras) $(d2cs_extras) $(d2dbs_extras)
 
 bnetd.conf:bnetd.conf.in $(top_builddir)/config.status
-	$(SED) -e "s@/usr/local/var/@${localstatedir}/@g" -e "s@/usr/local/etc/@${sysconfdir}/@g" $(top_srcdir)/conf/bnetd.conf.in > $@
+	$(SED) -e "s,\$${LOCALSTATEDIR}/,$(localstatedir)/,g" -e "s,\$${SYSCONFDIR}/,$(sysconfdir)/,g" $(top_srcdir)/conf/bnetd.conf.in > $@
 
 d2cs.conf:d2cs.conf.in $(top_builddir)/config.status
-	$(SED) -e "s@/usr/local/var/@${localstatedir}/@g" -e "s@/usr/local/etc/@${sysconfdir}/@g" $(top_srcdir)/conf/d2cs.conf.in > $@
+	$(SED) -e "s,\$${LOCALSTATEDIR}/,$(localstatedir)/,g" -e "s,\$${SYSCONFDIR}/,$(sysconfdir)/,g" $(top_srcdir)/conf/d2cs.conf.in > $@
 
 d2dbs.conf:d2dbs.conf.in $(top_builddir)/config.status
-	$(SED) -e "s@/usr/local/var/@${localstatedir}/@g" -e "s@/usr/local/etc/@${sysconfdir}/@g" $(top_srcdir)/conf/d2dbs.conf.in > $@
+	$(SED) -e "s,\$${LOCALSTATEDIR}/,$(localstatedir)/,g" -e "s,\$${SYSCONFDIR}/,$(sysconfdir)/,g" $(top_srcdir)/conf/d2dbs.conf.in > $@
 
 CONFIG_CLEAN_FILES = bnetd.conf d2cs.conf d2dbs.conf
