@@ -201,11 +201,4 @@ extern void fdwatch_traverse(t_fdw_cb cb, void *data)
 	}
 }
 
-FDWBackend::FDWBackend(int nfds_)
-:nfds(nfds_)
-{}
-
-FDWBackend::~ FDWBackend() throw()
-{}
-
 }
