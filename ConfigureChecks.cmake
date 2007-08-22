@@ -207,5 +207,5 @@ endif(WITH_ANSI)
 
 # new VS.Net deprecates with warnings most of ISO C functions without this
 if(MSVC)
-    add_definitions("-D_CRT_SECURE_NO_DEPRECATE=1")
+    add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
 endif(MSVC)
