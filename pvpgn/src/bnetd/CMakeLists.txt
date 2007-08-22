@@ -27,7 +27,7 @@ add_executable(bnetd
 	team.cpp team.h tick.cpp tick.h timer.cpp timer.h topic.cpp topic.h 
 	tournament.cpp tournament.h tracker.cpp tracker.h udptest_send.cpp 
 	udptest_send.h versioncheck.cpp versioncheck.h watch.cpp watch.h)
-target_link_libraries(bnetd compat common tinycdb win32 ${NETWORK_LIBRARIES}
+target_link_libraries(bnetd common compat tinycdb win32 ${NETWORK_LIBRARIES}
 ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES})
 
 install(TARGETS bnetd DESTINATION ${SBINDIR})
