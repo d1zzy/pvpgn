@@ -204,3 +204,8 @@ configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 if(WITH_ANSI)
     check_cxx_compiler_flag("-pedantic -ansi" WITH_FLAG_ANSIPEDANTIC)
 endif(WITH_ANSI)
+
+# new VS.Net deprecates with warnings most of ISO C functions without this
+if(MSVC)
+    add_definitions("-D_CRT_SECURE_NO_DEPRECATE=1")
+endif(MSVC)
