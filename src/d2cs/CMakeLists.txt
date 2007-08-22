@@ -1,3 +1,5 @@
+add_definitions("-DD2CS_DEFAULT_CONF_FILE=\\\"${SYSCONFDIR}/d2cs.conf\\\"")
+
 add_executable(d2cs 
 	bit.h bnetd.cpp bnetd.h cmdline.cpp cmdline.h connection.cpp 
 	connection.h d2charfile.cpp d2charfile.h d2charlist.cpp d2charlist.h 
