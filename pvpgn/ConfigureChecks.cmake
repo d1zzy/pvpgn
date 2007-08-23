@@ -23,6 +23,11 @@ set(SYSCONFDIR ${SYSCONF_INSTALL_DIR})
 set(LOCALSTATEDIR ${LOCALSTATE_INSTALL_DIR})
 set(MANDIR ${MAN_INSTALL_DIR})
 
+# set default hardcoded config paths
+set(BNETD_DEFAULT_CONF_FILE "${SYSCONFDIR}/bnetd.conf")
+set(D2CS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2cs.conf")
+set(D2DBS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2dbs.conf")
+
 # library checks
 find_package(ZLIB REQUIRED)
 check_library_exists(pcap pcap_open_offline "" HAVE_LIBPCAP)
@@ -30,11 +35,6 @@ check_library_exists(nsl gethostbyname "" HAVE_LIBNSL)
 check_library_exists(socket socket "" HAVE_LIBSOCKET)
 check_library_exists(resolv inet_aton "" HAVE_LIBRESOLV)
 check_library_exists(bind __inet_aton "" HAVE_LIBBIND)
-
-# set default hardcoded config paths
-set(BNETD_DEFAULT_CONF_FILE "${SYSCONFDIR}/bnetd.conf")
-set(D2CS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2cs.conf")
-set(D2DBS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2dbs.conf")
 
 # storage module checks
 if(WITH_MYSQL)
