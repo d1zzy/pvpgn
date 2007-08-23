@@ -1,5 +1,3 @@
-add_definitions("-DD2DBS_DEFAULT_CONF_FILE=\\\"${SYSCONFDIR}/d2dbs.conf\\\"")
-
 add_executable(d2dbs 
 	charlock.cpp charlock.h cmdline.cpp cmdline.h d2ladder.cpp d2ladder.h 
 	dbsdupecheck.cpp dbsdupecheck.h dbserver.cpp dbserver.h dbspacket.cpp 

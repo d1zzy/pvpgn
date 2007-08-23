@@ -1,5 +1,3 @@
-add_definitions("-DBNETD_DEFAULT_CONF_FILE=\\\"${SYSCONFDIR}/bnetd.conf\\\"")
-
 add_executable(bnetd
 	account.cpp account.h account_wrap.cpp account_wrap.h adbanner.cpp
 	adbanner.h alias_command.cpp alias_command.h anongame.cpp
