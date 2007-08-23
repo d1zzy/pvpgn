@@ -1,3 +1,6 @@
+# add aditional includes corresponding to the additional libraries bellow
+include_directories(${ZLIB_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${SQLITE3_INCLUDE_DIR})
+
 add_executable(bnetd
 	account.cpp account.h account_wrap.cpp account_wrap.h adbanner.cpp
 	adbanner.h alias_command.cpp alias_command.h anongame.cpp

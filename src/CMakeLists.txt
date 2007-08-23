@@ -1,7 +1,5 @@
 #first setup the includes and link paths
-include_directories(${CMAKE_BINARY_DIR} 
-	${CMAKE_SOURCE_DIR}/src ${ZLIB_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR}
-	${SQLITE3_INCLUDE_DIR})
+include_directories(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src)
 
 # the following line makes sure all targets will lookup local libraries
 # when referenced by short names

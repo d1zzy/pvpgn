@@ -52,22 +52,22 @@
 # - "prefix" : prefix to use for all pvpgn tables (default "")               #
 #                                                                            #
 # Examples:                                                                  #
-# storage_path = file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}/clans;team=${LOCALSTATEDIR}/teams;default=${SYSCONFDIR}/bnetd_default_user.plain
-# storage_path = file:mode=cdb;dir=${LOCALSTATEDIR}/userscdb;clan=${LOCALSTATEDIR}/clans;team=${LOCALSTATEDIR}/teams;default=${SYSCONFDIR}/bnetd_default_user.cdb
-# storage_path = sql:mode=mysql;host=127.0.0.1;name=PVPGN;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn_
-# storage_path = sql:mode=pgsql;host=127.0.0.1;name=pvpgn;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn_
-# storage_path = sql:mode=sqlite3;name=${LOCALSTATEDIR}/users.db;default=0;prefix=pvpgn_
-# storage_path = sql:mode=odbc;name=PVPGN;prefix=pvpgn_
+# storage_path = "file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}/clans;team=${LOCALSTATEDIR}/teams;default=${SYSCONFDIR}/bnetd_default_user.plain"
+# storage_path = "file:mode=cdb;dir=${LOCALSTATEDIR}/userscdb;clan=${LOCALSTATEDIR}/clans;team=${LOCALSTATEDIR}/teams;default=${SYSCONFDIR}/bnetd_default_user.cdb"
+# storage_path = "sql:mode=mysql;host=127.0.0.1;name=PVPGN;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn_"
+# storage_path = "sql:mode=pgsql;host=127.0.0.1;name=pvpgn;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn_"
+# storage_path = "sql:mode=sqlite3;name=${LOCALSTATEDIR}/users.db;default=0;prefix=pvpgn_"
+# storage_path = "sql:mode=odbc;name=PVPGN;prefix=pvpgn_"
 #
 # WARNING!! you MUST change "DBlayoutfile" bellow configuration directive to 
 # sql_DB_layout2.conf to be able to use "sql2" !!!
-# storage_path = sql2:mode=mysql;host=127.0.0.1;name=PVPGN;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn2_
-# storage_path = sql2:mode=pgsql;host=127.0.0.1;name=pvpgn;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn2_
-# storage_path = sql2:mode=sqlite3;name=${LOCALSTATEDIR}/users.db;default=0;prefix=pvpgn2_
-# storage_path = sql2:mode=odbc;name=PVPGN;prefix=pvpgn2_
+# storage_path = "sql2:mode=mysql;host=127.0.0.1;name=PVPGN;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn2_"
+# storage_path = "sql2:mode=pgsql;host=127.0.0.1;name=pvpgn;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn2_"
+# storage_path = "sql2:mode=sqlite3;name=${LOCALSTATEDIR}/users.db;default=0;prefix=pvpgn2_"
+# storage_path = "sql2:mode=odbc;name=PVPGN;prefix=pvpgn2_"
 #----------------------------------------------------------------------------#
 
-storage_path = file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}/clans;team=${LOCALSTATEDIR}/teams;default=${SYSCONFDIR}/bnetd_default_user.plain
+storage_path = "file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}/clans;team=${LOCALSTATEDIR}/teams;default=${SYSCONFDIR}/bnetd_default_user.plain"
 
 #                                                                            #
 ##############################################################################
@@ -78,35 +78,35 @@ storage_path = file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}/
 # Use absolute paths in these lines to avoid problems!                       #
 #----------------------------------------------------------------------------#
 
-filedir     = ${LOCALSTATEDIR}/files
-reportdir   = ${LOCALSTATEDIR}/reports
-chanlogdir  = ${LOCALSTATEDIR}/chanlogs
-motdfile    = ${SYSCONFDIR}/bnmotd.txt
-issuefile   = ${SYSCONFDIR}/bnissue.txt
-channelfile = ${SYSCONFDIR}/channel.conf
-newsfile    = ${SYSCONFDIR}/news.txt
-adfile      = ${SYSCONFDIR}/ad.conf
-topicfile   = ${SYSCONFDIR}/topics.conf
-ipbanfile   = ${SYSCONFDIR}/bnban.conf
-helpfile    = ${SYSCONFDIR}/bnhelp.conf
-mpqfile     = ${SYSCONFDIR}/autoupdate.conf
-logfile     = ${LOCALSTATEDIR}/bnetd.log
-realmfile   = ${SYSCONFDIR}/realm.conf
-maildir     = ${LOCALSTATEDIR}/bnmail
-versioncheck_file = ${SYSCONFDIR}/versioncheck.conf
-mapsfile    = ${SYSCONFDIR}/bnmaps.conf
-xplevelfile = ${SYSCONFDIR}/bnxplevel.conf
-xpcalcfile  = ${SYSCONFDIR}/bnxpcalc.conf
-#pidfile    = ${LOCALSTATEDIR}/bnetd.pid
-ladderdir   = ${LOCALSTATEDIR}/ladders
-command_groups_file = ${SYSCONFDIR}/command_groups.conf
-tournament_file = ${SYSCONFDIR}/tournament.conf
-statusdir   = ${LOCALSTATEDIR}/status
-aliasfile   = ${SYSCONFDIR}/bnalias.conf
-anongame_infos_file = ${SYSCONFDIR}/anongame_infos.conf
-DBlayoutfile = ${SYSCONFDIR}/sql_DB_layout.conf
-supportfile = ${SYSCONFDIR}/supportfile.conf
-transfile   = ${SYSCONFDIR}/address_translation.conf
+filedir     = "${LOCALSTATEDIR}/files"
+reportdir   = "${LOCALSTATEDIR}/reports"
+chanlogdir  = "${LOCALSTATEDIR}/chanlogs"
+motdfile    = "${SYSCONFDIR}/bnmotd.txt"
+issuefile   = "${SYSCONFDIR}/bnissue.txt"
+channelfile = "${SYSCONFDIR}/channel.conf"
+newsfile    = "${SYSCONFDIR}/news.txt"
+adfile      = "${SYSCONFDIR}/ad.conf"
+topicfile   = "${SYSCONFDIR}/topics.conf"
+ipbanfile   = "${SYSCONFDIR}/bnban.conf"
+helpfile    = "${SYSCONFDIR}/bnhelp.conf"
+mpqfile     = "${SYSCONFDIR}/autoupdate.conf"
+logfile     = "${LOCALSTATEDIR}/bnetd.log"
+realmfile   = "${SYSCONFDIR}/realm.conf"
+maildir     = "${LOCALSTATEDIR}/bnmail"
+versioncheck_file = "${SYSCONFDIR}/versioncheck.conf"
+mapsfile    = "${SYSCONFDIR}/bnmaps.conf"
+xplevelfile = "${SYSCONFDIR}/bnxplevel.conf"
+xpcalcfile  = "${SYSCONFDIR}/bnxpcalc.conf"
+#pidfile    = "${LOCALSTATEDIR}/bnetd.pid"
+ladderdir   = "${LOCALSTATEDIR}/ladders"
+command_groups_file = "${SYSCONFDIR}/command_groups.conf"
+tournament_file = "${SYSCONFDIR}/tournament.conf"
+statusdir   = "${LOCALSTATEDIR}/status"
+aliasfile   = "${SYSCONFDIR}/bnalias.conf"
+anongame_infos_file = "${SYSCONFDIR}/anongame_infos.conf"
+DBlayoutfile = "${SYSCONFDIR}/sql_DB_layout.conf"
+supportfile = "${SYSCONFDIR}/supportfile.conf"
+transfile   = "${SYSCONFDIR}/address_translation.conf"
 
 fortunecmd  = /usr/games/fortune
 
