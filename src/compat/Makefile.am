@@ -11,4 +11,4 @@ noinst_HEADERS = access.h gethostname.h gettimeofday.h inet_aton.h \
 	inet_ntoa.h mkdir.h mmap.h netinet_in.h pdir.h psock.h read.h recv.h \
 	rename.h send.h snprintf.h socket.h statmacros.h stdfileno.h \
 	strcasecmp.h strdup.h strerror.h strncasecmp.h strsep.h strtoul.h \
-	termios.h uint.h uname.h vsnprintf.h pgetpid.h pgetopt.h
+	termios.h uint.h uname.h vsnprintf.h pgetopt.h
