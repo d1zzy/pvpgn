@@ -31,6 +31,11 @@ check_library_exists(socket socket "" HAVE_LIBSOCKET)
 check_library_exists(resolv inet_aton "" HAVE_LIBRESOLV)
 check_library_exists(bind __inet_aton "" HAVE_LIBBIND)
 
+# set default hardcoded config paths
+set(BNETD_DEFAULT_CONF_FILE "${SYSCONFDIR}/bnetd.conf")
+set(D2CS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2cs.conf")
+set(D2DBS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2dbs.conf")
+
 # storage module checks
 if(WITH_MYSQL)
     find_package(MySQL REQUIRED)
