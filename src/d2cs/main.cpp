@@ -34,19 +34,12 @@
 #ifdef WIN32
 # include "win32/service.h"
 #endif
-#ifdef HAVE_GETPID
-# ifdef HAVE_UNISTD_H
-#  include <unistd.h>
-# endif
-# ifdef HAVE_PROCESS_H
-#  include <process.h>
-# endif
-#endif
 #ifdef WIN32_GUI
 # include "win32/winmain.h"
 #endif
 
 #include "compat/stdfileno.h"
+#include "compat/pgetpid.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/trans.h"

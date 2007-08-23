@@ -27,21 +27,11 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifdef HAVE_GETPID
-# ifdef HAVE_UNISTD_H
-#  include <unistd.h>
-# endif
-# ifdef HAVE_SYS_TYPES_H
-#  include <sys/types.h>
-# endif
-# ifdef HAVE_PROCESS_H
-#  include <process.h>
-# endif
-#endif
 
 #include "compat/stdfileno.h"
 #include "compat/psock.h"
 #include "compat/inet_ntoa.h"
+#include "compat/pgetpid.h"
 #include "common/tracker.h"
 #include "common/eventlog.h"
 #include "common/list.h"
