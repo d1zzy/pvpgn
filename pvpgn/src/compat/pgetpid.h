@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000  Ross Combs (rocombs@cs.nmsu.edu)
+ * Copyright (C) 2007   Olaf Freyer   aaron@cs.tu-berlin.de
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,17 +19,14 @@
 #define INCLUDED_PGETPID_PROTOS
 
 #ifdef HAVE_GETPID
-# ifndef WIN32
-#   ifdef HAVE_UNISTD_H
-#    include <unistd.h>
-#   endif
-#   ifdef HAVE_SYS_TYPES_H
-#    include <sys/types.h>
-#   endif
-#  define pgetpid() getpid()
-# else
-#  include <windows.h>
-#  define pgetpid() GetCurrentProcessId()
+# ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+# endif
+# ifdef HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+# endif
+# ifdef HAVE_PROCESS_H
+#  include <process.h>
 # endif
 #endif
 
