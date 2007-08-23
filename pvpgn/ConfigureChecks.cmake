@@ -112,6 +112,7 @@ check_include_file_cxx(sqlite3.h HAVE_SQLITE3_H)
 check_include_file_cxx(pcap.h HAVE_PCAP_H)
 check_include_file_cxx(windows.h HAVE_WINDOWS_H)
 check_include_file_cxx(winsock2.h HAVE_WINSOCK2_H)
+check_include_file_cxx(process.h HAVE_PROCESS_H)
 
 check_type_size_cxx("unsigned char" SIZEOF_UNSIGNED_CHAR)
 check_type_size_cxx("unsigned short" SIZEOF_UNSIGNED_SHORT)

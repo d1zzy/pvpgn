@@ -35,12 +35,19 @@
 #ifdef WIN32
 # include "win32/service.h"
 #endif
+#ifdef HAVE_GETPID
+# ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+# endif
+# ifdef HAVE_PROCESS_H
+#  include <process.h>
+# endif
 #ifdef WIN32_GUI
 # include "win32/winmain.h"
 #endif
+#endif
 
 #include "compat/stdfileno.h"
-#include "compat/pgetpid.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "cmdline.h"
@@ -118,7 +125,7 @@ static char * write_to_pidfile(void)
 			xfree((void *)pidfile); /* avoid warning */
 			return NULL;
 		} else {
-			std::fprintf(fp,"%u",(unsigned int)pgetpid());
+			std::fprintf(fp,"%u",(unsigned int)getpid());
 			if (std::fclose(fp)<0)
 				eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (std::fclose: %s)",pidfile,std::strerror(errno));
 		}

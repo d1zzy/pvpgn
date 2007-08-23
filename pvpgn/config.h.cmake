@@ -38,6 +38,7 @@
 #cmakedefine HAVE_PCAP_H
 #cmakedefine HAVE_WINDOWS_H
 #cmakedefine HAVE_WINSOCK2_H
+#cmakedefine HAVE_PROCESS_H
 
 #cmakedefine SIZEOF_UNSIGNED_CHAR ${SIZEOF_UNSIGNED_CHAR}
 #cmakedefine SIZEOF_UNSIGNED_SHORT ${SIZEOF_UNSIGNED_SHORT}

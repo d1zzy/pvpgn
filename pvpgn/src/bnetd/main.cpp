@@ -25,7 +25,7 @@
 #include <cerrno>
 #include <cstring>
 
-#ifdef HAVE_SYS_TYPES_h
+#ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
 #ifdef HAVE_UNISTD_H
@@ -37,6 +37,14 @@
 #ifdef WIN32
 # include "win32/service.h"
 #endif
+#ifdef HAVE_GETPID
+# ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+# endif
+# ifdef HAVE_PROCESS_H
+#  include <process.h>
+# endif
+#endif
 #ifdef WIN32_GUI
 # include "win32/gui_printf.h"
 # define printf gui_printf
@@ -45,7 +53,6 @@
 #include "compat/stdfileno.h"
 #include "compat/psock.h"
 #include "compat/uname.h"
-#include "compat/pgetpid.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/fdwatch.h"
@@ -271,7 +278,7 @@ char * write_to_pidfile(void)
 	xfree((void *)pidfile); /* avoid warning */
 	return NULL;
     } else {
-	std::fprintf(fp,"%u",(unsigned int)pgetpid());
+	std::fprintf(fp,"%u",(unsigned int)getpid());
 	if (std::fclose(fp)<0)
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not close pid file \"%s\" after writing (std::fclose: %s)",pidfile,std::strerror(errno));
     }
@@ -427,7 +434,7 @@ void pvpgn_greeting(void)
 {
     struct utsname     utsbuf;
 #ifdef HAVE_GETPID
-    eventlog(eventlog_level_info,__FUNCTION__,PVPGN_SOFTWARE" version "PVPGN_VERSION" process %u",(unsigned int)pgetpid());
+    eventlog(eventlog_level_info,__FUNCTION__,PVPGN_SOFTWARE" version "PVPGN_VERSION" process %u",(unsigned int)getpid());
 #else
     eventlog(eventlog_level_info,__FUNCTION__,PVPGN_SOFTWARE" version "PVPGN_VERSION);
 #endif
