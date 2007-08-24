@@ -1201,9 +1201,10 @@ int irc_send_topic(t_connection * c, t_channel const * channel){
         snprintf(temp, sizeof(temp), "%s :%s", irc_convert_channel(channel), topic);
         irc_send(c, RPL_TOPIC, temp);
     }
-    else
-    {
-        irc_send(c, RPL_NOTOPIC, ":No topic is set");
+    else {
+        snprintf(temp, sizeof(temp), "%s :", irc_convert_channel(channel));
+        irc_send(c, RPL_TOPIC, temp);
+        //irc_send(c, RPL_NOTOPIC, ":No topic is set");
     }
 	return 0;
 }
