@@ -10,18 +10,15 @@ set(D2CS_SOURCES
 	../win32/gui_printf.cpp ../win32/d2cs_winmain.cpp 
 	../win32/d2cs_resource.h ../win32/d2cs_resource.rc)
 
-set(D2CS_SERVICE_SOURCES
-  ../win32/service.h ../win32/service.cpp)
-
-add_executable(d2cs ${D2CS_SOURCES} ${D2CS_SERVICE_SOURCES})
-target_link_libraries(d2cs common compat ${NETWORK_LIBRARIES})
+add_executable(d2cs ${D2CS_SOURCES})
+target_link_libraries(d2cs common compat win32 ${NETWORK_LIBRARIES})
 install(TARGETS d2cs DESTINATION ${SBINDIR})
 
 # build the GUI version too
 # (this will practically recompile every file again)
 if(WITH_WIN32_GUI)
-  add_executable(d2cs_gui WIN32 ${D2CS_SOURCES} ${D2CS_SERVICE_SOURCES})
+  add_executable(d2cs_gui WIN32 ${D2CS_SOURCES})
   set_target_properties(d2cs_gui PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
-  target_link_libraries(d2cs_gui common_gui compat ${NETWORK_LIBRARIES})
+  target_link_libraries(d2cs_gui common_gui compat win32_gui ${NETWORK_LIBRARIES})
   install(TARGETS d2cs_gui DESTINATION ${SBINDIR})
 endif(WITH_WIN32_GUI)
