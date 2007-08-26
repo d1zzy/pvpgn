@@ -42,6 +42,12 @@ if test "$SED" != "sed"; then
 	AC_MSG_ERROR([sed not found, please install sed])
 fi
 
+# Check for cp
+AC_CHECK_PROG(CP, cp, cp)
+if test "$CP" != "cp"; then
+	AC_MSG_ERROR([cp not found, please install cp])
+fi
+
 # Checks for systems.
 AC_AIX
 AC_MINIX
