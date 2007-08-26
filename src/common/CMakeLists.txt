@@ -1,4 +1,4 @@
-add_library(common 
+set(COMMON_SOURCES
 	addr.cpp addr.h anongame_protocol.h asnprintf.cpp asnprintf.h 
 	bnethashconv.cpp bnethashconv.h bnethash.cpp bnethash.h bnet_protocol.h 
 	bnettime.cpp bnettime.h bn_type.cpp bn_type.h bot_protocol.h conf.cpp 
@@ -18,3 +18,16 @@ add_library(common
 	token.h tracker.h trans.cpp trans.h udp_protocol.h util.cpp util.h 
 	version.h wolhash.cpp wolhash.h xalloc.cpp xalloc.h xstr.cpp xstr.h 
 	xstring.cpp xstring.h)
+
+add_library(common
+  ${COMMON_SOURCES}
+)
+
+# build the GUI version too
+# (this will practically recompile every file again)
+if(WITH_WIN32_GUI)
+add_library(common_gui
+  ${COMMON_SOURCES}
+)
+set_target_properties(common_gui PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
+endif(WITH_WIN32_GUI)

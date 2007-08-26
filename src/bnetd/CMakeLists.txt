@@ -57,7 +57,7 @@ if(WITH_WIN32_GUI)
   add_executable(bnetd_gui WIN32 ${BNETD_SOURCES} ${BNETD_SERVICE_SOURCES} 
     ${BNETD_GUI_SOURCES} ${BNETD_GUI_RESOURCES})
   set_target_properties(bnetd_gui PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
-  target_link_libraries(bnetd_gui common compat tinycdb ${NETWORK_LIBRARIES}
+  target_link_libraries(bnetd_gui common_gui compat tinycdb ${NETWORK_LIBRARIES}
     ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES})
   install(TARGETS bnetd_gui DESTINATION ${SBINDIR})
 endif(WITH_WIN32_GUI)
