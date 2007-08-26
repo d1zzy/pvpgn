@@ -47,7 +47,7 @@ static volatile struct
 	unsigned char	reload_config;
 	unsigned char	reload_ladder;
 	unsigned char	restart_d2gs;
-	unsigned int	exit_time;
+	time_t			exit_time;
 } signal_data ={ 0, 0, 0, 0, 0, 0 };
 
 extern int handle_signal(void)
