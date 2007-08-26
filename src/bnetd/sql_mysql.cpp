@@ -18,17 +18,18 @@
 
 #ifdef WITH_SQL_MYSQL
 #include "common/setup_before.h"
-#ifdef WIN32
+#include "sql_mysql.h"
+
+#ifdef HAVE_WINDOWS_H
 #include <windows.h>
-#include <mysql/mysql.h>
-#else
-#include <mysql.h>
 #endif
+#include <mysql.h>
 #include <cstdlib>
+
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "storage_sql.h"
-#include "sql_mysql.h"
+
 #include "common/setup_after.h"
 
 namespace pvpgn
