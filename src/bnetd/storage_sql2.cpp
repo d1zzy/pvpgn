@@ -24,6 +24,8 @@
 #include <cstdlib>
 #include <cstdio>
 
+#include "compat/snprintf.h"
+
 #include "common/eventlog.h"
 #include "common/util.h"
 
