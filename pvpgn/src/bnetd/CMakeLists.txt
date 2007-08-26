@@ -1,7 +1,7 @@
 # add aditional includes corresponding to the additional libraries bellow
 include_directories(${ZLIB_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${SQLITE3_INCLUDE_DIR})
 
-add_executable(bnetd
+set(BNETD_SOURCES
 	account.cpp account.h account_wrap.cpp account_wrap.h adbanner.cpp
 	adbanner.h alias_command.cpp alias_command.h anongame.cpp
 	anongame_gameresult.cpp anongame_gameresult.h anongame.h 
@@ -29,8 +29,22 @@ add_executable(bnetd
 	storage_sql2.h storage_sql.cpp storage_sql.h support.cpp support.h
 	team.cpp team.h tick.cpp tick.h timer.cpp timer.h topic.cpp topic.h 
 	tournament.cpp tournament.h tracker.cpp tracker.h udptest_send.cpp 
-	udptest_send.h versioncheck.cpp versioncheck.h watch.cpp watch.h)
+	udptest_send.h versioncheck.cpp versioncheck.h watch.cpp watch.h
+	../win32/gui_printf.h ../win32/gui_printf.cpp ../win32/winmain.cpp 
+	../win32/winmain.h ../win32/console_resource.h ../win32/console_resource.rc 
+	../win32/resource.h ../win32/resource.rc)
+
+add_executable(bnetd ${BNETD_SOURCES})
 target_link_libraries(bnetd common compat tinycdb win32 ${NETWORK_LIBRARIES}
     ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES})
-
 install(TARGETS bnetd DESTINATION ${SBINDIR})
+
+# build the GUI version too
+# (this will practically recompile every file again)
+if(WITH_WIN32_GUI)
+  add_executable(bnetd_gui WIN32 ${BNETD_SOURCES})
+  set_target_properties(bnetd_gui PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
+  target_link_libraries(bnetd_gui common compat tinycdb win32 ${NETWORK_LIBRARIES}
+    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES})
+  install(TARGETS bnetd_gui DESTINATION ${SBINDIR})
+endif(WITH_WIN32_GUI)
