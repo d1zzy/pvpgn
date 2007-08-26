@@ -23,7 +23,6 @@
  
 #include "common/setup_before.h"
 
-#include <windows.h>
 #include <cstdarg>
 #include "common/eventlog.h"
 

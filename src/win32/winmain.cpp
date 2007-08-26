@@ -21,28 +21,33 @@
 #pragma warning(disable : 4047)
 
 #include "common/setup_before.h"
+#include "winmain.h"
+
 #include <cstdio>
 #include <windows.h>
 #include <windowsx.h>
 #include <winuser.h>
 #include <process.h>
 #include <richedit.h>
-#include <string.h>
+#include <cstring>
 #include <commctrl.h>
 #include <time.h>
+
+#include "common/addr.h"
+#include "common/eventlog.h"
+#include "common/list.h"
+#include "common/version.h"
+
 #include "gui_printf.h"
+
 #include "bnetd/connection.h"
 #include "bnetd/account.h"
 #include "bnetd/account_wrap.h"
 #include "bnetd/ipban.h"
 #include "bnetd/message.h"
 #include "bnetd/server.h"
-#include "common/addr.h"
-#include "common/eventlog.h"
-#include "common/list.h"
-#include "common/version.h"
 #include "resource.h"
-#include "winmain.h"
+
 #include "common/setup_after.h"
 
 #define WM_SHELLNOTIFY          (WM_USER+1)
@@ -55,7 +60,7 @@ HWND	ghwndConsole;
 namespace bnetd
 {
 
-extern int server_main(int, char*[]);
+extern int server_main(int argc, char *argv[]);
 
 static void	guiThread(void*);
 static void	guiAddText(const char *, COLORREF);
@@ -818,3 +823,4 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE reserved, LPSTR lpCmdLine, i
 }
 
 #endif
+

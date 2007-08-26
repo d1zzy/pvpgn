@@ -19,6 +19,7 @@
 #ifdef WIN32_GUI 
  
 #include "common/setup_before.h"
+#include "gui_printf.h"
 
 #include <windows.h>
 #include <richedit.h>
