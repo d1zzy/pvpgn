@@ -12,6 +12,7 @@ IF (ZLIB_INCLUDE_DIR)
 ENDIF (ZLIB_INCLUDE_DIR)
 
 FIND_PATH(ZLIB_INCLUDE_DIR zlib.h
+  "[HKEY_LOCAL_MACHINE\\SOFTWARE\\GnuWin32\\Zlib;InstallPath]/include"
   /usr/local/include
   /usr/include
 )
@@ -19,7 +20,9 @@ FIND_PATH(ZLIB_INCLUDE_DIR zlib.h
 SET(ZLIB_NAMES z zlib zdll)
 FIND_LIBRARY(ZLIB_LIBRARY
   NAMES ${ZLIB_NAMES}
-  PATHS /usr/lib /usr/local/lib ${CMAKE_SOURCE_DIR}/zlib
+  PATHS 
+    "[HKEY_LOCAL_MACHINE\\SOFTWARE\\GnuWin32\\Zlib;InstallPath]/lib"
+    /usr/lib /usr/local/lib ${CMAKE_SOURCE_DIR}/zlib
 )
 
 IF (ZLIB_INCLUDE_DIR AND ZLIB_LIBRARY)
