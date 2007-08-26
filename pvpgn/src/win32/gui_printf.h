@@ -21,12 +21,8 @@
  
 #ifdef WIN32_GUI 
  
-#include "common/setup_before.h"
-
 #include <cstdarg>
 #include "common/eventlog.h"
-
-#include "common/setup_after.h"
 
 namespace pvpgn
 {
