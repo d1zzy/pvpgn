@@ -45,7 +45,7 @@ static volatile struct
 	unsigned char	cancel_quit;
 	unsigned char	reload_config;
 	unsigned char	save_ladder;
-	unsigned int	exit_time;
+	time_t			exit_time;
 } signal_data ={ 0, 0, 0, 0, 0 };
 
 extern int d2dbs_handle_signal(void)

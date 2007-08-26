@@ -16,6 +16,7 @@
 
 #ifdef WIN32
 
+#include <cstring>
 #include <windows.h>
 #include <winsvc.h>
 
@@ -57,7 +58,7 @@ void Win32_ServiceInstall()
 		if (GetModuleFileName( 0, path, sizeof(path)/sizeof(path[0]) ) > 0)
 		{
 			SC_HANDLE service;
-			strcat(path, " --service");
+			std::strcat(path, " --service");
 			service = CreateService(serviceControlManager,
 							serviceName, serviceLongName,
 							SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
@@ -174,11 +175,11 @@ void WINAPI ServiceMain(DWORD argc, char *argv[])
 	if ( serviceStatusHandle )
 	{
 		char path[_MAX_PATH + 1];
-		int i, last_slash = 0;
+		unsigned int i, last_slash = 0;
 
 		GetModuleFileName(0, path, sizeof(path)/sizeof(path[0]));
 
-		for (i = 0; i < strlen(path); i++) {
+		for (i = 0; i < std::strlen(path); i++) {
 			if (path[i] == '\\') last_slash = i;
 		}
 
