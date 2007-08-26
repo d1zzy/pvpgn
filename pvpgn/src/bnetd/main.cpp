@@ -452,7 +452,7 @@ void pvpgn_greeting(void)
 }
 
 #ifdef WIN32_GUI
-extern int server_main(int argc, char * * argv)
+extern int server_main(int argc, char *argv[])
 #else
 extern int main(int argc, char * * argv)
 #endif
