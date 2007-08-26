@@ -5,19 +5,16 @@ set(D2DBS_SOURCES
 	prefs.h setup.h version.h ../win32/gui_printf.h ../win32/gui_printf.cpp 
 	../win32/d2dbs_winmain.cpp ../win32/d2dbs_resource.h 
 	../win32/d2dbs_resource.rc)
-	
-set(D2DBS_SERVICE_SOURCES
-  ../win32/service.h ../win32/service.cpp)
 
-add_executable(d2dbs ${D2DBS_SOURCES} ${D2DBS_SERVICE_SOURCES})
-target_link_libraries(d2dbs common compat ${NETWORK_LIBRARIES})
+add_executable(d2dbs ${D2DBS_SOURCES})
+target_link_libraries(d2dbs common compat win32 ${NETWORK_LIBRARIES})
 install(TARGETS d2dbs DESTINATION ${SBINDIR})
 
 # build the GUI version too
 # (this will practically recompile every file again)
 if(WITH_WIN32_GUI)
-  add_executable(d2dbs_gui WIN32 ${D2DBS_SOURCES} ${D2DBS_SERVICE_SOURCES})
+  add_executable(d2dbs_gui WIN32 ${D2DBS_SOURCES})
   set_target_properties(d2dbs_gui PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
-  target_link_libraries(d2dbs_gui common_gui compat ${NETWORK_LIBRARIES})
+  target_link_libraries(d2dbs_gui common_gui compat win32_gui ${NETWORK_LIBRARIES})
   install(TARGETS d2dbs_gui DESTINATION ${SBINDIR})
 endif(WITH_WIN32_GUI)
