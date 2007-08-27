@@ -212,9 +212,9 @@ if(WITH_ANSI)
   # (which is stupid since a program using specific system functions can still be standard
   # conformant, -ansi doesn't mean to not use non ANSI features it just means to respect
   # the standard text)
-  if(NOT MINGW)
+  if(NOT MINGW AND NOT MSVC)
     check_cxx_compiler_flag("-pedantic -ansi" WITH_FLAG_ANSIPEDANTIC)
-  endif(NOT MINGW)
+  endif(NOT MINGW AND NOT MSVC)
 endif(WITH_ANSI)
 
 # new VS.Net deprecates with warnings most of ISO C functions without this
