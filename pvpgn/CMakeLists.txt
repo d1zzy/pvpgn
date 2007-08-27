@@ -20,6 +20,7 @@ endif(WIN32)
 #storage backends flags
 option(WITH_MYSQL "include MySQL user accounts support" OFF)
 option(WITH_SQLITE3 "include SQLite3 user accounts support" OFF)
+option(WITH_PGSQL "include PostgreSQL user accounts support" OFF)
 
 include(ConfigureChecks.cmake)
 

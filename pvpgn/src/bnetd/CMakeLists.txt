@@ -1,5 +1,7 @@
 # add aditional includes corresponding to the additional libraries bellow
-include_directories(${ZLIB_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${SQLITE3_INCLUDE_DIR})
+include_directories(${ZLIB_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} 
+  ${SQLITE3_INCLUDE_DIR} ${PGSQL_INCLUDE_DIR}
+)
 
 set(BNETD_SOURCES
 	account.cpp account.h account_wrap.cpp account_wrap.h adbanner.cpp
@@ -44,7 +46,7 @@ set(BNETD_GUI_SOURCES
 add_executable(bnetd ${BNETD_SOURCES} 
   ${BNETD_CONSOLE_RESOURCES})
 target_link_libraries(bnetd common compat win32 tinycdb ${NETWORK_LIBRARIES}
-    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES})
+    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES})
 install(TARGETS bnetd DESTINATION ${SBINDIR})
 
 # build the GUI version too
@@ -54,6 +56,6 @@ if(WITH_WIN32_GUI)
     ${BNETD_GUI_RESOURCES})
   set_target_properties(bnetd_gui PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
   target_link_libraries(bnetd_gui common_gui compat win32_gui tinycdb ${NETWORK_LIBRARIES}
-    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES})
+    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES})
   install(TARGETS bnetd_gui DESTINATION ${SBINDIR})
 endif(WITH_WIN32_GUI)

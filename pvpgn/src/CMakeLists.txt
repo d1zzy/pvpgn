@@ -25,6 +25,9 @@ endif(MYSQL_FOUND)
 if(SQLITE3_FOUND)
     add_definitions("-DWITH_SQL_SQLITE3")
 endif(SQLITE3_FOUND)
+if(PGSQL_FOUND)
+    add_definitions("-DWITH_SQL_PGSQL")
+endif(PGSQL_FOUND)
 
 subdirs(compat common win32 tinycdb bntrackd client bniutils bnpass)
 
