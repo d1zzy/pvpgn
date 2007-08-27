@@ -43,6 +43,9 @@ endif(WITH_MYSQL)
 if(WITH_SQLITE3)
     find_package(SQLite3 REQUIRED)
 endif(WITH_SQLITE3)
+if(WITH_PGSQL)
+    find_package(PostgreSQL REQUIRED)
+endif(WITH_PGSQL)
 
 # if any of nsl or socket exists we need to make sure the following tests
 # use them otherwise some functions may not be found
