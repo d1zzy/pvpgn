@@ -15,9 +15,10 @@ FIND_PATH(ZLIB_INCLUDE_DIR zlib.h
   "[HKEY_LOCAL_MACHINE\\SOFTWARE\\GnuWin32\\Zlib;InstallPath]/include"
   /usr/local/include
   /usr/include
+  ${CMAKE_SOURCE_DIR}/zlib
 )
 
-SET(ZLIB_NAMES z zlib zdll)
+SET(ZLIB_NAMES z zlib zdll zlibwapi)
 FIND_LIBRARY(ZLIB_LIBRARY
   NAMES ${ZLIB_NAMES}
   PATHS 
