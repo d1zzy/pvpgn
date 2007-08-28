@@ -173,39 +173,38 @@
  0x41e223a3 \
  D2DV_109D
 
-# Starcraft - Broodwar (Expansion) 1.15 - (Broodwar mode)
+# Starcraft - Broodwar (Expansion) 1.15.1 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
  "IX86ver1.mpq" \
  IX86 \
  SEXP \
- "starcraft.exe 05/08/07 19:13:26 1220608" \
+ "starcraft.exe 07/19/07 02:30:05 1220608" \
  0x000000d1 \
- 1.15.0.1 \
- 0xc9ca8bc3 \
- SEXP_115
+ 1.15.1.0 \
+ 0x61f028c1 \
+ SEXP_1151
 
-# Starcraft - Broodwar (Expansion) 1.15 - (Starcraft mode)
+# Starcraft - Broodwar (Expansion) 1.15.1 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
  "IX86ver1.mpq" \
  IX86 \
  STAR \
- "starcraft.exe 05/08/07 19:13:26 1220608" \
+ "starcraft.exe 07/19/07 02:30:05 1220608" \
  0x000000d1 \
- 1.15.0.1 \
- 0xc9ca8bc3 \
- STAR_115
+ 1.15.1.0 \
+ 0x61f028c1 \
+ STAR_1151
 
-# Starcraft (Standalone) 1.15
+# Starcraft (Standalone) 1.15.1
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
  "IX86ver1.mpq" \
  IX86 \
  STAR \
- "starcraft.exe 05/08/07 19:14:08 1220608" \
+ "starcraft.exe 07/19/07 02:30:53 1220608" \
  0x000000d1 \
- 1.15.0.0 \
- 0x79b1b06e \
- STAR_115
-
+ 1.15.1.0 \
+ 0xc3199b84 \
+ STAR_1151
 
 ##### Mac OS X (XMAC) ########################################################
 
@@ -1036,6 +1035,28 @@
 
 # ==================== StarCraft Broodwar entries ============================
 
+# Starcraft - Broodwar (Expansion) 1.15 - (Broodwar mode)
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ SEXP \
+ "starcraft.exe 05/08/07 19:13:26 1220608" \
+ 0x000000d1 \
+ 1.15.0.1 \
+ 0xc9ca8bc3 \
+ SEXP_115
+
+# Starcraft - Broodwar (Expansion) 1.15 - (Starcraft mode)
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ STAR \
+ "starcraft.exe 05/08/07 19:13:26 1220608" \
+ 0x000000d1 \
+ 1.15.0.1 \
+ 0xc9ca8bc3 \
+ STAR_115
+
 # Starcraft Broodwar (Expansion) 1.14 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
  "IX86ver1.mpq" \
@@ -1481,6 +1502,17 @@
 # SEXP_104_STAR
 
 # ==================== StarCraft (original) entries ==========================
+
+# Starcraft (Standalone) 1.15
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ STAR \
+ "starcraft.exe 05/08/07 19:14:08 1220608" \
+ 0x000000d1 \
+ 1.15.0.0 \
+ 0x79b1b06e \
+ STAR_115
 
 # Starcraft (Standalone) 1.14
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
