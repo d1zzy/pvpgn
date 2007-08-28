@@ -10,7 +10,10 @@ IF (PGSQL_INCLUDE_DIR)
   SET(PostgreSQL_FIND_QUIETLY TRUE)
 ENDIF (PGSQL_INCLUDE_DIR)
 
+# the registry settings checked are in order:
+# - for pgInstaller 8.2.x postgresql version
 FIND_PATH(PGSQL_INCLUDE_DIR libpq-fe.h
+  "[HKEY_LOCAL_MACHINE\\SOFTWARE\\PostgreSQL\\Installations\\{1F701DBD-1660-4108-B10A-FB435EA63BF0};Base Directory]/include"
   /usr/local/pgsql/include
   /usr/local/include/pgsql
   /usr/local/include
@@ -21,6 +24,7 @@ FIND_PATH(PGSQL_INCLUDE_DIR libpq-fe.h
 
 SET(PGSQL_NAMES pq)
 SET(PGSQL_SEARCH_LIB_PATHS 
+  "[HKEY_LOCAL_MACHINE\\SOFTWARE\\PostgreSQL\\Installations\\{1F701DBD-1660-4108-B10A-FB435EA63BF0};Base Directory]/lib"
   /usr/local/pgsql/lib /usr/local/lib /usr/lib
 )
 FIND_LIBRARY(PGSQL_LIBRARY
