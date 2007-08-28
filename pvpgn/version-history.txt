@@ -1,6 +1,6 @@
 PvPGN Version History:
 
- Changelog for SVN TRUNK (since 1.8.1)
+ Changelog for SVN TRUNK (since 1.8.2)
 =========================================
  -- The list of changes mentioned in here is most propably incomplete.
  For more details also take a peek view into conversion-changelog.
@@ -12,10 +12,18 @@ PvPGN Version History:
   -- added support for battle clans
   -- added various protocol related fixes
   -- added apireg support
-  -- added support for BattleClans
 
 [MISC]
   -- added /clan whisper subcommand
+
+ ChangeLog for 1.8.2 (since 1.8.1)
+=========================================
+
+[WOL]
+  -- fixed possible server crash on raw list command
+
+[VCHECK]
+  -- added SC/BW IX86 1.15.1 version check entries
 
  ChangeLog for 1.8.1 (since 1.8.0)
 =========================================
