@@ -18,9 +18,7 @@
 
 #ifdef WITH_SQL_SQLITE3
 #include "common/setup_before.h"
-#ifdef HAVE_SQLITE3_H
 # include <sqlite3.h>
-#endif
 #include <cstdlib>
 #include "common/eventlog.h"
 #include "common/xalloc.h"
