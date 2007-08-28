@@ -6,7 +6,7 @@ set(OUTPUT_CONFS ad.conf anongame_infos.conf address_translation.conf
   sql_DB_layout2.conf sql_DB_layout.conf supportfile.conf topics.conf 
   tournament.conf versioncheck.conf)
 foreach(CONF ${OUTPUT_CONFS})
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${CONF}.in ${CMAKE_CURRENT_BINARY_DIR}/${CONF} COPYONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${CONF}.in ${CMAKE_CURRENT_BINARY_DIR}/${CONF} @ONLY)
 endforeach(CONF)
 
 # generate the config files replacing the path variables
