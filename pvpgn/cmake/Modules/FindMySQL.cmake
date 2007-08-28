@@ -22,7 +22,11 @@ FIND_PATH(MYSQL_INCLUDE_DIR mysql.h
   /usr/mysql/include
 )
 
-SET(MYSQL_NAMES mysqlclient mysqlclient_r)
+IF(MSVC)
+  SET(MYSQL_NAMES libmysql)
+ELSE(MSVC)
+  SET(MYSQL_NAMES mysqlclient mysqlclient_r)
+ENDIF(MSVC)
 SET(MYSQL_SEARCH_LIB_PATHS 
   "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MySQL AB\\MySQL Server 5.0;Location]/lib/opt"
   "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MySQL AB\\MySQL Server 4.1;Location]/lib/opt"
