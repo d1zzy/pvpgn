@@ -31,7 +31,7 @@ FIND_PATH(PGSQL_INCLUDE_DIR libpq-fe.h
   /usr/pgsql/include
 )
 
-SET(PGSQL_NAMES pq)
+SET(PGSQL_NAMES pq libpq)
 SET(PGSQL_SEARCH_LIB_PATHS 
   ${PGSQL_SEARCH_LIB_PATHS}
   /usr/local/pgsql/lib /usr/local/lib /usr/lib
