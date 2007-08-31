@@ -105,7 +105,7 @@ with MySQL support
   > mingw32-make
   > mingw32-make install
 
-4. Problems
+5. Problems
 
 
    cmake building in PvPGN is a young feature as such many issues may 
