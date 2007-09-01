@@ -5,6 +5,9 @@ PvPGN Version History:
  -- The list of changes mentioned in here is most propably incomplete.
  For more details also take a peek view into conversion-changelog.
 
+[CMAKE]
+  -- added cmake build system support
+
 [WOL]
   -- completed support for all WOL clients (read IGNOREME.TXT)
   -- disable account creation via irc/wol when new_accounts=false
