@@ -24,11 +24,15 @@ ENDIF(PGSQL_WIN_BASE)
 FIND_PATH(PGSQL_INCLUDE_DIR libpq-fe.h
   "[HKEY_LOCAL_MACHINE\\SOFTWARE\\PostgreSQL\\Installations\\{1F701DBD-1660-4108-B10A-FB435EA63BF0};Base Directory]/include"
   /usr/local/pgsql/include
+  /usr/local/postgresql/include
   /usr/local/include/pgsql
+  /usr/local/include/postgresql
   /usr/local/include
   /usr/include/pgsql
+  /usr/include/postgresql
   /usr/include
   /usr/pgsql/include
+  /usr/postgresql/include
 )
 
 SET(PGSQL_NAMES pq libpq)
