@@ -34,7 +34,6 @@
 #cmakedefine HAVE_SYS_EVENT_H
 #cmakedefine HAVE_SYS_EPOLL_H
 #cmakedefine HAVE_SYS_RESOURCE_H
-#cmakedefine HAVE_SQLITE3_H
 #cmakedefine HAVE_PCAP_H
 #cmakedefine HAVE_WINDOWS_H
 #cmakedefine HAVE_WINSOCK2_H
