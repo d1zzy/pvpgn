@@ -32,6 +32,7 @@ set(BNETD_SOURCES
 	team.cpp team.h tick.cpp tick.h timer.cpp timer.h topic.cpp topic.h 
 	tournament.cpp tournament.h tracker.cpp tracker.h udptest_send.cpp 
 	udptest_send.h versioncheck.cpp versioncheck.h watch.cpp watch.h
+    handle_wserv.cpp handle_wserv.h
 	)
 	
 set(BNETD_CONSOLE_RESOURCES

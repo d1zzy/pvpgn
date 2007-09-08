@@ -32,6 +32,7 @@
 
 #include "handle_irc.h"
 #include "handle_wol.h"
+#include "handle_wserv.h"
 
 #include "prefs.h"
 #include "command.h"
@@ -55,8 +56,9 @@ static int handle_irc_common_con_command(t_connection * conn, char const * comma
     switch (conn_get_class(conn)) {
        case conn_class_irc:
             return handle_irc_con_command(conn, command, numparams, params, text);
-       case conn_class_wol:
        case conn_class_wserv:
+            return handle_wserv_con_command(conn, command, numparams, params, text);
+       case conn_class_wol:
        case conn_class_wgameres:
             return handle_wol_con_command(conn, command, numparams, params, text);
        default:
@@ -75,7 +77,6 @@ static int handle_irc_common_log_command(t_connection * conn, char const * comma
        case conn_class_irc:
             return handle_irc_log_command(conn, command, numparams, params, text);
        case conn_class_wol:
-       case conn_class_wserv:
        case conn_class_wgameres:
             return handle_wol_log_command(conn, command, numparams, params, text);
        default:
@@ -86,44 +87,59 @@ static int handle_irc_common_log_command(t_connection * conn, char const * comma
 static int handle_irc_common_set_class(t_connection * conn, char const * command, int numparams, char ** params, char * text)
 {
     if (!conn) {
-       eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
-       return -1;
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
+        return -1;
     }
 
     if (conn_get_class(conn) != conn_class_ircinit) {
-       DEBUG0("FIXME: conn_get_class(conn) != conn_class_ircinit");
-       return -1;
+        DEBUG0("FIXME: conn_get_class(conn) != conn_class_ircinit");
+        return -1;
     }
     else {
-       if (std::strcmp(command, "verchk") == 0) {
-          DEBUG0("Got WSERV packet");
-          conn_set_class(conn,conn_class_wserv);
-          return 0;
-       }
-       else if (std::strcmp(command, "CVERS") == 0) {
-          DEBUG0("Got WOL packet");
-          conn_set_class(conn,conn_class_wol);
-          return 0;
-       }
-       else if ((std::strcmp(command, "LISTSEARCH") == 0) ||
+        if (std::strcmp(command, "verchk") == 0) {
+            DEBUG0("Got WSERV packet");
+            if (std::strcmp(prefs_get_wserv_addrs(),"") != 0)
+                conn_set_class(conn,conn_class_wserv);
+            else
+                conn_set_state(conn,conn_state_destroy);
+            return 0;
+        }
+        else if (std::strcmp(command, "CVERS") == 0) {
+            DEBUG0("Got WOL packet");
+            if (std::strcmp(prefs_get_wol_addrs(),"") != 0)
+                conn_set_class(conn,conn_class_wol);
+            else
+                conn_set_state(conn,conn_state_destroy);
+            return 0;
+        }
+        else if ((std::strcmp(command, "LISTSEARCH") == 0) ||
                 (std::strcmp(command, "RUNGSEARCH") == 0) ||
                 (std::strcmp(command, "HIGHSCORE") == 0)) {
-          DEBUG0("Got WOL Ladder packet");
-          conn_set_class(conn,conn_class_wol); /* is handled in handle_wol.* now */
-          return 0;
-       }
-       else if ((std::strcmp(command, "CRYPT") == 0) ||
+            DEBUG0("Got WOL Ladder packet");
+            if (std::strcmp(prefs_get_wol_addrs(),"") != 0)
+                conn_set_class(conn,conn_class_wol); /* is handled in handle_wol.* now */
+            else
+                conn_set_state(conn,conn_state_destroy);
+            return 0;
+        }
+        else if ((std::strcmp(command, "CRYPT") == 0) ||
                 (std::strcmp(command, "LOGIN") == 0)) {
-          DEBUG0("Got GameSpy packet");
-          conn_set_class(conn,conn_class_irc);
-//          conn_set_class(conn,conn_class_gspy_peerchat);
-          return 0;
-       }
-       else {
-          DEBUG0("Got IRC packet");
-          conn_set_class(conn,conn_class_irc);
-          return 0;
-       }
+            DEBUG0("Got GameSpy packet");
+            if (std::strcmp(prefs_get_irc_addrs(),"") != 0)
+                conn_set_class(conn,conn_class_irc);
+//                conn_set_class(conn,conn_class_gspy_peerchat);
+            else
+                conn_set_state(conn,conn_state_destroy);
+            return 0;
+        }
+        else {
+            DEBUG0("Got IRC packet");
+            if (std::strcmp(prefs_get_irc_addrs(),"") != 0)
+                conn_set_class(conn,conn_class_irc);
+            else
+                conn_set_state(conn,conn_state_destroy);
+            return 0;
+        }
     }
 }
 
