@@ -109,6 +109,7 @@ static const t_irc_command_table_row irc_log_command_table[] =
 	{ "ISON"		, _handle_ison_command },
 	{ "WHOIS"		, _handle_whois_command },
 	{ "PART"		, _handle_part_command },
+	{ "KICK"		, _handle_kick_command },
 
 	{ NULL			, NULL }
 };
@@ -622,7 +623,7 @@ static int _handle_userhost_command(t_connection * conn, int numparams, char ** 
 
 static int _handle_quit_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-	conn_set_channel(conn, NULL);
+	conn_quit_channel(conn,text);
 	conn_set_state(conn, conn_state_destroy);
 	return 0;
 }
@@ -707,7 +708,7 @@ static int _handle_whois_command(t_connection * conn, int numparams, char ** par
 
 static int _handle_part_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-    conn_set_channel(conn, NULL);
+    conn_part_channel(conn);
     return 0;
 }
 

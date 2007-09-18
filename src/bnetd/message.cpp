@@ -98,33 +98,35 @@ static char const * message_type_get_str(t_message_type type)
     case message_type_notice:
         return "notice";
     case message_type_nick:
-         return "nick";
+        return "nick";
     case message_type_namreply:
-         return "namreply";
+        return "namreply";
     case message_type_topic:
-         return "topic";
+        return "topic";
     case message_type_mode:
-         return "mode";
+        return "mode";
     case message_type_host:
-	 return "host";
+        return "host";
     case message_type_page:
-	 return "page";
+        return "page";
+    case message_type_kick:
+        return "kick";
+    case message_type_quit:
+        return "quit";
     case message_wol_joingame:
-	 return "wol_joingame";
+        return "wol_joingame";
     case message_wol_gameopt_owner:
-	 return "wol_gameopt_owner";
+        return "wol_gameopt_owner";
     case message_wol_gameopt_join:
-	 return "wol_gameopt_join";
+        return "wol_gameopt_join";
     case message_wol_start_game:
-	 return "wol_start_game";
+        return "wol_start_game";
     case message_wol_advertr:
-	 return "wol_advertr";
+        return "wol_advertr";
     case message_wol_chanchk:
-	 return "wol_chanchk";
-    case message_wol_kick:
-	 return "wol_kick";
+        return "wol_chanchk";
     case message_wol_userip:
-	 return "wol_userip";
+        return "wol_userip";
     case message_type_null:
         return "null";
     default:
@@ -372,6 +374,36 @@ static int message_telnet_format(t_packet * packet, t_message_type type, t_conne
 	    tname = conn_get_chatcharname(me, dst);
 	    msgtemp = (char*)xmalloc(std::strlen(tname)+32);
 	    std::sprintf(msgtemp,"[%s leaves]\r\n",tname);
+	    conn_unget_chatcharname(me,tname);
+	}
+	break;
+    case message_type_kick:
+	if (!me)
+	{
+	    eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection for %s",message_type_get_str(type));
+	    return -1;
+	}
+	{
+	    char const * tname;
+
+	    tname = conn_get_chatcharname(me, dst);
+	    msgtemp = (char*)xmalloc(std::strlen(tname)+32);
+	    std::sprintf(msgtemp,"[%s has been kicked]\r\n",tname);
+	    conn_unget_chatcharname(me,tname);
+	}
+	break;
+    case message_type_quit:
+	if (!me)
+	{
+	    eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection for %s",message_type_get_str(type));
+	    return -1;
+	}
+	{
+	    char const * tname;
+
+	    tname = conn_get_chatcharname(me, dst);
+	    msgtemp = (char*)xmalloc(std::strlen(tname)+32);
+	    std::sprintf(msgtemp,"[%s quit]\r\n",tname);
 	    conn_unget_chatcharname(me,tname);
 	}
 	break;
@@ -739,6 +771,8 @@ static int message_bot_format(t_packet * packet, t_message_type type, t_connecti
 	    }
 	    break;
 	case message_type_part:
+	case message_type_kick:
+	case message_type_quit:
 	    if (!me)
 	    {
 		eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection for %s",message_type_get_str(type));
@@ -1013,6 +1047,8 @@ static int message_bnet_format(t_packet * packet, t_message_type type, t_connect
 	}
 	break;
     case message_type_part:
+    case message_type_kick:
+    case message_type_quit:
 	if (!me)
 	{
 	    eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection for %s",message_type_get_str(type));

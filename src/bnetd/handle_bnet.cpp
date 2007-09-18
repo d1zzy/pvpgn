@@ -25,7 +25,6 @@
 
 #include <sstream>
 #include <cstring>
-#include <cstring>
 #include <cctype>
 
 #include "compat/strcasecmp.h"
@@ -2204,7 +2203,7 @@ static int _client_atinvitefriend(t_connection * c, t_packet const *const packet
 
 
 	//Create the packet to send to each of the users you wanted to invite
-	conn_set_channel(c, NULL);
+	conn_part_channel(c);
 
 	for (i = 0; i < teammemcount; i++) {
 
@@ -3404,7 +3403,7 @@ static int _client_joingame(t_connection * c, t_packet const *const packet)
     }
 
     if (conn_get_channel(c))
-	conn_set_channel(c, NULL);
+	conn_part_channel(c);
 
     if (!std::strcmp(gamename, "BNet") && !handle_anongame_join(c)) {
 	gtype = game_type_anongame;
@@ -3614,7 +3613,7 @@ static int _client_startgame4(t_connection * c, t_packet const *const packet)
     }
     // Quick hack to make W3 part channels when creating a game
     if (conn_get_channel(c))
-	conn_set_channel(c, NULL);
+	conn_part_channel(c);
 
     {
 	char const *gamename;
@@ -3828,7 +3827,7 @@ static int _client_leavechannel(t_connection * c, t_packet const *const packet)
 {
     /* If this user in a channel, notify everyone that the user has left */
     if (conn_get_channel(c))
-	conn_set_channel(c, NULL);
+	conn_part_channel(c);
     return 0;
 }
 

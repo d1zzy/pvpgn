@@ -328,6 +328,9 @@ extern int conn_del_watch(t_connection * c, t_account * account, t_clienttag cli
 extern t_channel * conn_get_channel(t_connection const * c) ;
 extern int conn_set_channel_var(t_connection * c, t_channel * channel);
 extern int conn_set_channel(t_connection * c, char const * channelname);
+extern int conn_part_channel(t_connection * c);
+extern int conn_kick_channel(t_connection * c, char const * text);
+extern int conn_quit_channel(t_connection * c, char const * text);
 extern t_game * conn_get_game(t_connection const * c) ;
 extern int conn_set_game(t_connection * c, char const * gamename, char const * gamepass, char const * gameinfo, t_game_type type, int version);
 extern unsigned int conn_get_tcpaddr(t_connection * c) ;
