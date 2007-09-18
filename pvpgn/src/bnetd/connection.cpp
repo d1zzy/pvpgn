@@ -1847,6 +1847,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
     t_elem * curr;
     int clantag=0;
     t_clan * clan = NULL;
+	unsigned int created;
 
     if (!c)
     {
@@ -1862,10 +1863,12 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
         return -1;
     }
 
-    if (channelname)
+    if (!channelname)
     {
-	unsigned int created;
-
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL channelname");
+        return -1;
+    }
+                
 	oldchannel=c->protocol.chat.channel;
 
 	channel = channellist_find_channel_by_name(channelname,conn_get_country(c),realm_get_name(conn_get_realm(c)));
@@ -1897,10 +1900,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
     }
 
     if (c->protocol.chat.channel)
-    {
-	channel_del_connection(c->protocol.chat.channel, c);
-	c->protocol.chat.channel = NULL;
-    }
+        conn_part_channel(c);
 
     if (channel)
 	{
@@ -1978,7 +1978,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
       message_send_text(c,message_type_info,c,msgtemp);
     }
 
-    if (channel_get_topic(channel_get_name(c->protocol.chat.channel)) && ((conn_get_class(c)!=conn_class_irc)))
+    if (channel_get_topic(channel_get_name(c->protocol.chat.channel)) && ((conn_is_irc_variant(c)) == 0))
     {
       char msgtemp[MAX_MESSAGE_LEN];
 
@@ -1991,19 +1991,70 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
 
     if(c->protocol.chat.channel!=oldchannel)
       clanmember_on_change_status_by_connection(c);
-    }
-    else
-    {
-      if (c->protocol.chat.channel)
-      {
-        channel_del_connection(c->protocol.chat.channel,c);
-        c->protocol.chat.channel = NULL;
-      }
-    }
 
     return 0;
 }
 
+extern int conn_part_channel(t_connection * c)
+{
+    if (!c) {
+        ERROR0("got NULL connection");
+        return -1;
+    }
+
+    if (!c->protocol.chat.channel) {
+        ERROR0("client want to PART channel but is not in channel! c->protocol.chat.channel == NULL");
+        return -1;
+    }
+
+    channel_message_send(c->protocol.chat.channel,message_type_part,c,NULL);
+    channel_del_connection(c->protocol.chat.channel,c);
+    c->protocol.chat.channel = NULL;
+
+    return 0;
+}
+
+extern int conn_kick_channel(t_connection * c, char const * text)
+{
+    /* According to RFC2812 in *text is reason, wol sends by text op nickname */
+
+    if (!c) {
+        ERROR0("got NULL connection");
+        return -1;
+    }
+
+    if (!c->protocol.chat.channel) {
+        ERROR0("client want to KICK channel but is not in channel! c->protocol.chat.channel == NULL");
+        return -1;
+    }
+   
+    channel_message_send(c->protocol.chat.channel,message_type_kick,c,text);
+    channel_del_connection(c->protocol.chat.channel,c);
+    c->protocol.chat.channel = NULL;
+
+    return 0;
+}
+
+extern int conn_quit_channel(t_connection * c, char const * text)
+{
+    /* According to RFC2812 in *text is user difinable QUIT message i.e.: Gone to have lunch */
+
+    if (!c) {
+        ERROR0("got NULL connection");
+        return -1;
+    }
+
+    if (!c->protocol.chat.channel) {
+        ERROR0("client want to QUIT channel but is not in channel! c->protocol.chat.channel == NULL");
+        return -1;
+    }
+   
+    channel_message_send(c->protocol.chat.channel,message_type_quit,c,text);
+    channel_del_connection(c->protocol.chat.channel,c);
+    c->protocol.chat.channel = NULL;
+
+    return 0;
+}
 
 extern t_game * conn_get_game(t_connection const * c)
 {

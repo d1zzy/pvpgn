@@ -100,7 +100,6 @@ static int _handle_getbuddy_command(t_connection * conn, int numparams, char ** 
 static int _handle_addbuddy_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_delbuddy_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_time_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_kick_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_host_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_advertc_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -681,7 +680,7 @@ static int _handle_join_command(t_connection * conn, int numparams, char ** para
 static int _handle_quit_command(t_connection * conn, int numparams, char ** params, char * text)
 {
     irc_send(conn,RPL_QUIT,":goodbye");
-    conn_set_channel(conn, NULL);
+    conn_quit_channel(conn, text);
     conn_set_state(conn, conn_state_destroy);
 
     return 0;
@@ -692,7 +691,7 @@ static int _handle_part_command(t_connection * conn, int numparams, char ** para
     if ((conn_wol_get_ingame(conn) == 1)) {
         conn_wol_set_ingame(conn,0);
     }
-    conn_set_channel(conn, NULL);
+    conn_part_channel(conn);
     return 0;
 }
 
@@ -1534,46 +1533,6 @@ static int _handle_time_command(t_connection * conn, int numparams, char ** para
 
     snprintf(temp,sizeof(temp),"irc.westwood.com :%lu", now);
 	irc_send(conn,RPL_TIME,temp);
-    return 0;
-}
-
-static int _handle_kick_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-    char temp[MAX_IRC_MESSAGE_LEN];
-    t_channel * channel;
-    t_connection * c;
-    unsigned int flags;
-
- 	/**
- 	*  Heres the imput expected
-    *  KICK [channel] [kicked_user]
-    *
-    *  Heres the output expected
-    *  :user!WWOL@hostname KICK [channel] [kicked_user] :[user_op]
-    */
-
-	flags = conn_get_flags(conn);
-
-	if (!flags & MF_BLIZZARD) {
-	    snprintf(temp,sizeof(temp),"That command is for Admins/Operators only.");
-        message_send_text(conn,message_type_whisper,conn,temp);
-        return 0;
-    }
-
-    if (params[1])
-      c = connlist_find_connection_by_name(params[1],NULL);
-
-	if ((channel = channellist_find_channel_by_name(irc_convert_ircname(params[0]),NULL,NULL))) {
-	    snprintf(temp, sizeof(temp), "%s %s :%s", params[0], params[1], conn_get_loggeduser(conn));
-   	    channel_message_send(channel,message_wol_kick,conn,temp);
-	    if ((conn_wol_get_ingame(c) == 1)) {
-		   conn_wol_set_ingame(c,0);
-        }
-        conn_set_channel(c, NULL);
-	}
-    else {
-     	irc_send(conn,ERR_NOSUCHCHANNEL,":No such channel");
-	}
     return 0;
 }
 

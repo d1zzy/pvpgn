@@ -519,8 +519,6 @@ extern int channel_del_connection(t_channel * channel, t_connection * connection
 
     channel_message_log(channel,connection,0,"PARTED");
 
-    channel_message_send(channel,message_type_part,connection,NULL);
-
     curr = channel->memberlist;
     if (curr->connection==connection)
     {

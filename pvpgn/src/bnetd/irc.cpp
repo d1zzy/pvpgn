@@ -53,6 +53,7 @@
 #include "command_groups.h"
 #include "topic.h"
 #include "clan.h"
+#include "command.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -799,11 +800,37 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     case message_type_topic:
         {
             t_channel * channel;
-
             channel = conn_get_channel(me);
-
             irc_send_topic(dst,channel);
-	}
+        }
+        break;
+   case message_type_kick:
+        {
+            char temp[MAX_IRC_MESSAGE_LEN];
+            from.nick = conn_get_chatname(me);
+            from.user = ctag;
+            from.host = addr_num_to_ip_str(conn_get_addr(me));
+            if (text)
+                std::sprintf(temp,"%s :%s",conn_get_chatname(me),text);
+            else
+                std::sprintf(temp,"%s :");
+            msg = irc_message_preformat(&from,"KICK",irc_convert_channel(conn_get_channel(me)),temp);
+            conn_unget_chatname(me,from.nick);
+        }
+        break;
+    case message_type_quit:
+        {
+            char temp[MAX_IRC_MESSAGE_LEN];
+            if (text)
+                sprintf(temp,":%s",text);
+            else
+                sprintf(temp,":Bye");
+
+            from.nick = conn_get_chatname(me);
+            from.host = addr_num_to_ip_str(conn_get_addr(me));
+            from.user = ctag;
+            msg = irc_message_preformat(&from,"QUIT","\r",temp);
+        }
         break;
 
    	/**
@@ -860,13 +887,6 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         break;
    case message_wol_chanchk:
         msg = irc_message_preformat(NULL,"CHANCHK","\r",text);
-        break;
-   case message_wol_kick:
-        from.nick = conn_get_chatname(me);
-        from.user = ctag;
-        from.host = addr_num_to_ip_str(conn_get_addr(me));
-        msg = irc_message_preformat(&from,"KICK","\r",text);
-        conn_unget_chatname(me,from.nick);
         break;
    case message_wol_userip:
         from.nick = conn_get_chatname(me);
@@ -1271,6 +1291,36 @@ extern int _handle_names_command(t_connection * conn, int numparams, char ** par
 		irc_send_rpl_namreply(conn, NULL);
     }
 	return 0;
+}
+
+extern int _handle_kick_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+    char temp[MAX_IRC_MESSAGE_LEN];
+
+    /**
+ 	*  Heres the imput expected
+    *  KICK [channel] [kicked_user]
+    *
+    *  Heres the output expected
+    *  :user!WWOL@hostname KICK [channel] [kicked_user] :[text]
+    *
+    *  WOL in [text] sends Admin name
+    */
+
+    if ((numparams != 2) || !(params[1])) {
+	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to KICK");
+	    return -1;
+    }
+
+    /* Make standart PvPGN KICK from RFC2812 KICK */
+    if (text)
+        snprintf(temp, sizeof(temp), "/kick %s %s", params[1], text);
+    else
+        snprintf(temp, sizeof(temp), "/kick %s", params[1]);
+
+    handle_command(conn, temp);
+
+    return 0;
 }
 
 }

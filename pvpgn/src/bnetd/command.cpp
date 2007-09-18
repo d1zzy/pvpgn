@@ -2357,7 +2357,9 @@ static int _handle_kick_command(t_connection * c, char const *text)
       std::sprintf(msgtemp,"%-.20s has been kicked by %-.20s.",tname1,tname2);
     channel_message_send(channel,message_type_info,c,msgtemp);
   }
-  conn_set_channel(kuc,CHANNEL_NAME_KICKED); /* should not fail */
+  conn_kick_channel(kuc,"Bye");
+  if (conn_get_class(kuc) == conn_class_bnet)
+      conn_set_channel(kuc,CHANNEL_NAME_KICKED); /* should not fail */
 
   return 0;
 }

@@ -58,6 +58,8 @@ typedef enum
     message_type_emote,
     message_type_uniqueid,
     message_type_mode,
+    message_type_kick,
+    message_type_quit,
     
     /**
     *  IRC specific messages
@@ -78,7 +80,6 @@ typedef enum
     message_wol_start_game,
     message_wol_advertr,
     message_wol_chanchk,
-    message_wol_kick,
     message_wol_userip,
 
     message_type_null
