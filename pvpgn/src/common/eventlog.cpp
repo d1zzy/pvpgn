@@ -39,7 +39,11 @@ static unsigned currlevel=eventlog_level_debug|
                           eventlog_level_info|
                           eventlog_level_warn|
                           eventlog_level_error|
-                          eventlog_level_fatal;
+                          eventlog_level_fatal
+#ifdef WIN32GUI
+                          |eventlog_level_gui
+#endif
+						  ;
 /* FIXME: maybe this should be default for win32 */
 static int eventlog_debugmode=0;
 
@@ -137,6 +141,13 @@ extern int eventlog_add_level(char const * levelname)
 	currlevel |= eventlog_level_fatal;
 	return 0;
     }
+#ifdef WIN32_GUI
+    if (strcasecmp(levelname,"gui")==0)
+    {
+	currlevel |= eventlog_level_gui;
+	return 0;
+    }
+#endif
 
     eventlog(eventlog_level_error,__FUNCTION__,"got bad levelname \"%s\"",levelname);
     return -1;
@@ -181,7 +192,13 @@ extern int eventlog_del_level(char const * levelname)
 	currlevel &= ~eventlog_level_fatal;
 	return 0;
     }
-
+#ifdef WIN32_GUI
+    if (strcasecmp(levelname,"gui")==0)
+    {
+	currlevel &= ~eventlog_level_gui;
+	return 0;
+    }
+#endif
 
     eventlog(eventlog_level_error,__FUNCTION__,"got bad levelname \"%s\"",levelname);
     return -1;
@@ -203,6 +220,10 @@ extern char const * eventlog_get_levelname_str(t_eventlog_level level)
     return "error";
   case eventlog_level_fatal:
     return "fatal";
+#ifdef WIN32_GUI
+  case eventlog_level_gui:
+	  return "gui";
+#endif
   default:
     return "unknown";
   }
@@ -224,7 +245,8 @@ extern void eventlog_hexdump_data(void const * data, unsigned int len)
 	hexdump_string(datac, (len - i < 16) ? (len - i) : 16, dst, i);
 	std::fprintf(eventstrm,"%s\n",dst);
 #ifdef WIN32_GUI
-        gui_lprintf(eventlog_level_info,"%s\n",dst);
+       if (eventlog_level_gui&currlevel)
+	    gui_lprintf(eventlog_level_info,"%s\n",dst);
 #endif
        if (eventlog_debugmode)
        {
@@ -259,7 +281,8 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
     {
 	    std::fprintf(eventstrm,"%s [error] eventlog: got NULL module\n",time_string);
 #ifdef WIN32_GUI
-        gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL module\n",time_string);
+    if (eventlog_level_gui&currlevel)
+	    gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL module\n",time_string);
 #endif
 	std::fflush(eventstrm);
 	return;
@@ -269,7 +292,8 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
     {
 	    std::fprintf(eventstrm,"%s [error] eventlog: got NULL fmt\n",time_string);
 #ifdef WIN32_GUI
-        gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL fmt\n",time_string);
+    if (eventlog_level_gui&currlevel)
+	    gui_lprintf(eventlog_level_error,"%s [error] eventlog: got NULL fmt\n",time_string);
 #endif
 	std::fflush(eventstrm);
 	return;
@@ -277,19 +301,22 @@ extern void eventlog(t_eventlog_level level, char const * module, char const * f
 
     std::fprintf(eventstrm,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
 #ifdef WIN32_GUI
-    gui_lprintf(level,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
+    if (eventlog_level_gui&currlevel)
+	    gui_lprintf(level,"%s [%s] %s: ",time_string,eventlog_get_levelname_str(level),module);
 #endif
 
     va_start(args,fmt);
 
     std::vfprintf(eventstrm,fmt,args);
 #ifdef WIN32_GUI
-    gui_lvprintf(level,fmt,args);
+    if (eventlog_level_gui&currlevel)
+      gui_lvprintf(level,fmt,args);
 #endif
     va_end(args);
     std::fprintf(eventstrm,"\n");
 #ifdef WIN32_GUI
-    gui_lprintf(level,"\n");
+    if (eventlog_level_gui&currlevel)
+      gui_lprintf(level,"\n");
 #endif
 
     if (eventlog_debugmode) {

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005           Dizzy
- * Copyright (C) 2005           Olaf Freyer (aaron@cs.tu-berlin.de)
+ * Copyright (C) 2005,2007      Olaf Freyer (aaron@cs.tu-berlin.de)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,6 +46,10 @@ static struct {
 	const char *preffile;
 	const char *logfile;
 	unsigned debug;
+#ifdef WIN32_GUI
+	unsigned console;
+	unsigned gui;
+#endif
 } cmdline_config;
 
 
@@ -79,6 +83,13 @@ static int conf_set_servaction(const char * valstr);
 static int conf_setdef_servaction(void);
 #endif
 
+#ifdef WIN32_GUI
+static int conf_set_console(char const * valstr);
+static int conf_setdef_console(void);
+
+static int conf_set_gui(char const * valstr);
+static int conf_setdef_gui(void);
+#endif
 
 static t_conf_entry conftab[]={
 	{ "c",          conf_set_preffile,      NULL, conf_setdef_preffile},
@@ -99,6 +110,10 @@ static t_conf_entry conftab[]={
 #ifdef WIN32
 	{ "service",    conf_set_service,       NULL, conf_setdef_service   },
 	{ "s",		conf_set_servaction,	NULL, conf_setdef_servaction},
+#endif
+#ifdef WIN32_GUI
+	{ "console",    conf_set_console,       NULL, conf_setdef_console   },
+	{ "gui",        conf_set_gui,           NULL, conf_setdef_gui       },
 #endif
 	{ NULL,         NULL,                   NULL, NULL                  }
 };
@@ -145,6 +160,9 @@ static void usage(void)
 		"    --service                run as service\n"
 		"    -s install               install service\n"
 		"    -s uninstall             uninstall service\n"
+#endif
+#ifdef WIN32GUI
+		"    -console                 run in console mode\n"
 #endif
 		"\n"
 		"Notes:\n"
@@ -303,6 +321,46 @@ static int conf_set_servaction(const char *valstr)
 static int conf_setdef_servaction(void)
 {
 	return 0;
+}
+
+#endif
+
+#ifdef WIN32_GUI
+
+static int conf_set_console(const char *valstr)
+{
+	conf_set_bool(&cmdline_config.console, valstr, 0);
+	if (cmdline_config.console){
+		conf_set_bool(&cmdline_config.gui, NULL, 0);
+	}
+	return 0;
+}
+
+static int conf_setdef_console(void)
+{
+	return conf_set_bool(&cmdline_config.console, NULL, 0);
+}
+
+extern unsigned cmdline_get_console(void){
+	return cmdline_config.console;
+}
+
+
+static int conf_set_gui(const char *valstr)
+{
+	conf_set_bool(&cmdline_config.gui, valstr, 0);
+	if (cmdline_config.gui){
+	}
+	return 0;
+}
+
+static int conf_setdef_gui(void)
+{
+	return conf_set_bool(&cmdline_config.gui, NULL, 1);
+}
+
+extern unsigned cmdline_get_gui(void){
+	return cmdline_config.gui;
 }
 
 #endif

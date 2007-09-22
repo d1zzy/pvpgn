@@ -31,6 +31,9 @@ typedef enum
     eventlog_level_warn = 8,
     eventlog_level_error=16,
     eventlog_level_fatal=32
+#ifdef WIN32_GUI
+   ,eventlog_level_gui  =64
+#endif
 } t_eventlog_level;
 
 }

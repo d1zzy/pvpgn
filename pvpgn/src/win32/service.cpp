@@ -34,11 +34,7 @@ extern char serviceDescription[];
 
 extern int g_ServiceStatus;
 
-#ifdef WIN32_GUI
-extern int server_main(int argc, char *argv[]);
-#else
-extern int main(int argc, char *argv[]);
-#endif
+extern int main(int argc, char **argv);
 
 SERVICE_STATUS serviceStatus;
 SERVICE_STATUS_HANDLE serviceStatusHandle = 0;
@@ -204,11 +200,7 @@ void WINAPI ServiceMain(DWORD argc, char *argv[])
 		g_ServiceStatus = 1;
 		argc = 1;
 
-#ifdef WIN32_GUI
-		server_main(argc, argv);
-#else
 		main(argc, argv);
-#endif
 
 		// service was stopped
 		serviceStatus.dwCurrentState = SERVICE_STOP_PENDING;

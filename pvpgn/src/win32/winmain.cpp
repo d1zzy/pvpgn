@@ -46,11 +46,15 @@
 #include "bnetd/ipban.h"
 #include "bnetd/message.h"
 #include "bnetd/server.h"
+#include "bnetd/cmdline.h"
 #include "resource.h"
+#include "console_output.h"
 
 #include "common/setup_after.h"
 
 #define WM_SHELLNOTIFY          (WM_USER+1)
+
+extern int main(int argc, char **argv); /* bnetd main function in bnetd/main.c */
 
 namespace pvpgn
 {
@@ -801,19 +805,29 @@ BOOL CALLBACK KickDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 
 }
 
-#ifdef WIN32_GUI
-extern int server_main(int argc, char *argv[]);
-#endif
+using namespace pvpgn;
+using namespace pvpgn::bnetd;
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE reserved, LPSTR lpCmdLine, int nCmdShow)
 {
 	int result;
+	Console     console;
+
+	if (cmdline_load(__argc, __argv) != 1) {
+		return -1;
+	}
+
+	if (cmdline_get_console()){
+		console.RedirectIOToConsole();
+		return main(__argc, __argv);
+	}
+
 	pvpgn::bnetd::gui.main_finished = FALSE;
 	pvpgn::bnetd::gui.event_ready = CreateEvent(NULL, FALSE, FALSE, NULL);
 	_beginthread( pvpgn::bnetd::guiThread, 0, (void*)hInstance);
 	WaitForSingleObject(pvpgn::bnetd::gui.event_ready, INFINITE);
 
-	result = server_main(__argc ,__argv);
+	result = main(__argc ,__argv);
     
 	pvpgn::bnetd::gui.main_finished = TRUE;
 	eventlog(pvpgn::eventlog_level_debug,__FUNCTION__,"server exited ( return : %i )", result);

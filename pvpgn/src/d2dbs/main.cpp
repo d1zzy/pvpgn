@@ -183,6 +183,12 @@ static int config_init(int argc, char * * argv)
         xfree(temp);
     }
 
+#ifdef WIN32_GUI
+	if (cmdline_get_gui()){
+		eventlog_add_level(eventlog_get_levelname_str(eventlog_level_gui));
+	}
+#endif
+
 #ifdef DO_DAEMONIZE
 	if (cmdline_get_foreground()) {
 		eventlog_set(stderr);
@@ -213,11 +219,8 @@ static int config_cleanup(void)
 	return 0;
 }
 
-#ifdef WIN32_GUI
-extern int server_main(int argc, char *argv[])
-#else
-extern int main(int argc, char * * argv)
-#endif
+
+extern int main(int argc, char ** argv)
 {
 	int pid;
 	char * pidfile;

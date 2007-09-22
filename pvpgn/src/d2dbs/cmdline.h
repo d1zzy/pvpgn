@@ -35,6 +35,10 @@ extern int cmdline_get_foreground(void);
 #endif
 extern const char* cmdline_get_preffile(void);
 extern const char* cmdline_get_logfile(void);
+#ifdef WIN32_GUI
+extern unsigned cmdline_get_console(void);
+extern unsigned cmdline_get_gui(void);
+#endif
 
 }
 

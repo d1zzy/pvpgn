@@ -28,13 +28,16 @@
 #include "common/eventlog.h"
 #include "d2dbs/version.h"
 #include "d2dbs/handle_signal.h"
+#include "d2dbs/cmdline.h"
 #include "service.h"
 #include "winmain.h"
+#include "console_output.h"
+
 #include "common/setup_after.h"
 
 #define WM_SHELLNOTIFY          (WM_USER+1)
 
-extern int	server_main(int argc, char *argv[]); /* d2dbs main function in d2dbs/main.c */
+extern int main(int argc, char **argv); /* d2dbs main function in d2dbs/main.c */
 
 namespace pvpgn
 {
@@ -218,7 +221,7 @@ BOOL CALLBACK DlgProcAbout(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 static void d2dbs(void * dummy)
 {
-    switch (server_main(__argc, __argv))
+    switch (main(__argc, __argv))
     {
         case EXIT_SERVICE:
             gui_run = FALSE; /* close gui */
@@ -236,6 +239,7 @@ static void d2dbs(void * dummy)
 
 }
 
+using namespace pvpgn;
 using namespace pvpgn::d2dbs;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -245,12 +249,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     HWND		hwnd;
     MSG			msg;
     
-    /* if running as a service skip starting the GUI and go straight to starting d2dbs */
-    if (__argc==2 && strcmp(__argv[1],"--service")==0)
-    {
-        Win32_ServiceRun();
-        return 1;
-    }
+	Console     console;
+
+	if (cmdline_load(__argc, __argv) != 1) {
+		return -1;
+	}
+
+	if (cmdline_get_console()){
+		console.RedirectIOToConsole();
+		return main(__argc, __argv);
+	}
     
     LoadLibrary("RichEd20.dll");
 

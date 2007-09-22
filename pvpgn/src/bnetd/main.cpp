@@ -182,6 +182,13 @@ int eventlog_startup(void)
 	}
 	xfree(temp);
     }
+
+#ifdef WIN32_GUI
+	if (cmdline_get_gui()){
+		eventlog_add_level(eventlog_get_levelname_str(eventlog_level_gui));
+	}
+#endif
+
     if (eventlog_open(prefs_get_logfile())<0) {
 	if (prefs_get_logfile()) {
 	    eventlog(eventlog_level_fatal,__FUNCTION__,"could not use file \"%s\" for the eventlog (exiting)",prefs_get_logfile());
@@ -451,11 +458,7 @@ void pvpgn_greeting(void)
     return;
 }
 
-#ifdef WIN32_GUI
-extern int server_main(int argc, char *argv[])
-#else
-extern int main(int argc, char * * argv)
-#endif
+extern int main(int argc, char ** argv)
 {
 try {
     int a;
@@ -542,3 +545,4 @@ try {
 }
     return -1;
 }
+
