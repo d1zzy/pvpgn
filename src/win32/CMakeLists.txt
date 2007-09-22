@@ -3,7 +3,7 @@ set(WIN32_SOURCES
 )
 
 set(WIN32_GUI_SOURCES
-	gui_printf.h gui_printf.cpp
+	gui_printf.h gui_printf.cpp console_output.h console_output.cpp
 )
 
 add_library(win32 ${WIN32_SOURCES})
