@@ -28,13 +28,16 @@
 #include "common/eventlog.h"
 #include "d2cs/version.h"
 #include "d2cs/handle_signal.h"
+#include "d2cs/cmdline.h"
 #include "service.h"
 #include "winmain.h"
+#include "console_output.h"
+
 #include "common/setup_after.h"
 
 #define WM_SHELLNOTIFY          (WM_USER+1)
 
-extern int	server_main(int argc, char *argv[]); /* d2cs main function in d2cs/main.c */
+extern int main(int argc, char **argv); /* d2cs main function in d2cs/main.c */
 
 namespace pvpgn
 {
@@ -222,7 +225,7 @@ BOOL CALLBACK DlgProcAbout(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 static void d2cs(void * dummy)
 {
-    switch (server_main(__argc, __argv))
+    switch (main(__argc, __argv))
     {
         case EXIT_SERVICE:
             gui_run = FALSE; /* close gui */
@@ -240,6 +243,7 @@ static void d2cs(void * dummy)
 
 }
 
+using namespace pvpgn;
 using namespace pvpgn::d2cs;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -248,14 +252,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     WNDCLASSEX	wc;
     HWND		hwnd;
     MSG			msg;
-    
-    /* if running as a service skip starting the GUI and go straight to starting d2cs */
-    if (__argc==2 && strcmp(__argv[1],"--service")==0)
-    {
-        Win32_ServiceRun();
-        return 1;
-    }
-    
+	Console     console;
+
+	if (cmdline_load(__argc, __argv) != 1) {
+		return -1;
+	}
+
+	if (cmdline_get_console()){
+		console.RedirectIOToConsole();
+		return main(__argc, __argv);
+	}
+
     LoadLibrary("RichEd20.dll");
 
     wc.cbSize = sizeof(WNDCLASSEX);
