@@ -32,7 +32,7 @@ set(BNETD_SOURCES
 	team.cpp team.h tick.cpp tick.h timer.cpp timer.h topic.cpp topic.h 
 	tournament.cpp tournament.h tracker.cpp tracker.h udptest_send.cpp 
 	udptest_send.h versioncheck.cpp versioncheck.h watch.cpp watch.h
-    handle_wserv.cpp handle_wserv.h
+  handle_wserv.cpp handle_wserv.h ../win32/winmain.cpp ../win32/winmain.h
 	)
 	
 set(BNETD_CONSOLE_RESOURCES
@@ -41,22 +41,13 @@ set(BNETD_CONSOLE_RESOURCES
 set(BNETD_GUI_RESOURCES
   ../win32/resource.h ../win32/resource.rc)
 
-set(BNETD_GUI_SOURCES
-	../win32/winmain.cpp ../win32/winmain.h)
-
-add_executable(bnetd ${BNETD_SOURCES} 
-  ${BNETD_CONSOLE_RESOURCES})
-target_link_libraries(bnetd common compat win32 tinycdb ${NETWORK_LIBRARIES}
-    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES})
-install(TARGETS bnetd DESTINATION ${SBINDIR})
-
-# build the GUI version too
-# (this will practically recompile every file again)
 if(WITH_WIN32_GUI)
-  add_executable(bnetd_gui WIN32 ${BNETD_SOURCES} ${BNETD_GUI_SOURCES} 
-    ${BNETD_GUI_RESOURCES})
-  set_target_properties(bnetd_gui PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
-  target_link_libraries(bnetd_gui common_gui compat win32_gui tinycdb ${NETWORK_LIBRARIES}
-    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES})
-  install(TARGETS bnetd_gui DESTINATION ${SBINDIR})
+  add_executable(bnetd WIN32 ${BNETD_SOURCES} ${BNETD_GUI_RESOURCES})
+  set_target_properties(bnetd PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
+else(WITH_WIN32_GUI)  
+  add_executable(bnetd ${BNETD_SOURCES} ${BNETD_CONSOLE_RESOURCES})
 endif(WITH_WIN32_GUI)
+
+  target_link_libraries(bnetd common compat win32 tinycdb ${NETWORK_LIBRARIES}
+    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES})
+  install(TARGETS bnetd DESTINATION ${SBINDIR})

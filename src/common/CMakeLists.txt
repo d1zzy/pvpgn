@@ -17,17 +17,12 @@ set(COMMON_SOURCES
 	setup_before.h systemerror.cpp systemerror.h tag.cpp tag.h token.cpp 
 	token.h tracker.h trans.cpp trans.h udp_protocol.h util.cpp util.h 
 	version.h wolhash.cpp wolhash.h xalloc.cpp xalloc.h xstr.cpp xstr.h 
-	xstring.cpp xstring.h)
+	xstring.cpp xstring.h gui_printf.h gui_printf.cpp )
 
 add_library(common
   ${COMMON_SOURCES}
 )
 
-# build the GUI version too
-# (this will practically recompile every file again)
 if(WITH_WIN32_GUI)
-add_library(common_gui
-  ${COMMON_SOURCES}
-)
-set_target_properties(common_gui PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
+set_target_properties(common PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
 endif(WITH_WIN32_GUI)

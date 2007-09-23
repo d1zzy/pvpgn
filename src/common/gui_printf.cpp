@@ -30,7 +30,7 @@
 namespace pvpgn
 {
 
-extern HWND		ghwndConsole;         
+HWND		ghwndConsole;         
           
 static void guiAddText(const char *str, COLORREF clr)
 {

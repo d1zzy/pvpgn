@@ -23,8 +23,8 @@
 #include <windowsx.h>
 #include <richedit.h>
 #include <process.h>
-#include "gui_printf.h"
 #include "d2cs_resource.h"
+#include "common/gui_printf.h"
 #include "common/eventlog.h"
 #include "d2cs/version.h"
 #include "d2cs/handle_signal.h"
@@ -42,7 +42,7 @@ extern int main(int argc, char **argv); /* d2cs main function in d2cs/main.c */
 namespace pvpgn
 {
 
-HWND		ghwndConsole; /* hwnd for eventlog output */
+extern HWND		ghwndConsole; /* hwnd for eventlog output */
           
 namespace d2cs
 {

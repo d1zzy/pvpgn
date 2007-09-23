@@ -27,7 +27,7 @@
 #include "compat/strcasecmp.h"
 #include "common/hexdump.h"
 #ifdef WIN32_GUI
-# include "win32/gui_printf.h"
+# include "common/gui_printf.h"
 #endif
 #include "common/setup_after.h"
 
