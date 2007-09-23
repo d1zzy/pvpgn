@@ -95,7 +95,7 @@ static t_conf_entry conftab[]={
 	{ "c",          conf_set_preffile,      NULL, conf_setdef_preffile},
 	{ "config",     conf_set_preffile,      NULL, conf_setdef_preffile},
 	{ "l",          conf_set_logfile,       NULL, conf_setdef_logfile   },
-	{ "std::log",        conf_set_logfile,       NULL, conf_setdef_logfile   },
+	{ "log",        conf_set_logfile,       NULL, conf_setdef_logfile   },
 	{ "h",          conf_set_help,          NULL, conf_setdef_help      },
 	{ "help",       conf_set_help,          NULL, conf_setdef_help      },
 	{ "usage",      conf_set_help,          NULL, conf_setdef_help      },
@@ -147,14 +147,14 @@ static void usage(void)
 {
 	std::fprintf(stderr,
 		"Usage: %s [<options>]\n"
-		"    -c std::FILE, --config=std::FILE   use std::FILE as configuration file (default is " D2CS_DEFAULT_CONF_FILE ")\n"
-		"    -l std::FILE, --std::log=std::FILE      set std::log to std::FILE\n"
+		"    -c FILE, --config=FILE   use FILE as configuration file (default is " D2CS_DEFAULT_CONF_FILE ")\n"
+		"    -l FILE, --log=FILE      set log to FILE\n"
 #ifdef DO_DAEMONIZE
 		"    -f, --foreground:        don't daemonize\n"
 #endif
-		"    -D, --debug:             run in debug mode (run in foreground and std::log to stdout)\n"
-		"    -h, --help, --usage      show this information and std::exit\n"
-		"    -v, --version:           print version number and std::exit\n"
+		"    -D, --debug              run in debug mode (run in foreground and log to stdout)\n"
+		"    -h, --help, --usage      show this information and exit\n"
+		"    -v, --version            print version number and exit\n"
 #ifdef WIN32
 		"    Running as service functions:\n"
 		"    --service                run as service\n"
@@ -166,7 +166,7 @@ static void usage(void)
 #endif
 		"\n"
 		"Notes:\n"
-		"	1.You should always use absolute path here for all std::FILE names\n\n",
+		"	1.You should always use absolute path here for all FILE names\n\n",
 		progname);
 }
 
