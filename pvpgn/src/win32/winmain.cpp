@@ -37,8 +37,7 @@
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/version.h"
-
-#include "gui_printf.h"
+#include "common/gui_printf.h"
 
 #include "bnetd/connection.h"
 #include "bnetd/account.h"
@@ -59,7 +58,7 @@ extern int main(int argc, char **argv); /* bnetd main function in bnetd/main.c *
 namespace pvpgn
 {
 
-HWND	ghwndConsole;
+extern HWND	ghwndConsole;
 
 namespace bnetd
 {
