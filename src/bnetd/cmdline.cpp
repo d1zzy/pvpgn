@@ -27,7 +27,7 @@
 # include "win32/service.h"
 #endif
 #ifdef WIN32_GUI
-# include "win32/gui_printf.h"
+# include "common/gui_printf.h"
 # define printf gui_printf
 #endif
 #include "compat/strcasecmp.h"
