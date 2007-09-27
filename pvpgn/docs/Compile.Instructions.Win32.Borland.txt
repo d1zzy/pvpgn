@@ -1,3 +1,0 @@
-PvPGN Win32 Borland Compile Instructions
-
-No longer supported.
