@@ -458,7 +458,11 @@ void pvpgn_greeting(void)
     return;
 }
 
+#ifdef WIN32_GUI
+extern int app_main(int argc, char ** argv)
+#else
 extern int main(int argc, char ** argv)
+#endif
 {
 try {
     int a;

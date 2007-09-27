@@ -43,7 +43,6 @@ set(BNETD_GUI_RESOURCES
 
 if(WITH_WIN32_GUI)
   add_executable(bnetd WIN32 ${BNETD_SOURCES} ${BNETD_GUI_RESOURCES})
-  set_target_properties(bnetd PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
 else(WITH_WIN32_GUI)  
   add_executable(bnetd ${BNETD_SOURCES} ${BNETD_CONSOLE_RESOURCES})
 endif(WITH_WIN32_GUI)

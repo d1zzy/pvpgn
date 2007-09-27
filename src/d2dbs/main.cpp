@@ -220,7 +220,11 @@ static int config_cleanup(void)
 }
 
 
+#ifdef WIN32_GUI
+extern int app_main(int argc, char ** argv)
+#else
 extern int main(int argc, char ** argv)
+#endif
 {
 	int pid;
 	char * pidfile;

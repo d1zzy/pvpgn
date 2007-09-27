@@ -53,7 +53,7 @@
 
 #define WM_SHELLNOTIFY          (WM_USER+1)
 
-extern int main(int argc, char **argv); /* bnetd main function in bnetd/main.c */
+extern int app_main(int argc, char **argv); /* bnetd main function in bnetd/main.c */
 
 namespace pvpgn
 {
@@ -818,7 +818,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE reserved, LPSTR lpCmdLine, i
 
 	if (cmdline_get_console()){
 		console.RedirectIOToConsole();
-		return main(__argc, __argv);
+		return app_main(__argc, __argv);
 	}
 
 	pvpgn::bnetd::gui.main_finished = FALSE;
@@ -826,7 +826,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE reserved, LPSTR lpCmdLine, i
 	_beginthread( pvpgn::bnetd::guiThread, 0, (void*)hInstance);
 	WaitForSingleObject(pvpgn::bnetd::gui.event_ready, INFINITE);
 
-	result = main(__argc ,__argv);
+	result = app_main(__argc ,__argv);
     
 	pvpgn::bnetd::gui.main_finished = TRUE;
 	eventlog(pvpgn::eventlog_level_debug,__FUNCTION__,"server exited ( return : %i )", result);

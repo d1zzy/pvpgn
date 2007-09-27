@@ -11,7 +11,6 @@ set(D2CS_SOURCES
 
 if(WITH_WIN32_GUI)
   add_executable(d2cs WIN32 ${D2CS_SOURCES})
-  set_target_properties(d2cs PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
 else(WITH_WIN32_GUI)
   add_executable(d2cs ${D2CS_SOURCES})
 endif(WITH_WIN32_GUI)
