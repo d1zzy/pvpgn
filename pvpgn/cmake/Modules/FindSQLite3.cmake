@@ -15,12 +15,14 @@ FIND_PATH(SQLITE3_INCLUDE_DIR sqlite3.h
   /usr/local/include
   /usr/include/sqlite3
   /usr/include
+  ${CMAKE_SOURCE_DIR}/sqlite3
 )
 
 SET(SQLITE3_NAMES sqlite3)
 FIND_LIBRARY(SQLITE3_LIBRARY
   NAMES ${SQLITE3_NAMES}
-  PATHS /usr/local/lib /usr/lib
+  PATHS /usr/local/lib /usr/lib 
+  ${CMAKE_SOURCE_DIR}/sqlite3
 )
 
 IF (SQLITE3_INCLUDE_DIR AND SQLITE3_LIBRARY)
