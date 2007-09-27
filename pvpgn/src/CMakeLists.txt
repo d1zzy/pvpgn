@@ -29,6 +29,10 @@ if(PGSQL_FOUND)
     add_definitions("-DWITH_SQL_PGSQL")
 endif(PGSQL_FOUND)
 
+if (WITH_WIN32_GUI)
+    add_definitions("-DWIN32_GUI")
+endif (WITH_WIN32_GUI)
+
 subdirs(compat common win32 tinycdb bntrackd client bniutils bnpass)
 
 if(WITH_BNETD)

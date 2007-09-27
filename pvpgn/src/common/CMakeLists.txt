@@ -22,7 +22,3 @@ set(COMMON_SOURCES
 add_library(common
   ${COMMON_SOURCES}
 )
-
-if(WITH_WIN32_GUI)
-set_target_properties(common PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
-endif(WITH_WIN32_GUI)

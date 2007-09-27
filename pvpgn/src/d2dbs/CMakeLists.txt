@@ -7,7 +7,6 @@ set(D2DBS_SOURCES
 
 if(WITH_WIN32_GUI)
   add_executable(d2dbs WIN32 ${D2DBS_SOURCES})
-  set_target_properties(d2dbs PROPERTIES COMPILE_FLAGS "-DWIN32_GUI")
 else(WITH_WIN32_GUI)
   add_executable(d2dbs ${D2DBS_SOURCES})
 endif(WITH_WIN32_GUI)

@@ -37,7 +37,7 @@
 
 #define WM_SHELLNOTIFY          (WM_USER+1)
 
-extern int main(int argc, char **argv); /* d2cs main function in d2cs/main.c */
+extern int app_main(int argc, char **argv); /* d2cs main function in d2cs/main.c */
 
 namespace pvpgn
 {
@@ -225,7 +225,7 @@ BOOL CALLBACK DlgProcAbout(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 static void d2cs(void * dummy)
 {
-    switch (main(__argc, __argv))
+    switch (app_main(__argc, __argv))
     {
         case EXIT_SERVICE:
             gui_run = FALSE; /* close gui */
@@ -260,7 +260,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	if (cmdline_get_console()){
 		console.RedirectIOToConsole();
-		return main(__argc, __argv);
+		return app_main(__argc, __argv);
 	}
 
     LoadLibrary("RichEd20.dll");
