@@ -73,7 +73,6 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 static int _handle_quit_command(t_connection * conn, int numparams, char ** params, char * text);
 
 static int _handle_list_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_part_command(t_connection * conn, int numparams, char ** params, char * text);
 
 static int _handle_cvers_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -375,7 +374,7 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 {
      /**
       * Pelish: FIXME delete NICSERV and add support for matchbot.
-      * ACTION messages is not in WOLv1 and Dune 2000 sended by server (client add this messages automaticaly)
+      * ACTION messages are not in WOLv1 and Dune 2000 sended by server to self (client add this messages automaticaly)
       */
 
 	if ((numparams>=1)&&(text))
@@ -648,33 +647,6 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 
     	irc_send(conn,RPL_LISTEND," :End of LIST command");
     	return 0;
-}
-
-static int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-    /* NOTICE: Move this function to IRC Common file!!! */
-
-	if (numparams>=1) {
-	    char ** e;
-
-	    e = irc_get_listelems(params[0]);
-	    if ((e)&&(e[0])) {
-	    		char const * wolname = irc_convert_ircname(e[0]);
-	   	 	t_channel * old_channel = conn_get_channel(conn);
-
-			if ((!(wolname)) || (conn_set_channel(conn,wolname)<0)) {
-				irc_send(conn,ERR_NOSUCHCHANNEL,":JOIN failed"); /* FIXME: be more precise; what is the real error code for that? */
-			}
-			else {
-				channel_set_userflags(conn);
-			}
-		}
-    		if (e)
-			irc_unget_listelems(e);
-	}
-	else
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to JOIN");
-	return 0;
 }
 
 static int _handle_quit_command(t_connection * conn, int numparams, char ** params, char * text)
@@ -976,9 +948,10 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
             channel = channellist_find_channel_by_name(wolname,NULL,NULL);
 
             if (channel == NULL) {
-	             irc_send(conn,ERR_NOSUCHCHANNEL,":No such channel");
+			     snprintf(_temp, sizeof(_temp), "%s :Game channel has closed",e[0]);
+			     irc_send(conn,ERR_GAMEHASCLOSED,_temp);
 			     if (e)
-		               irc_unget_listelems(e);
+		             irc_unget_listelems(e);
      	         return 0;
             }
 
@@ -986,8 +959,16 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	   	 	     snprintf(_temp, sizeof(_temp), "%s :Channel is full",e[0]);
                  irc_send(conn,ERR_CHANNELISFULL,_temp);
 			     if (e)
-		            irc_unget_listelems(e);
+		             irc_unget_listelems(e);
 			     return 0;
+            }
+
+            if (channel_check_banning(channel,conn)) {
+	   	 	     snprintf(_temp, sizeof(_temp), "%s :You are banned from that channel.",e[0]);
+	   	 	     irc_send(conn,ERR_BANNEDFROMCHAN,_temp);
+	   	 	     if (e)
+	   	 	         irc_unget_listelems(e);
+	   	 	     return 0;
             }
 
 			conn_wol_set_ingame(conn,1);

@@ -51,6 +51,7 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel);
 extern int irc_who(t_connection * c, char const * name);
 extern int irc_send_motd(t_connection * conn);
 extern int _handle_nick_command(t_connection * conn, int numparams, char ** params, char * text);
+extern int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text);
 extern int irc_send_topic(t_connection * c, t_channel const * channel);
 extern int _handle_topic_command(t_connection * conn, int numparams, char ** params, char * text);
 extern int _handle_names_command(t_connection * conn, int numparams, char ** params, char * text);

@@ -1213,7 +1213,66 @@ extern int _handle_nick_command(t_connection * conn, int numparams, char ** para
 	return 0;
 }
 
-int irc_send_topic(t_connection * c, t_channel const * channel){
+extern int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+    if (numparams>=1) {
+        char ** e;
+
+        /* According to RFC2812 - if channelname is "0" we need to PART all channels */
+        if (std::strcmp(params[0], "0") == 0) {
+            conn_part_channel(conn);
+            return 0;
+        }
+
+        e = irc_get_listelems(params[0]);
+        if ((e)&&(e[0])) {
+            char temp[MAX_IRC_MESSAGE_LEN];
+            char const * ircname = irc_convert_ircname(e[0]);
+            t_channel * old_channel = conn_get_channel(conn);
+            t_channel * channel;
+            t_account * acc = conn_get_account(conn);
+
+            if ((ircname) && (channel = channellist_find_channel_by_name(ircname,NULL,NULL))) {
+                if (channel_check_banning(channel,conn)) {
+                    snprintf(temp, sizeof(temp), "%s :You are banned from that channel.",e[0]);
+                    irc_send(conn,ERR_BANNEDFROMCHAN, temp);
+                    if (e)
+                        irc_unget_listelems(e);
+                    return 0;
+                }
+
+                if ((account_get_auth_admin(acc,NULL)!=1) && (account_get_auth_admin(acc,ircname)!=1) &&
+                    (account_get_auth_operator(acc,NULL)!=1) && (account_get_auth_operator(acc,ircname)!=1) &&
+                    (channel_get_max(channel) != -1) && (channel_get_curr(channel)>=channel_get_max(channel))) {
+
+                    snprintf(temp, sizeof(temp), "%s :The channel is currently full.",e[0]);
+                    irc_send(conn,ERR_CHANNELISFULL, temp);
+                    if (e)
+                        irc_unget_listelems(e);
+                    return 0;
+                }
+            }
+
+            if ((!(ircname)) || (conn_set_channel(conn,ircname)<0)) {
+                snprintf(temp, sizeof(temp), "%s :JOIN failed",e[0]);
+                irc_send(conn,ERR_NOSUCHCHANNEL,temp); /* Anything is still bad */
+            }
+            else {
+                channel = conn_get_channel(conn);
+
+                if (channel!=old_channel)
+                    channel_set_userflags(conn);
+            }
+        }
+        if (e)
+            irc_unget_listelems(e);
+    }
+    else
+        irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to JOIN");
+    return 0;
+}
+
+extern int irc_send_topic(t_connection * c, t_channel const * channel){
     char * topic;
     char temp[MAX_IRC_MESSAGE_LEN];
 
@@ -1296,10 +1355,10 @@ extern int _handle_names_command(t_connection * conn, int numparams, char ** par
 extern int _handle_kick_command(t_connection * conn, int numparams, char ** params, char * text)
 {
     char temp[MAX_IRC_MESSAGE_LEN];
-
+    char ** e;
     /**
- 	*  Heres the imput expected
-    *  KICK [channel] [kicked_user]
+    *  Heres the imput expected
+    *  KICK [channel] [kicked_user],[kicked_user2]
     *
     *  Heres the output expected
     *  :user!WWOL@hostname KICK [channel] [kicked_user] :[text]
@@ -1309,16 +1368,21 @@ extern int _handle_kick_command(t_connection * conn, int numparams, char ** para
 
     if ((numparams != 2) || !(params[1])) {
 	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to KICK");
-	    return -1;
+	    return 0;
     }
+
+    e = irc_get_listelems(params[1]);
 
     /* Make standart PvPGN KICK from RFC2812 KICK */
     if (text)
-        snprintf(temp, sizeof(temp), "/kick %s %s", params[1], text);
+        snprintf(temp, sizeof(temp), "/kick %s %s", e[0], text);
     else
-        snprintf(temp, sizeof(temp), "/kick %s", params[1]);
+        snprintf(temp, sizeof(temp), "/kick %s", e[0]);
 
     handle_command(conn, temp);
+
+    if (e)
+        irc_unget_listelems(e);
 
     return 0;
 }

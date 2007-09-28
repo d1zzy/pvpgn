@@ -73,7 +73,6 @@ static int _handle_quit_command(t_connection * conn, int numparams, char ** para
 
 static int _handle_who_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_list_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_userhost_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_ison_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -574,38 +573,6 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 		irc_unget_listelems(e);
     }
     irc_send(conn,RPL_LISTEND,":End of LIST command");
-	return 0;
-}
-
-static int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	if (numparams>=1) {
-	    char ** e;
-
-	    e = irc_get_listelems(params[0]);
-	    if ((e)&&(e[0])) {
-	    		char const * ircname = irc_convert_ircname(e[0]);
-	   	 	t_channel * old_channel = conn_get_channel(conn);
-
-			if ((!(ircname)) || (conn_set_channel(conn,ircname)<0)) {
-				irc_send(conn,ERR_NOSUCHCHANNEL,":JOIN failed"); /* FIXME: be more precise; what is the real error code for that? */
-			}
-			else {
-    			char temp[MAX_IRC_MESSAGE_LEN];
-				t_channel * channel;
-				channel = conn_get_channel(conn);
-
-				if (channel!=old_channel) {
-				    channel_set_userflags(conn);
-				}
-
-	    		}
-		}
-    		if (e)
-			irc_unget_listelems(e);
-	}
-	else
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to JOIN");
 	return 0;
 }
 
