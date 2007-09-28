@@ -367,6 +367,12 @@
 
 #define ERR_IDNOEXIST        439
 
+//#define ERR_CHANNELISFULL    471 (used for games too)
+//#define ERR_BANNEDFROMCHAN   474 (used for games too)
+//#define ERR_BADCHANNELKEY    475 (used for game password)
+
+#define ERR_GAMEHASCLOSED   478
+
 /** error's */
 /*
  * Errors are in the range from 400-599 currently and are grouped by what
