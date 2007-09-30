@@ -78,7 +78,7 @@ extern char const * clienttag_uint_to_str(t_clienttag clienttag)
     	case CLIENTTAG_IIRC_UINT:
              return CLIENTTAG_IIRC;
         case CLIENTTAG_WCHAT_UINT:
-             return CLIENTTAG_WCHAT;             
+             return CLIENTTAG_WCHAT;
         case CLIENTTAG_TIBERNSUN_UINT:
              return CLIENTTAG_TIBERNSUN;
         case CLIENTTAG_TIBSUNXP_UINT:
@@ -98,7 +98,9 @@ extern char const * clienttag_uint_to_str(t_clienttag clienttag)
         case CLIENTTAG_YURISREV_UINT:
              return CLIENTTAG_YURISREV;
         case CLIENTTAG_EMPERORBD_UINT:
-             return CLIENTTAG_EMPERORBD;     
+             return CLIENTTAG_EMPERORBD;
+        case CLIENTTAG_LOFLORE3_UINT:
+             return CLIENTTAG_LOFLORE3;
         case CLIENTTAG_WWOL_UINT:
              return CLIENTTAG_WWOL;
 	    default:
@@ -221,6 +223,7 @@ extern int tag_check_client(t_tag tag_uint)
     case CLIENTTAG_RENEGADE_UINT:
     case CLIENTTAG_YURISREV_UINT:
     case CLIENTTAG_EMPERORBD_UINT:
+    case CLIENTTAG_LOFLORE3_UINT:
     case CLIENTTAG_WWOL_UINT:
 	    return 1;
 	default:
@@ -302,6 +305,8 @@ extern char const * clienttag_get_title(t_clienttag clienttag)
         return "Yuri's Revenge";
       case CLIENTTAG_EMPERORBD_UINT:
         return "Emepror: Battle for Dune";
+      case CLIENTTAG_LOFLORE3_UINT:
+        return "Lands of Lore 3";
       case CLIENTTAG_WWOL_UINT:
         return "Westwood Online";
       default:
@@ -408,6 +413,12 @@ extern t_clienttag tag_sku_to_uint (int sku)
       case 5378:
       case 5379:
            return CLIENTTAG_REDALERT_UINT;
+      case 6400:  /* Lands of Lore 3 */
+      case 6401:
+      case 6402:
+      case 6403:
+      case 6405:
+           return CLIENTTAG_LOFLORE3_UINT;
       case 7168:  /* Tiberian Sun: Firestorm */
       case 7170:
       case 7171:
