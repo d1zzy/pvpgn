@@ -104,6 +104,8 @@ typedef t_tag		t_gamelang;
 #define CLIENTTAG_YURISREV_UINT     0x59555249
 #define CLIENTTAG_EMPERORBD         "EMPR" /* Emperor: Battle for Dune */
 #define CLIENTTAG_EMPERORBD_UINT    0x454D5052
+#define CLIENTTAG_LOFLORE3          "LOR3" /* Lands of Lore 3 */
+#define CLIENTTAG_LOFLORE3_UINT     0x4C4F5233
 #define CLIENTTAG_WWOL              "WWOL" /* Other Westwood Online games */
 #define CLIENTTAG_WWOL_UINT         0x57574F4C
 
