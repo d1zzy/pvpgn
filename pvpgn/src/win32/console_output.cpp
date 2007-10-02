@@ -19,14 +19,15 @@
  ***************************************************************************/
 
 #include "common/setup_before.h"
-#include "console_output.h"
+
 #ifdef WIN32
-# include <windows.h>
-# include <fcntl.h>
-# include <io.h>
-# include <iostream>
-# include <fstream>
-#endif
+
+#include "console_output.h"
+#include <windows.h>
+#include <fcntl.h>
+#include <io.h>
+#include <iostream>
+#include <fstream>
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -42,7 +43,6 @@ Console::~Console() throw () {
 }
 
 void Console::RedirectIOToConsole() {
-#ifdef WIN32
    const WORD MAX_CONSOLE_LINES = 500;
    const WORD CONSOLE_COLUMNS= 140;
    int hConHandle;
@@ -79,7 +79,8 @@ void Console::RedirectIOToConsole() {
 
    std::ios::sync_with_stdio();
    initialised = true;
-#endif
 }
 
 }
+
+#endif
