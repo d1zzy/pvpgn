@@ -17,6 +17,11 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.         *
  ***************************************************************************/
 
+#ifdef WIN32
+
+#ifndef CONSOLE_OUTPUT_INCLUDED
+#define CONSOLE_OUTPUT_INCLUDED
+
 namespace pvpgn
 {
 
@@ -30,3 +35,7 @@ private:
 };
 
 }
+
+#endif
+
+#endif
