@@ -571,7 +571,7 @@ extern void conn_destroy(t_connection * c, t_elem ** elem, int conn_or_dead_list
 
     /* if this user in a channel, notify everyone that the user has left */
     if (c->protocol.chat.channel)
-	channel_del_connection(c->protocol.chat.channel,c);
+	channel_del_connection(c->protocol.chat.channel,c,message_type_quit);
 
    if ((c->protocol.game) && (c->protocol.account))
    {
@@ -2007,8 +2007,7 @@ extern int conn_part_channel(t_connection * c)
         return -1;
     }
 
-    channel_message_send(c->protocol.chat.channel,message_type_part,c,NULL);
-    channel_del_connection(c->protocol.chat.channel,c);
+    channel_del_connection(c->protocol.chat.channel,c,message_type_part);
     c->protocol.chat.channel = NULL;
 
     return 0;
@@ -2028,8 +2027,7 @@ extern int conn_kick_channel(t_connection * c, char const * text)
         return -1;
     }
    
-    channel_message_send(c->protocol.chat.channel,message_type_kick,c,text);
-    channel_del_connection(c->protocol.chat.channel,c);
+    channel_del_connection(c->protocol.chat.channel,c,message_type_kick);
     c->protocol.chat.channel = NULL;
 
     return 0;
@@ -2049,8 +2047,7 @@ extern int conn_quit_channel(t_connection * c, char const * text)
         return -1;
     }
    
-    channel_message_send(c->protocol.chat.channel,message_type_quit,c,text);
-    channel_del_connection(c->protocol.chat.channel,c);
+    channel_del_connection(c->protocol.chat.channel,c,message_type_quit);
     c->protocol.chat.channel = NULL;
 
     return 0;
