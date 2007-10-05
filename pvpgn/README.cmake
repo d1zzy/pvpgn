@@ -61,12 +61,12 @@ obviously valid only on Windows)
 accordingly values so that on "make install" it will install relative to 
 "/path/to"
 
-   -D WITH_MYSQL : it will tell cmake to check for MySQL 
+   -D WITH_MYSQL=true : it will tell cmake to check for MySQL 
 headers/libraries and if present prepare project files able to compile 
 PvPGN with MySQL
 
-   -D WITH_PGSQL or -D WITH_SQLITE3 are similar to WITH_MYSQL but for 
-PostgreSQL/SQLite3 storage support
+   -D WITH_PGSQL=true or -D WITH_SQLITE3=true are similar to WITH_MYSQL 
+but for PostgreSQL/SQLite3 storage support
 
    WARNING: in between 2 cmake runs make sure you remove all build files 
 or at least remove the CMakeCache.txt file otherwise you may experience 
