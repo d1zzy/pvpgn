@@ -52,7 +52,7 @@ typedef int (* t_apireg_tag)(t_apiregmember * apiregmember, char * param);
 static t_list * apireglist_head=NULL;
 
 typedef struct {
-	char  * apireg_tag_string;
+	const char * apireg_tag_string;
 	t_apireg_tag  apireg_tag_handler;
 } t_apireg_tag_table_row;
 
