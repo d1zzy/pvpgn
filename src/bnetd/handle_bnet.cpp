@@ -1884,14 +1884,11 @@ static int _client_friendslistreq(t_connection * c, t_packet const *const packet
 	t_channel *channel;
 	char stat;
 
-	if (n == 0)
-	    return 0;
 	if (!(rpacket = packet_create(packet_class_bnet)))
 	    return -1;
 
 	packet_set_size(rpacket, sizeof(t_server_friendslistreply));
 	packet_set_type(rpacket, SERVER_FRIENDSLISTREPLY);
-
 
 	if ((flist = account_get_friends(account)) == NULL)
 	    return -1;

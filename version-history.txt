@@ -25,6 +25,9 @@ PvPGN Version History:
 [WOL]
   -- fixed possible server crash on raw list command
 
+[SC/BW]
+  -- fixed client crash when was showed Friends without any item
+
 [VCHECK]
   -- added SC/BW IX86 1.15.1 version check entries
 
