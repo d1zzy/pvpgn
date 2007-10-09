@@ -321,7 +321,7 @@ extern int tag_check_in_list(t_clienttag clienttag, char const * list)
     * if it's allowed returns 0
     * if it's not allowed returns -1
     */
-    char *p, *q;
+    char *tmp, *p, *q;
 
     /* by default allow all */
     if (!list)
@@ -332,7 +332,7 @@ extern int tag_check_in_list(t_clienttag clienttag, char const * list)
     if (!strcasecmp(list, "all"))
 	return 0;
 
-    p =  xstrdup(list);
+    tmp = p =  xstrdup(list);
     do {
 	q = std::strchr(p, ',');
 	if (q)
@@ -346,12 +346,12 @@ extern int tag_check_in_list(t_clienttag clienttag, char const * list)
 	if (q)
 	    p = q + 1;
     } while (q);
-    xfree((void *) p);
+    xfree((void *) tmp);
 
     return -1;			/* client is NOT in list */
 
   ok:
-    xfree((void *) p);
+    xfree((void *) tmp);
     return 0;
 }
 
