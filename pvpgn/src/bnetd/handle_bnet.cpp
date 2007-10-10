@@ -1968,6 +1968,9 @@ static int _client_friendinforeq(t_connection * c, t_packet const *const packet)
 	int n = account_get_friendcount(account);
 	char type;
 
+	if (n == 0)
+	    return 0;
+
 	if (bn_byte_get(packet->u.client_friendinforeq.friendnum) > n) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] bad friend number in FRIENDINFOREQ packet", conn_get_socket(c));
 	    return -1;
