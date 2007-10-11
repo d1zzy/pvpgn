@@ -2537,41 +2537,11 @@ extern char const * conn_get_playerinfo(t_connection const * c)
 		account_get_ladder_rank(account,clienttag,ladder_id_ironman));
     }
     else if (clienttag==CLIENTTAG_DIABLO2DV_UINT || clienttag==CLIENTTAG_DIABLO2XP_UINT)
-#if 0
-    /* FIXME: Was this the old code? Can this stuff vanish? */
-    /* Yes, this was the pre-d2close code, however I'm not sure the new code
-     * takes care of all the cases. */
-    {
-	t_character * ch;
-
-	if (c->protocol.d2.character)
-	    ch = c->protocol.d2.character;
-	else
-	    if ((c->protocol.class==conn_class_bnet) && c->protocol.bound && c->protocol.bound->protocol.d2.character)
-		ch = c->protocol.bound->protocol.d2.character;
-	    else
-		ch = NULL;
-
-	if (ch)
-	    std::sprintf(playerinfo,"%s%s,%s,%s",
-		    revtag,
-		    character_get_realmname(ch),
-		    character_get_name(ch),
-		    character_get_playerinfo(ch));
-	else
-	    std::strcpy(playerinfo,revtag); /* open char */
-    }
-    else /* FIXME: this used to return the empty string... do some formats actually use that or not? */
-	std::strcpy(playerinfo,revtag); /* best guess... */
-   }
-#endif
    {
        /* This sets portrait of character */
        if (!conn_get_realm(c) || !conn_get_realminfo(c))
        {
-           tag_uint_to_str(playerinfo,clienttag);
-           //bn_int_tag_set((bn_int *)playerinfo,clienttag); /* FIXME: Is this attempting to reverse the tag?  This isn't really correct... why not use the revtag stuff like above or below? */
-           //playerinfo[std::strlen(clienttag)]='\0';
+		   std::strcpy(playerinfo,revtag);
        }
        else
        {
