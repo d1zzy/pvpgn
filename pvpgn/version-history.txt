@@ -29,7 +29,7 @@ PvPGN Version History:
   -- fixed client crash when was showed Friends without any item
 
 [VCHECK]
-  -- added SC/BW IX86 1.15.1 version check entries
+  -- added SC/BW IX86 and XMAC 1.15.1 version check entries
 
  ChangeLog for 1.8.1 (since 1.8.0)
 =========================================
