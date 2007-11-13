@@ -73,7 +73,6 @@ static int _handle_quit_command(t_connection * conn, int numparams, char ** para
 
 static int _handle_who_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_list_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_userhost_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_ison_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_whois_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -573,12 +572,6 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 		irc_unget_listelems(e);
     }
     irc_send(conn,RPL_LISTEND,":End of LIST command");
-	return 0;
-}
-
-static int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	/* FIXME: Not yet implemented */
 	return 0;
 }
 

@@ -145,7 +145,7 @@ extern int channel_get_permanent(t_channel const * channel);
 extern unsigned int channel_get_channelid(t_channel const * channel);
 extern int channel_set_channelid(t_channel * channel, unsigned int channelid);
 extern int channel_add_connection(t_channel * channel, t_connection * connection);
-extern int channel_del_connection(t_channel * channel, t_connection * connection, t_message_type mess);
+extern int channel_del_connection(t_channel * channel, t_connection * connection, t_message_type mess, char const * text);
 extern void channel_update_latency(t_connection * conn);
 extern void channel_update_userflags(t_connection * conn);
 extern void channel_message_log(t_channel const * channel, t_connection * me, int fromuser, char const * text);
