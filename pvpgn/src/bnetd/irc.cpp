@@ -1387,6 +1387,93 @@ extern int _handle_kick_command(t_connection * conn, int numparams, char ** para
     return 0;
 }
 
+extern int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+    char temp[MAX_IRC_MESSAGE_LEN];
+
+   	std::memset(temp,0,sizeof(temp));
+
+    /**
+    * FIXME: CHECK IF USER IS OPERATOR
+    * because in WOLv1 is used mode command to add OP or Voice to another user !!!!
+    * in WOLv2 is used for change game mode (cooperative, free for all...)
+    */
+
+    if (numparams == 1) {
+        irc_send(conn,ERR_NEEDMOREPARAMS,":Not enough parameters");
+        return 0;
+    }
+
+    if (params[0][0]=='#') {
+        /* Channel mode */
+        t_channel * channel;
+
+	    if ((channel = channellist_find_channel_by_name(irc_convert_ircname(params[0]),NULL,NULL))) {
+            if (std::strcmp(params[1], "+b") == 0) {
+                snprintf(temp, sizeof(temp), "/ban %s", params[2]);
+                handle_command(conn, temp);
+
+                snprintf(temp,sizeof(temp),"%s %s %s", params[0], params[1], params[2]);
+       	        channel_message_send(channel,message_type_mode,conn,temp);                
+            }
+            else if (std::strcmp(params[1], "-b") == 0) {
+                snprintf(temp, sizeof(temp), "/unban %s", params[2]);
+                handle_command(conn, temp);
+
+                snprintf(temp,sizeof(temp),"%s %s %s", params[0], params[1], params[2]);
+       	        channel_message_send(channel,message_type_mode,conn,temp);                     
+            }
+            else if (std::strcmp(params[1], "b") == 0) {
+                /* FIXME: Send banlist */
+                snprintf(temp,sizeof(temp),":End of channel ban list for %s", params[0]);
+                irc_send(conn,RPL_ENDOFBANLIST,temp);
+            }
+            else if (std::strcmp(params[1], "+o") == 0) {
+                snprintf(temp, sizeof(temp), "/op %s", params[2]);
+                handle_command(conn, temp);
+
+                snprintf(temp,sizeof(temp),"%s %s %s", params[0], params[1], params[2]);
+       	        channel_message_send(channel,message_type_mode,conn,temp);                
+            }
+            else if (std::strcmp(params[1], "-o") == 0) {
+                snprintf(temp, sizeof(temp), "/deop %s", params[2]);
+                handle_command(conn, temp);
+
+                snprintf(temp,sizeof(temp),"%s %s %s", params[0], params[1], params[2]);
+       	        channel_message_send(channel,message_type_mode,conn,temp);                     
+            }
+            else if (std::strcmp(params[1], "+v") == 0) {
+                snprintf(temp, sizeof(temp), "/voice %s", params[2]);
+                handle_command(conn, temp);
+
+                snprintf(temp,sizeof(temp),"%s %s %s", params[0], params[1], params[2]);
+       	        channel_message_send(channel,message_type_mode,conn,temp);                
+            }
+            else if (std::strcmp(params[1], "-v") == 0) {
+                snprintf(temp, sizeof(temp), "/devoice %s", params[2]);
+                handle_command(conn, temp);
+
+                snprintf(temp,sizeof(temp),"%s %s %s", params[0], params[1], params[2]);
+       	        channel_message_send(channel,message_type_mode,conn,temp);                     
+            }
+       	    else {
+                snprintf(temp,sizeof(temp),":%s is unknown mode char to me", params[1]);
+                irc_send(conn,ERR_UNKNOWNMODE,temp);
+            }
+	    }
+        else {
+     	    irc_send(conn,ERR_NOSUCHCHANNEL,":No such channel");
+     	    return 0;
+	    }
+    }
+    else {
+        /* User mode */
+        /* FIXME: Support user modes (away, invisible...) */
+     	irc_send(conn,ERR_UMODEUNKNOWNFLAG,":Unknown MODE flag");
+    }
+    return 0;
+}
+
 }
 
 }

@@ -99,7 +99,6 @@ static int _handle_getbuddy_command(t_connection * conn, int numparams, char ** 
 static int _handle_addbuddy_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_delbuddy_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_time_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_host_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_advertc_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_clanbyname_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -1514,29 +1513,6 @@ static int _handle_time_command(t_connection * conn, int numparams, char ** para
 
     snprintf(temp,sizeof(temp),"irc.westwood.com :%lu", now);
 	irc_send(conn,RPL_TIME,temp);
-    return 0;
-}
-
-static int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-    char temp[MAX_IRC_MESSAGE_LEN];
-
-   	std::memset(temp,0,sizeof(temp));
-    t_channel * channel;
-
-    /**
-    * FIXME: CHECK IF USER IS OPERATOR
-    * because in WOLv1 is used mode command to add OP or Voice to another user !!!!
-    * in WOLv2 is used for change game mode (cooperative, free for all...)
-    */
-
-	if ((channel = channellist_find_channel_by_name(irc_convert_ircname(params[0]),NULL,NULL))) {
-        snprintf(temp,sizeof(temp),"%s %s %s", params[0], params[1], params[2]);
-   	    channel_message_send(channel,message_type_mode,conn,temp);
-	}
-    else {
-     	irc_send(conn,ERR_NOSUCHCHANNEL,":No such channel");
-	}
     return 0;
 }
 

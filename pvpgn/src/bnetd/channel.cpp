@@ -500,7 +500,7 @@ extern int channel_add_connection(t_channel * channel, t_connection * connection
 }
 
 
-extern int channel_del_connection(t_channel * channel, t_connection * connection, t_message_type mess)
+extern int channel_del_connection(t_channel * channel, t_connection * connection, t_message_type mess, char const * text)
 {
     t_channelmember * curr;
     t_channelmember * temp;
@@ -517,7 +517,7 @@ extern int channel_del_connection(t_channel * channel, t_connection * connection
         return -1;
     }
 
-    channel_message_send(channel, mess, connection, NULL);
+    channel_message_send(channel, mess, connection, text);
     channel_message_log(channel,connection,0,"PARTED");
 
     curr = channel->memberlist;
@@ -1147,7 +1147,7 @@ extern int channellist_reload(void)
 	  member = old_channel->memberlist;
 	  while (member)
 	  {
-	    channel_del_connection(channel,member->connection,message_type_quit);
+	    channel_del_connection(channel,member->connection,message_type_quit,NULL);
 	    conn_set_channel_var(member->connection,NULL);
 	    member = member->next;
 	  }
