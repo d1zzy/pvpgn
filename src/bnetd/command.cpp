@@ -4378,7 +4378,7 @@ static int _handle_commandgroups_command(t_connection * c, char const * text)
     char *	username;
     unsigned int usergroups;	// from user account
     unsigned int groups = 0;	// converted from arg3
-    char	tempgroups[8];	// converted from usergroups
+    char	tempgroups[9];	// converted from usergroups
     char 	t[MAX_MESSAGE_LEN];
     unsigned int i,j;
     char	arg1[256];
@@ -4440,6 +4440,7 @@ static int _handle_commandgroups_command(t_connection * c, char const * text)
 	if (usergroups & 32) tempgroups[5] = '6'; else tempgroups[5] = ' ';
 	if (usergroups & 64) tempgroups[6] = '7'; else tempgroups[6] = ' ';
 	if (usergroups & 128) tempgroups[7] = '8'; else tempgroups[7] = ' ';
+	tempgroups[8] = '\0';
 	snprintf(msgtemp, sizeof(msgtemp), "%.64s's command group(s): %.64s", username, tempgroups);
 	message_send_text(c,message_type_info,c,msgtemp);
 	return 0;
