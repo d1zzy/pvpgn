@@ -101,7 +101,6 @@ typedef struct message
     /* ---- */
     t_message_type type;       /* format of message */
     t_connection * src;        /* originator message */
-    t_connection * dst;        /* destination */
     char const *   text;       /* text of message */
 }
 #endif
@@ -130,7 +129,7 @@ namespace bnetd
 {
 
 extern char * message_format_line(t_connection const * c, char const * in);
-extern t_message * message_create(t_message_type type, t_connection * src, t_connection * dst, char const * text);
+extern t_message * message_create(t_message_type type, t_connection * src, char const * text);
 extern int message_destroy(t_message * message);
 extern int message_send(t_message * message, t_connection * dst);
 extern int message_send_all(t_message * message);

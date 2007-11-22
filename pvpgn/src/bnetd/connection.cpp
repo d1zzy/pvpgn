@@ -1712,7 +1712,7 @@ extern int conn_add_ignore(t_connection * c, t_account * account)
     if (dest_c) {
 	t_message *message;
 
-	message = message_create(message_type_userflags,dest_c,NULL,NULL);
+	message = message_create(message_type_userflags,dest_c,NULL);
 	if (!message) return 0;
 	message_send(message,c);
 	message_destroy(message);

@@ -577,7 +577,7 @@ extern void channel_update_latency(t_connection * me)
         return;
     }
 
-    if (!(message = message_create(message_type_userflags,me,NULL,NULL))) /* handles NULL text */
+    if (!(message = message_create(message_type_userflags,me,NULL))) /* handles NULL text */
 	return;
 
     for (c=channel_get_first(channel); c; c=channel_get_next())
@@ -604,7 +604,7 @@ extern void channel_update_userflags(t_connection * me)
         return;
     }
 
-    if (!(message = message_create(message_type_userflags,me,NULL,NULL))) /* handles NULL text */
+    if (!(message = message_create(message_type_userflags,me,NULL))) /* handles NULL text */
 	return;
 
     for (c=channel_get_first(channel); c; c=channel_get_next())
@@ -683,7 +683,7 @@ extern void channel_message_send(t_channel const * channel, t_message_type type,
 	}
     }
 
-    if (!(message = message_create(type,me,NULL,text)))
+    if (!(message = message_create(type,me,text)))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"could not create message");
 	return;

@@ -1810,7 +1810,7 @@ static int _handle_announce_command(t_connection * c, char const *text)
   }
 
   snprintf(msgtemp, sizeof(msgtemp), "Announcement from %.64s: %.128s",conn_get_username(c),&text[i]);
-  if (!(message = message_create(message_type_broadcast,c,NULL,msgtemp)))
+  if (!(message = message_create(message_type_broadcast,c,msgtemp)))
     message_send_text(c,message_type_info,c,"Could not broadcast message.");
   else
     {
@@ -2270,7 +2270,7 @@ static int _handle_unsquelch_command(t_connection * c, char const *text)
 
       if ((dest_c = account_get_conn(account)))
       {
-        if (!(message = message_create(message_type_userflags,dest_c,NULL,NULL))) /* handles NULL text */
+        if (!(message = message_create(message_type_userflags,dest_c,NULL))) /* handles NULL text */
 	    return 0;
         message_send(message,c);
         message_destroy(message);
@@ -2524,7 +2524,7 @@ static int _handle_realmann_command(t_connection * c, char const *text)
   }
 
   snprintf(msgtemp, sizeof(msgtemp), "Announcement from %.32s@%.32s: %.128s",conn_get_username(c),realm_get_name(realm),&text[i]);
-  if (!(message = message_create(message_type_broadcast,c,NULL,msgtemp)))
+  if (!(message = message_create(message_type_broadcast,c,msgtemp)))
     {
       message_send_text(c,message_type_info,c,"Could not broadcast message.");
     }
