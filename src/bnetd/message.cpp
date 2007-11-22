@@ -1333,7 +1333,7 @@ static int message_bnet_format(t_packet * packet, t_message_type type, t_connect
 }
 
 
-extern t_message * message_create(t_message_type type, t_connection * src, t_connection * dst, char const * text)
+extern t_message * message_create(t_message_type type, t_connection * src, char const * text)
 {
     t_message * message;
 
@@ -1345,7 +1345,6 @@ extern t_message * message_create(t_message_type type, t_connection * src, t_con
     message->mclasses	= NULL;
     message->type       = type;
     message->src        = src;
-    message->dst        = dst;
     message->text       = text;
 
     return message;
@@ -1439,7 +1438,7 @@ static t_packet * message_cache_lookup(t_message * message, t_connection *dst, u
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not create packet");
 	    return NULL;
 	}
-	if (message_telnet_format(packet,message->type,message->src,message->dst,message->text,dstflags)<0)
+	if (message_telnet_format(packet,message->type,message->src,dst,message->text,dstflags)<0)
 	{
 	    packet_del_ref(packet);
 	    packet = NULL; /* we can cache the NULL too */
@@ -1451,7 +1450,7 @@ static t_packet * message_cache_lookup(t_message * message, t_connection *dst, u
 	    eventlog(eventlog_level_error,__FUNCTION__,"could not create packet");
 	    return NULL;
 	}
-	if (message_bot_format(packet,message->type,message->src,message->dst,message->text,dstflags)<0)
+	if (message_bot_format(packet,message->type,message->src,dst,message->text,dstflags)<0)
 	{
 	    packet_del_ref(packet);
 	    packet = NULL; /* we can cache the NULL too */
@@ -1479,7 +1478,7 @@ static t_packet * message_cache_lookup(t_message * message, t_connection *dst, u
 	    return NULL;
 	}
 	/* irc_message_format() is in irc.c */
-	if (irc_message_format(packet,message->type,message->src,message->dst,message->text,dstflags)<0)
+	if (irc_message_format(packet,message->type,message->src,dst,message->text,dstflags)<0)
 	{
 	    packet_del_ref(packet);
 	    packet = NULL; /* we can cache the NULL too */
@@ -1595,7 +1594,7 @@ extern int message_send_text(t_connection * dst, t_message_type type, t_connecti
 	return -1;
     }
 
-    if (!(message = message_create(type,src,dst,text)))
+    if (!(message = message_create(type,src,text)))
 	return -1;
     rez = message_send(message,dst);
     message_destroy(message);

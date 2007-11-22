@@ -1239,7 +1239,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 
 		tstr = seconds_to_timestr(curr_exittime-now);
 		std::sprintf(text,"The server will shut down in %s (%d connections remaining).",tstr,connlist_get_length());
-        	if ((message = message_create(message_type_error,NULL,NULL,text)))
+        	if ((message = message_create(message_type_error,NULL,text)))
 		{
 		    message_send_all(message);
 		    message_destroy(message);
@@ -1248,7 +1248,7 @@ static void _server_mainloop(t_addrlist *laddrs)
 	    }
 	    else
 	    {
-		if ((message = message_create(message_type_error,NULL,NULL,"Server shutdown has been canceled.")))
+		if ((message = message_create(message_type_error,NULL,"Server shutdown has been canceled.")))
 		{
 		    message_send_all(message);
 		    message_destroy(message);
