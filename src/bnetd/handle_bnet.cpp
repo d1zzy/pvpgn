@@ -3044,7 +3044,7 @@ static int _client_progident2(t_connection * c, t_packet const *const packet)
 
 	    LIST_TRAVERSE_CONST(channellist(), curr) {
 		ch = (t_channel*)elem_get_data(curr);
-		if ((!(channel_get_flags(ch) & channel_flags_clan)) && (!prefs_get_hide_temp_channels() || channel_get_permanent(ch)) && (!channel_get_clienttag(ch) || std::strcmp(channel_get_clienttag(ch), clienttag_uint_to_str(conn_get_clienttag(c))) == 0) && (!(channel_get_flags(ch) & channel_flags_thevoid)) &&	// don't display theVoid in channel list
+		if ((!(channel_get_flags(ch) & channel_flags_clan)) && (!prefs_get_hide_temp_channels() || channel_get_permanent(ch)) && (!channel_get_clienttag(ch) || channel_get_clienttag(ch)== conn_get_clienttag(c)) && (!(channel_get_flags(ch) & channel_flags_thevoid)) &&	// don't display theVoid in channel list
 		    ((channel_get_max(ch) != 0) || ((channel_get_max(ch) == 0) && (account_is_operator_or_admin(conn_get_account(c), channel_get_name(ch)) == 1))))	// don't display restricted channel for no admins/ops
 		    packet_append_string(rpacket, channel_get_name(ch));
 	    }

@@ -2832,7 +2832,7 @@ static int _handle_channels_command(t_connection * c, char const *text)
   unsigned int      i;
   t_elem const *    curr;
   t_channel const * channel;
-  char const *      tag;
+  t_clienttag       clienttag;
   t_connection const * conn;
   t_account * acc;
   char const * name;
@@ -2844,18 +2844,18 @@ static int _handle_channels_command(t_connection * c, char const *text)
 
   if (text[i]=='\0')
     {
-      tag = clienttag_uint_to_str(conn_get_clienttag(c));
+      clienttag = conn_get_clienttag(c);
       message_send_text(c,message_type_info,c,"Currently accessable channels:");
     }
   else if (std::strcmp(&text[i],"all")==0)
     {
-      tag = NULL;
+      clienttag = NULL;
       message_send_text(c,message_type_info,c,"All current channels:");
     }
   else
     {
-      tag = &text[i];
-      snprintf(msgtemp, sizeof(msgtemp), "Current channels of type %.64s",tag);
+	  clienttag=tag_case_str_to_uint(&text[i]);
+      snprintf(msgtemp, sizeof(msgtemp), "Current channels of type %.64s",&text[i]);
       message_send_text(c,message_type_info,c,msgtemp);
     }
 
@@ -2864,9 +2864,9 @@ static int _handle_channels_command(t_connection * c, char const *text)
   LIST_TRAVERSE_CONST(channellist(),curr)
     {
       channel = (t_channel*)elem_get_data(curr);
-      if ((!(channel_get_flags(channel) & channel_flags_clan)) && (!tag || !prefs_get_hide_temp_channels() || channel_get_permanent(channel)) &&
-	  (!tag || !channel_get_clienttag(channel) ||
-	   strcasecmp(channel_get_clienttag(channel),tag)==0) &&
+      if ((!(channel_get_flags(channel) & channel_flags_clan)) && (!clienttag || !prefs_get_hide_temp_channels() || channel_get_permanent(channel)) &&
+	  (!clienttag || !channel_get_clienttag(channel) ||
+	   channel_get_clienttag(channel)==clienttag) &&
 	   ((channel_get_max(channel)!=0) || //only show restricted channels to OPs and Admins
 	    ((channel_get_max(channel)==0 && account_is_operator_or_admin(conn_get_account(c),NULL)))) &&
 	    (!(channel_get_flags(channel) & channel_flags_thevoid)) // don't list TheVoid
