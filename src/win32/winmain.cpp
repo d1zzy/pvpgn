@@ -660,7 +660,7 @@ BOOL CALLBACK AnnDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 							buf = (char*)GlobalAlloc(GPTR, len + 1);
 							GetDlgItemText(hwnd, IDC_EDIT1, buf, len + 1);
 							
-							if ((message = message_create(message_type_error,NULL,NULL,buf))) {
+							if ((message = message_create(message_type_error,NULL,buf))) {
 								message_send_all(message);
 								message_destroy(message);
 							}
