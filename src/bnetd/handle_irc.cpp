@@ -513,7 +513,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 	        char const * tempname;
 			char * topic = channel_get_topic(channel_get_name(channel));
 
-	        tempname = irc_convert_channel(channel);
+	        tempname = irc_convert_channel(channel,conn);
 
 			/* FIXME: AARON: only list channels like in /channels command */
 			if (topic) {
@@ -552,7 +552,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 			continue; /* channel doesn't exist */
 
 		topic = channel_get_topic(channel_get_name(channel));
-	       	tempname = irc_convert_channel(channel);
+	       	tempname = irc_convert_channel(channel,conn);
 
 			if (topic) {
 	       		if (std::strlen(tempname)+1+20+1+1+std::strlen(topic)<MAX_IRC_MESSAGE_LEN)
@@ -648,7 +648,7 @@ static int _handle_whois_command(t_connection * conn, int numparams, char ** par
 	            	else if (flags & MF_VOICE)
 		            flg='+';
 		        else flg = ' ';
-			snprintf(temp2, sizeof(temp2), "%s :%c%s", e[i], flg, irc_convert_channel(chan));
+			snprintf(temp2, sizeof(temp2), "%s :%c%s", e[i], flg, irc_convert_channel(chan,conn));
 			irc_send(conn,RPL_WHOISCHANNELS,temp2);
 		    }
 
