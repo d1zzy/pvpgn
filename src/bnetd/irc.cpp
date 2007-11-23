@@ -302,7 +302,7 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
 /*   ':'  -> '%='     */
 /*   ','  -> '%-'     */
 /* In IRC a channel can be specified by '#'+channelname or '!'+channelid */
-extern char const * irc_convert_channel(t_channel const * channel)
+extern char const * irc_convert_channel(t_channel const * channel, t_connection * c)
 {
     char const * bname;
     static char out[MAX_CHANNELNAME_LEN];
@@ -315,7 +315,12 @@ extern char const * irc_convert_channel(t_channel const * channel)
     std::memset(out,0,sizeof(out));
     out[0] = '#';
     outpos = 1;
-    bname = channel_get_name(channel);
+
+    if ((conn_get_wol(c) == 1) && (channel_get_clienttag(channel)!=0 && (conn_get_clienttag(c) == channel_get_clienttag(channel))))
+        bname = channel_get_shortname(channel); /* We converting unreadable "lob 18 0" names to human redable ones */
+    else
+        bname = channel_get_name(channel);
+
     for (i=0; bname[i]!='\0'; i++) {
 	if (bname[i]==' ') {
 	    out[outpos++] = '_';
@@ -603,10 +608,13 @@ extern int irc_message_postformat(t_packet * packet, t_connection const * dest)
 	char msg[MAX_IRC_MESSAGE_LEN+1];
 
 	if (e1_2)
-	    std::sprintf(msg,"%s@hidden %s %s%s%s\r\n",e1,e2,toname,temp,e4);
+	    std::sprintf(msg,"%s@hidden %s %s%s%s",e1,e2,toname,temp,e4);
 	else
-	    std::sprintf(msg,"%s %s %s%s%s\r\n",e1,e2,toname,temp,e4);
-	eventlog(eventlog_level_debug,__FUNCTION__,"sent \"%s\"",msg);
+	    std::sprintf(msg,"%s %s %s%s%s",e1,e2,toname,temp,e4);
+
+	DEBUG2("[%d] sent \"%s\"",conn_get_socket(dest),msg);
+	std::strcat(msg,"\r\n");
+
 	packet_set_size(packet,0);
 	packet_append_data(packet,msg,std::strlen(msg));
 	if (tname)
@@ -671,10 +679,10 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	        clanid = clan_get_clanid(clan);
 
             std::sprintf(temp,":%u,%u",clanid,conn_get_addr(me));
-    	    msg = irc_message_preformat(&from,"JOIN",temp,irc_convert_channel(channel));
+    	    msg = irc_message_preformat(&from,"JOIN",temp,irc_convert_channel(channel,dst));
         }
         else {
-            msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(channel));
+            msg = irc_message_preformat(&from,"JOIN","\r",irc_convert_channel(channel,dst));
         }
     	conn_unget_chatname(me,from.nick);
     }
@@ -683,7 +691,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     	from.nick = conn_get_chatname(me);
     	from.user = ctag;
     	from.host = addr_num_to_ip_str(conn_get_addr(me));
-    	msg = irc_message_preformat(&from,"PART","\r",irc_convert_channel(conn_get_channel(me)));
+    	msg = irc_message_preformat(&from,"PART","\r",irc_convert_channel(conn_get_channel(me),dst));
     	conn_unget_chatname(me,from.nick);
     	break;
     case message_type_talk:
@@ -703,7 +711,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         from.user = ctag;
 
         if (type==message_type_talk)
-            dest = irc_convert_channel(conn_get_channel(me)); /* FIXME: support more channels and choose right one! */
+            dest = irc_convert_channel(conn_get_channel(me),dst); /* FIXME: support more channels and choose right one! */
         else
             dest = ""; /* will be replaced with username in postformat */
 
@@ -735,7 +743,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
             from.user = ctag;
     	    from.host = addr_num_to_ip_str(conn_get_addr(me));
     	    /* FIXME: also supports whisper emotes? */
-    	    dest = irc_convert_channel(conn_get_channel(me)); /* FIXME: support more channels and choose right one! */
+    	    dest = irc_convert_channel(conn_get_channel(me),dst); /* FIXME: support more channels and choose right one! */
 	    msg = irc_message_preformat(&from,"PRIVMSG",dest,temp);
     	    conn_unget_chatname(me,from.nick);
     	}
@@ -814,7 +822,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
                 std::sprintf(temp,"%s :%s",conn_get_chatname(me),text);
             else
                 std::sprintf(temp,"%s :");
-            msg = irc_message_preformat(&from,"KICK",irc_convert_channel(conn_get_channel(me)),temp);
+            msg = irc_message_preformat(&from,"KICK",irc_convert_channel(conn_get_channel(me),dst),temp);
             conn_unget_chatname(me,from.nick);
         }
         break;
@@ -865,7 +873,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         from.nick = conn_get_chatname(me);
         from.user = ctag;
         from.host = addr_num_to_ip_str(conn_get_addr(me));
-        msg = irc_message_preformat(&from,"GAMEOPT",irc_convert_channel(conn_get_channel(me)),text);
+        msg = irc_message_preformat(&from,"GAMEOPT",irc_convert_channel(conn_get_channel(me),dst),text);
         conn_unget_chatname(me,from.nick);
         break;
     case message_wol_gameopt_join:
@@ -920,7 +928,7 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
     }
 
     std::memset(temp,0,sizeof(temp));
-    ircname = irc_convert_channel(channel);
+    ircname = irc_convert_channel(channel,c);
     if (!ircname) {
 	eventlog(eventlog_level_error,__FUNCTION__,"channel has NULL ircname");
 	return -1;
@@ -999,7 +1007,7 @@ extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)
     }
 
     if (channel) {
-        ircname = irc_convert_channel(channel);
+        ircname = irc_convert_channel(channel,c);
         if (!ircname) {
 	    eventlog(eventlog_level_error,__FUNCTION__,"channel has NULL ircname");
 	    return -1;
@@ -1060,7 +1068,7 @@ static int irc_who_connection(t_connection * dest, t_connection * c)
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL addr (tempip)");
 	return -1;
     }
-    if (!(tempchannel = irc_convert_channel(conn_get_channel(c))))
+    if (!(tempchannel = irc_convert_channel(conn_get_channel(c),c)))
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel (tempchannel)");
 	return -1;
@@ -1277,11 +1285,11 @@ extern int irc_send_topic(t_connection * c, t_channel const * channel){
     char temp[MAX_IRC_MESSAGE_LEN];
 
     if ((topic = channel_get_topic(channel_get_name(channel)))) {
-        snprintf(temp, sizeof(temp), "%s :%s", irc_convert_channel(channel), topic);
+        snprintf(temp, sizeof(temp), "%s :%s", irc_convert_channel(channel,c), topic);
         irc_send(c, RPL_TOPIC, temp);
     }
     else {
-        snprintf(temp, sizeof(temp), "%s :", irc_convert_channel(channel));
+        snprintf(temp, sizeof(temp), "%s :", irc_convert_channel(channel,c));
         irc_send(c, RPL_TOPIC, temp);
         //irc_send(c, RPL_NOTOPIC, ":No topic is set");
     }

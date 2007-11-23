@@ -538,7 +538,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
    	         t_channel const * channel = (const t_channel*)elem_get_data(curr);
              char const * tempname;
 
-             tempname = irc_convert_channel(channel);
+             tempname = irc_convert_channel(channel,conn);
 
              if (std::strstr(tempname,"_game") == NULL) {
                 sprintf(temp,"%s %u ",tempname,channel_get_length(channel));
@@ -565,18 +565,16 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
     		t_channel const * channel = (t_channel const *)elem_get_data(curr);
        	    char const * tempname;
 
-	        tempname = irc_convert_channel(channel);
+	        tempname = irc_convert_channel(channel,conn);
 
             if ((channel_get_clienttag(channel) != 0) &&
                 (channel_get_clienttag(channel)==conn_get_clienttag(conn))) {
-			    if((std::strstr(tempname,"Lob") != NULL) || (std::strstr(tempname,"Emperor") != NULL)) {
                      eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Channel: \"Lob\"] (%s)",tempname);
 				     if (std::strlen(tempname)+1+20+1+1<MAX_IRC_MESSAGE_LEN)
 					     snprintf(temp, sizeof(temp), "%s %u 0 388:",tempname,channel_get_length(channel));
  				     else
    					     eventlog(eventlog_level_warn,__FUNCTION__,"LISTREPLY length exceeded");
                      irc_send(conn,RPL_CHANNEL,temp);
-			    }
             }
    		}
     }
@@ -606,7 +604,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
         	    char const * tempname;
 				char * topic = channel_get_topic(channel_get_name(channel));
 
-        	    tempname = irc_convert_channel(channel);
+        	    tempname = irc_convert_channel(channel,conn);
         	    
 				if((channel_wol_get_game_type(channel) != 0)) {
 					m = channel_get_first(channel);
@@ -973,7 +971,7 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 			conn_wol_set_ingame(conn,1);
 
 			if (old_channel)
-   	  		   old_channel_name = xstrdup(irc_convert_channel(old_channel));
+   	  		   old_channel_name = xstrdup(irc_convert_channel(old_channel,conn));
 
 			if ((!(wolname)) || (conn_set_channel(conn,wolname)<0))	{
 				irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed");
@@ -986,7 +984,7 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
                     if (conn_get_clienttag(conn) == CLIENTTAG_WCHAT_UINT) {
                         /* WOLv1 JOINGAME message */
                         std::sprintf(_temp,"2 %u %u 1 1 %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel),
-                                    channel_wol_get_game_tournament(channel), irc_convert_channel(channel));
+                                    channel_wol_get_game_tournament(channel), irc_convert_channel(channel,conn));
                     }
                     else {
                         /* WOLv2 JOINGAME message with BATTLECLAN support */
@@ -997,7 +995,7 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
                             clanid = clan_get_clanid(clan);
 
                         std::sprintf(_temp,"1 %u %u 1 %u %u %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel),
-                                     clanid, conn_get_addr(conn), channel_wol_get_game_tournament(channel), irc_convert_channel(channel));
+                                     clanid, conn_get_addr(conn), channel_wol_get_game_tournament(channel), irc_convert_channel(channel,conn));
                     }
 
                     eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME [Game Options] (%s) [Game Owner] (%s)",_temp,channel_wol_get_game_owner(channel));
@@ -1056,7 +1054,7 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	   	 	t_channel * old_channel = conn_get_channel(conn);
 
 			if (old_channel)
-			  old_channel_name = xstrdup(irc_convert_channel(old_channel));
+			  old_channel_name = xstrdup(irc_convert_channel(old_channel,conn));
 
 /* This will be in future: Start GAME (no start channel) */
 //			if ((!(wolname)) || ((conn_set_game(conn, wolname, "", "", game_type_none, 0))<0)) {
@@ -1189,7 +1187,7 @@ static int _handle_finduser_command(t_connection * conn, int numparams, char ** 
 	    t_connection * user;
 
 	    if((user = connlist_find_connection_by_accountname(params[0]))&&(conn_wol_get_findme(user) == 17)) {
-     		wolname = irc_convert_channel(conn_get_channel(user));
+     		wolname = irc_convert_channel(conn_get_channel(user),user);
 	        snprintf(_temp, sizeof(_temp), "0 :%s", wolname); /* User found in channel wolname */
 	    }
 	    else
@@ -1211,7 +1209,7 @@ static int _handle_finduserex_command(t_connection * conn, int numparams, char *
 	    t_connection * user;
 
 	    if((user = connlist_find_connection_by_accountname(params[0]))&&(conn_wol_get_findme(user) == 17)) {
-     		wolname = irc_convert_channel(conn_get_channel(user));
+     		wolname = irc_convert_channel(conn_get_channel(user),user);
      		snprintf(_temp, sizeof(_temp), "0 :%s,0", wolname); /* User found in channel wolname */
 	    }
 	    else

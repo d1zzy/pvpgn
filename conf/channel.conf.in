@@ -15,83 +15,70 @@
 # -1 for max sets no limit to the number of users allowed in the channel     #
 #                                                                            #
 # ---special name--- 		-----short name----- 	cltag bots- -ops- -log- ctry- realm max -mod-#
-"The Void"           		"The Void"           	NULL  true  false false  NULL NULL -1   true
-NONE                	 	"Starcraft"          	STAR  true  false false  NULL NULL -1   false
-NONE                 		"Brood War"          	SEXP  true  false false  NULL NULL -1   false
-NONE                 		"Starcraft Shareware" 	SSHR  true  false false  NULL NULL -1   false
-NONE                 		"Diablo Retail"      	DRTL  true  false false  NULL NULL -1   false
-NONE                 		"War2BNE"            	W2BN  true  false false  NULL NULL -1   false
-NONE                 		"Diablo II"          	D2DV  true  false false  NULL NULL -1   false
-NONE				"Diablo II"		D2XP  true  false false  NULL NULL -1   false
-"Warcraft 3 Frozen Throne" 	"W3"			W3XP  true  false false  NULL NULL -1   false
-"Warcraft 3"         		"W3"			WAR3  true  false false  NULL NULL -1   false
-"Human Castle"       		"W3"			W3XP  true  false false  NULL NULL -1   false
-"Orc Stronghold"     		"W3"			W3XP  true  false false  NULL NULL -1   false
-"Undead Necropolis" 		"W3"			W3XP  true  false false  NULL NULL -1   false
-"Night Elf Tree of Life"  	"W3"			W3XP  true  false false  NULL NULL -1   false
-"Dragon Roost"       		"W3"			W3XP  true  false false  NULL NULL -1   false
-"Human Castle"       		"W3"			WAR3  true  false false  NULL NULL -1   false
-"Orc Stronghold"     		"W3"			WAR3  true  false false  NULL NULL -1   false
-"Undead Necropolis" 		"W3"			WAR3  true  false false  NULL NULL -1   false
-"Night Elf Tree of Life"	"W3"			WAR3  true  false false  NULL NULL -1   false
-"Dragon Roost"       		"W3"			WAR3  true  false false  NULL NULL -1   false
-"Chat"               		"Chat"			CHAT  true  false false  NULL NULL -1   false
-"Backstage"			"Backstage"		NULL  true  false false  NULL NULL  0   false
-"Moderated Support"		"Support"		NULL  true  false false  NULL NULL -1    true
-#                                                                            #
-##############################################################################
+"The Void"                  "The Void"              NULL  true  false false  NULL NULL -1   true
+NONE                        "Starcraft"             STAR  true  false false  NULL NULL -1   false
+NONE                        "Brood War"             SEXP  true  false false  NULL NULL -1   false
+NONE                        "Starcraft Shareware"   SSHR  true  false false  NULL NULL -1   false
+NONE                        "Diablo Retail"         DRTL  true  false false  NULL NULL -1   false
+NONE                        "War2BNE"               W2BN  true  false false  NULL NULL -1   false
+NONE                        "Diablo II"             D2DV  true  false false  NULL NULL -1   false
+NONE                        "Diablo II"	            D2XP  true  false false  NULL NULL -1   false
+"Warcraft 3 Frozen Throne"  "W3"                    W3XP  true  false false  NULL NULL -1   false
+"Warcraft 3"                "W3"                    WAR3  true  false false  NULL NULL -1   false
+"Human Castle"              "W3"                    W3XP  true  false false  NULL NULL -1   false
+"Orc Stronghold"            "W3"                    W3XP  true  false false  NULL NULL -1   false
+"Undead Necropolis"         "W3"                    W3XP  true  false false  NULL NULL -1   false
+"Night Elf Tree of Life"    "W3"                    W3XP  true  false false  NULL NULL -1   false
+"Dragon Roost"              "W3"                    W3XP  true  false false  NULL NULL -1   false
+"Human Castle"              "W3"                    WAR3  true  false false  NULL NULL -1   false
+"Orc Stronghold"            "W3"                    WAR3  true  false false  NULL NULL -1   false
+"Undead Necropolis"         "W3"                    WAR3  true  false false  NULL NULL -1   false
+"Night Elf Tree of Life"    "W3"                    WAR3  true  false false  NULL NULL -1   false
+"Dragon Roost"              "W3"                    WAR3  true  false false  NULL NULL -1   false
+"Chat"                      "Chat"                  CHAT  true  false false  NULL NULL -1   false
+"Backstage"                 "Backstage"             NULL  true  false false  NULL NULL  0   false
+"Moderated Support"         "Support"               NULL  true  false false  NULL NULL -1   true
 
 ##############################################################################
 # Westwood Online Channels                                                   #
 #----------------------------------------------------------------------------#
-# Note: The Westwood channels should be formatted like this! Do not set the last number above 5.
-# The proper game type numbers are as follows:
-#   - 12 = C&C Renegade channels
-#	- 14 = Dune 2000 channels
-#	- 16 = Nox channels
-#	- 18 = Tiberian Sun channels
-#	- 21 = Red Alert 1 channels
-#	- 33 = Red Alert 2 channels
-#	- 37 = Nox Quest channels
-#	- 41 = Yuri's Revenge channels
-#
-
-##### Westwood Chat Channels ###################################################################################
-"Command n Conqr"             "Command n Conqr"         WCHT    false false false  NULL   NULL    -1   false
-"Monopoly"                    "Monopoly"                WCHT    false false false  NULL   NULL    -1   false
-"Red Alert"                   "Red Alert"               WCHT    false false false  NULL   NULL    -1   false
-
-##### C&C Renegade Support #####################################################################################
-"Lob 12 0"                    "GDI Barracks"            RNGD    false false false  NULL   NULL    -1   false
-
-##### Dune 2000 Support ########################################################################################
-"Lob 14 0"                    "Alman"                   DN2K    false false false  NULL   NULL    -1   false
-
-##### Nox Support ##############################################################################################
-"Lob 16 0"                    "Brin"                    NOXX    false false false  NULL   NULL    -1   false
-"Lob 16 1"                    "Ix"                      NOXX    false false false  NULL   NULL    -1   false
-
-##### Tiberian Sun Support #####################################################################################
-"Lob 18 0"                    "GDI Barracks"            TSUN    false false false  NULL   NULL    -1   false
-"Lob 18 1"                    "NOD Barracks"            TSUN    false false false  NULL   NULL    -1   false
-"Lob 18 2"                    "GDI Comm. Center"        TSUN    false false false  NULL   NULL    -1   false
-
-##### Red Alert 1 Support ######################################################################################
-"Lob 21 0"                    "Combat Alley"            RALT    false false false  NULL   NULL    -1   false
-
-##### Red Alert 2 Support ######################################################################################
-"Lob 33 0"                    "USA Command"             RAL2    false false false  NULL   NULL    -1   false
-"Lob 33 1"                    "Korean Bunker"           RAL2    false false false  NULL   NULL    -1   false
-
-##### Nox Quest Support ########################################################################################
-"Lob 37 0"                    "Brin"                    NOXQ    false false false  NULL   NULL    -1   false
-
-##### Yuri's Revenge Support ###################################################################################
-"Lob 41 0"                    "Unknown"                 YURI    false false false  NULL   NULL    -1   false
-"Lob 41 1"                    "Unknown"                 YURI    false false false  NULL   NULL    -1   false
-
-##### Emperor: Battle for Dune #################################################################################
-"Emperor-1"                   "Emperor-1"               EMPR    false false false  NULL   NULL    -1   false
+# Note: The Westwood channels must be formatted like "Lob xx x".             #
+# Where xx=Game type number and x=channel number. First channel number is 0. #
+# For exemple "Lob 18 0" is the first channel for "Tiberian Sun".            #
+# The proper game type numbers are as follows:                               #
+#   - 12 = C&C Renegade channels                                             #
+#	- 14 = Dune 2000 channels                                                #
+#	- 16 = Nox channels                                                      #
+#	- 18 = Tiberian Sun channels                                             #
+#	- 21 = Red Alert 1 channels                                              #
+#	- 33 = Red Alert 2 channels                                              #
+#	- 37 = Nox Quest channels                                                #
+#	- 41 = Yuri's Revenge channels                                           #
+#                                                                            #
+# DO NOT USE game type nubers 38,39 and 40. This numbers are used for        #
+# Quick match services and are hardcoded in PvPGN                            #
+#                                                                            #
+# In WOLv1 (Westwood Chat client) and Emperor: Battle for Dune are not used  #
+# "Lob xx x" formated channels.                                              #
+#                                                                            #
+# ---special name--- 		-----short name----- 	cltag bots- -ops- -log- ctry- realm max -mod-#
+"Command n Conqr"           "Command n Conqr"       WCHT  true  false false  NULL NULL -1   false
+"Monopoly"                  "Monopoly"              WCHT  true  false false  NULL NULL -1   false
+"Red Alert"                 "Red Alert"             WCHT  true  false false  NULL NULL -1   false
+"Renegade-1"                "Lob 12 0"              RNGD  true  false false  NULL NULL -1   false
+"Dune 2000-1"               "Lob 14 0"              DN2K  true  false false  NULL NULL -1   false
+"Nox-1"                     "Lob 16 0"              NOXX  true  false false  NULL NULL -1   false
+"Nox-2"                     "Lob 16 1"              NOXX  true  false false  NULL NULL -1   false
+"Tiberian Sun-1"            "Lob 18 0"              TSUN  true  false false  NULL NULL -1   false
+"Tiberian Sun-2"            "Lob 18 1"              TSUN  true  false false  NULL NULL -1   false
+"Tiberian Sun-3"            "Lob 18 2"              TSUN  true  false false  NULL NULL -1   false
+"Red Alert-1"               "Lob 21 0"              RALT  true  false false  NULL NULL -1   false
+"Red Alert 2-1"             "Lob 33 0"              RAL2  true  false false  NULL NULL -1   false
+"Red Alert 2-2"             "Lob 33 1"              RAL2  true  false false  NULL NULL -1   false
+"Nox Quest-1"               "Lob 37 0"              NOXQ  true  false false  NULL NULL -1   false
+"Yuri's Revenge-1"          "Lob 41 0"              YURI  true  false false  NULL NULL -1   false
+"Yuri's Revenge-2"          "Lob 41 1"              YURI  true  false false  NULL NULL -1   false
+"Emperor-1"                 "Emperor-1"             EMPR  true  false false  NULL NULL -1   false
 
 #                                                                            #
 ##############################################################################
