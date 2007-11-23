@@ -644,8 +644,12 @@ extern void channel_message_send(t_channel const * channel, t_message_type type,
 {
     t_connection * c;
     unsigned int   heard;
-    t_message *    message;
-    char const *   tname;
+	char const *   tname;
+    t_message *    message1; //send to people with clienttag matching channel clienttag 
+                             // or everyone when channel has no clienttag set
+	t_message *    message2; //send to people with clienttag not matching channel clienttag
+	t_message *    message_to_send;
+    
 
     if (!channel)
     {
@@ -675,11 +679,27 @@ extern void channel_message_send(t_channel const * channel, t_message_type type,
 	}
     }
 
-    if (!(message = message_create(type,me,text)))
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not create message");
-	return;
-    }
+	if (!channel->clienttag){
+        if (!(message1 = message_create(type,me,text)))
+        {
+            eventlog(eventlog_level_error,__FUNCTION__,"could not create message1");
+            return;
+         }
+		 message2 = NULL;
+	} else {
+        if (!(message1 = message_create(type,me,text)))
+        {
+            eventlog(eventlog_level_error,__FUNCTION__,"could not create message1");
+            return;
+         }
+        if (!(message2 = message_create(type,me,text)))
+        {
+            eventlog(eventlog_level_error,__FUNCTION__,"could not create message2");
+			message_destroy(message1);
+            return;
+         }
+	}
+
 
     heard = 0;
     tname = conn_get_chatname(me);
@@ -695,19 +715,27 @@ extern void channel_message_send(t_channel const * channel, t_message_type type,
 	    conn_check_ignoring(c,tname)==1)
 	    continue; /* ignore squelched players */
 
-	if (message_send(message,c)==0 && c!=me)
-	    heard = 1;
+	if (!channel->clienttag || channel->clienttag==conn_get_clienttag(c)) {
+		message_to_send = message1;
+	} else {
+		message_to_send = message2;
+	}
 
-    }
+	if (message_send(message_to_send,c)==0 && c!=me)
+	    heard = 1;
+	}
+
     conn_unget_chatname(me,tname);
 
-    message_destroy(message);
+    message_destroy(message1);
+	if (message2)
+		message_destroy(message2);
 
     if ((conn_get_wol(me) == 0))
     {
-    if (!heard && (type==message_type_talk || type==message_type_emote))
-	message_send_text(me,message_type_info,me,"No one hears you.");
-}
+        if (!heard && (type==message_type_talk || type==message_type_emote))
+	    message_send_text(me,message_type_info,me,"No one hears you.");
+    }
 }
 
 extern int channel_ban_user(t_channel * channel, char const * user)
