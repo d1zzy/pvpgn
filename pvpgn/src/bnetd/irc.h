@@ -39,7 +39,7 @@ extern int irc_send(t_connection * conn, int code, char const * params);
 extern int irc_send_ping(t_connection * conn);
 extern int irc_send_pong(t_connection * conn, char const * params);
 extern int irc_authenticate(t_connection * conn, char const * passhash);
-extern char const * irc_convert_channel(t_channel const * channel);
+extern char const * irc_convert_channel(t_channel const * channel, t_connection * c);
 extern char const * irc_convert_ircname(char const * pircname);
 extern char ** irc_get_listelems(char * list);
 extern int irc_unget_listelems(char ** elems);
