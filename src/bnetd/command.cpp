@@ -2849,7 +2849,7 @@ static int _handle_channels_command(t_connection * c, char const *text)
     }
   else if (std::strcmp(&text[i],"all")==0)
     {
-      clienttag = NULL;
+      clienttag = 0;
       message_send_text(c,message_type_info,c,"All current channels:");
     }
   else
