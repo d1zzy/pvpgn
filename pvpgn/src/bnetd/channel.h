@@ -87,7 +87,7 @@ typedef struct channel
     unsigned int      flags;
     int		      maxmembers;
     int		      currmembers;
-    char const *      clienttag;
+    t_clienttag       clienttag;
     unsigned int      id;
     t_channelmember * memberlist;
     t_list *          banlist;    /* of char * */
@@ -121,6 +121,7 @@ t_channel;
 #include "connection.h"
 #include "message.h"
 #include "common/list.h"
+#include "common/tag.h"
 #undef JUST_NEED_TYPES
 
 #define CHANNEL_NAME_BANNED "THE VOID"
@@ -134,11 +135,11 @@ namespace bnetd
 {
 
 extern int channel_set_userflags(t_connection * c);
-extern t_channel * channel_create(char const * fullname, char const * shortname, char const * clienttag, int permflag, int botflag, int operflag, int logflag, char const * country, char const * realmname, int maxmembers, int moderated, int clan,int autoname) ;
+extern t_channel * channel_create(char const * fullname, char const * shortname, t_clienttag clienttag, int permflag, int botflag, int operflag, int logflag, char const * country, char const * realmname, int maxmembers, int moderated, int clan,int autoname) ;
 extern int channel_destroy(t_channel * channel, t_elem ** elem);
 extern char const * channel_get_name(t_channel const * channel);
 extern char const * channel_get_shortname(t_channel const * channel);
-extern char const * channel_get_clienttag(t_channel const * channel);
+extern t_clienttag channel_get_clienttag(t_channel const * channel);
 extern unsigned channel_get_flags(t_channel const * channel);
 extern int channel_set_flags(t_channel * channel, unsigned flags);
 extern int channel_get_permanent(t_channel const * channel);

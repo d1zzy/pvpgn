@@ -61,7 +61,7 @@ static char * channel_format_name(char const * sname, char const * country, char
 
 extern int channel_set_userflags(t_connection * c);
 
-extern t_channel * channel_create(char const * fullname, char const * shortname, char const * clienttag, int permflag, int botflag, int operflag, int logflag, char const * country, char const * realmname, int maxmembers, int moderated, int clanflag, int autoname)
+extern t_channel * channel_create(char const * fullname, char const * shortname, t_clienttag clienttag, int permflag, int botflag, int operflag, int logflag, char const * country, char const * realmname, int maxmembers, int moderated, int clanflag, int autoname)
 {
     t_channel * channel;
 
@@ -80,18 +80,13 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
         eventlog(eventlog_level_error,__FUNCTION__,"got empty shortname");
 	return NULL;
     }
-    if (clienttag && std::strlen(clienttag)!=4)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"client tag has bad length (%lu chars)",std::strlen(clienttag));
-	return NULL;
-    }
 
     /* non-permanent already checks for this in conn_set_channel */
     if (permflag)
     {
 	if ((channel = channellist_find_channel_by_fullname(fullname)))
 	{
-	    if ((channel_get_clienttag(channel)) && (clienttag) && (std::strcmp(channel_get_clienttag(channel),clienttag)==0))
+	    if ((channel_get_clienttag(channel)) && (clienttag) && (channel_get_clienttag(channel)==clienttag))
 	    {
 	      eventlog(eventlog_level_error,__FUNCTION__,"could not create duplicate permanent channel (fullname \"%s\")",fullname);
 	      return NULL;
@@ -130,7 +125,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 	     shortname?shortname:"none",
 	     shortname?"\"":")",
 	     clienttag?"\"":"(",
-	     clienttag?clienttag:"none",
+	     clienttag?clienttag_uint_to_str(clienttag):"none",
 	     clienttag?"\"":")",
 	     country?"\"":"(",
              country?country:"none",
@@ -147,10 +142,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
     else
 	channel->shortname = xstrdup(shortname);
 
-    if (clienttag)
-	channel->clienttag = xstrdup(clienttag);
-    else
-	channel->clienttag = NULL;
+	channel->clienttag = clienttag;
 
     if (country)
 	channel->country = xstrdup(country);
@@ -342,12 +334,12 @@ extern char const * channel_get_name(t_channel const * channel)
 }
 
 
-extern char const * channel_get_clienttag(t_channel const * channel)
+extern t_clienttag channel_get_clienttag(t_channel const * channel)
 {
     if (!channel)
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
-	return "";
+	return 0;
     }
 
     return channel->clienttag;
@@ -897,6 +889,7 @@ static int channellist_load_permanent(char const * filename)
     char *       name;
     char *       sname;
     char *       tag;
+	t_clienttag  clienttag;
     char *       bot;
     char *       oper;
     char *       log;
@@ -1031,24 +1024,26 @@ static int channellist_load_permanent(char const * filename)
 	if (std::strcmp(sname,"NULL") == 0)
 	    sname = NULL;
 	if (std::strcmp(tag,"NULL") == 0)
-	    tag = NULL;
-        if (std::strcmp(name,"NONE") == 0)
+	    clienttag = 0;
+	else
+		clienttag = clienttag_str_to_uint(tag);
+    if (std::strcmp(name,"NONE") == 0)
 	    name = NULL;
-        if (std::strcmp(country, "NULL") == 0)
-            country = NULL;
-        if (std::strcmp(realmname,"NULL") == 0)
+    if (std::strcmp(country, "NULL") == 0)
+        country = NULL;
+    if (std::strcmp(realmname,"NULL") == 0)
             realmname = NULL;
 
 	if (name)
 	    {
-            channel_create(name,sname,tag,1,botflag,operflag,logflag,country,realmname,std::atoi(max),modflag,0,0);
+            channel_create(name,sname,clienttag,1,botflag,operflag,logflag,country,realmname,std::atoi(max),modflag,0,0);
 	    }
 	else
 	    {
             newname = channel_format_name(sname,country,realmname,1);
             if (newname)
 		{
-                   channel_create(newname,sname,tag,1,botflag,operflag,logflag,country,realmname,std::atoi(max),modflag,0,1);
+                   channel_create(newname,sname,clienttag,1,botflag,operflag,logflag,country,realmname,std::atoi(max),modflag,0,1);
                    xfree(newname);
 	    }
             else
@@ -1386,7 +1381,7 @@ extern t_channel * channellist_find_channel_by_name(char const * name, char cons
     int            maxchannel; /* the number of "rollover" channels that exist */
     char const *   saveshortname;
     char const *   savespecialname;
-    char const *   savetag;
+    t_clienttag    savetag;
     int            savebotflag;
     int            saveoperflag;
     int            savelogflag;
@@ -1397,8 +1392,8 @@ extern t_channel * channellist_find_channel_by_name(char const * name, char cons
     t_channel *    special_channel;
 
     // try to make gcc happy and initialize all variables
-    saveshortname = savespecialname = savetag = savecountry = saverealmname = NULL;
-    savebotflag = saveoperflag = savelogflag = savemaxmembers = savemoderated = 0;
+    saveshortname = savespecialname = savecountry = saverealmname = NULL;
+    savetag = savebotflag = saveoperflag = savelogflag = savemaxmembers = savemoderated = 0;
 
     maxchannel = 0;
     foundperm = 0;

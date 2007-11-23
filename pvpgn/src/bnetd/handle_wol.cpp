@@ -543,8 +543,8 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
              if (std::strstr(tempname,"_game") == NULL) {
                 sprintf(temp,"%s %u ",tempname,channel_get_length(channel));
 
-                if ((channel_get_clienttag(channel) != NULL) &&
-                   (std::strcmp(channel_get_clienttag(channel), clienttag_uint_to_str(CLIENTTAG_WCHAT_UINT)) == 0 ))
+                if ((channel_get_clienttag(channel) != 0) &&
+                   (channel_get_clienttag(channel)==CLIENTTAG_WCHAT_UINT))
                     std::strcat(temp,"1");  /* WestwoodChat Icon before chanelname */
                 else
                     std::strcat(temp,"0");  /* No WestwoodChat Icon before chanelname */
@@ -567,8 +567,8 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 
 	        tempname = irc_convert_channel(channel);
 
-            if ((channel_get_clienttag(channel) != NULL) &&
-                (std::strcmp(channel_get_clienttag(channel), clienttag_uint_to_str(conn_get_clienttag(conn))) == 0)) {
+            if ((channel_get_clienttag(channel) != 0) &&
+                (channel_get_clienttag(channel)==conn_get_clienttag(conn))) {
 			    if((std::strstr(tempname,"Lob") != NULL) || (std::strstr(tempname,"Emperor") != NULL)) {
                      eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Channel: \"Lob\"] (%s)",tempname);
 				     if (std::strlen(tempname)+1+20+1+1<MAX_IRC_MESSAGE_LEN)
