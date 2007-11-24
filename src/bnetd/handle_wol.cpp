@@ -526,13 +526,19 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 static int _handle_list_command(t_connection * conn, int numparams, char ** params, char * text)
 {
     char temp[MAX_IRC_MESSAGE_LEN];
-
-	irc_send(conn,RPL_LISTSTART,"Channel :Users Names"); /* backward compatibility */
     t_elem const * curr;
 
-    if (numparams == 0) {
-        /* This is Westwood Chat LIST command */
-        eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST WCHAT");
+    irc_send(conn,RPL_LISTSTART,"Channel :Users Names"); /* backward compatibility */
+
+    if ((numparams == 0) ||
+        ((std::strcmp(params[0], "0") == 0) || (std::strcmp(params[0], "-1") == 0))) {
+        /* LIST all chat channels */
+        /* Emperor sends as params[0] == -1 if want QuickMatch channels too, 0 if not.
+         * This sends also NOX but we dunno why. */
+
+        /* HACK: Currently, this is the best way to set the game type... */
+        if (params)
+            conn_wol_set_game_type(conn,std::atoi(params[1]));
 
         LIST_TRAVERSE_CONST(channellist(),curr) {
    	         t_channel const * channel = (const t_channel*)elem_get_data(curr);
@@ -540,43 +546,25 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 
              tempname = irc_convert_channel(channel,conn);
 
-             if (std::strstr(tempname,"_game") == NULL) {
+             if (std::strstr(tempname,"_game") == NULL) { /* FIXME: Delete this if games are not in channels */
                 sprintf(temp,"%s %u ",tempname,channel_get_length(channel));
 
-                if ((channel_get_clienttag(channel) != 0) &&
-                   (channel_get_clienttag(channel)==CLIENTTAG_WCHAT_UINT))
-                    std::strcat(temp,"1");  /* WestwoodChat Icon before chanelname */
+	        	if (channel_get_flags(channel) & channel_flags_permanent)
+                    std::strcat(temp,"1");  /* Official channel */
                 else
-                    std::strcat(temp,"0");  /* No WestwoodChat Icon before chanelname */
+                    std::strcat(temp,"0");  /* User channel */
 
-                std::strcat(temp,":");
+                if (conn_get_clienttag(conn)==CLIENTTAG_WCHAT_UINT)
+                    std::strcat(temp,":");    /* WOLv1 ends by ":" */
+                else
+                    std::strcat(temp," 388");  /* WOLv2 ends by "388" */
+
+                if (std::strlen(temp)>MAX_IRC_MESSAGE_LEN)
+                    WARN0("LISTREPLY length exceeded");
+
                 irc_send(conn,RPL_CHANNEL,temp);
              }
         }
-    }
-    else if ((std::strcmp(params[0], "0") == 0) || (std::strcmp(params[0], "-1") == 0)) {
-        /* Nox and Emperor send by some reason -1 */
-		/* HACK: Currently, this is the best way to set the game type... */
-		conn_wol_set_game_type(conn,std::atoi(params[1]));
-
-		eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Channel]");
-   	    LIST_TRAVERSE_CONST(channellist(),curr)
-		{
-    		t_channel const * channel = (t_channel const *)elem_get_data(curr);
-       	    char const * tempname;
-
-	        tempname = irc_convert_channel(channel,conn);
-
-            if ((channel_get_clienttag(channel) != 0) &&
-                (channel_get_clienttag(channel)==conn_get_clienttag(conn))) {
-                     eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Channel: \"Lob\"] (%s)",tempname);
-				     if (std::strlen(tempname)+1+20+1+1<MAX_IRC_MESSAGE_LEN)
-					     snprintf(temp, sizeof(temp), "%s %u 0 388:",tempname,channel_get_length(channel));
- 				     else
-   					     eventlog(eventlog_level_warn,__FUNCTION__,"LISTREPLY length exceeded");
-                     irc_send(conn,RPL_CHANNEL,temp);
-            }
-   		}
     }
     /**
     *  Known channel game types:
@@ -584,7 +572,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
     *  3 = Red Alert Counterstrike channels, 4 = Red Alert Aftermath channels, 5 = CnC Sole Survivor channels,
     *  12 = C&C Renegade channels, 14 = Dune 2000 channels, 16 = Nox channels, 18 = Tiberian Sun channels,
     *  21 = Red Alert 1 v 3.03 channels, 31 = Emperor: Battle for Dune, 33 = Red Alert 2,
-    *  37 = Nox Quest channels, 39 = C&C Renegade Quickgame channels, 41 = Yuri's Revenge
+    *  37 = Nox Quest channels, 38,39,40 = Quickgame channels, 41 = Yuri's Revenge
 	*/
     if ((numparams == 0) ||
        (std::strcmp(params[0], "12") == 0) ||
@@ -620,7 +608,9 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 							/**
 							*  The layout of the game list entry is something like this:
                             *
-							*   #game_channel_name users unknown gameType gameIsTournment gameExtension longIP 128::topic
+							*   #game_channel_name users isofficial gameType gameIsTournment gameExtension longIP locked::topic
+							*   by isofficial is used always 0 (its backwar compatibility with chat channels)
+							*   locked can be 128 = unlocked or 384 = locked
 							*/
 	        		        if (std::strlen(tempname)+1+20+1+1+std::strlen(topic)<MAX_IRC_MESSAGE_LEN)
                                    snprintf(temp, sizeof(temp), "%s %u 0 %u %u %s %u 128::%s",tempname,
