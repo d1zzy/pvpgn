@@ -106,7 +106,7 @@ extern int irc_send_cmd(t_connection * conn, char const * command, char const * 
 	    return -1;
 	}
 	else
-	    std::sprintf(data,":%s %s %s %s\r\n",ircname,command,nick,params);
+	    std::sprintf(data,":%s %s %s %s",ircname,command,nick,params);
     } else {
         len = 1+std::strlen(ircname)+1+std::strlen(command)+1+std::strlen(nick)+1+2;
     	if (len > MAX_IRC_MESSAGE_LEN) {
@@ -114,8 +114,10 @@ extern int irc_send_cmd(t_connection * conn, char const * command, char const * 
 	    return -1;
 	}
 	else
-	std::sprintf(data,":%s %s %s\r\n",ircname,command,nick);
+	std::sprintf(data,":%s %s %s",ircname,command,nick);
     }
+	DEBUG2("[%d] sent \"%s\"",conn_get_socket(conn),data);
+	std::strcat(data,"\r\n");
     packet_set_size(p,0);
     packet_append_data(p,data,len);
     // eventlog(eventlog_level_debug,__FUNCTION__,"[%d] sent \"%s\"",conn_get_socket(conn),data);
