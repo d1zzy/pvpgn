@@ -1177,7 +1177,7 @@ static int _handle_finduser_command(t_connection * conn, int numparams, char ** 
 	    t_connection * user;
 
 	    if((user = connlist_find_connection_by_accountname(params[0]))&&(conn_wol_get_findme(user) == 17)) {
-     		wolname = irc_convert_channel(conn_get_channel(user),user);
+     		wolname = irc_convert_channel(conn_get_channel(user),conn);
 	        snprintf(_temp, sizeof(_temp), "0 :%s", wolname); /* User found in channel wolname */
 	    }
 	    else
@@ -1199,7 +1199,7 @@ static int _handle_finduserex_command(t_connection * conn, int numparams, char *
 	    t_connection * user;
 
 	    if((user = connlist_find_connection_by_accountname(params[0]))&&(conn_wol_get_findme(user) == 17)) {
-     		wolname = irc_convert_channel(conn_get_channel(user),user);
+     		wolname = irc_convert_channel(conn_get_channel(user),conn);
      		snprintf(_temp, sizeof(_temp), "0 :%s,0", wolname); /* User found in channel wolname */
 	    }
 	    else
@@ -1235,7 +1235,7 @@ static int _handle_page_command(t_connection * conn, int numparams, char ** para
                }
             }
             else
-                ERROR1("User %s want to ClanPAGE but is not clanmember!",conn_get_chatname(conn));
+                WARN1("User %s want to ClanPAGE but is not clanmember!",conn_get_chatname(conn));
             return 0;
         }
 	    else if((user = connlist_find_connection_by_accountname(params[0]))&&(conn_wol_get_pageme(user) == 33)) {

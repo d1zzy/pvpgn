@@ -829,12 +829,12 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         }
         break;
     case message_type_quit:
-        {
+        if (conn_get_clienttag(dst) == CLIENTTAG_IIRC_UINT) {
             char temp[MAX_IRC_MESSAGE_LEN];
             if (text)
                 sprintf(temp,":%s",text);
             else
-                sprintf(temp,":Bye");
+                sprintf(temp,":");
 
             from.nick = conn_get_chatname(me);
             from.host = addr_num_to_ip_str(conn_get_addr(me));
