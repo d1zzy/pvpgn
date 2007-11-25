@@ -152,8 +152,9 @@ extern int irc_send_ping(t_connection * conn)
 	return -1;
     }
 
-    if ((conn_get_clienttag(conn) != CLIENTTAG_WCHAT_UINT) &&
-        (conn_get_clienttag(conn) != CLIENTTAG_IIRC_UINT))
+    if ((conn_get_class(conn) == conn_class_wserv) ||
+        (conn_get_class(conn) == conn_class_wgameres) ||
+        (conn_get_class(conn) == conn_class_wladder))
         return 0;
 
     if (!(p = packet_create(packet_class_raw))) {
@@ -163,12 +164,13 @@ extern int irc_send_ping(t_connection * conn)
 
     conn_set_ircping(conn,get_ticks());
     if (conn_get_state(conn)==conn_state_bot_username)
-    	std::sprintf(data,"PING :%u\r\n",conn_get_ircping(conn)); /* Undernet doesn't reveal the servername yet ... neither do we */
+    	std::sprintf(data,"PING :%u",conn_get_ircping(conn)); /* Undernet doesn't reveal the servername yet ... neither do we */
     else if ((6+std::strlen(server_get_hostname())+2+1)<=MAX_IRC_MESSAGE_LEN)
-    	std::sprintf(data,"PING :%s\r\n",server_get_hostname());
+    	std::sprintf(data,"PING :%s",server_get_hostname());
     else
     	eventlog(eventlog_level_error,__FUNCTION__,"maximum message length exceeded");
     eventlog(eventlog_level_debug,__FUNCTION__,"[%d] sent \"%s\"",conn_get_socket(conn),data);
+	std::strcat(data,"\r\n");
     packet_set_size(p,0);
     packet_append_data(p,data,std::strlen(data));
     conn_push_outqueue(conn,p);
@@ -195,10 +197,11 @@ extern int irc_send_pong(t_connection * conn, char const * params)
     }
 
     if (params)
-    	std::sprintf(data,":%s PONG %s :%s\r\n",server_get_hostname(),server_get_hostname(),params);
+    	std::sprintf(data,":%s PONG %s :%s",server_get_hostname(),server_get_hostname(),params);
     else
-    	std::sprintf(data,":%s PONG %s\r\n",server_get_hostname(),server_get_hostname());
+    	std::sprintf(data,":%s PONG %s",server_get_hostname(),server_get_hostname());
     eventlog(eventlog_level_debug,__FUNCTION__,"[%d] sent \"%s\"",conn_get_socket(conn),data);
+	std::strcat(data,"\r\n");
     packet_set_size(p,0);
     packet_append_data(p,data,std::strlen(data));
     conn_push_outqueue(conn,p);
@@ -1221,6 +1224,54 @@ extern int _handle_nick_command(t_connection * conn, int numparams, char ** para
 			irc_welcome(conn); /* only send the welcome if we have USER and NICK */
 	}
 	return 0;
+}
+
+extern int _handle_ping_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+    /* Dizzy: just ignore this because RFC says we should not reply client PINGs
+     * NOTE: RFC2812 doesn't seem to be very expressive about this ... */
+    if (numparams)
+        irc_send_pong(conn,params[0]);
+    else
+        irc_send_pong(conn,text);
+    return 0;
+}
+
+extern int _handle_pong_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+    /* NOTE: RFC2812 doesn't seem to be very expressive about this ... */
+    if (conn_get_ircping(conn)==0) {
+        eventlog(eventlog_level_warn,__FUNCTION__,"[%d] PONG without PING",conn_get_socket(conn));
+    }
+    else {
+        unsigned int val = 0;
+        char * sname;
+
+        if (numparams>=1) {
+            val =  std::strtoul(params[0],NULL,10);
+        sname = params[0];
+        }
+        else if (text) {
+            val = std::strtoul(text,NULL,10);
+        sname = text;
+        }
+        else {
+        val = 0;
+        sname = 0;
+        }
+
+        if (conn_get_ircping(conn) != val) {
+       	    if ((!(sname)) || (std::strcmp(sname,server_get_hostname())!=0)) {
+                /* Actually the servername should not be always accepted but we aren't that pedantic :) */
+                eventlog(eventlog_level_warn,__FUNCTION__,"[%d] got bad PONG (%u!=%u && %s!=%s)",conn_get_socket(conn),val,conn_get_ircping(conn),sname,server_get_hostname());
+                return -1;
+            }
+        }
+        conn_set_latency(conn,get_ticks()-conn_get_ircping(conn));
+        eventlog(eventlog_level_debug,__FUNCTION__,"[%d] latency is now %d (%u-%u)",conn_get_socket(conn),get_ticks()-conn_get_ircping(conn),get_ticks(),conn_get_ircping(conn));
+        conn_set_ircping(conn,0);
+    }
+    return 0;
 }
 
 extern int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text)

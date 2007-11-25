@@ -114,7 +114,7 @@ static void conn_send_welcome(t_connection * c)
 
     if (c->protocol.cflags & conn_flags_welcomed)
 	return;
-    if ((conn_get_class(c)==conn_class_irc)||(conn_get_class(c)==conn_class_wol)||(conn_get_class(c)==conn_class_wserv)||(conn_get_class(c)==conn_class_wgameres))
+    if ((conn_get_class(c)==conn_class_irc)||(conn_get_class(c)==conn_class_wol))
     {
 	c->protocol.cflags|= conn_flags_welcomed;
 	return;
@@ -196,7 +196,7 @@ extern void conn_test_latency(t_connection * c, std::time_t now, t_timer_data de
     	return;					// state_destroy: do nothing
 
 
-    if ((conn_get_class(c)==conn_class_irc)||(conn_get_class(c)==conn_class_wol)||(conn_get_class(c)==conn_class_wserv)||(conn_get_class(c)==conn_class_wgameres)) {
+    if ((conn_get_class(c)==conn_class_irc)||(conn_get_class(c)==conn_class_wol)) {
     	/* We should start pinging the client after we received the first line ... */
     	/* NOTE: RFC2812 only suggests that PINGs are being sent
     	 * if no other activity is detected. However it explecitly
@@ -265,19 +265,19 @@ extern char const * conn_class_get_str(t_conn_class cclass)
     switch (cclass)
     {
     case conn_class_init:
-	return "init";
+        return "init";
     case conn_class_bnet:
-	return "bnet";
+        return "bnet";
     case conn_class_file:
-	return "file";
+        return "file";
     case conn_class_bot:
-	return "bot";
+        return "bot";
     case conn_class_d2cs_bnetd:
-	return "d2cs_bnetd";
+        return "d2cs_bnetd";
     case conn_class_telnet:
-	return "telnet";
+        return "telnet";
     case conn_class_irc:
-	return "irc";
+        return "irc";
     case conn_class_wol:
         return "wol";
     case conn_class_wserv:
@@ -286,6 +286,8 @@ extern char const * conn_class_get_str(t_conn_class cclass)
         return "apireg";
     case conn_class_wgameres:
         return "wgameres";
+    case conn_class_wladder:
+        return "wladder";
     case conn_class_none:
         return "none";
     case conn_class_w3route:
@@ -3548,8 +3550,7 @@ extern unsigned int connlist_login_get_length(void)
 	c = (const t_connection*)elem_get_data(curr);
 	if ((c->protocol.state==conn_state_loggedin)&&
 	    ((c->protocol.cclass==conn_class_bnet)||(c->protocol.cclass==conn_class_bot)||(c->protocol.cclass==conn_class_telnet)
-          ||(c->protocol.cclass==conn_class_irc)||(c->protocol.cclass==conn_class_wol)||(c->protocol.cclass==conn_class_wserv)
-          ||(c->protocol.cclass==conn_class_wgameres)))
+          ||(c->protocol.cclass==conn_class_irc)||(c->protocol.cclass==conn_class_wol)))
 	    count++;
     }
 
@@ -3826,7 +3827,7 @@ extern int conn_is_irc_variant(t_connection * c)
 	if ( (c->protocol.cclass==conn_class_irc) ||
              (c->protocol.cclass==conn_class_wol) ||
              (c->protocol.cclass==conn_class_wserv) ||
-             (c->protocol.cclass==conn_class_wgameres)
+             (c->protocol.cclass==conn_class_wladder)
 	   )
 	   return 1;
 

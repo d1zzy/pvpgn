@@ -66,8 +66,6 @@ typedef struct {
 } t_wol_command_table_row;
 
 static int _handle_user_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_ping_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_pong_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_pass_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_privmsg_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_quit_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -291,59 +289,6 @@ static int _handle_user_command(t_connection * conn, int numparams, char ** para
 	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to USER");
     	}
 	return 0;
-}
-
-static int _handle_ping_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	if (conn_get_clienttag(conn) == CLIENTTAG_WCHAT_UINT) {
-       /* WCHAT need ping */
-	   if (numparams)
-	       irc_send_pong(conn,params[0]);
-       else
-	       irc_send_pong(conn,text);
-       return 0;
-    }
-    return 0;
-}
-
-static int _handle_pong_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	/* NOTE: RFC2812 doesn't seem to be very expressive about this ... */
-	if (conn_get_clienttag(conn) == CLIENTTAG_WCHAT_UINT) {
-	    if (conn_get_ircping(conn)==0) {
-            eventlog(eventlog_level_warn,__FUNCTION__,"[%d] PONG without PING",conn_get_socket(conn));
-        }
-	    else {
-	         unsigned int val = 0;
-	         char * sname;
-
-	         if (numparams>=1) {
-	             val =  std::strtoul(params[0],NULL,10);
-		         sname = params[0];
-             }
-	         else if (text) {
-	    	     val = std::strtoul(text,NULL,10);
-	             sname = text;
-             }
-	         else {
-		        val = 0;
-		        sname = 0;
-             }
-
-	         if (conn_get_ircping(conn) != val) {
-                 if ((!(sname)) || (std::strcmp(sname,server_get_hostname())!=0)) {
-			        /* Actually the servername should not be always accepted but we aren't that pedantic :) */
-			        eventlog(eventlog_level_warn,__FUNCTION__,"[%d] got bad PONG (%u!=%u && %s!=%s)",conn_get_socket(conn),val,conn_get_ircping(conn),sname,server_get_hostname());
-			        return -1;
-		         }
-             }
-	         conn_set_latency(conn,get_ticks()-conn_get_ircping(conn));
-	         eventlog(eventlog_level_debug,__FUNCTION__,"[%d] latency is now %d (%u-%u)",conn_get_socket(conn),get_ticks()-conn_get_ircping(conn),get_ticks(),conn_get_ircping(conn));
-	         conn_set_ircping(conn,0);
-        }
-	    return 0;
-    }
-    return 0;
 }
 
 static int _handle_pass_command(t_connection * conn, int numparams, char ** params, char * text)
