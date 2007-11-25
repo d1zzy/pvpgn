@@ -72,9 +72,10 @@ typedef enum
     conn_class_telnet,
     conn_class_ircinit,    /* IRC based protocol INIT*/
     conn_class_irc,        /* Internet Relay Chat */
-    conn_class_wol,        /* Westwood IRC */
-    conn_class_wserv,      /* Westwood servserv */
-    conn_class_wgameres,   /* Westwood gameres */
+    conn_class_wol,        /* Westwood Chat and Game protocol (IRC based) */
+    conn_class_wserv,      /* Westwood servserv (IRC based) */
+    conn_class_wgameres,   /* Westwood Gameresolution */
+    conn_class_wladder,    /* Westwood Ladder server */
     conn_class_apireg,     /* Westwood API Register */
     conn_class_d2cs_bnetd,
     conn_class_w3route,

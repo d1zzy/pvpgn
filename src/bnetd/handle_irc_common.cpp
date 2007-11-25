@@ -59,6 +59,7 @@ static int handle_irc_common_con_command(t_connection * conn, char const * comma
        case conn_class_wserv:
             return handle_wserv_con_command(conn, command, numparams, params, text);
        case conn_class_wol:
+       case conn_class_wladder:
        case conn_class_wgameres:
             return handle_wol_con_command(conn, command, numparams, params, text);
        default:
@@ -117,7 +118,7 @@ static int handle_irc_common_set_class(t_connection * conn, char const * command
                 (std::strcmp(command, "HIGHSCORE") == 0)) {
             DEBUG0("Got WOL Ladder packet");
             if (std::strcmp(prefs_get_wol_addrs(),"") != 0)
-                conn_set_class(conn,conn_class_wol); /* is handled in handle_wol.* now */
+                conn_set_class(conn,conn_class_wladder); /* is handled in handle_wol.* now */
             else
                 conn_set_state(conn,conn_state_destroy);
             return 0;
@@ -292,11 +293,12 @@ extern int handle_irc_common_packet(t_connection * conn, t_packet const * const 
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
 	return -1;
     }
-    if (conn_get_class(conn) != conn_class_ircinit &&
-        conn_get_class(conn) != conn_class_irc && 
-        conn_get_class(conn) != conn_class_wol &&
-        conn_get_class(conn) != conn_class_wserv &&
-        conn_get_class(conn) != conn_class_wgameres) {
+    if ((conn_get_class(conn) != conn_class_ircinit) &&
+        (conn_get_class(conn) != conn_class_irc) &&
+        (conn_get_class(conn) != conn_class_wol) &&
+        (conn_get_class(conn) != conn_class_wserv) &&
+        (conn_get_class(conn) != conn_class_wgameres) &&
+        (conn_get_class(conn) != conn_class_wladder)) {
 	eventlog(eventlog_level_error,__FUNCTION__,"FIXME: handle_irc_packet without any reason (conn->class != conn_class_irc/ircinit/wol/wserv...)");
 	return -1;
     }

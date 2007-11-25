@@ -531,6 +531,7 @@ static int sd_tcpinput(t_connection * c)
 	case conn_class_wserv:
  	case conn_class_apireg:
 	case conn_class_wgameres:
+	case conn_class_wladder:
 	case conn_class_telnet:
 	    if (!(packet = packet_create(packet_class_raw)))
 	    {
@@ -646,7 +647,8 @@ static int sd_tcpinput(t_connection * c)
 		case conn_class_irc:
 		case conn_class_wserv:
 		case conn_class_wol:
-		case conn_class_wgameres: /* NOTICE: Will be handled in other file */
+		case conn_class_wladder:
+		case conn_class_wgameres: /* NOTICE: Will be handled in another file */
 		    ret = handle_irc_common_packet(c,packet);
 		    break;
 		case conn_class_apireg:
