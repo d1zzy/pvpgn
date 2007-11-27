@@ -241,11 +241,16 @@ static int handle_irc_common_line(t_connection * conn, char const * ircline)
     }
 
     if (conn_get_state(conn)==conn_state_connected) {
-	t_timer_data temp;
+	    conn_set_state(conn,conn_state_bot_username); /* PELISH: What is this for? */
 
-	conn_set_state(conn,conn_state_bot_username);
-	temp.n = prefs_get_irc_latency();
-	conn_test_latency(conn,std::time(NULL),temp);
+        if ((conn_get_class(conn) != conn_class_wserv) &&
+            (conn_get_class(conn) != conn_class_wgameres) &&
+            (conn_get_class(conn) != conn_class_wladder)) {
+
+	        t_timer_data temp;
+	        temp.n = prefs_get_irc_latency();
+	        conn_test_latency(conn,std::time(NULL),temp);
+        }
     }
 
 	if (handle_irc_common_con_command(conn, command, numparams, params, text)!=-1) {}
