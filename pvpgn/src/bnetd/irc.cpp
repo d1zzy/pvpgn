@@ -96,7 +96,7 @@ extern int irc_send_cmd(t_connection * conn, char const * command, char const * 
 
     nick = conn_get_loggeduser(conn);
     if (!nick)
-    	nick = "";
+    	nick = "UserName";
 
     /* snprintf isn't portable -> check message length first */
     if (params) {
@@ -120,7 +120,6 @@ extern int irc_send_cmd(t_connection * conn, char const * command, char const * 
 	std::strcat(data,"\r\n");
     packet_set_size(p,0);
     packet_append_data(p,data,len);
-    // eventlog(eventlog_level_debug,__FUNCTION__,"[%d] sent \"%s\"",conn_get_socket(conn),data);
     conn_push_outqueue(conn,p);
     packet_del_ref(p);
     return 0;

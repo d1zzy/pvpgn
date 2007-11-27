@@ -110,7 +110,6 @@ static int _handle_verchk_command(t_connection * conn, int numparams, char ** pa
     if (clienttag != CLIENTTAG_WWOL_UINT)
         conn_set_clienttag(conn,clienttag);
 
-    DEBUG0("[** WOL **] VERCHK :Update record non-existant");
     irc_send(conn,RPL_UPDATE_NONEX,":Update record non-existant");
 
     return 0;
@@ -148,13 +147,13 @@ static int _handle_whereto_command(t_connection * conn, int numparams, char ** p
     if (!tag_check_in_list(conn_get_clienttag(conn), prefs_get_allowed_clients())) {
         /*  This is for anyone game but not for Emperor */
         if (conn_get_clienttag(conn) != CLIENTTAG_EMPERORBD_UINT) {
-            snprintf(temp, sizeof(temp), ":%s %d '0:%s' %s %s %s", wolip, BNETD_WOL_PORT, wolname, woltimezone, wollong, wollat);
+            snprintf(temp, sizeof(temp), ":%s %d '0:%s' %s %s %s", wolip, BNETD_WSERV_PORT, wolname, woltimezone, wollong, wollat);
             irc_send(conn,RPL_WOLSERV,temp);
         }
 
         /*  Only for Emperor: Battle for Dune */
         if (conn_get_clienttag(conn) == CLIENTTAG_EMPERORBD_UINT) {
-            snprintf(temp, sizeof(temp), ":%s %d '0:Emperor %s' %s %s %s", wolip, BNETD_WOL_PORT, wolname, woltimezone, wollong, wollat);
+            snprintf(temp, sizeof(temp), ":%s %d '0:Emperor %s' %s %s %s", wolip, BNETD_WSERV_PORT, wolname, woltimezone, wollong, wollat);
             irc_send(conn,RPL_WOLSERV,temp);
         }
 

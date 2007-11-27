@@ -47,19 +47,19 @@ NONE                        "Diablo II"	            D2XP  true  false false  NUL
 # For exemple "Lob 18 0" is the first channel for "Tiberian Sun".            #
 # The proper game type numbers are as follows:                               #
 #   - 12 = C&C Renegade channels                                             #
-#	- 14 = Dune 2000 channels                                                #
-#	- 16 = Nox channels                                                      #
-#	- 18 = Tiberian Sun channels                                             #
-#	- 21 = Red Alert 1 channels                                              #
-#	- 33 = Red Alert 2 channels                                              #
-#	- 37 = Nox Quest channels                                                #
-#	- 41 = Yuri's Revenge channels                                           #
+#   - 14 = Dune 2000 channels                                                #
+#   - 16 = Nox channels                                                      #
+#   - 18 = Tiberian Sun channels                                             #
+#   - 21 = Red Alert 1 channels                                              #
+#   - 31 = Emperor: Battle for Dune channels                                 #
+#   - 33 = Red Alert 2 channels                                              #
+#   - 37 = Nox Quest channels                                                #
+#   - 41 = Yuri's Revenge channels                                           #
 #                                                                            #
 # DO NOT USE game type nubers 38,39 and 40. This numbers are used for        #
-# Quick match services and are hardcoded in PvPGN                            #
+# Quick match services and are hardcoded in PvPGN.                           #
 #                                                                            #
-# In WOLv1 (Westwood Chat client) and Emperor: Battle for Dune are not used  #
-# "Lob xx x" formated channels.                                              #
+# In WOLv1 (Westwood Chat client) are not used "Lob xx x" formated channels. #
 #                                                                            #
 # ---special name--- 		-----short name----- 	cltag bots- -ops- -log- ctry- realm max -mod-#
 "Command n Conqr"           "Command n Conqr"       WCHT  true  false false  NULL NULL -1   false
@@ -73,12 +73,12 @@ NONE                        "Diablo II"	            D2XP  true  false false  NUL
 "Tiberian Sun-2"            "Lob 18 1"              TSUN  true  false false  NULL NULL -1   false
 "Tiberian Sun-3"            "Lob 18 2"              TSUN  true  false false  NULL NULL -1   false
 "Red Alert-1"               "Lob 21 0"              RALT  true  false false  NULL NULL -1   false
+"Emperor-1"                 "Lob 31 0"              EMPR  true  false false  NULL NULL -1   false
+"Emperor-2"                 "Lob 31 1"              EMPR  true  false false  NULL NULL -1   false
 "Red Alert 2-1"             "Lob 33 0"              RAL2  true  false false  NULL NULL -1   false
 "Red Alert 2-2"             "Lob 33 1"              RAL2  true  false false  NULL NULL -1   false
 "Nox Quest-1"               "Lob 37 0"              NOXQ  true  false false  NULL NULL -1   false
 "Yuri's Revenge-1"          "Lob 41 0"              YURI  true  false false  NULL NULL -1   false
 "Yuri's Revenge-2"          "Lob 41 1"              YURI  true  false false  NULL NULL -1   false
-"Emperor-1"                 "Emperor-1"             EMPR  true  false false  NULL NULL -1   false
-
 #                                                                            #
 ##############################################################################
