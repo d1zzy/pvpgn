@@ -195,122 +195,153 @@ extern int handle_wol_log_command(t_connection * conn, char const * command, int
   return -1;
 }
 
+static int handle_wol_authenticate(t_connection * conn, char const * passhash)
+{
+    t_account * a;
+    char const * tempapgar;
+    char const * temphash;
+    char const * username;
+
+    if (!conn) {
+        ERROR0("got NULL connection");
+        return 0;
+    }
+    if (!passhash) {
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL passhash");
+        return 0;
+    }
+    username = conn_get_loggeduser(conn);
+    if (!username) {
+        /* redundant sanity check */
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn->protocol.loggeduser");
+        return 0;
+    }
+    a = accountlist_find_account(username);
+    if (!a) {
+        /* FIXME: Send real error code */
+        message_send_text(conn,message_type_notice,NULL,"Authentication failed.");
+        return 0;
+    }
+    tempapgar = conn_wol_get_apgar(conn);
+    temphash = account_get_wol_apgar(a);
+
+    if(!temphash) {
+        /* Acount auto creating */
+        account_set_wol_apgar(a,tempapgar);
+        temphash = account_get_wol_apgar(a);
+    }
+    if(!tempapgar) {
+        irc_send(conn,RPL_BAD_LOGIN,":You have specified an invalid password for that nickname."); /* bad APGAR */
+        //std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
+        //message_send_text(conn,message_type_error,conn,temp);
+        conn_increment_passfail_count(conn);
+        return 0;
+    }
+    if(std::strcmp(temphash,tempapgar) == 0) {
+        /* LOGIN is OK. We sends motd */
+        conn_login(conn,a,username);
+    	conn_set_state(conn,conn_state_loggedin);
+    	irc_send_motd(conn);
+        return 1;
+    }
+    else {
+        irc_send(conn,RPL_BAD_LOGIN,":You have specified an invalid password for that nickname."); /* bad APGAR */
+        //std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
+        //message_send_text(conn,message_type_error,conn,temp);
+        conn_increment_passfail_count(conn);
+        return 0;
+    }
+}
+
 extern int handle_wol_welcome(t_connection * conn)
 {
     /* This function need rewrite */
 
-    irc_send_motd(conn);
-
     conn_set_state(conn,conn_state_bot_password);
     if (connlist_find_connection_by_accountname(conn_get_loggeduser(conn))) {
         message_send_text(conn,message_type_notice,NULL,"This account is already logged in, use another account.");
-	return -1;
+        return -1;
     }
 
-    if (conn_get_ircpass(conn)) {
-    /* FIXME: In wol is not authentification by PASS but by APGAR!!! */
-	// irc_send_cmd(conn,"NOTICE",":Trying to authenticate with PASS ...");
-	irc_authenticate(conn,conn_get_ircpass(conn));
-    } else {
-    	    message_send_text(conn,message_type_notice,NULL,"No PASS command received. Please identify yourself by /msg NICKSERV identify <password>.");
+    if (conn_wol_get_apgar(conn)) {
+        handle_wol_authenticate(conn,conn_wol_get_apgar(conn));
+    }
+    else {
+        message_send_text(conn,message_type_notice,NULL,"No APGAR command received!");
     }
 
     return 0;
 }
 
+/* Commands: */
+
 static int _handle_user_command(t_connection * conn, int numparams, char ** params, char * text)
-{   /* In WOL isnt used user command (only by byckwar compatibility) */
-	/* RFC 2812 says: */
-	/* <user> <mode> <unused> :<realname>*/
-	/* wolII and X-Chat say: */
-	/* mz SHODAN localhost :Marco Ziech */
-	/* BitchX says: */
-	/* mz +iws mz :Marco Ziech */
-	/* Don't bother with, params 1 and 2 anymore they don't contain what they should. */
-	char * user = NULL;
-	char * realname = NULL;
-	t_account * a;
+{
+    /**
+     *  In WOL isnt used USER command (only for backward compatibility)
+   	 *  RFC 2812 says:
+     *  USER <user> <mode> <unused> :<realname>
+     *
+     *  There is WOL imput expected:
+     *  USER UserName HostName irc.westwood.com :RealName
+     */
 
-	if ((numparams>=3)&&(params[0])&&(text)) {
-	    user = params[0];
-	    realname = text;
+    char * user = NULL;
+    t_account * a;
 
-		if (conn_get_wol(conn) == 1) {
-			user = (char *)conn_get_loggeduser(conn);
-			realname = (char *)conn_get_loggeduser(conn);
+    user = (char *)conn_get_loggeduser(conn);
 
-        	if (conn_get_user(conn)) {
-		irc_send(conn,ERR_ALREADYREGISTRED,":You are already registred");
-        }
-			else {
-				eventlog(eventlog_level_debug,__FUNCTION__,"[%d][** WOL **] got USER: user=\"%s\"",conn_get_socket(conn),user);
+   	if (conn_get_user(conn)) {
+        /* FIXME: Send real ERROR code/message */
+	    irc_send(conn,ERR_ALREADYREGISTRED,":You are already registred");
+    }
+    else {
+        eventlog(eventlog_level_debug,__FUNCTION__,"[%d][** WOL **] got USER: user=\"%s\"",conn_get_socket(conn),user);
 
-                a = accountlist_find_account(user);
-                if (!a) {
-                   if((conn_get_wol(conn) == 1)) {
-                        t_account * tempacct;
-                        t_hash pass_hash;
-                        const char * pass = "supersecret";
+        a = accountlist_find_account(user);
+        if (!a) {
+            /* Auto-create account */
+            t_account * tempacct;
+            t_hash pass_hash;
+            char * pass = xstrdup(conn_wol_get_apgar(conn)); /* FIXME: Do not use bnet passhash when we have wol passhash */
 
-				/* no need to std::tolower a known contant lowercase string
-            			for (unsigned j=0; j<std::strlen(pass); j++)
-            				if (std::isupper((int)pass[j])) pass[j] = std::tolower((int)pass[j]);
-				*/
+            for (unsigned j=0; j<std::strlen(pass); j++)
+                if (std::isupper((int)pass[j])) pass[j] = std::tolower((int)pass[j]);
 
-            			bnet_hash(&pass_hash,std::strlen(pass),pass);
+            bnet_hash(&pass_hash,std::strlen(pass),pass);
 
-            			tempacct = accountlist_create_account(user,hash_get_str(pass_hash));
-            			if (!tempacct) {
-                            return 0;
-            			}
-                   }
-                }
+            tempacct = accountlist_create_account(user,hash_get_str(pass_hash));
+            if (!tempacct) {
+                /* FIXME: Send real ERROR code/message */
+                irc_send(conn,RPL_BAD_LOGIN,":Account creating failed");
+                return 0;
+            }
+            if (pass)
+                xfree((void *)pass);
 
 			conn_set_user(conn,user);
-			conn_set_owner(conn,realname);
+			conn_set_owner(conn,user);
 			if (conn_get_loggeduser(conn))
 				handle_wol_welcome(conn); /* only send the welcome if we have USER and NICK */
-	    	}
     	}
 		else {
-			if (conn_get_user(conn)) {
-				irc_send(conn,ERR_ALREADYREGISTRED,":You are already registred");
-			}
-			else {
-				eventlog(eventlog_level_debug,__FUNCTION__,"[%d] got USER: user=\"%s\" realname=\"%s\"",conn_get_socket(conn),user,realname);
-				conn_set_user(conn,user);
-				conn_set_owner(conn,realname);
-				if (conn_get_loggeduser(conn))
-					handle_wol_welcome(conn); /* only send the welcome if we have USER and NICK */
-    		}
-		}
+            conn_set_user(conn,user);
+            conn_set_owner(conn,user);
+            if (conn_get_loggeduser(conn))
+                handle_wol_welcome(conn); /* only send the welcome if we have USER and NICK */
+        }
    	}
-	else {
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to USER");
-    	}
-	return 0;
+    return 0;
 }
 
 static int _handle_pass_command(t_connection * conn, int numparams, char ** params, char * text)
 {
     /**
-     * PASS isnt used in WOL (only for backwrd compatibility client sent PASS supersecret
+     * PASS is not used in WOL
+     * only for backward compatibility sent client PASS supersecret
      * real password sent client by apgar command
      */
 
-	if ((!conn_get_ircpass(conn))&&(conn_get_state(conn)==conn_state_bot_username)) {
-		t_hash h;
-
-	    if (numparams>=1) {
-			bnet_hash(&h,std::strlen(params[0]),params[0]);
-			conn_set_ircpass(conn,hash_get_str(h));
-	    }
-		else
-			irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to PASS");
-    }
-	else {
-	    eventlog(eventlog_level_warn,__FUNCTION__,"[%d] client tried to set password twice with PASS",conn_get_socket(conn));
-    }
 	return 0;
 }
 
@@ -318,7 +349,6 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 {
      /**
       * Pelish: FIXME delete NICSERV and add support for matchbot.
-      * ACTION messages are not in WOLv1 and Dune 2000 sended by server to self (client add this messages automaticaly)
       */
 
 	if ((numparams>=1)&&(text))
@@ -577,14 +607,15 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 			}
 		}
 
-    	irc_send(conn,RPL_LISTEND," :End of LIST command");
+    	irc_send(conn,RPL_LISTEND,":End of LIST command");
     	return 0;
 }
 
 static int _handle_quit_command(t_connection * conn, int numparams, char ** params, char * text)
 {
     irc_send(conn,RPL_QUIT,":goodbye");
-    conn_quit_channel(conn, text);
+    if (conn_get_channel(conn))
+        conn_quit_channel(conn, text);
     conn_set_state(conn, conn_state_destroy);
 
     return 0;
@@ -641,7 +672,7 @@ static int _handle_verchk_command(t_connection * conn, int numparams, char ** pa
     *  1) Update non-existant:
     *  :[servername] 379 [username] :none none none 1 [SKU] NONREQ
     *  2) Update existant:
-    *  :[servername] 379 [username] :none none none 1 [SKU] NONREQ
+    *  :[servername] 379 [username] :none none none [oldversnum] [SKU] REQ
     */
 
     clienttag = tag_sku_to_uint(std::atoi(params[0]));

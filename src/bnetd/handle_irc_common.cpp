@@ -171,7 +171,10 @@ static int handle_irc_common_line(t_connection * conn, char const * ircline)
 	return -1;
     }
     if (ircline[0] == '\0') {
-	eventlog(eventlog_level_error,__FUNCTION__,"got empty ircline");
+	/**
+	 * PELISH: We dont send warning about that because it is client-side problem.
+	 * eventlog(eventlog_level_error,__FUNCTION__,"got empty ircline");
+	 */
 	return -1;
     }
 	//amadeo: code was sent by some unknown fellow of pvpgn, prevents buffer-overflow for
