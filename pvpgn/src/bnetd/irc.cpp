@@ -210,14 +210,13 @@ extern int irc_send_pong(t_connection * conn, char const * params)
 
 extern int irc_authenticate(t_connection * conn, char const * passhash)
 {
+    /* FIXME: Move this function to handle_irc.* file! */
     char temp[MAX_IRC_MESSAGE_LEN];
     t_hash h1;
     t_hash h2;
     t_account * a;
     char const * temphash;
     char const * username;
-
-    char const * tempapgar;
 
     if (!conn) {
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
@@ -247,38 +246,7 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
     }
     else
     {
-     	if((conn_get_wol(conn) == 1)) {
-    	    temphash = account_get_wol_apgar(a);
-    	    tempapgar = conn_wol_get_apgar(conn);
-
-    	    if(temphash == NULL) {
-        		account_set_wol_apgar(a,tempapgar);
-        		temphash = account_get_wol_apgar(a);
-    	    }
-
-    	    if(tempapgar == NULL) {
-                irc_send(conn,RPL_BAD_LOGIN,":You have specified an invalid password for that nickname."); /* bad APGAR */
-                //std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
-                //message_send_text(conn,message_type_error,conn,temp);
-                conn_increment_passfail_count(conn);
-                return 0;
-            }
-
-    	    if(std::strcmp(temphash,tempapgar) == 0) {
-                conn_login(conn,a,username);
-    	        conn_set_state(conn,conn_state_loggedin);
-        		return 1;
-    	    }
-    	    else {
-                irc_send(conn,RPL_BAD_LOGIN,":You have specified an invalid password for that nickname."); /* bad APGAR */
-                //std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
-                ///message_send_text(conn,message_type_error,conn,temp);
-        		conn_increment_passfail_count(conn);
-        		return 0;
-    	    }
-    	}
-
-        hash_set_str(&h1,passhash);
+     	hash_set_str(&h1,passhash);
         temphash = account_get_pass(a);
         hash_set_str(&h2,temphash);
         if (hash_eq(h1,h2)) {
@@ -286,10 +254,11 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
             conn_set_state(conn,conn_state_loggedin);
             conn_set_clienttag(conn,CLIENTTAG_IIRC_UINT); /* IIRC hope here is ok */
             message_send_text(conn,message_type_notice,NULL,"Authentication successful. You are now logged in.");
-	    return 1;
-        } else {
+            return 1;
+        }
+        else {
             message_send_text(conn,message_type_notice,NULL,"Authentication failed."); /* wrong password */
-	    conn_increment_passfail_count(conn);
+            conn_increment_passfail_count(conn);
         }
     }
     return 0;
@@ -737,6 +706,12 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	    char temp[MAX_IRC_MESSAGE_LEN];
 
 	    /* "\001ACTION " + text + "\001" + \0 */
+
+        /* PELISH: WOLv1 (wchat atm) and DUNE2000 shows emotes automaticaly to self */
+	    if ((me==dst) && ((conn_get_clienttag(dst) == CLIENTTAG_WCHAT_UINT) || 
+                          (conn_get_clienttag(dst) == CLIENTTAG_DUNE2000_UINT)))
+	        break;
+
 	    if ((8+std::strlen(text)+1+1)<=MAX_IRC_MESSAGE_LEN) {
 		std::sprintf(temp,":\001ACTION %s\001",text);
 	    }
@@ -766,6 +741,11 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 	break;
     case message_type_channel:
     	/* ignore it */
+	break;
+	case message_type_userflags:
+    	/* ignore it but maybe will be used for set MODE +o if user is operator
+         * but at this time is this command sended only once when user join 
+         * first channel */
 	break;
     case message_type_mode:
 	    from.nick = conn_get_chatname(me);
