@@ -797,6 +797,7 @@ static int _handle_end_apiregtag(t_apiregmember * apiregmember, char * param)
 	char const * newnick = apiregmember_get_newnick(apiregmember);
 	char const * newpass = apiregmember_get_newpass(apiregmember);
 	char const * email = apiregmember_get_email(apiregmember);
+	char const * request = apiregmember_get_request(apiregmember);
 //    char const * newpass2 = apiregmember_get_newpass2(apiregmember);
 	char hresult[12];
 	char message[MAX_IRC_MESSAGE_LEN];
@@ -827,7 +828,7 @@ static int _handle_end_apiregtag(t_apiregmember * apiregmember, char * param)
 
 	DEBUG3("APIREG:/%s/%s/%s/",apiregmember_get_request(apiregmember),apiregmember_get_newnick(apiregmember),apiregmember_get_newpass(apiregmember));
 	
-    if (std::strcmp(apiregmember_get_request(apiregmember), REQUEST_AGEVERIFY) == 0) {
+    if ((request) && (std::strcmp(apiregmember_get_request(apiregmember), REQUEST_AGEVERIFY) == 0)) {
         snprintf(data,sizeof(data),"HRESULT=%s\nMessage=%s\nNewNick=((NewNick))\nNewPass=((NewPass))\n",hresult,message);
         /* FIXME: Count real age here! */
    	    snprintf(age,sizeof(age),"28"); /* FIXME: Here must be counted age */
@@ -836,15 +837,25 @@ static int _handle_end_apiregtag(t_apiregmember * apiregmember, char * param)
        	apireg_send(apiregmember_get_conn(apiregmember),data);
        	return 0;
     }
-    else if (std::strcmp(apiregmember_get_request(apiregmember), REQUEST_GETNICK) == 0) {
+    else if ((request) && (std::strcmp(apiregmember_get_request(apiregmember), REQUEST_GETNICK) == 0)) {
         if(!prefs_get_allow_new_accounts()){
             snprintf(message,sizeof(message),"Account creation is not allowed");
             snprintf(hresult,sizeof(hresult),"-2147221248");
         }
         else {
-            /* Chceck */
-            account = accountlist_find_account(newnick);
-            if (!account) {  /* done, we can create new account */
+            if (!newnick) {
+                snprintf(message,sizeof(message),"Nick must be specifed!");
+                snprintf(hresult,sizeof(hresult),"-2147221248");
+            }
+            else if (!newpass) {
+                snprintf(message,sizeof(message),"Pussword must be specifed!");
+                snprintf(hresult,sizeof(hresult),"-2147221248");
+            }
+            else if (account = accountlist_find_account(newnick)) {
+                snprintf(message,sizeof(message),"That login is already in use! Please try another NICK name.");
+                snprintf(hresult,sizeof(hresult),"-2147221248");
+            }
+            else {  /* done, we can create new account */
                 t_account * tempacct;
                 t_hash bnet_pass_hash;
                 t_wolhash wol_pass_hash;
@@ -863,15 +874,11 @@ static int _handle_end_apiregtag(t_apiregmember * apiregmember, char * param)
                 else {
                     eventlog(eventlog_level_debug,__FUNCTION__,"WOLHASH: %s",wol_pass_hash);
                     account_set_wol_apgar(tempacct,wol_pass_hash);
-                    account_set_email(tempacct,apiregmember_get_email(apiregmember));
+                    if (apiregmember_get_email(apiregmember))
+                        account_set_email(tempacct,apiregmember_get_email(apiregmember));
                     snprintf(message,sizeof(message),"Welcome in the amazing world of PvPGN! Your login can be used for all PvPGN Supported games!");
                     snprintf(hresult,sizeof(hresult),"0");
                 }
-            }
-            else {
-                /* Account with that login is already in use! */
-                snprintf(message,sizeof(message),"That login is already in use! Please try another NICK name.");
-                snprintf(hresult,sizeof(hresult),"-2147221248");
             }
         }
         snprintf(data,sizeof(data),"HRESULT=%s\nMessage=%s\nNewNick=%s\nNewPass=%s\nAge=%s\nConsent=0\nEND\r",hresult,message,newnick,newpass,age,consent);

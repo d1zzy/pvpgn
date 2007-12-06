@@ -1297,12 +1297,6 @@ extern int _handle_join_command(t_connection * conn, int numparams, char ** para
                 snprintf(temp, sizeof(temp), "%s :JOIN failed",e[0]);
                 irc_send(conn,ERR_NOSUCHCHANNEL,temp); /* Anything is still bad */
             }
-            else {
-                channel = conn_get_channel(conn);
-
-                if (channel!=old_channel)
-                    channel_set_userflags(conn);
-            }
         }
         if (e)
             irc_unget_listelems(e);

@@ -480,6 +480,7 @@ extern int channel_add_connection(t_channel * channel, t_connection * connection
     }
 
     if (conn_is_irc_variant(connection) && (!conn_wol_get_ingame(connection))) {
+        channel_set_userflags(connection);
         message_send_text(connection,message_type_topic,connection,NULL);
         message_send_text(connection,message_type_namreply,connection,NULL);
     }
