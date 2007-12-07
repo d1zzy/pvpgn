@@ -76,10 +76,10 @@ static int _handle_part_command(t_connection * conn, int numparams, char ** para
 static int _handle_cvers_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_verchk_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_apgar_command(t_connection * conn, int numparams, char ** params, char * text);
+static int _handle_setopt_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_serial_command(t_connection * conn, int numparams, char ** params, char * text);
 
 static int _handle_squadinfo_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_setopt_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_setcodepage_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_setlocale_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_getcodepage_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -121,6 +121,7 @@ static const t_wol_command_table_row wol_con_command_table[] =
 	{ "CVERS"		, _handle_cvers_command },
 	{ "VERCHK"		, _handle_verchk_command },
 	{ "APGAR"		, _handle_apgar_command },
+	{ "SETOPT"		, _handle_setopt_command },
 	{ "SERIAL"		, _handle_serial_command },
 	
     /* Ladder server commands */
@@ -141,7 +142,6 @@ static const t_wol_command_table_row wol_log_command_table[] =
 	{ "PART"		, _handle_part_command },
 
 	{ "SQUADINFO"	, _handle_squadinfo_command },
-	{ "SETOPT"		, _handle_setopt_command },
 	{ "SETCODEPAGE"	, _handle_setcodepage_command },
 	{ "SETLOCALE"	, _handle_setlocale_command },
 	{ "GETCODEPAGE"	, _handle_getcodepage_command },
@@ -1230,22 +1230,24 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
 	char temp[MAX_IRC_MESSAGE_LEN];
 	char _temp_a[MAX_IRC_MESSAGE_LEN];
 	t_channel * channel;
-	int numelems = 0;
 
 	std::time_t now;
 
  	/**
+    *  Imput expected:
+    *   STARTG [channel_name] [nick1](,nick2_optional)
+    *
  	*  Heres the output expected (this can have up-to 8 entries (ie 8 players):
     *  (we are assuming for this example that user1 is the game owner)
     *
  	*   WOLv1:
-    *   :user1!WWOL@hostname STARTG u :owner_ip :gameNumber time_t
+    *   :user1!WWOL@hostname STARTG u :owner_ip gameNumber time_t
     *
     *   WOLv2:
- 	*   user1!WWOL@hostname STARTG u :user1 xxx.xxx.xxx.xxx user2 xxx.xxx.xxx.xxx :gameNumber time_t
+ 	*   :user1!WWOL@hostname STARTG u :user1 xxx.xxx.xxx.xxx user2 xxx.xxx.xxx.xxx :gameNumber time_t
  	*/
 
-	if((numparams>=1)) {
+	if (numparams>=1) {
 	    int i;
 	    char ** e;
 
@@ -1255,13 +1257,9 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
 	    e = irc_get_listelems(params[1]);
 	    /* FIXME: support wildcards! */
 
-        if (e) {
-           for (numelems=0;e[numelems];numelems++);
-        }
-
         std::strcat(temp,":");
 
- 	    if (numelems == 1) {
+ 	    if (conn_get_clienttag(conn) == CLIENTTAG_WCHAT_UINT) {
   		    t_connection * user;
    		    channel = conn_get_channel(conn);
 
@@ -1272,7 +1270,7 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
                }
             }
         }
-        else if (numelems>=2) {
+        else {
             for (i=0;((e)&&(e[i]));i++) {
    		        t_connection * user;
        		    const char * addr = NULL;
@@ -1285,7 +1283,9 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
             }
         }
 
-        std::strcat(temp,":");
+        if (conn_get_clienttag(conn) != CLIENTTAG_WCHAT_UINT)
+            std::strcat(temp,":");
+
         std::strcat(temp,"1337"); /* yes, ha ha funny, i just don't generate game numbers yet */
         std::strcat(temp," ");
 
