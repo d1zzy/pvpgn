@@ -341,6 +341,7 @@
 
 #define RPL_BATTLECLAN	     358
 
+#define RPL_ANNOUNCE         377  /* only in WOLv2 */
 #define RPL_BAD_LOGIN        378
 #define RPL_VERCHK_NONREQ    379  /* for WOL */
 
