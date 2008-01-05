@@ -730,15 +730,25 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     case message_type_broadcast:
     case message_type_info:
     case message_type_error:
-	{
-	    char temp[MAX_IRC_MESSAGE_LEN];
-	    std::sprintf(temp,":%s",text);
-        if ((type==message_type_info || type==message_type_error) && (conn_get_wol(dst) == 1))
-            msg = irc_message_preformat(NULL,"PAGE",NULL,temp);
-        else
-	        msg = irc_message_preformat(NULL,"NOTICE",NULL,temp);
-	}
-	break;
+    {
+        char temp[MAX_IRC_MESSAGE_LEN];
+        char temp_[MAX_IRC_MESSAGE_LEN];
+        if (conn_get_wol(dst) == 1)
+           if ((conn_get_clienttag(dst) != CLIENTTAG_WCHAT_UINT) && (type == message_type_broadcast)) {
+               /* Pelish: WOLv2 have special announce message code */
+               std::sprintf(temp,":- %s",text);
+               std::sprintf(temp_,"%u",RPL_ANNOUNCE,NULL);
+               msg = irc_message_preformat(NULL,temp_,NULL,temp);
+           }
+           else {
+               std::sprintf(temp,":%s",text);
+               if ((type == message_type_info) || (type == message_type_error))
+                   msg = irc_message_preformat(NULL,"PAGE",NULL,temp);
+               else
+                   msg = irc_message_preformat(NULL,"NOTICE",NULL,temp);
+           }
+    }
+    break;
     case message_type_channel:
     	/* ignore it */
 	break;
