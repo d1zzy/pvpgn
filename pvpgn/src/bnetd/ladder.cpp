@@ -336,16 +336,15 @@ extern int ladder_createxptable(const char *xplevelfile, const char *xpcalcfile)
      for(j=0;j<=w3_xpcalc_maxleveldiff;j++)
        if (xpcalc[j].higher_winxp == 0 || xpcalc[j].higher_lossxp == 0 ||
            xpcalc[j].lower_winxp  == 0 || xpcalc[j].lower_lossxp  == 0) {
-	  eventlog(eventlog_level_error, "ladder_createxptable", "i found 0 for a win/loss XP, please check your config file");
+	  eventlog(eventlog_level_error, __FUNCTION__, "I found 0 for a win/loss XP, please check your config file");
 	  ladder_destroyxptable();
 	  return -1;
        }
 
    for (i=0; i<W3_XPCALC_MAXLEVEL; i++)
      if ((i > 0 && xplevels[i].neededxp == 0) || xplevels[i].lossfactor == 0
-	 || xplevels[i].neededxp > xplevels[i].startxp
 	 || (i > 0 && (xplevels[i].startxp <= xplevels[i-1].startxp || xplevels[i].neededxp < xplevels[i-1].neededxp))) {
-	eventlog(eventlog_level_error, "ladder_createxptable", "i found 0 for a level XP, please check your config file (level: %d neededxp: %d lossfactor: %d)", i+1, xplevels[i].neededxp , xplevels[i].lossfactor);
+	eventlog(eventlog_level_error, __FUNCTION__, "I found 0 for a level XP, please check your config file (level: %d neededxp: %d lossfactor: %d)", i+1, xplevels[i].neededxp , xplevels[i].lossfactor);
 	ladder_destroyxptable();
 	return -1;
      }
