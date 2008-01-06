@@ -27,7 +27,7 @@
 #include <string>
 #include <utility>
 
-#define W3_XPCALC_MAXLEVEL	50
+#define W3_XPCALC_MAXLEVEL	65
 
 namespace pvpgn
 {
