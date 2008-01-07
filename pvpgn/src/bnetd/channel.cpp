@@ -308,9 +308,6 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
     if (channel->realmname)
 	xfree((void *)channel->realmname); /* avoid warning */
 
-    if (channel->clienttag)
-	xfree((void *)channel->clienttag); /* avoid warning */
-
     if (channel->shortname)
 	xfree((void *)channel->shortname); /* avoid warning */
 
