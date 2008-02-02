@@ -707,9 +707,10 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 
 	    /* "\001ACTION " + text + "\001" + \0 */
 
-        /* PELISH: WOLv1 (wchat atm) and DUNE2000 shows emotes automaticaly to self */
+        /* PELISH: WOLv1 (wchat atm), DUNE2000 and RENEGADE shows emotes automaticaly to self */
 	    if ((me==dst) && ((conn_get_clienttag(dst) == CLIENTTAG_WCHAT_UINT) || 
-                          (conn_get_clienttag(dst) == CLIENTTAG_DUNE2000_UINT)))
+                          (conn_get_clienttag(dst) == CLIENTTAG_DUNE2000_UINT) ||
+                          (conn_get_clienttag(dst) == CLIENTTAG_RENEGADE_UINT)))
 	        break;
 
 	    if ((8+std::strlen(text)+1+1)<=MAX_IRC_MESSAGE_LEN) {
@@ -733,7 +734,8 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     {
         char temp[MAX_IRC_MESSAGE_LEN];
         char temp_[MAX_IRC_MESSAGE_LEN];
-        if (conn_get_wol(dst) == 1)
+        std::sprintf(temp,":%s",text);
+        if (conn_get_wol(dst) == 1) {
            if ((conn_get_clienttag(dst) != CLIENTTAG_WCHAT_UINT) && (type == message_type_broadcast)) {
                /* Pelish: WOLv2 have special announce message code */
                std::sprintf(temp,":- %s",text);
@@ -741,12 +743,14 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
                msg = irc_message_preformat(NULL,temp_,NULL,temp);
            }
            else {
-               std::sprintf(temp,":%s",text);
                if ((type == message_type_info) || (type == message_type_error))
                    msg = irc_message_preformat(NULL,"PAGE",NULL,temp);
                else
                    msg = irc_message_preformat(NULL,"NOTICE",NULL,temp);
            }
+        }
+        else
+            msg = irc_message_preformat(NULL,"NOTICE",NULL,temp);
     }
     break;
     case message_type_channel:
