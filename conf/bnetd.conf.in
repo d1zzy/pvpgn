@@ -625,3 +625,8 @@ clan_max_members = 50
 
 # Default clan channel status when create a clan, 1 for private, 0 for public
 clan_channel_default_private = 0
+
+# Minimum accepted invites for create new clan. 0 = clans will be created
+# without accepted invitations need. This does not affect WAR3/W3XP ingame
+# clan management.
+clan_min_invites = 2

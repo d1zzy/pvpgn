@@ -159,6 +159,7 @@ const unsigned CLAN_DEFAULT_MAX_MEMBERS = 50;
 /* hardcoded limits in the client */
 const unsigned CLAN_MIN_MEMBERS = 10;
 const unsigned CLAN_MAX_MEMBERS = 100;
+const unsigned CLAN_DEFAULT_MIN_INVITES = 2;
 
 const unsigned MAX_FRIENDS = 20;
 

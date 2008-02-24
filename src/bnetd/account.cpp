@@ -874,7 +874,7 @@ extern t_clanmember * account_get_clanmember(t_account * account)
 	return NULL;
     }
 
-    if ((member = account->clanmember)&&(clanmember_get_clan(member))&&(clan_get_created(clanmember_get_clan(member)) > 0))
+    if ((member = account->clanmember)&&(clanmember_get_clan(member))&&(clan_get_created(clanmember_get_clan(member)) > 0)&&(clanmember_get_fullmember(member) == 1))
 	return member;
     else
 	return NULL;
@@ -899,7 +899,7 @@ extern t_clan * account_get_clan(t_account * account)
 	return NULL;
     }
 
-    if(account->clanmember && (clanmember_get_clan(account->clanmember) != NULL) && (clan_get_created(clanmember_get_clan(account->clanmember)) > 0))
+    if(account->clanmember && (clanmember_get_clan(account->clanmember) != NULL) && (clan_get_created(clanmember_get_clan(account->clanmember)) > 0) && (clanmember_get_fullmember(account->clanmember) == 1))
 	return clanmember_get_clan(account->clanmember);
     else
 	return NULL;
@@ -913,7 +913,8 @@ extern t_clan * account_get_creating_clan(t_account * account)
 	return NULL;
     }
 
-    if(account->clanmember && (clanmember_get_clan(account->clanmember) != NULL) && (clan_get_created(clanmember_get_clan(account->clanmember)) <= 0))
+    if(account->clanmember && (clanmember_get_clan(account->clanmember) != NULL) && ((clan_get_created(clanmember_get_clan(account->clanmember)) <= 0) || (clanmember_get_fullmember(account->clanmember) == 0)))
+
 	return clanmember_get_clan(account->clanmember);
     else
 	return NULL;

@@ -73,7 +73,7 @@
 #include "friends.h"
 #include "clan.h"
 #include "common/setup_after.h"
-
+#include "common/flags.h"
 
 namespace pvpgn
 {
@@ -323,6 +323,7 @@ static int _handle_killsession_command(t_connection * c, char const * text);
 static int _handle_gameinfo_command(t_connection * c, char const * text);
 static int _handle_ladderactivate_command(t_connection * c, char const * text);
 static int _handle_rehash_command(t_connection * c, char const * text);
+
 //static int _handle_rank_all_accounts_command(t_connection * c, char const * text);
 static int _handle_shutdown_command(t_connection * c, char const * text);
 static int _handle_ladderinfo_command(t_connection * c, char const * text);
@@ -343,6 +344,7 @@ static int _handle_topic_command(t_connection * c, char const * text);
 static int _handle_moderate_command(t_connection * c, char const * text);
 static int _handle_clearstats_command(t_connection * c, char const * text);
 static int _handle_tos_command(t_connection * c, char const * text);
+
 
 static const t_command_table_row standard_command_table[] =
 {
@@ -388,8 +390,7 @@ static const t_command_table_row standard_command_table[] =
 	{ "/kick"               , _handle_kick_command },
 	{ "/ban"                , _handle_ban_command },
 	{ "/unban"              , _handle_unban_command },
-	{ "/tos"              , _handle_tos_command },
-
+	{ "/tos"                , _handle_tos_command },
 	{ NULL                  , NULL }
 
 };
@@ -537,27 +538,38 @@ static int _handle_clan_command(t_connection * c, char const * text)
   t_clanmember * member;
   t_clan * clan;
 
-  if((acc = conn_get_account(c)) && (member = account_get_clanmember(acc)) && (clan = clanmember_get_clan(member))) {
-    text = skip_command(text);
-    if ( text[0] == '\0' ) {
+  if (!(acc = conn_get_account(c))){
+      ERROR0("got NULL account");
+  }
+
+  text = skip_command(text);
+  /* FIXME: can get clan as is in creating process */
+  if((member = account_get_clanmember_forced(acc)) && (clan = clanmember_get_clan(member)) && (clanmember_get_fullmember(member) == 1)) {
+    if (text[0] == '\0') {
          message_send_text(c,message_type_info,c,"usage:");
-         message_send_text(c,message_type_info,c,"/clan msg MESSAGE");
+         message_send_text(c,message_type_info,c,"/clan msg <message>");
          message_send_text(c,message_type_info,c,"Whispers a message to all your fellow clan members.");
          if (clanmember_get_status(member)>=CLAN_SHAMAN) {
            message_send_text(c,message_type_info,c,"/clan public  /clan pub");
            message_send_text(c,message_type_info,c,"Opens the clan channel up to the public so that anyone may enter.");
            message_send_text(c,message_type_info,c,"/clan private  /clan priv");
            message_send_text(c,message_type_info,c,"Closes the clan channel such that only members of the clan may enter.");
-           message_send_text(c,message_type_info,c,"/clan motd MESSAGE");
-           message_send_text(c,message_type_info,c,"Update the clan message of the day to MESSAGE.");
+           message_send_text(c,message_type_info,c,"/clan motd <message>");
+           message_send_text(c,message_type_info,c,"Update the clan message of the day to <message>.");
+           message_send_text(c,message_type_info,c,"/clan invite <username>");
+           message_send_text(c,message_type_info,c,"Invite <username> to your clan.");
+        }
+        if (clanmember_get_status(member) == CLAN_CHIEFTAIN) {
+           message_send_text(c,message_type_info,c,"/clan disband");
+           message_send_text(c,message_type_info,c,"Disband your clan.");
         }
         return 0;
     }
     if (strstart(text,"msg")==0 || strstart(text,"m")==0 || strstart(text,"w")==0 || strstart(text,"whisper")==0) {
         char const *msg = skip_command(text);
-        if(msg[0]=='\0') {
+        if (msg[0]=='\0') {
           message_send_text(c,message_type_info,c,"usage:");
-          message_send_text(c,message_type_info,c,"/clan msg MESSAGE");
+          message_send_text(c,message_type_info,c,"/clan msg <message>");
           message_send_text(c,message_type_info,c,"Whispers a message to all your fellow clan members.");
         }
         else {
@@ -585,35 +597,30 @@ static int _handle_clan_command(t_connection * c, char const * text)
         }
     }
     else
-    if(clanmember_get_status(member)>=CLAN_SHAMAN)
-    {
+    if (clanmember_get_status(member)>=CLAN_SHAMAN) {
       if (strstart(text,"public")==0 || strstart(text,"pub")==0) {
-        if(clan_get_channel_type(clan)!=0)
-        {
+        if(clan_get_channel_type(clan)!=0) {
           clan_set_channel_type(clan,0);
           message_send_text(c,message_type_info,c,"Clan channel is opened up!");
         }
         else
           message_send_text(c,message_type_error,c,"Clan channel has already been opened up!");
       }
-      else
-      if (strstart(text,"private")==0 || strstart(text,"priv")==0) {
-        if(clan_get_channel_type(clan)!=1)
-        {
+      else if (strstart(text,"private")==0 || strstart(text,"priv")==0) {
+        if(clan_get_channel_type(clan)!=1) {
           clan_set_channel_type(clan,1);
           message_send_text(c,message_type_info,c,"Clan channel is closed!");
         }
         else
           message_send_text(c,message_type_error,c,"Clan channel has already been closed!");
       }
-      else
-      if (strstart(text,"motd")==0) {
+      else if (strstart(text,"motd")==0) {
         const char * msg=skip_command(text);
         if(msg[0]=='\0')
         {
           message_send_text(c,message_type_info,c,"usage:");
-          message_send_text(c,message_type_info,c,"/clan motd MESSAGE");
-          message_send_text(c,message_type_info,c,"Update the clan message of the day to MESSAGE.");
+          message_send_text(c,message_type_info,c,"/clan motd <message>");
+          message_send_text(c,message_type_info,c,"Update the clan message of the day to <message>.");
         }
         else
         {
@@ -621,13 +628,160 @@ static int _handle_clan_command(t_connection * c, char const * text)
           message_send_text(c,message_type_info,c,"Clan message of day is updated!");
         }
       }
+      else if (strstart(text,"invite")==0 || strstart(text,"inv")==0) {
+          const char * username = skip_command(text);
+          t_account * dest_account;
+          t_connection * dest_conn;
+          if(username[0]=='\0') {
+              message_send_text(c,message_type_info,c,"usage:");
+              message_send_text(c,message_type_info,c,"/clan invite <username>");
+              message_send_text(c,message_type_info,c,"Invite <username> to your clan.");
+          }
+          else {
+              if ((dest_account = accountlist_find_account(username)) && (dest_conn = account_get_conn(dest_account))
+                 && (account_get_clan(dest_account) == NULL) && (account_get_creating_clan(dest_account) == NULL)) {
+                  if (prefs_get_clan_newer_time() > 0)
+                      clan_add_member(clan, dest_account, CLAN_NEW);
+                  else
+                      clan_add_member(clan, dest_account, CLAN_PEON);
+                  snprintf(msgtemp, sizeof(msgtemp), "User %s was invited to your clan!", username);
+                  message_send_text(c,message_type_error,c,msgtemp);
+                  snprintf(msgtemp, sizeof(msgtemp), "You are invited to %s by %s!",clan_get_name(clan),conn_get_chatname(c));
+                  message_send_text(dest_conn,message_type_error,c,msgtemp);
+              }
+              else {
+                  snprintf(msgtemp, sizeof(msgtemp), "User %s is not online or is already member of clan!", username);
+                  message_send_text(c,message_type_error,c,msgtemp);
+              }
+          }
+      }
     }
     else
-      message_send_text(c,message_type_error,c,"You are not the chieftain or shaman of clan!");
+        message_send_text(c,message_type_error,c,"You are not the chieftain or shaman of clan!");
+    if (clanmember_get_status(member) == CLAN_CHIEFTAIN) {
+        if (strstart(text,"disband")==0) {
+          const char * ack = skip_command(text);
+          if (ack[0]=='\0') {
+              message_send_text(c,message_type_info,c,"This is one-way action! If you really want");
+              message_send_text(c,message_type_info,c,"to disband your clan, type /clan disband yes");
+          }
+          else if (strstart(ack,"yes")==0) {
+              /* PELISH: fixme - Find out better solution! */
+              if (clanlist_remove_clan(clan) == 0) {
+                  if (clan_get_created(clan) == 1)
+                      clan_remove(clan_get_clantag(clan));
+                  clan_destroy(clan);
+                  message_send_text(c,message_type_info,c,"Your clan was disbanded.");
+              }
+          }
+        }    
+    }
+    else 
+        message_send_text(c,message_type_error,c,"You are not the chieftain of clan!");
   }
   else
-    message_send_text(c,message_type_error,c,"You are not in a clan!");
+  if ((member = account_get_clanmember_forced(acc)) && (clan = clanmember_get_clan(member)) && (clanmember_get_fullmember(member) == 0)) {
+     /* User is not in clan, but he can accept invitation to someone */
+        if (text[0]=='\0') {
+            message_send_text(c,message_type_info,c,"usage:");
+            message_send_text(c,message_type_info,c,"/clan invite get     (show clanname wich you have been invited)");
+            message_send_text(c,message_type_info,c,"/clan invite accept  (accept invitation to clan)");
+            message_send_text(c,message_type_info,c,"/clan invite decline (decline invitation to clan)");
+        }
+        if (strstart(text,"invite")==0 || strstart(text,"inv")==0) {
+            text = skip_command(text);
+            if (text[0]=='\0') {
+                message_send_text(c,message_type_info,c,"usage:");
+                message_send_text(c,message_type_info,c,"/clan invite get     (show clanname wich you have been invited)");
+                message_send_text(c,message_type_info,c,"/clan invite accept  (accept invitation to clan)");
+                message_send_text(c,message_type_info,c,"/clan invite decline (decline invitation to clan)");
+            }
+            else if (strstart(text,"get")==0) {
+                snprintf(msgtemp, sizeof(msgtemp), "You have been invited to %s", clan_get_name(clan));
+                message_send_text(c,message_type_info,c,msgtemp);
+            }
+            else if (strstart(text,"accept")==0 || strstart(text,"acc")==0) {
+                int created = clan_get_created(clan);
 
+                clanmember_set_fullmember(member,1);
+                clanmember_set_join_time(member,std::time(NULL));
+                snprintf(msgtemp, sizeof(msgtemp), "You are now clanmember of %s", clan_get_name(clan));
+                message_send_text(c,message_type_info,c,msgtemp);
+                if (created > 0) {
+                       DEBUG1("clan %s has already been created", clan_get_name(clan));
+                       return 0;
+	            }
+                created++;
+                if (created >= 0) {
+                    clan_set_created(clan, 1);
+                    clan_set_creation_time(clan, std::time(NULL));
+                    /* FIXME: send message "CLAN was be created" to members */
+                    clan_save(clan);
+                }
+                else
+                    clan_set_created(clan, created);
+            }
+            else if (strstart(text,"decline")==0 || strstart(text,"dec")==0) {
+                clan_remove_member(clan,member);
+                snprintf(msgtemp, sizeof(msgtemp), "You are no longer ivited to %s", clan_get_name(clan));
+                message_send_text(c,message_type_info,c,msgtemp);
+            }
+        }
+  }
+  else {
+      if (text[0]=='\0') {
+          message_send_text(c,message_type_info,c,"usage:");
+          message_send_text(c,message_type_info,c,"/clan create <clantag> <clanname>  (Create a new clan)");
+      }
+      else if (strstart(text,"create")==0 || strstart(text,"cre")==0) {
+          unsigned int i,j;
+          char clantag[CLANSHORT_NAME_MAX+1];
+          char clanname[MAX_CLANNAME_LEN+1];
+
+          for (i=0; text[i]!=' ' && text[i]!='\0'; i++); /* skip command */
+          for (; text[i]==' '; i++);
+
+          for (j=0; text[i]!=' ' && text[i]!='\0'; i++) /* get clantag */
+              if (j<sizeof(clantag)-1) clantag[j++] = text[i];
+          clantag[j] = '\0';
+
+          for (; text[i]==' '; i++);                    /* skip spaces */
+          for (j=0; text[i]!='\0'; i++)                 /* get clanname (spaces are allowed) */
+              if (j<sizeof(clanname)-1) clanname[j++] = text[i];
+          clanname[j] = '\0';
+
+          if ((clantag[0]=='\0') || (clanname[0]=='\0')) {
+              message_send_text(c,message_type_info,c,"usage:");
+              message_send_text(c,message_type_info,c,"/clan create <clantag> <clanname>  (Create a new clan)");
+              return 0;
+          }
+          
+          if (clan = clanlist_find_clan_by_clantag(str_to_clantag(clantag))) {
+              message_send_text(c,message_type_error,c,"Clan with your specifed <clantag> allready exist!");
+              message_send_text(c,message_type_error,c,"Please choice another one.");
+              return 0;
+          }
+
+          if ((clan = clan_create(conn_get_account(c), str_to_clantag(clantag), clanname, NULL)) && clanlist_add_clan(clan)) {
+              member = account_get_clanmember_forced(acc);
+              clanmember_set_fullmember(member,1);         /*FIXME: Should be in clan_create() */
+              if (prefs_get_clan_min_invites() == 0) {
+                  clan_set_created(clan, 1);
+                  clan_set_creation_time(clan, std::time(NULL));
+                  snprintf(msgtemp, sizeof(msgtemp), "Clan %s is created!", clan_get_name(clan));
+                  message_send_text(c,message_type_info,c,msgtemp);
+                  clan_save(clan);
+              }
+              else {
+                  snprintf(msgtemp, sizeof(msgtemp), "Clan %s is pre-created, please invite", clan_get_name(clan));
+                  message_send_text(c,message_type_info,c,msgtemp);
+                  snprintf(msgtemp, sizeof(msgtemp), "at last %u players to your clan by using",prefs_get_clan_min_invites());
+                  message_send_text(c,message_type_info,c,msgtemp);
+                  message_send_text(c,message_type_info,c,"/clan invite <username> command.");
+              }
+          }
+      }
+  }
   return 0;
 }
 
@@ -1844,7 +1998,7 @@ static int _handle_copyright_command(t_connection * c, char const *text)
 {
   static char const * const info[] =
     {
-      " Copyright (C) 2002  See source for details",
+      " Copyright (C) 2002 - 2008  See source for details",
       " ",
       " PvPGN is free software; you can redistribute it and/or",
       " modify it under the terms of the GNU General Public License",
@@ -4241,9 +4395,10 @@ static int _handle_set_command(t_connection * c, char const *text)
 
   if (account_set_strattr(account,key,value)<0)
     message_send_text(c,message_type_error,c,"Unable to set key");
-  else
+  else{
     message_send_text(c,message_type_error,c,"Key set succesfully");
 
+}
   return 0;
 }
 
