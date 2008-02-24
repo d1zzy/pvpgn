@@ -778,7 +778,7 @@ extern t_clan *clanlist_find_clan_by_clanid(unsigned cid)
 		eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 		continue;
 	    }
-	    eventlog(eventlog_level_error, __FUNCTION__, "trace %d", clan->clanid);
+	    eventlog(eventlog_level_trace, __FUNCTION__, "trace %d", clan->clanid);
 	    if (clan->created && (clan->clanid == cid))
 		return clan;
 	}
@@ -984,6 +984,18 @@ extern int clanmember_set_status(t_clanmember * member, char status)
     return 0;
 }
 
+extern int clanmember_set_join_time(t_clanmember * member, std::time_t join_time)
+{
+    if (!(member)) {
+        eventlog(eventlog_level_error, __FUNCTION__, "got NULL clanmember");
+        return 0;
+    }
+
+    member->join_time = join_time;
+
+    return 0;
+}
+
 extern std::time_t clanmember_get_join_time(t_clanmember * member)
 {
     if (!(member))
@@ -1004,6 +1016,33 @@ extern t_clan *clanmember_get_clan(t_clanmember * member)
     }
 
     return member->clan;
+}
+
+extern int clanmember_get_fullmember(t_clanmember * member)
+{
+    if (!(member)) {
+        ERROR0("got NULL clanmember");
+        return -1;
+    }
+
+    return member->fullmember;
+}
+
+extern int clanmember_set_fullmember(t_clanmember * member, int fullmember)
+{
+    if (!(member)) {
+        ERROR0("got NULL clanmember");
+        return -1;
+    }
+
+    if (!(fullmember)) {
+        ERROR0("got NULL fullmember");
+        return -1;
+    }
+
+    member->fullmember = fullmember;
+
+    return 0;
 }
 
 extern const char *clanmember_get_online_status(t_clanmember * member, char *status)
@@ -1267,6 +1306,7 @@ extern t_clanmember *clan_add_member(t_clan * clan, t_account * memberacc, char 
     member->status = status;
     member->join_time = now;
     member->clan = clan;
+    member->fullmember = 0; /* clanmember is invited */
 #ifdef WITH_SQL
     member->modified = 1;
 #endif
@@ -1294,7 +1334,8 @@ extern int clan_remove_member(t_clan * clan, t_clanmember * member)
     if (member->memberacc != NULL)
     {
 	account_set_clanmember((t_account*)member->memberacc, NULL);
-	storage->remove_clanmember(account_get_uid((t_account*)member->memberacc));
+	if (member->fullmember == true)
+	    storage->remove_clanmember(account_get_uid((t_account*)member->memberacc));
     }
     xfree((void *) member);
     clan->modified = 1;

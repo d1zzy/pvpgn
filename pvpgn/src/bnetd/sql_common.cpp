@@ -425,6 +425,7 @@ extern int sql_load_clans(t_load_clans_func cb)
 			member->status = std::atoi(row2[1]);
 			member->join_time = std::atoi(row2[2]);
 			member->clan	  = clan;
+			member->fullmember = 1;
 
 			if ((member->status == CLAN_NEW) && (std::time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
 			{
@@ -498,6 +499,8 @@ extern int sql_write_clan(void *data)
 		eventlog(eventlog_level_error, __FUNCTION__, "got NULL elem in list");
 		continue;
 	    }
+	    if (member->fullmember == 0)
+		continue;
 	    if ((member->status == CLAN_NEW) && (std::time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
 	    {
 		member->status = CLAN_PEON;

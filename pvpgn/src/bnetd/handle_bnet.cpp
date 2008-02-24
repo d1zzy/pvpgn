@@ -4349,10 +4349,15 @@ static int _client_w3xp_clan_createinvitereq(t_connection * c, t_packet const *c
 		    t_connection *conn;
 		    offset += (std::strlen(username) + 1);
 		    if ((conn = connlist_find_connection_by_accountname(username)) != NULL) {
-			if (prefs_get_clan_newer_time() > 0)
-			    clan_add_member(clan, conn_get_account(conn), CLAN_NEW);
-			else
-			    clan_add_member(clan, conn_get_account(conn), CLAN_PEON);
+		    t_clanmember *clanmember;
+			if (prefs_get_clan_newer_time() > 0) {
+			    clanmember = clan_add_member(clan, conn_get_account(conn), CLAN_NEW);
+			    clanmember_set_fullmember(clanmember, 1);      /* FIXME: do only this here and no clan_add_member() */
+            }
+			else {
+			    clanmember = clan_add_member(clan, conn_get_account(conn), CLAN_PEON);
+			    clanmember_set_fullmember(clanmember, 1);      /* FIXME: do only this here and no clan_add_member() */
+			}
 			conn_push_outqueue(conn, rpacket);
 		    }
 		}
@@ -4621,7 +4626,8 @@ static int _client_w3xp_clan_invitereply(t_connection * c, t_packet const *const
 	    char channelname[10];
 	    t_clantag clantag;
 	    if (clan_get_member_count(clan) < prefs_get_clan_max_members()) {
-		t_clanmember *member = clan_add_member(clan, conn_get_account(c), 1);
+		t_clanmember *member = clan_add_member(clan, conn_get_account(c), CLAN_PEON); /* PEON? it should be CLAN_NEW?? */
+		clanmember_set_fullmember(member, 1);      /* FIXME: do only this here and no clan_add_member()*/
 		if ((member != NULL) && (clantag = clan_get_clantag(clan))) {
 		    snprintf(channelname, sizeof(channelname), "Clan %s", clantag_to_str(clantag));
 		    if (conn_get_channel(c)) {

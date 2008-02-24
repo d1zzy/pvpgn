@@ -149,6 +149,7 @@ static struct {
     unsigned int clan_newer_time;
     unsigned int clan_max_members;
     unsigned int clan_channel_default_private;
+    unsigned int clan_min_invites;
     unsigned int passfail_count;
     unsigned int passfail_bantime;
     unsigned int maxusers_per_channel;
@@ -605,6 +606,10 @@ static int conf_set_clan_channel_default_private(const char *valstr);
 static const char *conf_get_clan_channel_default_private(void);
 static int conf_setdef_clan_channel_default_private(void);
 
+static int conf_set_clan_min_invites(const char *valstr);
+static const char *conf_get_clan_min_invites(void);
+static int conf_setdef_clan_min_invites(void);
+
 static int conf_set_passfail_count(const char *valstr);
 static const char *conf_get_passfail_count(void);
 static int conf_setdef_passfail_count(void);
@@ -781,6 +786,7 @@ static t_conf_entry conf_table[] =
     { "clan_newer_time",        conf_set_clan_newer_time,      conf_get_clan_newer_time,conf_setdef_clan_newer_time},
     { "clan_max_members",       conf_set_clan_max_members,     conf_get_clan_max_members,conf_setdef_clan_max_members},
     { "clan_channel_default_private",conf_set_clan_channel_default_private,conf_get_clan_channel_default_private,conf_setdef_clan_channel_default_private},
+    { "clan_min_invites",       conf_set_clan_min_invites,     conf_get_clan_min_invites,conf_setdef_clan_min_invites},
     { "passfail_count",		conf_set_passfail_count,       conf_get_passfail_count,conf_setdef_passfail_count},
     { "passfail_bantime",	conf_set_passfail_bantime,     conf_get_passfail_bantime,conf_setdef_passfail_bantime},
     { "maxusers_per_channel",	conf_set_maxusers_per_channel, conf_get_maxusers_per_channel,conf_setdef_maxusers_per_channel},
@@ -3146,6 +3152,25 @@ static const char* conf_get_clan_channel_default_private(void)
     return conf_get_bool(prefs_runtime_config.clan_channel_default_private);
 }
 
+extern unsigned int prefs_get_clan_min_invites(void)
+{
+    return prefs_runtime_config.clan_min_invites;
+}
+
+static int conf_set_clan_min_invites(const char *valstr)
+{
+    return conf_set_int(&prefs_runtime_config.clan_min_invites,valstr,0);
+}
+
+static int conf_setdef_clan_min_invites(void)
+{
+    return conf_set_int(&prefs_runtime_config.clan_min_invites,NULL,CLAN_DEFAULT_MIN_INVITES);
+}
+
+static const char* conf_get_clan_min_invites(void)
+{
+    return conf_get_int(prefs_runtime_config.clan_min_invites);
+}
 
 extern unsigned int prefs_get_passfail_count(void)
 {

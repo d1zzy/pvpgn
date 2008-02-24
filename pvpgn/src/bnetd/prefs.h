@@ -167,6 +167,7 @@ extern int prefs_get_max_friends(void) ;
 extern unsigned int prefs_get_clan_newer_time(void) ;
 extern unsigned int prefs_get_clan_max_members(void) ;
 extern unsigned int prefs_get_clan_channel_default_private(void) ;
+extern unsigned int prefs_get_clan_min_invites(void);
 
 extern unsigned int prefs_get_passfail_count(void) ;
 extern unsigned int prefs_get_passfail_bantime(void) ;

@@ -568,6 +568,7 @@ static int file_load_clans(t_load_clans_func cb)
 	    member->status = member_status - '0';
 	    member->join_time = member_join_time;
 	    member->clan = clan;
+ 	    member->fullmember = 1; /* In files we have only fullmembers */
 
 	    if ((member->status == CLAN_NEW) && (std::time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
 	    {
@@ -628,7 +629,8 @@ static int file_write_clan(void *data)
 	}
 	if ((member->status == CLAN_NEW) && (std::time(NULL) - member->join_time > prefs_get_clan_newer_time() * 3600))
 	    member->status = CLAN_PEON;
-	std::fprintf(fp, "%i,%c,%u\n", account_get_uid((t_account*)member->memberacc), member->status + '0', (unsigned) member->join_time);
+	if (member->fullmember == 1) /* only fullmembers are stored */
+	    std::fprintf(fp, "%i,%c,%u\n", account_get_uid((t_account*)member->memberacc), member->status + '0', (unsigned) member->join_time);
     }
 
     std::fclose(fp);
