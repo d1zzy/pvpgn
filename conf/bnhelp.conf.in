@@ -149,12 +149,20 @@ whois <player> - looks up some basic information on a user, including their acco
 %rehash
 /rehash - forces reload of bnetd.conf
 %clan
+/clan create <clantag> <clanname>
+Create a new clan
+/clan msg <message>
+Whispers a message to all your fellow clan members
 /clan public (alias: pub)
 Opens the clan channel up to the public so that anyone may enter
 /clan private  (alias: priv)
 Closes the clan channel such that only members of the clan may enter
-/clan motd <MESSAGE>
-Update the clan message of the day to MESSAGE
+/clan motd <message>
+Update the clan message of the day to message
+/clan invite <username>
+Invite <username> to your clan
+/clan disband
+Disband your clan
 %ping p latency
 /ping, /p, /latency - returns your latency to the server
 %command_groups cg

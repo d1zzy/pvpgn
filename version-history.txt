@@ -1,6 +1,6 @@
 PvPGN Version History:
 
- Changelog for SVN TRUNK (since 1.8.2)
+ Changelog for SVN TRUNK (since 1.8.3)
 =========================================
  -- The list of changes mentioned in here is most propably incomplete.
  For more details also take a peek view into conversion-changelog.
@@ -18,6 +18,20 @@ PvPGN Version History:
 
 [MISC]
   -- added /clan whisper subcommand
+  -- added /clan create/invite/disband subcommands
+  -- added clan_min_invites for miminum accepted invitations need
+     in clan-creating process (default is 2)
+
+ ChangeLog for 1.8.3 (since 1.8.2)
+=========================================
+
+[WOL]
+  -- added Dune 2000 Support
+  -- fixed bad time format in startgame message
+  -- fixed log warnings/errors rising in login process
+
+[MISC]
+  -- fixed bad output by /cg list command
 
  ChangeLog for 1.8.2 (since 1.8.1)
 =========================================

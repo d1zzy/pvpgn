@@ -8,6 +8,7 @@
  * Copyright (C) 2000  Onlyer (onlyer@263.net)
  * Copyright (C) 2003,2004  Aaron
  * Copyright (C) 2004  Donny Redmond (dredmond@linuxmail.org)
+ * Copyright (C) 2008  Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License

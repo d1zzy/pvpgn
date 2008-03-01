@@ -419,7 +419,6 @@ extern t_connection * conn_create(int tsock, int usock, unsigned int real_local_
     temp->protocol.wol.findme                    = 17;
 
     temp->protocol.wol.apgar			         = NULL;
-    temp->protocol.wol.gameOptions		         = NULL;
 
 
     temp->protocol.cr_time                       = now;
@@ -635,8 +634,6 @@ extern void conn_destroy(t_connection * c, t_elem ** elem, int conn_or_dead_list
 
     if (c->protocol.wol.apgar)
 		xfree((void *)c->protocol.wol.apgar); /* avoid warning */
-    if (c->protocol.wol.gameOptions)
-    	xfree((void *)c->protocol.wol.gameOptions); /* avoid warning */
 
     /* ADDED BY UNDYING SOULZZ 4/8/02 */
     if (c->protocol.w3.w3_playerinfo)
@@ -3944,35 +3941,6 @@ extern int conn_wol_get_game_type(t_connection * c)
     }
 
     return c->protocol.wol.gameType;
-}
-
-extern void conn_wol_set_game_options(t_connection * c, char const * gameOptions)
-{
-    if (!c)
-    {
-        eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
-        return;
-    }
-    if (!gameOptions)
-    {
-        eventlog(eventlog_level_error,__FUNCTION__,"got NULL game options");
-        return;
-    }
-
-    if (c->protocol.wol.gameOptions)
-    	xfree((void *)c->protocol.wol.gameOptions); /* avoid warning */
-    c->protocol.wol.gameOptions = xstrdup(gameOptions);
-}
-
-extern char const * conn_wol_get_game_options(t_connection * c)
-{
-    if (!c)
-    {
-		eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
-		return NULL;
-    }
-
-    return c->protocol.wol.gameOptions;
 }
 
 extern void conn_wol_set_findme(t_connection * c, int findme)
