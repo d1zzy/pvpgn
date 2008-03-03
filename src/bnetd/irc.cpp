@@ -1211,7 +1211,7 @@ extern int _handle_nick_command(t_connection * conn, int numparams, char ** para
 			conn_set_loggeduser(conn,text);
 	    }
 	    else
-	        irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to NICK");
+	        irc_send(conn,ERR_NEEDMOREPARAMS,"NICK :Not enough parameters");
 
 	    if ((conn_get_user(conn))&&(conn_get_loggeduser(conn)))
 			irc_welcome(conn); /* only send the welcome if we have USER and NICK */
@@ -1316,7 +1316,7 @@ extern int _handle_join_command(t_connection * conn, int numparams, char ** para
             irc_unget_listelems(e);
     }
     else
-        irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to JOIN");
+        irc_send(conn,ERR_NEEDMOREPARAMS,"JOIN :Not enough parameters");
     return 0;
 }
 
@@ -1365,7 +1365,7 @@ extern int _handle_topic_command(t_connection * conn, int numparams, char ** par
 		irc_unget_listelems(e);
 	}
 	else
-		irc_send(conn,ERR_NEEDMOREPARAMS,":too few arguments to TOPIC");
+		irc_send(conn,ERR_NEEDMOREPARAMS,"TOPIC :Not enough parameters");
 	return 0;
 }
 
@@ -1415,7 +1415,7 @@ extern int _handle_kick_command(t_connection * conn, int numparams, char ** para
     */
 
     if ((numparams != 2) || !(params[1])) {
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to KICK");
+	    irc_send(conn,ERR_NEEDMOREPARAMS,"KICK :Not enough parameters");
 	    return 0;
     }
 
@@ -1448,7 +1448,7 @@ extern int _handle_mode_command(t_connection * conn, int numparams, char ** para
     */
 
     if (numparams == 1) {
-        irc_send(conn,ERR_NEEDMOREPARAMS,":Not enough parameters");
+        irc_send(conn,ERR_NEEDMOREPARAMS,"MODE :Not enough parameters");
         return 0;
     }
 
@@ -1518,6 +1518,35 @@ extern int _handle_mode_command(t_connection * conn, int numparams, char ** para
         /* User mode */
         /* FIXME: Support user modes (away, invisible...) */
      	irc_send(conn,ERR_UMODEUNKNOWNFLAG,":Unknown MODE flag");
+    }
+    return 0;
+}
+
+extern int _handle_time_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+    char temp[MAX_IRC_MESSAGE_LEN];
+    std::time_t now;
+    char const * ircname = server_get_hostname();
+
+    /* PELISH: According to RFC2812 */
+    std::memset(temp,0,sizeof(temp));
+
+    if ((numparams>=1)&&(params[0])) {
+        if (std::strcmp(params[0], ircname) == 0) {
+            now = std::time(NULL);
+            snprintf(temp,sizeof(temp),"%s :%lu", ircname, now);
+            irc_send(conn,RPL_TIME,temp);
+        }
+        else {
+            snprintf(temp,sizeof(temp),"%s :No such server", params[0]);
+            irc_send(conn,ERR_NOSUCHSERVER,temp);
+        }
+    }
+    else {
+        /* RPL_TIME contains time and name of this server */
+        now = std::time(NULL);
+        snprintf(temp,sizeof(temp),"%s :%lu", ircname, now);
+        irc_send(conn,RPL_TIME,temp);
     }
     return 0;
 }
