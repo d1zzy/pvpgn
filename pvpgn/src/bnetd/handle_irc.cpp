@@ -106,6 +106,7 @@ static const t_irc_command_table_row irc_log_command_table[] =
 	{ "WHOIS"		, _handle_whois_command },
 	{ "PART"		, _handle_part_command },
 	{ "KICK"		, _handle_kick_command },
+    { "TIME"        , _handle_time_command },
 
 	{ NULL			, NULL }
 };
@@ -235,8 +236,8 @@ static int _handle_user_command(t_connection * conn, int numparams, char ** para
    		}
    	}
 	else {
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to USER");
-    	}
+        irc_send(conn,ERR_NEEDMOREPARAMS,"USER :Not enough parameters");
+    }
 	return 0;
 }
 
@@ -250,10 +251,10 @@ static int _handle_pass_command(t_connection * conn, int numparams, char ** para
 			conn_set_ircpass(conn,hash_get_str(h));
 	    }
 		else
-			irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to PASS");
+			irc_send(conn,ERR_NEEDMOREPARAMS,"PASS :Not enough parameters");
     }
 	else {
-	    eventlog(eventlog_level_warn,__FUNCTION__,"[%d] client tried to set password twice with PASS",conn_get_socket(conn));
+	    irc_send(conn,ERR_ALREADYREGISTRED,":Unauthorized command (already registered)");
     }
 	return 0;
 }
@@ -396,7 +397,7 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 	         irc_unget_listelems(e);
 	}
 	else
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to PRIVMSG");
+	    irc_send(conn,ERR_NEEDMOREPARAMS,"PRIVMSG :Not enough parameters");
 	return 0;
 }
 
@@ -425,7 +426,7 @@ static int _handle_notice_command(t_connection * conn, int numparams, char ** pa
 	        irc_unget_listelems(e);
 	}
 	else
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to PRIVMSG");
+	    irc_send(conn,ERR_NEEDMOREPARAMS,"NOTICE :Not enough parameters");
 	return 0;
 }
 
@@ -444,7 +445,7 @@ static int _handle_who_command(t_connection * conn, int numparams, char ** param
 			irc_unget_listelems(e);
 	}
 	else
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to WHO");
+	    irc_send(conn,ERR_NEEDMOREPARAMS,"WHO :Not enough parameters");
 	return 0;
 }
 
@@ -560,7 +561,7 @@ static int _handle_ison_command(t_connection * conn, int numparams, char ** para
 	    irc_send(conn,RPL_ISON,temp);
 	}
 	else
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to ISON");
+	    irc_send(conn,ERR_NEEDMOREPARAMS,"ISON :Not enough parameters");
 	return 0;
 }
 
@@ -612,7 +613,7 @@ static int _handle_whois_command(t_connection * conn, int numparams, char ** par
 			irc_unget_listelems(e);
 	}
 	else
-	    irc_send(conn,ERR_NEEDMOREPARAMS,":Too few arguments to WHOIS");
+	    irc_send(conn,ERR_NEEDMOREPARAMS,"WHOIS :Not enough parameters");
 	return 0;
 }
 

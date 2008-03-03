@@ -59,6 +59,7 @@ extern int _handle_topic_command(t_connection * conn, int numparams, char ** par
 extern int _handle_names_command(t_connection * conn, int numparams, char ** params, char * text);
 extern int _handle_kick_command(t_connection * conn, int numparams, char ** params, char * text);
 extern int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text);
+extern int _handle_time_command(t_connection * conn, int numparams, char ** params, char * text);
 }
 
 }

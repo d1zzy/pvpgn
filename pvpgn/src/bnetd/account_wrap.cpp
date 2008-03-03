@@ -2451,10 +2451,6 @@ extern int account_set_locale(t_account * account, int locale)
 		ERROR0("got NULL account");
 		return -1;
 	}
-	if(!locale) {
-		ERROR0("got NULL locale");
-		return -1;
-	}
 
     eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] WOL\\acct\\locale = %u",locale);
     return account_set_numattr(account,"WOL\\acct\\locale",locale);

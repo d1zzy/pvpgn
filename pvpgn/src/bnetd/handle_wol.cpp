@@ -96,7 +96,6 @@ static int _handle_chanchk_command(t_connection * conn, int numparams, char ** p
 static int _handle_getbuddy_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_addbuddy_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_delbuddy_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_time_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_host_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_advertc_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_clanbyname_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -1535,20 +1534,6 @@ static int _handle_delbuddy_command(t_connection * conn, int numparams, char ** 
     else
         irc_send(conn,ERR_NEEDMOREPARAMS,"DELBUDDY :Not enough parameters");
 	return 0;
-}
-
-static int _handle_time_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-    /* FIXME: recode and move into irc.cpp */
-    char temp[MAX_IRC_MESSAGE_LEN];
-	std::time_t now;
-
-   	std::memset(temp,0,sizeof(temp));
-    now = std::time(NULL);
-
-    snprintf(temp,sizeof(temp),"irc.westwood.com :%lu", now);
-	irc_send(conn,RPL_TIME,temp);
-    return 0;
 }
 
 static int _handle_host_command(t_connection * conn, int numparams, char ** params, char * text)
