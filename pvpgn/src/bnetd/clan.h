@@ -21,11 +21,13 @@
 #ifdef JUST_NEED_TYPES
 # include "common/bn_type.h"
 # include "connection.h"
+# include "message.h"
 # include "common/packet.h"
 #else
 # define JUST_NEED_TYPES
 # include "common/bn_type.h"
 # include "connection.h"
+# include "message.h"
 # include "common/packet.h"
 # include "common/tag.h"
 # undef JUST_NEED_TYPES
@@ -176,6 +178,7 @@ extern t_clanmember *clan_find_member(t_clan * clan, t_account * memberacc);
 extern t_clanmember *clan_find_member_by_name(t_clan * clan, char const *membername);
 extern t_clanmember *clan_find_member_by_uid(t_clan * clan, unsigned int memberuid);
 
+extern int clan_send_message_to_online_members(t_clan * clan, t_message_type type, t_connection * me, char const * text);
 extern int clan_send_packet_to_online_members(t_clan * clan, t_packet * packet);
 extern int clan_get_possible_member(t_connection * c, t_packet const *const packet);
 extern int clan_send_status_window(t_connection * c);

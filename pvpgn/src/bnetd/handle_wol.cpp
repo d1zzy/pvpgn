@@ -80,6 +80,7 @@ static int _handle_setopt_command(t_connection * conn, int numparams, char ** pa
 static int _handle_serial_command(t_connection * conn, int numparams, char ** params, char * text);
 
 static int _handle_squadinfo_command(t_connection * conn, int numparams, char ** params, char * text);
+static int _handle_clanbyname_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_setcodepage_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_getcodepage_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_setlocale_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -92,13 +93,14 @@ static int _handle_finduserex_command(t_connection * conn, int numparams, char *
 static int _handle_page_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_startg_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_advertr_command(t_connection * conn, int numparams, char ** params, char * text);
+static int _handle_advertc_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_chanchk_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_getbuddy_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_addbuddy_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_delbuddy_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_host_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_advertc_command(t_connection * conn, int numparams, char ** params, char * text);
-static int _handle_clanbyname_command(t_connection * conn, int numparams, char ** params, char * text);
+static int _handle_invmsg_command(t_connection * conn, int numparams, char ** params, char * text);
+static int _handle_invdel_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_userip_command(t_connection * conn, int numparams, char ** params, char * text);
 
 /* Ladder server commands (we will probalby move this commands to any another handle file */
@@ -163,7 +165,9 @@ static const t_wol_command_table_row wol_log_command_table[] =
 	{ "KICK"		, _handle_kick_command },
 	{ "MODE"		, _handle_mode_command },
 	{ "HOST"		, _handle_host_command },
-	{ "USERIP"	    , _handle_userip_command },
+	{ "INVMSG"      , _handle_invmsg_command },
+	{ "INVDEL"      , _handle_invdel_command },
+	{ "USERIP"      , _handle_userip_command },
 
 	{ NULL			, NULL }
 };
@@ -294,7 +298,7 @@ static int handle_wol_send_claninfo(t_connection * conn, t_clan * clan)
         irc_send(conn,RPL_BATTLECLAN,_temp);
     }
     else {
-        snprintf(_temp, sizeof(_temp), "ID does not exist");
+        snprintf(_temp, sizeof(_temp), ":ID does not exist");
 	    irc_send(conn,ERR_IDNOEXIST,_temp);
     }
     return 0;
@@ -829,17 +833,17 @@ static int _handle_getcodepage_command(t_connection * conn, int numparams, char 
 	    for (i=0; i<numparams; i++) {
     		t_connection * user;
             int codepage;
-    		char const * name;
 
-    		if((user = connlist_find_connection_by_accountname(params[i]))) {
+    		if (user = connlist_find_connection_by_accountname(params[i]))
     		    codepage = conn_wol_get_codepage(user);
-    		    name = conn_get_chatname(user);
+    		if (!codepage)
+    		    codepage = 0;
 
-    		    snprintf(_temp, sizeof(_temp), "%s`%u", name, codepage);
-    		    std::strcat(temp,_temp);
-    		    if(i < numparams-1)
-    			     std::strcat(temp,"`");
-    		}
+    		snprintf(_temp, sizeof(_temp), "%s`%u", params[i], codepage);
+    		std::strcat(temp,_temp);
+
+    		if(i < numparams-1)
+    		    std::strcat(temp,"`");
 	    }
    	    irc_send(conn,RPL_GET_CODEPAGE,temp);
 	}
@@ -853,7 +857,7 @@ static int _handle_setlocale_command(t_connection * conn, int numparams, char **
     t_account * account = conn_get_account(conn);
     int locale;
 
-    if((numparams>=1)&&(params[0])) {
+    if ((numparams>=1)&&(params[0])) {
        locale = std::atoi(params[0]);
        account_set_locale(account,locale);
        irc_send(conn,RPL_SET_LOCALE,params[0]);
@@ -871,22 +875,20 @@ static int _handle_getlocale_command(t_connection * conn, int numparams, char **
 	std::memset(temp,0,sizeof(temp));
 	std::memset(_temp,0,sizeof(_temp));
 
-	if((numparams>=1)&&(params[0])) {
-	    int i;
-	    for (i=0; i<numparams; i++) {
-    		t_account * account;
-    		int locale;
-    		char const * name;
+	if ((numparams>=1)&&(params[0])) {
+        int i;
+        for (i=0; i<numparams; i++) {
+            t_account * account;
+            int locale;
 
-    		if(account = accountlist_find_account(params[i])) {
+    		if (account = accountlist_find_account(params[i]))
     		    locale = account_get_locale(account);
-    		    if (!locale)
-    		       locale = 0;
-    		    snprintf(_temp, sizeof(_temp), "%s`%u", params[i], locale);
-    		    std::strcat(temp,_temp);
-    		    if(i < numparams-1)
-           			std::strcat(temp,"`");
-    		}
+    		if (!locale)
+    		    locale = 0;
+    		snprintf(_temp, sizeof(_temp), "%s`%u", params[i], locale);
+    		std::strcat(temp,_temp);
+    		if (i < numparams-1)
+    		    std::strcat(temp,"`");
 	    }
 	    irc_send(conn,RPL_GET_LOCALE,temp);
 	}
@@ -897,18 +899,20 @@ static int _handle_getlocale_command(t_connection * conn, int numparams, char **
 
 static int _handle_getinsider_command(t_connection * conn, int numparams, char ** params, char * text)
 {
+	char _temp[MAX_IRC_MESSAGE_LEN];
+
     /**
-     * FIXME:
-     * XWIS working:
-     *   GETINSIDER Pelish
-     *   : 399 u Pelish`0
-     * FSGS working: (used in PvPGN now)
-     *   GETINSIDER Pelish
-     *    :irc.westwood.com 399 Pelish
+     * Here is imput expected:
+     *   GETINSIDER [nickname]
+     * Here is output expected:
+     *   :[servername] 399 [nick] [nickname]`0
      */
 
+	std::memset(_temp,0,sizeof(_temp));
+
     if ((numparams>=1)&&(params[0])) {
-        irc_send(conn,RPL_GET_INSIDER,params[0]);
+        snprintf(_temp, sizeof(_temp), "%s`%u", params[0], 0);
+        irc_send(conn,RPL_GET_INSIDER,_temp);
     }
     else
         irc_send(conn,ERR_NEEDMOREPARAMS,"GETINSIDER :Not enough parameters");
@@ -1238,21 +1242,9 @@ static int _handle_page_command(t_connection * conn, int numparams, char ** para
 	    if (std::strcmp(params[0], "0") == 0) {
             /* PAGE for MY BATTLECLAN */
             t_clan * clan = account_get_clan(conn_get_account(conn));
-            t_list * cl_member_list;
-            t_elem * curr;
 
-            if (clan) {
-               cl_member_list = clan_get_members(clan);
-
-               LIST_TRAVERSE(cl_member_list,curr) {
-                   t_clanmember * member = (t_clanmember*)elem_get_data(curr);
-
-                   if ((user = clanmember_get_conn(member)) && (conn_wol_get_pageme(user) == 33) && (user != conn)) {
-                       message_send_text(user,message_type_page,conn,text);
-                       paged = true;
-                   }
-               }
-            }
+            if ((clan) && (clan_send_message_to_online_members(clan,message_type_page,conn,text) >= 1))
+                paged = true;
         }
 	    else if((user = connlist_find_connection_by_accountname(params[0]))&&(conn_wol_get_pageme(user) == 33)) {
      		message_send_text(user,message_type_page,conn,text);
@@ -1339,8 +1331,6 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
         snprintf(_temp_a, sizeof(_temp_a), "%lu", now);
         std::strcat(temp,_temp_a);
 
-	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] STARTG: (%s)",temp);
-
         for (i=0;((e)&&(e[i]));i++) {
    		        t_connection * user;
    		        if((user = connlist_find_connection_by_accountname(e[i]))) {
@@ -1371,9 +1361,7 @@ static int _handle_advertr_command(t_connection * conn, int numparams, char ** p
     */
 
     if ((numparams>=1)&&(params[0])) {
-        snprintf(temp,sizeof(temp),"5 ");
-        std::strcat(temp,params[0]);
-
+        snprintf(temp,sizeof(temp),"5 %s",params[0]);
         message_send_text(conn,message_wol_advertr,conn,temp);
     }
     else
@@ -1458,7 +1446,6 @@ static int _handle_getbuddy_command(t_connection * conn, int numparams, char ** 
    		    std::strcat(temp,_temp);
         }
     }
-    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] GETBUDDY (%s)",temp);
 	irc_send(conn,RPL_GET_BUDDY,temp);
 	return 0;
 }
@@ -1556,6 +1543,45 @@ static int _handle_host_command(t_connection * conn, int numparams, char ** para
     else
         irc_send(conn,ERR_NEEDMOREPARAMS,"HOST :Not enough parameters");
     return 0;
+}
+
+static int _handle_invmsg_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+    char temp[MAX_IRC_MESSAGE_LEN];
+    char ** e;
+    t_connection * user;
+    int i;
+
+    /**
+     *  Here is the imput expected:
+     *  INVMSG [channel] [unknown] [invited],[invited2_optional]
+     *  [unknown] can be 1 or 2
+     *
+     *  Here is the output expected:
+     *  :user!WWOL@hostname INVMSG [invited] [channel] [unknown]
+     */
+
+    if ((numparams>=3)&&(params[0])&&(params[1])&&(params[2])) {
+    	std::memset(temp,0,sizeof(temp));
+        e = irc_get_listelems(params[2]);
+
+        for (i=0;((e)&&(e[i]));i++) {
+            if ((user = connlist_find_connection_by_accountname(e[i]))) {
+                snprintf(temp,sizeof(temp),"%s %s", params[0], params[1]);
+                /* FIXME: set user to linvitelist! */
+                message_send_text(user,message_type_invmsg,conn,temp);
+            }
+        }
+    }
+    else {
+        irc_send(conn,ERR_NEEDMOREPARAMS,"INVMSG :Not enough parameters");
+    }
+    return 0;
+}
+
+static int _handle_invdel_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+    /* FIXME: Not implemented yet */
 }
 
 static int _handle_userip_command(t_connection * conn, int numparams, char ** params, char * text)

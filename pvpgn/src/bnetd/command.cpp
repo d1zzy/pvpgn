@@ -574,27 +574,10 @@ static int _handle_clan_command(t_connection * c, char const * text)
           message_send_text(c,message_type_info,c,"Whispers a message to all your fellow clan members.");
         }
         else {
-          int counter = 0;
-          t_list * cl_member_list = clan_get_members(clan);
-          t_elem * curr;
-          t_connection * dest_conn;
-          t_clanmember * dest_member;
-
-          LIST_TRAVERSE(cl_member_list,curr) {
-    	        if (!(dest_member = (t_clanmember*)elem_get_data(curr))) {
-    	           eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
-    	           continue;
-    	        }
-
-                if ((dest_conn = clanmember_get_conn(dest_member)) && (dest_conn != c)) {
-                   message_send_text(dest_conn,message_type_whisper,c,msg);
-                   counter++;
-                }
-          }
-          if(counter)
-             message_send_text(c,message_type_info,c,"Message was sent to all currently available clan members.");
-          else
-             message_send_text(c,message_type_info,c,"All fellow members of your clan are currently offline.");
+            if (clan_send_message_to_online_members(clan,message_type_whisper,c,msg) >= 1)
+                message_send_text(c,message_type_info,c,"Message was sent to all currently available clan members.");
+            else
+                message_send_text(c,message_type_info,c,"All fellow members of your clan are currently offline.");
         }
     }
     else
@@ -717,6 +700,9 @@ static int _handle_clan_command(t_connection * c, char const * text)
                     clan_set_created(clan, 1);
                     clan_set_creation_time(clan, std::time(NULL));
                     /* FIXME: send message "CLAN was be created" to members */
+                    snprintf(msgtemp, sizeof(msgtemp), "Clan %s was be created", clan_get_name(clan));
+                    clan_send_message_to_online_members(clan,message_type_whisper,c,msgtemp); /* Send message to all members */
+                    message_send_text(c,message_type_whisper,c,msgtemp);                      /* also to self */
                     clan_save(clan);
                 }
                 else

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2001  Marco Ziech (mmz@gmx.net)
  * Copyright (C) 2005  Bryan Biedenkapp (gatekeep@gmail.com)
- * Copyright (C) 2006,2007  Pelish (pelish@gmail.com)
+ * Copyright (C) 2006,2007,2008  Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -849,6 +849,13 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         msg = irc_message_preformat(&from,"HOST","\r",text);
         conn_unget_chatname(me,from.nick);
     	break;
+    case message_type_invmsg:
+        from.nick = conn_get_chatname(me);
+        from.user = ctag;
+        from.host = addr_num_to_ip_str(conn_get_addr(me));
+        msg = irc_message_preformat(&from,"INVMSG",conn_get_loggeduser(dst),text);
+        conn_unget_chatname(me,from.nick);
+    	break;
     case message_type_page:
         {
             char temp[MAX_IRC_MESSAGE_LEN];
@@ -885,7 +892,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         from.nick = conn_get_chatname(me);
         from.user = ctag;
         from.host = addr_num_to_ip_str(conn_get_addr(me));
-        msg = irc_message_preformat(&from,"STARTG","u",text);
+        msg = irc_message_preformat(&from,"STARTG",conn_get_loggeduser(dst),text);
         conn_unget_chatname(me,from.nick);
         break;
     case message_wol_advertr:
@@ -1331,7 +1338,8 @@ extern int irc_send_topic(t_connection * c, t_channel const * channel){
     else {
         snprintf(temp, sizeof(temp), "%s :", irc_convert_channel(channel,c));
         irc_send(c, RPL_TOPIC, temp);
-        //irc_send(c, RPL_NOTOPIC, ":No topic is set");
+        //snprintf(temp, sizeof(temp), "%s :No topic is set", irc_convert_channel(channel,c));
+        //irc_send(c, RPL_NOTOPIC, temp);
     }
 	return 0;
 }
@@ -1339,8 +1347,10 @@ extern int irc_send_topic(t_connection * c, t_channel const * channel){
 extern int _handle_topic_command(t_connection * conn, int numparams, char ** params, char * text)
 {
 	char ** e = NULL;
+    char temp[MAX_IRC_MESSAGE_LEN];
 
-	if((conn_get_wol(conn) == 1)) {
+	if ((conn_get_wol(conn) == 1)) {
+        /* FIXME: check if channel exist */
 	    t_channel * channel = conn_get_channel(conn);
 	    channel_set_topic(channel_get_name(channel),text,NO_SAVE_TOPIC);
 	}
@@ -1356,11 +1366,14 @@ extern int _handle_topic_command(t_connection * conn, int numparams, char ** par
 			if ((ircname) && (strcasecmp(channel_get_name(channel),ircname)==0)) {
 			    irc_send_topic(conn, channel);
 			}
-			else
-				irc_send(conn,ERR_NOTONCHANNEL,":You are not on that channel");
+			else {
+                snprintf(temp, sizeof(temp), "%s :You're not on that channel", e[0]);
+                irc_send(conn, ERR_NOTONCHANNEL, temp);
+            }
 		}
 		else {
-			irc_send(conn,ERR_NOTONCHANNEL,":You're not on a channel");
+            snprintf(temp, sizeof(temp), "%s :You're not on that channel", e[0]);
+            irc_send(conn, ERR_NOTONCHANNEL, temp);
 		}
 		irc_unget_listelems(e);
 	}
@@ -1504,8 +1517,11 @@ extern int _handle_mode_command(t_connection * conn, int numparams, char ** para
                 snprintf(temp,sizeof(temp),"%s %s %s", params[0], params[1], params[2]);
        	        channel_message_send(channel,message_type_mode,conn,temp);                     
             }
+            else if (std::strcmp(params[1], "+i") == 0) {
+                /* FIXME: channel will be only for invited */
+            }
        	    else {
-                snprintf(temp,sizeof(temp),":%s is unknown mode char to me", params[1]);
+                snprintf(temp,sizeof(temp),":%s is unknown mode char to me for %s", params[1], params[0]);
                 irc_send(conn,ERR_UNKNOWNMODE,temp);
             }
 	    }

@@ -107,6 +107,8 @@ static char const * message_type_get_str(t_message_type type)
         return "mode";
     case message_type_host:
         return "host";
+    case message_type_invmsg:
+        return "invmsg";
     case message_type_page:
         return "page";
     case message_type_kick:
