@@ -73,6 +73,7 @@ typedef enum
     *  Westwood Online Extensions
     */
     message_type_host,
+    message_type_invmsg,
     message_type_page,
     message_wol_joingame,
     message_wol_gameopt_owner,

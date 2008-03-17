@@ -36,6 +36,7 @@
 #include "prefs.h"
 #include "friends.h"
 #include "game.h"
+#include "message.h"
 #include "account.h"
 #include "channel.h"
 #include "anongame.h"
@@ -66,6 +67,50 @@ static int _cb_load_clans(void *clan)
     if (((t_clan *) clan)->clanid > max_clanid)
 	max_clanid = ((t_clan *) clan)->clanid;
     return 0;
+}
+
+/*
+** Message functions
+*/
+
+extern int clan_send_message_to_online_members(t_clan * clan, t_message_type type, t_connection * me, char const * text)
+{
+    /* PELISH: Send message to online clan_members
+       returns: an eroor == -1, done but no one heard == 0, done with message sended == 1 */
+    t_list * cl_member_list;
+    t_elem * curr;
+    t_clanmember * dest_member;
+    t_connection * dest_conn;
+    bool heard;
+
+    if (!clan) {
+        eventlog(eventlog_level_error, __FUNCTION__, "got NULL clan");
+        return -1;
+    }
+
+    if (!me) {
+        eventlog(eventlog_level_error, __FUNCTION__, "got NULL connecion");
+        return -1;
+    }
+
+    cl_member_list = clan_get_members(clan);
+
+    LIST_TRAVERSE(cl_member_list,curr) {
+        if (!(dest_member = (t_clanmember*)elem_get_data(curr))) {
+            eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
+            continue;
+        }
+
+        if ((dest_conn = clanmember_get_conn(dest_member)) && (dest_conn != me)) {
+            message_send_text(dest_conn,type,me,text);
+            heard = true;
+        }
+    }
+    
+    if (heard)
+        return 1;
+    else
+        return 0;
 }
 
 /*
