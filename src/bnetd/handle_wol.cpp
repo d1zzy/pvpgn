@@ -1582,6 +1582,7 @@ static int _handle_invmsg_command(t_connection * conn, int numparams, char ** pa
 static int _handle_invdel_command(t_connection * conn, int numparams, char ** params, char * text)
 {
     /* FIXME: Not implemented yet */
+    return 0;
 }
 
 static int _handle_userip_command(t_connection * conn, int numparams, char ** params, char * text)
