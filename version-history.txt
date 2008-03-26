@@ -14,13 +14,14 @@ PvPGN Version History:
   -- added support to allow/deny WOL clients in bnconf.conf
   -- added support for battle clans
   -- added various protocol related fixes
-  -- added apireg support
+  -- added apiregister support
+  -- added autoupdate support for WOLv2 games
 
 [MISC]
   -- added /clan whisper subcommand
   -- added /clan create/invite/disband subcommands
-  -- added clan_min_invites for miminum accepted invitations need
-     in clan-creating process (default is 2)
+  -- added clan_min_invites to bnetd.conf for miminum accepted
+     invitations need in clan-creating process (default is 2)
 
  ChangeLog for 1.8.3 (since 1.8.2)
 =========================================
