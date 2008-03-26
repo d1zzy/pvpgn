@@ -101,22 +101,24 @@ static int _handle_verchk_command(t_connection * conn, int numparams, char ** pa
     *  :[servername] 602 [username] :Update record non-existant
     *  2) Update existant:
     *  :[servername] 606 [username] :[ftpserveraddr] [ftpusername] [ftppaswd] [path] [file.rtp] [newversion] [SKU] REQ
-    *  :[servername] 603 [username] :You must update before connecting!
     */
 
-    clienttag = tag_sku_to_uint(std::atoi(params[0]));
+	if (numparams>=2) {
+        clienttag = tag_sku_to_uint(std::atoi(params[0]));
 
-    if (clienttag != CLIENTTAG_WWOL_UINT)
-        conn_set_clienttag(conn,clienttag);
+        if (clienttag != CLIENTTAG_WWOL_UINT)
+            conn_set_clienttag(conn,clienttag);
 
-    if (filestring = autoupdate_check(ARCHTAG_WINX86_UINT, clienttag, TAG_UNKNOWN_UINT, params[1], params[0])) {
-        //:westwood-patch.ea.com update world96 lore3/1.003 65539_65536_6400.rtp 65539 6400 REQ
-        snprintf(temp, sizeof(temp), ":westwood-patch.ea.com update world96 %s 131075 %s REQ", filestring, params[0]);
-        irc_send(conn,RPL_UPDATE_FTP,temp);
+        if (filestring = autoupdate_check(ARCHTAG_WINX86_UINT, clienttag, TAG_UNKNOWN_UINT, params[1], params[0])) {
+            //:westwood-patch.ea.com update world96 lore3/1.003 65539_65536_6400.rtp 65539 6400 REQ
+            snprintf(temp, sizeof(temp), ":westwood-patch.ea.com update world96 %s 131075 %s REQ", filestring, params[0]);
+            irc_send(conn,RPL_UPDATE_FTP,temp);
+        }
+        else
+            irc_send(conn,RPL_UPDATE_NONEX,":Update record non-existant");
     }
-    else
-        irc_send(conn,RPL_UPDATE_NONEX,":Update record non-existant");
-
+   	else
+        irc_send(conn,ERR_NEEDMOREPARAMS,"VERCHK :Not enough parameters");
     return 0;
 }
 
@@ -148,7 +150,7 @@ static int _handle_whereto_command(t_connection * conn, int numparams, char ** p
         wolip = addr_num_to_ip_str(addr);
     }
 
-   irc_send(conn,RPL_UPDATE_EXIST,":Unsapported game client");
+    //irc_send(conn,RPL_UPDATE_EXIST,":You must update before connecting!");
 
     // Check if it's an allowed client type
     if (!tag_check_in_list(conn_get_clienttag(conn), prefs_get_allowed_clients())) {
