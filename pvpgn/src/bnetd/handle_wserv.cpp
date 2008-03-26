@@ -41,6 +41,7 @@
 #include "message.h"
 #include "tick.h"
 #include "server.h"
+#include "autoupdate.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -89,6 +90,7 @@ static int _handle_verchk_command(t_connection * conn, int numparams, char ** pa
 {
     char temp[MAX_IRC_MESSAGE_LEN];
     t_clienttag clienttag;
+    char *filestring;
 
    /**
     *  Heres the imput expected:
@@ -97,20 +99,23 @@ static int _handle_verchk_command(t_connection * conn, int numparams, char ** pa
     *  Here is output expected for ServServ server:
     *  1) Update non-existant:
     *  :[servername] 602 [username] :Update record non-existant
-    *  2) Update existant):
-    *  :[servername] 606 [username] :[ftpserveraddr] [ftpusername] [ftppaswd] [directori] [file.rtp] [newversion] [SKU] REQ
+    *  2) Update existant:
+    *  :[servername] 606 [username] :[ftpserveraddr] [ftpusername] [ftppaswd] [path] [file.rtp] [newversion] [SKU] REQ
     *  :[servername] 603 [username] :You must update before connecting!
     */
-
-    // FIXME: We send only update non-existant now!
-    // THIS is point for autoupdate!!!
 
     clienttag = tag_sku_to_uint(std::atoi(params[0]));
 
     if (clienttag != CLIENTTAG_WWOL_UINT)
         conn_set_clienttag(conn,clienttag);
 
-    irc_send(conn,RPL_UPDATE_NONEX,":Update record non-existant");
+    if (filestring = autoupdate_check(ARCHTAG_WINX86_UINT, clienttag, TAG_UNKNOWN_UINT, params[1], params[0])) {
+        //:westwood-patch.ea.com update world96 lore3/1.003 65539_65536_6400.rtp 65539 6400 REQ
+        snprintf(temp, sizeof(temp), ":westwood-patch.ea.com update world96 %s 131075 %s REQ", filestring, params[0]);
+        irc_send(conn,RPL_UPDATE_FTP,temp);
+    }
+    else
+        irc_send(conn,RPL_UPDATE_NONEX,":Update record non-existant");
 
     return 0;
 }
@@ -143,22 +148,24 @@ static int _handle_whereto_command(t_connection * conn, int numparams, char ** p
         wolip = addr_num_to_ip_str(addr);
     }
 
-    /* Check if it's an allowed client type */
+   irc_send(conn,RPL_UPDATE_EXIST,":Unsapported game client");
+
+    // Check if it's an allowed client type
     if (!tag_check_in_list(conn_get_clienttag(conn), prefs_get_allowed_clients())) {
-        /*  This is for anyone game but not for Emperor */
+        //  This is for anyone game but not for Emperor
         if (conn_get_clienttag(conn) != CLIENTTAG_EMPERORBD_UINT) {
             snprintf(temp, sizeof(temp), ":%s %d '0:%s' %s %s %s", wolip, BNETD_WSERV_PORT, wolname, woltimezone, wollong, wollat);
             irc_send(conn,RPL_WOLSERV,temp);
         }
 
-        /*  Only for Emperor: Battle for Dune */
+        //  Only for Emperor: Battle for Dune
         if (conn_get_clienttag(conn) == CLIENTTAG_EMPERORBD_UINT) {
             snprintf(temp, sizeof(temp), ":%s %d '0:Emperor %s' %s %s %s", wolip, BNETD_WSERV_PORT, wolname, woltimezone, wollong, wollat);
             irc_send(conn,RPL_WOLSERV,temp);
         }
 
-        /*  Only for CnC Renegade */
-        if (conn_get_clienttag(conn) == CLIENTTAG_RENEGADE_UINT) {
+        //  Only for CnC Renegade
+        if ((conn_get_clienttag(conn) == CLIENTTAG_RENEGADE_UINT) || (conn_get_clienttag(conn) == CLIENTTAG_RENGDFDS_UINT)) {
             snprintf(temp, sizeof(temp), ":%s 0 'Ping server' %s %s %s", wolip, woltimezone, wollong, wollat);
             irc_send(conn,RPL_PINGSERVER,temp);
             //I dont know for what is this server...? (used in renegade and yuri)
@@ -168,17 +175,17 @@ static int _handle_whereto_command(t_connection * conn, int numparams, char ** p
             //:noxchat1.wol.abn-sjc.ea.com 613 UserName :ea4.str.ea.com 0 '0,1,2,3,4,5,6,7,8,9,10:EA Ticket Server' -8 36.1083 -115.0582
         }
 
-        /*  There are servers for anyone game */
+        //  There are servers for anyone game
         snprintf(temp, sizeof(temp), ":%s %d 'Live chat server' %s %s %s", wolip, BNETD_WOL_PORT, woltimezone, wollong, wollat);
         irc_send(conn,RPL_WOLSERV,temp);
     }
 
-    /* If game is not allowed than we still send this servers */
+    // If game is not allowed than we still send this servers 
     snprintf(temp, sizeof(temp), ":%s %d 'Gameres server' %s %s %s", wolip, BNETD_WGAMERES_PORT, woltimezone, wollong, wollat);
     irc_send(conn,RPL_GAMERESSERV,temp);
     snprintf(temp, sizeof(temp), ":%s %d 'Ladder server' %s %s %s", wolip, BNETD_WOL_PORT, woltimezone, wollong, wollat);
     irc_send(conn,RPL_LADDERSERV,temp);
-    /* There is Word Domination Tour server for Firestorm (maybe for future coding) */
+    // There is Word Domination Tour server for Firestorm (maybe for future coding)
     //snprintf(temp, sizeof(temp), ":%s %d 'WDT server' %s %s %s", wolip, BNETD_WOL_PORT, woltimezone, wollong, wollat); //I dont know for what is this server...?
     //irc_send(conn,RPL_WDTSERV,temp);
 

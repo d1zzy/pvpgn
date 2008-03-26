@@ -414,7 +414,6 @@ extern t_connection * conn_create(int tsock, int usock, unsigned int real_local_
     temp->protocol.wol.ingame			         = 0;
 
     temp->protocol.wol.codepage	                 = 0;
-    temp->protocol.wol.gameType                  = 0;
     temp->protocol.wol.pageme                    = 33;
     temp->protocol.wol.findme                    = 17;
 
@@ -3919,28 +3918,6 @@ extern int conn_wol_get_codepage(t_connection * c)
     }
 
     return c->protocol.wol.codepage;
-}
-
-extern void conn_wol_set_game_type(t_connection * c, int gameType)
-{
-    if (!c)
-    {
-        eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
-        return;
-    }
-
-    c->protocol.wol.gameType = gameType;
-}
-
-extern int conn_wol_get_game_type(t_connection * c)
-{
-    if (!c)
-    {
-    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
-    	return -1;
-    }
-
-    return c->protocol.wol.gameType;
 }
 
 extern void conn_wol_set_findme(t_connection * c, int findme)

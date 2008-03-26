@@ -635,7 +635,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 
         channel = conn_get_channel(me);
 
-        if((conn_get_wol(dst) == 1) && (conn_get_clienttag(dst) != CLIENTTAG_WCHAT_UINT)) {
+        if (tag_check_wolv2(conn_get_clienttag(dst))) {
             char temp[MAX_IRC_MESSAGE_LEN];
     	    t_clan * clan;
     	    unsigned int clanid = 0;
@@ -707,10 +707,11 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
 
 	    /* "\001ACTION " + text + "\001" + \0 */
 
-        /* PELISH: WOLv1 (wchat atm), DUNE2000 and RENEGADE shows emotes automaticaly to self */
-	    if ((me==dst) && ((conn_get_clienttag(dst) == CLIENTTAG_WCHAT_UINT) || 
+        /* PELISH: WOLv1, DUNE2000 and RENEGADE shows emotes automaticaly to self */
+	    if ((me==dst) && ((tag_check_wolv1(conn_get_clienttag(dst))) || 
                           (conn_get_clienttag(dst) == CLIENTTAG_DUNE2000_UINT) ||
-                          (conn_get_clienttag(dst) == CLIENTTAG_RENEGADE_UINT)))
+                          (conn_get_clienttag(dst) == CLIENTTAG_RENEGADE_UINT) ||
+                          (conn_get_clienttag(dst) == CLIENTTAG_RENGDFDS_UINT)))
 	        break;
 
 	    if ((8+std::strlen(text)+1+1)<=MAX_IRC_MESSAGE_LEN) {
@@ -736,7 +737,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         char temp_[MAX_IRC_MESSAGE_LEN];
         std::sprintf(temp,":%s",text);
         if (conn_get_wol(dst) == 1) {
-           if ((conn_get_clienttag(dst) != CLIENTTAG_WCHAT_UINT) && (type == message_type_broadcast)) {
+           if ((tag_check_wolv2(conn_get_clienttag(dst))) && (type == message_type_broadcast)) {
                /* Pelish: WOLv2 have special announce message code */
                std::sprintf(temp,":- %s",text);
                std::sprintf(temp_,"%u",RPL_ANNOUNCE,NULL);
@@ -853,7 +854,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         from.nick = conn_get_chatname(me);
         from.user = ctag;
         from.host = addr_num_to_ip_str(conn_get_addr(me));
-        msg = irc_message_preformat(&from,"INVMSG",conn_get_loggeduser(dst),text);
+        msg = irc_message_preformat(&from,"INVMSG",NULL,text);
         conn_unget_chatname(me,from.nick);
     	break;
     case message_type_page:
@@ -892,7 +893,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         from.nick = conn_get_chatname(me);
         from.user = ctag;
         from.host = addr_num_to_ip_str(conn_get_addr(me));
-        msg = irc_message_preformat(&from,"STARTG",conn_get_loggeduser(dst),text);
+        msg = irc_message_preformat(&from,"STARTG",NULL,text);
         conn_unget_chatname(me,from.nick);
         break;
     case message_wol_advertr:
@@ -972,7 +973,7 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
                    	if (flags & MF_BLIZZARD)
 		               std::strcat(temp,"@");
                 }
-                if (conn_get_clienttag(c) != CLIENTTAG_WCHAT_UINT) {
+                if (tag_check_wolv2(conn_get_clienttag(c))) {
                     /* BATTLECLAN Support */
                     char _temp[MAX_IRC_MESSAGE_LEN];
                     std::memset(_temp,0,sizeof(_temp));

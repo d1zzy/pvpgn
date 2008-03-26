@@ -538,15 +538,13 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 
     irc_send(conn,RPL_LISTSTART,"Channel :Users Names"); /* backward compatibility */
 
-    if ((numparams == 0) ||
-        ((std::strcmp(params[0], "0") == 0) || (std::strcmp(params[0], "-1") == 0))) {
-        /* LIST all chat channels */
-        /* Emperor sends as params[0] == -1 if want QuickMatch channels too, 0 if not.
-         * This sends also NOX but we dunno why. */
-
-        /* HACK: Currently, this is the best way to set the game type... */
-        if (params)
-            conn_wol_set_game_type(conn,std::atoi(params[1]));
+    if ((numparams == 0) || ((params[0]) && (params[1]) && (std::strcmp(params[0], params[1]) != 0))) {
+        /**
+         * LIST all chat channels 
+         * Emperor sends as params[0] == -1 if want QuickMatch channels too, 0 if not.
+         * This sends also NOX but we dunno why.
+         * DUNE 2000 use params[0] to determine channels by channeltype
+         */
 
         LIST_TRAVERSE_CONST(channellist(),curr) {
    	         t_channel const * channel = (const t_channel*)elem_get_data(curr);
@@ -563,7 +561,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
                     std::strcat(temp,"0");  /* User channel */
 
                 if (conn_get_clienttag(conn)==CLIENTTAG_WCHAT_UINT)
-                    std::strcat(temp,":");    /* WOLv1 ends by ":" */
+                    std::strcat(temp,":");     /* WOLv1 ends by ":" */
                 else
                     std::strcat(temp," 388");  /* WOLv2 ends by "388" */
 
@@ -582,16 +580,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
     *  21 = Red Alert 1 v 3.03 channels, 31 = Emperor: Battle for Dune, 33 = Red Alert 2,
     *  37 = Nox Quest channels, 38,39,40 = Quickgame channels, 41 = Yuri's Revenge
 	*/
-    if ((numparams == 0) ||
-       (std::strcmp(params[0], "12") == 0) ||
-       (std::strcmp(params[0], "14") == 0) ||
-       (std::strcmp(params[0], "16") == 0) ||
-       (std::strcmp(params[0], "18") == 0) ||
-       (std::strcmp(params[0], "21") == 0) ||
-       (std::strcmp(params[0], "31") == 0) ||
-       (std::strcmp(params[0], "33") == 0) ||
-       (std::strcmp(params[0], "37") == 0) ||
-       (std::strcmp(params[0], "41") == 0)) {
+    if ((numparams == 0) || ((params[0]) && (params[1]) && (std::strcmp(params[0], params[1]) == 0))) {
    		    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Game]");
        	    LIST_TRAVERSE_CONST(channellist(),curr)
             {
@@ -604,7 +593,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
         	    
 				if((channel_wol_get_game_type(channel) != 0)) {
 					m = channel_get_first(channel);
-					if((channel_wol_get_game_type(channel) == conn_wol_get_game_type(conn)) || ((numparams == 0))) {
+					if((tag_channeltype_to_uint(channel_wol_get_game_type(channel)) == conn_get_clienttag(conn)) || ((numparams == 0))) {
 						eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] List [Channel: \"_game\"] %s %u 0 %u %u %s %u 128::",tempname,
 									 channel_get_length(channel),channel_wol_get_game_type(channel),channel_wol_get_game_tournament(channel),
 									 channel_wol_get_game_extension(channel),channel_wol_get_game_ownerip(channel));
@@ -618,7 +607,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
                             *
 							*   #game_channel_name users isofficial gameType gameIsTournment gameExtension longIP locked::topic
 							*   by isofficial is used always 0 (its backward compatibility with chat channels)
-							*   locked can be 128 = unlocked or 384 = locked
+							*   locked can be 128==unlocked or 384==locked
 							*   gameExtension is used for game_sorting, i.e. in RedAlert1v3 or TSUN/TSXP for spliting
 							*   extension pack, also is used for spliting Clan_game or quick_match from normal game
 							*/
@@ -641,7 +630,6 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 				}
 			}
 		}
-
     	irc_send(conn,RPL_LISTEND,":End of LIST command");
     	return 0;
 }
@@ -930,15 +918,15 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	*  the same...input and output of JOINGAME is listed below. By the way, there is a
 	*  hack in here, for Red Alert 1, it use's JOINGAME for some reason to join a lobby channel.
 	*
-	*   Here is the input expected for WCHAT:
-    *   JOINGAME [#Game_channel] 2 [NumberOfPlayers] [gameType] 1 1 [gameIsTournament]
-    *   Knowed GameTypes (0-chat, 1-cnc, 2-ra1, 3-racs, 4-raam, 5-solsurv)
+	*   Here is WOLv1 input expected:
+    *   JOINGAME [#Game_channel_name] [MinPlayers] [MaxPlayers] [channelType] 1 1 [gameIsTournament]
+    *   Knowed channelTypes (0-chat, 1-cnc, 2-ra1, 3-racs, 4-raam, 5-solsurv... listed in tag.cpp)
     *
-	*   Here is the input expected:
-	*   JOINGAME #user's_game MinOfPlayers MaxOfPlayers gameType unknown unknown gameIsTournament gameExtension password
+	*   Here is WOLv2 input expected:
+	*   JOINGAME [#Game_channel_name] [MinPlayers] [MaxPlayers] [channelType] unknown unknown [gameIsTournament] [gameExtension] [password_optional]
 	*
 	*   Heres the output expected:
-	*   user!WWOL@hostname JOINGAME MinOfPlayers MaxOfPlayers gameType unknown clanID longIP gameIsTournament :#game_channel_name
+	*   user!WWOL@hostname JOINGAME [MinPlayers] [MaxPlayers] [channelType] unknown clanID [longIP] [gameIsTournament] :[#Game_channel_name]
 	*/
 	if((numparams==2)) {
 	    char ** e;

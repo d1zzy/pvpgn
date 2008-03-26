@@ -191,8 +191,9 @@ tosfile = "tos.txt"
 # noxx : client type Nox
 # noxq : client type Nox Quest
 # rngd : client type Renegade
+# rfds : client type Renegade Free Dedicated Server
 # yuri : client type Yuri's Revenge
-# empr : client type Emperor: Battle for Dune
+# ebfd : client type Emperor: Battle for Dune
 #
 # Example: allowed_clients = war3,w3xp
 allowed_clients = all

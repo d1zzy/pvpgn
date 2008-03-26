@@ -2,6 +2,7 @@
  * Copyright (C) 2000 Rob Crittenden (rcrit@greyoak.com)
  * Copyright (C) 2002 Gianluigi Tiesi (sherpya@netfarm.it)
  * Copyright (C) 2004 CreepLord (creeplord@pvpgn.org)
+ * Copyright (C) 2008 Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,8 +63,9 @@ extern int autoupdate_load(char const * filename)
     char *         temp;
     char const *   archtag;
     char const *   clienttag;
-    char const *   mpqfile;
+    char const *   updatefile;
     char const *   versiontag;
+    char const *   path;
     t_autoupdate * entry;
 
     if (!filename) {
@@ -108,9 +110,12 @@ extern int autoupdate_load(char const * filename)
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing versiontag on line %u of file \"%s\"",line,filename);
 	    continue;
 	}
-	if (!(mpqfile = std::strtok(NULL," \t"))) {
-	    eventlog(eventlog_level_error,__FUNCTION__,"missing mpqfile on line %u of file \"%s\"",line,filename);
+	if (!(updatefile = std::strtok(NULL," \t"))) {
+	    eventlog(eventlog_level_error,__FUNCTION__,"missing updatefile on line %u of file \"%s\"",line,filename);
 	    continue;
+	}
+	if ((!(path = std::strtok(NULL," \t"))) && tag_check_wolv1(tag_str_to_uint(clienttag)) && tag_check_wolv2(tag_str_to_uint(clienttag))) { /* Only in WOL is needed to have path*/
+	    eventlog(eventlog_level_error,__FUNCTION__,"missing path on line %u of file \"%s\"",line,filename);
 	}
 
 	entry = (t_autoupdate*)xmalloc(sizeof(t_autoupdate));
@@ -126,9 +131,11 @@ extern int autoupdate_load(char const * filename)
 	    continue;
 	}
 	entry->versiontag = xstrdup(versiontag);
-	entry->mpqfile = xstrdup(mpqfile);
+	entry->updatefile = xstrdup(updatefile);
+	if (path)
+	    entry->path = xstrdup(path);
 
-	eventlog(eventlog_level_debug,__FUNCTION__,"update '%s' version '%s' with file %s",clienttag,versiontag,mpqfile);
+	eventlog(eventlog_level_debug,__FUNCTION__,"update '%s' version '%s' with file %s",clienttag,versiontag,updatefile);
 
 	list_append_data(autoupdate_head,entry);
     }
@@ -152,7 +159,9 @@ extern int autoupdate_unload(void)
 		eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
 	    else {
 		xfree((void *)entry->versiontag);	/* avoid warning */
-		xfree((void *)entry->mpqfile);		/* avoid warning */
+		xfree((void *)entry->updatefile);	/* avoid warning */
+		if (entry->path)
+		    xfree((void *)entry->path);		/* avoid warning */
 		xfree(entry);
 	    }
 	    list_remove_elem(autoupdate_head,&curr);
@@ -170,7 +179,7 @@ extern int autoupdate_unload(void)
  *  retrun NULL if no update exists
  */
 
-extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, char const * versiontag)
+extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, char const * versiontag,  char const * sku)
 {
     if (autoupdate_head) {
 	t_elem const * curr;
@@ -191,28 +200,36 @@ extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, c
 	    if (std::strcmp(entry->versiontag, versiontag) != 0)
 		continue;
 
-	    /* if we have a gamelang then add it to the mpq file name */
-	    if ((gamelang) && // so far only WAR3 uses gamelang specific MPQs!
-	        ((clienttag == CLIENTTAG_WARCRAFT3_UINT) || (clienttag == CLIENTTAG_WAR3XP_UINT))){
+	    /* if we have a gamelang or SKU then add it to the update file name */
+	    // so far only WAR3 uses gamelang specific MPQs!
+	    if (((gamelang) && ((clienttag == CLIENTTAG_WARCRAFT3_UINT) || (clienttag == CLIENTTAG_WAR3XP_UINT)))
+            || ((sku) && (tag_check_wolv2(clienttag)))) {
 		char gltag[5];
 		char * tempmpq;
 		char * extention;
+		char const * path = entry->path;
 
-		tag_uint_to_str(gltag,gamelang);
-		tempmpq = xstrdup(entry->mpqfile);
-
-		temp = (char*)xmalloc(std::strlen(tempmpq)+6);
+		tempmpq = xstrdup(entry->updatefile);
 
 		extention = std::strrchr(tempmpq,'.');
 		*extention = '\0';
 		extention++;
 
-		std::sprintf(temp, "%s_%s.%s", tempmpq, gltag, extention);
+		if ((clienttag == CLIENTTAG_WARCRAFT3_UINT) || (clienttag == CLIENTTAG_WAR3XP_UINT)) {
+		    tag_uint_to_str(gltag,gamelang);
+
+		    temp = (char*)xmalloc(std::strlen(tempmpq)+6);
+		    std::sprintf(temp, "%s_%s.%s", tempmpq, gltag, extention);
+		}
+		else {
+		    temp = (char*)xmalloc(std::strlen(path)+std::strlen(tempmpq)+std::strlen(sku)+7);
+		    std::sprintf(temp, "%s %s_%s.%s", path, tempmpq, sku, extention);
+		}
 
 		xfree((void *)tempmpq);
 		return temp;
 	    }
-	    temp = xstrdup(entry->mpqfile);
+	    temp = xstrdup(entry->updatefile);
 	    return temp;
 	}
     }
