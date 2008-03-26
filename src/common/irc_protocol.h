@@ -351,6 +351,7 @@
 #define RPL_FIND_USER_EX     398
 #define RPL_GET_INSIDER      399
 
+/* Westwood Online servserv replies are in range 600 - 615 */
 #define RPL_UPDATE_NONEX     602  /* for servserv */
 #define RPL_UPDATE_EXIST     603  /* for servserv */
 

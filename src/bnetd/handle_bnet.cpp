@@ -1009,7 +1009,7 @@ static int _client_authreq1(t_connection * c, t_packet const *const packet)
 	    } else {
 		char *mpqfilename;
 
-		mpqfilename = autoupdate_check(conn_get_archtag(c), conn_get_clienttag(c), conn_get_gamelang(c), versiontag);
+		mpqfilename = autoupdate_check(conn_get_archtag(c), conn_get_clienttag(c), conn_get_gamelang(c), versiontag, NULL);
 
 		/* Only handle updates when there is an update file available. */
 		if (mpqfilename != NULL) {
@@ -1116,7 +1116,7 @@ static int _client_authreq109(t_connection * c, t_packet const *const packet)
 	    } else {
 		char *mpqfilename;
 
-		mpqfilename = autoupdate_check(conn_get_archtag(c), conn_get_clienttag(c), conn_get_gamelang(c), versiontag);
+		mpqfilename = autoupdate_check(conn_get_archtag(c), conn_get_clienttag(c), conn_get_gamelang(c), versiontag, NULL);
 
 		/* Only handle updates when there is an update file available. */
 		if (mpqfilename != NULL) {

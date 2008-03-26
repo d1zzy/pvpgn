@@ -23,6 +23,9 @@
 # number, checksum, clienttag, etc.  The autoupdate then uses the arch tag,  #
 # client tag and version tag to find the needed update file.                 #
 #                                                                            #
+##############################################################################
+# Battle.net related informations                                            #
+#----------------------------------------------------------------------------#
 # War3 and War3x clients have different mpq files for the different game     #
 # languages.  This is accounted for by the server, and the client will get   #
 # the correct file.  Only one entry is needed per arch, client, and version  #
@@ -45,6 +48,48 @@
 # The format of this file is as follows:                                     #  
 #                                                                            #
 # archtag  clienttag  versiontag  -----update file-----                      #
+#                                                                            #
+##############################################################################
+# Westwood Online related informations                                       #
+#----------------------------------------------------------------------------#
+# For WOL autoupdate is used standart FTP protocol which is not included in  #
+# PvPGN. The default WOL autoupdate entryes are writed according to          #
+# westwood's autoupdate FTP server settings (username, password, filepath).  #
+#                                                                            #
+# WOLv2 using diferent rtp files for the diferent SKUs. This is accounted    #
+# for by the server, and the client will get the correct file. Only one      #
+# entry is needed per arch, client, and version tag.                         #
+#                                                                            #
+# Example: With the following line:                                          #
+# IX86    TSUN     65536         131075_65536.rtp     tibsun                 #
+#                                                                            #
+# TibSun clients with SKU 4608 will receive the file "131075_65536_4608.rtp" #
+# TibSun clients with SKU 4610 will receive the file "131075_65536_4610.rtp" #
+#                                                                            #
+# The avaliable clients, theirs tags and SKUs are:                           #
+#                                                                            #
+# Client name     CTag     SKUs                                              #
+# ---------------------------------------------------                        #
+# Renegade        RNGD     3072 3074 3075 3078 3081 3082                     #
+# Dune 2000       DN2K     3584 3586 3587 3589 3591                          #
+# Nox             NOXX     4096 4098 4099 4101 4102 4105                     #
+# Tiberian Sun    TSUN     4608 4610 4611 4615                               #
+# Red Alert 1v3   RALT     5376 5378 5379                                    #
+# Lands of Lore 3 LOR3     6400 6401 6402 6403 6405                          #
+# Tiberian Sun XP TSXP     7168 7170 7171 7175 7424 7426 7427 7431           #
+# Emperor: BDF    EBFD     7936 7938 7939 7945 7946                          #
+# Red Alert 2     RAL2     8448 8450 8451 8457 8458 8960 8962 8963 8969 8970 #
+# Nox Quest       NOXQ     9472 9474 9475 9477 9478 9481                     #
+# Yuri's Revenge  YURI     10496 10498 10499 10505 10506                     #
+# Renegade Server RFDS     12288                                             #
+# WOL API         WWOL     32512                                             #
+#                                                                            #
+# Note: WOL update entry must including file path according to FTP server.   #
+# All WOL entries using archtag IX86.                                        #
+#                                                                            #
+# The format of this file is as follows:                                     #
+#                                                                            #
+# archtag  clienttag  versiontag  -----update file-----      file path       #
 #                                                                            #
 ##############################################################################
 
@@ -330,3 +375,117 @@
 
 # The next one is a Brood War wildcard entry.
 #PMAC    STAR   STAR_1xx        STAR_PMAC_1xx_113E.mpq
+
+##### Westwood Online update entries #########################################
+
+# ========================== Westwood Online API ============================
+
+#IX86    WWOL     65536         65551_65536.rtp      wolapi
+#IX86    WWOL     65537         65551_65537.rtp      wolapi
+#IX86    WWOL     65538         65551_65538.rtp      wolapi
+#IX86    WWOL     65539         65551_65539.rtp      wolapi
+#IX86    WWOL     65540         65551_65540.rtp      wolapi
+#IX86    WWOL     65541         65551_65541.rtp      wolapi
+#IX86    WWOL     65542         65551_65542.rtp      wolapi
+#IX86    WWOL     65543         65551_65543.rtp      wolapi
+#IX86    WWOL     65544         65551_65544.rtp      wolapi
+#IX86    WWOL     65545         65551_65545.rtp      wolapi
+#IX86    WWOL     65546         65551_65546.rtp      wolapi
+#IX86    WWOL     65547         65551_65547.rtp      wolapi
+#IX86    WWOL     65548         65551_65548.rtp      wolapi
+#IX86    WWOL     65549         65551_65549.rtp      wolapi
+#IX86    WWOL     65550         65551_65550.rtp      wolapi
+#IX86    WWOL     65555         65556_65555.rtp      wolapi
+
+# =============================== Renegade ==================================
+
+#IX86    RNGD     65538         65573_65538.rtp      renegade
+#IX86    RNGD     65550         65573_65538.rtp      renegade
+#IX86    RNGD     65551         65573_65538.rtp      renegade
+#IX86    RNGD     65566         65573_65538.rtp      renegade
+#IX86    RNGD     65567         65573_65538.rtp      renegade
+#IX86    RNGD     65568         65573_65538.rtp      renegade
+#IX86    RNGD     65570         65573_65570.rtp      renegade
+#IX86    RNGD     65571         65573_65571.rtp      renegade
+#IX86    RNGD     65572         65573_65572.rtp      renegade
+
+# ==================== Renegade Free Dedicated Server =======================
+
+#IX86    RFDS     65538         65572_65538.rtp      renegade
+#IX86    RFDS     65550         65572_65550.rtp      renegade
+#IX86    RFDS     65551         65572_65551.rtp      renegade
+#IX86    RFDS     65553         65572_65553.rtp      renegade
+#IX86    RFDS     65554         65572_65554.rtp      renegade
+#IX86    RFDS     65566         65572_65566.rtp      renegade
+#IX86    RFDS     65568         65572_65568.rtp      renegade
+#IX86    RFDS     65570         65572_65570.rtp      renegade
+#IX86    RFDS     65571         65572_65571.rtp      renegade
+#IX86    RFDS     65572         65573_65572.rtp      renegade
+
+# ============================= Tiberian Sun ================================
+
+#IX86    TSUN     65536         131075_65536.rtp     tibsun
+#IX86    TSUN     65541         131075_65536.rtp     tibsun
+#IX86    TSUN     65542         131075_65536.rtp     tibsun
+#IX86    TSUN     65543         131075_65536.rtp     tibsun
+#IX86    TSUN     65544         131075_65536.rtp     tibsun
+#IX86    TSUN     65545         131075_65536.rtp     tibsun
+#IX86    TSUN     65546         131075_65536.rtp     tibsun
+#IX86    TSUN     65547         131075_65536.rtp     tibsun
+#IX86    TSUN     65548         131075_65548.rtp     tibsun
+#IX86    TSUN     131072        131075_65548.rtp     tibsun
+#IX86    TSUN     131074        131075_131074.rtp    tibsun
+
+# ======================= Tiberian Sun: FireStorm ===========================
+
+#IX86    TSXP     131072        131074_131072.rtp    tibsun
+#IX86    TSXP     131074        131075_131074.rtp    tibsun
+
+# =============================== Dune 2000 =================================
+
+#IX86    DN2K     65536         65542.rtp            dune2k/1.006/1.000
+#IX86    DN2K     65537         65542_65537.rtp      dune2k/1.006/1.001
+
+# ================================== NOX ====================================
+
+#IX86    NOXX     65536         65538_65536.rtp      nox
+#IX86    NOXX     65537         65538_65537.rtp      nox
+
+# =============================== NOX: Quest ================================
+
+#IX86    NOXQ     65536         65538_65536.rtp      nox
+#IX86    NOXQ     65537         65538_65537.rtp      nox
+#IX86    NOXQ     65538         65540_65538.rtp      nox
+#IX86    NOXQ     65539         65540_65539.rtp      nox
+
+# ======================= Emperor: Battle for Dune ==========================
+
+#IX86    EBFD         1         65545_1.rtp          emperor
+#IX86    EBFD     65536         65545_65536.rtp      emperor
+#IX86    EBFD     65537         65545_65537.rtp      emperor
+#IX86    EBFD     65538         65545_65538.rtp      emperor
+#IX86    EBFD     65539         65545_65539.rtp      emperor
+#IX86    EBFD     65540         65545_65540.rtp      emperor
+#IX86    EBFD     65541         65545_65541.rtp      emperor
+#IX86    EBFD     65542         65545_65542.rtp      emperor
+#IX86    EBFD     65543         65545_65543.rtp      emperor
+#IX86    EBFD     65544         65545_65544.rtp      emperor
+
+# ============================= Red Alert 2 =================================
+
+#IX86    RAL2     65536         65542_65536.rtp      ra2
+#IX86    RAL2     65537         65542_65537.rtp      ra2
+#IX86    RAL2     65538         65542_65538.rtp      ra2
+#IX86    RAL2     65539         65542_65539.rtp      ra2
+#IX86    RAL2     65540         65542_65540.rtp      ra2
+#IX86    RAL2     65541         65542_65541.rtp      ra2
+
+# ============================= Yuri's Revenge ==============================
+
+#IX86    YURI     65536         65537_65536.rtp      yuri
+
+# ============================= Lands of Lore 3 =============================
+
+#IX86    LOR3     65536         65539_65536.rtp      lore3/1.003
+#IX86    LOR3     65537         65539_65537.rtp      lore3/1.003
+#IX86    LOR3     65538         65539_65538.rtp      lore3/1.003

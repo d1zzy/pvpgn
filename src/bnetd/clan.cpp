@@ -76,7 +76,7 @@ static int _cb_load_clans(void *clan)
 extern int clan_send_message_to_online_members(t_clan * clan, t_message_type type, t_connection * me, char const * text)
 {
     /* PELISH: Send message to online clan_members
-       returns: an eroor == -1, done but no one heard == 0, done with message sended == 1 */
+       returns: an error == -1, done but no one heard == 0, done with message sended == 1 */
     t_list * cl_member_list;
     t_elem * curr;
     t_clanmember * dest_member;

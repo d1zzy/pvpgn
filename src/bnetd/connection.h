@@ -198,7 +198,6 @@ typedef struct connection
 	struct {
 	    int ingame;				        /* Are we in a game channel? */
 	    int codepage;
-	    int gameType;
 	    int findme;                     /* Allow others to find me? */
 	    int pageme;                     /* Allow others to page me? */
 	    char const * apgar;			    /* WOL User Password (encrypted) */
@@ -448,8 +447,6 @@ extern void conn_wol_set_apgar(t_connection * c, char const * apgar);
 extern char const * conn_wol_get_apgar(t_connection * c);
 extern void conn_wol_set_codepage(t_connection * c, int codepage);
 extern int conn_wol_get_codepage(t_connection * c);
-extern void conn_wol_set_game_type(t_connection * c, int gameType);
-extern int conn_wol_get_game_type(t_connection * c);
 extern void conn_wol_set_findme(t_connection * c, int findme);
 extern int conn_wol_get_findme(t_connection * c);
 extern void conn_wol_set_pageme(t_connection * c, int pageme);

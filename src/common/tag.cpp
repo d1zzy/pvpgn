@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2004	Aaron
  * Copyright (C) 2004	CreepLord (creeplord@pvpgn.org)
- * Copyright (C) 2007	Pelish (pelish@gmail.com)
+ * Copyright (C) 2007,2008	Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -95,6 +95,8 @@ extern char const * clienttag_uint_to_str(t_clienttag clienttag)
              return CLIENTTAG_NOXQUEST;
         case CLIENTTAG_RENEGADE_UINT:
              return CLIENTTAG_RENEGADE;
+        case CLIENTTAG_RENGDFDS_UINT:
+             return CLIENTTAG_RENGDFDS;
         case CLIENTTAG_YURISREV_UINT:
              return CLIENTTAG_YURISREV;
         case CLIENTTAG_EMPERORBD_UINT:
@@ -221,6 +223,7 @@ extern int tag_check_client(t_tag tag_uint)
     case CLIENTTAG_NOX_UINT:
     case CLIENTTAG_NOXQUEST_UINT:
     case CLIENTTAG_RENEGADE_UINT:
+    case CLIENTTAG_RENGDFDS_UINT:
     case CLIENTTAG_YURISREV_UINT:
     case CLIENTTAG_EMPERORBD_UINT:
     case CLIENTTAG_LOFLORE3_UINT:
@@ -250,6 +253,38 @@ extern int tag_check_gamelang(t_tag gamelang)
 	    return 1;
 	default:
 	    return 0;
+    }
+}
+
+extern int tag_check_wolv1(t_tag tag_uint)
+{
+    switch (tag_uint) {
+        case CLIENTTAG_WCHAT_UINT:
+            return 1;
+        default:
+            return 0;
+    }
+}
+
+extern int tag_check_wolv2(t_tag tag_uint)
+{
+    switch (tag_uint) {
+        case CLIENTTAG_TIBERNSUN_UINT:
+        case CLIENTTAG_TIBSUNXP_UINT:
+        case CLIENTTAG_REDALERT_UINT:
+        case CLIENTTAG_REDALERT2_UINT:
+        case CLIENTTAG_DUNE2000_UINT:
+        case CLIENTTAG_NOX_UINT:
+        case CLIENTTAG_NOXQUEST_UINT:
+        case CLIENTTAG_RENEGADE_UINT:
+        case CLIENTTAG_RENGDFDS_UINT:
+        case CLIENTTAG_YURISREV_UINT:
+        case CLIENTTAG_EMPERORBD_UINT:
+        case CLIENTTAG_LOFLORE3_UINT:
+        case CLIENTTAG_WWOL_UINT:
+            return 1;
+        default:
+            return 0;
     }
 }
 
@@ -301,6 +336,8 @@ extern char const * clienttag_get_title(t_clienttag clienttag)
         return "Nox Quest";
       case CLIENTTAG_RENEGADE_UINT:
         return "Renegade";
+      case CLIENTTAG_RENGDFDS_UINT:
+        return "Renegade Free Dedicated Server";
       case CLIENTTAG_YURISREV_UINT:
         return "Yuri's Revenge";
       case CLIENTTAG_EMPERORBD_UINT:
@@ -355,15 +392,14 @@ extern int tag_check_in_list(t_clienttag clienttag, char const * list)
     return 0;
 }
 
-extern t_clienttag tag_sku_to_uint (int sku)
+extern t_clienttag tag_sku_to_uint(int sku)
 {
   /**
    *  Here is table of Westwood Online SKUs and by this SKU returning CLIENTTAG
    *  SKUs are from Autoupdate FTP and from windows registry
    */
     
-   if (!sku)
-   {
+   if (!sku) {
         ERROR0("got NULL sku");
         return CLIENTTAG_UNKNOWN_UINT;
    }
@@ -459,12 +495,58 @@ extern t_clienttag tag_sku_to_uint (int sku)
       case 10506:
            return CLIENTTAG_YURISREV_UINT;
       case 12288:  /* C&C Renegade Free Dedicated Server */
-           return CLIENTTAG_RENEGADE_UINT; //FIXME: SET NEW CLIENTTAG FOR RENEGADE FDS
+           return CLIENTTAG_RENGDFDS_UINT;
       case 32512:  /* Westwood Online API */
            return CLIENTTAG_WWOL_UINT;
       default:  /* Unknown Westwood Online game -> is anyone SKU that we havent??? */
            return CLIENTTAG_WWOL_UINT;
    }
+}
+
+extern t_clienttag tag_channeltype_to_uint(int channeltype)
+{
+   /**
+    *  This is used to convert WOL channel type to t_clienttag
+    */
+
+    if (!channeltype) {
+        ERROR0("got NULL channeltype");
+        return CLIENTTAG_UNKNOWN_UINT;
+    }
+
+    switch (channeltype) {
+        case 0:   /* Westwood Chat channels */
+        case 1:   /* Command & Conquer Win95 channels */
+        case 2:   /* Red Alert Win95 channels */
+        case 3:   /* Red Alert Win95 Counterstrike channels */
+        case 4:   /* Red Alert Win95 The Aftermath channels */
+        case 5:   /* Command & Conquer: Sole Survivor channels */
+            return CLIENTTAG_WCHAT_UINT;
+        case 12:  /* Command & Conquer: Renegade channels */
+            return CLIENTTAG_RENEGADE_UINT;
+        case 14:  /* Dune 2000 channels */
+            return CLIENTTAG_DUNE2000_UINT;
+        case 16:  /* Nox channels */
+            return CLIENTTAG_NOX_UINT;
+        case 18:  /* Tiberian Sun channels */
+            return CLIENTTAG_TIBERNSUN_UINT;
+        case 21:  /* Red Alert 1 v 3.03 channels */
+            return CLIENTTAG_REDALERT_UINT;
+        case 31:  /* Emperor: Battle for Dune channels */
+            return CLIENTTAG_EMPERORBD_UINT;
+        case 33:  /* Red Alert 2 channels */
+            return CLIENTTAG_REDALERT2_UINT;
+        case 37:  /* Nox Quest channels */
+            return CLIENTTAG_NOXQUEST_UINT;
+        case 38:  /* QuickMatch channels */
+        case 39:
+        case 40:
+            return CLIENTTAG_WWOL_UINT;
+        case 41:  /* Yuri's Revenge channels */
+            return CLIENTTAG_YURISREV_UINT;
+        default:
+            return CLIENTTAG_WWOL_UINT;
+    }
 }
 
 }

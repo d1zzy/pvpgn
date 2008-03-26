@@ -98,12 +98,14 @@ typedef t_tag		t_gamelang;
 #define CLIENTTAG_NOX_UINT          0x4E4F5858
 #define CLIENTTAG_NOXQUEST          "NOXQ" /* NOX Quest*/
 #define CLIENTTAG_NOXQUEST_UINT     0x4E4F5851
-#define CLIENTTAG_RENEGADE          "RNGD" /* C&C Renegade */
+#define CLIENTTAG_RENEGADE          "RNGD" /* Renegade */
 #define CLIENTTAG_RENEGADE_UINT     0x524E4744
+#define CLIENTTAG_RENGDFDS          "RFDS" /* Renegade Free Dedicated Server */
+#define CLIENTTAG_RENGDFDS_UINT     0x52464453
 #define CLIENTTAG_YURISREV          "YURI" /* Yuri's Revenge */
 #define CLIENTTAG_YURISREV_UINT     0x59555249
-#define CLIENTTAG_EMPERORBD         "EMPR" /* Emperor: Battle for Dune */
-#define CLIENTTAG_EMPERORBD_UINT    0x454D5052
+#define CLIENTTAG_EMPERORBD         "EBFD" /* Emperor: Battle for Dune */
+#define CLIENTTAG_EMPERORBD_UINT    0x45424644
 #define CLIENTTAG_LOFLORE3          "LOR3" /* Lands of Lore 3 */
 #define CLIENTTAG_LOFLORE3_UINT     0x4C4F5233
 #define CLIENTTAG_WWOL              "WWOL" /* Other Westwood Online games */
@@ -163,8 +165,11 @@ extern const char * tag_uint_to_revstr(char * tag_str, t_tag tag_uint);
 extern int	tag_check_arch(t_tag tag_uint);
 extern int	tag_check_client(t_tag tag_uint);
 extern int	tag_check_gamelang(t_tag tag_uint);
+extern int	tag_check_wolv1(t_tag tag_uint);
+extern int	tag_check_wolv2(t_tag tag_uint);
 extern int	tag_check_in_list(t_clienttag clienttag,const char * list);
-extern t_clienttag tag_sku_to_uint (int sku);
+extern t_clienttag tag_sku_to_uint(int sku);
+extern t_clienttag tag_channeltype_to_uint(int channeltype);
 
 }
 
