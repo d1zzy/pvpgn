@@ -40,7 +40,7 @@ extern int clockstr_to_seconds(char const * clockstr, unsigned int * totsecs);
 extern char * escape_fs_chars(char const * in, unsigned int len) ;
 extern char * escape_chars(char const * in, unsigned int len) ;
 extern char * unescape_chars(char const * in) ;
-extern void str_to_hex(char * target, char * data, int datalen);
+extern void str_to_hex(char * target, char const * data, int datalen);
 extern int hex_to_str(char const * source, char * data, int datalen);
 extern char * buildpath(char const *root, const char *suffix);
 extern int timestr_to_time(char const * timestr, std::time_t* ptime);

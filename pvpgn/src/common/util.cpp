@@ -523,7 +523,7 @@ extern char * unescape_chars(char const * in)
 }
 
 
-extern void str_to_hex(char * target, char * data, int datalen)
+extern void str_to_hex(char * target, char const * data, int datalen)
 {
     unsigned char c;
     int  i;
@@ -531,7 +531,7 @@ extern void str_to_hex(char * target, char * data, int datalen)
     {
         c = (data[i]) & 0xff;
 
-	std::sprintf(target + i*3, "%02X    ", c);
+	std::sprintf(target + i*3, "%02X ", c);
 	target[i*3+3] = '\0';
 
 	/* std::fprintf(stderr, "str_to_hex %d | '%02x' '%s'\n", i, c, target); */
