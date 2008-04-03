@@ -23,6 +23,7 @@
 #include <cstring>
 
 #include "compat/uint.h"
+#include "common/bn_type.h"
 #include "common/introtate.h"
 #include "common/eventlog.h"
 #include "common/setup_after.h"
@@ -241,7 +242,6 @@ static void hash_set_length(t_uint32 * dst, unsigned int size){
   dst[15] |= ((size_low ) & 0xff);
 }
 
-
 extern int sha1_hash(t_hash * hashout, unsigned int size, void const * datain)
 {
     t_uint32              tmp[64+16];
@@ -299,6 +299,18 @@ extern int sha1_hash(t_hash * hashout, unsigned int size, void const * datain)
     return 0;
 }
 
+extern int little_endian_sha1_hash(t_hash * hashout, unsigned int size, void const * datain)
+{
+    bn_int value;
+    unsigned int i;
+    sha1_hash(hashout,size,datain);
+    for (i=0; i<5; i++)
+    {
+        bn_int_nset(&value,(*hashout)[i]);
+        (*hashout)[i]=bn_int_get(value);
+    }
+}
+
 extern int hash_eq(t_hash const h1, t_hash const h2)
 {
     unsigned int i;
@@ -332,6 +344,19 @@ extern char const * hash_get_str(t_hash const hash)
         std::sprintf(&temp[i*8],"%08x",hash[i]);
 
     return temp;
+}
+
+extern char const * little_endian_hash_get_str(t_hash const hash)
+{
+    bn_int value;
+    t_hash be_hash;
+    unsigned int i;
+    for (i=0; i<5; i++)
+    {
+        bn_int_nset(&value,hash[i]);
+        be_hash[i]=bn_int_get(value);
+    }
+    return hash_get_str(be_hash);
 }
 
 
