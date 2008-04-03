@@ -50,3 +50,8 @@ endif(WITH_D2DBS)
 if(HAVE_PCAP_H AND HAVE_LIBPCAP)
     add_subdirectory(bnpcap)
 endif(HAVE_PCAP_H AND HAVE_LIBPCAP)
+
+if(CMAKE_TESTING_ENABLED)
+    add_subdirectory(test)
+endif(CMAKE_TESTING_ENABLED)
+

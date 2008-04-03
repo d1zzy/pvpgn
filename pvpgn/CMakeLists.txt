@@ -25,3 +25,4 @@ option(WITH_PGSQL "include PostgreSQL user accounts support" OFF)
 include(ConfigureChecks.cmake)
 
 subdirs(src conf man files)
+ENABLE_TESTING()
