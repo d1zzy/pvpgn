@@ -58,13 +58,12 @@ private:
 	typedef t_uint32 bigint_base;
 	typedef t_uint64 bigint_extended;
 	#define bigint_base_mask 0xffffffff
-	#define bigint_extended_carry 0x100000000
 #else
 	typedef t_uint16 bigint_base;
 	typedef t_uint32 bigint_extended;
 	#define bigint_base_mask 0xffff
-	#define bigint_extended_carry 0x10000
 #endif
+	#define bigint_extended_carry bigint_base_mask+0x01
 	#define bigint_base_bitcount (sizeof(bigint_base)*8)
 
         bigint_base	*segment;
