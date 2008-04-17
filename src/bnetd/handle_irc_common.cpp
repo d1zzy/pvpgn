@@ -99,15 +99,16 @@ static int handle_irc_common_set_class(t_connection * conn, char const * command
     else {
         if (std::strcmp(command, "verchk") == 0) {
             DEBUG0("Got WSERV packet");
-            if (std::strcmp(prefs_get_wserv_addrs(),"") != 0)
+            if (std::strcmp(prefs_get_wolv2_addrs(),"") != 0)
                 conn_set_class(conn,conn_class_wserv);
             else
                 conn_set_state(conn,conn_state_destroy);
             return 0;
         }
-        else if (std::strcmp(command, "CVERS") == 0) {
+        else if ((std::strcmp(command, "CVERS") == 0) || (std::strcmp(command, "cvers") == 0)) {
             DEBUG0("Got WOL packet");
-            if (std::strcmp(prefs_get_wol_addrs(),"") != 0)
+            /* FIXME: We can check it not by address but check if client is supported by tag_check_in_list() */
+            if ((std::strcmp(prefs_get_wolv1_addrs(),"") != 0) || (std::strcmp(prefs_get_wolv2_addrs(),"") != 0))
                 conn_set_class(conn,conn_class_wol);
             else
                 conn_set_state(conn,conn_state_destroy);
@@ -117,7 +118,7 @@ static int handle_irc_common_set_class(t_connection * conn, char const * command
                 (std::strcmp(command, "RUNGSEARCH") == 0) ||
                 (std::strcmp(command, "HIGHSCORE") == 0)) {
             DEBUG0("Got WOL Ladder packet");
-            if (std::strcmp(prefs_get_wol_addrs(),"") != 0)
+            if (std::strcmp(prefs_get_wolv2_addrs(),"") != 0)
                 conn_set_class(conn,conn_class_wladder); /* is handled in handle_wol.* now */
             else
                 conn_set_state(conn,conn_state_destroy);

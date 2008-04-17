@@ -176,10 +176,10 @@ const char * const BNETD_MPQ_FILE = "autoupdate";
 /* Westwood Online default configuration values */
 const char * const BNETD_APIREG_ADDRS = "";
 const int BNETD_APIREG_PORT = 5400;
-const char * const BNETD_WOL_ADDRS = "";
-const int BNETD_WOL_PORT = 4000;
-const char * const BNETD_WSERV_ADDRS = "";
-const int BNETD_WSERV_PORT = 4005;
+const char * const BNETD_WOLV1_ADDRS = "";
+const int BNETD_WOLV1_PORT = 4000;
+const char * const BNETD_WOLV2_ADDRS = "";
+const int BNETD_WOLV2_PORT = 4005;
 const char * const BNETD_WGAMERES_ADDRS = "";
 const int BNETD_WGAMERES_PORT = 4807;
 

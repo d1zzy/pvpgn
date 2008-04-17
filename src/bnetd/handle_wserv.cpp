@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2001  Marco Ziech (mmz@gmx.net)
  * Copyright (C) 2005  Bryan Biedenkapp (gatekeep@gmail.com)
- * Copyright (C) 2006,2007  Pelish (pelish@gmail.com)
+ * Copyright (C) 2006,2007,2008  Pelish (pelish@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -91,6 +91,9 @@ static int _handle_verchk_command(t_connection * conn, int numparams, char ** pa
     char temp[MAX_IRC_MESSAGE_LEN];
     t_clienttag clienttag;
     char *filestring;
+    char const *ftphostname;
+    char const *ftpusername;
+    char const *ftppassword;
 
    /**
     *  Heres the imput expected:
@@ -111,7 +114,10 @@ static int _handle_verchk_command(t_connection * conn, int numparams, char ** pa
 
         if (filestring = autoupdate_check(ARCHTAG_WINX86_UINT, clienttag, TAG_UNKNOWN_UINT, params[1], params[0])) {
             //:westwood-patch.ea.com update world96 lore3/1.003 65539_65536_6400.rtp 65539 6400 REQ
-            snprintf(temp, sizeof(temp), ":westwood-patch.ea.com update world96 %s 131075 %s REQ", filestring, params[0]);
+            ftphostname = prefs_get_wol_autoupdate_serverhost();
+            ftpusername = prefs_get_wol_autoupdate_username();
+            ftppassword = prefs_get_wol_autoupdate_password();
+            snprintf(temp, sizeof(temp), ":%s %s %s %s 131075 %s REQ", ftphostname, ftpusername, ftppassword, filestring, params[0]);
             irc_send(conn,RPL_UPDATE_FTP,temp);
         }
         else
@@ -156,13 +162,13 @@ static int _handle_whereto_command(t_connection * conn, int numparams, char ** p
     if (!tag_check_in_list(conn_get_clienttag(conn), prefs_get_allowed_clients())) {
         //  This is for anyone game but not for Emperor
         if (conn_get_clienttag(conn) != CLIENTTAG_EMPERORBD_UINT) {
-            snprintf(temp, sizeof(temp), ":%s %d '0:%s' %s %s %s", wolip, BNETD_WSERV_PORT, wolname, woltimezone, wollong, wollat);
+            snprintf(temp, sizeof(temp), ":%s %d '0:%s' %s %s %s", wolip, BNETD_WOLV2_PORT, wolname, woltimezone, wollong, wollat);
             irc_send(conn,RPL_WOLSERV,temp);
         }
 
         //  Only for Emperor: Battle for Dune
         if (conn_get_clienttag(conn) == CLIENTTAG_EMPERORBD_UINT) {
-            snprintf(temp, sizeof(temp), ":%s %d '0:Emperor %s' %s %s %s", wolip, BNETD_WSERV_PORT, wolname, woltimezone, wollong, wollat);
+            snprintf(temp, sizeof(temp), ":%s %d '0:Emperor %s' %s %s %s", wolip, BNETD_WOLV2_PORT, wolname, woltimezone, wollong, wollat);
             irc_send(conn,RPL_WOLSERV,temp);
         }
 
@@ -178,17 +184,18 @@ static int _handle_whereto_command(t_connection * conn, int numparams, char ** p
         }
 
         //  There are servers for anyone game
-        snprintf(temp, sizeof(temp), ":%s %d 'Live chat server' %s %s %s", wolip, BNETD_WOL_PORT, woltimezone, wollong, wollat);
+        // FIXME: Check if is WOLv1 supported
+        snprintf(temp, sizeof(temp), ":%s %d 'Live chat server' %s %s %s", wolip, BNETD_WOLV1_PORT, woltimezone, wollong, wollat);
         irc_send(conn,RPL_WOLSERV,temp);
     }
 
     // If game is not allowed than we still send this servers 
     snprintf(temp, sizeof(temp), ":%s %d 'Gameres server' %s %s %s", wolip, BNETD_WGAMERES_PORT, woltimezone, wollong, wollat);
     irc_send(conn,RPL_GAMERESSERV,temp);
-    snprintf(temp, sizeof(temp), ":%s %d 'Ladder server' %s %s %s", wolip, BNETD_WOL_PORT, woltimezone, wollong, wollat);
+    snprintf(temp, sizeof(temp), ":%s %d 'Ladder server' %s %s %s", wolip, BNETD_WOLV2_PORT, woltimezone, wollong, wollat);
     irc_send(conn,RPL_LADDERSERV,temp);
     // There is Word Domination Tour server for Firestorm (maybe for future coding)
-    //snprintf(temp, sizeof(temp), ":%s %d 'WDT server' %s %s %s", wolip, BNETD_WOL_PORT, woltimezone, wollong, wollat); //I dont know for what is this server...?
+    //snprintf(temp, sizeof(temp), ":%s %d 'WDT server' %s %s %s", wolip, BNETD_WOLV2_PORT, woltimezone, wollong, wollat); //I dont know for what is this server...?
     //irc_send(conn,RPL_WDTSERV,temp);
 
     return 0;
