@@ -200,10 +200,10 @@ static char const * laddr_type_get_str(t_laddr_type laddr_type)
 	return "w3route";
     case laddr_type_irc:
 	return "irc";
-    case laddr_type_wol:
-	return "wol";
-    case laddr_type_wserv:
-	return "wserv";
+    case laddr_type_wolv1:
+	return "wolv1";
+    case laddr_type_wolv2:
+	return "wolv2";
     case laddr_type_apireg:
 	return "apireg";
     case laddr_type_wgameres:
@@ -343,8 +343,8 @@ static int sd_accept(t_addr const * curr_laddr, t_laddr_info const * laddr_info,
 	switch (laddr_info->type)
 	{
 	case laddr_type_irc:
-	case laddr_type_wol:
-	case laddr_type_wserv:
+	case laddr_type_wolv1:
+	case laddr_type_wolv2:
 	    conn_set_class(c,conn_class_ircinit);
 	    conn_set_state(c,conn_state_connected);
 	    break;
@@ -645,8 +645,8 @@ static int sd_tcpinput(t_connection * c)
 		    break;
 		case conn_class_ircinit:
 		case conn_class_irc:
-		case conn_class_wserv:
 		case conn_class_wol:
+		case conn_class_wserv:
 		case conn_class_wladder:
 		case conn_class_wgameres: /* NOTICE: Will be handled in another file */
 		    ret = handle_irc_common_packet(c,packet);
@@ -1460,18 +1460,18 @@ extern int server_process(void)
 	return -1;
     }
 
-    /* Append list of addresses to listen for WOL IRC connections */
-    if (_setup_add_addrs(&laddrs, prefs_get_wol_addrs(),INADDR_ANY,BNETD_WOL_PORT, laddr_type_wol))
+    /* Append list of addresses to listen for WOLv1 connections */
+    if (_setup_add_addrs(&laddrs, prefs_get_wolv1_addrs(),INADDR_ANY,BNETD_WOLV1_PORT, laddr_type_wolv1))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not create %s server address list from \"%s\"",laddr_type_get_str(laddr_type_wol),prefs_get_wol_addrs());
+	eventlog(eventlog_level_error,__FUNCTION__,"could not create %s server address list from \"%s\"",laddr_type_get_str(laddr_type_wolv1),prefs_get_wolv1_addrs());
 	_shutdown_addrs(laddrs);
 	return -1;
     }
 
-    /* Append list of addresses to listen for WSERV IRC connections */
-    if (_setup_add_addrs(&laddrs, prefs_get_wserv_addrs(),INADDR_ANY,BNETD_WSERV_PORT, laddr_type_wserv))
+    /* Append list of addresses to listen for WOLv2 connections */
+    if (_setup_add_addrs(&laddrs, prefs_get_wolv2_addrs(),INADDR_ANY,BNETD_WOLV2_PORT, laddr_type_wolv2))
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not create %s server address list from \"%s\"",laddr_type_get_str(laddr_type_wserv),prefs_get_wserv_addrs());
+	eventlog(eventlog_level_error,__FUNCTION__,"could not create %s server address list from \"%s\"",laddr_type_get_str(laddr_type_wolv2),prefs_get_wolv2_addrs());
 	_shutdown_addrs(laddrs);
 	return -1;
     }

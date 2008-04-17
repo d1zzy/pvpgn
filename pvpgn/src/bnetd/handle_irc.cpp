@@ -68,7 +68,6 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 static int _handle_notice_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_quit_command(t_connection * conn, int numparams, char ** params, char * text);
 
-
 static int _handle_who_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_list_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_userhost_command(t_connection * conn, int numparams, char ** params, char * text);

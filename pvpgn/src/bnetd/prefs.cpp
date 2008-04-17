@@ -162,12 +162,15 @@ static struct {
     char const * irc_network_name;
 
     char const * apiregaddrs;
-    char const * woladdrs;
-    char const * wservaddrs;
+    char const * wolv1addrs;
+    char const * wolv2addrs;
     char const * wgameresaddrs;
     char const * woltimezone;
     char const * wollongitude;
     char const * wollatitude;
+    char const * wol_autoupdate_serverhost;
+    char const * wol_autoupdate_username;
+    char const * wol_autoupdate_password;
 } prefs_runtime_config;
 
 static int conf_set_filedir(const char *valstr);
@@ -654,13 +657,13 @@ static int conf_setdef_wgameres_addrs(void);
 static int conf_set_wgameres_addrs(const char *valstr);
 static const char *conf_get_wgameres_addrs(void);
 
-static int conf_setdef_wserv_addrs(void);
-static int conf_set_wserv_addrs(const char *valstr);
-static const char *conf_get_wserv_addrs(void);
+static int conf_setdef_wolv1_addrs(void);
+static int conf_set_wolv1_addrs(const char *valstr);
+static const char *conf_get_wolv1_addrs(void);
 
-static int conf_setdef_wol_addrs(void);
-static int conf_set_wol_addrs(const char *valstr);
-static const char *conf_get_wol_addrs(void);
+static int conf_setdef_wolv2_addrs(void);
+static int conf_set_wolv2_addrs(const char *valstr);
+static const char *conf_get_wolv2_addrs(void);
 
 static int conf_set_wol_timezone(const char *valstr);
 static const char *conf_get_wol_timezone(void);
@@ -673,6 +676,18 @@ static int conf_setdef_wol_longitude(void);
 static int conf_set_wol_latitude(const char *valstr);
 static const char *conf_get_wol_latitude(void);
 static int conf_setdef_wol_latitude(void);
+
+static int conf_set_wol_autoupdate_serverhost(const char *valstr);
+static const char *conf_get_wol_autoupdate_serverhost(void);
+static int conf_setdef_wol_autoupdate_serverhost(void);
+
+static int conf_set_wol_autoupdate_username(const char *valstr);
+static const char *conf_get_wol_autoupdate_username(void);
+static int conf_setdef_wol_autoupdate_username(void);
+
+static int conf_set_wol_autoupdate_password(const char *valstr);
+static const char *conf_get_wol_autoupdate_password(void);
+static int conf_setdef_wol_autoupdate_password(void);
 
 /*    directive                 set method                     get method         */
 static t_conf_entry conf_table[] =
@@ -799,11 +814,14 @@ static t_conf_entry conf_table[] =
 
     { "apiregaddrs",		conf_set_apireg_addrs,	       conf_get_apireg_addrs, conf_setdef_apireg_addrs},
     { "wgameresaddrs",		conf_set_wgameres_addrs,	       conf_get_wgameres_addrs, conf_setdef_wgameres_addrs},
-    { "wservaddrs",		conf_set_wserv_addrs,	       conf_get_wserv_addrs, conf_setdef_wserv_addrs},
-    { "woladdrs",		conf_set_wol_addrs,	       conf_get_wol_addrs, conf_setdef_wol_addrs},
+    { "wolv1addrs",		conf_set_wolv1_addrs,	       conf_get_wolv1_addrs, conf_setdef_wolv1_addrs},
+    { "wolv2addrs",		conf_set_wolv2_addrs,	       conf_get_wolv2_addrs, conf_setdef_wolv2_addrs},
     { "woltimezone",		conf_set_wol_timezone,         conf_get_wol_timezone, conf_setdef_wol_timezone},
     { "wollongitude",		conf_set_wol_longitude,             conf_get_wol_longitude, conf_setdef_wol_longitude},
     { "wollatitude",		conf_set_wol_latitude,              conf_get_wol_latitude, conf_setdef_wol_latitude},
+    { "wol_autoupdate_serverhost", conf_set_wol_autoupdate_serverhost,    conf_get_wol_autoupdate_serverhost, conf_setdef_wol_autoupdate_serverhost},
+    { "wol_autoupdate_username",   conf_set_wol_autoupdate_username,      conf_get_wol_autoupdate_username,   conf_setdef_wol_autoupdate_username},
+    { "wol_autoupdate_password",   conf_set_wol_autoupdate_password,      conf_get_wol_autoupdate_password,   conf_setdef_wol_autoupdate_password},
 
     { NULL,			NULL,				NULL,				NONE},
   };
@@ -3415,7 +3433,7 @@ static int conf_set_wgameres_addrs(const char *valstr)
 
 static int conf_setdef_wgameres_addrs(void)
 {
-    return conf_set_str(&prefs_runtime_config.wgameresaddrs,NULL,BNETD_WOL_ADDRS);
+    return conf_set_str(&prefs_runtime_config.wgameresaddrs,NULL,BNETD_WGAMERES_ADDRS);
 }
 
 static const char* conf_get_wgameres_addrs(void)
@@ -3423,44 +3441,44 @@ static const char* conf_get_wgameres_addrs(void)
     return prefs_runtime_config.wgameresaddrs;
 }
 
-extern char const * prefs_get_wserv_addrs(void)
+extern char const * prefs_get_wolv1_addrs(void)
 {
-    return prefs_runtime_config.wservaddrs;
+    return prefs_runtime_config.wolv1addrs;
 }
 
-static int conf_set_wserv_addrs(const char *valstr)
+static int conf_set_wolv1_addrs(const char *valstr)
 {
-    return conf_set_str(&prefs_runtime_config.wservaddrs,valstr,NULL);
+    return conf_set_str(&prefs_runtime_config.wolv1addrs,valstr,NULL);
 }
 
-static int conf_setdef_wserv_addrs(void)
+static int conf_setdef_wolv1_addrs(void)
 {
-    return conf_set_str(&prefs_runtime_config.wservaddrs,NULL,BNETD_WOL_ADDRS);
+    return conf_set_str(&prefs_runtime_config.wolv1addrs,NULL,BNETD_WOLV1_ADDRS);
 }
 
-static const char* conf_get_wserv_addrs(void)
+static const char* conf_get_wolv1_addrs(void)
 {
-    return prefs_runtime_config.wservaddrs;
+    return prefs_runtime_config.wolv1addrs;
 }
 
-extern char const * prefs_get_wol_addrs(void)
+extern char const * prefs_get_wolv2_addrs(void)
 {
-    return prefs_runtime_config.woladdrs;
+    return prefs_runtime_config.wolv2addrs;
 }
 
-static int conf_set_wol_addrs(const char *valstr)
+static int conf_set_wolv2_addrs(const char *valstr)
 {
-    return conf_set_str(&prefs_runtime_config.woladdrs,valstr,NULL);
+    return conf_set_str(&prefs_runtime_config.wolv2addrs,valstr,NULL);
 }
 
-static int conf_setdef_wol_addrs(void)
+static int conf_setdef_wolv2_addrs(void)
 {
-    return conf_set_str(&prefs_runtime_config.woladdrs,NULL,BNETD_WOL_ADDRS);
+    return conf_set_str(&prefs_runtime_config.wolv2addrs,NULL,BNETD_WOLV2_ADDRS);
 }
 
-static const char* conf_get_wol_addrs(void)
+static const char* conf_get_wolv2_addrs(void)
 {
-    return prefs_runtime_config.woladdrs;
+    return prefs_runtime_config.wolv2addrs;
 }
 
 static int  conf_set_wol_timezone(const char *valstr)
@@ -3521,6 +3539,66 @@ static char const * conf_get_wol_latitude(void)
 static int conf_setdef_wol_latitude(void)
 {
     return conf_set_str(&prefs_runtime_config.wollatitude,NULL,0);
+}
+
+static int conf_set_wol_autoupdate_serverhost(const char *valstr)
+{
+    return conf_set_str(&prefs_runtime_config.wol_autoupdate_serverhost,valstr,NULL);
+}
+
+extern char const * prefs_get_wol_autoupdate_serverhost(void)
+{
+     return prefs_runtime_config.wol_autoupdate_serverhost;
+}
+
+static char const * conf_get_wol_autoupdate_serverhost(void)
+{
+     return prefs_runtime_config.wol_autoupdate_serverhost;
+}
+
+static int conf_setdef_wol_autoupdate_serverhost(void)
+{
+    return conf_set_str(&prefs_runtime_config.wol_autoupdate_serverhost,NULL,0);
+}
+
+static int conf_set_wol_autoupdate_username(const char *valstr)
+{
+    return conf_set_str(&prefs_runtime_config.wol_autoupdate_username,valstr,NULL);
+}
+
+extern char const * prefs_get_wol_autoupdate_username(void)
+{
+     return prefs_runtime_config.wol_autoupdate_username;
+}
+
+static char const * conf_get_wol_autoupdate_username(void)
+{
+     return prefs_runtime_config.wol_autoupdate_username;
+}
+
+static int conf_setdef_wol_autoupdate_username(void)
+{
+    return conf_set_str(&prefs_runtime_config.wol_autoupdate_username,NULL,0);
+}
+
+static int conf_set_wol_autoupdate_password(const char *valstr)
+{
+    return conf_set_str(&prefs_runtime_config.wol_autoupdate_password,valstr,NULL);
+}
+
+extern char const * prefs_get_wol_autoupdate_password(void)
+{
+     return prefs_runtime_config.wol_autoupdate_password;
+}
+
+static char const * conf_get_wol_autoupdate_password(void)
+{
+     return prefs_runtime_config.wol_autoupdate_password;
+}
+
+static int conf_setdef_wol_autoupdate_password(void)
+{
+    return conf_set_str(&prefs_runtime_config.wol_autoupdate_password,NULL,0);
 }
 
 }

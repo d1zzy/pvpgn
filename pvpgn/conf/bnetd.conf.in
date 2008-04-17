@@ -525,12 +525,16 @@ initkill_timer = 120
 
 # This specifies the addresses where WOL connections should be accepted. See
 # the description of servaddrs for formatting information. Leave this field
-# blank if you do not want to accept WOL connections. If the WSERV port is not
-# specifed then 4005 and WOL port is not specifed then 4000 will be used. 
-# Note: DO NOT SET THE PORT TO ANYTHING OTHER THEN 4005 and 4000, WOL WILL FAIL IF YOU DO!
+# blank if you do not want to accept WOL connections. If the wolv1 port is
+# not specifed then 4005 will be used. Also if wolv2 port is not specifed
+# then 4000 will be used. 
+# WOLv2 address includes servserv, game/chatting and ladder services.
+#
+# Note: DO NOT SET THE PORT TO ANYTHING OTHER THEN 4000 for WOLv1 or 4005 for
+# WOLv2, WOL WILL FAIL IF YOU DO!
 
-#woladdrs = ":4000"
-#wservaddrs = ":4005"
+#wolv1addrs = ":4000"
+#wolv2addrs = ":4005"
 #wgameresaddrs = ":4807"
 #apiregaddrs = ":5400"
 
@@ -539,6 +543,15 @@ initkill_timer = 120
 woltimezone = "-8"
 wollongitude = "36.1083"
 wollatitude = "-115.0582"
+
+# These as default means that WOL autoupdate will use official WOL FTP server.
+# As "wol_update_serverhost" can be used also an IP address. FTP server is not
+# component of PvPGN so for that purpose can be used any FTP server.
+# Note that username and password is specifiable only in WOLv2 protocol. WOLv1
+# will always use the default values. 
+wol_autoupdate_serverhost = "westwood-patch.ea.com"
+wol_autoupdate_username = "update"
+wol_autoupdate_password = "world96"
 
 #                                                                            #
 ##############################################################################
