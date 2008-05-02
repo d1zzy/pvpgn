@@ -1882,9 +1882,15 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
         if (!channel)
         {
             char msgtemp[MAX_MESSAGE_LEN];
-            std::sprintf(msgtemp, "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
+            std::snprintf(msgtemp, sizeof(msgtemp), "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
             message_send_text(c, message_type_error, c, msgtemp);
-            return 0;
+
+            if (conn_get_game(c)) {  // fix for empty clan channels with preventing to join CHANNEL_NAME_BANNED when is used _handle_join_command
+                std::snprintf(msgtemp, sizeof(msgtemp), "You have been redirected to %s.", CHANNEL_NAME_BANNED);
+                message_send_text(c, message_type_error, c, msgtemp);    
+                channel = channellist_find_channel_by_name(CHANNEL_NAME_BANNED,conn_get_country(c),realm_get_name(conn_get_realm(c)));
+            } else
+                return 0;
         }
         else
         {
