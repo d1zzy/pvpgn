@@ -1309,7 +1309,7 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
             }
         }
 
-        if (conn_get_clienttag(conn) != CLIENTTAG_WCHAT_UINT)
+        if (tag_check_wolv2(conn_get_clienttag(conn)))
             std::strcat(temp,":");
 
         std::strcat(temp,"1337"); /* yes, ha ha funny, i just don't generate game numbers yet */
