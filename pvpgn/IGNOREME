@@ -12,7 +12,8 @@ clients (thus it supports all BNETD supported clients plus the most recent
 ones). 
 
 The list of supported clients and their minimum verion required is:
-Battle.net online games:
+
+Battle.net games:
 ------------------------
 - Diablo 1 v1.09
 - Starcraft v1.08
@@ -22,6 +23,7 @@ Battle.net online games:
 - Diablo 2 LOD v1.10
 - Warcraft III Reign Of Chaos v1.13
 - Warcraft III Frozen Throne v1.13
+
 Westwood Online games:
 ----------------------
 - Westwood Chat client v4.221

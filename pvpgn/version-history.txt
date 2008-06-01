@@ -15,9 +15,9 @@ PvPGN Version History:
   -- added support for battle clans
   -- added various protocol related fixes
   -- added apiregister support
-  -- added autoupdate support for WOLv2 games
+  -- added autoupdate support for WOLv2 clients
   -- added variables into bnetd.conf for wol FTP server specification
-  -- fixed non shoed voice flag for clients in channel
+  -- fixed non showed voice flag for clients in channel
   -- fixed bug in RedAlert2/Yuri when game owner change maximum players
 
 [MISC]
@@ -36,6 +36,9 @@ PvPGN Version History:
 
 [MISC]
   -- fixed malformed output by /cg list command
+
+[VCHECK]
+  -- added WAR3/W3XP IX86 1.21B vcheck entries
 
  ChangeLog for 1.8.2 (since 1.8.1)
 =========================================
