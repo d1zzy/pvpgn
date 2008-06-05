@@ -31,7 +31,7 @@ PvPGN Version History:
 
 [WOL]
   -- added Dune 2000 Support
-  -- fixed bad time format in startgame message
+  -- fixed malformed time format in startgame message
   -- fixed log warnings/errors rising in login process
 
 [MISC]
@@ -39,6 +39,10 @@ PvPGN Version History:
 
 [VCHECK]
   -- added WAR3/W3XP IX86 1.21B vcheck entries
+  -- added STAR/SEXP IX86 1.51.2 vcheck entries
+  -- rewrited all STAR/SEXP/W2BN/DRTL IX86 vcheck entries
+     to match new ver-ix86-1.mpq file (this fixes connecting
+     problems on Windows Vista systems)
 
  ChangeLog for 1.8.2 (since 1.8.1)
 =========================================
