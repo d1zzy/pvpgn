@@ -194,6 +194,9 @@ typedef struct connection
    /* FIXME: this "optimization" is so confusing leading to many possible bugs */
 	    struct connection *	routeconn;
 	    t_anongame *	anongame;
+	    /* those will be filled when recieving 0x53ff and wiped out after 54ff */
+	    char const * client_proof;
+	    char const * server_proof;
 	} w3;
 	struct {
 	    int ingame;				        /* Are we in a game channel? */
@@ -430,6 +433,12 @@ extern int conn_update_w3_playerinfo(t_connection * c);
 extern int conn_get_passfail_count(t_connection * c);
 extern int conn_set_passfail_count(t_connection * c, unsigned int failcount);
 extern int conn_increment_passfail_count (t_connection * c);
+
+extern char const * conn_get_client_proof(t_connection * c);
+extern int conn_set_client_proof(t_connection * c, char const * client_proof);
+
+extern char const * conn_get_server_proof(t_connection * c);
+extern int conn_set_server_proof(t_connection * c, char const * server_proof);
 
 extern int conn_set_tmpOP_channel(t_connection * c, char const * tmpOP_channel);
 extern char const * conn_get_tmpOP_channel(t_connection * c);

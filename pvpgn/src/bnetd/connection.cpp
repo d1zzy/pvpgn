@@ -408,6 +408,8 @@ extern t_connection * conn_create(int tsock, int usock, unsigned int real_local_
     temp->protocol.w3.routeconn                  = NULL;
     temp->protocol.w3.anongame                   = NULL;
     temp->protocol.w3.anongame_search_starttime  = 0;
+    temp->protocol.w3.client_proof               = NULL;
+    temp->protocol.w3.server_proof               = NULL;
     temp->protocol.bound                         = NULL;
     elist_init(&temp->protocol.timers);
 
@@ -637,6 +639,12 @@ extern void conn_destroy(t_connection * c, t_elem ** elem, int conn_or_dead_list
     /* ADDED BY UNDYING SOULZZ 4/8/02 */
     if (c->protocol.w3.w3_playerinfo)
 	xfree((void *)c->protocol.w3.w3_playerinfo); /* avoid warning */
+
+    if (c->protocol.w3.client_proof)
+	xfree((void *)c->protocol.w3.client_proof); /* avoid warning */
+
+    if (c->protocol.w3.server_proof)
+	xfree((void *)c->protocol.w3.server_proof); /* avoid warning */
 
     if (c->protocol.bound)
 	c->protocol.bound->protocol.bound = NULL;
@@ -3702,6 +3710,73 @@ extern int conn_increment_passfail_count (t_connection * c)
     }
     return 0;
 }
+
+
+extern char const * conn_get_client_proof(t_connection * c)
+{
+	if (!c)
+	{
+	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
+	  return NULL;
+	}
+
+        return c->protocol.w3.client_proof;
+}
+
+extern int conn_set_client_proof(t_connection * c, char const * client_proof)
+{
+	if (!c)
+	{
+	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
+	  return -1;
+	}
+
+	if (c->protocol.w3.client_proof){
+	  xfree((void*)c->protocol.w3.client_proof);
+	  c->protocol.w3.client_proof = NULL;
+	}
+
+	if (client_proof != NULL) {
+	  char * proof = (char *)xmalloc(20);
+	  std::memcpy(proof, client_proof, 20);
+	  c->protocol.w3.client_proof = proof;
+	}
+	return 0;
+}
+
+
+extern char const * conn_get_server_proof(t_connection * c)
+{
+	if (!c)
+	{
+	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
+	  return NULL;
+	}
+
+        return c->protocol.w3.server_proof;
+}
+
+extern int conn_set_server_proof(t_connection * c, char const * server_proof)
+{
+	if (!c)
+	{
+	  eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
+	  return -1;
+	}
+
+	if (c->protocol.w3.server_proof){
+	  xfree((void*)c->protocol.w3.server_proof);
+	  c->protocol.w3.server_proof = NULL;
+	}
+
+	if (server_proof != NULL) {
+	  char * proof = (char *)xmalloc(20);
+	  std::memcpy(proof, server_proof, 20);
+	  c->protocol.w3.server_proof = proof;
+	}
+	return 0;
+}
+
 
 extern int conn_set_tmpOP_channel(t_connection * c, char const * tmpOP_channel)
 {
