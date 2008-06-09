@@ -47,6 +47,11 @@ extern int account_get_boolattr_real(t_account * account, char const * key, char
 #define account_get_boolattr(A,K) account_get_boolattr_real(A,K,__FILE__,__LINE__)
 extern int account_set_boolattr(t_account * account, char const * key, int val);
 
+/* warning: unlike the other account_get_*attr functions this one allocates memory for returning data - its up to the caller to clean it up */
+extern char const * account_get_rawattr_real(t_account * account, char const * key, char const * fn, unsigned int ln);
+#define account_get_rawattr(A,K) account_get_rawattr_real(A,K,__FILE__,__LINE__)
+extern int account_set_rawattr(t_account * account, char const * key, char const * val, int length);
+
 extern char const * account_get_pass(t_account * account);
 extern int account_set_pass(t_account * account, char const * passhash1);
 
