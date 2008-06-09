@@ -1700,10 +1700,52 @@ typedef struct
    bn_int	response;
    bn_int	server_password_proof[5];
 } PACKED_ATTR() t_server_logonproofreply;
-#define SERVER_LOGONPROOFREPLY_RESPONSE_OK 0x00000000
+#define SERVER_LOGONPROOFREPLY_RESPONSE_OK      0x00000000
 #define SERVER_LOGONPROOFREPLY_RESPONSE_BADPASS 0x00000002
 #define SERVER_LOGONPROOFREPLY_RESPONSE_EMAIL   0x0000000E
 #define SERVER_LOGONPROOFREPLY_RESPONSE_CUSTOM  0x0000000F
+/******************************************************/
+
+/******************************************************/
+#define CLIENT_PASSCHANGEREQ 0x55ff
+typedef struct
+{
+   t_bnet_header h;
+   bn_byte client_public_key[32];
+   /* username */
+} PACKED_ATTR() t_client_passchangereq;
+
+#define SERVER_PASSCHANGEREPLY 0x55ff
+typedef struct
+{
+   t_bnet_header h;
+   bn_int        message;
+   bn_byte       salt[32];
+   bn_byte       server_public_key[32];
+} PACKED_ATTR() t_server_passchangereply;
+#define SERVER_PASSCHANGEREPLY_MESSAGE_ACCEPT 0x00000000
+#define SERVER_PASSCHANGEREPLY_MESSAGE_REJECT 0x00000001 /* No such account */
+/******************************************************/
+
+/******************************************************/
+#define CLIENT_PASSCHANGEPROOFREQ 0x56ff
+typedef struct
+{
+   t_bnet_header h;
+   bn_byte       client_password_proof[20];
+   bn_byte       salt[32];
+   bn_byte       password_verifier[32];
+} PACKED_ATTR() t_client_passchangeproofreq;
+
+#define SERVER_PASSCHANGEPROOFREPLY 0x56ff
+typedef struct
+{
+   t_bnet_header h;
+   bn_int	response;
+   bn_byte       server_password_proof[20];
+} PACKED_ATTR() t_server_passchangeproofreply;
+#define SERVER_PASSCHANGEPROOFREPLY_RESPONSE_OK      0x00000000
+#define SERVER_PASSCHANGEPROOFREPLY_RESPONSE_BADPASS 0x00000002
 /******************************************************/
 
 /******************************************************/
