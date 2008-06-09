@@ -145,6 +145,66 @@ extern int account_set_boolattr(t_account * account, char const * key, int val)
     return account_set_strattr(account,key,val?"true":"false");
 }
 
+extern char const * account_get_rawattr_real(t_account * account, char const * key, char const * fn, unsigned int ln)
+{
+    char const * temp;
+    char * result;
+    int length;
+
+    if (!account)
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL account (from %s:%u)",fn,ln);
+	return NULL;
+    }
+    if (!key)
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL key (from %s:%u)",fn,ln);
+	return NULL;
+    }
+
+    if (!(temp = account_get_strattr(account,key)))
+	return NULL;
+
+    length = std::strlen(temp)/3;
+
+    if (!(result = (char *)xmalloc(length)))
+    {
+    	eventlog(eventlog_level_error,__FUNCTION__,"failed to create result");
+	return NULL;
+    }
+    hex_to_str(temp, result, length);
+
+    return result;
+}
+
+extern int account_set_rawattr(t_account * account, char const * key, char const * val, int length)
+{
+    char * temp_buffer;
+    int result;
+
+    if (!account)
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL account");
+	return -1;
+    }
+    if (!key)
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL key");
+	return -1;
+    }
+
+    if (!(temp_buffer = (char *)xmalloc(length*3+1)))
+    {
+    	eventlog(eventlog_level_error,__FUNCTION__,"failed to create temp_buffer");
+	return -1;
+    }
+
+    str_to_hex(temp_buffer, val, length);
+    result = account_set_strattr(account,key,temp_buffer);
+    xfree((void *)temp_buffer);
+    return result;
+}
+
 
 /****************************************************************/
 
@@ -161,22 +221,22 @@ extern int account_set_pass(t_account * account, char const * passhash1)
 
 extern char const * account_get_salt(t_account * account)
 {
-    return account_get_strattr(account,"BNET\\acct\\salt");
+    return account_get_rawattr(account,"BNET\\acct\\salt");
 }
 
 extern int account_set_salt(t_account * account, char const * salt)
 {
-    return account_set_strattr(account,"BNET\\acct\\salt",salt);
+    return account_set_rawattr(account,"BNET\\acct\\salt",salt, 32);
 }
 
 extern char const * account_get_verifier(t_account * account)
 {
-    return account_get_strattr(account,"BNET\\acct\\verifier");
+    return account_get_rawattr(account,"BNET\\acct\\verifier");
 }
 
 extern int account_set_verifier(t_account * account, char const * verifier)
 {
-    return account_set_strattr(account,"BNET\\acct\\verifier",verifier);
+    return account_set_rawattr(account,"BNET\\acct\\verifier",verifier, 32);
 }
 
 
