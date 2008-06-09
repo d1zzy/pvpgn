@@ -20,6 +20,9 @@ PvPGN Version History:
   -- fixed non showed voice flag for clients in channel
   -- fixed bug in RedAlert2/Yuri when game owner change maximum players
 
+[WAR3]
+  -- add support for SRP3 based account creation/login
+
 [MISC]
   -- added /clan whisper subcommand
   -- added /clan create/invite/disband subcommands
