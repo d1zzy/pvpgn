@@ -20,6 +20,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <cstdlib>
+#include <cstring>
 #include <cstdio>
 #include <cassert>
 

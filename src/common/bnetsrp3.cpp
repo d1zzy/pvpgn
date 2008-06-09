@@ -22,6 +22,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <cstdlib>
+#include <cstring>
 #include <cstdio>
 #include <cassert>
 
@@ -244,6 +245,13 @@ BigInt
 BnetSRP3::getSalt() const
 {
   return s;
+}
+
+void
+BnetSRP3::setSalt(BigInt salt_)
+{
+  s = salt_;
+  s.getData(raw_salt, 32);
 }
 
 BigInt 

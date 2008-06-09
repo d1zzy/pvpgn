@@ -36,6 +36,7 @@ public:
 	~BnetSRP3();
 	BigInt getVerifier() const;
 	BigInt getSalt() const;
+	void   setSalt(BigInt salt);
 	BigInt getClientSessionPublicKey() const;
 	BigInt getServerSessionPublicKey(BigInt& v);
 	BigInt getHashedClientSecret(BigInt& B) const;
