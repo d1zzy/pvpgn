@@ -208,6 +208,10 @@ typedef struct
 	t_server_logonproofreply   server_logonproofreply;
 	t_client_createaccount_w3  client_createaccount_w3;
 	t_server_createaccount_w3  server_createaccount_w3;
+	t_client_passchangereq     client_passchangereq;
+	t_server_passchangereply   server_passchangereply;
+	t_client_passchangeproofreq     client_passchangeproofreq;
+	t_server_passchangeproofreply   server_passchangeproofreply;
 	t_client_findanongame      client_findanongame;
 	t_client_findanongame_at   client_findanongame_at;
 	t_client_findanongame_at_inv   client_findanongame_at_inv;

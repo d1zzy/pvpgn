@@ -370,6 +370,10 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
                 return "CLIENT_LOGONPROOFREQ";
 	    case CLIENT_CREATEACCOUNT_W3:
 		return "CLIENT_CREATEACCOUNT_W3";
+	    case CLIENT_PASSCHANGEREQ:
+		return "CLIENT_PASSCHANGEREQ";
+	    case CLIENT_PASSCHANGEPROOFREQ:
+		return "CLIENT_PASSCHANGEPROOFREQ";
 	    case CLIENT_CHANGEGAMEPORT:
                 return "CLIENT_CHANGEGAMEPORT";
             case CLIENT_CREATEACCTREQ2:
@@ -608,11 +612,15 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	    case SERVER_LOGONPROOFREPLY:
 		return "SERVER_LOGONPROOFREPLY";
 	    case SERVER_CREATEACCOUNT_W3:
-		return "SERVER_CREATEACCTREPLY2";
+		return "SERVER_CREATEACCOUNT_W3";
+	    case SERVER_PASSCHANGEREPLY:
+		return "SERVER_PASSCHANGEREPLY";
+	    case SERVER_PASSCHANGEPROOFREPLY:
+		return "SERVER_PASSCHANGEPROOFREPLY";
 	    case SERVER_LOGINREPLY2:
 		return "SERVER_LOGINREPLY2";
 	    case SERVER_CREATEACCTREPLY2:
-		return "SERVER_CREATEACCOUNT_W3";
+		return "SERVER_CREATEACCTREPLY2";
 	    case SERVER_FILEINFOREPLY:
 		return "SERVER_FILEINFOREPLY";
 	    case SERVER_STATSREPLY:
