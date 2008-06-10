@@ -28,6 +28,7 @@
 #ifdef WIN32_GUI
 #include <win32/winmain.h>
 #endif
+#include "compat/snprintf.h"
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
 #include "compat/socket.h"
@@ -1890,13 +1891,13 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
         if (!channel)
         {
             char msgtemp[MAX_MESSAGE_LEN];
-            std::snprintf(msgtemp, sizeof(msgtemp), "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
+            snprintf(msgtemp, sizeof(msgtemp), "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
             message_send_text(c, message_type_error, c, msgtemp);
 
             if (conn_get_game(c)) {
                 // FIXME: This is not tested to be according to battle.net!!
                 // This is fix for empty clan channels with preventing to join CHANNEL_NAME_BANNED when is used _handle_join_command
-                std::snprintf(msgtemp, sizeof(msgtemp), "You have been redirected to %s.", CHANNEL_NAME_BANNED);
+                snprintf(msgtemp, sizeof(msgtemp), "You have been redirected to %s.", CHANNEL_NAME_BANNED);
                 message_send_text(c, message_type_error, c, msgtemp);    
                 channel = channellist_find_channel_by_name(CHANNEL_NAME_BANNED,conn_get_country(c),realm_get_name(conn_get_realm(c)));
             } else
