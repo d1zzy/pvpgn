@@ -1520,7 +1520,7 @@ extern int _handle_mode_command(t_connection * conn, int numparams, char ** para
         }
 
         /* PELISH: Also tmpOP have banning mode alowed because all new channels have only tmpOP */
-        if ((std::strcmp(conn_get_tmpOP_channel(conn),ircname)!=0) && 
+        if ((channel_conn_is_tmpOP(channel,conn)) && 
             (account_get_auth_admin(acc,NULL)!=1) && (account_get_auth_admin(acc,ircname)!=1) &&
             (account_get_auth_operator(acc,NULL)!=1) && (account_get_auth_operator(acc,ircname)!=1)) {
             snprintf(temp,sizeof(temp),"%s :You're not channel operator", params[0]);

@@ -31,6 +31,7 @@
 #include "game.h"
 #include "channel.h"
 #include "connection.h"
+#include "account.h"
 #include "server.h"
 #include "common/setup_after.h"
 
