@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
+#include <cctype>
 #include <cassert>
 
 #include "bnetsrp3.h"

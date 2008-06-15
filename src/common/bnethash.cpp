@@ -309,6 +309,7 @@ extern int little_endian_sha1_hash(t_hash * hashout, unsigned int size, void con
         bn_int_nset(&value,(*hashout)[i]);
         (*hashout)[i]=bn_int_get(value);
     }
+	return 0;
 }
 
 extern int hash_eq(t_hash const h1, t_hash const h2)
