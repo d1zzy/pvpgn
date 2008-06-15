@@ -59,7 +59,9 @@ BigInt::BigInt(t_uint16 input)
 
 BigInt::BigInt(t_uint32 input)
 {
+#ifndef HAVE_UINT64_T
   int i;
+#endif
   segment_count = sizeof(t_uint32)/sizeof(bigint_base);
   segment = (bigint_base*)xmalloc(segment_count * sizeof(bigint_base));
 #ifdef HAVE_UINT64_T
@@ -118,7 +120,6 @@ BigInt::BigInt(unsigned char const * input, int input_size, int blockSize, bool 
     if (blockSize==1)
       std::memcpy(in,input,input_size);
     else {
-      unsigned char val;
       assert(blockSize%2==0);
       for(i=0; i<input_size; i+=blockSize)
       {
