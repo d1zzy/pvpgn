@@ -63,7 +63,7 @@ BigInt BnetSRP3::I = BigInt(bnetsrp3_I, 32);
 int
 BnetSRP3::init(const char* username_, const char* password_, BigInt* salt_)
 {
-  int i;
+  unsigned int i;
   const char* source;
   char* symbol;
 
