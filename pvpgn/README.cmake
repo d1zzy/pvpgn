@@ -68,6 +68,9 @@ PvPGN with MySQL
    -D WITH_PGSQL=true or -D WITH_SQLITE3=true are similar to WITH_MYSQL 
 but for PostgreSQL/SQLite3 storage support
 
+   -D CMAKE_BUILD_TYPE=Debug : build in debug mode (to get meaningfull 
+stack traces) 
+
    WARNING: in between 2 cmake runs make sure you remove all build files 
 or at least remove the CMakeCache.txt file otherwise you may experience 
 strange problems.
