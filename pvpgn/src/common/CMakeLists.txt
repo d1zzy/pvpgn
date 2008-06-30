@@ -18,7 +18,7 @@ set(COMMON_SOURCES
 	token.h tracker.h trans.cpp trans.h udp_protocol.h util.cpp util.h 
 	version.h wolhash.cpp wolhash.h xalloc.cpp xalloc.h xstr.cpp xstr.h 
 	xstring.cpp xstring.h gui_printf.h gui_printf.cpp 
-	bigint.cpp bigint.h bnetsrp3.cpp bnetsrp3.h)
+	bigint.cpp bigint.h bnetsrp3.cpp bnetsrp3.h peerchat.cpp peerchat.h)
 
 add_library(common
   ${COMMON_SOURCES}
