@@ -61,29 +61,29 @@
 
 # -=-=-=-=-=-=- Latest Versions -=-=-=-=-=-=- No Update Required -=-=-=-=-=-=-
 
-# Warcraft III - TFT (Expansion) 1.21b
+# Warcraft III - TFT (Expansion) 1.22a
 # Note: this version check is sent in both FT and ROC mode
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
  IX86ver1.mpq \
  IX86 \
  W3XP \
- "war3.exe 07/19/07 18:41:12 409660" \
- 0x00000015 \
- 1.21.1.156 \
- 0x1b735294 \
- W3XP_121B
+ "war3.exe 06/27/08 00:01:35 471040" \
+ 0x00000016 \
+ 1.22.0.184 \
+ 0x909998db \
+ W3XP_122A
 
-# Warcraft III - ROC 1.21b
+# Warcraft III - ROC 1.22a
 # Note: this version check is sent in both FT and ROC mode
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
  IX86ver1.mpq \
  IX86 \
  WAR3 \
- "war3.exe 07/19/07 18:41:12 409660" \
- 0x00000015 \
- 1.21.1.156 \
- 0x1b735294 \
- WAR3_121B
+ "war3.exe 06/27/08 00:01:35 471040" \
+ 0x00000016 \
+ 1.22.0.184 \
+ 0x909998db \
+ WAR3_122A
 
 # Diablo II - LoD (Expansion) 1.12a
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
@@ -330,6 +330,18 @@
 
 # =================== WarCraft 3 Expansion Entries ==================
 
+# Warcraft III - TFT (Expansion) 1.21b
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 07/19/07 18:41:12 409660" \
+ 0x00000015 \
+ 1.21.1.156 \
+ 0x1b735294 \
+ W3XP_121B
+
 # Warcraft III - TFT (Expansion) 1.21a
 # Note: this version check is sent in both FT and ROC mode
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
@@ -573,6 +585,18 @@
 # W3XP_107A
 
 # ====================== WarCraft 3 Entries ========================
+
+# Warcraft III - ROC 1.21b
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 07/19/07 18:41:12 409660" \
+ 0x00000015 \
+ 1.21.1.156 \
+ 0x1b735294 \
+ WAR3_121B
 
 # Warcraft III - ROC 1.21a
 # Note: this version check is sent in both FT and ROC mode
