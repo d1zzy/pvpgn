@@ -96,6 +96,17 @@
  0x3d421510 \
  D2XP_112A
 
+# Diablo II 1.12a
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 07/05/08 17:19:40 57344" \
+ 0x0000000c \
+ 1.0.12.0 \
+ 0x243ac143 \
+ D2DV_112A
+
 # Diablo II - LoD (Expansion) 1.11b
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
  IX86ver1.mpq \
