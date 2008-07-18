@@ -96,169 +96,187 @@
 ##### Intel (IX86) ###########################################################
 
 # =============== WarCraft III - FT (Expansion) ===============
-#IX86    W3XP    W3XP_107A       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_110A       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_111A       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_112A       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_113A       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_113B       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_114A       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_114B       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_115A       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_116A       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_117A       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_118A       W3XP_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_120A       W3XP_IX86_1xx_120C.mpq
+#IX86    W3XP    W3XP_107A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_110A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_111A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_112A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_113A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_113B       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_114A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_114B       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_115A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_116A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_117A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_118A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_119A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_119B       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_120A       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_120B       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_120C       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_120D       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_120E       W3XP_IX86_1xx_122a_2.mpq
+#IX86    W3XP    W3XP_121A       W3XP_IX86_1xx_122a_2.mpq
 
-# Incremental update from version 1.20b
-#IX86    W3XP    W3XP_120B       W3XP_IX86_120B_120C.mpq
+# Incremental update from version 1.21b
+#IX86    W3XP    W3XP_121B       W3XP_IX86_121B_122a_2.mpq
 
 # The next one is a WarCraft III - FT wildcard entry.
-#IX86    W3XP    W3XP_1xx        W3XP_IX86_1xx_120C.mpq
+#IX86    W3XP    W3XP_1xx        W3XP_IX86_1xx_122a_2.mpq
 
 # ==================== WarCraft III - RoC =====================
-#IX86    WAR3    WAR3_100        WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_101        WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_101B       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_102        WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_102A       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_103A       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_104A       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_104B       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_104C       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_105A       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_106A       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_110A       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_111A       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_112A       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_113A       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_113B       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_114A       WAR3_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_114B       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_115A       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_116A       WAR3_IX86_1xx_120C.mpq
-#IX86    WAR3    WAR3_117A       WAR3_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_118A       WAR3_IX86_1xx_120C.mpq
-#IX86    W3XP    W3XP_120A       WAR3_IX86_1xx_120C.mpq
+#IX86    WAR3    WAR3_107A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_110A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_111A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_112A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_113A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_113B       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_114A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_114B       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_115A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_116A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_117A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_118A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_119A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_119B       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_120A       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_120B       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_120C       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_120D       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_120E       WAR3_IX86_1xx_122a_2.mpq
+#IX86    WAR3    WAR3_121A       WAR3_IX86_1xx_122a_2.mpq
 
-# Incremental update from version 1.20b
-#IX86    WAR3    WAR3_120B       WAR3_IX86_120B_120C.mpq
+# Incremental update from version 1.21b
+#IX86    WAR3    WAR3_121B       WAR3_IX86_121B_122a_2.mpq
 
 # The next one is a WarCraft III - RoC wildcard entry.
-#IX86    WAR3    WAR3_1xx        WAR3_IX86_1xx_120C.mpq
+#IX86    WAR3    WAR3_1xx        WAR3_IX86_1xx_122a_2.mpq
 
 # ===================== Diablo II Expansion (LoD) ===========================
 # Note: the following assumes that you want to upgrade all Diablo II clients
 # to version 1.11b.  If you are still running a 1.10 or 1.09d realm, you
 # will need to modify these entries accordingly.
 
-#IX86    D2XP    D2XP_107        D2XP_IX86_1xx_111B.mpq
-#IX86    D2XP    D2XP_108        D2XP_IX86_1xx_111B.mpq
-#IX86    D2XP    D2XP_109        D2XP_IX86_1xx_111B.mpq
-#IX86    D2XP    D2XP_109B       D2XP_IX86_1xx_111B.mpq
-#IX86    D2XP    D2XP_109C       D2XP_IX86_1xx_111B.mpq
-#IX86    D2XP    D2XP_109D       D2XP_IX86_1xx_111B.mpq
-#IX86    D2XP    D2XP_110        D2XP_IX86_1xx_111B.mpq
+#IX86    D2XP    D2XP_107        D2XP_IX86_1xx_112A.mpq
+#IX86    D2XP    D2XP_108        D2XP_IX86_1xx_112A.mpq
+#IX86    D2XP    D2XP_109        D2XP_IX86_1xx_112A.mpq
+#IX86    D2XP    D2XP_109B       D2XP_IX86_1xx_112A.mpq
+#IX86    D2XP    D2XP_109C       D2XP_IX86_1xx_112A.mpq
+#IX86    D2XP    D2XP_109D       D2XP_IX86_1xx_112A.mpq
+#IX86    D2XP    D2XP_110        D2XP_IX86_1xx_112A.mpq
+#IX86    D2XP    D2XP_111        D2XP_IX86_1xx_112A.mpq
 
 # Incremental update from version 1.11a --> 1.11b
-#IX86    D2XP    D2XP_111        D2XP_IX86_111A_111B.mpq
+#IX86    D2XP    D2XP_111B       D2XP_IX86_111B_112A.mpq
 
 # The next one is a Diablo II LoD wildcard entry.
-#IX86    D2XP    D2XP_1xx        D2XP_IX86_1xx_111B.mpq
+#IX86    D2XP    D2XP_1xx        D2XP_IX86_1xx_112A.mpq
 
 # ========================== Diablo II (DV) =================================
 # Note: the following assumes that you want to upgrade all Diablo II clients
 # to version 1.11b.  If you are still running a 1.10 or 1.09d realm, you
 # will need to modify these entries accordingly.
 
-#IX86    D2DV    D2DV_100        D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_101        D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_103        D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_104B       D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_104C       D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_105        D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_105B       D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_106        D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_106B       D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_108        D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_109        D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_109B       D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_109C       D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_109D       D2DV_IX86_1xx_111B.mpq
-#IX86    D2DV    D2DV_110        D2DV_IX86_1xx_111B.mpq
+#IX86    D2DV    D2DV_100        D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_101        D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_103        D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_104B       D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_104C       D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_105        D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_105B       D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_106        D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_106B       D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_108        D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_109        D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_109B       D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_109C       D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_109D       D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_110        D2DV_IX86_1xx_112A.mpq
+#IX86    D2DV    D2DV_111        D2DV_IX86_1xx_112A.mpq
 
 # Incremental update from version 1.11a --> 1.11b
-#IX86    D2XP    D2DV_111        D2DV_IX86_111A_111B.mpq
+#IX86    D2DV    D2DV_111B       D2DV_IX86_111B_112A.mpq
 
 # The next one is a Diablo II wildcard entry.
-#IX86    D2DV    D2DV_1xx        D2DV_IX86_1xx_111B.mpq
+#IX86    D2DV    D2DV_1xx        D2DV_IX86_1xx_112A.mpq
 
 # ================ StarCraft Expansion (Brood War) ==========================
-#IX86    SEXP    SEXP_104        SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_104_STAR   SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_105        SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_105_STAR   SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_106        SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_106_STAR   SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_107        SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_107_STAR   SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_108        SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_108_STAR   SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_108B       SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_108B_STAR  SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_109        SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_109_STAR   SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_110        SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_110_STAR   SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_111        SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_111_STAR   SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_111B       SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_111B_STAR  SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_112        SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_112_STAR   SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_112B       SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_112B_STAR  SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_113        SEXP_IX86_1xx_113E.mpq
+#IX86    SEXP    SEXP_104        SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_104_STAR   SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_105        SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_105_STAR   SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_106        SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_106_STAR   SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_107        SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_107_STAR   SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_108        SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_108_STAR   SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_108B       SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_108B_STAR  SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_109        SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_109_STAR   SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_110        SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_110_STAR   SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_111        SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_111_STAR   SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_111B       SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_111B_STAR  SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_112        SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_112_STAR   SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_112B       SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_112B_STAR  SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_113        SEXP_IX86_1xx_1152.mpq
 # unfortunately we don't have a SEXP_113_STAR in versioncheck.conf
-#IX86    SEXP    SEXP_113B       SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_113B_STAR  SEXP_IX86_1xx_113E.mpq
-#IX86    SEXP    SEXP_113C       SEXP_IX86_1xx_113E.mpq
-#IX86    STAR    SEXP_113C_STAR  SEXP_IX86_1xx_113E.mpq
+#IX86    SEXP    SEXP_113B       SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_113B_STAR  SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_113C       SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_113C_STAR  SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_113D       SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_113D_STAR  SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_113E       SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_113E       SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_114        SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_114        SEXP_IX86_1xx_1152.mpq
+#IX86    SEXP    SEXP_115        SEXP_IX86_1xx_1152.mpq
+#IX86    STAR    SEXP_115        SEXP_IX86_1xx_1152.mpq
 
 # Incremental update from version 1.13d
-#IX86    SEXP    SEXP_113D       SEXP_IX86_113D_113E.mpq
-#IX86    STAR    SEXP_113D_STAR  SEXP_IX86_113D_113E.mpq
+#IX86    SEXP    SEXP_1151       SEXP_IX86_1151_1152.mpq
+#IX86    STAR    SEXP_1151       SEXP_IX86_1151_1152.mpq
 
 # The next one is a Brood War wildcard entry.
-#IX86    SEXP    SEXP_1xx        SEXP_IX86_1xx_113E.mpq
+#IX86    SEXP    SEXP_1xx        SEXP_IX86_1xx_1152.mpq
 
 # ========================= StarCraft (original) ============================
-#IX86    STAR    STAR_100        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_101        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_102        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_103        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_104        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_105        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_106        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_107        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_108        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_108B       STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_109        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_109B       STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_110        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_111        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_111B       STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_112        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_112B       STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_113        STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_113B       STAR_IX86_1xx_113E.mpq
-#IX86    STAR    STAR_113C       STAR_IX86_1xx_113E.mpq
+#IX86    STAR    STAR_100        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_101        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_102        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_103        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_104        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_105        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_106        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_107        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_108        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_108B       STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_109        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_109B       STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_110        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_111        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_111B       STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_112        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_112B       STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_113        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_113B       STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_113C       STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_113D       STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_113E       STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_114        STAR_IX86_1xx_1152.mpq
+#IX86    STAR    STAR_115        STAR_IX86_1xx_1152.mpq
 
 # Incremental update from version 1.11b
-#IX86    STAR    STAR_113D       STAR_IX86_113D_113E.mpq
+#IX86    STAR    STAR_1151       STAR_IX86_1151_1152.mpq
 
 # The next one is a Starcraft wildcard entry.
-#IX86    STAR    STAR_1xx        STAR_IX86_1xx_113E.mpq
+#IX86    STAR    STAR_1xx        STAR_IX86_1xx_1152.mpq
 
 # ========================= Diablo (original) ==============================
 # note: Blizzard doesn't update client from 109 to 109b.
