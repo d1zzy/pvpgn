@@ -158,8 +158,8 @@ static int _client_w3xp_clan_disbandreq(t_connection * c, t_packet const *const 
 static int _client_w3xp_clanmember_rankupdatereq(t_connection * c, t_packet const *const packet);
 static int _client_w3xp_clanmember_removereq(t_connection * c, t_packet const *const packet);
 static int _client_w3xp_clan_membernewchiefreq(t_connection * c, t_packet const *const packet);
-static int _client_w3xp_clan_invitereq(t_connection * c, t_packet const *const packet);
-static int _client_w3xp_clan_invitereply(t_connection * c, t_packet const *const packet);
+static int _client_clan_invitereq(t_connection * c, t_packet const *const packet);
+static int _client_clan_invitereply(t_connection * c, t_packet const *const packet);
 static int _client_crashdump(t_connection * c, t_packet const *const packet);
 static int _client_setemailreply(t_connection * c, t_packet const *const packet);
 static int _client_changeemailreq(t_connection * c, t_packet const *const packet);
@@ -257,8 +257,8 @@ static const t_htable_row bnet_htable_log[] = {
     {CLIENT_W3XP_CLANMEMBER_RANKUPDATE_REQ, _client_w3xp_clanmember_rankupdatereq},
     {CLIENT_W3XP_CLANMEMBER_REMOVE_REQ, _client_w3xp_clanmember_removereq},
     {CLIENT_W3XP_CLAN_MEMBERNEWCHIEFREQ, _client_w3xp_clan_membernewchiefreq},
-    {CLIENT_W3XP_CLAN_INVITEREQ, _client_w3xp_clan_invitereq},
-    {CLIENT_W3XP_CLAN_INVITEREPLY, _client_w3xp_clan_invitereply},
+    {CLIENT_CLAN_INVITEREQ, _client_clan_invitereq},
+    {CLIENT_CLAN_INVITEREPLY, _client_clan_invitereply},
     {CLIENT_CRASHDUMP, _client_crashdump},
     {CLIENT_SETEMAILREPLY, _client_setemailreply},
     {CLIENT_CLANINFOREQ, _client_claninforeq},
@@ -672,7 +672,7 @@ static int _client_createaccountw3(t_connection * c, t_packet const *const packe
 	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CREATEACCOUNT_W3 (missing or too long username)", conn_get_socket(c));
 	return -1;
     }
-    
+
     account_salt = (const char *)packet_get_data_const(packet,offsetof(t_client_createaccount_w3,salt),32);
     account_verifier = (const char *)packet_get_data_const(packet,offsetof(t_client_createaccount_w3,password_verifier),32);
 
@@ -1727,14 +1727,14 @@ static int _client_loginreqw3(t_connection * c, t_packet const *const packet)
 	const char *conn_client_public_key;
 	const char *server_public_key;
 	int i;
-    
+
         conn_client_public_key = (char *)packet_get_data_const(packet,offsetof(t_client_loginreq_w3, client_public_key),32);
 
 
 	if (!(username = packet_get_str_const(packet, sizeof(t_client_loginreq_w3), MAX_USERNAME_LEN))) {
 	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLIENT_LOGINREQ_W3 (missing or too long username)", conn_get_socket(c));
 	    return -1;
-	}   
+	}
 
 	if (!(rpacket = packet_create(packet_class_bnet)))
 	    return -1;
@@ -1776,7 +1776,7 @@ static int _client_loginreqw3(t_connection * c, t_packet const *const packet)
 		bn_int_set(&rpacket->u.server_loginreply_w3.message, SERVER_LOGINREPLY_W3_MESSAGE_SUCCESS);
 		xfree((void*)account_salt);
 	    } else {
-	        
+
 	        for (i = 0; i < 32; i++){
 	            bn_byte_set(&rpacket->u.server_loginreply_w3.salt[i], account_salt[i]);
 		}
@@ -1804,7 +1804,7 @@ static int _client_loginreqw3(t_connection * c, t_packet const *const packet)
 		xfree((void*)account_salt);
 		xfree(conn_client_proof);
 		xfree(conn_server_proof);
-	    
+
 		eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) \"%s\" passed account check", conn_get_socket(c), username);
 		conn_set_loggeduser(c, username);
 		bn_int_set(&rpacket->u.server_loginreply_w3.message, SERVER_LOGINREPLY_W3_MESSAGE_SUCCESS);
@@ -4485,7 +4485,7 @@ static int _client_w3xp_clan_createinvitereply(t_connection * c, t_packet const 
 	return -1;
     if ((clan = account_get_creating_clan(conn_get_account(conn))) == NULL)
 	return -1;
-    if ((status != W3XP_CLAN_INVITEREPLY_ACCEPT) && (rpacket = packet_create(packet_class_bnet))) {
+    if ((status != CLAN_RESPONSE_ACCEPT) && (rpacket = packet_create(packet_class_bnet))) {
 	packet_set_size(rpacket, sizeof(t_server_w3xp_clan_createinvitereply));
 	packet_set_type(rpacket, SERVER_W3XP_CLAN_CREATEINVITEREPLY);
 	bn_int_set(&rpacket->u.server_w3xp_clan_createinvitereply.count, bn_int_get(packet->u.client_w3xp_clan_createinvitereply.count));
@@ -4651,109 +4651,160 @@ static int _client_w3xp_clan_membernewchiefreq(t_connection * c, t_packet const 
     return 0;
 }
 
-static int _client_w3xp_clan_invitereq(t_connection * c, t_packet const *const packet)
+static int _client_clan_invitereq(t_connection * c, t_packet const *const packet)
 {
     t_packet *rpacket;
+    t_account *account;
     t_clan *clan;
+    t_clanmember *member;
     t_clantag clantag;
     const char *username;
     t_connection *conn;
+    t_account *conn_account;
+    char response_code;
 
-    if (packet_get_size(packet) < sizeof(t_client_w3xp_clan_invitereq)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLAN_INVITEREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_w3xp_clan_createreq), packet_get_size(packet));
-	return -1;
+    if (packet_get_size(packet) < sizeof(t_client_clan_invitereq)) {
+    	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_INVITEREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_invitereq), packet_get_size(packet));
+    	return -1;
     }
 
-    if ((clan = account_get_clan(conn_get_account(c))) != NULL) {
-	if (clan_get_member_count(clan) < prefs_get_clan_max_members()) {
-	    if ((clantag = clan_get_clantag(clan)) && (username = packet_get_str_const(packet, sizeof(t_client_w3xp_clan_invitereq), MAX_USERNAME_LEN)) && (conn = connlist_find_connection_by_accountname(username)) && (rpacket = packet_create(packet_class_bnet))) {
-		packet_set_size(rpacket, sizeof(t_server_w3xp_clan_invitereq));
-		packet_set_type(rpacket, SERVER_W3XP_CLAN_INVITEREQ);
-		bn_int_set(&rpacket->u.server_w3xp_clan_invitereq.count, bn_int_get(packet->u.client_w3xp_clan_invitereq.count));
-		bn_int_set(&rpacket->u.server_w3xp_clan_invitereq.clantag, clantag);
-		packet_append_string(rpacket, clan_get_name(clan));
-		packet_append_string(rpacket, conn_get_username(c));
-		conn_push_outqueue(conn, rpacket);
-		packet_del_ref(rpacket);
-	    }
-	} else if ((rpacket = packet_create(packet_class_bnet)) != NULL) {
-	    packet_set_size(rpacket, sizeof(t_server_w3xp_clan_invitereply));
-	    packet_set_type(rpacket, SERVER_W3XP_CLAN_INVITEREPLY);
-	    bn_int_set(&rpacket->u.server_w3xp_clan_invitereply.count, bn_int_get(packet->u.client_w3xp_clan_invitereq.count));
-	    bn_byte_set(&rpacket->u.server_w3xp_clan_invitereply.result, W3XP_CLAN_INVITEREPLY_CLANFULL);
-	    conn_push_outqueue(c, rpacket);
-	    packet_del_ref(rpacket);
+	if (!(username = packet_get_str_const(packet, sizeof(t_client_clan_invitereq), MAX_USERNAME_LEN))) {
+	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_INVITEREQ packet (missing or too long username)", conn_get_socket(c));
+	    return -1;
 	}
+
+    if (rpacket = packet_create(packet_class_bnet)) {
+
+    	// user not authorized
+	    if (!((account = conn_get_account(c)) &&
+	    		(clan = account_get_clan(account)) &&
+	    		(member = account_get_clanmember(account)) &&
+	    		(clanmember_get_status(member) >= CLAN_SHAMAN) &&
+	    		(clantag = clan_get_clantag(clan)))) {
+	    	response_code = CLAN_RESPONSE_NOT_AUTHORIZED;
+	    } else {
+
+	    	// target user not online
+	    	if (!((conn = connlist_find_connection_by_accountname(username)) &&
+	    			(conn_account = conn_get_account(conn)))) {
+	    		response_code = CLAN_RESPONSE_NOT_FOUND;
+
+	    	// target user allready in a clan or creating a clan
+	    	} else if (account_get_clanmember_forced(conn_get_account(conn))) {
+				response_code = CLAN_RESPONSE_NOT_FOUND;
+
+			// clan allready full
+	    	} else if (clan_get_member_count(clan) >= prefs_get_clan_max_members()) {
+	    		response_code = CLAN_RESPONSE_CLAN_FULL;
+
+	    	// valid invitereq
+	    	} else {
+                if (prefs_get_clan_newer_time() > 0)
+                    clan_add_member(clan, conn_account, CLAN_NEW);
+                else
+                    clan_add_member(clan, conn_account, CLAN_PEON);
+	    		packet_set_size(rpacket, sizeof(t_server_clan_invitereq));
+   				packet_set_type(rpacket, SERVER_CLAN_INVITEREQ);
+   				bn_int_set(&rpacket->u.server_clan_invitereq.count, bn_int_get(packet->u.client_clan_invitereq.count));
+   				bn_int_set(&rpacket->u.server_clan_invitereq.clantag, clantag);
+				packet_append_string(rpacket, clan_get_name(clan));
+				packet_append_string(rpacket, conn_get_username(c));
+				conn_push_outqueue(conn, rpacket);
+				packet_del_ref(rpacket);
+	    		return 0;
+	    	}
+	    }
+
+		packet_set_size(rpacket, sizeof(t_server_clan_invitereply));
+		packet_set_type(rpacket, SERVER_CLAN_INVITEREPLY);
+		bn_byte_set(&rpacket->u.server_clan_invitereply.result, response_code);
+		bn_int_set(&rpacket->u.server_clan_invitereply.count, bn_int_get(packet->u.client_clan_invitereq.count));
+
+		conn_push_outqueue(c, rpacket);
+		packet_del_ref(rpacket);
     }
 
     return 0;
 }
 
-static int _client_w3xp_clan_invitereply(t_connection * c, t_packet const *const packet)
+static int _client_clan_invitereply(t_connection * c, t_packet const *const packet)
 {
     t_packet *rpacket;
+    t_account *acc;
     t_clan *clan;
+    t_clanmember *member;
     const char *username;
     t_connection *conn;
+    t_account *conn_account;
+    t_clan *conn_clan;
+    t_clanmember *conn_member;
     int offset;
     char status;
 
-    if (packet_get_size(packet) < sizeof(t_client_w3xp_clan_invitereply)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLAN_INVITEREPLY packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_w3xp_clan_createreq), packet_get_size(packet));
-	return -1;
+    if (packet_get_size(packet) < sizeof(t_client_clan_invitereply)) {
+		eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_INVITEREPLY packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_w3xp_clan_createreq), packet_get_size(packet));
+		return -1;
     }
 
-    offset = sizeof(t_client_w3xp_clan_invitereply);
+    offset = sizeof(t_client_clan_invitereply);
     if (!(username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN))) {
-        eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad W3XP CLAN_INVITEREPLY packet (missing username)", conn_get_socket(c));
+        eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad CLAN_INVITEREPLY packet (missing username)", conn_get_socket(c));
 	return -1;
     }
     offset += (std::strlen(username) + 1);
-
     status = *((char *) packet_get_data_const(packet, offset, 1));
-    if ((conn = connlist_find_connection_by_accountname(username)) != NULL) {
-	if ((status == W3XP_CLAN_INVITEREPLY_ACCEPT) && (clan = account_get_clan(conn_get_account(conn)))) {
-	    char channelname[10];
-	    t_clantag clantag;
-	    if (clan_get_member_count(clan) < prefs_get_clan_max_members()) {
-		t_clanmember *member = clan_add_member(clan, conn_get_account(c), CLAN_PEON); /* PEON? it should be CLAN_NEW?? */
-		clanmember_set_fullmember(member, 1);      /* FIXME: do only this here and no clan_add_member()*/
-		if ((member != NULL) && (clantag = clan_get_clantag(clan))) {
-		    snprintf(channelname, sizeof(channelname), "Clan %s", clantag_to_str(clantag));
-		    if (conn_get_channel(c)) {
-			conn_update_w3_playerinfo(c);
-			channel_set_userflags(c);
-			if (conn_set_channel(c, channelname) < 0)
-			    conn_set_channel(c, CHANNEL_NAME_BANNED);	/* should not fail */
-			clanmember_set_online(c);
-		    }
-		    clan_send_status_window(c);
-		}
-		if ((rpacket = packet_create(packet_class_bnet)) != NULL) {
-		    packet_set_size(rpacket, sizeof(t_server_w3xp_clan_invitereply));
-		    packet_set_type(rpacket, SERVER_W3XP_CLAN_INVITEREPLY);
-		    bn_int_set(&rpacket->u.server_w3xp_clan_invitereply.count, bn_int_get(packet->u.client_w3xp_clan_invitereply.count));
-		    bn_byte_set(&rpacket->u.server_w3xp_clan_invitereply.result, W3XP_CLAN_INVITEREPLY_SUCCESS);
-		    conn_push_outqueue(conn, rpacket);
-		    packet_del_ref(rpacket);
-		}
-	    } else if ((rpacket = packet_create(packet_class_bnet)) != NULL) {
-		packet_set_size(rpacket, sizeof(t_server_w3xp_clan_invitereply));
-		packet_set_type(rpacket, SERVER_W3XP_CLAN_INVITEREPLY);
-		bn_int_set(&rpacket->u.server_w3xp_clan_invitereply.count, bn_int_get(packet->u.client_w3xp_clan_invitereply.count));
-		bn_byte_set(&rpacket->u.server_w3xp_clan_invitereply.result, W3XP_CLAN_INVITEREPLY_CLANFULL);
-		conn_push_outqueue(conn, rpacket);
-		packet_del_ref(rpacket);
-	    }
-	} else if ((rpacket = packet_create(packet_class_bnet)) != NULL) {
-	    packet_set_size(rpacket, sizeof(t_server_w3xp_clan_invitereply));
-	    packet_set_type(rpacket, SERVER_W3XP_CLAN_INVITEREPLY);
-	    bn_int_set(&rpacket->u.server_w3xp_clan_invitereply.count, bn_int_get(packet->u.client_w3xp_clan_invitereply.count));
-	    bn_byte_set(&rpacket->u.server_w3xp_clan_invitereply.result, status);
-	    conn_push_outqueue(conn, rpacket);
-	    packet_del_ref(rpacket);
+
+	// reply without prior request
+	if (!((acc = conn_get_account(c)) &&
+			(member = account_get_clanmember_forced(acc)) &&
+			(clan = clanmember_get_clan(member)) &&
+			(clanmember_get_fullmember(member) == 0))) {
+		eventlog(eventlog_level_warn,__FUNCTION__,"[%d] got suspicious CLAN_INVITEREPLY packet (reply without prior request)", conn_get_socket(c));
+		return -1;
+
+	// invalid inviter
+	} else if (!((conn = connlist_find_connection_by_accountname(username)) &&
+			(conn_account = conn_get_account(conn)) &&
+			(conn_clan = account_get_clan(conn_account)) &&
+			(conn_member = account_get_clanmember(conn_account)) &&
+			(clanmember_get_status(conn_member) >= CLAN_SHAMAN) &&
+			(clan_get_clantag(clan) == clan_get_clantag(conn_clan)))) {
+		eventlog(eventlog_level_warn,__FUNCTION__,"[%d] got suspicious CLAN_INVITEREPLY packet (invalid inviter)", conn_get_socket(c));
+		return -1;
 	}
+
+	if (rpacket = packet_create(packet_class_bnet)) {
+		packet_set_size(rpacket, sizeof(t_server_clan_invitereply));
+		packet_set_type(rpacket, SERVER_CLAN_INVITEREPLY);
+		bn_int_set(&rpacket->u.server_clan_invitereply.count, bn_int_get(packet->u.client_clan_invitereply.count));
+
+		if (status != CLAN_RESPONSE_ACCEPT) {
+			clan_remove_member(clan,member);
+			bn_byte_set(&rpacket->u.server_clan_invitereply.result, status);
+		} else {
+			if (clan_get_member_count(clan) >= prefs_get_clan_max_members()) {
+				clan_remove_member(clan,member);
+				bn_byte_set(&rpacket->u.server_clan_invitereply.result, CLAN_RESPONSE_CLAN_FULL);
+			} else {
+				char channelname[10];
+				clanmember_set_fullmember(member, 1);
+				snprintf(channelname, sizeof(channelname), "Clan %s", clantag_to_str(clan_get_clantag(clan)));
+				if (conn_get_channel(c)) {
+					conn_update_w3_playerinfo(c);
+					channel_set_userflags(c);
+					if (conn_set_channel(c, channelname) < 0) {
+						conn_set_channel(c, CHANNEL_NAME_BANNED);	/* should not fail */
+					}
+					clanmember_set_online(c);
+				}
+				clan_send_status_window(c);
+				bn_byte_set(&rpacket->u.server_clan_invitereply.result, CLAN_RESPONSE_SUCCESS);
+			}
+		}
     }
+
+	conn_push_outqueue(conn, rpacket);
+	packet_del_ref(rpacket);
 
     return 0;
 }

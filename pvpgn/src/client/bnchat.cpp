@@ -1432,16 +1432,16 @@ extern int main(int argc, char * argv[])
 			{
 			    char result;
 
-			    packet_set_size(packet,sizeof(t_client_w3xp_clan_invitereply));
-			    packet_set_type(packet,CLIENT_W3XP_CLAN_INVITEREPLY);
-			    bn_int_set(&packet->u.client_w3xp_clan_invitereply.count,user.count);
-			    bn_int_set(&packet->u.client_w3xp_clan_invitereply.clantag,user.clantag);
+			    packet_set_size(packet,sizeof(t_client_clan_invitereply));
+			    packet_set_type(packet,CLIENT_CLAN_INVITEREPLY);
+			    bn_int_set(&packet->u.client_clan_invitereply.count,user.count);
+			    bn_int_set(&packet->u.client_clan_invitereply.clantag,user.clantag);
 			    packet_append_string(packet,user.inviter);
 
 			    if (!strcasecmp(client.text,"no"))
-			        result = W3XP_CLAN_INVITEREPLY_DECLINE;
+			        result = CLAN_RESPONSE_DECLINED;
 			    else
-			        result = W3XP_CLAN_INVITEREPLY_ACCEPT;
+			        result = CLAN_RESPONSE_ACCEPT;
 
 			    packet_append_data(packet,&result,1);
 
@@ -1561,7 +1561,31 @@ extern int main(int argc, char * argv[])
 				   " chinfo         - modify your profile\n"
 				   " quit           - exit bnchat\n"
 				   " stats <PLAYER> - print a player's game record\n"
+				   " invite <PLAYER> - invite a player to your clan\n"
 				   "Use the escape key to toggle between chat and command modes.\n");
+			}
+			else if (strstart(client.text,"invite")==0)
+			{
+			    for (i=6; client.text[i]==' ' || client.text[i]=='\t'; i++);
+			    if (client.text[i]=='\0')
+			    {
+			        ansi_printf(&client,ansi_text_color_red,"You must specify the player.\n");
+			    }
+			    else
+			    {
+				if (!(packet = packet_create(packet_class_bnet)))
+				    std::fprintf(stderr,"%s: could not create packet\n",argv[0]);
+				else
+				{
+				    std::printf("Inviting:  %s\n",&client.text[i]);
+				    packet_set_size(packet,sizeof(t_client_clan_invitereq));
+				    packet_set_type(packet,CLIENT_CLAN_INVITEREQ);
+				    bn_int_set(&packet->u.client_clan_invitereq.count,1);
+				    packet_append_string(packet,&client.text[i]);
+				    client_blocksend_packet(client.sd,packet);
+				    packet_del_ref(packet);
+				}
+			    }
 			}
 			else if (strstart(client.text,"info")==0)
 			{
@@ -1713,11 +1737,11 @@ extern int main(int argc, char * argv[])
 			}
 			break;
 
-		    case SERVER_W3XP_CLAN_INVITEREQ:
-			if (packet_get_size(rpacket)<sizeof(t_server_w3xp_clan_invitereq))
+		    case SERVER_CLAN_INVITEREQ:
+			if (packet_get_size(rpacket)<sizeof(t_server_clan_invitereq))
 			{
 		            munge(&client);
-			    std::printf("Got bad SERVER_W3XP_CLAN_INVITEREQ packet (expected %lu bytes, got %u)\n",sizeof(t_server_w3xp_clan_invitereq),packet_get_size(rpacket));
+			    std::printf("Got bad SERVER_W3XP_CLAN_INVITEREQ packet (expected %lu bytes, got %u)\n",sizeof(t_server_clan_invitereq),packet_get_size(rpacket));
 			    break;
 			}
 
@@ -1726,22 +1750,22 @@ extern int main(int argc, char * argv[])
 			    char const * inviter;
 			    int offset;
 
-			    offset = sizeof(t_server_w3xp_clan_invitereq);
+			    offset = sizeof(t_server_clan_invitereq);
 			    if (!(clan = packet_get_str_const(rpacket,offset,MAX_CLANNAME_LEN)))
 			    {
 				munge(&client);
-				std::printf("Got SERVER_W3XP_CLAN_INVITEREQ with bad or missing clanname\n");
+				std::printf("Got SERVER_CLAN_INVITEREQ with bad or missing clanname\n");
 				break;
 			    }
 			    offset+=std::strlen(clan)+1;
 			    if (!(inviter = packet_get_str_const(rpacket,offset,MAX_USERNAME_LEN)))
 			    {
 				munge(&client);
-				std::printf("Got SERVER_W3XP_CLAN_INVITEREQ with bad or missing inviter\n");
+				std::printf("Got SERVER_CLAN_INVITEREQ with bad or missing inviter\n");
 				break;
 			    }
-			    user.count   = bn_int_get(rpacket->u.server_w3xp_clan_invitereq.count);
-			    user.clantag = bn_int_get(rpacket->u.server_w3xp_clan_invitereq.clantag);
+			    user.count   = bn_int_get(rpacket->u.server_clan_invitereq.count);
+			    user.clantag = bn_int_get(rpacket->u.server_clan_invitereq.clantag);
 			    if (user.inviter)
 			    	xfree((void *)user.inviter);
 			    user.inviter = xstrdup(inviter);
@@ -1751,8 +1775,22 @@ extern int main(int argc, char * argv[])
 			    std::printf("Do you want to accept invitation (yes/no) ? [yes] ");
 
 			    client.mode = mode_claninvite;
+			    break;
 			}
 
+		    case SERVER_CLAN_INVITEREPLY:
+			if (packet_get_size(rpacket)<sizeof(t_server_clan_invitereply))
+			{
+		            munge(&client);
+			    std::printf("Got bad SERVER_CLAN_INVITEREPLY packet (expected %lu bytes, got %u)\n",sizeof(t_server_clan_invitereply),packet_get_size(rpacket));
+			    break;
+			}
+
+			{
+			    char result = bn_byte_get(rpacket->u.server_clan_invitereply.result);
+			    std::printf("Recieved result: %i\n",result);
+			    break;
+			}
 
 
 		    case SERVER_W3XP_CLANMEMBERUPDATE:
