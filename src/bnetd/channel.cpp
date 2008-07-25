@@ -413,7 +413,7 @@ extern int channel_rejoin(t_connection * conn)
     return -1;
 
   chname=xstrdup(temp);
-  conn_set_channel(conn, NULL);
+  conn_part_channel(conn);
   if (conn_set_channel(conn,chname)<0)
     conn_set_channel(conn,CHANNEL_NAME_BANNED);
   xfree((void *)chname);
@@ -643,11 +643,11 @@ extern void channel_message_send(t_channel const * channel, t_message_type type,
     t_connection * c;
     unsigned int   heard;
 	char const *   tname;
-    t_message *    message1; //send to people with clienttag matching channel clienttag 
+    t_message *    message1; //send to people with clienttag matching channel clienttag
                              // or everyone when channel has no clienttag set
 	t_message *    message2; //send to people with clienttag not matching channel clienttag
 	t_message *    message_to_send;
-    
+
 
     if (!channel)
     {

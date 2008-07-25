@@ -1875,7 +1875,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
         eventlog(eventlog_level_error,__FUNCTION__,"got NULL channelname");
         return -1;
     }
-                
+
 	oldchannel=c->protocol.chat.channel;
 
 	channel = channellist_find_channel_by_name(channelname,conn_get_country(c),realm_get_name(conn_get_realm(c)));
@@ -1894,11 +1894,11 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
             snprintf(msgtemp, sizeof(msgtemp), "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
             message_send_text(c, message_type_error, c, msgtemp);
 
-            if (conn_get_game(c)) {
+            if (conn_get_game(c) || c->protocol.chat.channel==NULL) {
                 // FIXME: This is not tested to be according to battle.net!!
                 // This is fix for empty clan channels with preventing to join CHANNEL_NAME_BANNED when is used _handle_join_command
                 snprintf(msgtemp, sizeof(msgtemp), "You have been redirected to %s.", CHANNEL_NAME_BANNED);
-                message_send_text(c, message_type_error, c, msgtemp);    
+                message_send_text(c, message_type_error, c, msgtemp);
                 channel = channellist_find_channel_by_name(CHANNEL_NAME_BANNED,conn_get_country(c),realm_get_name(conn_get_realm(c)));
             } else
                 return 0;
@@ -2041,7 +2041,7 @@ extern int conn_kick_channel(t_connection * c, char const * text)
         ERROR0("client want to KICK channel but is not in channel! c->protocol.chat.channel == NULL");
         return -1;
     }
-   
+
     channel_del_connection(c->protocol.chat.channel,c,message_type_kick,text);
     c->protocol.chat.channel = NULL;
 
@@ -2061,7 +2061,7 @@ extern int conn_quit_channel(t_connection * c, char const * text)
         ERROR0("client want to QUIT channel but is not in channel! c->protocol.chat.channel == NULL");
         return -1;
     }
-   
+
     channel_del_connection(c->protocol.chat.channel,c,message_type_quit,text);
     c->protocol.chat.channel = NULL;
 
@@ -3624,10 +3624,15 @@ extern int conn_update_w3_playerinfo(t_connection * c)
 	return -1;
     }
 
+    clienttag = c->protocol.client.clienttag;
+
+	if (!((clienttag==CLIENTTAG_WARCRAFT3_UINT) ||
+			(clienttag==CLIENTTAG_WAR3XP_UINT))){
+		return 0;
+	}
+
     std::strncpy(revtag, tag_uint_to_str(clienttag_str,conn_get_fake_clienttag(c)),5); revtag[4] = '\0';
     strreverse(revtag);
-
-    clienttag = c->protocol.client.clienttag;
 
     acctlevel = account_get_highestladderlevel(account,clienttag);
     account_get_raceicon(account, &raceicon, &raceiconnumber, &wins, clienttag);
