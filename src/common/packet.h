@@ -316,10 +316,10 @@ typedef struct
 	t_client_findanongame_inforeq		client_findanongame_inforeq;
 	t_server_findanongame_inforeply		server_findanongame_inforeply;
 
-	t_client_w3xp_clan_invitereq		client_w3xp_clan_invitereq;
-    	t_server_w3xp_clan_invitereply		server_w3xp_clan_invitereply;
-	t_server_w3xp_clan_invitereq		server_w3xp_clan_invitereq;
-	t_client_w3xp_clan_invitereply		client_w3xp_clan_invitereply;
+	t_client_clan_invitereq		client_clan_invitereq;
+   	t_server_clan_invitereply	server_clan_invitereply;
+	t_server_clan_invitereq		server_clan_invitereq;
+	t_client_clan_invitereply	client_clan_invitereply;
 	t_client_w3xp_clan_disbandreq		client_w3xp_clan_disbandreq;
 	t_server_w3xp_clan_disbandreply		server_w3xp_clan_disbandreply;
 	t_client_w3xp_clan_motdchg		client_w3xp_clan_motdchg;

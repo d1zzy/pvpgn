@@ -3867,19 +3867,19 @@ typedef struct{
 /*
 3876: recv class=bnet[0x02] type=unknown[0x77ff] length=13
 0000:   FF 77 0D 00 01 00 00 00   44 4A 50 31 00             .w......DJP1.  */
-#define CLIENT_W3XP_CLAN_INVITEREQ 0x77ff
+#define CLIENT_CLAN_INVITEREQ 0x77ff
 typedef struct{
   t_bnet_header        h;
   bn_int               count;
   /*Player_Name invited */
-} PACKED_ATTR() t_client_w3xp_clan_invitereq;
+} PACKED_ATTR() t_client_clan_invitereq;
 
-#define SERVER_W3XP_CLAN_INVITEREPLY 0x77ff
+#define SERVER_CLAN_INVITEREPLY 0x77ff
 typedef struct{
   t_bnet_header        h;
   bn_int               count;
   bn_byte              result;  /* 0x04--decline 0x05--Cannot contact(not in channel screen) or already in clan */
-} PACKED_ATTR() t_server_w3xp_clan_invitereply;
+} PACKED_ATTR() t_server_clan_invitereply;
 
 #define CLIENT_W3XP_CLANMEMBER_REMOVE_REQ 0x78ff
 typedef struct{
@@ -3897,30 +3897,55 @@ typedef struct{
 #define SERVER_W3XP_CLANMEMBER_REMOVE_SUCCESS 0x00
 #define SERVER_W3XP_CLANMEMBER_REMOVE_FAILED 0x01
 
-#define SERVER_W3XP_CLAN_INVITEREQ 0x79ff
+#define SERVER_CLAN_INVITEREQ 0x79ff
 typedef struct{
   t_bnet_header        h;
   bn_int               count;
   bn_int               clantag;
   /*Clan_Name (\0 terminated)
   Player_Name invited (\0 terminated) */
-} PACKED_ATTR() t_server_w3xp_clan_invitereq;
+} PACKED_ATTR() t_server_clan_invitereq;
 
-#define CLIENT_W3XP_CLAN_INVITEREPLY 0x79ff
+#define CLIENT_CLAN_INVITEREPLY 0x79ff
 typedef struct{
   t_bnet_header        h;
   bn_int               count;
   bn_int               clantag;
   /*Player_Name invited (\0 terminated)
-  bn_byte            reply *//* 0x04--decline 0x05--Cannot contact(not in channel screen) or already in clan 0x06--accept 0x07--no privilege to invite 0x08--cannot invite(??any difference from cannot contact?) 0x09--clan full*/
-} PACKED_ATTR() t_client_w3xp_clan_invitereply;
-#define W3XP_CLAN_INVITEREPLY_SUCCESS 0x00
-#define W3XP_CLAN_INVITEREPLY_DECLINE 0x04
-#define W3XP_CLAN_INVITEREPLY_FAILED 0x05
-#define W3XP_CLAN_INVITEREPLY_ACCEPT 0x06
-#define W3XP_CLAN_INVITEREPLY_NOPRIVILEGE 0x07
-#define W3XP_CLAN_INVITEREPLY_CANNOT 0x08
-#define W3XP_CLAN_INVITEREPLY_CLANFULL 0x09
+  bn_byte            reply */
+} PACKED_ATTR() t_client_clan_invitereply;
+
+/*
+    clan codes according to bnetdocs
+
+    0x00: Success
+    0x01: In use
+    0x02: Too soon
+    0x03: Not enough members
+    0x04: Invitation was declined
+    0x05: Decline
+    0x06: Accept
+    0x07: Not authorized
+    0x08: User not found
+    0x09: Clan is full
+    0x0A: Bad tag
+    0x0B: Bad name
+    0x0C: User not found in that clan
+ */
+
+#define CLAN_RESPONSE_SUCCESS 		0x00
+#define CLAN_RESPONSE_IN_USE  		0x01
+#define CLAN_RESPONSE_TOO_SOON 		0x02
+#define CLAN_RESPONSE_TOO_SMALL 	0x03
+#define CLAN_RESPONSE_DECLINED 		0x04
+#define CLAN_RESPONSE_DECLINE 		0x05
+#define CLAN_RESPONSE_ACCEPT 		0x06
+#define CLAN_RESPONSE_NOT_AUTHORIZED 0x07
+#define CLAN_RESPONSE_NOT_FOUND 	0x08
+#define CLAN_RESPONSE_CLAN_FULL 	0x09
+#define CLAN_RESPONSE_BAD_TAG		0x0a
+#define CLAN_RESPONSE_BAD_NAME		0x0b
+#define CLAN_RESPONSE_NOT_MEMBER	0x0c
 
 #define CLIENT_W3XP_CLANMEMBER_RANKUPDATE_REQ 0x7aff
 typedef struct{
