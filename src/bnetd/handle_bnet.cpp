@@ -152,7 +152,7 @@ static int _client_w3xp_clanmemberlistreq(t_connection * c, t_packet const *cons
 static int _client_w3xp_clan_motdreq(t_connection * c, t_packet const *const packet);
 static int _client_w3xp_clan_motdchg(t_connection * c, t_packet const *const packet);
 static int _client_w3xp_clan_createreq(t_connection * c, t_packet const *const packet);
-static int _client_w3xp_clan_createinvitereq(t_connection * c, t_packet const *const packet);
+static int _client_clan_createinvitereq(t_connection * c, t_packet const *const packet);
 static int _client_w3xp_clan_createinvitereply(t_connection * c, t_packet const *const packet);
 static int _client_w3xp_clan_disbandreq(t_connection * c, t_packet const *const packet);
 static int _client_w3xp_clanmember_rankupdatereq(t_connection * c, t_packet const *const packet);
@@ -252,7 +252,7 @@ static const t_htable_row bnet_htable_log[] = {
     {CLIENT_W3XP_CLAN_MOTDCHG, _client_w3xp_clan_motdchg},
     {CLIENT_W3XP_CLAN_MOTDREQ, _client_w3xp_clan_motdreq},
     {CLIENT_W3XP_CLAN_CREATEREQ, _client_w3xp_clan_createreq},
-    {CLIENT_W3XP_CLAN_CREATEINVITEREQ, _client_w3xp_clan_createinvitereq},
+    {CLIENT_CLAN_CREATEINVITEREQ, _client_clan_createinvitereq},
     {CLIENT_W3XP_CLAN_CREATEINVITEREPLY, _client_w3xp_clan_createinvitereply},
     {CLIENT_W3XP_CLANMEMBER_RANKUPDATE_REQ, _client_w3xp_clanmember_rankupdatereq},
     {CLIENT_W3XP_CLANMEMBER_REMOVE_REQ, _client_w3xp_clanmember_removereq},
@@ -4402,36 +4402,51 @@ static int _client_w3xp_clan_createreq(t_connection * c, t_packet const *const p
     return 0;
 }
 
-static int _client_w3xp_clan_createinvitereq(t_connection * c, t_packet const *const packet)
+static int _client_clan_createinvitereq(t_connection * c, t_packet const *const packet)
 {
     t_packet *rpacket;
     unsigned size;
+    const char *clanname;
+    const char *username;
+    t_clantag clantag;
+    unsigned offset;
+    t_clan *clan;
 
-    if ((size = packet_get_size(packet)) < sizeof(t_client_w3xp_clan_createinvitereq)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLAN_CREATEINVITEREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_w3xp_clan_createinvitereq), packet_get_size(packet));
-	return -1;
+    if ((size = packet_get_size(packet)) < sizeof(t_client_clan_createinvitereq)) {
+        eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_CREATEINVITEREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_createinvitereq), packet_get_size(packet));
+        return -1;
     }
+    offset = sizeof(t_client_clan_createinvitereq);
+    
+	if (!(clanname = packet_get_str_const(packet, offset, CLAN_NAME_MAX))) {
+        eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad CLAN_CREATEINVITEREQ packet (missing clanname)", conn_get_socket(c));
+        return -1;
+    }
+	offset += (std::strlen(clanname) + 1);
+
+	if (!(packet_get_data_const(packet, offset, 4))) { 
+        eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad CLAN_CREATEINVITEREQ packet (missing clantag)", conn_get_socket(c));
+        return -1;
+    }
+    clantag = *((int *) packet_get_data_const(packet, offset, 4));
+	offset += 4;
 
     if ((rpacket = packet_create(packet_class_bnet))) {
-	const char *clanname;
-	const char *username;
-	t_clantag clantag;
-	unsigned offset = sizeof(t_client_w3xp_clan_createinvitereq);
-	t_clan *clan;
-	clanname = packet_get_str_const(packet, offset, CLAN_NAME_MAX);
-	offset += (std::strlen(clanname) + 1);
-	clantag = *((int *) packet_get_data_const(packet, offset, 4));
-	offset += 4;
 	if ((clan = clan_create(conn_get_account(c), clantag, clanname, NULL)) && clanlist_add_clan(clan)) {
-	    char membercount = *((char *) packet_get_data_const(packet, offset, 1));
+	    char membercount;
+        if (!(packet_get_data_const(packet, offset, 1))) {
+            eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad CLAN_CREATEINVITEREQ packet (missing membercount)", conn_get_socket(c));
+            return -1;
+        }
+        membercount = *((char *) packet_get_data_const(packet, offset, 1));
 	    clan_set_created(clan, -membercount);
-	    packet_set_size(rpacket, sizeof(t_server_w3xp_clan_createinvitereq));
-	    packet_set_type(rpacket, SERVER_W3XP_CLAN_CREATEINVITEREQ);
-	    bn_int_set(&rpacket->u.server_w3xp_clan_createinvitereq.count, bn_int_get(packet->u.client_w3xp_clan_createinvitereq.count));
-	    bn_int_set(&rpacket->u.server_w3xp_clan_createinvitereq.clantag, clantag);
+	    packet_set_size(rpacket, sizeof(t_server_clan_createinvitereq));
+	    packet_set_type(rpacket, SERVER_CLAN_CREATEINVITEREQ);
+	    bn_int_set(&rpacket->u.server_clan_createinvitereq.count, bn_int_get(packet->u.client_clan_createinvitereq.count));
+	    bn_int_set(&rpacket->u.server_clan_createinvitereq.clantag, clantag);
 	    packet_append_string(rpacket, clanname);
 	    packet_append_string(rpacket, conn_get_username(c));
-	    packet_append_data(rpacket, packet_get_data_const(packet, offset, size - offset), size - offset);
+	    packet_append_data(rpacket, packet_get_data_const(packet, offset, size - offset), size - offset); //Pelish: we will send bad packet if we got bad packet...
 	    offset++;
 	    do {
 		username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
@@ -4474,7 +4489,7 @@ static int _client_w3xp_clan_createinvitereply(t_connection * c, t_packet const 
     char status;
 
     if (packet_get_size(packet) < sizeof(t_client_w3xp_clan_createinvitereply)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLAN_CREATEINVITEREPLY packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_w3xp_clan_createinvitereq), packet_get_size(packet));
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_CREATEINVITEREPLY packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_createinvitereq), packet_get_size(packet));
 	return -1;
     }
     offset = sizeof(t_client_w3xp_clan_createinvitereply);

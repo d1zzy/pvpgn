@@ -329,9 +329,9 @@ typedef struct
 	t_server_w3xp_clanmemberlist_reply	server_w3xp_clanmemberlist_reply;
 	t_client_w3xp_clan_createreq		client_w3xp_clan_createreq;
 	t_server_w3xp_clan_createreply		server_w3xp_clan_createreply;
-	t_client_w3xp_clan_createinvitereq	client_w3xp_clan_createinvitereq;
+	t_client_clan_createinvitereq       client_clan_createinvitereq;
 	t_server_w3xp_clan_createinvitereply	server_w3xp_clan_createinvitereply;
-	t_server_w3xp_clan_createinvitereq	server_w3xp_clan_createinvitereq;
+	t_server_clan_createinvitereq	     server_clan_createinvitereq;
 	t_client_w3xp_clan_createinvitereply	client_w3xp_clan_createinvitereply;
 	t_server_w3xp_clan_clanack		server_w3xp_clan_clanack;
 	t_server_w3xp_clanmemberupdate          server_w3xp_clanmemberupdate;
