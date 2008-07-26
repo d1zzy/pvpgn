@@ -3768,7 +3768,7 @@ typedef struct{
 0030:   00 44 4A 50 37 00 44 4A   50 38 00 44 4A 50 31 30    .DJP7.DJP8.DJP10
 0040:   00 44 4A 50 39 00                                    .DJP9.
 */
-#define CLIENT_W3XP_CLAN_CREATEINVITEREQ 0x71ff
+#define CLIENT_CLAN_CREATEINVITEREQ 0x71ff
 typedef struct{
   t_bnet_header        h;
   bn_int               count;
@@ -3777,7 +3777,7 @@ typedef struct{
      bn_byte			friend_count; //Number of friend selected
      Name of friend (\0 terminated string)
    */
-} PACKED_ATTR() t_client_w3xp_clan_createinvitereq;
+} PACKED_ATTR() t_client_clan_createinvitereq;
 
 /*3756: send class=bnet[0x02] type=unknown[0x71ff] length=14
 0000:   FF 71 0E 00 02 00 00 00   05 44 4A 50 32 00          .q.......DJP2.
@@ -3794,7 +3794,7 @@ typedef struct{
   Name of failed member(\0 terminated string) */
 } PACKED_ATTR() t_server_w3xp_clan_createinvitereply;
 
-#define SERVER_W3XP_CLAN_CREATEINVITEREQ 0x72ff
+#define SERVER_CLAN_CREATEINVITEREQ 0x72ff
 typedef struct{
   t_bnet_header        h;
   bn_int               count;
@@ -3803,7 +3803,7 @@ typedef struct{
      Clan Creator (\0 terminated string)
      bn_byte			friend_count; //Number of friend selected
      Name of friend (\0 terminated string) */
-} PACKED_ATTR() t_server_w3xp_clan_createinvitereq;
+} PACKED_ATTR() t_server_clan_createinvitereq;
 
 #define CLIENT_W3XP_CLAN_CREATEINVITEREPLY 0x72ff
 typedef struct{
