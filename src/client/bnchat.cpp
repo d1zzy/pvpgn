@@ -1741,7 +1741,7 @@ extern int main(int argc, char * argv[])
 			if (packet_get_size(rpacket)<sizeof(t_server_clan_invitereq))
 			{
 		            munge(&client);
-			    std::printf("Got bad SERVER_W3XP_CLAN_INVITEREQ packet (expected %lu bytes, got %u)\n",sizeof(t_server_clan_invitereq),packet_get_size(rpacket));
+			    std::printf("Got bad SERVER_CLAN_INVITEREQ packet (expected %lu bytes, got %u)\n",sizeof(t_server_clan_invitereq),packet_get_size(rpacket));
 			    break;
 			}
 
@@ -1793,11 +1793,11 @@ extern int main(int argc, char * argv[])
 			}
 
 
-		    case SERVER_W3XP_CLANMEMBERUPDATE:
-			if (packet_get_size(rpacket)<sizeof(t_server_w3xp_clanmemberupdate))
+		    case SERVER_CLANMEMBERUPDATE:
+			if (packet_get_size(rpacket)<sizeof(t_server_clanmemberupdate))
 			{
 		            munge(&client);
-			    std::printf("Got bad SERVER_W3XP_CLANMEMBERUPDATE packet (expected %lu bytes, got %u)\n",sizeof(t_server_w3xp_clanmemberupdate),packet_get_size(rpacket));
+			    std::printf("Got bad SERVER_CLANMEMBERUPDATE packet (expected %lu bytes, got %u)\n",sizeof(t_server_clanmemberupdate),packet_get_size(rpacket));
 			    break;
 			}
 
@@ -1814,18 +1814,18 @@ extern int main(int argc, char * argv[])
 			    char const * rank_str;
 			    char const * online_str;
 
-			    offset = sizeof(t_server_w3xp_clanmemberupdate);
+			    offset = sizeof(t_server_clanmemberupdate);
 			    if (!(member = packet_get_str_const(rpacket,offset,MAX_USERNAME_LEN)))
 			    {
 				munge(&client);
-				std::printf("Got SERVER_W3XP_CLANMEMBERUPDATE with bad or missing member\n");
+				std::printf("Got SERVER_CLANMEMBERUPDATE with bad or missing member\n");
 				break;
 			    }
 			    offset+=std::strlen(member)+1;
 			    if (!(rank_p = (char *)packet_get_data_const(rpacket,offset,1)))
 			    {
 				munge(&client);
-				std::printf("Got SERVER_W3XP_CLANMEMBERUPDATE with bad or missing rank\n");
+				std::printf("Got SERVER_CLANMEMBERUPDATE with bad or missing rank\n");
 				break;
 			    }
 			    rank = *rank_p;
@@ -1833,7 +1833,7 @@ extern int main(int argc, char * argv[])
 			    if (!(online_p = (char *)packet_get_data_const(rpacket,offset,1)))
 			    {
 				munge(&client);
-				std::printf("Got SERVER_W3XP_CLAN_MEMBERUPDATE with bad or missing online status\n");
+				std::printf("Got SERVER_CLAN_MEMBERUPDATE with bad or missing online status\n");
 				break;
 			    }
 			    online = *online_p;
@@ -1841,25 +1841,25 @@ extern int main(int argc, char * argv[])
 			    if (!(append_str = packet_get_str_const(rpacket,offset,MAX_USERNAME_LEN)))
 			    {
 				munge(&client);
-				std::printf("Got SERVER_W3XP_CLANMEMBERUPDATE with bad or missing append_str\n");
+				std::printf("Got SERVER_CLANMEMBERUPDATE with bad or missing append_str\n");
 				break;
 			    }
 
 			    switch (rank)
 			    {
-				case SERVER_W3XP_CLAN_MEMBER_NEW:
+				case SERVER_CLAN_MEMBER_NEW:
 					rank_str = "New clan member";
 					break;
-				case SERVER_W3XP_CLAN_MEMBER_PEON:
+				case SERVER_CLAN_MEMBER_PEON:
 					rank_str = "Peon";
 					break;
-				case SERVER_W3XP_CLAN_MEMBER_GRUNT:
+				case SERVER_CLAN_MEMBER_GRUNT:
 					rank_str = "Grunt";
 					break;
-				case SERVER_W3XP_CLAN_MEMBER_SHAMAN:
+				case SERVER_CLAN_MEMBER_SHAMAN:
 					rank_str = "Shaman";
 					break;
-				case SERVER_W3XP_CLAN_MEMBER_CHIEFTAIN:
+				case SERVER_CLAN_MEMBER_CHIEFTAIN:
 					rank_str = "Chieftain";
 					break;
 				default:
@@ -1869,19 +1869,19 @@ extern int main(int argc, char * argv[])
 
 			    switch (online)
 			    {
-				case SERVER_W3XP_CLAN_MEMBER_OFFLINE:
+				case SERVER_CLAN_MEMBER_OFFLINE:
 					online_str = "offline";
 					break;
-				case SERVER_W3XP_CLAN_MEMBER_ONLINE:
+				case SERVER_CLAN_MEMBER_ONLINE:
 					online_str = "online";
 					break;
-				case SERVER_W3XP_CLAN_MEMBER_CHANNEL:
+				case SERVER_CLAN_MEMBER_CHANNEL:
 					online_str = "in channel";
 					break;
-				case SERVER_W3XP_CLAN_MEMBER_GAME:
+				case SERVER_CLAN_MEMBER_GAME:
 					online_str = "in game";
 					break;
-				case SERVER_W3XP_CLAN_MEMBER_PRIVATE_GAME:
+				case SERVER_CLAN_MEMBER_PRIVATE_GAME:
 					online_str = "in private game";
 					break;
 				default:
