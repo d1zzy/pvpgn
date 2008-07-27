@@ -669,10 +669,12 @@ static int _client_createaccountw3(t_connection * c, t_packet const *const packe
 
     username = packet_get_str_const(packet, sizeof(t_client_createaccount_w3), UNCHECKED_NAME_STR);
     if (!username) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CREATEACCOUNT_W3 (missing or too long username)", conn_get_socket(c));
-	return -1;
+        eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CREATEACCOUNT_W3 (missing or too long username)", conn_get_socket(c));
+        return -1;
     }
 
+    /* PELISH: We are testing if username missing and if packetsize is good
+               so we does not need to test if salt and verifier are present */
     account_salt = (const char *)packet_get_data_const(packet,offsetof(t_client_createaccount_w3,salt),32);
     account_verifier = (const char *)packet_get_data_const(packet,offsetof(t_client_createaccount_w3,password_verifier),32);
 
@@ -1728,7 +1730,8 @@ static int _client_loginreqw3(t_connection * c, t_packet const *const packet)
 	const char *server_public_key;
 	int i;
 
-        conn_client_public_key = (char *)packet_get_data_const(packet,offsetof(t_client_loginreq_w3, client_public_key),32);
+    /* PELISH: Does not need to check conn_client_public_key != NULL because we testing packet size */
+    conn_client_public_key = (char *)packet_get_data_const(packet,offsetof(t_client_loginreq_w3, client_public_key),32);
 
 
 	if (!(username = packet_get_str_const(packet, sizeof(t_client_loginreq_w3), MAX_USERNAME_LEN))) {
@@ -1876,6 +1879,9 @@ static int _client_logonproofreq(t_connection * c, t_packet const *const packet)
 		    int i;
 		    const char * client_password_proof;
 
+            /* PELISH: This can not occur - We allready tested packet size which must be wrong firstly.
+               Also pvpgn will crash when will dereferencing NULL pointer (so we cant got this errorlog message)
+               I vote for deleting this "if" */
 		    if (!(client_password_proof = (const char*)packet_get_data_const(packet, offsetof(t_client_logonproofreq,client_password_proof), 20))) {
 			eventlog(eventlog_level_error, __FUNCTION__, "[%d] (W3) got bad LOGONPROOFREQ packet (missing hash)", conn_get_socket(c));
 			return -1;
@@ -3845,6 +3851,7 @@ static int _client_gamereport(t_connection * c, t_packet const *const packet)
 	    results[i] = game_result_none;
 
 	for (i = 0, result_off = sizeof(t_client_game_report), player_off = sizeof(t_client_game_report) + player_count * sizeof(t_client_game_report_result); i < player_count; i++, result_off += sizeof(t_client_game_report_result), player_off += std::strlen(player) + 1) {
+        /* PELISH: Fixme - Can this crash server (NULL pointer dereferencing)?? */
 	    if (!(result_data = (const t_client_game_report_result*)packet_get_data_const(packet, result_off, sizeof(t_client_game_report_result)))) {
 		eventlog(eventlog_level_error, __FUNCTION__, "[%d] got corrupt GAME_REPORT packet (missing results %u-%u)", conn_get_socket(c), i + 1, player_count);
 		break;
@@ -4424,7 +4431,7 @@ static int _client_clan_createinvitereq(t_connection * c, t_packet const *const 
     }
 	offset += (std::strlen(clanname) + 1);
 
-	if (!(packet_get_data_const(packet, offset, 4))) {
+	if (packet_get_size(packet) < offset+4) { 
         eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad CLAN_CREATEINVITEREQ packet (missing clantag)", conn_get_socket(c));
         return -1;
     }
@@ -4434,19 +4441,19 @@ static int _client_clan_createinvitereq(t_connection * c, t_packet const *const 
     if ((rpacket = packet_create(packet_class_bnet))) {
 	if ((clan = clan_create(conn_get_account(c), clantag, clanname, NULL)) && clanlist_add_clan(clan)) {
 	    char membercount;
-        if (!(packet_get_data_const(packet, offset, 1))) {
+        if (packet_get_size(packet) < offset+1) {
             eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad CLAN_CREATEINVITEREQ packet (missing membercount)", conn_get_socket(c));
             return -1;
         }
         membercount = *((char *) packet_get_data_const(packet, offset, 1));
-	    clan_set_created(clan, -membercount);
+	    clan_set_created(clan, -membercount);                               /* FIXME: We should also check if membercount == count of names on end of this packet */
 	    packet_set_size(rpacket, sizeof(t_server_clan_createinvitereq));
 	    packet_set_type(rpacket, SERVER_CLAN_CREATEINVITEREQ);
 	    bn_int_set(&rpacket->u.server_clan_createinvitereq.count, bn_int_get(packet->u.client_clan_createinvitereq.count));
 	    bn_int_set(&rpacket->u.server_clan_createinvitereq.clantag, clantag);
 	    packet_append_string(rpacket, clanname);
 	    packet_append_string(rpacket, conn_get_username(c));
-	    packet_append_data(rpacket, packet_get_data_const(packet, offset, size - offset), size - offset); //Pelish: we will send bad packet if we got bad packet...
+	    packet_append_data(rpacket, packet_get_data_const(packet, offset, size - offset), size - offset); /* Pelish: we will send bad packet if we got bad packet... */
 	    offset++;
 	    do {
 		username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
@@ -4495,6 +4502,10 @@ static int _client_clan_createinvitereply(t_connection * c, t_packet const *cons
     offset = sizeof(t_client_clan_createinvitereply);
     username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
     offset += (std::strlen(username) + 1);
+    if (packet_get_size(packet) < offset+1) {
+        eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_CREATEINVITEREPLY packet (mising status)", conn_get_socket(c));
+        return -1;
+    }
     status = *((char *) packet_get_data_const(packet, offset, 1));
     if ((conn = connlist_find_connection_by_accountname(username)) == NULL)
 	return -1;
@@ -4559,6 +4570,10 @@ static int _client_clanmember_rankupdatereq(t_connection * c, t_packet const *co
 	           bn_int_get(packet->u.client_clanmember_rankupdate_req.count));
 	username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
 	offset += (std::strlen(username) + 1);
+    if (packet_get_size(packet) < offset+1) {
+        eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_CREATEINVITEREPLY packet (mising status)", conn_get_socket(c));
+        return -1;
+    }
 	status = *((char *) packet_get_data_const(packet, offset, 1));
 
 	clan = account_get_clan(conn_get_account(c));
@@ -4760,13 +4775,16 @@ static int _client_clan_invitereply(t_connection * c, t_packet const *const pack
 		eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_INVITEREPLY packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_createreq), packet_get_size(packet));
 		return -1;
     }
-
     offset = sizeof(t_client_clan_invitereply);
     if (!(username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN))) {
         eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad CLAN_INVITEREPLY packet (missing username)", conn_get_socket(c));
-	return -1;
+        return -1;
     }
     offset += (std::strlen(username) + 1);
+    if (packet_get_size(packet) < offset+1) {
+        eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_INVITEREPLY packet (mising status)", conn_get_socket(c));
+        return -1;
+    }
     status = *((char *) packet_get_data_const(packet, offset, 1));
 
 	// reply without prior request
