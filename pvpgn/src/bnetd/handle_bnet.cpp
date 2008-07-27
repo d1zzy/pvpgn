@@ -4327,7 +4327,7 @@ static int _client_changeclient(t_connection * c, t_packet const *const packet)
 static int _client_clanmemberlistreq(t_connection * c, t_packet const *const packet)
 {
     if (packet_get_size(packet) < sizeof(t_client_clanmemberlist_req)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLANMEMBERLIST_REQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clanmemberlist_req), packet_get_size(packet));
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLANMEMBERLIST_REQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clanmemberlist_req), packet_get_size(packet));
 	return -1;
     }
 
@@ -4338,7 +4338,7 @@ static int _client_clanmemberlistreq(t_connection * c, t_packet const *const pac
 static int _client_clan_motdreq(t_connection * c, t_packet const *const packet)
 {
     if (packet_get_size(packet) < sizeof(t_client_clan_motdreq)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLAN_MOTDREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_motdreq), packet_get_size(packet));
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_MOTDREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_motdreq), packet_get_size(packet));
 	return -1;
     }
 
@@ -4349,7 +4349,7 @@ static int _client_clan_motdreq(t_connection * c, t_packet const *const packet)
 static int _client_clan_motdchg(t_connection * c, t_packet const *const packet)
 {
     if (packet_get_size(packet) < sizeof(t_client_clan_motdreq)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLAN_MOTDCHGREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_motdreq), packet_get_size(packet));
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_MOTDCHGREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_motdreq), packet_get_size(packet));
 	return -1;
     }
 
@@ -4362,7 +4362,7 @@ static int _client_clan_disbandreq(t_connection * c, t_packet const *const packe
     t_packet *rpacket;
 
     if (packet_get_size(packet) < sizeof(t_client_clan_disbandreq)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLAN_DISBANDREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_disbandreq), packet_get_size(packet));
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_DISBANDREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_disbandreq), packet_get_size(packet));
 	return -1;
     }
 
@@ -4393,7 +4393,7 @@ static int _client_clan_disbandreq(t_connection * c, t_packet const *const packe
 static int _client_clan_createreq(t_connection * c, t_packet const *const packet)
 {
     if (packet_get_size(packet) < sizeof(t_client_clan_createreq)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLAN_INFOREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_createreq), packet_get_size(packet));
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_INFOREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_createreq), packet_get_size(packet));
 	return -1;
     }
 
@@ -4489,7 +4489,7 @@ static int _client_clan_createinvitereply(t_connection * c, t_packet const *cons
     char status;
 
     if (packet_get_size(packet) < sizeof(t_client_clan_createinvitereply)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLAN_CREATEINVITEREPLY packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_createinvitereq), packet_get_size(packet));
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_CREATEINVITEREPLY packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_createinvitereq), packet_get_size(packet));
 	return -1;
     }
     offset = sizeof(t_client_clan_createinvitereply);
@@ -4542,7 +4542,7 @@ static int _client_clanmember_rankupdatereq(t_connection * c, t_packet const *co
     t_packet *rpacket;
 
     if (packet_get_size(packet) < sizeof(t_client_clanmember_rankupdate_req)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLANMEMBER_RANKUPDATE_REQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clanmember_rankupdate_req), packet_get_size(packet));
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLANMEMBER_RANKUPDATE_REQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clanmember_rankupdate_req), packet_get_size(packet));
 	return -1;
     }
 
@@ -4586,7 +4586,7 @@ static int _client_clanmember_removereq(t_connection * c, t_packet const *const 
     t_packet *rpacket;
 
     if (packet_get_size(packet) < sizeof(t_client_clanmember_remove_req)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLANMEMBER_REMOVE_REQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clanmember_remove_req), packet_get_size(packet));
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLANMEMBER_REMOVE_REQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clanmember_remove_req), packet_get_size(packet));
 	return -1;
     }
 
@@ -4636,7 +4636,7 @@ static int _client_clan_membernewchiefreq(t_connection * c, t_packet const *cons
     t_packet *rpacket;
 
     if (packet_get_size(packet) < sizeof(t_client_clan_membernewchiefreq)) {
-	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad W3XP_CLAN_MEMBERNEWCHIEFREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_createreq), packet_get_size(packet));
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLIENT_CLAN_MEMBERNEWCHIEFREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_clan_createreq), packet_get_size(packet));
 	return -1;
     }
 
