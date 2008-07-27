@@ -2321,7 +2321,7 @@ static int _handle_dnd_command(t_connection * c, char const *text)
     {
       if (!conn_get_dndstr(c))
       {
-	message_send_text(c,message_type_info,c,"Do Not Diturb mode engaged.");
+	message_send_text(c,message_type_info,c,"Do Not Disturb mode engaged.");
 	conn_set_dndstr(c,"Not available");
       }
       else
