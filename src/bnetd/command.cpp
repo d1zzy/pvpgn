@@ -1790,6 +1790,11 @@ static int _handle_status_command(t_connection * c, char const *text)
     switch (clienttag)
     {
 	case 0:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %d users online, in %d games and %d channels.",
+		connlist_login_get_length(),
+		gamelist_get_length(),
+		channellist_get_length());
+	    message_send_text(c,message_type_info,c,msgtemp);
 	case CLIENTTAG_WAR3XP_UINT:
 	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
 		conn_get_user_count_by_clienttag(CLIENTTAG_WAR3XP_UINT),
@@ -1846,7 +1851,85 @@ static int _handle_status_command(t_connection * c, char const *text)
 		clienttag_get_title(CLIENTTAG_DIABLORTL_UINT));
 	    message_send_text(c,message_type_info,c,msgtemp);
 	    if (clienttag) break;
+	case CLIENTTAG_WCHAT_UINT:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+		conn_get_user_count_by_clienttag(CLIENTTAG_WCHAT_UINT),
+		game_get_count_by_clienttag(CLIENTTAG_WCHAT_UINT),
+		clienttag_get_title(CLIENTTAG_WCHAT_UINT));
+	    message_send_text(c,message_type_info,c,msgtemp);
+	    if (clienttag) break;
+	case CLIENTTAG_TIBERNSUN_UINT:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+		conn_get_user_count_by_clienttag(CLIENTTAG_TIBERNSUN_UINT),
+		game_get_count_by_clienttag(CLIENTTAG_TIBERNSUN_UINT),
+		clienttag_get_title(CLIENTTAG_TIBERNSUN_UINT));
+	    message_send_text(c,message_type_info,c,msgtemp);
+	    if (clienttag) break;
+	case CLIENTTAG_TIBSUNXP_UINT:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+		conn_get_user_count_by_clienttag(CLIENTTAG_TIBSUNXP_UINT),
+		game_get_count_by_clienttag(CLIENTTAG_TIBSUNXP_UINT),
+		clienttag_get_title(CLIENTTAG_TIBSUNXP_UINT));
+	    message_send_text(c,message_type_info,c,msgtemp);
+	    if (clienttag) break;
+	case CLIENTTAG_REDALERT_UINT:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+		conn_get_user_count_by_clienttag(CLIENTTAG_REDALERT_UINT),
+		game_get_count_by_clienttag(CLIENTTAG_REDALERT_UINT),
+		clienttag_get_title(CLIENTTAG_REDALERT_UINT));
+	    message_send_text(c,message_type_info,c,msgtemp);
+	    if (clienttag) break;
+	case CLIENTTAG_REDALERT2_UINT:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+		conn_get_user_count_by_clienttag(CLIENTTAG_REDALERT2_UINT),
+		game_get_count_by_clienttag(CLIENTTAG_REDALERT2_UINT),
+		clienttag_get_title(CLIENTTAG_REDALERT2_UINT));
+	    message_send_text(c,message_type_info,c,msgtemp);
+	    if (clienttag) break;
+ 	case CLIENTTAG_DUNE2000_UINT:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+		conn_get_user_count_by_clienttag(CLIENTTAG_DUNE2000_UINT),
+		game_get_count_by_clienttag(CLIENTTAG_DUNE2000_UINT),
+		clienttag_get_title(CLIENTTAG_DUNE2000_UINT));
+	    message_send_text(c,message_type_info,c,msgtemp);
+	    if (clienttag) break;
+	case CLIENTTAG_NOX_UINT:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+		conn_get_user_count_by_clienttag(CLIENTTAG_NOX_UINT),
+		game_get_count_by_clienttag(CLIENTTAG_NOX_UINT),
+		clienttag_get_title(CLIENTTAG_NOX_UINT));
+	    message_send_text(c,message_type_info,c,msgtemp);
+	    if (clienttag) break;
+	case CLIENTTAG_NOXQUEST_UINT:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+		conn_get_user_count_by_clienttag(CLIENTTAG_NOXQUEST_UINT),
+		game_get_count_by_clienttag(CLIENTTAG_NOXQUEST_UINT),
+		clienttag_get_title(CLIENTTAG_NOXQUEST_UINT));
+	    message_send_text(c,message_type_info,c,msgtemp);
+	    if (clienttag) break;
+	case CLIENTTAG_RENEGADE_UINT:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+		conn_get_user_count_by_clienttag(CLIENTTAG_RENEGADE_UINT),
+		game_get_count_by_clienttag(CLIENTTAG_RENEGADE_UINT),
+		clienttag_get_title(CLIENTTAG_RENEGADE_UINT));
+	    message_send_text(c,message_type_info,c,msgtemp);
+	    if (clienttag) break;
+	case CLIENTTAG_YURISREV_UINT:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+		conn_get_user_count_by_clienttag(CLIENTTAG_YURISREV_UINT),
+		game_get_count_by_clienttag(CLIENTTAG_YURISREV_UINT),
+		clienttag_get_title(CLIENTTAG_YURISREV_UINT));
+	    message_send_text(c,message_type_info,c,msgtemp);
+	    if (clienttag) break;
+	case CLIENTTAG_EMPERORBD_UINT:
+	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+		conn_get_user_count_by_clienttag(CLIENTTAG_EMPERORBD_UINT),
+		game_get_count_by_clienttag(CLIENTTAG_EMPERORBD_UINT),
+		clienttag_get_title(CLIENTTAG_EMPERORBD_UINT));
+	    message_send_text(c,message_type_info,c,msgtemp);
+	    if (clienttag) break;
 	default:
+	    if (clienttag == 0) break;
 	    snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
 		conn_get_user_count_by_clienttag(conn_get_clienttag(c)),
 		game_get_count_by_clienttag(conn_get_clienttag(c)),
