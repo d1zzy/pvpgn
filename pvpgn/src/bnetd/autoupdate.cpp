@@ -218,11 +218,11 @@ extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, c
 		if ((clienttag == CLIENTTAG_WARCRAFT3_UINT) || (clienttag == CLIENTTAG_WAR3XP_UINT)) {
 		    tag_uint_to_str(gltag,gamelang);
 
-		    temp = (char*)xmalloc(std::strlen(tempmpq)+6);
+		    temp = (char*)xmalloc(std::strlen(entry->updatefile)+6);
 		    std::sprintf(temp, "%s_%s.%s", tempmpq, gltag, extention);
 		}
 		else {
-		    temp = (char*)xmalloc(std::strlen(path)+std::strlen(tempmpq)+std::strlen(sku)+7);
+		    temp = (char*)xmalloc(std::strlen(path)+std::strlen(entry->updatefile)+std::strlen(sku)+3);
 		    std::sprintf(temp, "%s %s_%s.%s", path, tempmpq, sku, extention);
 		}
 
