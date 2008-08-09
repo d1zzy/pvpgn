@@ -31,8 +31,11 @@ SET(MYSQL_SEARCH_LIB_PATHS
   "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MySQL AB\\MySQL Server 5.0;Location]/lib/opt"
   "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MySQL AB\\MySQL Server 4.1;Location]/lib/opt"
   "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MySQL AB\\MySQL Server 4.0;Location]/lib/opt"
-  /usr/local/mysql/lib /usr/local/lib /usr/lib
-  )
+  /usr/local/mysql/lib
+  /usr/local/lib/mysql
+  /usr/local/lib
+  /usr/lib
+)
 FIND_LIBRARY(MYSQL_LIBRARY
   NAMES ${MYSQL_NAMES}
   PATHS ${MYSQL_SEARCH_LIB_PATHS}
