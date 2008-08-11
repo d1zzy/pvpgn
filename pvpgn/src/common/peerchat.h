@@ -41,11 +41,13 @@ typedef struct {
     unsigned char   gs_peerchat_crypt[256];
 } gs_peerchat_ctx;
 
+extern gs_peerchat_ctx * gs_peerchat_create();
+extern void gs_peerchat_destroy(gs_peerchat_ctx const * ctx);
 extern void gs_peerchat_init(gs_peerchat_ctx *ctx, unsigned char *chall, unsigned char *gamekey);
 extern void gs_peerchat(gs_peerchat_ctx *ctx, unsigned char *data, int size);
 
 }
 
-#endif /* __BNET_SRP3_INCLUDED__ */
+#endif /* __PEERCHAT_INCLUDED__ */
 
 
