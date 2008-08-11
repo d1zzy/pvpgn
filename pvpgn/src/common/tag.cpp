@@ -549,4 +549,89 @@ extern t_clienttag tag_channeltype_to_uint(int channeltype)
     }
 }
 
+extern t_tag tag_wol_locale_to_uint(int locale)
+{
+    switch (locale) {
+        case tag_wol_locale_unknown:
+            return GAMELANG_ENGLISH_UINT;
+        case tag_wol_locale_other:
+            return GAMELANG_ENGLISH_UINT;
+        case tag_wol_locale_usa:
+            return GAMELANG_ENGLISH_UINT;
+/*        case tag_wol_locale_canada:
+            return enCA
+        case tag_wol_locale_uk:
+            return enGB */
+        case tag_wol_locale_germany:
+            return GAMELANG_GERMAN_UINT;
+        case tag_wol_locale_france:
+            return GAMELANG_FRENCH_UINT;
+        case tag_wol_locale_spain:
+            return GAMELANG_SPANISH_UINT;
+/*        case tag_wol_locale_netherlands:
+            return nlNL
+        case tag_wol_locale_belgium:
+            return nlBE
+        case tag_wol_locale_austria:
+            return deAT
+        case tag_wol_locale_switzerland:
+            return deCH */
+        case tag_wol_locale_italy:
+            return GAMELANG_ITALIAN_UINT;
+/*        case tag_wol_locale_denmark:
+            return daDK
+        case tag_wol_locale_sweden:
+            return svSE
+        case tag_wol_locale_norway:
+            return noNO
+        case tag_wol_locale_finland:
+            return fiFI
+        case tag_wol_locale_israel:
+            return arIL
+        case tag_wol_locale_south_africa:
+            return enZA*/
+        case tag_wol_locale_japan:
+            return GAMELANG_JAPANESE_UINT;
+        case tag_wol_locale_south_korea:
+            return GAMELANG_KOREAN_UINT;
+        case tag_wol_locale_china:
+            return GAMELANG_CHINESE_S_UINT;
+/*        case tag_wol_locale_singapore:
+            return enSG
+        case tag_wol_locale_taiwan:
+            return zhTW
+        case tag_wol_locale_malaysia:
+            return msMY
+        case tag_wol_locale_australia:
+            return enAU
+        case tag_wol_locale_new_zealand:
+            return enNZ
+        case tag_wol_locale_brazil:
+            return ptBR
+        case tag_wol_locale_thailand:
+            return thTH
+        case tag_wol_locale_argentina:
+            return esAR
+        case tag_wol_locale_philippines:
+            return enPH
+        case tag_wol_locale_greece:
+            return elGR
+        case tag_wol_locale_ireland:
+            return enIE*/
+        case tag_wol_locale_poland:
+            return GAMELANG_POLISH_UINT;
+/*        case tag_wol_locale_portugal:
+            return ptPT
+        case tag_wol_locale_mexico:
+            return esMX*/
+        case tag_wol_locale_russia:
+            return GAMELANG_RUSSIAN_UINT;
+/*        case tag_wol_locale_turkey:
+            return trTR*/
+        default:
+            WARN1("%d is not defined",locale);
+            return GAMELANG_ENGLISH_UINT;
+        }
+}
+
 }
