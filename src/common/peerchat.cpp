@@ -31,10 +31,32 @@ LICENSE
 #include "common/setup_before.h"
 #include "common/peerchat.h"
 
+#include "common/eventlog.h"
+#include "common/xalloc.h"
+
 #include "common/setup_after.h"
 
 namespace pvpgn
 {
+
+extern gs_peerchat_ctx * gs_peerchat_create()
+{
+    gs_peerchat_ctx * temp;
+
+    temp = (gs_peerchat_ctx*)xmalloc(sizeof(gs_peerchat_ctx));
+
+    return temp;
+}
+
+extern void  gs_peerchat_destroy(gs_peerchat_ctx const * ctx)
+{
+    if (!ctx) {
+        ERROR0("got NULL ctx");
+        return;
+    }
+
+    xfree((void *)ctx); /* avoid warning */
+}
 
 void gs_peerchat_init(gs_peerchat_ctx *ctx, unsigned char *chall, unsigned char *gamekey) {
     unsigned char   challenge[16],
@@ -76,9 +98,9 @@ void gs_peerchat_init(gs_peerchat_ctx *ctx, unsigned char *chall, unsigned char 
         p1++;
         if(p1 == l) p1 = challenge;
     } while(p != l1);
+    
+ //   DEBUG3("initialised: %u/%u/%s",ctx->gs_peerchat_1,ctx->gs_peerchat_2,ctx->gs_peerchat_crypt);
 }
-
-
 
 void gs_peerchat(gs_peerchat_ctx *ctx, unsigned char *data, int size) {
     unsigned char   num1,
