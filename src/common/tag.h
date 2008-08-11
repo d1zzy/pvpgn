@@ -39,6 +39,47 @@ typedef t_tag		t_gamelang;
 
 }
 
+typedef enum {
+    tag_wol_locale_unknown = 0,
+    tag_wol_locale_other = 1,
+    tag_wol_locale_usa = 2,
+    tag_wol_locale_canada = 3,
+    tag_wol_locale_uk = 4,
+    tag_wol_locale_germany = 5,
+    tag_wol_locale_france = 6,
+    tag_wol_locale_spain = 7,
+    tag_wol_locale_netherlands = 8,
+    tag_wol_locale_belgium = 9,
+    tag_wol_locale_austria = 10,
+    tag_wol_locale_switzerland = 11,
+    tag_wol_locale_italy = 12,
+    tag_wol_locale_denmark = 13,
+    tag_wol_locale_sweden = 14,
+    tag_wol_locale_norway = 15,
+    tag_wol_locale_finland = 16,
+    tag_wol_locale_israel = 17,
+    tag_wol_locale_south_africa = 18,
+    tag_wol_locale_japan = 19,
+    tag_wol_locale_south_korea = 20,
+    tag_wol_locale_china = 21,
+    tag_wol_locale_singapore = 22,
+    tag_wol_locale_taiwan = 23,
+    tag_wol_locale_malaysia = 24,
+    tag_wol_locale_australia = 25,
+    tag_wol_locale_new_zealand = 26,
+    tag_wol_locale_brazil = 27,
+    tag_wol_locale_thailand = 28,
+    tag_wol_locale_argentina = 29,
+    tag_wol_locale_philippines = 30,
+    tag_wol_locale_greece = 31,
+    tag_wol_locale_ireland = 32,
+    tag_wol_locale_poland = 33,
+    tag_wol_locale_portugal = 34,
+    tag_wol_locale_mexico = 35,
+    tag_wol_locale_russia = 36,
+    tag_wol_locale_turkey = 37
+} t_tag_wol_locale;
+
 #endif
 
 /*****/
@@ -167,10 +208,10 @@ extern int	tag_check_client(t_tag tag_uint);
 extern int	tag_check_gamelang(t_tag tag_uint);
 extern int	tag_check_wolv1(t_tag tag_uint);
 extern int	tag_check_wolv2(t_tag tag_uint);
-extern int	tag_check_in_list(t_clienttag clienttag,const char * list);
+extern int	tag_check_in_list(t_clienttag clienttag, const char * list);
 extern t_clienttag tag_sku_to_uint(int sku);
 extern t_clienttag tag_channeltype_to_uint(int channeltype);
-
+extern t_tag tag_wol_locale_to_uint(int locale);
 }
 
 #endif
