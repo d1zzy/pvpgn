@@ -258,11 +258,14 @@ static int handle_wol_authenticate(t_connection * conn, char const * passhash)
 
 extern int handle_wol_welcome(t_connection * conn)
 {
-    /* This function need rewrite */
+	char _temp[MAX_IRC_MESSAGE_LEN];
 
+    /* This function need rewrite */
     conn_set_state(conn,conn_state_bot_password);
+
     if (connlist_find_connection_by_accountname(conn_get_loggeduser(conn))) {
-        message_send_text(conn,message_type_notice,NULL,"This account is already logged in, use another account.");
+        snprintf(_temp, sizeof(_temp), "%s :Nickname is already in use!",conn_get_loggeduser(conn));
+        irc_send(conn,ERR_NICKNAMEINUSE,_temp);
         return -1;
     }
 
@@ -552,6 +555,9 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 
              tempname = irc_convert_channel(channel,conn);
 
+             if ((tag_check_wolv1(conn_get_clienttag(conn))) && (std::strlen(tempname) > MAX_WOLV1_CHANNELNAME_LEN))
+                 continue;
+
              if (std::strstr(tempname,"_game") == NULL) { /* FIXME: Delete this if games are not in channels */
                 sprintf(temp,"%s %u ",tempname,channel_get_length(channel));
 
@@ -560,7 +566,7 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
                 else
                     std::strcat(temp,"0");  /* User channel */
 
-                if (conn_get_clienttag(conn)==CLIENTTAG_WCHAT_UINT)
+                if (tag_check_wolv1(conn_get_clienttag(conn)))
                     std::strcat(temp,":");     /* WOLv1 ends by ":" */
                 else
                     std::strcat(temp," 388");  /* WOLv2 ends by "388" */
@@ -980,7 +986,7 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
     			channel = conn_get_channel(conn);
 
 			    if (channel!=old_channel) {
-                    if (conn_get_clienttag(conn) == CLIENTTAG_WCHAT_UINT) {
+                    if (tag_check_wolv1(conn_get_clienttag(conn))) {
                         /* WOLv1 JOINGAME message */
                         std::sprintf(_temp,"2 %u %u 1 1 %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel),
                                     channel_wol_get_game_tournament(channel), irc_convert_channel(channel,conn));
@@ -1120,7 +1126,7 @@ static int _handle_gameopt_command(t_connection * conn, int numparams, char ** p
         t_connection * user;
         t_channel * channel;
 
-        if (conn_get_clienttag(conn) == CLIENTTAG_WCHAT_UINT) {
+        if (tag_check_wolv1(conn_get_clienttag(conn))) {
             /* we only send text to another client */
 
             channel = conn_get_channel(conn);
@@ -1222,8 +1228,6 @@ static int _handle_page_command(t_connection * conn, int numparams, char ** para
 	char _temp[MAX_IRC_MESSAGE_LEN];
     bool paged = false;
 
-	std::memset(_temp,0,sizeof(_temp));
-
 	if ((numparams>=1)&&(params[0])&&(text)) {
 	    t_connection * user;
 
@@ -1278,14 +1282,13 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
 	    char ** e;
 
 	    std::memset(temp,0,sizeof(temp));
-	    std::memset(_temp_a,0,sizeof(_temp_a));
 
 	    e = irc_get_listelems(params[1]);
 	    /* FIXME: support wildcards! */
 
         std::strcat(temp,":");
 
- 	    if (conn_get_clienttag(conn) == CLIENTTAG_WCHAT_UINT) {
+ 	    if (tag_check_wolv1(conn_get_clienttag(conn))) {
   		    t_connection * user;
    		    channel = conn_get_channel(conn);
 
