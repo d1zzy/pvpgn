@@ -194,8 +194,9 @@ extern int handle_irc_welcome(t_connection * conn)
 
     conn_set_state(conn,conn_state_bot_password);
     if (connlist_find_connection_by_accountname(conn_get_loggeduser(conn))) {
-       message_send_text(conn,message_type_notice,NULL,"This account is already logged in, use another account.");
-	return -1;
+        snprintf(temp, sizeof(temp), "%s :Nickname is already in use!",conn_get_loggeduser(conn));
+        irc_send(conn,ERR_NICKNAMEINUSE,temp);
+        return -1;
     }
 
     if (conn_get_ircpass(conn)) {

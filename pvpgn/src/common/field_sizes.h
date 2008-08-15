@@ -62,5 +62,6 @@ const int MAX_ATTRVAL_STR = 4096; /* including terminating NUL char */
 const unsigned MAX_IRC_MESSAGE_LEN = 512; /* including CRLF (according to RFC 2812) */
 const unsigned MAX_TOPIC_LEN = 201; /* including terminating NUL char */
 const int MAX_REALMNAME_LEN = 32;
+const int MAX_WOLV1_CHANNELNAME_LEN = 18; /* including '#' char */
 
 #endif
