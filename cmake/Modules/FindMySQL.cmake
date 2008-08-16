@@ -34,6 +34,7 @@ SET(MYSQL_SEARCH_LIB_PATHS
   /usr/local/mysql/lib
   /usr/local/lib/mysql
   /usr/local/lib
+  /usr/lib/mysql
   /usr/lib
 )
 FIND_LIBRARY(MYSQL_LIBRARY
