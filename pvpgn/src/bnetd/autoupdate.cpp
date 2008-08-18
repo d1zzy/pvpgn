@@ -205,11 +205,11 @@ extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, c
 	    if (((gamelang) && ((clienttag == CLIENTTAG_WARCRAFT3_UINT) || (clienttag == CLIENTTAG_WAR3XP_UINT)))
             || ((sku) && (tag_check_wolv2(clienttag)))) {
 		char gltag[5];
-		char * tempmpq, *p;
+		char * tempmpq;
 		char * extention;
 		char const * path = entry->path;
 
-		p = tempmpq = xstrdup(entry->updatefile);
+		tempmpq = xstrdup(entry->updatefile);
 
 		extention = std::strrchr(tempmpq,'.');
 		*extention = '\0';
@@ -218,15 +218,15 @@ extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, c
 		if ((clienttag == CLIENTTAG_WARCRAFT3_UINT) || (clienttag == CLIENTTAG_WAR3XP_UINT)) {
 		    tag_uint_to_str(gltag,gamelang);
 
-		    temp = (char*)xmalloc(std::strlen(p)+6);
+		    temp = (char*)xmalloc(std::strlen(entry->updatefile)+6);
 		    std::sprintf(temp, "%s_%s.%s", tempmpq, gltag, extention);
 		}
 		else {
-		    temp = (char*)xmalloc(std::strlen(path)+std::strlen(p)+std::strlen(sku)+3);
+		    temp = (char*)xmalloc(std::strlen(path)+std::strlen(entry->updatefile)+std::strlen(sku)+3);
 		    std::sprintf(temp, "%s %s_%s.%s", path, tempmpq, sku, extention);
 		}
 
-		xfree((void *)p);
+		xfree((void *)tempmpq);
 		return temp;
 	    }
 	    temp = xstrdup(entry->updatefile);
