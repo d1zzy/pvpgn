@@ -20,7 +20,8 @@ set(BNETD_SOURCES
 	handle_file.cpp handle_file.h handle_init.cpp handle_init.h 
 	handle_irc_common.cpp handle_irc_common.h handle_irc.cpp handle_irc.h 
 	handlers.h handle_telnet.cpp handle_telnet.h handle_udp.cpp 
-	handle_udp.h handle_wol.cpp handle_wol.h helpfile.cpp helpfile.h 
+	handle_udp.h handle_wol.cpp handle_wol.h handle_wol_gameres.cpp
+    handle_wol_gameres.h helpfile.cpp helpfile.h 
 	ipban.cpp ipban.h irc.cpp irc.h ladder_calc.cpp ladder_calc.h ladder.cpp 
 	ladder.h mail.cpp mail.h main.cpp message.cpp message.h news.cpp news.h
 	output.cpp output.h prefs.cpp prefs.h quota.h realm.cpp realm.h 

@@ -19,6 +19,7 @@
 #define INCLUDED_FIELD_SIZES_TYPES
 
 const unsigned MAX_PACKET_SIZE = 3072;
+const unsigned MAX_WOL_GAMERES_PACKET_SIZE = 65535;
 const unsigned MAX_NORMAL_TYPE = 0xffff;
 const unsigned MAX_FILE_TYPE = 0xffff;
 const int MAX_AUTH_TYPE = 0xff;

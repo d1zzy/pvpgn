@@ -31,6 +31,7 @@
 # include "d2cs_protocol.h"
 # include "d2cs_d2gs_protocol.h"
 # include "d2cs_bnetd_protocol.h"
+# include "wol_gameres_protocol.h"
 #else
 # define JUST_NEED_TYPES
 # include "field_sizes.h"
@@ -44,6 +45,7 @@
 # include "d2cs_protocol.h"
 # include "d2cs_d2gs_protocol.h"
 # include "d2cs_bnetd_protocol.h"
+# include "wol_gameres_protocol.h"
 # undef JUST_NEED_TYPES
 #endif
 
@@ -62,7 +64,8 @@ typedef enum
     packet_class_d2gs,
     packet_class_d2cs,
     packet_class_d2cs_bnetd,
-    packet_class_w3route
+    packet_class_w3route,
+    packet_class_wolgameres
 } t_packet_class;
 
 
@@ -79,23 +82,25 @@ typedef enum
  */
 typedef struct
 {
-    unsigned int   ref;   /* reference count */
+    unsigned int   ref;      /* reference count */
     t_packet_class pclass;
-    unsigned int   flags; /* user-defined flags (used to mark UDP in bnproxy) */
-    unsigned int   len;   /* raw packets have no header, so we use this */
+    unsigned int   flags;    /* user-defined flags (used to mark UDP in bnproxy) */
+    unsigned int   len;      /* raw packets have no header, so we use this */
 
     /* next part looks just like it would on the network (no padding, byte for byte) */
     union
     {
         char data[MAX_PACKET_SIZE];
 
-        t_bnet_generic   bnet;
-        t_file_generic   file;
-        t_udp_generic    udp;
-        t_d2game_generic d2game;
-	t_w3route_generic w3route;
+        t_bnet_generic              bnet;
+        t_file_generic              file;
+        t_udp_generic               udp;
+        t_d2game_generic            d2game;
+        t_w3route_generic           w3route;
+        t_wolgameres_generic        wolgameres;
 
-	t_client_initconn client_initconn;
+
+        t_client_initconn           client_initconn;
 
         t_server_authreply1         server_authreply1;
         t_server_authreq1           server_authreq1;

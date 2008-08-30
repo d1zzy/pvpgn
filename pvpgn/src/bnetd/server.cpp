@@ -62,6 +62,7 @@
 #include "handle_irc_common.h"
 #include "handle_udp.h"
 #include "handle_apireg.h"
+#include "handle_wol_gameres.h"
 #include "anongame.h"
 #include "clan.h"
 #include "attrlayer.h"
@@ -530,7 +531,6 @@ static int sd_tcpinput(t_connection * c)
 	case conn_class_wol:
 	case conn_class_wserv:
  	case conn_class_apireg:
-	case conn_class_wgameres:
 	case conn_class_wladder:
 	case conn_class_telnet:
 	    if (!(packet = packet_create(packet_class_raw)))
@@ -547,7 +547,13 @@ static int sd_tcpinput(t_connection * c)
 		return -1;
 	    }
 	    break;
-
+ 	case conn_class_wgameres:
+        if (!(packet = packet_create(packet_class_wolgameres)))
+	    {
+		eventlog(eventlog_level_error,__FUNCTION__,"could not allocate wolgameres packet for input");
+		return -1;
+	    }
+	    break;
 	default:
 	    eventlog(eventlog_level_error,__FUNCTION__,"[%d] connection has bad class (closing connection)",conn_get_socket(c));
 	    conn_close_read(c);
@@ -648,7 +654,6 @@ static int sd_tcpinput(t_connection * c)
 		case conn_class_wol:
 		case conn_class_wserv:
 		case conn_class_wladder:
-		case conn_class_wgameres: /* NOTICE: Will be handled in another file */
 		    ret = handle_irc_common_packet(c,packet);
 		    break;
 		case conn_class_apireg:
@@ -656,6 +661,9 @@ static int sd_tcpinput(t_connection * c)
 		    break;
 		case conn_class_w3route:
 		    ret = handle_w3route_packet(c,packet);
+		    break;
+		case conn_class_wgameres:
+		    ret = handle_wol_gameres_packet(c,packet);
 		    break;
 		default:
 		    eventlog(eventlog_level_error,__FUNCTION__,"[%d] bad packet class %d (closing connection)",conn_get_socket(c),(int)packet_get_class(packet));

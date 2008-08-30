@@ -1341,6 +1341,7 @@ extern int irc_send_topic(t_connection * c, t_channel const * channel){
     else {
         snprintf(temp, sizeof(temp), "%s :", irc_convert_channel(channel,c));
         irc_send(c, RPL_TOPIC, temp);
+        /* PELISH: This is according to RFC2812 but brakes WOLv1/WOLv2 */
         //snprintf(temp, sizeof(temp), "%s :No topic is set", irc_convert_channel(channel,c));
         //irc_send(c, RPL_NOTOPIC, temp);
     }
