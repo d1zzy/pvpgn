@@ -37,15 +37,16 @@ extern t_packet * packet_create(t_packet_class pclass)
     t_packet * temp;
 
     if (pclass!=packet_class_init &&
-	pclass!=packet_class_bnet &&
-	pclass!=packet_class_file &&
-	pclass!=packet_class_udp &&
-	pclass!=packet_class_raw &&
-	pclass!=packet_class_d2game &&
+        pclass!=packet_class_bnet &&
+        pclass!=packet_class_file &&
+        pclass!=packet_class_udp &&
+        pclass!=packet_class_raw &&
+        pclass!=packet_class_d2game &&
         pclass!=packet_class_d2cs &&
         pclass!=packet_class_d2gs &&
-	pclass!=packet_class_d2cs_bnetd &&
-	pclass!=packet_class_w3route)
+        pclass!=packet_class_d2cs_bnetd &&
+        pclass!=packet_class_w3route &&
+        pclass!=packet_class_wolgameres)
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"invalid packet class %d",(int)pclass);
         return NULL;
@@ -131,6 +132,8 @@ extern t_packet_class packet_get_class(t_packet const * packet)
         return packet_class_d2cs_bnetd;
     case packet_class_w3route:
         return packet_class_w3route;
+    case packet_class_wolgameres:
+        return packet_class_wolgameres;
     case packet_class_none:
 	return packet_class_none;
     default:
@@ -169,12 +172,14 @@ extern char const * packet_get_class_str(t_packet const * packet)
     case packet_class_d2cs:
         return "d2cs";
     case packet_class_w3route:
-	return "w3route";
+        return "w3route";
+    case packet_class_wolgameres:
+        return "wolgameres";
     case packet_class_none:
-	return "none";
+        return "none";
     default:
-	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
-	return "unknown";
+        eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
+        return "unknown";
     }
 }
 
@@ -183,26 +188,27 @@ extern int packet_set_class(t_packet * packet, t_packet_class pclass)
 {
     if (!packet)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
-	return -1;
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL packet");
+        return -1;
     }
     if (packet->pclass!=packet_class_raw)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"got non-raw packet");
-	return -1;
+        eventlog(eventlog_level_error,__FUNCTION__,"got non-raw packet");
+        return -1;
     }
     if (pclass!=packet_class_init &&
-	pclass!=packet_class_bnet &&
-	pclass!=packet_class_file &&
-	pclass!=packet_class_udp &&
-	pclass!=packet_class_raw &&
-	pclass!=packet_class_d2game &&
+        pclass!=packet_class_bnet &&
+        pclass!=packet_class_file &&
+        pclass!=packet_class_udp &&
+        pclass!=packet_class_raw &&
+        pclass!=packet_class_d2game &&
         pclass!=packet_class_d2cs &&
         pclass!=packet_class_d2gs &&
         pclass!=packet_class_d2cs_bnetd &&
-	pclass!=packet_class_w3route)
+        pclass!=packet_class_w3route &&
+        pclass!=packet_class_wolgameres)
     {
-	eventlog(eventlog_level_error,__FUNCTION__,"invalid packet class %d",(int)pclass);
+        eventlog(eventlog_level_error,__FUNCTION__,"invalid packet class %d",(int)pclass);
         return -1;
     }
 
@@ -288,7 +294,8 @@ extern unsigned int packet_get_type(t_packet const * packet)
 	    return 0;
 	}
 	return bn_short_get(packet->u.w3route.h.type);
-
+    case packet_class_wolgameres:
+	    return 0; /* wolgameres packets don't have a type */
 
     default:
 	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
@@ -817,6 +824,8 @@ extern char const * packet_get_type_str(t_packet const * packet, t_packet_dir di
 	        return "SERVER_W3ROUTE_STARTGAME2";
 	    }
 	    return "unknown";
+ 	case packet_class_wolgameres:
+	    return "CLIENT_WOLGAMERES";
 	case packet_class_none:
 	    return "unknown";
 	}
@@ -930,6 +939,9 @@ extern int packet_set_type(t_packet * packet, unsigned int type)
 	bn_short_set(&packet->u.w3route.h.type,(unsigned short)type);
 	return 0;
 
+    case packet_class_wolgameres:
+	eventlog(eventlog_level_error,__FUNCTION__,"can not set packet type for wol gameres packet");
+	return 0;
 
     case packet_class_raw:
 	eventlog(eventlog_level_error,__FUNCTION__,"can not set packet type for raw packet");
@@ -983,10 +995,19 @@ extern unsigned int packet_get_size(t_packet const * packet)
         size = (unsigned int)bn_short_get(packet->u.d2cs_client.h.size);
         break;
     case packet_class_w3route:
-	size = (unsigned int)bn_short_get(packet->u.w3route.h.size);
-	break;
+        size = (unsigned int)bn_short_get(packet->u.w3route.h.size);
+        break;
+    case packet_class_wolgameres:
+        {
+            size = (unsigned int)bn_short_nget(packet->u.wolgameres.h.size);
+            if (size>MAX_WOL_GAMERES_PACKET_SIZE) {
+                eventlog(eventlog_level_error,__FUNCTION__,"packet has bad size %u",size);
+                return 0;
+            }
+        }
+        return size;
     default:
-	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
+        eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return 0;
     }
 
@@ -1069,6 +1090,9 @@ extern int packet_set_size(t_packet * packet, unsigned int size)
 	}
         bn_short_set(&packet->u.w3route.h.size,size);
         return 0;
+     case packet_class_wolgameres:
+        /* PELISH: useless - there is no server packet for wolgameres */
+        return 0;
     default:
 	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
 	return -1;
@@ -1106,6 +1130,8 @@ extern unsigned int packet_get_header_size(t_packet const * packet)
         return sizeof(t_d2cs_bnetd_header);
     case packet_class_w3route:
         return sizeof(t_w3route_header);
+    case packet_class_wolgameres:
+        return sizeof(t_wolgameres_header);
     default:
         eventlog(eventlog_level_error,__FUNCTION__,"packet has bad class %d",(int)packet_get_class(packet));
         return MAX_PACKET_SIZE;
@@ -1290,7 +1316,7 @@ extern void const * packet_get_raw_data_const(t_packet const * packet, unsigned 
         return NULL;
     }
     size = (unsigned int)packet_get_size(packet);
-    if (offset>=size || offset>=MAX_PACKET_SIZE)
+    if (offset>=size || (((offset>=MAX_PACKET_SIZE) && (packet->pclass != packet_class_wolgameres)) || (offset>=MAX_WOL_GAMERES_PACKET_SIZE)))
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got bad offset %u for packet size %u",offset,size);
         return NULL;
@@ -1310,7 +1336,7 @@ extern void * packet_get_raw_data(t_packet * packet, unsigned int offset)
         return NULL;
     }
     size = (unsigned int)packet_get_size(packet);
-    if (offset>=size || offset>=MAX_PACKET_SIZE)
+    if (offset>=size || (((offset>=MAX_PACKET_SIZE) && (packet->pclass != packet_class_wolgameres)) || (offset>=MAX_WOL_GAMERES_PACKET_SIZE)))
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got bad offset %u for packet size %u",offset,size);
         return NULL;
@@ -1328,7 +1354,7 @@ extern void * packet_get_raw_data_build(t_packet * packet, unsigned int offset)
         return NULL;
     }
 
-    if (offset>=MAX_PACKET_SIZE)
+    if (((offset>=MAX_PACKET_SIZE) && (packet->pclass != packet_class_wolgameres)) || (offset>=MAX_WOL_GAMERES_PACKET_SIZE))
     {
         eventlog(eventlog_level_error,__FUNCTION__,"got bad offset %u for packet",offset);
         return NULL;
