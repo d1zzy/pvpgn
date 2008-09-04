@@ -41,7 +41,7 @@ namespace pvpgn
 typedef struct
 {
     bn_short size;
-    bn_short unknown1;
+    bn_short rngd_size;
 } PACKED_ATTR() t_wolgameres_header;
 /******************************************************/
 
@@ -95,6 +95,46 @@ const t_tag CLIENT_TIBR_UINT = 0x54494252;
 const t_tag CLIENT_SHAD_UINT = 0x53484144;
 const t_tag CLIENT_FLAG_UINT = 0x464C4147;
 const t_tag CLIENT_TECH_UINT = 0x54454348;
+const t_tag CLIENT_BROK_UINT = 0x42524f4b;
+const t_tag CLIENT_ACCO_UINT = 0x4143434f;
+const t_tag CLIENT_ETIM_UINT = 0x4554494d;
+const t_tag CLIENT_PSPD_UINT = 0x50535044;
+const t_tag CLIENT_SMEM_UINT = 0x534d454d;
+const t_tag CLIENT_SVID_UINT = 0x53564944;
+const t_tag CLIENT_SNAM_UINT = 0x534e414d;
+const t_tag CLIENT_GMAP_UINT = 0x474d4150;
+const t_tag CLIENT_DSVR_UINT = 0x44535652;
+
+/* RNDG Player tags */
+const t_tag CLIENT_PNAM_UINT = 0x504e414d;
+const t_tag CLIENT_PLOC_UINT = 0x504c4f43;
+const t_tag CLIENT_TEAM_UINT = 0x5445414d;
+const t_tag CLIENT_PSCR_UINT = 0x50534352;
+const t_tag CLIENT_PPTS_UINT = 0x50505453;
+const t_tag CLIENT_PTIM_UINT = 0x5054494d;
+const t_tag CLIENT_PHLT_UINT = 0x50484c54;
+const t_tag CLIENT_PKIL_UINT = 0x504b494c;
+const t_tag CLIENT_EKIL_UINT = 0x454b494c;
+const t_tag CLIENT_AKIL_UINT = 0x414b494c;
+const t_tag CLIENT_SHOT_UINT = 0x53484f54;
+const t_tag CLIENT_HEDF_UINT = 0x48454446;
+const t_tag CLIENT_TORF_UINT = 0x544f5246;
+const t_tag CLIENT_ARMF_UINT = 0x41524d46;
+const t_tag CLIENT_LEGF_UINT = 0x4c454746;
+const t_tag CLIENT_CRTF_UINT = 0x43525446;
+const t_tag CLIENT_PUPS_UINT = 0x50555053;
+const t_tag CLIENT_VKIL_UINT = 0x564b494c;
+const t_tag CLIENT_VTIM_UINT = 0x5654494d;
+const t_tag CLIENT_NKFV_UINT = 0x4e4b4656;
+const t_tag CLIENT_SQUI_UINT = 0x53515549;
+const t_tag CLIENT_PCRD_UINT = 0x50435244;
+const t_tag CLIENT_BKIL_UINT = 0x424b494c;
+const t_tag CLIENT_HEDR_UINT = 0x48454452;
+const t_tag CLIENT_TORR_UINT = 0x544f5252;
+const t_tag CLIENT_ARMR_UINT = 0x41524d52;
+const t_tag CLIENT_LEGR_UINT = 0x4c454752;
+const t_tag CLIENT_CRTR_UINT = 0x43525452;
+const t_tag CLIENT_FLGC_UINT = 0x464c4743;
 
 /* Player tags */
 const t_tag CLIENT_NAM0_UINT = 0x4E414D30;

@@ -34,12 +34,12 @@ namespace bnetd
 {
 
 typedef enum {
-    wol_gameres_type_unknown,
-    wol_gameres_type_byte,
-    wol_gameres_type_bool,
-    wol_gameres_type_time,
-    wol_gameres_type_int,
-    wol_gameres_type_string
+    wol_gameres_type_unknown = 0,
+    wol_gameres_type_byte = 1,
+    wol_gameres_type_bool = 2,
+    wol_gameres_type_time = 5,
+    wol_gameres_type_int = 6,
+    wol_gameres_type_string = 7
 } wol_gameres_type;
 
 extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const packet);
