@@ -407,6 +407,7 @@ extern t_clienttag tag_sku_to_uint(int sku)
    switch (sku) {
       case 1000:  /* Westwood Chat */
            return CLIENTTAG_WCHAT_UINT;
+/*    case 1002: Internet Registration  */
       case 1003:  /* Command & Conquer */
            return CLIENTTAG_WCHAT_UINT;
 //           return CLIENTTAG_CNCONQUER_UINT;
