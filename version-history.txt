@@ -1,6 +1,6 @@
 PvPGN Version History:
 
- Changelog for SVN TRUNK (since 1.8.3)
+ Changelog for SVN TRUNK (since 1.8.4)
 =========================================
  -- The list of changes mentioned in here is most propably incomplete.
  For more details also take a peek view into conversion-changelog.
@@ -11,14 +11,14 @@ PvPGN Version History:
 [WOL]
   -- completed support for all WOL clients (read IGNOREME.TXT)
   -- disable account creation via irc/wol when new_accounts=false
-  -- added support to allow/deny WOL clients in bnconf.conf
+  -- added support to allow/deny WOL clients in bnetd.conf
   -- added support for battle clans
   -- added various protocol related fixes
   -- added apiregister support
   -- added autoupdate support for WOLv2 clients
   -- added variables into bnetd.conf for wol FTP server specification
-  -- fixed non showed voice flag for clients in channel
-  -- fixed bug in RedAlert2/Yuri when game owner change maximum players
+  -- fixed  voice flag not shown for clients in channel
+  -- fixed bug in RedAlert2/Yuri when game owner changes maximum players
 
 [WAR3]
   -- add support for SRP3 based account creation/login
@@ -29,6 +29,16 @@ PvPGN Version History:
   -- added clan_min_invites to bnetd.conf for miminum accepted
      invitations need in clan-creating process (default is 2)
 
+ ChangeLog for 1.8.4 (since 1.8.3)
+=========================================
+
+[WAR3]
+  -- fixed possible server crash on many ill-formated packets
+  
+[SQL]
+  -- fixed MySQL reconnection issues for MySQL >= 5.0.19  
+
+ 
  ChangeLog for 1.8.3 (since 1.8.2)
 =========================================
 
