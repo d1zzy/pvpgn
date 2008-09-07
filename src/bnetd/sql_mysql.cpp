@@ -162,26 +162,38 @@ static int sql_mysql_init(const char *host, const char *port, const char *socket
         return -1;
     }
 
+#if MYSQL_VERSION_ID >= 50003
+  #if MYSQL_VERSION_ID < 50013
+    eventlog(eventlog_level_warn,__FUNCTION__,"Your mySQL client lib version does not support reconnecting after a timeout.");
+    eventlog(eventlog_level_warn,__FUNCTION__,"If this causes you any trouble you are advices to upgrade");
+    eventlog(eventlog_level_warn,__FUNCTION__,"your mySQL client libs to at least mySQL 5.0.13 to resolve this problem.");
+    // we might try a dirty hack like the following, but I'm not sure if it will work
+    // mysql->reconnect = 1;
+  #endif
+  #if MYSQL_VERSION_ID >= 50019
+    my_bool  my_true = true;
+    if (mysql_options(mysql, MYSQL_OPT_RECONNECT, &my_true)){
+      eventlog(eventlog_level_warn,__FUNCTION__,"Failed to turn on MYSQL_OPT_RECONNECT.");
+    }else{
+      eventlog(eventlog_level_info,__FUNCTION__,"Successfully turned on MYSQL_OPT_RECONNECT.");
+    }
+  #endif
+#endif
+
     if (p_mysql_real_connect(mysql, host, user, pass, name, port ? atoi(port) : 0, socket, CLIENT_FOUND_ROWS) == NULL) {
         eventlog(eventlog_level_error, __FUNCTION__, "error connecting to database (db said: '%s')", p_mysql_error(mysql));
 	p_mysql_close(mysql);
         return -1;
     }
     
-#if MYSQL_VERSION_ID >= 50003
-  #if MYSQL_VERSION_ID >= 50013
-    my_bool my_true = (my_bool)1;
+#if MYSQL_VERSION_ID >= 50013
+  #if MYSQL_VERSION_ID < 50019
+    my_bool  my_true = true;
     if (mysql_options(mysql, MYSQL_OPT_RECONNECT, &my_true)){
       eventlog(eventlog_level_warn,__FUNCTION__,"Failed to turn on MYSQL_OPT_RECONNECT.");
     }else{
       eventlog(eventlog_level_info,__FUNCTION__,"Successfully turned on MYSQL_OPT_RECONNECT.");
     }
-  #else
-    eventlog(eventlog_level_warn,__FUNCTION__,"Your mySQL client lib version does not support reconnecting after a timeout.");
-    eventlog(eventlog_level_warn,__FUNCTION__,"If this causes you any trouble you are advices to upgrade");
-    eventlog(eventlog_level_warn,__FUNCTION__,"your mySQL client libs to at least mySQL 5.0.13 to resolve this problem.");
-    // we might try a dirty hack like the following, but I'm not sure if it will work
-    // mysql->reconnect = 1;
   #endif
 #endif
 
