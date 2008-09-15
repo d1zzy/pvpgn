@@ -239,7 +239,8 @@ extern int irc_authenticate(t_connection * conn, char const * passhash)
     }
 
     if (connlist_find_connection_by_account(a) && prefs_get_kick_old_login()==0) {
-            message_send_text(conn,message_type_notice,NULL,"Authentication rejected (already logged in) ");
+        snprintf(temp, sizeof(temp), "%s :Account is already in use!", conn_get_loggeduser(conn));
+        irc_send(conn, ERR_NICKNAMEINUSE, temp);
     }
     else if (account_get_auth_lock(a)==1) {
             message_send_text(conn,message_type_notice,NULL,"Authentication rejected (account is locked) ");

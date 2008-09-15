@@ -204,6 +204,7 @@ static int handle_wol_authenticate(t_connection * conn, char const * passhash)
     char const * tempapgar;
     char const * temphash;
     char const * username;
+    char temp[MAX_IRC_MESSAGE_LEN];
 
     if (!conn) {
         ERROR0("got NULL connection");
@@ -228,32 +229,34 @@ static int handle_wol_authenticate(t_connection * conn, char const * passhash)
     tempapgar = conn_wol_get_apgar(conn);
     temphash = account_get_wol_apgar(a);
 
-    if(!temphash) {
-        /* Acount auto creating */
-        account_set_wol_apgar(a,tempapgar);
-        temphash = account_get_wol_apgar(a);
+    if (connlist_find_connection_by_account(a) && prefs_get_kick_old_login()==0) {
+        snprintf(temp, sizeof(temp), "%s :Account is already in use!", conn_get_loggeduser(conn));
+        irc_send(conn, ERR_NICKNAMEINUSE, temp);
     }
-    if(!tempapgar) {
-        irc_send(conn,RPL_BAD_LOGIN,":You have specified an invalid password for that nickname."); /* bad APGAR */
-        //std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
-        //message_send_text(conn,message_type_error,conn,temp);
-        conn_increment_passfail_count(conn);
-        return 0;
-    }
-    if(std::strcmp(temphash,tempapgar) == 0) {
-        /* LOGIN is OK. We sends motd */
-        conn_login(conn,a,username);
-    	conn_set_state(conn,conn_state_loggedin);
-    	irc_send_motd(conn);
-        return 1;
+    else if (account_get_auth_lock(a)==1) {
+        /* FIXME: Send real error code */
+        message_send_text(conn,message_type_notice,NULL,"Authentication rejected (account is locked) ");
     }
     else {
-        irc_send(conn,RPL_BAD_LOGIN,":You have specified an invalid password for that nickname."); /* bad APGAR */
-        //std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
-        //message_send_text(conn,message_type_error,conn,temp);
-        conn_increment_passfail_count(conn);
-        return 0;
+        if (!temphash) {
+            /* Account auto creating */
+            account_set_wol_apgar(a,tempapgar);
+            temphash = account_get_wol_apgar(a);
+        }
+        if ((tempapgar) && (temphash) && (std::strcmp(temphash,tempapgar) == 0)) {
+            /* LOGIN is OK. We sends motd */
+            conn_login(conn,a,username);
+       	    conn_set_state(conn,conn_state_loggedin);
+       	    irc_send_motd(conn);
+        }
+        else {
+            irc_send(conn,RPL_BAD_LOGIN,":You have specified an invalid password for that nickname."); /* bad APGAR */
+            conn_increment_passfail_count(conn);
+            //std::sprintf(temp,":Closing Link %s[Some.host]:(Password needed for that nickname.)",conn_get_loggeduser(conn));
+            //message_send_text(conn,message_type_error,conn,temp);
+        }
     }
+    return 0;
 }
 
 extern int handle_wol_welcome(t_connection * conn)
@@ -262,12 +265,6 @@ extern int handle_wol_welcome(t_connection * conn)
 
     /* This function need rewrite */
     conn_set_state(conn,conn_state_bot_password);
-
-    if (connlist_find_connection_by_accountname(conn_get_loggeduser(conn))) {
-        snprintf(_temp, sizeof(_temp), "%s :Nickname is already in use!",conn_get_loggeduser(conn));
-        irc_send(conn,ERR_NICKNAMEINUSE,_temp);
-        return -1;
-    }
 
     if (conn_wol_get_apgar(conn)) {
         handle_wol_authenticate(conn,conn_wol_get_apgar(conn));
