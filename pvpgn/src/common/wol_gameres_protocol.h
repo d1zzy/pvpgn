@@ -60,11 +60,24 @@ typedef struct
 //	data;
 } PACKED_ATTR() t_client_wolgameres_generic;
 */
+
+/* DATA TYPES */
+const int DATA_TYPE_BYTE   = 1;
+const int DATA_TYPE_BOOL   = 2;
+const int DATA_TYPE_TIME   = 5;
+const int DATA_TYPE_INT    = 6;
+const int DATA_TYPE_STRING = 7;
+const int DATA_TYPE_BIGINT = 20;
+
 /* Game tags */
 
 const t_tag CLIENT_SERN_UINT = 0x53455223;
+const t_tag CLIENT_SDFX_UINT = 0x53444658;
 const t_tag CLIENT_IDNO_UINT = 0x49444E4F;
 const t_tag CLIENT_GSKU_UINT = 0x47534B55;
+const t_tag CLIENT_DCON_UINT = 0x44434F4E;
+const t_tag CLIENT_LCON_UINT = 0x4C434F4E;
+const t_tag CLIENT_TYPE_UINT = 0x54595045;
 const t_tag CLIENT_TRNY_UINT = 0x54524E59;
 const t_tag CLIENT_OOSY_UINT = 0x4F4F5359;
 const t_tag CLIENT_FINI_UINT = 0x46494E49;
@@ -78,6 +91,7 @@ const t_tag CLIENT_CRAT_UINT = 0x43524154;
 const t_tag CLIENT_AIPL_UINT = 0x4149504C;
 const t_tag CLIENT_UNIT_UINT = 0x554E4954;
 const t_tag CLIENT_SCEN_UINT = 0x5343454E;
+const t_tag CLIENT_CMPL_UINT = 0x434D504C;
 const t_tag CLIENT_PNGS_UINT = 0x504E4753;
 const t_tag CLIENT_PNGR_UINT = 0x504E4752;
 const t_tag CLIENT_PLRS_UINT = 0x504C5253;
@@ -154,6 +168,132 @@ const t_tag CLIENT_CMP4_UINT = 0x434D5034;
 const t_tag CLIENT_CMP5_UINT = 0x434D5035;
 const t_tag CLIENT_CMP6_UINT = 0x434D5036;
 const t_tag CLIENT_CMP7_UINT = 0x434D5037;
+
+const t_tag CLIENT_COL0_UINT = 0x434f4c30;
+const t_tag CLIENT_COL1_UINT = 0x434f4c31;
+const t_tag CLIENT_COL2_UINT = 0x434f4c32;
+const t_tag CLIENT_COL3_UINT = 0x434f4c33;
+const t_tag CLIENT_COL4_UINT = 0x434f4c34;
+const t_tag CLIENT_COL5_UINT = 0x434f4c35;
+const t_tag CLIENT_COL6_UINT = 0x434f4c36;
+const t_tag CLIENT_COL7_UINT = 0x434f4c37;
+
+const t_tag CLIENT_INB0_UINT = 0x494e4230;
+const t_tag CLIENT_INB1_UINT = 0x494e4231;
+const t_tag CLIENT_INB2_UINT = 0x494e4232;
+const t_tag CLIENT_INB3_UINT = 0x494e4233;
+const t_tag CLIENT_INB4_UINT = 0x494e4234;
+const t_tag CLIENT_INB5_UINT = 0x494e4235;
+const t_tag CLIENT_INB6_UINT = 0x494e4236;
+const t_tag CLIENT_INB7_UINT = 0x494e4237;
+
+const t_tag CLIENT_UNB0_UINT = 0x554e4230;
+const t_tag CLIENT_UNB1_UINT = 0x554e4231;
+const t_tag CLIENT_UNB2_UINT = 0x554e4232;
+const t_tag CLIENT_UNB3_UINT = 0x554e4233;
+const t_tag CLIENT_UNB4_UINT = 0x554e4234;
+const t_tag CLIENT_UNB5_UINT = 0x554e4235;
+const t_tag CLIENT_UNB6_UINT = 0x554e4236;
+const t_tag CLIENT_UNB7_UINT = 0x554e4237;
+
+const t_tag CLIENT_PLB0_UINT = 0x504c4230;
+const t_tag CLIENT_PLB1_UINT = 0x504c4231;
+const t_tag CLIENT_PLB2_UINT = 0x504c4232;
+const t_tag CLIENT_PLB3_UINT = 0x504c4233;
+const t_tag CLIENT_PLB4_UINT = 0x504c4234;
+const t_tag CLIENT_PLB5_UINT = 0x504c4235;
+const t_tag CLIENT_PLB6_UINT = 0x504c4236;
+const t_tag CLIENT_PLB7_UINT = 0x504c4237;
+
+const t_tag CLIENT_BLB0_UINT = 0x424c4230;
+const t_tag CLIENT_BLB1_UINT = 0x424c4231;
+const t_tag CLIENT_BLB2_UINT = 0x424c4232;
+const t_tag CLIENT_BLB3_UINT = 0x424c4233;
+const t_tag CLIENT_BLB4_UINT = 0x424c4234;
+const t_tag CLIENT_BLB5_UINT = 0x424c4235;
+const t_tag CLIENT_BLB6_UINT = 0x424c4236;
+const t_tag CLIENT_BLB7_UINT = 0x424c4237;
+
+const t_tag CLIENT_INL0_UINT = 0x494e4c30;
+const t_tag CLIENT_INL1_UINT = 0x494e4c31;
+const t_tag CLIENT_INL2_UINT = 0x494e4c32;
+const t_tag CLIENT_INL3_UINT = 0x494e4c33;
+const t_tag CLIENT_INL4_UINT = 0x494e4c34;
+const t_tag CLIENT_INL5_UINT = 0x494e4c35;
+const t_tag CLIENT_INL6_UINT = 0x494e4c36;
+const t_tag CLIENT_INL7_UINT = 0x494e4c37;
+
+const t_tag CLIENT_UNL0_UINT = 0x554e4c30;
+const t_tag CLIENT_UNL1_UINT = 0x554e4c31;
+const t_tag CLIENT_UNL2_UINT = 0x554e4c32;
+const t_tag CLIENT_UNL3_UINT = 0x554e4c33;
+const t_tag CLIENT_UNL4_UINT = 0x554e4c34;
+const t_tag CLIENT_UNL5_UINT = 0x554e4c35;
+const t_tag CLIENT_UNL6_UINT = 0x554e4c36;
+const t_tag CLIENT_UNL7_UINT = 0x554e4c37;
+
+const t_tag CLIENT_PLL0_UINT = 0x504c4c30;
+const t_tag CLIENT_PLL1_UINT = 0x504c4c31;
+const t_tag CLIENT_PLL2_UINT = 0x504c4c32;
+const t_tag CLIENT_PLL3_UINT = 0x504c4c33;
+const t_tag CLIENT_PLL4_UINT = 0x504c4c34;
+const t_tag CLIENT_PLL5_UINT = 0x504c4c35;
+const t_tag CLIENT_PLL6_UINT = 0x504c4c36;
+const t_tag CLIENT_PLL7_UINT = 0x504c4c37;
+
+const t_tag CLIENT_BLL0_UINT = 0x424c4c30;
+const t_tag CLIENT_BLL1_UINT = 0x424c4c31;
+const t_tag CLIENT_BLL2_UINT = 0x424c4c32;
+const t_tag CLIENT_BLL3_UINT = 0x424c4c33;
+const t_tag CLIENT_BLL4_UINT = 0x424c4c34;
+const t_tag CLIENT_BLL5_UINT = 0x424c4c35;
+const t_tag CLIENT_BLL6_UINT = 0x424c4c36;
+const t_tag CLIENT_BLL7_UINT = 0x424c4c37;
+
+const t_tag CLIENT_INK0_UINT = 0x494e4b30;
+const t_tag CLIENT_INK1_UINT = 0x494e4b31;
+const t_tag CLIENT_INK2_UINT = 0x494e4b32;
+const t_tag CLIENT_INK3_UINT = 0x494e4b33;
+const t_tag CLIENT_INK4_UINT = 0x494e4b34;
+const t_tag CLIENT_INK5_UINT = 0x494e4b35;
+const t_tag CLIENT_INK6_UINT = 0x494e4b36;
+const t_tag CLIENT_INK7_UINT = 0x494e4b37;
+
+const t_tag CLIENT_UNK0_UINT = 0x554e4b30;
+const t_tag CLIENT_UNK1_UINT = 0x554e4b31;
+const t_tag CLIENT_UNK2_UINT = 0x554e4b32;
+const t_tag CLIENT_UNK3_UINT = 0x554e4b33;
+const t_tag CLIENT_UNK4_UINT = 0x554e4b34;
+const t_tag CLIENT_UNK5_UINT = 0x554e4b35;
+const t_tag CLIENT_UNK6_UINT = 0x554e4b36;
+const t_tag CLIENT_UNK7_UINT = 0x554e4b37;
+
+const t_tag CLIENT_PLK0_UINT = 0x504c4b30;
+const t_tag CLIENT_PLK1_UINT = 0x504c4b31;
+const t_tag CLIENT_PLK2_UINT = 0x504c4b32;
+const t_tag CLIENT_PLK3_UINT = 0x504c4b33;
+const t_tag CLIENT_PLK4_UINT = 0x504c4b34;
+const t_tag CLIENT_PLK5_UINT = 0x504c4b35;
+const t_tag CLIENT_PLK6_UINT = 0x504c4b36;
+const t_tag CLIENT_PLK7_UINT = 0x504c4b37;
+
+const t_tag CLIENT_BLK0_UINT = 0x424c4b30;
+const t_tag CLIENT_BLK1_UINT = 0x424c4b31;
+const t_tag CLIENT_BLK2_UINT = 0x424c4b32;
+const t_tag CLIENT_BLK3_UINT = 0x424c4b33;
+const t_tag CLIENT_BLK4_UINT = 0x424c4b34;
+const t_tag CLIENT_BLK5_UINT = 0x424c4b35;
+const t_tag CLIENT_BLK6_UINT = 0x424c4b36;
+const t_tag CLIENT_BLK7_UINT = 0x424c4b37;
+
+const t_tag CLIENT_BLC0_UINT = 0x424c4330;
+const t_tag CLIENT_BLC1_UINT = 0x424c4331;
+const t_tag CLIENT_BLC2_UINT = 0x424c4332;
+const t_tag CLIENT_BLC3_UINT = 0x424c4333;
+const t_tag CLIENT_BLC4_UINT = 0x424c4334;
+const t_tag CLIENT_BLC5_UINT = 0x424c4335;
+const t_tag CLIENT_BLC6_UINT = 0x424c4336;
+const t_tag CLIENT_BLC7_UINT = 0x424c4337;
 
 }
 

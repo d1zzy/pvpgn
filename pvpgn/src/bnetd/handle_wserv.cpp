@@ -162,6 +162,14 @@ static int _handle_whereto_command(t_connection * conn, int numparams, char ** p
     if (!tag_check_in_list(conn_get_clienttag(conn), prefs_get_allowed_clients())) {
         //  This is for anyone game but not for Emperor
         if (conn_get_clienttag(conn) != CLIENTTAG_EMPERORBD_UINT) {
+//        a.xwis.net 4009 RA2
+//        c.xwis.net 4000 TSUN
+//        c.xwis.net 4010 RNGD
+//        a.xwis.net 4010 YURI
+//            snprintf(temp, sizeof(temp), ":a.xwis.net 4009 '0:%s' %s %s %s", wolname, woltimezone, wollong, wollat);
+//            snprintf(temp, sizeof(temp), ":c.xwis.net 4000 '0:%s' %s %s %s", wolname, woltimezone, wollong, wollat);
+//            snprintf(temp, sizeof(temp), ":c.xwis.net 4010 '0:%s' %s %s %s", wolname, woltimezone, wollong, wollat);
+//            snprintf(temp, sizeof(temp), ":a.xwis.net 4010 '0:%s' %s %s %s", wolname, woltimezone, wollong, wollat);
             snprintf(temp, sizeof(temp), ":%s %d '0:%s' %s %s %s", wolip, BNETD_WOLV2_PORT, wolname, woltimezone, wollong, wollat);
             irc_send(conn,RPL_WOLSERV,temp);
         }
