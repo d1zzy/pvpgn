@@ -19,9 +19,9 @@
 #include "common/setup_before.h"
 #include "handle_wol_gameres.h"
 
-#include <cstring>
-#include <cctype>
-#include <cstdlib>
+#include <cmath>
+#include <algorithm>
+
 //#include <sstream>
 //#include <cstring>
 //nclude <cctype>
@@ -34,8 +34,6 @@
 #include "common/bn_type.h"
 
 #include "connection.h"
-//#include "prefs.h"
-//#include "server.h"
 #ifdef WIN32_GUI
 #include <win32/winmain.h>
 #endif
@@ -49,8 +47,12 @@ namespace bnetd
 
 /* handlers prototypes */
 static int _client_sern(wol_gameres_type type, int size, void const * data);
+static int _client_sdfx(wol_gameres_type type, int size, void const * data);
 static int _client_idno(wol_gameres_type type, int size, void const * data);
 static int _client_gsku(wol_gameres_type type, int size, void const * data);
+static int _client_dcon(wol_gameres_type type, int size, void const * data);
+static int _client_lcon(wol_gameres_type type, int size, void const * data);
+static int _client_type(wol_gameres_type type, int size, void const * data);
 static int _client_trny(wol_gameres_type type, int size, void const * data);
 static int _client_oosy(wol_gameres_type type, int size, void const * data);
 static int _client_fini(wol_gameres_type type, int size, void const * data);
@@ -64,6 +66,7 @@ static int _client_crat(wol_gameres_type type, int size, void const * data);
 static int _client_aipl(wol_gameres_type type, int size, void const * data);
 static int _client_unit(wol_gameres_type type, int size, void const * data);
 static int _client_scen(wol_gameres_type type, int size, void const * data);
+static int _client_cmpl(wol_gameres_type type, int size, void const * data);
 static int _client_pngs(wol_gameres_type type, int size, void const * data);
 static int _client_pngr(wol_gameres_type type, int size, void const * data);
 static int _client_plrs(wol_gameres_type type, int size, void const * data);
@@ -131,6 +134,7 @@ static int _client_nam4(wol_gameres_type type, int size, void const * data);
 static int _client_nam5(wol_gameres_type type, int size, void const * data);
 static int _client_nam6(wol_gameres_type type, int size, void const * data);
 static int _client_nam7(wol_gameres_type type, int size, void const * data);
+
 static int _client_cmp0(wol_gameres_type type, int size, void const * data);
 static int _client_cmp1(wol_gameres_type type, int size, void const * data);
 static int _client_cmp2(wol_gameres_type type, int size, void const * data);
@@ -139,6 +143,132 @@ static int _client_cmp4(wol_gameres_type type, int size, void const * data);
 static int _client_cmp5(wol_gameres_type type, int size, void const * data);
 static int _client_cmp6(wol_gameres_type type, int size, void const * data);
 static int _client_cmp7(wol_gameres_type type, int size, void const * data);
+
+static int _client_col0(wol_gameres_type type, int size, void const * data);
+static int _client_col1(wol_gameres_type type, int size, void const * data);
+static int _client_col2(wol_gameres_type type, int size, void const * data);
+static int _client_col3(wol_gameres_type type, int size, void const * data);
+static int _client_col4(wol_gameres_type type, int size, void const * data);
+static int _client_col5(wol_gameres_type type, int size, void const * data);
+static int _client_col6(wol_gameres_type type, int size, void const * data);
+static int _client_col7(wol_gameres_type type, int size, void const * data);
+
+static int _client_inb0(wol_gameres_type type, int size, void const * data);
+static int _client_inb1(wol_gameres_type type, int size, void const * data);
+static int _client_inb2(wol_gameres_type type, int size, void const * data);
+static int _client_inb3(wol_gameres_type type, int size, void const * data);
+static int _client_inb4(wol_gameres_type type, int size, void const * data);
+static int _client_inb5(wol_gameres_type type, int size, void const * data);
+static int _client_inb6(wol_gameres_type type, int size, void const * data);
+static int _client_inb7(wol_gameres_type type, int size, void const * data);
+
+static int _client_unb0(wol_gameres_type type, int size, void const * data);
+static int _client_unb1(wol_gameres_type type, int size, void const * data);
+static int _client_unb2(wol_gameres_type type, int size, void const * data);
+static int _client_unb3(wol_gameres_type type, int size, void const * data);
+static int _client_unb4(wol_gameres_type type, int size, void const * data);
+static int _client_unb5(wol_gameres_type type, int size, void const * data);
+static int _client_unb6(wol_gameres_type type, int size, void const * data);
+static int _client_unb7(wol_gameres_type type, int size, void const * data);
+
+static int _client_plb0(wol_gameres_type type, int size, void const * data);
+static int _client_plb1(wol_gameres_type type, int size, void const * data);
+static int _client_plb2(wol_gameres_type type, int size, void const * data);
+static int _client_plb3(wol_gameres_type type, int size, void const * data);
+static int _client_plb4(wol_gameres_type type, int size, void const * data);
+static int _client_plb5(wol_gameres_type type, int size, void const * data);
+static int _client_plb6(wol_gameres_type type, int size, void const * data);
+static int _client_plb7(wol_gameres_type type, int size, void const * data);
+
+static int _client_blb0(wol_gameres_type type, int size, void const * data);
+static int _client_blb1(wol_gameres_type type, int size, void const * data);
+static int _client_blb2(wol_gameres_type type, int size, void const * data);
+static int _client_blb3(wol_gameres_type type, int size, void const * data);
+static int _client_blb4(wol_gameres_type type, int size, void const * data);
+static int _client_blb5(wol_gameres_type type, int size, void const * data);
+static int _client_blb6(wol_gameres_type type, int size, void const * data);
+static int _client_blb7(wol_gameres_type type, int size, void const * data);
+
+static int _client_inl0(wol_gameres_type type, int size, void const * data);
+static int _client_inl1(wol_gameres_type type, int size, void const * data);
+static int _client_inl2(wol_gameres_type type, int size, void const * data);
+static int _client_inl3(wol_gameres_type type, int size, void const * data);
+static int _client_inl4(wol_gameres_type type, int size, void const * data);
+static int _client_inl5(wol_gameres_type type, int size, void const * data);
+static int _client_inl6(wol_gameres_type type, int size, void const * data);
+static int _client_inl7(wol_gameres_type type, int size, void const * data);
+
+static int _client_unl0(wol_gameres_type type, int size, void const * data);
+static int _client_unl1(wol_gameres_type type, int size, void const * data);
+static int _client_unl2(wol_gameres_type type, int size, void const * data);
+static int _client_unl3(wol_gameres_type type, int size, void const * data);
+static int _client_unl4(wol_gameres_type type, int size, void const * data);
+static int _client_unl5(wol_gameres_type type, int size, void const * data);
+static int _client_unl6(wol_gameres_type type, int size, void const * data);
+static int _client_unl7(wol_gameres_type type, int size, void const * data);
+
+static int _client_pll0(wol_gameres_type type, int size, void const * data);
+static int _client_pll1(wol_gameres_type type, int size, void const * data);
+static int _client_pll2(wol_gameres_type type, int size, void const * data);
+static int _client_pll3(wol_gameres_type type, int size, void const * data);
+static int _client_pll4(wol_gameres_type type, int size, void const * data);
+static int _client_pll5(wol_gameres_type type, int size, void const * data);
+static int _client_pll6(wol_gameres_type type, int size, void const * data);
+static int _client_pll7(wol_gameres_type type, int size, void const * data);
+
+static int _client_bll0(wol_gameres_type type, int size, void const * data);
+static int _client_bll1(wol_gameres_type type, int size, void const * data);
+static int _client_bll2(wol_gameres_type type, int size, void const * data);
+static int _client_bll3(wol_gameres_type type, int size, void const * data);
+static int _client_bll4(wol_gameres_type type, int size, void const * data);
+static int _client_bll5(wol_gameres_type type, int size, void const * data);
+static int _client_bll6(wol_gameres_type type, int size, void const * data);
+static int _client_bll7(wol_gameres_type type, int size, void const * data);
+
+static int _client_ink0(wol_gameres_type type, int size, void const * data);
+static int _client_ink1(wol_gameres_type type, int size, void const * data);
+static int _client_ink2(wol_gameres_type type, int size, void const * data);
+static int _client_ink3(wol_gameres_type type, int size, void const * data);
+static int _client_ink4(wol_gameres_type type, int size, void const * data);
+static int _client_ink5(wol_gameres_type type, int size, void const * data);
+static int _client_ink6(wol_gameres_type type, int size, void const * data);
+static int _client_ink7(wol_gameres_type type, int size, void const * data);
+
+static int _client_unk0(wol_gameres_type type, int size, void const * data);
+static int _client_unk1(wol_gameres_type type, int size, void const * data);
+static int _client_unk2(wol_gameres_type type, int size, void const * data);
+static int _client_unk3(wol_gameres_type type, int size, void const * data);
+static int _client_unk4(wol_gameres_type type, int size, void const * data);
+static int _client_unk5(wol_gameres_type type, int size, void const * data);
+static int _client_unk6(wol_gameres_type type, int size, void const * data);
+static int _client_unk7(wol_gameres_type type, int size, void const * data);
+
+static int _client_plk0(wol_gameres_type type, int size, void const * data);
+static int _client_plk1(wol_gameres_type type, int size, void const * data);
+static int _client_plk2(wol_gameres_type type, int size, void const * data);
+static int _client_plk3(wol_gameres_type type, int size, void const * data);
+static int _client_plk4(wol_gameres_type type, int size, void const * data);
+static int _client_plk5(wol_gameres_type type, int size, void const * data);
+static int _client_plk6(wol_gameres_type type, int size, void const * data);
+static int _client_plk7(wol_gameres_type type, int size, void const * data);
+
+static int _client_blk0(wol_gameres_type type, int size, void const * data);
+static int _client_blk1(wol_gameres_type type, int size, void const * data);
+static int _client_blk2(wol_gameres_type type, int size, void const * data);
+static int _client_blk3(wol_gameres_type type, int size, void const * data);
+static int _client_blk4(wol_gameres_type type, int size, void const * data);
+static int _client_blk5(wol_gameres_type type, int size, void const * data);
+static int _client_blk6(wol_gameres_type type, int size, void const * data);
+static int _client_blk7(wol_gameres_type type, int size, void const * data);
+
+static int _client_blc0(wol_gameres_type type, int size, void const * data);
+static int _client_blc1(wol_gameres_type type, int size, void const * data);
+static int _client_blc2(wol_gameres_type type, int size, void const * data);
+static int _client_blc3(wol_gameres_type type, int size, void const * data);
+static int _client_blc4(wol_gameres_type type, int size, void const * data);
+static int _client_blc5(wol_gameres_type type, int size, void const * data);
+static int _client_blc6(wol_gameres_type type, int size, void const * data);
+static int _client_blc7(wol_gameres_type type, int size, void const * data);
 
 typedef int (* t_wol_gamerestag)(wol_gameres_type type, int size, void const * data);
 
@@ -150,8 +280,12 @@ typedef struct {
 /* handler table */
 static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_SERN_UINT, _client_sern},
+    {CLIENT_SDFX_UINT, _client_sdfx},
     {CLIENT_IDNO_UINT, _client_idno},
     {CLIENT_GSKU_UINT, _client_gsku},
+    {CLIENT_DCON_UINT, _client_dcon},
+    {CLIENT_LCON_UINT, _client_lcon},
+    {CLIENT_TYPE_UINT, _client_type},
     {CLIENT_TRNY_UINT, _client_trny},
     {CLIENT_OOSY_UINT, _client_oosy},
     {CLIENT_FINI_UINT, _client_fini},
@@ -165,6 +299,7 @@ static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_AIPL_UINT, _client_aipl},
     {CLIENT_UNIT_UINT, _client_unit},
     {CLIENT_SCEN_UINT, _client_scen},
+    {CLIENT_CMPL_UINT, _client_cmpl},
     {CLIENT_PNGS_UINT, _client_pngs},
     {CLIENT_PNGR_UINT, _client_pngr},
     {CLIENT_PLRS_UINT, _client_plrs},
@@ -232,6 +367,7 @@ static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_NAM5_UINT, _client_nam5},
     {CLIENT_NAM6_UINT, _client_nam6},
     {CLIENT_NAM7_UINT, _client_nam7},
+
     {CLIENT_CMP0_UINT, _client_cmp0},
     {CLIENT_CMP1_UINT, _client_cmp1},
     {CLIENT_CMP2_UINT, _client_cmp2},
@@ -240,6 +376,132 @@ static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_CMP5_UINT, _client_cmp5},
     {CLIENT_CMP6_UINT, _client_cmp6},
     {CLIENT_CMP7_UINT, _client_cmp7},
+    
+    {CLIENT_COL0_UINT, _client_col0},
+    {CLIENT_COL1_UINT, _client_col1},
+    {CLIENT_COL2_UINT, _client_col2},
+    {CLIENT_COL3_UINT, _client_col3},
+    {CLIENT_COL4_UINT, _client_col4},
+    {CLIENT_COL5_UINT, _client_col5},
+    {CLIENT_COL6_UINT, _client_col6},
+    {CLIENT_COL7_UINT, _client_col7},
+
+    {CLIENT_INB0_UINT, _client_inb0},
+    {CLIENT_INB1_UINT, _client_inb1},
+    {CLIENT_INB2_UINT, _client_inb2},
+    {CLIENT_INB3_UINT, _client_inb3},
+    {CLIENT_INB4_UINT, _client_inb4},
+    {CLIENT_INB5_UINT, _client_inb5},
+    {CLIENT_INB6_UINT, _client_inb6},
+    {CLIENT_INB7_UINT, _client_inb7},
+
+    {CLIENT_UNB0_UINT, _client_unb0},
+    {CLIENT_UNB1_UINT, _client_unb1},
+    {CLIENT_UNB2_UINT, _client_unb2},
+    {CLIENT_UNB3_UINT, _client_unb3},
+    {CLIENT_UNB4_UINT, _client_unb4},
+    {CLIENT_UNB5_UINT, _client_unb5},
+    {CLIENT_UNB6_UINT, _client_unb6},
+    {CLIENT_UNB7_UINT, _client_unb7},
+
+    {CLIENT_PLB0_UINT, _client_plb0},
+    {CLIENT_PLB1_UINT, _client_plb1},
+    {CLIENT_PLB2_UINT, _client_plb2},
+    {CLIENT_PLB3_UINT, _client_plb3},
+    {CLIENT_PLB4_UINT, _client_plb4},
+    {CLIENT_PLB5_UINT, _client_plb5},
+    {CLIENT_PLB6_UINT, _client_plb6},
+    {CLIENT_PLB7_UINT, _client_plb7},
+
+    {CLIENT_BLB0_UINT, _client_blb0},
+    {CLIENT_BLB1_UINT, _client_blb1},
+    {CLIENT_BLB2_UINT, _client_blb2},
+    {CLIENT_BLB3_UINT, _client_blb3},
+    {CLIENT_BLB4_UINT, _client_blb4},
+    {CLIENT_BLB5_UINT, _client_blb5},
+    {CLIENT_BLB6_UINT, _client_blb6},
+    {CLIENT_BLB7_UINT, _client_blb7},
+
+    {CLIENT_INL0_UINT, _client_inl0},
+    {CLIENT_INL1_UINT, _client_inl1},
+    {CLIENT_INL2_UINT, _client_inl2},
+    {CLIENT_INL3_UINT, _client_inl3},
+    {CLIENT_INL4_UINT, _client_inl4},
+    {CLIENT_INL5_UINT, _client_inl5},
+    {CLIENT_INL6_UINT, _client_inl6},
+    {CLIENT_INL7_UINT, _client_inl7},
+
+    {CLIENT_UNL0_UINT, _client_unl0},
+    {CLIENT_UNL1_UINT, _client_unl1},
+    {CLIENT_UNL2_UINT, _client_unl2},
+    {CLIENT_UNL3_UINT, _client_unl3},
+    {CLIENT_UNL4_UINT, _client_unl4},
+    {CLIENT_UNL5_UINT, _client_unl5},
+    {CLIENT_UNL6_UINT, _client_unl6},
+    {CLIENT_UNL7_UINT, _client_unl7},
+
+    {CLIENT_PLL0_UINT, _client_pll0},
+    {CLIENT_PLL1_UINT, _client_pll1},
+    {CLIENT_PLL2_UINT, _client_pll2},
+    {CLIENT_PLL3_UINT, _client_pll3},
+    {CLIENT_PLL4_UINT, _client_pll4},
+    {CLIENT_PLL5_UINT, _client_pll5},
+    {CLIENT_PLL6_UINT, _client_pll6},
+    {CLIENT_PLL7_UINT, _client_pll7},
+
+    {CLIENT_BLL0_UINT, _client_bll0},
+    {CLIENT_BLL1_UINT, _client_bll1},
+    {CLIENT_BLL2_UINT, _client_bll2},
+    {CLIENT_BLL3_UINT, _client_bll3},
+    {CLIENT_BLL4_UINT, _client_bll4},
+    {CLIENT_BLL5_UINT, _client_bll5},
+    {CLIENT_BLL6_UINT, _client_bll6},
+    {CLIENT_BLL7_UINT, _client_bll7},
+
+    {CLIENT_INK0_UINT, _client_ink0},
+    {CLIENT_INK1_UINT, _client_ink1},
+    {CLIENT_INK2_UINT, _client_ink2},
+    {CLIENT_INK3_UINT, _client_ink3},
+    {CLIENT_INK4_UINT, _client_ink4},
+    {CLIENT_INK5_UINT, _client_ink5},
+    {CLIENT_INK6_UINT, _client_ink6},
+    {CLIENT_INK7_UINT, _client_ink7},
+
+    {CLIENT_UNK0_UINT, _client_unk0},
+    {CLIENT_UNK1_UINT, _client_unk1},
+    {CLIENT_UNK2_UINT, _client_unk2},
+    {CLIENT_UNK3_UINT, _client_unk3},
+    {CLIENT_UNK4_UINT, _client_unk4},
+    {CLIENT_UNK5_UINT, _client_unk5},
+    {CLIENT_UNK6_UINT, _client_unk6},
+    {CLIENT_UNK7_UINT, _client_unk7},
+
+    {CLIENT_PLK0_UINT, _client_plk0},
+    {CLIENT_PLK1_UINT, _client_plk1},
+    {CLIENT_PLK2_UINT, _client_plk2},
+    {CLIENT_PLK3_UINT, _client_plk3},
+    {CLIENT_PLK4_UINT, _client_plk4},
+    {CLIENT_PLK5_UINT, _client_plk5},
+    {CLIENT_PLK6_UINT, _client_plk6},
+    {CLIENT_PLK7_UINT, _client_plk7},
+
+    {CLIENT_BLK0_UINT, _client_blk0},
+    {CLIENT_BLK1_UINT, _client_blk1},
+    {CLIENT_BLK2_UINT, _client_blk2},
+    {CLIENT_BLK3_UINT, _client_blk3},
+    {CLIENT_BLK4_UINT, _client_blk4},
+    {CLIENT_BLK5_UINT, _client_blk5},
+    {CLIENT_BLK6_UINT, _client_blk6},
+    {CLIENT_BLK7_UINT, _client_blk7},
+
+    {CLIENT_BLC0_UINT, _client_blc0},
+    {CLIENT_BLC1_UINT, _client_blc1},
+    {CLIENT_BLC2_UINT, _client_blc2},
+    {CLIENT_BLC3_UINT, _client_blc3},
+    {CLIENT_BLC4_UINT, _client_blc4},
+    {CLIENT_BLC5_UINT, _client_blc5},
+    {CLIENT_BLC6_UINT, _client_blc6},
+    {CLIENT_BLC7_UINT, _client_blc7},
 
     {1, NULL}
 };
@@ -260,21 +522,54 @@ static int handle_wolgameres_tag(t_tag gamerestag, wol_gameres_type type, int si
 static wol_gameres_type wol_gameres_type_from_int(int type)
 {
     switch (type) {
-        case 1:
+        case DATA_TYPE_BYTE:
             return wol_gameres_type_byte;
-        case 2:
+        case DATA_TYPE_BOOL:
             return wol_gameres_type_bool;
-        case 5:
+        case DATA_TYPE_TIME:
             return wol_gameres_type_time;
-        case 6:
+        case DATA_TYPE_INT:
             return wol_gameres_type_int;
-        case 7:
+        case DATA_TYPE_STRING:
             return wol_gameres_type_string;
+        case DATA_TYPE_BIGINT:
+            return wol_gameres_type_bigint;
         default:
             WARN1("type %d is not defined",type);
             return wol_gameres_type_unknown;
     }
 }
+
+static unsigned long wol_gameres_get_long_from_data(int size, const void * data)
+{
+    unsigned int temp = 0;
+    const char * chdata;
+    int i = 0;
+
+    if (!data) {
+        ERROR0 ("got NULL data");
+        return 0;
+    }
+
+    if (size < 4)
+        return 0;
+
+    chdata = (const char*) data;
+
+    while (i < size) {
+        temp = temp + (unsigned int) bn_int_nget(*((bn_int *)chdata));
+        i += 4;
+        if (i < size) {
+            *chdata ++;
+            *chdata ++;
+            *chdata ++;
+            *chdata ++;
+        }
+    }
+
+    return temp;
+}
+
 
 extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const packet)
 {
@@ -306,19 +601,28 @@ extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const pa
         type = wol_gameres_type_from_int(datatype);
 
         if (handle_wolgameres_tag(wgtag, type, datalen, data) != 0) {
-            char ch_data[255];
+            char ch_data[255]; /* FIXME: this is not so good */
             tag_uint_to_str(wgtag_str, wgtag);
-            if ((type == wol_gameres_type_bool) || (type == wol_gameres_type_byte)) {
-                snprintf (ch_data, sizeof(ch_data),"%u", (unsigned int) bn_byte_get(*((bn_byte *)data)));
+
+            switch (type) {
+                case wol_gameres_type_bool:
+                case wol_gameres_type_byte:
+                    snprintf (ch_data, sizeof(ch_data), "%u", (unsigned int) bn_byte_get(*((bn_byte *)data)));
+                    break;
+                case wol_gameres_type_int:
+                case wol_gameres_type_time:
+                    snprintf (ch_data, sizeof(ch_data), "%u", (unsigned int) bn_int_nget(*((bn_int *)data)));
+                    break;
+                case wol_gameres_type_string:
+                    snprintf (ch_data, sizeof(ch_data), "%s", data);
+                    break;
+                case wol_gameres_type_bigint:
+                    snprintf (ch_data, sizeof(ch_data), "%u", wol_gameres_get_long_from_data(datalen, data));
+                    break;
+                default:
+                    snprintf (ch_data, sizeof(ch_data), "unknown");
+                    break;
             }
-            else if ((type == wol_gameres_type_int) || (type == wol_gameres_type_time)){
-                snprintf (ch_data, sizeof(ch_data),"%u", (unsigned int) bn_int_nget(*((bn_int *)data)));
-            }
-            else if (type == wol_gameres_type_string){
-                snprintf (ch_data, sizeof(ch_data),"%s", data);
-            }
-            else
-                snprintf (ch_data, sizeof(ch_data),"unknown");
             eventlog(eventlog_level_warn, __FUNCTION__, "[%d] got unknown WOL Gameres tag: %s, data type %u, data lent %u, data %s",conn_get_socket(c), wgtag_str, datatype, datalen, ch_data);
 
         }
@@ -341,50 +645,131 @@ static int _client_sern(wol_gameres_type type, int size, void const * data)
     return 0;
 }
 
+static int _client_sdfx(wol_gameres_type type, int size, void const * data)
+{
+    int sdfx;
+
+    switch (type) {
+        case wol_gameres_type_bool:
+            sdfx = (unsigned int) bn_byte_get(*((bn_byte *)data));
+            break;
+        default:
+            WARN1("got unknown gameres type %u for SDFX", type);
+            break;
+    }
+
+    if (sdfx)
+        DEBUG0("SDFX == true");
+    else
+        DEBUG0("SDFX == false");
+
+    return 0;
+}
+
 static int _client_idno(wol_gameres_type type, int size, void const * data)
 {
-    int gameidnumber;
+    unsigned int gameidnumber;
 
-    if (type == wol_gameres_type_int) {
-        gameidnumber = (unsigned int) bn_int_nget(*((bn_int *)data));
-        DEBUG1("Game ID Number: %u", gameidnumber);
+    switch (type) {
+        case wol_gameres_type_int:
+            gameidnumber = (unsigned int) bn_int_nget(*((bn_int *)data));
+            DEBUG1("Game ID Number: %u", gameidnumber);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for IDNO", type);
+            break;
     }
-    else
-        WARN1("got unknown gameres type %u for IDNO", type);
 
     return 0;
 }
 
 static int _client_gsku(wol_gameres_type type, int size, void const * data)
 {
-    int sku;
+    unsigned int sku;
 
-    if (type == wol_gameres_type_int) {
-        sku = (unsigned int) bn_int_nget(*((bn_int *)data));
-        DEBUG1("Got WOL game resolution of %s", clienttag_get_title(tag_sku_to_uint(sku)));
+    switch (type) {
+        case wol_gameres_type_int:
+            sku = (unsigned int) bn_int_nget(*((bn_int *)data));
+            DEBUG1("Got WOL game resolution of %s", clienttag_get_title(tag_sku_to_uint(sku)));
+            break;
+        default:
+            WARN1("got unknown gameres type %u for GSKU", type);
+            break;
     }
-    else
-        WARN1("got unknown gameres type %u for GSKU", type);
+
+    return 0;
+}
+
+static int _client_dcon(wol_gameres_type type, int size, void const * data)
+{
+    unsigned int dcon;
+
+    switch (type) {
+        case wol_gameres_type_int:
+            dcon = (unsigned int) bn_int_nget(*((bn_int *)data));
+            DEBUG1("DCON is: %u", dcon);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for DCON", type);
+            break;
+    }
+
+    return 0;
+}
+
+static int _client_lcon(wol_gameres_type type, int size, void const * data)
+{
+    unsigned int lcon;
+
+    switch (type) {
+        case wol_gameres_type_int:
+            lcon = (unsigned int) bn_int_nget(*((bn_int *)data));
+            DEBUG1("LCON is: %u", lcon);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for LCON", type);
+            break;
+    }
+
+    return 0;
+}
+
+static int _client_type(wol_gameres_type type, int size, void const * data)
+{
+    int gametype;
+
+    switch (type) {
+        case wol_gameres_type_bool:
+            gametype = (unsigned int) bn_byte_get(*((bn_byte *)data));
+            DEBUG1("TYPE is: %u", gametype);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for TYPE", type);
+            break;
+    }
 
     return 0;
 }
 
 static int _client_trny(wol_gameres_type type, int size, void const * data)
 {
-    int tournament;
+    bool tournament;
 
     switch (type) {
+        case wol_gameres_type_bool:
+            tournament = (bool) bn_byte_get(*((bn_byte *)data));
+            break;
         case wol_gameres_type_int:
-            tournament = (unsigned int) bn_int_nget(*((bn_int *)data));
+            tournament = (bool) bn_int_nget(*((bn_int *)data));
             break;
         case wol_gameres_type_string:
             if (std::strcmp("TY  ", (const char *) data) == 0) /* for RNGD */
-                tournament = 1;
+                tournament = true;
             else if (std::strcmp("TN  ", (const char *) data) == 0) /* for RNGD */
-                tournament = 0; 
+                tournament = false; 
             else {
-                WARN1("got unknown string for TRNY: %s",data);
-                tournament = 0;
+                WARN1("got unknown string for TRNY: %s", data);
+                tournament = false;
             }
             break;
         default:
@@ -402,7 +787,22 @@ static int _client_trny(wol_gameres_type type, int size, void const * data)
 
 static int _client_oosy(wol_gameres_type type, int size, void const * data)
 {
-    /* Not implemented yet */
+    bool outofsync;
+
+    switch (type) {
+        case wol_gameres_type_bool:
+            outofsync = (bool) bn_byte_get(*((bn_byte *)data));
+            break;
+        default:
+            WARN1("got unknown gameres type %u for OOSY", type);
+            break;
+    }
+
+    if (outofsync)
+        DEBUG0("Game has Out of Sync YES");
+    else
+        DEBUG0("Game has Out of Sync NO");
+
     return 0;
 }
 
@@ -421,13 +821,15 @@ static int _client_dura(wol_gameres_type type, int size, void const * data)
     // DURA 00 06 00 04 [00 00 01 F4]
     // DURA 00 06 00 04 [00 00 00 06]
 
-    if (type == wol_gameres_type_int) {
-        duration = (unsigned int) bn_int_nget(*((bn_int *)data));
-        DEBUG1("Game duration %u seconds", duration);
+    switch (type) {
+        case wol_gameres_type_int:
+            duration = (unsigned int) bn_int_nget(*((bn_int *)data));
+            DEBUG1("Game duration %u seconds", duration);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for DURA", type);
+            break;
     }
-    else
-        WARN1("got unknown gameres type %u for DURA", type);
-
 
     return 0;
 }
@@ -436,12 +838,15 @@ static int _client_cred(wol_gameres_type type, int size, void const * data)
 {
     unsigned int credits;
 
-    if (type == wol_gameres_type_int) {
-        credits = (unsigned int) bn_int_nget(*((bn_int *)data));
-        DEBUG1("Game was start with %u credits", credits);
+    switch (type) {
+        case wol_gameres_type_int:
+            credits = (unsigned int) bn_int_nget(*((bn_int *)data));
+            DEBUG1("Game was start with %u credits", credits);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for CRED", type);
+            break;
     }
-    else
-        WARN1("got unknown gameres type %u for CRED", type);
 
     return 0;
 }
@@ -450,15 +855,16 @@ static int _client_shrt(wol_gameres_type type, int size, void const * data)
 {
     bool shortgame;
 
-    if (type == wol_gameres_type_bool) {
-        shortgame = (bool) bn_byte_get(*((bn_byte *)data));
-    }
-    else if (type == wol_gameres_type_int) {
-        shortgame = (bool) bn_int_nget(*((bn_int *)data));
-    }
-    else {
-        WARN1("got unknown gameres type %u for SHRT", type);
-        return 0;
+    switch (type) {
+        case wol_gameres_type_bool:
+            shortgame = (bool) bn_byte_get(*((bn_byte *)data));
+            break;
+        case wol_gameres_type_int:
+            shortgame = (bool) bn_int_nget(*((bn_int *)data));
+            break;
+        default:
+            WARN1("got unknown gameres type %u for SHRT", type);
+            break;
     }
 
     if (shortgame)
@@ -473,15 +879,16 @@ static int _client_supr(wol_gameres_type type, int size, void const * data)
 {
     bool superweapons;
 
-    if (type == wol_gameres_type_bool) {
-        superweapons = (bool) bn_byte_get(*((bn_byte *)data));
-    }
-    else if (type == wol_gameres_type_int) {
-        superweapons = (bool) bn_int_nget(*((bn_int *)data));
-    }
-    else {
-        WARN1("got unknown gameres type %u for SUPR", type);
-        return 0;
+    switch (type) {
+        case wol_gameres_type_bool:
+            superweapons = (bool) bn_byte_get(*((bn_byte *)data));
+            break;
+        case wol_gameres_type_int:
+            superweapons = (bool) bn_int_nget(*((bn_int *)data));
+            break;
+        default:
+            WARN1("got unknown gameres type %u for SUPR", type);
+            break;
     }
 
     if (superweapons)
@@ -518,15 +925,26 @@ static int _client_crat(wol_gameres_type type, int size, void const * data)
 {
     bool crates;
 
-    if (type == wol_gameres_type_bool) {
-        crates = (bool) bn_byte_get(*((bn_byte *)data));
-    }
-    else if (type == wol_gameres_type_int) {
-        crates = (bool) bn_int_nget(*((bn_int *)data));
-    }
-    else {
-        WARN1("got unknown gameres type %u for CRAT", type);
-        return 0;
+    switch (type) {
+        case wol_gameres_type_bool:
+            crates = (bool) bn_byte_get(*((bn_byte *)data));
+            break;
+        case wol_gameres_type_int:
+            crates = (bool) bn_int_nget(*((bn_int *)data));
+            break;
+        case wol_gameres_type_string:
+            if (std::strcmp("ON", (const char *) data) == 0)
+                crates = true;
+            else if (std::strcmp("OFF", (const char *) data) == 0)
+                crates = false; 
+            else {
+                WARN1("got unknown string for CRAT: %s", data);
+                crates = false;
+            }
+            break;
+        default:
+            WARN1("got unknown gameres type %u for CRAT", type);
+            break;
     }
 
     if (crates)
@@ -555,7 +973,7 @@ static int _client_aipl(wol_gameres_type type, int size, void const * data)
 
 static int _client_unit(wol_gameres_type type, int size, void const * data)
 {
-    int units;
+    unsigned int units;
 
     if (type == wol_gameres_type_int) {
         units = (unsigned int) bn_int_nget(*((bn_int *)data));
@@ -578,15 +996,52 @@ static int _client_scen(wol_gameres_type type, int size, void const * data)
     return 0;
 }
 
+static int _client_cmpl(wol_gameres_type type, int size, void const * data)
+{
+    int cmpl;
+      
+    switch (type) {
+        case wol_gameres_type_byte:
+            cmpl = (unsigned int) bn_byte_get(*((bn_byte *)data));
+            DEBUG1("CMPL is: %u", cmpl);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for CMPL", type);
+            break;
+    }
+
+    return 0;
+}
+
 static int _client_pngs(wol_gameres_type type, int size, void const * data)
 {
-    /* Not implemented yet */
+    unsigned int pngs;
+
+    switch (type) {
+        case wol_gameres_type_int:
+            pngs = (unsigned int) bn_int_nget(*((bn_int *)data));
+            DEBUG1("PNGS %u ", pngs);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for PNGS", type);
+            break;
+    }
     return 0;
 }
 
 static int _client_pngr(wol_gameres_type type, int size, void const * data)
 {
-    /* Not implemented yet */
+    unsigned int pngr;
+
+    switch (type) {
+        case wol_gameres_type_int:
+            pngr = (unsigned int) bn_int_nget(*((bn_int *)data));
+            DEBUG1("PNGR %u ", pngr);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for PNGR", type);
+            break;
+    }
     return 0;
 }
 
@@ -606,7 +1061,17 @@ static int _client_plrs(wol_gameres_type type, int size, void const * data)
 
 static int _client_spid(wol_gameres_type type, int size, void const * data)
 {
-    /* Not implemented yet */
+    unsigned int spid;
+
+    switch (type) {
+        case wol_gameres_type_int:
+            spid = (unsigned int) bn_int_nget(*((bn_int *)data));
+            DEBUG1("SPID %u ", spid);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for SPID", type);
+            break;
+    }
     return 0;
 }
 
@@ -632,7 +1097,17 @@ static int _client_time(wol_gameres_type type, int size, void const * data)
 
 static int _client_afps(wol_gameres_type type, int size, void const * data)
 {
-    /* Not implemented yet */
+    unsigned int afps;
+
+    switch (type) {
+        case wol_gameres_type_int:
+            afps = (unsigned int) bn_int_nget(*((bn_int *)data));
+            DEBUG1("Average Frames per Second %u ", afps);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for AFPS", type);
+            break;
+    }
     return 0;
 }
 
@@ -643,7 +1118,7 @@ static int _client_proc(wol_gameres_type type, int size, void const * data)
             DEBUG1("Procesor %s", data);
             break;
         default:
-            WARN1("got unknown gameres type %u for SCEN", type);
+            WARN1("got unknown gameres type %u for PROC", type);
             break;
     }
     return 0;
@@ -701,11 +1176,16 @@ static int _client_vers(wol_gameres_type type, int size, void const * data)
 
 static int _client_date(wol_gameres_type type, int size, void const * data)
 {
-    if (type == wol_gameres_type_string) {
-        DEBUG1("Date %s",data);
+    //WOLv1: DATE 00 14 00 08  52 11 ea 00  01 c5 cd a9
+
+    switch (type) {
+        case wol_gameres_type_string:
+            DEBUG1("Date %s",data);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for DATE", type);
+            break;
     }
-    else
-        WARN1("got unknown gameres type %u for DATE", type);
     return 0;
 }
 
@@ -715,18 +1195,29 @@ static int _client_base(wol_gameres_type type, int size, void const * data)
 
     //WOLv1 BASE 00 07 00 03 ON
 
-    if (type == wol_gameres_type_bool) {
-        bases = (bool) bn_byte_get(*((bn_byte *)data));
-        if (bases)
-            DEBUG0("Game has bases ON");
-        else
-            DEBUG0("Game has bases OFF");
+    switch (type) {
+        case wol_gameres_type_bool:
+            bases = (bool) bn_byte_get(*((bn_byte *)data));
+            break;
+        case wol_gameres_type_string:
+            if (std::strcmp("ON", (const char *) data) == 0)
+                bases = true;
+            else if (std::strcmp("OFF", (const char *) data) == 0)
+                bases = false; 
+            else {
+                WARN1("got unknown string for BASE: %s", data);
+                bases = false;
+            }
+            break;
+        default:
+            WARN1("got unknown gameres type %u for BASE", type);
+            break;
     }
-    else if (type == wol_gameres_type_string) {
-        DEBUG1("Game has bases %s", data);
-    }
+
+    if (bases)
+        DEBUG0("Game has bases ON");
     else
-        WARN1("got unknown gameres type %u for BASE", type);
+        DEBUG0("Game has bases OFF");
 
     return 0;
 }
@@ -755,18 +1246,33 @@ static int _client_shad(wol_gameres_type type, int size, void const * data)
 {
     //SHAD 00 02 00 01 [00 FF FF FF]
     //SHAD 00 02 00 01 [00 00 00 00]
-    
+    //SHAD 00 07 00 04 [OFF 00]
+   
     bool shadows;
 
-    if (type == wol_gameres_type_bool) {
-        shadows = (bool) bn_byte_get(*((bn_byte *)data));
-        if (shadows)
-            DEBUG0("Game has shadows ON");
-        else
-            DEBUG0("Game has shadows OFF");
+    switch (type) {
+        case wol_gameres_type_bool:
+            shadows = (bool) bn_byte_get(*((bn_byte *)data));
+            break;
+        case wol_gameres_type_string:
+            if (std::strcmp("ON", (const char *) data) == 0)
+                shadows = true;
+            else if (std::strcmp("OFF", (const char *) data) == 0)
+                shadows = false; 
+            else {
+                WARN1("got unknown string for SHAD: %s", data);
+                shadows = false;
+            }
+            break;
+        default:
+            WARN1("got unknown gameres type %u for SHAD", type);
+            break;
     }
+
+    if (shadows)
+        DEBUG0("Game has shadows ON");
     else
-        WARN1("got unknown gameres type %u for SHAD", type);
+        DEBUG0("Game has shadows OFF");
 
     return 0;
 }
@@ -775,17 +1281,32 @@ static int _client_flag(wol_gameres_type type, int size, void const * data)
 {
     bool captureflag;
 
-    if (type == wol_gameres_type_bool) {
-        captureflag = (bool) bn_byte_get(*((bn_byte *)data));
-        if (captureflag)
-            DEBUG0("Game has capture the flag ON");
-        else
-            DEBUG0("Game has capture the flag OFF");
+    switch (type) {
+        case wol_gameres_type_bool:
+            captureflag = (bool) bn_byte_get(*((bn_byte *)data));
+            break;
+        case wol_gameres_type_string:
+            if (std::strcmp("ON", (const char *) data) == 0)
+                captureflag = true;
+            else if (std::strcmp("OFF", (const char *) data) == 0)
+                captureflag = false; 
+            else {
+                WARN1("got unknown string for FLAG: %s", data);
+                captureflag = false;
+            }
+            break;
+        default:
+            WARN1("got unknown gameres type %u for FLAG", type);
+            break;
     }
+
+    if (captureflag)
+        DEBUG0("Game has capture the flag ON");
     else
-        WARN1("got unknown gameres type %u for FLAG", type);
+        DEBUG0("Game has capture the flag OFF");
 
     return 0;
+
 }
 
 static int _client_tech(wol_gameres_type type, int size, void const * data)
@@ -1454,110 +1975,879 @@ static int _client_nam7(wol_gameres_type type, int size, void const * data)
 }
 
 /**/
-static int show_player_reslut(int playernum, int result)
+
+static int show_player_points(int pl1_points, int pl2_points)
 {
-    /* FIXME: This does not work! */
-    DEBUG2("%u player has %u", playernum ,result);
-    if (result == 0x100)
-        DEBUG0("WIN");
-    if (result == 0x200)
-        DEBUG0("LOSE");
-    if (result == 0x300)
-        DEBUG0("DISCONECT");
+	int points_win = static_cast<int>(64 * (1 - 1 / (powf(10, static_cast<float>(pl2_points - pl1_points) / 400) + 1)) + 0.5);
+	int points_loss = std::min(64 - points_win, pl1_points / 10);
+
+    DEBUG1("Winer points %u", points_win);
+    DEBUG1("Losser points %u", points_loss);
+
     return 0;
 }
+
 /**/
 
-static int _client_cmp0(wol_gameres_type type, int size, void const * data)
+static int _cl_cmp_general(int num, wol_gameres_type type, int size, void const * data)
 {
     //CMPx 00 06 00 04 00 00 02 00
-    //0x0100=WIN 0x0200=LOSE (0x0210) 0x0300=DISCONECT
+    //0x0100=WIN 0x0200(0x0210)=LOSE 0x0300=DISCONECT
 
     int result;
 
-    if (type == wol_gameres_type_int) {
-        result = (unsigned int) bn_int_nget(*((bn_int *)data));
-        show_player_reslut(0,result);
+    switch (type) {
+        case wol_gameres_type_int:
+            result = (unsigned int) bn_int_nget(*((bn_int *)data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for CMP%u", type, num);
+            return 0;
     }
+     
+    result &= 0x0000FF00;
+    result = result >> 8;
+
+    if (result == 1)
+        DEBUG0("WIN");
+    else if (result == 2)
+        DEBUG0("LOSE");
+    else if (result == 3)
+        DEBUG0("DISCONECT");
+    else
+        DEBUG2("Got wrong %u player result %u", num , result);
+
     return 0;
+}
+
+static int _client_cmp0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_cmp_general(0, type, size, data);
 }
 
 static int _client_cmp1(wol_gameres_type type, int size, void const * data)
 {
-    int result;
-
-    if (type == wol_gameres_type_int) {
-        result = (unsigned int) bn_int_nget(*((bn_int *)data));
-        show_player_reslut(1,result);
-    }
-    return 0;
+    return _cl_cmp_general(0, type, size, data);
 }
 
 static int _client_cmp2(wol_gameres_type type, int size, void const * data)
 {
-    int result;
-
-    if (type == wol_gameres_type_int) {
-        result = (unsigned int) bn_int_nget(*((bn_int *)data));
-        show_player_reslut(2,result);
-    }
-    return 0;
+    return _cl_cmp_general(0, type, size, data);
 }
 
 static int _client_cmp3(wol_gameres_type type, int size, void const * data)
 {
-    int result;
-
-    if (type == wol_gameres_type_int) {
-        result = (unsigned int) bn_int_nget(*((bn_int *)data));
-        show_player_reslut(3,result);
-    }
-    return 0;
+    return _cl_cmp_general(0, type, size, data);
 }
 
 static int _client_cmp4(wol_gameres_type type, int size, void const * data)
 {
-    int result;
-
-    if (type == wol_gameres_type_int) {
-        result = (unsigned int) bn_int_nget(*((bn_int *)data));
-        show_player_reslut(4,result);
-    }
-    return 0;
+    return _cl_cmp_general(0, type, size, data);
 }
 
 static int _client_cmp5(wol_gameres_type type, int size, void const * data)
 {
-    int result;
-
-    if (type == wol_gameres_type_int) {
-        result = (unsigned int) bn_int_nget(*((bn_int *)data));
-        show_player_reslut(5,result);
-    }
-    return 0;
+    return _cl_cmp_general(0, type, size, data);
 }
 
 static int _client_cmp6(wol_gameres_type type, int size, void const * data)
 {
-    int result;
-
-    if (type == wol_gameres_type_int) {
-        result = (unsigned int) bn_int_nget(*((bn_int *)data));
-        show_player_reslut(6,result);
-    }
-    return 0;
+    return _cl_cmp_general(0, type, size, data);
 }
 
 static int _client_cmp7(wol_gameres_type type, int size, void const * data)
 {
-    int result;
+    return _cl_cmp_general(0, type, size, data);
+}
 
-    if (type == wol_gameres_type_int) {
-        result = (unsigned int) bn_int_nget(*((bn_int *)data));
-        show_player_reslut(7,result);
+static int _cl_col_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_int:
+            DEBUG2("Player %u color num: %u", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for COL%u", type, num);
+            break;
     }
     return 0;
 }
+
+static int _client_col0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_col_general(0, type, size, data);
+}
+
+static int _client_col1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_col_general(1, type, size, data);
+}
+
+static int _client_col2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_col_general(2, type, size, data);
+}
+
+static int _client_col3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_col_general(3, type, size, data);
+}
+
+static int _client_col4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_col_general(4, type, size, data);
+}
+
+static int _client_col5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_col_general(5, type, size, data);
+}
+
+static int _client_col6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_col_general(6, type, size, data);
+}
+
+static int _client_col7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_col_general(7, type, size, data);
+}
+
+static int _cl_inb_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u build %u infantry", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u build %u infantry", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for INB%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_inb0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inb_general(0, type, size, data);
+}
+
+static int _client_inb1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inb_general(1, type, size, data);
+}
+
+
+static int _client_inb2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inb_general(2, type, size, data);
+}
+
+
+static int _client_inb3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inb_general(3, type, size, data);
+}
+
+
+static int _client_inb4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inb_general(4, type, size, data);
+}
+
+
+static int _client_inb5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inb_general(5, type, size, data);
+}
+
+
+static int _client_inb6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inb_general(6, type, size, data);
+}
+
+
+static int _client_inb7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inb_general(7, type, size, data);
+}
+
+static int _cl_unb_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u build %u units", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u build %u units", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for UNB%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_unb0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unb_general(0, type, size, data);
+}
+
+
+static int _client_unb1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unb_general(1, type, size, data);
+}
+
+static int _client_unb2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unb_general(2, type, size, data);
+}
+
+static int _client_unb3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unb_general(3, type, size, data);
+}
+
+static int _client_unb4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unb_general(4, type, size, data);
+}
+
+static int _client_unb5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unb_general(5, type, size, data);
+}
+
+static int _client_unb6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unb_general(6, type, size, data);
+}
+
+static int _client_unb7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unb_general(7, type, size, data);
+}
+
+static int _cl_plb_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u build %u planes", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u build %u planes", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for PLB%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_plb0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plb_general(0, type, size, data);
+}
+
+static int _client_plb1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plb_general(1, type, size, data);
+}
+
+static int _client_plb2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plb_general(2, type, size, data);
+}
+
+static int _client_plb3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plb_general(3, type, size, data);
+}
+
+static int _client_plb4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plb_general(4, type, size, data);
+}
+
+static int _client_plb5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plb_general(5, type, size, data);
+}
+
+static int _client_plb6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plb_general(6, type, size, data);
+}
+
+static int _client_plb7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plb_general(7, type, size, data);
+}
+
+static int _cl_blb_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u build %u buildings", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u build %u buildings", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for BLB%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_blb0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blb_general(0, type, size, data);
+}
+
+static int _client_blb1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blb_general(1, type, size, data);
+}
+
+static int _client_blb2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blb_general(2, type, size, data);
+}
+
+static int _client_blb3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blb_general(3, type, size, data);
+}
+
+static int _client_blb4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blb_general(4, type, size, data);
+}
+
+static int _client_blb5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blb_general(5, type, size, data);
+}
+
+static int _client_blb6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blb_general(6, type, size, data);
+}
+
+static int _client_blb7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blb_general(7, type, size, data);
+}
+
+static int _cl_inl_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u lost %u infantry", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u lost %u infantry", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for INL%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_inl0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inl_general(0, type, size, data);
+}
+
+static int _client_inl1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inl_general(1, type, size, data);
+}
+
+static int _client_inl2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inl_general(2, type, size, data);
+}
+
+static int _client_inl3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inl_general(3, type, size, data);
+}
+
+static int _client_inl4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inl_general(4, type, size, data);
+}
+
+static int _client_inl5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inl_general(5, type, size, data);
+}
+
+static int _client_inl6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inl_general(6, type, size, data);
+}
+
+static int _client_inl7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_inl_general(7, type, size, data);
+}
+
+static int _cl_unl_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u lost %u units", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u lost %u units", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for UNL%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_unl0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unl_general(0, type, size, data);
+}
+
+static int _client_unl1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unl_general(1, type, size, data);
+}
+
+static int _client_unl2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unl_general(2, type, size, data);
+}
+
+static int _client_unl3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unl_general(3, type, size, data);
+}
+
+static int _client_unl4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unl_general(4, type, size, data);
+}
+
+static int _client_unl5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unl_general(5, type, size, data);
+}
+
+static int _client_unl6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unl_general(6, type, size, data);
+}
+
+static int _client_unl7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unl_general(7, type, size, data);
+}
+
+static int _cl_pll_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u lost %u planes", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u lost %u planes", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for PLL%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_pll0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_pll_general(0, type, size, data);
+}
+
+static int _client_pll1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_pll_general(1, type, size, data);
+}
+
+static int _client_pll2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_pll_general(2, type, size, data);
+}
+
+static int _client_pll3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_pll_general(3, type, size, data);
+}
+
+static int _client_pll4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_pll_general(4, type, size, data);
+}
+
+static int _client_pll5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_pll_general(5, type, size, data);
+}
+
+static int _client_pll6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_pll_general(6, type, size, data);
+}
+
+static int _client_pll7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_pll_general(7, type, size, data);
+}
+
+static int _cl_bll_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u lost %u buildings", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u lost %u buildings", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for BLL%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_bll0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_bll_general(0, type, size, data);
+}
+
+static int _client_bll1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_bll_general(1, type, size, data);
+}
+
+static int _client_bll2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_bll_general(2, type, size, data);
+}
+
+static int _client_bll3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_bll_general(3, type, size, data);
+}
+
+static int _client_bll4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_bll_general(4, type, size, data);
+}
+
+static int _client_bll5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_bll_general(5, type, size, data);
+}
+
+static int _client_bll6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_bll_general(6, type, size, data);
+}
+
+static int _client_bll7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_bll_general(7, type, size, data);
+}
+
+static int _cl_ink_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u killed %u infantry", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u killed %u infantry", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for INK%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_ink0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_ink_general(0, type, size, data);
+}
+
+static int _client_ink1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_ink_general(1, type, size, data);
+}
+
+static int _client_ink2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_ink_general(2, type, size, data);
+}
+
+static int _client_ink3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_ink_general(3, type, size, data);
+}
+
+static int _client_ink4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_ink_general(4, type, size, data);
+}
+
+static int _client_ink5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_ink_general(5, type, size, data);
+}
+
+static int _client_ink6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_ink_general(6, type, size, data);
+}
+
+static int _client_ink7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_ink_general(7, type, size, data);
+}
+
+static int _cl_unk_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u killed %u units", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u killed %u units", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for UNK%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_unk0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unk_general(0, type, size, data);
+}
+
+static int _client_unk1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unk_general(1, type, size, data);
+}
+
+static int _client_unk2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unk_general(2, type, size, data);
+}
+
+static int _client_unk3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unk_general(3, type, size, data);
+}
+
+static int _client_unk4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unk_general(4, type, size, data);
+}
+
+static int _client_unk5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unk_general(5, type, size, data);
+}
+
+static int _client_unk6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unk_general(6, type, size, data);
+}
+
+static int _client_unk7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_unk_general(7, type, size, data);
+}
+
+static int _cl_plk_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u killed %u planes", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u killed %u planes", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for PLK%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_plk0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plk_general(0, type, size, data);
+}
+
+static int _client_plk1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plk_general(1, type, size, data);
+}
+
+static int _client_plk2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plk_general(2, type, size, data);
+}
+
+static int _client_plk3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plk_general(3, type, size, data);
+}
+
+static int _client_plk4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plk_general(4, type, size, data);
+}
+
+static int _client_plk5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plk_general(5, type, size, data);
+}
+
+static int _client_plk6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plk_general(6, type, size, data);
+}
+
+static int _client_plk7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_plk_general(7, type, size, data);
+}
+
+static int _cl_blk_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u killed %u buildings", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u killed %u buildings", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for BLK%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_blk0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blk_general(0, type, size, data);
+}
+
+static int _client_blk1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blk_general(1, type, size, data);
+}
+
+static int _client_blk2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blk_general(2, type, size, data);
+}
+
+static int _client_blk3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blk_general(3, type, size, data);
+}
+
+static int _client_blk4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blk_general(4, type, size, data);
+}
+
+static int _client_blk5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blk_general(5, type, size, data);
+}
+
+static int _client_blk6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blk_general(6, type, size, data);
+}
+
+static int _client_blk7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blk_general(7, type, size, data);
+}
+
+static int _cl_blc_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_int:
+            DEBUG2("Player %u captured %u buildings", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u captured %u buildings", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for BLC%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_blc0(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blc_general(0, type, size, data);
+}
+
+static int _client_blc1(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blc_general(1, type, size, data);
+}
+
+static int _client_blc2(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blc_general(2, type, size, data);
+}
+
+static int _client_blc3(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blc_general(3, type, size, data);
+}
+
+static int _client_blc4(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blc_general(4, type, size, data);
+}
+
+static int _client_blc5(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blc_general(5, type, size, data);
+}
+
+static int _client_blc6(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blc_general(6, type, size, data);
+}
+
+static int _client_blc7(wol_gameres_type type, int size, void const * data)
+{
+    return _cl_blc_general(7, type, size, data);
+}
+
 
 }
 

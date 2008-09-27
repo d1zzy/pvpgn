@@ -39,7 +39,8 @@ typedef enum {
     wol_gameres_type_bool = 2,
     wol_gameres_type_time = 5,
     wol_gameres_type_int = 6,
-    wol_gameres_type_string = 7
+    wol_gameres_type_string = 7,
+    wol_gameres_type_bigint = 20
 } wol_gameres_type;
 
 extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const packet);
