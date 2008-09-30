@@ -22,16 +22,13 @@
 #include <cmath>
 #include <algorithm>
 
-//#include <sstream>
-//#include <cstring>
-//nclude <cctype>
-//nclude <ctime>
-
 #include "common/wol_gameres_protocol.h"
 #include "common/packet.h"
 #include "common/eventlog.h"
 #include "common/tag.h"
 #include "common/bn_type.h"
+
+#include "compat/snprintf.h"
 
 #include "connection.h"
 #ifdef WIN32_GUI
