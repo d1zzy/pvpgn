@@ -1492,7 +1492,7 @@ extern int _handle_mode_command(t_connection * conn, int numparams, char ** para
 
    	std::memset(temp,0,sizeof(temp));
 
-    if (numparams <= 1) {
+    if (numparams < 1) {
         irc_send(conn,ERR_NEEDMOREPARAMS,"MODE :Not enough parameters");
         return 0;
     }
@@ -1501,7 +1501,6 @@ extern int _handle_mode_command(t_connection * conn, int numparams, char ** para
         /* Channel mode */
         t_channel * channel;
         char const * ircname = irc_convert_ircname(params[0]);
-        unsigned int flags = conn_get_flags(conn);
 
         if (!(channel = channellist_find_channel_by_name(ircname,NULL,NULL))) {
             snprintf(temp,sizeof(temp),"%s :No such channel", params[0]);
@@ -1509,29 +1508,33 @@ extern int _handle_mode_command(t_connection * conn, int numparams, char ** para
      	    return 0;
 	    }
 
-        if (numparams <= 2) {
-            irc_send(conn,ERR_NEEDMOREPARAMS,"MODE :Not enough parameters");
+        if (numparams == 1) {
+            /* FIXME: Send real CHANELMODE flags! */
+            snprintf(temp,sizeof(temp),"%s +tns", params[0]);
+            irc_send(conn,RPL_CHANNELMODEIS,temp);
             return 0;
         }
 
-        if (std::strcmp(params[1], "b") == 0) {
-            irc_send_banlist(conn, channel);
-            snprintf(temp,sizeof(temp),"%s :End of channel ban list", params[0]);
-            irc_send(conn,RPL_ENDOFBANLIST,temp);
-            return 0;
+        if (numparams == 2) {
+            if (std::strcmp(params[1], "b") == 0) {
+                irc_send_banlist(conn, channel);
+                snprintf(temp,sizeof(temp),"%s :End of channel ban list", params[0]);
+                irc_send(conn,RPL_ENDOFBANLIST,temp);
+                return 0;
+            }
+            else {
+                snprintf(temp,sizeof(temp),":%s is unknown mode char to me for %s", params[1], params[0]);
+                irc_send(conn,ERR_UNKNOWNMODE,temp);
+                return 0;
+            }
         }
 
-        /* PELISH: Also tmpOP have banning mode alowed because all new channels have only tmpOP */
-        if ((channel_conn_is_tmpOP(channel,conn)) && 
+        /* PELISH: Also tmpOP have setting modes alowed because all new channels have only tmpOP */
+        if ((channel_conn_is_tmpOP(channel,conn)!=1) && 
             (account_get_auth_admin(acc,NULL)!=1) && (account_get_auth_admin(acc,ircname)!=1) &&
             (account_get_auth_operator(acc,NULL)!=1) && (account_get_auth_operator(acc,ircname)!=1)) {
             snprintf(temp,sizeof(temp),"%s :You're not channel operator", params[0]);
             irc_send(conn,ERR_CHANOPRIVSNEEDED,temp);
-            return 0;
-        }
-
-        if (numparams <= 3) {
-            irc_send(conn,ERR_NEEDMOREPARAMS,"MODE :Not enough parameters");
             return 0;
         }
 
@@ -1589,7 +1592,7 @@ extern int _handle_mode_command(t_connection * conn, int numparams, char ** para
         }
     }
     else {
-        /* User mode */
+        /* User modes */
         /* FIXME: Support user modes (away, invisible...) */
      	irc_send(conn,ERR_UMODEUNKNOWNFLAG,":Unknown MODE flag");
     }
