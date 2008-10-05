@@ -110,6 +110,8 @@ static int _client_statsreq(t_connection * c, t_packet const *const packet);
 static int _client_loginreq1(t_connection * c, t_packet const *const packet);
 static int _client_loginreq2(t_connection * c, t_packet const *const packet);
 static int _client_loginreqw3(t_connection * c, t_packet const *const packet);
+static int _client_passchangereq(t_connection * c, t_packet const *const packet);
+static int _client_passchangeproofreq(t_connection * c, t_packet const *const packet);
 static int _client_pingreq(t_connection * c, t_packet const *const packet);
 static int _client_logonproofreq(t_connection * c, t_packet const *const packet);
 static int _client_changegameport(t_connection * c, t_packet const *const packet);
@@ -195,6 +197,8 @@ static const t_htable_row bnet_htable_con[] = {
     {CLIENT_LOGINREQ1, _client_loginreq1},
     {CLIENT_LOGINREQ2, _client_loginreq2},
     {CLIENT_LOGINREQ_W3, _client_loginreqw3},
+    {CLIENT_PASSCHANGEREQ, _client_passchangereq},
+    {CLIENT_PASSCHANGEPROOFREQ, _client_passchangeproofreq},
     {CLIENT_LOGONPROOFREQ, _client_logonproofreq},
     {CLIENT_CHANGECLIENT, _client_changeclient},
     {CLIENT_GETPASSWORDREQ, _client_getpasswordreq},
@@ -1817,6 +1821,178 @@ static int _client_loginreqw3(t_connection * c, t_packet const *const packet)
 	conn_push_outqueue(c, rpacket);
 	packet_del_ref(rpacket);
 
+    }
+
+    return 0;
+}
+
+static int _client_passchangereq(t_connection * c, t_packet const *const packet)
+{
+    t_packet *rpacket;
+
+    if (packet_get_size(packet) < sizeof(t_client_passchangereq)) {
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLIENT_PASSCHANGEREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_passchangereq), packet_get_size(packet));
+	return -1;
+    }
+
+    {
+	char const *username;
+	t_account *account;
+	char const *account_salt;
+	char const *account_verifier;
+	const char *conn_client_public_key;
+	const char *server_public_key;
+	int i;
+
+	/* PELISH: Does not need to check conn_client_public_key != NULL because we testing packet size */
+	conn_client_public_key = (char *)packet_get_data_const(packet,offsetof(t_client_loginreq_w3, client_public_key),32);
+
+
+	if (!(username = packet_get_str_const(packet, sizeof(t_client_passchangereq), MAX_USERNAME_LEN))) {
+	    eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLIENT_PASSCHANGEREQ (missing or too long username)", conn_get_socket(c));
+	    return -1;
+	}   
+
+	if (!(rpacket = packet_create(packet_class_bnet)))
+	    return -1;
+	packet_set_size(rpacket, sizeof(t_server_passchangereply));
+	packet_set_type(rpacket, SERVER_PASSCHANGEREPLY);
+
+	for (i = 0; i < 32; i++)
+	    bn_byte_set(&rpacket->u.server_loginreply_w3.salt[i], 0);
+
+	for (i = 0; i < 32; i++)
+	    bn_byte_set(&rpacket->u.server_loginreply_w3.server_public_key[i], 0);
+
+	{
+	    bn_int_set(&rpacket->u.server_passchangereply.message, SERVER_PASSCHANGEREPLY_MESSAGE_REJECT);
+
+		/* fail if no account */
+	    if (!(account = accountlist_find_account(username))) {
+		eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) passchange for \"%s\" refused (no such account)", conn_get_socket(c), username);
+	    } else 
+		/* fail if bnetlogin is disallowed */
+		if (account_get_auth_bnetlogin(account) == 0) {	/* default to true */
+		eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) passchange for \"%s\" refused (no bnet access)", conn_get_socket(c), username);
+	    } else 
+		/* fail if no salt */
+		if ((account_salt = account_get_salt(account)) == NULL)  {
+		eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) passchange for \"%s\" refused (no SALT)", conn_get_socket(c), username);
+	    } else 
+		/* fail if no verifier */
+		if ((account_verifier = account_get_verifier(account)) == NULL)  {
+		eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) passchange for \"%s\" refused (no VERIFIER)", conn_get_socket(c), username);
+		xfree((void*)account_salt);
+	    } else {
+
+	        for (i = 0; i < 32; i++){
+	            bn_byte_set(&rpacket->u.server_passchangereply.salt[i], account_salt[i]);
+		}
+
+                BigInt salt = BigInt((unsigned char*)account_salt,32,4,false);
+		BigInt verifier = BigInt((unsigned char*)account_verifier,32,1,false);
+		BnetSRP3 srp3 = BnetSRP3(username, salt);
+
+		BigInt client_public_key = BigInt((unsigned char*)conn_client_public_key,32,1,false);
+		BigInt server_public_key = srp3.getServerSessionPublicKey(verifier);
+
+		server_public_key.getData((unsigned char*)&rpacket->u.server_loginreply_w3.server_public_key,32,4,false);
+
+		BigInt hashed_server_secret_ = srp3.getHashedServerSecret(client_public_key, verifier);
+		BigInt client_proof = srp3.getClientPasswordProof(client_public_key, server_public_key, hashed_server_secret_);
+		BigInt server_proof = srp3.getServerPasswordProof(client_public_key, client_proof, hashed_server_secret_);
+
+		char * conn_client_proof = (char*)client_proof.getData(20,4,false);
+		char * conn_server_proof = (char*)server_proof.getData(20,4,false);
+
+		conn_set_client_proof(c, conn_client_proof);
+		conn_set_server_proof(c, conn_server_proof);
+
+		xfree((void*)account_verifier);
+		xfree((void*)account_salt);
+		xfree(conn_client_proof);
+		xfree(conn_server_proof);
+
+		eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) \"%s\" passed account passchange check", conn_get_socket(c), username);
+		conn_set_loggeduser(c, username);
+		bn_int_set(&rpacket->u.server_passchangereply.message, SERVER_PASSCHANGEREPLY_MESSAGE_ACCEPT);
+	    }
+	}
+
+	conn_push_outqueue(c, rpacket);
+	packet_del_ref(rpacket);
+
+    }
+
+    return 0;
+}
+
+static int _client_passchangeproofreq(t_connection * c, t_packet const *const packet)
+{
+    t_packet *rpacket;
+
+    if (packet_get_size(packet) < sizeof(t_client_passchangeproofreq)) {
+	eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad PASSCHANGEPROOFREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_passchangeproofreq), packet_get_size(packet));
+	return -1;
+    }
+
+    {
+	char const *username;
+	t_account *account;
+        const char *salt;
+        const char *verifier;
+
+	eventlog(eventlog_level_info, __FUNCTION__, "[%d] passchange proof requested", conn_get_socket(c));
+
+	if (!(rpacket = packet_create(packet_class_bnet)))
+	    return -1;
+	packet_set_size(rpacket, sizeof(t_server_passchangeproofreply));
+	packet_set_type(rpacket, SERVER_PASSCHANGEPROOFREPLY);
+
+	std::memset(&rpacket->u.server_passchangeproofreply.server_password_proof,0,sizeof(rpacket->u.server_passchangeproofreply.server_password_proof));
+
+	bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_PASSCHANGEPROOFREPLY_RESPONSE_BADPASS);
+
+	if (!(username = conn_get_loggeduser(c))) {
+	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) got NULL username, 0x56ff before 0x55ff?", conn_get_socket(c));
+	} else if (!(account = accountlist_find_account(username))) {
+	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) passchange in 0x56ff for \"%s\" refused (no such account)", conn_get_socket(c), username);
+	} else if (account_get_auth_lock(account) == 1) {	/* default to false */
+	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] passchange for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
+	} else {
+	    t_hash serverhash;
+	    t_hash clienthash;
+	    int i;
+	    const char * client_password_proof;
+
+	    if (!(client_password_proof = (const char*)packet_get_data_const(packet, offsetof(t_client_passchangeproofreq,client_password_proof), 20))) {
+		eventlog(eventlog_level_error, __FUNCTION__, "[%d] (W3) got bad PASSCHANGEPROOFREQ packet (missing hash)", conn_get_socket(c));
+		return -1;
+	    }
+
+            if (std::memcmp(client_password_proof, conn_get_client_proof(c), 20)==0) {
+	        const char * server_proof = conn_get_server_proof(c);
+
+	        for (i = 0; i < 20; i++){
+	            bn_byte_set(&rpacket->u.server_passchangeproofreply.server_password_proof[i], server_proof[i]);
+		}
+
+                salt = (const char *)packet_get_data_const(packet,offsetof(t_client_passchangeproofreq,salt),32);
+                verifier = (const char *)packet_get_data_const(packet,offsetof(t_client_passchangeproofreq,password_verifier),32);
+                account_set_salt(account, salt);
+	        account_set_verifier(account,verifier);
+
+		eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) \"%s\" successfull passchange (right client password proof)", conn_get_socket(c), username);
+		bn_int_set(&rpacket->u.server_passchangeproofreply.response, SERVER_PASSCHANGEPROOFREPLY_RESPONSE_OK);
+	    } else {
+		eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) got wrong client password proof for \"%s\"", conn_get_socket(c), username);
+		conn_increment_passfail_count(c);
+	    }
+	}
+	conn_push_outqueue(c, rpacket);
+	packet_del_ref(rpacket);
+	conn_set_client_proof(c, NULL);
+	conn_set_server_proof(c, NULL);
     }
 
     return 0;
