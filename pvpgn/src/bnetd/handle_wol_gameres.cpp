@@ -20,6 +20,7 @@
 #include "handle_wol_gameres.h"
 
 #include <cmath>
+#include <cstring>
 #include <algorithm>
 
 #include "common/wol_gameres_protocol.h"
