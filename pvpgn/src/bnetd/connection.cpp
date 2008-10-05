@@ -1854,6 +1854,7 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
     t_elem * curr;
     int clantag=0;
     t_clan * clan = NULL;
+    t_clanmember * member = NULL;
 	unsigned int created;
 
     if (!c)
@@ -1886,30 +1887,39 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
 	if((strncasecmp(channelname, "clan ", 5)==0)&&(std::strlen(channelname)<10))
 		clantag = str_to_clantag(&channelname[5]);
 
-    if(clantag && ((!(clan = account_get_clan(acc))) || (clan_get_clantag(clan) != clantag)))
-    {
-        if (!channel)
-        {
-            char msgtemp[MAX_MESSAGE_LEN];
-            snprintf(msgtemp, sizeof(msgtemp), "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
-            message_send_text(c, message_type_error, c, msgtemp);
-
-            if (conn_get_game(c) || c->protocol.chat.channel==NULL) {
-                // FIXME: This is not tested to be according to battle.net!!
-                // This is fix for empty clan channels with preventing to join CHANNEL_NAME_BANNED when is used _handle_join_command
-                snprintf(msgtemp, sizeof(msgtemp), "You have been redirected to %s.", CHANNEL_NAME_BANNED);
-                message_send_text(c, message_type_error, c, msgtemp);
-                channel = channellist_find_channel_by_name(CHANNEL_NAME_BANNED,conn_get_country(c),realm_get_name(conn_get_realm(c)));
-            } else
-                return 0;
-        }
-        else
-        {
-            t_clan * ch_clan;
-            if((ch_clan=clanlist_find_clan_by_clantag(clantag))&&(clan_get_channel_type(ch_clan)==1))
+    if (clantag) {
+        clan = account_get_clan(acc);
+        if ((!clan) || (clan_get_clantag(clan) != clantag)) {
+            if (!channel)
             {
-                message_send_text(c, message_type_error, c, "This is a private clan channel, unable to join!");
-                return 0;
+                char msgtemp[MAX_MESSAGE_LEN];
+                snprintf(msgtemp, sizeof(msgtemp), "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
+                message_send_text(c, message_type_error, c, msgtemp);
+
+                if (conn_get_game(c) || c->protocol.chat.channel==NULL) {
+                    // FIXME: This is not tested to be according to battle.net!!
+                    // This is fix for empty clan channels with preventing to join CHANNEL_NAME_BANNED when is used _handle_join_command
+                    snprintf(msgtemp, sizeof(msgtemp), "You have been redirected to %s.", CHANNEL_NAME_BANNED);
+                    message_send_text(c, message_type_error, c, msgtemp);
+                    channel = channellist_find_channel_by_name(CHANNEL_NAME_BANNED,conn_get_country(c),realm_get_name(conn_get_realm(c)));
+                } else
+                    return 0;
+            }
+            else
+            {
+                t_clan * ch_clan;
+                if((ch_clan=clanlist_find_clan_by_clantag(clantag))&&(clan_get_channel_type(ch_clan)==1))
+                {
+                    message_send_text(c, message_type_error, c, "This is a private clan channel, unable to join!");
+                    return 0;
+                }
+            }
+        }
+        else {
+            if ((clan) && (clan_get_clantag(clan) == clantag) && (member = account_get_clanmember(acc))) {
+                if (clanmember_get_status(member) >= CLAN_SHAMAN)
+                    /* PELISH: Giving tmpOP to SHAMAN and CHIEFTAIN on clanchannel */
+                    conn_set_tmpOP_channel(c,channelname);
             }
         }
     }
