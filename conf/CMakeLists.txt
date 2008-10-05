@@ -19,8 +19,8 @@ if(WITH_BNETD)
   autoupdate.conf bnalias.conf bnban.conf 
   bnetd_default_user.plain bnhelp.conf bnissue.txt bnmaps.conf bnmotd.txt 
   bnxpcalc.conf bnxplevel.conf channel.conf command_groups.conf news.txt 
-  realm.conf sql_DB_layout.conf supportfile.conf topics.conf tournament.conf 
-  versioncheck.conf)
+  realm.conf sql_DB_layout.conf sql_DB_layout2.conf supportfile.conf topics.conf 
+  tournament.conf versioncheck.conf)
 
   # special treatement for non .in files
   install(FILES bnetd_default_user.cdb DESTINATION ${SYSCONFDIR})
