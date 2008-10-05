@@ -1887,7 +1887,8 @@ extern int conn_set_channel(t_connection * c, char const * channelname)
 	if((strncasecmp(channelname, "clan ", 5)==0)&&(std::strlen(channelname)<10))
 		clantag = str_to_clantag(&channelname[5]);
 
-    if (clantag) {
+    if ((clantag) && !((account_get_auth_admin(acc,channelname) == 1) || (account_get_auth_admin(acc,NULL) == 1))) {
+        /* PELISH: Admins should be possible to connect any channel */
         clan = account_get_clan(acc);
         if ((!clan) || (clan_get_clantag(clan) != clantag)) {
             if (!channel)
