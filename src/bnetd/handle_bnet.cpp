@@ -4571,7 +4571,7 @@ static int _client_clanmember_rankupdatereq(t_connection * c, t_packet const *co
 	username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
 	offset += (std::strlen(username) + 1);
     if (packet_get_size(packet) < offset+1) {
-        eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLAN_CREATEINVITEREPLY packet (mising status)", conn_get_socket(c));
+        eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad CLANMEMBER_RANKUPDATE_REQ packet (mising status)", conn_get_socket(c));
         return -1;
     }
 	status = *((char *) packet_get_data_const(packet, offset, 1));
