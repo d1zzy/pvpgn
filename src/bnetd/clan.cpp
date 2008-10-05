@@ -81,7 +81,7 @@ extern int clan_send_message_to_online_members(t_clan * clan, t_message_type typ
     t_elem * curr;
     t_clanmember * dest_member;
     t_connection * dest_conn;
-    bool heard;
+    bool heard = false;
 
     if (!clan) {
         eventlog(eventlog_level_error, __FUNCTION__, "got NULL clan");
