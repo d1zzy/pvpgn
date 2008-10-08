@@ -672,7 +672,7 @@ extern void channel_message_send(t_channel const * channel, t_message_type type,
 	if (type==message_type_talk || type==message_type_emote)
 	{
 	    if (!((account_is_operator_or_admin(acc,channel_get_name(channel))) ||
-		 (channel_conn_has_tmpVOICE(channel,me)) || (account_get_auth_voice(acc,channel_get_name(channel)) == 1) ))
+		 (channel_conn_has_tmpVOICE(channel,me)) || (account_get_auth_voice(acc,channel_get_name(channel)) == 1)))
 	    {
 		message_send_text(me,message_type_error,me,"This channel is moderated");
 	        return;
