@@ -36,7 +36,15 @@ PvPGN Version History:
   -- fixed possible server crash on many ill-formated packets
   
 [SQL]
-  -- fixed MySQL reconnection issues for MySQL >= 5.0.19  
+  -- fixed MySQL reconnection issues for MySQL >= 5.0.19
+
+[IRC/WOL]
+  -- fixed bug when client does not got proper information
+     when account is already in use
+
+[MISC]
+  -- fixed bug when Voiced client was not possible to talk in
+     moderated channels
 
  
  ChangeLog for 1.8.3 (since 1.8.2)
