@@ -1096,6 +1096,7 @@ extern int packet_set_size(t_packet * packet, unsigned int size)
         return 0;
      case packet_class_wolgameres:
         /* PELISH: useless - there is no server packet for wolgameres */
+        packet->len = size;
         return 0;
     default:
 	eventlog(eventlog_level_error,__FUNCTION__,"packet has invalid class %d",(int)packet->pclass);
