@@ -586,16 +586,33 @@ extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const pa
         offset += 4; /* Just trying to get RNGD working */
 
     while (offset < packet_get_size(packet)) {
+        if (packet_get_size(packet) < offset+4) {
+            eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad WOL Gameres packet (missing tag)", conn_get_socket(c));
+            return -1;
+        }
         wgtag = (unsigned int) bn_int_nget(*((bn_int *) packet_get_data_const(packet, offset, 4)));
         offset += 4;
 
+        if (packet_get_size(packet) < offset+2) {
+            eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad WOL Gameres packet (missing datatype)", conn_get_socket(c));
+            return -1;
+        }
         datatype = (unsigned int) bn_short_nget(*((bn_short *) packet_get_data_const(packet, offset, 2)));
         offset += 2;
 
+        if (packet_get_size(packet) < offset+2) {
+            eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad WOL Gameres packet (missing datalen)", conn_get_socket(c));
+            return -1;
+        }
         datalen = (unsigned int) bn_short_nget(*((bn_short *) packet_get_data_const(packet, offset, 2)));
         offset += 2;
 
+        if (packet_get_size(packet) < offset+1) {
+            eventlog(eventlog_level_error,__FUNCTION__, "[%d] got bad WOL Gameres packet (missing data)", conn_get_socket(c));
+            return -1;
+        }
         data = packet_get_data_const(packet, offset, 1);
+
         type = wol_gameres_type_from_int(datatype);
 
         if (handle_wolgameres_tag(wgtag, type, datalen, data) != 0) {
@@ -618,7 +635,7 @@ extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const pa
                     snprintf (ch_data, sizeof(ch_data), "%u", wol_gameres_get_long_from_data(datalen, data));
                     break;
                 default:
-                    snprintf (ch_data, sizeof(ch_data), "unknown");
+                    snprintf (ch_data, sizeof(ch_data), "UNKNOWN");
                     break;
             }
             eventlog(eventlog_level_warn, __FUNCTION__, "[%d] got unknown WOL Gameres tag: %s, data type %u, data lent %u, data %s",conn_get_socket(c), wgtag_str, datatype, datalen, ch_data);
