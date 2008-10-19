@@ -305,7 +305,7 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 					unsigned int j;
 					t_hash       passhash;
 					t_account  * temp;
-					char         msgtemp[MAX_MESSAGE_LEN];
+					char         msgtemp[MAX_IRC_MESSAGE_LEN];
 					char       * username=(char *)conn_get_loggeduser(conn);
 
 					if (account_check_name(username)<0) {
