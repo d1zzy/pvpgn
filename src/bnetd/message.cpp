@@ -988,6 +988,14 @@ static int message_bnet_format(t_packet * packet, t_message_type type, t_connect
     if (text && text[0]=='\0')
         text = " "; /* empty messages crash some clients, just send whitespace */
 
+    if (text && (std::strlen(text) > MAX_MESSAGE_LEN)) {
+        /* PELISH: We are trying to support MAX_IRC_MESSAGE_LEN for IRC and also
+                   MAX_MESSAGE_LEN for bnet */
+        char * temp = (char *)text;
+        eventlog(eventlog_level_warn,__FUNCTION__,"line too long, truncation...");
+	    temp[MAX_MESSAGE_LEN] = '\0';
+    }
+
     packet_set_size(packet,sizeof(t_server_message));
     packet_set_type(packet,SERVER_MESSAGE);
     bn_int_set(&packet->u.server_message.player_ip,SERVER_MESSAGE_PLAYER_IP_DUMMY);

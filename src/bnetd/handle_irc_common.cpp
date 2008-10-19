@@ -178,13 +178,15 @@ static int handle_irc_common_line(t_connection * conn, char const * ircline)
 	 */
 	return -1;
     }
-	//amadeo: code was sent by some unknown fellow of pvpgn, prevents buffer-overflow for
-	// too long irc-lines
 
-    if (std::strlen(ircline)>254) {
+    //amadeo: code was sent by some unknown fellow of pvpgn, prevents buffer-overflow for
+    // too long irc-lines
+    //PELISH: According to RFC2812 we do truncation on 512 byte
+
+    if (std::strlen(ircline)>MAX_IRC_MESSAGE_LEN) {
         char * tmp = (char *)ircline;
-	eventlog(eventlog_level_warn,__FUNCTION__,"line to long, truncation...");
-	tmp[254]='\0';
+        eventlog(eventlog_level_warn,__FUNCTION__,"line too long, truncation...");
+        tmp[MAX_IRC_MESSAGE_LEN]='\0';
     }
 
     line = xstrdup(ircline);
