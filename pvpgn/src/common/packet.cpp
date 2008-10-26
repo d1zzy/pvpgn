@@ -1004,8 +1004,9 @@ extern unsigned int packet_get_size(t_packet const * packet)
             size = (unsigned int)bn_short_nget(packet->u.wolgameres.h.size);
             if (size == 0) /* RNGD sends size on rngd_size */
                 size = (unsigned int)bn_short_nget(packet->u.wolgameres.h.rngd_size);
-            if (size>MAX_WOL_GAMERES_PACKET_SIZE) {
-                eventlog(eventlog_level_error,__FUNCTION__,"packet has bad size %u",size);
+//            if (size>MAX_WOL_GAMERES_PACKET_SIZE) { /* PELISH: Fix for bug but also disable WOL gameres */
+            if (size>MAX_PACKET_SIZE) {
+               // eventlog(eventlog_level_error,__FUNCTION__,"packet has bad size %u",size);
                 return 0;
             }
         }
