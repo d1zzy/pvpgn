@@ -547,32 +547,34 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
          */
 
         LIST_TRAVERSE_CONST(channellist(),curr) {
-   	         t_channel const * channel = (const t_channel*)elem_get_data(curr);
-             char const * tempname;
+            t_channel const * channel = (const t_channel*)elem_get_data(curr);
+            char const * tempname;
 
-             tempname = irc_convert_channel(channel,conn);
+            tempname = irc_convert_channel(channel,conn);
 
-             if ((tag_check_wolv1(conn_get_clienttag(conn))) && (std::strlen(tempname) > MAX_WOLV1_CHANNELNAME_LEN))
-                 continue;
+            if ((tag_check_wolv1(conn_get_clienttag(conn))) && (std::strlen(tempname) > MAX_WOLV1_CHANNELNAME_LEN))
+                continue;
 
-             if (std::strstr(tempname,"_game") == NULL) { /* FIXME: Delete this if games are not in channels */
-                sprintf(temp,"%s %u ",tempname,channel_get_length(channel));
+            /* FIXME: Delete this if games are not in channels */
+            if ((channel_wol_get_game_type(channel) != 0))
+                continue;
 
-	        	if (channel_get_flags(channel) & channel_flags_permanent)
-                    std::strcat(temp,"1");  /* Official channel */
-                else
-                    std::strcat(temp,"0");  /* User channel */
+            sprintf(temp,"%s %u ",tempname,channel_get_length(channel));
 
-                if (tag_check_wolv1(conn_get_clienttag(conn)))
-                    std::strcat(temp,":");     /* WOLv1 ends by ":" */
-                else
-                    std::strcat(temp," 388");  /* WOLv2 ends by "388" */
+            if (channel_get_flags(channel) & channel_flags_permanent)
+                std::strcat(temp,"1");  /* Official channel */
+            else
+                std::strcat(temp,"0");  /* User channel */
 
-                if (std::strlen(temp)>MAX_IRC_MESSAGE_LEN)
-                    WARN0("LISTREPLY length exceeded");
+            if (tag_check_wolv1(conn_get_clienttag(conn)))
+                std::strcat(temp,":");     /* WOLv1 ends by ":" */
+            else
+                std::strcat(temp," 388");  /* WOLv2 ends by "388" */
 
-                irc_send(conn,RPL_CHANNEL,temp);
-             }
+            if (std::strlen(temp)>MAX_IRC_MESSAGE_LEN)
+                WARN0("LISTREPLY length exceeded");
+
+            irc_send(conn,RPL_CHANNEL,temp);
         }
     }
     /**
@@ -985,7 +987,7 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 			    if (channel!=old_channel) {
                     if (tag_check_wolv1(conn_get_clienttag(conn))) {
                         /* WOLv1 JOINGAME message */
-                        std::sprintf(_temp,"2 %u %u 1 1 %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel),
+                        std::sprintf(_temp,"%u %u %u 1 1 %u :%s", channel_get_min(channel), channel_get_max(channel), channel_wol_get_game_type(channel),
                                     channel_wol_get_game_tournament(channel), irc_convert_channel(channel,conn));
                     }
                     else {
@@ -996,7 +998,7 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
                         if (clan)
                             clanid = clan_get_clanid(clan);
 
-                        std::sprintf(_temp,"1 %u %u 1 %u %u %u :%s", channel_get_length(channel), channel_wol_get_game_type(channel),
+                        std::sprintf(_temp,"%u %u %u 1 %u %u %u :%s", channel_get_min(channel), channel_get_max(channel), channel_wol_get_game_type(channel),
                                      clanid, conn_get_addr(conn), channel_wol_get_game_tournament(channel), irc_convert_channel(channel,conn));
                     }
 
@@ -1075,6 +1077,7 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 					channel_set_userflags(conn);
 					channel_wol_set_game_owner(channel,conn_get_chatname(conn));
 					channel_wol_set_game_ownerip(channel,conn_get_addr(conn));
+					channel_set_min(channel,std::atoi(params[1]));
 					channel_set_max(channel,std::atoi(params[2]));
 				    /* HACK: Currently, this is the best way to set the channel game type... */
 					channel_wol_set_game_type(channel,std::atoi(params[3]));
@@ -1107,14 +1110,14 @@ static int _handle_gameopt_command(t_connection * conn, int numparams, char ** p
     char temp[MAX_IRC_MESSAGE_LEN];
 
     /**
-    *  Basically this has 2 modes, Game Owner Change and Game Joinee Change what the output
-    *  on this does is pretty much unknown, we just dump this to the client to deal with...
+    *  Basically this has 2 modes as like in PRIVMSG - whisper and talk. What is in
+    *  text is pretty much unknown, we just dump this to the client to deal with...
     *
-    *	Heres the output expected (from game owner):
+    *	Heres the output expected (when gameopt is channel talk):
     *	user!WWOL@hostname GAMEOPT #game_channel_name :gameOptions
     *
-    *	Heres the output expected (from game joinee):
-    *	user!WWOL@hostname GAMEOPT game_owner_name :gameOptions
+    *	Heres the output expected (when gameopt is whispered):
+    *	user!WWOL@hostname GAMEOPT sender_nick_name :gameOptions
     */
 
     if ((numparams>=1)&&(params[0])&&(text)) {
@@ -1123,53 +1126,37 @@ static int _handle_gameopt_command(t_connection * conn, int numparams, char ** p
         t_connection * user;
         t_channel * channel;
 
-        if (tag_check_wolv1(conn_get_clienttag(conn))) {
-            /* we only send text to another client */
+        e = irc_get_listelems(params[0]);
+        /* FIXME: support wildcards! */
 
-            channel = conn_get_channel(conn);
-
-            for (user = channel_get_first(channel);user;user = channel_get_next()) {
-                char const * name = conn_get_chatname(user);
-                if (std::strcmp(conn_get_chatname(conn),name) != 0) {
-                    snprintf(temp, sizeof(temp), ":%s", text);
-                    message_send_text(user,message_wol_gameopt_join,conn,temp);
-                }
-            }
-        }
-        else {
-            e = irc_get_listelems(params[0]);
-            /* FIXME: support wildcards! */
-
-            for (i=0;((e)&&(e[i]));i++) {
-                if (e[i][0]=='#') {
-                    /* game owner change */
-                    if ((channel = channellist_find_channel_by_name(irc_convert_ircname(params[0]),NULL,NULL))) {
-                        snprintf(temp, sizeof(temp), ":%s", text);
-                        channel_message_send(channel,message_wol_gameopt_owner,conn,temp);
-                    }
-                    else {
-                        snprintf(temp,sizeof(temp),"%s :No such channel", params[0]);
-                        irc_send(conn,ERR_NOSUCHCHANNEL,temp);
-                    }
+        for (i=0;((e)&&(e[i]));i++) {
+            if (e[i][0]=='#') {
+                /* channel gameopt */
+                if ((channel = channellist_find_channel_by_name(irc_convert_ircname(params[0]),NULL,NULL))) {
+                    channel_message_send(channel,message_type_gameopt_talk,conn,text);
                 }
                 else {
-                    /* user change */
-                    if ((user = connlist_find_connection_by_accountname(e[i]))) {
-                        snprintf(temp, sizeof(temp), ":%s", text);
-                        message_send_text(user,message_wol_gameopt_join,conn,temp);
-                    }
-                    else {
-                        irc_send(conn,ERR_NOSUCHNICK,":No such user");
-                    }
+                    snprintf(temp,sizeof(temp),"%s :No such channel", params[0]);
+                    irc_send(conn,ERR_NOSUCHCHANNEL,temp);
                 }
             }
-            if (e)
-                irc_unget_listelems(e);
+            else {
+                /* user gameopt */
+                if ((user = connlist_find_connection_by_accountname(e[i]))) {
+                    message_send_text(user,message_type_gameopt_whisper,conn,text);
+                }
+                else {
+                    snprintf(temp,sizeof(temp),"%s :No such nick", e[i]);
+                    irc_send(conn,ERR_NOSUCHNICK,temp);
+                }
+            }
         }
-	}
+        if (e)
+           irc_unget_listelems(e);
+    }
     else
         irc_send(conn,ERR_NEEDMOREPARAMS,"GAMEOPT :Not enough parameters");
-	return 0;
+    return 0;
 }
 
 static int _handle_finduser_command(t_connection * conn, int numparams, char ** params, char * text)

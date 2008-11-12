@@ -97,6 +97,7 @@ typedef struct channel
     /**
     *  Westwood Online Extensions
     */
+    int               minmembers;
     char *            gameOwner;
     int               gameOwnerIP;
 
@@ -176,6 +177,9 @@ extern int channellist_get_length(void);
 /**
 *  Westwood Online Extensions
 */
+extern int channel_get_min(t_channel const * channel);
+extern int channel_set_min(t_channel * channel, int minmembers);
+
 extern char const * channel_wol_get_game_owner(t_channel const * channel);
 extern int channel_wol_set_game_owner(t_channel * channel, char const * gameOwner);
 
