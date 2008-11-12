@@ -706,7 +706,7 @@ extern void channel_message_send(t_channel const * channel, t_message_type type,
     tname = conn_get_chatname(me);
     for (c=channel_get_first(channel); c; c=channel_get_next())
     {
-	if (c==me && (type==message_type_talk || type==message_wol_gameopt_owner))
+	if (c==me && (type==message_type_talk || type==message_type_gameopt_talk))
 	    continue; /* ignore ourself */
 	if (c==me && (!conn_is_irc_variant(c)) && type==message_type_part)
             continue; /* only on irc we need to inform ourself about leaving the channel */
@@ -1597,6 +1597,28 @@ extern int channel_set_userflags(t_connection * c)
 /**
 *  Westwood Online Extensions
 */
+extern int channel_get_min(t_channel const * channel)
+{
+    if (!channel) {
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
+        return 0;
+    }
+
+    return channel->minmembers;
+}
+
+extern int channel_set_min(t_channel * channel, int minmembers)
+{
+    if (!channel) {
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel");
+        return 0;
+    }
+
+    if (minmembers)
+        channel->minmembers = minmembers;
+    return 1;
+}
+
 extern char const * channel_wol_get_game_owner(t_channel const * channel)
 {
 	if (!channel)

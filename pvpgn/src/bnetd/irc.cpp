@@ -738,18 +738,10 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         char temp_[MAX_IRC_MESSAGE_LEN];
         std::sprintf(temp,":%s",text);
         if (conn_get_wol(dst) == 1) {
-           if ((tag_check_wolv2(conn_get_clienttag(dst))) && (type == message_type_broadcast)) {
-               /* Pelish: WOLv2 have special announce message code */
-               std::sprintf(temp,":- %s",text);
-               std::sprintf(temp_,"%u",RPL_ANNOUNCE,NULL);
-               msg = irc_message_preformat(NULL,temp_,NULL,temp);
-           }
-           else {
                if ((type == message_type_info) || (type == message_type_error))
                    msg = irc_message_preformat(NULL,"PAGE",NULL,temp);
                else
                    msg = irc_message_preformat(NULL,"NOTICE",NULL,temp);
-           }
         }
         else
             msg = irc_message_preformat(NULL,"NOTICE",NULL,temp);
@@ -876,19 +868,34 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
         msg = irc_message_preformat(&from,"JOINGAME","\r",text);
         conn_unget_chatname(me,from.nick);
         break;
-    case message_wol_gameopt_owner:
-        from.nick = conn_get_chatname(me);
-        from.user = ctag;
-        from.host = addr_num_to_ip_str(conn_get_addr(me));
-        msg = irc_message_preformat(&from,"GAMEOPT",irc_convert_channel(conn_get_channel(me),dst),text);
-        conn_unget_chatname(me,from.nick);
-        break;
-    case message_wol_gameopt_join:
-        from.nick = conn_get_chatname(me);
-        from.user = ctag;
-        from.host = addr_num_to_ip_str(conn_get_addr(me));
-        msg = irc_message_preformat(&from,"GAMEOPT",channel_wol_get_game_owner(conn_get_channel(me)),text);
-        conn_unget_chatname(me,from.nick);
+    case message_type_gameopt_talk:
+    case message_type_gameopt_whisper:
+        {
+            char const * dest;
+            char temp[MAX_IRC_MESSAGE_LEN];
+
+            if (me) {
+                from.nick = conn_get_chatname(me);
+                from.host = addr_num_to_ip_str(conn_get_addr(me));
+            }
+            else {
+                from.nick = server_get_hostname();
+                from.host = server_get_hostname();
+            }
+            from.user = ctag;
+
+            if (type == message_type_gameopt_talk)
+                dest = irc_convert_channel(conn_get_channel(me),dst); /* FIXME: support more channels and choose right one! */
+            else
+                dest = ""; /* will be replaced with username in postformat */
+
+            std::sprintf(temp,":%s",text);
+
+            msg = irc_message_preformat(&from,"GAMEOPT",dest,temp);
+
+            if (me)
+                conn_unget_chatname(me,from.nick);
+        }
         break;
     case message_wol_start_game:
         from.nick = conn_get_chatname(me);
@@ -900,10 +907,10 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
     case message_wol_advertr:
         msg = irc_message_preformat(NULL,"ADVERTR","\r",text);
         break;
-   case message_wol_chanchk:
+    case message_wol_chanchk:
         msg = irc_message_preformat(NULL,"CHANCHK","\r",text);
         break;
-   case message_wol_userip:
+    case message_wol_userip:
         from.nick = conn_get_chatname(me);
         from.user = ctag;
         from.host = addr_num_to_ip_str(conn_get_addr(me));
@@ -948,7 +955,6 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
 	return -1;
     }
 
-    /* FIXME: Add per user flags (@(op) and +(voice))*/
     if (!(channel_get_flags(channel) & channel_flags_thevoid))
     for (m = channel_get_first(channel);m;m = channel_get_next()) {
 	char const * name = conn_get_chatname(m);

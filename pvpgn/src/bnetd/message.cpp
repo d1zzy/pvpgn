@@ -117,10 +117,10 @@ static char const * message_type_get_str(t_message_type type)
         return "quit";
     case message_wol_joingame:
         return "wol_joingame";
-    case message_wol_gameopt_owner:
-        return "wol_gameopt_owner";
-    case message_wol_gameopt_join:
-        return "wol_gameopt_join";
+    case message_type_gameopt_talk:
+        return "gameopt_talk";
+    case message_type_gameopt_whisper:
+        return "gameopt_whisper";
     case message_wol_start_game:
         return "wol_start_game";
     case message_wol_advertr:

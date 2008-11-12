@@ -308,7 +308,6 @@ extern int handle_irc_common_packet(t_connection * conn, t_packet const * const 
         (conn_get_class(conn) != conn_class_irc) &&
         (conn_get_class(conn) != conn_class_wol) &&
         (conn_get_class(conn) != conn_class_wserv) &&
-        (conn_get_class(conn) != conn_class_wgameres) &&
         (conn_get_class(conn) != conn_class_wladder)) {
 	eventlog(eventlog_level_error,__FUNCTION__,"FIXME: handle_irc_packet without any reason (conn->class != conn_class_irc/ircinit/wol/wserv...)");
 	return -1;
