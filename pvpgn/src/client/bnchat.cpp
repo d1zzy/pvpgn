@@ -96,7 +96,8 @@ typedef enum {
   mode_gamepass,
   mode_gamewait,
   mode_gamestop,
-  mode_claninvite
+  mode_claninvite,
+  mode_clancreateinvite
 } t_mode;
 
 typedef struct _client_state
@@ -1454,6 +1455,47 @@ extern int main(int argc, char * argv[])
 
 			}
 
+		    case mode_clancreateinvite:
+
+		        std::printf("\n");
+			client.munged = 1;
+
+			if ((client.text[0]!='\0') && strcasecmp(client.text,"yes") && strcasecmp(client.text,"no"))
+			{
+			    std::printf("Do you want to accept invitation (yes/no) ? [yes] ");
+			    break;
+			}
+
+			if (!(packet = packet_create(packet_class_bnet)))
+			{
+			    std::printf("Packet creation failed.\n");
+			}
+			else
+			{
+			    char result;
+
+			    packet_set_size(packet,sizeof(t_client_clan_createinvitereply));
+			    packet_set_type(packet,CLIENT_CLAN_CREATEINVITEREPLY);
+			    bn_int_set(&packet->u.client_clan_createinvitereply.count,user.count);
+			    bn_int_set(&packet->u.client_clan_createinvitereply.clantag,user.clantag);
+			    packet_append_string(packet,user.inviter);
+
+			    if (!strcasecmp(client.text,"no"))
+			        result = CLAN_RESPONSE_DECLINED;
+			    else
+			        result = CLAN_RESPONSE_ACCEPT;
+
+			    packet_append_data(packet,&result,1);
+
+			    client_blocksend_packet(client.sd,packet);
+			    packet_del_ref(packet);
+
+			    if (user.inviter)
+			        xfree((void *)user.inviter);
+			    user.inviter = NULL;
+
+			}
+
 
 			client.mode = mode_chat;
 		        break;
@@ -1789,6 +1831,58 @@ extern int main(int argc, char * argv[])
 			{
 			    char result = bn_byte_get(rpacket->u.server_clan_invitereply.result);
 			    std::printf("Recieved result: %i\n",result);
+			    break;
+			}
+
+			case SERVER_CLAN_CREATEINVITEREQ:
+			if (packet_get_size(rpacket)<sizeof(t_server_clan_createinvitereq))
+			{
+		            munge(&client);
+			    std::printf("Got bad SERVER_CLAN_CREATEINVITEREQ packet (expected %lu bytes, got %u)\n",sizeof(t_server_clan_createinvitereq),packet_get_size(rpacket));
+			    break;
+			}
+
+			{
+			    char const * clan;
+			    char const * inviter;
+				char invited_count;
+			    int offset;
+
+			    offset = sizeof(t_server_clan_createinvitereq);
+			    if (!(clan = packet_get_str_const(rpacket,offset,MAX_CLANNAME_LEN)))
+			    {
+				munge(&client);
+				std::printf("Got SERVER_CLAN_CREATEINVITEREQ with bad or missing clanname\n");
+				break;
+			    }
+			    offset+=std::strlen(clan)+1;
+			    if (!(inviter = packet_get_str_const(rpacket,offset,MAX_USERNAME_LEN)))
+			    {
+				munge(&client);
+				std::printf("Got SERVER_CLAN_CREATEINVITEREQ with bad or missing inviter\n");
+				break;
+			    }
+				offset+=std::strlen(inviter)+1;
+				if (packet_get_size(rpacket) < offset+4)
+				{
+				munge(&client);
+				std::printf("Got SERVER_CLAN_CREATEINVITEREQ with missing invited count\n");
+				break;
+				}
+				invited_count = *((char *) packet_get_data_const(rpacket, offset, 1));
+				offset++;
+
+			    user.count   = bn_int_get(rpacket->u.server_clan_invitereq.count);
+			    user.clantag = bn_int_get(rpacket->u.server_clan_invitereq.clantag);
+			    if (user.inviter)
+			    	xfree((void *)user.inviter);
+			    user.inviter = xstrdup(inviter);
+
+			    munge(&client);
+			    std::printf("%s invited you to Clan %s along with %i other players\n",inviter,clan,invited_count);
+			    std::printf("Do you want to accept invitation (yes/no) ? [yes] ");
+
+			    client.mode = mode_clancreateinvite;
 			    break;
 			}
 
