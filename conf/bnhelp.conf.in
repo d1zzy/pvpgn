@@ -1,0 +1,204 @@
+##############################################################################
+# bnhelp  -  This Help File is used for describing the commands to the user  #
+#----------------------------------------------------------------------------#
+# Entries are separated by a percent sign (%) at the beginning of the line.  #
+# The commands that correspond with the entry should follow the % on the     #
+# same line.                                                                 #
+#                                                                            #
+# You can enter comments by starting a line with #.  Comments extend to the  #
+# end of the line.                                                           #
+#                                                                            #
+%whois whereis where
+whois <player> - looks up some basic information on a user, including their account number and their current location
+%msg whisper m w
+/msg, /whisper, /m, /w <player> <message> - sends a private message to a user online regardless of the channel they are in
+%ignore squelch
+/ignore, /squelch <player> - ignores any future messages from that user effectively muting that user to you
+%unignore unsquelch
+/unignore /unsquelch <player> - unignores a user so u can listen to him again
+%away
+/away [<message>] - displays a message that you are away from your keyboard whenever someone whispers to you or does a /whois command on you
+%dnd
+/dnd [<message>] - prevents ALL whispers from displaying to your screen
+%who
+/who <channel> - displays a list of all users in the given channel
+%stats astat
+/stats /astat [<player>] [<gametag>] - displays a player's game record
+%status users
+/status, /users - displays the number of users currently on this server
+%time
+/time - displays the current server time
+%channel join
+/channel /join <channel> - switches to a channel without having to use the channel join screen
+%rejoin
+/rejoin - join the channel you are already in
+%me
+/me <message> - displays emotion text, as in 'tN is rolling on the floor laughing'
+%kick
+/kick <player> - kicks a user out of the channel
+%ban
+/ban <player> - kicks a user out of the channel and prevents them from returning until the current operator steps down or leaves the channel
+%unban
+/unban <player> - allows a banned user to return to the channel
+%whoami
+/whoami - looks up some basic information on yourself, including your account number and your current location
+%uptime
+/uptime - show the amount of time the server has been running
+%beep
+/beep - enable audible notifications
+%nobeep
+/nobeep - disable audible notifications
+%version
+/version - shows the version of the server
+%lusers
+/lusers - shows list of banned players in this channel
+%games
+/games [<gametag>] - displays current game list
+%channels chs
+/channels /chs [all] - displays current channel list
+%connections con
+/connections /con - displays current connections
+%finger
+/finger [<player>] - displays information about player
+%admins
+/admins - shows all currently logged in administrators
+%reply r
+/reply /r <message> - reply to the last person that whispered to you
+%announce ann
+/announce /ann <message> - announces a message in all channels
+%realmann
+/realmann <message> - makes an announcement in the real u are currenlty in
+%copyright warranty license
+/copyright /warranty /license - shows the legal information for bnetd
+%news
+/news - show some system-specific news
+%logout quit exit
+/logout /quit /exit - closes your connection to the server
+%kill
+/kill [<player>] [min] - close a player's connection to the server and ban players IP for min minutes
+%killsession
+/killsession [<sessionid>] [min] - close a connection to the server and ban sesion's IP for min minutes
+%watch
+/watch <player> - sends notification when a player logs out or joins a game
+%unwatch
+/unwatch <player> - stops sending notification about a player
+%watchall
+/watchall - sends notification when any player logs in or out
+%unwatchall
+/unwatchall - stops sending notification about all players
+%gameinfo
+/gameinfo [<gamename>] - prints information about a game
+%ladderactivate
+/ladderactivate - copy current ladder stats to active ladder stats
+%ladderinfo
+/ladderinfo <rank> [<gameid>] - display ladder info for given rank
+%timer
+/timer [<duration>] [<message>] - send notification after a period of time
+%netinfo
+/netinfo [<player>] - display a player's IP and port information
+%addacct
+/addacct <player> <password> - create a new player account
+%chpass
+/chpass [<player>] <password> - change a player's password
+%quota
+/quota - displays the channel quota
+%shutdown
+/shutdown [<duration>] - starts the shutdown sequence or cancels if duration is zero
+%lockacct 
+/lockacct <player> - locks that users account
+%unlockacct 
+/unlockacct <player> - unlocks that users account
+%friends f
+/friends add <username> - add user to your friends list
+/friends del <username> - remove user from your friends list
+/friends promote <username> - promote user in your friends list
+/friends demote <username> - demote user in your friends list
+/friends list - list all users in your friends list
+/friends msg <msgtext> - whispers to all your online friends
+%mail
+/mail <command> [<options>] - mail management commands
+    Syntax:
+    /mail send <receiver> <message>
+    /mail read [<index>]
+    /mail delete {all|<index>}
+%flag
+/flag <number> - debug tool for icon flags
+%tag
+/tag <gamename> - debug tool for client tags
+%help
+/help [<command>] - does this
+%ipban
+/ipban [<command>] [option] [time] - ban management commands
+    Syntax:
+    /ipban [l[ist]] - shows banned IPs
+    /ipban c[heck] <IP> - check is IP banned
+    /ipban d[el] <IP|index> - deletes ban for IP, or rule number index
+    /ipban a[dd] <IP> [time] - ban specified IP for time minutes (time = 0 - permanently ban)
+    /ipban h[elp] - show help screen
+%set
+/set <account> <key> [value] - set an attribute in a player profile - if no value given returns current value
+   key is like BNET\acct\lastlogin_owner
+%motd
+/motd - display the motd
+%tos
+/tos - shows terms of service once more
+%admin
+/admin - +username to make user a admin, or -username to remove admin status of a user
+%rank_all_accounts
+/rank_all_accounts - brute force adds all accounts to war3 ladder
+%rehash
+/rehash - forces reload of bnetd.conf
+%clan
+/clan create <clantag> <clanname>
+Create a new clan
+/clan msg <message>
+Whispers a message to all your fellow clan members
+/clan public (alias: pub)
+Opens the clan channel up to the public so that anyone may enter
+/clan private  (alias: priv)
+Closes the clan channel such that only members of the clan may enter
+/clan motd <message>
+Update the clan message of the day to message
+/clan invite <username>
+Invite <username> to your clan
+/clan disband
+Disband your clan
+%ping p latency
+/ping, /p, /latency - returns your latency to the server
+%command_groups cg
+/command_groups, /cg <command) <user> [<groups>] - adds, deletes, or lists command groups for user
+    Syntax:
+	/cg list <user> - shows command groups avialiable to user
+	/cg add <user> <group(s)> - adds group(s) to users command groups
+	/cg del <user> <group(s)> - deletes groups from users command groups
+	/cg help - show help screen
+%admin
+/admin +<username> - promote <username> to Server Admin
+/admin -<username> - demote <username> from Server Admin
+%operator
+/operator +<username> - promote <username> to Server Operator
+/operator -<username> - demote <username> from Server Operator
+%aop
+/aop <username> - make user Channel Admin
+%op
+/op <username> - make user Channel Operator
+%deop
+/deop - take away channel Admin/Operator privileges
+%tmpop
+/tmpop <username> - make user a temporary Channel Operator
+%vop
+/vop <username> - add user to VOP list
+%voice
+/voice <username> - give temporary voice to user
+%devoice
+/devoice <username> - remove user from VOP list and take away temporary voice
+%topic
+/topic [ [channel name] "topic " ] - used to get/set a channels topic
+%moderate
+/moderate - used to get/set channel moderated status
+%clearstats
+/clearstats - used to clear game statistics of a given user/clienttag
+Syntax: /clearstats <user> <clienttag>
+  <clienttag> can be one of DSHR,DRTL,SSHR,STAR,SEXP,W2BNE,WAR3,W3XP,ALL
+#                                                                            #
+##############################################################################
