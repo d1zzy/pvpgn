@@ -274,7 +274,7 @@ BigInt::operator- (const BigInt& right) const
     rhs+= carry;
     if (lhs<rhs)
     {
-      diff = (bigint_extended_carry+lhs) - rhs;
+      diff = (bigint_extended_carry + lhs) - rhs;
       carry = 1;
     }
     else
@@ -436,7 +436,7 @@ BigInt::operator/ (const BigInt& right) const
 BigInt
 BigInt::operator% (const BigInt& right) const
 {
-   int i, j, max_segment_count;
+  int i, j;
   BigInt remainder;
   BigInt m;
   BigInt q;
@@ -542,7 +542,7 @@ BigInt::random(int size)
     result.segment[i]=0;
     for (j=0; j<sizeof(bigint_base); j+=sizeof(unsigned int)){
       r = rand();
-      result.segment[i]<<(sizeof(unsigned int));
+      result.segment[i]<<=(sizeof(unsigned int));
       result.segment[i] = result.segment[i]+r;
     }
   }
@@ -600,7 +600,7 @@ BigInt::getData(int byteCount, int blockSize, bool bigEndian) const
 void 
 BigInt::getData(unsigned char* out, int byteCount, int blockSize, bool bigEndian) const
 {
-  int i, j, s;
+  int i, j;
   unsigned char* pos;
 
   std::memset(out,0,byteCount);
