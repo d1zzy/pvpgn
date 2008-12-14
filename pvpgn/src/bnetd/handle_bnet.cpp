@@ -4747,6 +4747,8 @@ static int _client_clanmember_rankupdatereq(t_connection * c, t_packet const *co
 	char status;
 	t_clan *clan;
 	t_clanmember *dest_member;
+	t_clanmember *member;
+	t_account *account;
 
 	packet_set_size(rpacket, sizeof(t_server_clanmember_rankupdate_reply));
 	packet_set_type(rpacket, SERVER_CLANMEMBER_RANKUPDATE_REPLY);
@@ -4760,18 +4762,28 @@ static int _client_clanmember_rankupdatereq(t_connection * c, t_packet const *co
     }
 	status = *((char *) packet_get_data_const(packet, offset, 1));
 
-	clan = account_get_clan(conn_get_account(c));
-	dest_member = clan_find_member_by_name(clan, username);
-	if (clanmember_set_status(dest_member, status) == 0)
-	{
-	    bn_byte_set(&rpacket->u.server_clanmember_rankupdate_reply.result,
-	                SERVER_CLANMEMBER_RANKUPDATE_SUCCESS);
-	    clanmember_on_change_status(dest_member);
+    account = (conn_get_account(c));
+
+    if ((clan = account_get_clan(account)) && (member = clan_find_member(clan,account))
+      && (dest_member = clan_find_member_by_name(clan, username)) && (member != dest_member)) {
+        if ((status < CLAN_PEON) || (status > CLAN_SHAMAN)) {
+            /* PELISH: CLAN_NEW can not be promoted to anything 
+             * and also noone can be promoted to CLAN_CHIEFTAIN */
+            DEBUG1("trying to change to bad status %u", status);
+	        bn_byte_set(&rpacket->u.server_clanmember_rankupdate_reply.result, SERVER_CLANMEMBER_RANKUPDATE_FAILED);
+        }
+        else if ((((clanmember_get_status(member) == CLAN_SHAMAN) && (status < CLAN_SHAMAN) && (clanmember_get_status(dest_member) < CLAN_SHAMAN)) ||
+          (clanmember_get_status(member) == CLAN_CHIEFTAIN)) && 
+           (clanmember_set_status(dest_member, status) == 0)) {
+            bn_byte_set(&rpacket->u.server_clanmember_rankupdate_reply.result, SERVER_CLANMEMBER_RANKUPDATE_SUCCESS);
+            clanmember_on_change_status(dest_member);
+        }
+        else {
+	        bn_byte_set(&rpacket->u.server_clanmember_rankupdate_reply.result, SERVER_CLANMEMBER_RANKUPDATE_FAILED);
+        }
 	}
-	else
-	{
-	    bn_byte_set(&rpacket->u.server_clanmember_rankupdate_reply.result,
-	                SERVER_CLANMEMBER_RANKUPDATE_FAILED);
+	else {
+	    bn_byte_set(&rpacket->u.server_clanmember_rankupdate_reply.result, SERVER_CLANMEMBER_RANKUPDATE_FAILED);
 	}
 	conn_push_outqueue(c, rpacket);
 	packet_del_ref(rpacket);
