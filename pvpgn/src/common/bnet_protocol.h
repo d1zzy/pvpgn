@@ -2662,6 +2662,7 @@ typedef struct
 #define CLIENT_GAMELISTREQ_PGL       0x000e
 #define CLIENT_GAMELISTREQ_TOPVBOT   0x000f
 #define CLIENT_GAMELISTREQ_DIABLO    0x0409 /* FIXME: this should be the langid */
+#define CLIENT_GAMELISTREQ_LOADED    0x0a00
 /* FIXME: Diablo reports differently than it is listed in GAMELIST */
 #define CLIENT_GAMETYPE_DIABLO_0     0x00000000 /* Level 1 Char */
 #define CLIENT_GAMETYPE_DIABLO_1     0x00000001 /* Level 2 Char */
@@ -2757,6 +2758,7 @@ typedef struct
 #define SERVER_GAMELISTREPLY_GAME_SSTATUS_FULL		0x3 /* game full */
 #define SERVER_GAMELISTREPLY_GAME_SSTATUS_STARTED	0x4 /* game started */
 #define SERVER_GAMELISTREPLY_GAME_SSTATUS_NOSPAWNCDKEY	0x5 /* trying to use a spawn install join invalid cdkey creator game */
+#define SERVER_GAMELISTREPLY_GAME_SSTATUS_LOADED        0x0a00 /* Loaded game */
 
 typedef struct
 {

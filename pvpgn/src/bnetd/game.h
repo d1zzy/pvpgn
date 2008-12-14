@@ -73,6 +73,7 @@ typedef enum
     game_status_started,
     game_status_full,
     game_status_open,
+    game_status_loaded,
     game_status_done
 } t_game_status;
 

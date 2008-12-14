@@ -157,19 +157,22 @@ extern char const * game_status_get_str(t_game_status status)
     switch (status)
     {
     case game_status_started:
-	return "started";
+        return "started";
 
     case game_status_full:
-	return "full";
+        return "full";
 
     case game_status_open:
-	return "open";
+        return "open";
 
     case game_status_done:
-	return "done";
+        return "done";
+
+    case game_status_loaded:
+        return "loaded";
 
     default:
-	return "UNKNOWN";
+        return "UNKNOWN";
     }
 }
 
@@ -1372,7 +1375,7 @@ extern void game_set_status(t_game * game, t_game_status status)
 	// [quetzal] 20020829 - this should prevent invalid status changes
 	// its like started game cant become open and so on
 	if (game->status == game_status_started &&
-		(status == game_status_open || status == game_status_full)) {
+		(status == game_status_open || status == game_status_full || status == game_status_loaded)) {
 		eventlog(eventlog_level_error, "game_set_status",
 		"attempting to set status '%s' (%d) to started game", game_status_get_str(status), status);
 		return;
