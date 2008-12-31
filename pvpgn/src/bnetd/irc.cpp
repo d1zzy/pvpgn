@@ -54,6 +54,7 @@
 #include "topic.h"
 #include "clan.h"
 #include "command.h"
+#include "anongame_wol.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -973,6 +974,17 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
 	if ((std::strlen(temp)+((!first)?(1):(0))+std::strlen(flg)+std::strlen(name)+1)<=sizeof(temp)) {
 	    if (!first) std::strcat(temp," ");
             if (conn_get_wol(c) == 1) {
+                char _temp[MAX_IRC_MESSAGE_LEN];
+                if ((first) && ((std::strcmp(ircname, "#Lob_38_0") == 0) ||
+                    (std::strcmp(ircname, "#Lob_39_0") == 0) ||
+                    (std::strcmp(ircname, "#Lob_40_0") == 0))) {
+
+                    std::sprintf(_temp,"@matchbot,0,0 ");
+                    std::strcat(temp,_temp);
+                    first = 0;
+
+                }               
+
                 if ((channel_wol_get_game_owner(channel) != NULL) && (std::strcmp(channel_wol_get_game_owner(channel),name) == 0)) {
                     /* PELISH: Only game owners will have OP flag (this prevent official OP to be normal player) */
                     std::strcat(temp,"@");
@@ -984,7 +996,6 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
                 }
                 if (tag_check_wolv2(conn_get_clienttag(c))) {
                     /* BATTLECLAN Support */
-                    char _temp[MAX_IRC_MESSAGE_LEN];
                     std::memset(_temp,0,sizeof(_temp));
                     t_clan * clan = account_get_clan(conn_get_account(m));
                     unsigned int clanid = 0;

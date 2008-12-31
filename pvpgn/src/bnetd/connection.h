@@ -31,6 +31,7 @@
 # include "character.h"
 # include "versioncheck.h"
 # include "anongame.h"
+# include "anongame_wol.h"
 # include "realm.h"
 # include "common/queue.h"
 # include "common/tag.h"
@@ -46,6 +47,7 @@
 # include "character.h"
 # include "versioncheck.h"
 # include "anongame.h"
+# include "anongame_wol.h"
 # include "realm.h"
 # include "common/queue.h"
 # include "common/tag.h"
@@ -204,6 +206,7 @@ typedef struct connection
 	    int findme;                     /* Allow others to find me? */
 	    int pageme;                     /* Allow others to page me? */
 	    char const * apgar;			    /* WOL User Password (encrypted) */
+	    t_anongame_wol_player * anongame_player;
 	} wol;
 	int			cr_time;
 	/* Pass fail count for bruteforce protection */
@@ -240,7 +243,8 @@ t_connection;
 #include "versioncheck.h"
 #include "timer.h"
 #include "anongame.h"
-# include "realm.h"
+#include "anongame_wol.h"
+#include "realm.h"
 #include "message.h"
 #include "common/tag.h"
 #include "common/fdwatch.h"
@@ -460,6 +464,8 @@ extern void conn_wol_set_findme(t_connection * c, int findme);
 extern int conn_wol_get_findme(t_connection * c);
 extern void conn_wol_set_pageme(t_connection * c, int pageme);
 extern int conn_wol_get_pageme(t_connection * c);
+extern void conn_wol_set_anongame_player(t_connection * c, t_anongame_wol_player * anongame_player);
+extern t_anongame_wol_player * conn_wol_get_anongame_player(t_connection * c);
 
 }
 

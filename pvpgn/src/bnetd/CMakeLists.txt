@@ -21,7 +21,7 @@ set(BNETD_SOURCES
 	handle_irc_common.cpp handle_irc_common.h handle_irc.cpp handle_irc.h 
 	handlers.h handle_telnet.cpp handle_telnet.h handle_udp.cpp 
 	handle_udp.h handle_wol.cpp handle_wol.h handle_wol_gameres.cpp
-    handle_wol_gameres.h helpfile.cpp helpfile.h 
+    handle_wol_gameres.h helpfile.cpp helpfile.h
 	ipban.cpp ipban.h irc.cpp irc.h ladder_calc.cpp ladder_calc.h ladder.cpp 
 	ladder.h mail.cpp mail.h main.cpp message.cpp message.h news.cpp news.h
 	output.cpp output.h prefs.cpp prefs.h quota.h realm.cpp realm.h 
@@ -33,7 +33,8 @@ set(BNETD_SOURCES
 	team.cpp team.h tick.cpp tick.h timer.cpp timer.h topic.cpp topic.h 
 	tournament.cpp tournament.h tracker.cpp tracker.h udptest_send.cpp 
 	udptest_send.h versioncheck.cpp versioncheck.h watch.cpp watch.h
-  handle_wserv.cpp handle_wserv.h ../win32/winmain.cpp ../win32/winmain.h
+	anongame_wol.cpp anongame_wol.h handle_wserv.cpp handle_wserv.h
+	../win32/winmain.cpp ../win32/winmain.h
 	)
 	
 set(BNETD_CONSOLE_RESOURCES
