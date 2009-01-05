@@ -1214,11 +1214,9 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
 	            }
    		        snprintf(_temp_a, sizeof(_temp_a), "%s %s ", e[i], addr);
    		        std::strcat(temp,_temp_a);
+   		        std::strcat(temp,":");
             }
         }
-
-        if (tag_check_wolv2(conn_get_clienttag(conn)))
-            std::strcat(temp,":");
 
         std::strcat(temp,"1337"); /* yes, ha ha funny, i just don't generate game numbers yet */
         std::strcat(temp," ");

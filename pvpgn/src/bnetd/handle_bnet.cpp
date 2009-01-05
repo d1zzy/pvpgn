@@ -3688,7 +3688,7 @@ static int _client_joingame(t_connection * c, t_packet const *const packet)
 	gamename = NULL;
 	return 0;		/* tmp: do not record any anongames as yet */
     } else {
-	if (!(game = gamelist_find_game(gamename, conn_get_clienttag(c), game_type_all))) {
+	if (!(game = gamelist_find_game_available(gamename, conn_get_clienttag(c), game_type_all))) {
 	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] unable to find game \"%s\" for user to join", conn_get_socket(c), gamename);
 	    return 0;
 	}
@@ -3944,20 +3944,27 @@ static int _client_startgame4(t_connection * c, t_packet const *const packet)
 	       0x00, 0x01, 0x02, 0x03, 0x10, 0x11, 0x12, 0x13, 0x80, 0x81, 0x82, 0x83 */
 
 	    t_game_type gtype;
+	    bool allow_create_custom = false;
+	    t_game *game;
 
 	    gtype = bngtype_to_gtype(conn_get_clienttag(c), bngtype);
 	    if ((gtype == game_type_ladder && account_get_auth_createladdergame(conn_get_account(c)) == 0) || (gtype != game_type_ladder && account_get_auth_createnormalgame(conn_get_account(c)) == 0))
-		eventlog(eventlog_level_info, __FUNCTION__, "[%d] game start for \"%s\" refused (no authority)", conn_get_socket(c), conn_get_username(c));
-	    else if (conn_set_game(c, gamename, gamepass, gameinfo, gtype, STARTVER_GW4) == 0) {
-		game_set_option(conn_get_game(c), bngoption_to_goption(conn_get_clienttag(c), gtype, option));
-		if (status & CLIENT_STARTGAME4_STATUS_PRIVATE)
-		    game_set_flag(conn_get_game(c), game_flag_private);
-		if (status & CLIENT_STARTGAME4_STATUS_FULL)
-		    game_set_status(conn_get_game(c), game_status_full);
-		if (bngtype & CLIENT_GAMELISTREQ_LOADED) /* PELISH: seems strange but it is really needed for loaded games */
-		    game_set_status(conn_get_game(c), game_status_loaded);
-		//FIXME: still need special handling for status disc-is-loss and replay
-	    }
+		    eventlog(eventlog_level_info, __FUNCTION__, "[%d] game start for \"%s\" refused (no authority)", conn_get_socket(c), conn_get_username(c));
+		else {
+		    //find is there any existing game with same name and allow the host to create game
+		    // with same name only when another game is already started or already done
+		    if ((!(game = gamelist_find_game_available(gamename, conn_get_clienttag(c), game_type_all))) &&
+                (conn_set_game(c, gamename, gamepass, gameinfo, gtype, STARTVER_GW4) == 0)) {
+		        game_set_option(conn_get_game(c), bngoption_to_goption(conn_get_clienttag(c), gtype, option));
+		        if (status & CLIENT_STARTGAME4_STATUS_PRIVATE)
+		            game_set_flag(conn_get_game(c), game_flag_private);
+		        if (status & CLIENT_STARTGAME4_STATUS_FULL)
+		            game_set_status(conn_get_game(c), game_status_full);
+		        if (bngtype & CLIENT_GAMELISTREQ_LOADED) /* PELISH: seems strange but it is really needed for loaded games */
+		            game_set_status(conn_get_game(c), game_status_loaded);
+    		    //FIXME: still need special handling for status disc-is-loss and replay
+	        }
+        }
 	} else
 	    eventlog(eventlog_level_info, __FUNCTION__, "[%d] client tried to set game status 0x%x to unexistent game (clienttag: %s)", conn_get_socket(c), status, clienttag_uint_to_str(conn_get_clienttag(c)));
     }

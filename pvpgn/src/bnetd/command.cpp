@@ -3688,7 +3688,7 @@ static int _handle_gameinfo_command(t_connection * c, char const *text)
 	}
     }
   else
-    if (!(game = gamelist_find_game(&text[i],conn_get_clienttag(c),game_type_all)))
+    if (!(game = gamelist_find_game_available(&text[i],conn_get_clienttag(c),game_type_all)))
       {
 	message_send_text(c,message_type_error,c,"That game does not exist.");
 	return 0;
