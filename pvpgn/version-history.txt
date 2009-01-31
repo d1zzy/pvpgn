@@ -22,7 +22,8 @@ PvPGN Version History:
   -- added QuickMatch support for RA2/YURI
 
 [WAR3]
-  -- add support for SRP3 based account creation/login
+  -- added support for SRP3 based account creation/login
+  -- added support for passchange for SRP3 based accounts
 
 [MISC]
   -- added /clan whisper subcommand
