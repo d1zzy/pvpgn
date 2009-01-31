@@ -98,7 +98,7 @@ the "Unix Makefiles" generator you can use "make install" to do so.
 with MySQL support
 
   $ cd pvpgn-build
-  $ cmake -D CMAKE_INSTALL_DIR=/home/pvpgn -D WITH_MYSQL ../pvpgn-src
+  $ cmake -D CMAKE_INSTALL_PREFIX=/home/pvpgn -D WITH_MYSQL ../pvpgn-src
   $ make
   $ make install
 
