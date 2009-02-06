@@ -611,7 +611,7 @@ XML_status_output = false
 # clan settings                                                               #
 #-----------------------------------------------------------------------------#
 
-# Time in hours for a new member of clan to be a newer(Peon icon, cannot premote to Grunt)
+# Time in hours for a new member of clan to be a newer(Peon icon, cannot promote to Grunt)
 # default value 168(7 days). If set to 0, all new members could be promote in no time
 clan_newer_time = 0
 

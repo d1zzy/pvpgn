@@ -1422,6 +1422,7 @@ extern t_clan *clan_create(t_account * chieftain_acc, t_clantag clantag, const c
     member->memberacc = chieftain_acc;
     member->status = CLAN_CHIEFTAIN;
     member->join_time = clan->creation_time;
+    member->fullmember = 1; /* chief should be considered invited */
     member->clan = clan;
 #ifdef WITH_SQL
     member->modified = 1;

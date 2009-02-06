@@ -745,7 +745,6 @@ static int _handle_clan_command(t_connection * c, char const * text)
 
           if ((clan = clan_create(conn_get_account(c), str_to_clantag(clantag), clanname, NULL)) && clanlist_add_clan(clan)) {
               member = account_get_clanmember_forced(acc);
-              clanmember_set_fullmember(member,1);         /*FIXME: Should be in clan_create() */
               if (prefs_get_clan_min_invites() == 0) {
                   clan_set_created(clan, 1);
                   clan_set_creation_time(clan, std::time(NULL));
