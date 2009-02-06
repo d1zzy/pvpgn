@@ -420,7 +420,7 @@ extern int aliasfile_load(char const * filename)
 		min =  1;
 		max = -1;
 	      }
-	      else if (std::sscanf(&buff[pos],"[%u",&min)==1)
+	      else if (std::sscanf(&buff[pos],"[%i",&min)==1)
 	      {
 		if (*(dummy-1)=='+')
 		  max = -1;
@@ -475,7 +475,7 @@ extern int aliasfile_load(char const * filename)
 		min =  1;
 		max = -1;
 	      }
-	      else if (std::sscanf(&buff[pos],"[%u",&min)==1)
+	      else if (std::sscanf(&buff[pos],"[%i",&min)==1)
 	      {
 		if (*(dummy-1)=='+')
 		  max = -1;
