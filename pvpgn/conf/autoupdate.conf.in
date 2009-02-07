@@ -200,89 +200,92 @@
 #IX86    D2DV    D2DV_1xx        D2DV_IX86_1xx_112A.mpq
 
 # ================ StarCraft Expansion (Brood War) ==========================
-#IX86    SEXP    SEXP_104        SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_104_STAR   SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_105        SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_105_STAR   SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_106        SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_106_STAR   SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_107        SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_107_STAR   SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_108        SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_108_STAR   SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_108B       SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_108B_STAR  SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_109        SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_109_STAR   SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_110        SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_110_STAR   SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_111        SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_111_STAR   SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_111B       SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_111B_STAR  SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_112        SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_112_STAR   SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_112B       SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_112B_STAR  SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_113        SEXP_IX86_1xx_116.mpq
+#IX86    SEXP    SEXP_104        SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_104_STAR   SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_105        SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_105_STAR   SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_106        SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_106_STAR   SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_107        SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_107_STAR   SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_108        SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_108_STAR   SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_108B       SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_108B_STAR  SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_109        SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_109_STAR   SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_110        SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_110_STAR   SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_111        SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_111_STAR   SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_111B       SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_111B_STAR  SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_112        SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_112_STAR   SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_112B       SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_112B_STAR  SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_113        SEXP_IX86_1xx_1161.mpq
 # unfortunately we don't have a SEXP_113_STAR in versioncheck.conf
-#IX86    SEXP    SEXP_113B       SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_113B_STAR  SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_113C       SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_113C_STAR  SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_113D       SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_113D_STAR  SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_113E       SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_113E       SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_114        SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_114        SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_115        SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_115        SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_1151       SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_1151       SEXP_IX86_1xx_116.mpq
-#IX86    SEXP    SEXP_1152       SEXP_IX86_1xx_116.mpq
-#IX86    STAR    SEXP_1152       SEXP_IX86_1xx_116.mpq
+#IX86    SEXP    SEXP_113B       SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_113B_STAR  SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_113C       SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_113C_STAR  SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_113D       SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_113D_STAR  SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_113E       SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_113E       SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_114        SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_114        SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_115        SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_115        SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_1151       SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_1151       SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_1152       SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_1152       SEXP_IX86_1xx_1161.mpq
+#IX86    SEXP    SEXP_1153       SEXP_IX86_1xx_1161.mpq
+#IX86    STAR    SEXP_1153       SEXP_IX86_1xx_1161.mpq
 
 # Incremental update from version 1.15.3
-#IX86    SEXP    SEXP_1153       SEXP_IX86_1153_116.mpq
-#IX86    STAR    SEXP_1153       SEXP_IX86_1153_116.mpq
+#IX86    SEXP    SEXP_116        SEXP_IX86_116_1161.mpq
+#IX86    STAR    SEXP_116        SEXP_IX86_116_1161.mpq
 
 # The next one is a Brood War wildcard entry.
-#IX86    SEXP    SEXP_1xx        SEXP_IX86_1xx_116.mpq
+#IX86    SEXP    SEXP_1xx        SEXP_IX86_1xx_1161.mpq
 
 # ========================= StarCraft (original) ============================
-#IX86    STAR    STAR_100        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_101        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_102        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_103        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_104        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_105        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_106        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_107        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_108        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_108B       STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_109        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_109B       STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_110        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_111        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_111B       STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_112        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_112B       STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_113        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_113B       STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_113C       STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_113D       STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_113E       STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_114        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_115        STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_1151       STAR_IX86_1xx_116.mpq
-#IX86    STAR    STAR_1152       STAR_IX86_1xx_116.mpq
+#IX86    STAR    STAR_100        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_101        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_102        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_103        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_104        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_105        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_106        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_107        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_108        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_108B       STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_109        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_109B       STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_110        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_111        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_111B       STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_112        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_112B       STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_113        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_113B       STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_113C       STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_113D       STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_113E       STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_114        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_115        STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_1151       STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_1152       STAR_IX86_1xx_1161.mpq
+#IX86    STAR    STAR_1153       SEXP_IX86_1xx_1161.mpq
 
 # Incremental update from version 1.15.3
-#IX86    STAR    STAR_1153       SEXP_IX86_1153_116.mpq
+#IX86    STAR    STAR_116        SEXP_IX86_116_1161.mpq
 
 # The next one is a Starcraft wildcard entry.
-#IX86    STAR    STAR_1xx        STAR_IX86_1xx_116.mpq
+#IX86    STAR    STAR_1xx        STAR_IX86_1xx_1161.mpq
 
 # ========================= Diablo (original) ==============================
 # note: Blizzard doesn't update client from 109 to 109b.
