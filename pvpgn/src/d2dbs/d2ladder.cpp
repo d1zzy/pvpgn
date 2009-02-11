@@ -538,8 +538,10 @@ const char * get_prefix(int type, int status, int chclass)
 
   static int sex[11] = {0,1,1,0,0,0,0,1,0,0,0};
 
-  difficulty = ((status >> 0x08) & 0x0f) / 5;
-
+  if(type == 0 || type == 1) // D2
+    difficulty = charstatus_get_difficulty(status);  
+  else if(type == 2 || type == 3) // D2XP
+    difficulty = charstatus_get_difficulty_expansion(status);
 
   return prefix[difficulty][type][sex[chclass]];
 }
