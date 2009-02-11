@@ -16,12 +16,14 @@ PvPGN Version History:
   -- added various protocol related fixes
   -- added apiregister support
   -- added autoupdate support for WOLv2 clients
-  -- added variables into bnetd.conf for wol FTP server specification
-  -- fixed  voice flag not shown for clients in channel
+  -- added variables into bnetd.conf for wol FTP update server specification
+  -- fixed voice flag not shown for clients in channel
   -- fixed bug in RedAlert2/Yuri when game owner changes maximum players
+  -- added QuickMatch support for RA2/YURI
 
 [WAR3]
-  -- add support for SRP3 based account creation/login
+  -- added support for SRP3 based account creation/login
+  -- added support for passchange for SRP3 based accounts
 
 [MISC]
   -- added /clan whisper subcommand

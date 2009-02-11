@@ -80,5 +80,9 @@ NONE                        "Diablo II"	            D2XP  true  false false  NUL
 "Nox Quest-1"               "Lob 37 0"              NOXQ  true  false false  NULL NULL -1   false
 "Yuri's Revenge-1"          "Lob 41 0"              YURI  true  false false  NULL NULL -1   false
 "Yuri's Revenge-2"          "Lob 41 1"              YURI  true  false false  NULL NULL -1   false
+
+"Lob 38 0"                  "Lob 38 0"              CHAT  true  false false  NULL NULL -1   false
+"Lob 39 0"                  "Lob 39 0"              CHAT  true  false false  NULL NULL -1   false
+"Lob 40 0"                  "Lob 40 0"              CHAT  true  false false  NULL NULL -1   false
 #                                                                            #
 ##############################################################################
