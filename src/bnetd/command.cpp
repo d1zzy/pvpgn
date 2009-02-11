@@ -638,12 +638,8 @@ static int _handle_clan_command(t_connection * c, char const * text)
                   message_send_text(c,message_type_error,c,msgtemp);
               }
           }
-      }
-    }
-    else
-        message_send_text(c,message_type_error,c,"You are not the chieftain or shaman of clan!");
-    if (clanmember_get_status(member) == CLAN_CHIEFTAIN) {
-        if (strstart(text,"disband")==0) {
+      } 
+      else if (strstart(text,"disband")==0) {
           const char * ack = skip_command(text);
           if (ack[0]=='\0') {
               message_send_text(c,message_type_info,c,"This is one-way action! If you really want");
@@ -658,10 +654,8 @@ static int _handle_clan_command(t_connection * c, char const * text)
                   message_send_text(c,message_type_info,c,"Your clan was disbanded.");
               }
           }
-        }    
+      }
     }
-    else 
-        message_send_text(c,message_type_error,c,"You are not the chieftain of clan!");
   }
   else
   if ((member = account_get_clanmember_forced(acc)) && (clan = clanmember_get_clan(member)) && (clanmember_get_fullmember(member) == 0)) {
@@ -3688,7 +3682,7 @@ static int _handle_gameinfo_command(t_connection * c, char const *text)
 	}
     }
   else
-    if (!(game = gamelist_find_game(&text[i],conn_get_clienttag(c),game_type_all)))
+    if (!(game = gamelist_find_game_available(&text[i],conn_get_clienttag(c),game_type_all)))
       {
 	message_send_text(c,message_type_error,c,"That game does not exist.");
 	return 0;

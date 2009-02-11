@@ -50,6 +50,7 @@
 #include "server.h"
 #include "friends.h"
 #include "clan.h"
+#include "anongame_wol.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -393,91 +394,10 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 		/* start amadeo: code was sent by some unkown fellow of pvpgn (maybe u wanna give us your name
 		   for any credits), it adds nick-registration, i changed some things here and there... */
 	    for (i=0;((e)&&(e[i]));i++) {
-    		if (strcasecmp(e[i],"NICKSERV")==0) {
- 				char * pass;
-				char * p;
-
- 				pass = std::strchr(text,' ');
- 				if (pass)
- 		    		*pass++ = '\0';
-
-				if (strcasecmp(text,"identify")==0) {
-				    switch (conn_get_state(conn)) {
-					case conn_state_bot_password:
-					{
-							if (pass) {
- 		    				t_hash h;
-
-						for (p = pass; *p; p++)
-						    if (std::isupper((int)*p)) *p = std::tolower(*p);
- 		    				bnet_hash(&h,std::strlen(pass),pass);
- 		    				irc_authenticate(conn,hash_get_str(h));
- 					    }
-							else {
-                                 message_send_text(conn,message_type_notice,NULL,"Syntax: IDENTIFY <password> (max 16 characters)");
-					    }
-					    break;
-					}
-					case conn_state_loggedin:
-					{
-					    message_send_text(conn,message_type_notice,NULL,"You don't need to IDENTIFY");
-					    break;
-					}
-					default: ;
-					    eventlog(eventlog_level_trace,__FUNCTION__,"got /msg in unexpected connection state (%s)",conn_state_get_str(conn_get_state(conn)));
-				    }
-				}
-				else if (strcasecmp(text,"register")==0) {
-					unsigned int j;
-					t_hash       passhash;
-					t_account  * temp;
-					char         msgtemp[MAX_IRC_MESSAGE_LEN];
-					char       * username=(char *)conn_get_loggeduser(conn);
-
-					if (account_check_name(username)<0) {
-						message_send_text(conn,message_type_error,conn,"Account name contains invalid symbol!");
-						break;
-					}
-
-					if(!prefs_get_allow_new_accounts()){
-						message_send_text(conn,message_type_error,conn,"Account creation is not allowed");
-						break;
-					}
-
-					if (!pass || pass[0]=='\0' || (std::strlen(pass)>16) ) {
-						message_send_text(conn,message_type_error,conn,":Syntax: REGISTER <password> (max 16 characters)");
-						break;
-					}
-
-					for (j=0; j<std::strlen(pass); j++)
-						if (std::isupper((int)pass[j])) pass[j] = std::tolower((int)pass[j]);
-
-					bnet_hash(&passhash,std::strlen(pass),pass);
-
-					snprintf(msgtemp, sizeof(msgtemp), "Trying to create account \"%s\" with password \"%s\"",username,pass);
-					message_send_text(conn,message_type_info,conn,msgtemp);
-
-					temp = accountlist_create_account(username,hash_get_str(passhash));
-					if (!temp) {
-						message_send_text(conn,message_type_error,conn,"Failed to create account!");
-						eventlog(eventlog_level_debug,__FUNCTION__,"[%d] account \"%s\" not created (failed)",conn_get_socket(conn),username);
-						conn_unget_chatname(conn,username);
-						break;
-					}
-
-					snprintf(msgtemp, sizeof(msgtemp), "Account "UID_FORMAT" created.",account_get_uid(temp));
-					message_send_text(conn,message_type_info,conn,msgtemp);
-					eventlog(eventlog_level_debug,__FUNCTION__,"[%d] account \"%s\" created",conn_get_socket(conn),username);
-					conn_unget_chatname(conn,username);
-				}
-				else {
-					char tmp[MAX_IRC_MESSAGE_LEN+1];
-
- 					message_send_text(conn,message_type_notice,NULL,"Invalid arguments for NICKSERV");
-					snprintf(tmp, sizeof(tmp), ":Unrecognized command \"%s\"", text);
-					message_send_text(conn,message_type_notice,NULL,tmp);
- 				}
- 	        }
+	        if (strcasecmp(e[i],"matchbot") == 0) {
+                /* Anongames WOL support */
+                anongame_wol_privmsg(conn, numparams, params, text);
+	        }
 			else if (conn_get_state(conn)==conn_state_loggedin) {
 				if (e[i][0]=='#') {
 					/* channel message */
@@ -654,6 +574,7 @@ static int _handle_part_command(t_connection * conn, int numparams, char ** para
     if ((conn_wol_get_ingame(conn) == 1)) {
         conn_wol_set_ingame(conn,0);
     }
+
     conn_part_channel(conn);
     return 0;
 }
@@ -825,7 +746,7 @@ static int _handle_getcodepage_command(t_connection * conn, int numparams, char 
 	    int i;
 	    for (i=0; i<numparams; i++) {
     		t_connection * user;
-            int codepage;
+            int codepage = 0;
 
     		if (user = connlist_find_connection_by_accountname(params[i]))
     		    codepage = conn_wol_get_codepage(user);
@@ -872,7 +793,7 @@ static int _handle_getlocale_command(t_connection * conn, int numparams, char **
         int i;
         for (i=0; i<numparams; i++) {
             t_account * account;
-            int locale;
+            int locale = 0;
 
     		if (account = accountlist_find_account(params[i]))
     		    locale = account_get_locale(account);
@@ -1293,11 +1214,9 @@ static int _handle_startg_command(t_connection * conn, int numparams, char ** pa
 	            }
    		        snprintf(_temp_a, sizeof(_temp_a), "%s %s ", e[i], addr);
    		        std::strcat(temp,_temp_a);
+   		        std::strcat(temp,":");
             }
         }
-
-        if (tag_check_wolv2(conn_get_clienttag(conn)))
-            std::strcat(temp,":");
 
         std::strcat(temp,"1337"); /* yes, ha ha funny, i just don't generate game numbers yet */
         std::strcat(temp," ");

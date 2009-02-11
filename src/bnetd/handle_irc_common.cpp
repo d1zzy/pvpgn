@@ -250,7 +250,6 @@ static int handle_irc_common_line(t_connection * conn, char const * ircline)
 	    conn_set_state(conn,conn_state_bot_username); /* PELISH: What is this for? */
 
         if ((conn_get_class(conn) != conn_class_wserv) &&
-            (conn_get_class(conn) != conn_class_wgameres) &&
             (conn_get_class(conn) != conn_class_wladder)) {
 
 	        t_timer_data temp;

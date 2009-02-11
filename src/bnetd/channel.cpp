@@ -206,7 +206,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 	    std::fprintf(channel->log,"allowbotse=\"%s\"\n",(channel->flags & channel_flags_allowbots)?"true":"false");
 	    std::fprintf(channel->log,"allowopers=\"%s\"\n",(channel->flags & channel_flags_allowopers)?"true":"false");
 	    if (channel->clienttag)
-		std::fprintf(channel->log,"clienttag=\"%s\"\n",channel->clienttag);
+		std::fprintf(channel->log,"clienttag=\"%s\"\n",clienttag_uint_to_str(channel->clienttag));
 	    else
 		std::fprintf(channel->log,"clienttag=none\n");
 

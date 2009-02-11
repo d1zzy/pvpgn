@@ -82,6 +82,7 @@
 #include "alias_command.h"
 #include "tournament.h"
 #include "anongame_infos.h"
+#include "anongame_wol.h"
 #include "clan.h"
 #include "team.h"
 #include "realm.h"
@@ -362,6 +363,7 @@ int pre_server_startup(void)
 	eventlog(eventlog_level_error,__FUNCTION__,"could not load trans list");
     tournament_init(prefs_get_tournament_file());
     anongame_infos_load(prefs_get_anongame_infos_file());
+    anongame_wol_matchlist_create();
     clanlist_load();
     teamlist_load();
     if (realmlist_create(prefs_get_realmfile())<0)
@@ -381,6 +383,7 @@ void post_server_shutdown(int status)
             clanlist_unload();
 	    tournament_destroy();
 	    anongame_infos_unload();
+	    anongame_wol_matchlist_destroy();
 	    trans_unload();
 	    aliasfile_unload();
 	    command_groups_unload();

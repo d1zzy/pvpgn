@@ -157,19 +157,22 @@ extern char const * game_status_get_str(t_game_status status)
     switch (status)
     {
     case game_status_started:
-	return "started";
+        return "started";
 
     case game_status_full:
-	return "full";
+        return "full";
 
     case game_status_open:
-	return "open";
+        return "open";
 
     case game_status_done:
-	return "done";
+        return "done";
+
+    case game_status_loaded:
+        return "loaded";
 
     default:
-	return "UNKNOWN";
+        return "UNKNOWN";
     }
 }
 
@@ -393,7 +396,7 @@ extern t_game * game_create(char const * name, char const * pass, char const * i
 	return NULL;
     }
 
-    if (gamelist_find_game(name, clienttag, game_type_all))
+    if (gamelist_find_game_available(name, clienttag, game_type_all))
     {
 	eventlog(eventlog_level_info,__FUNCTION__,"game \"%s\" not created because it already exists",name);
 	return NULL; /* already have a game by that name */
@@ -1372,7 +1375,7 @@ extern void game_set_status(t_game * game, t_game_status status)
 	// [quetzal] 20020829 - this should prevent invalid status changes
 	// its like started game cant become open and so on
 	if (game->status == game_status_started &&
-		(status == game_status_open || status == game_status_full)) {
+		(status == game_status_open || status == game_status_full || status == game_status_loaded)) {
 		eventlog(eventlog_level_error, "game_set_status",
 		"attempting to set status '%s' (%d) to started game", game_status_get_str(status), status);
 		return;
@@ -2076,6 +2079,26 @@ extern t_game * gamelist_find_game(char const * name, t_clienttag ctag, t_game_t
 }
 
 
+extern t_game * gamelist_find_game_available(char const * name, t_clienttag ctag, t_game_type type)
+{
+    t_elist *curr;
+    t_game *game;
+    t_game_status status;
+
+    elist_for_each(curr,&gamelist_head)
+    {
+        game = elist_entry(curr,t_game,glist_link);
+        status = game->status;
+
+        if ((type==game_type_all || game->type==type) && (ctag == game->clienttag) && (game->name)
+            && (!strcasecmp(name,game->name)) && (game->status != game_status_started) &&
+             (game->status != game_status_done))
+            return game;
+    }
+
+    return NULL;
+}
+
 extern t_game * gamelist_find_game_byid(unsigned int id)
 {
     t_elist *curr;
@@ -2090,7 +2113,6 @@ extern t_game * gamelist_find_game_byid(unsigned int id)
 
     return NULL;
 }
-
 
 extern void gamelist_traverse(t_glist_func cb, void *data)
 {

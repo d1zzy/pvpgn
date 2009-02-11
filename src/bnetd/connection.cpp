@@ -72,6 +72,7 @@
 #include "handle_d2cs.h"
 #include "command_groups.h"
 #include "attrlayer.h"
+#include "anongame_wol.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -421,6 +422,7 @@ extern t_connection * conn_create(int tsock, int usock, unsigned int real_local_
     temp->protocol.wol.findme                    = 17;
 
     temp->protocol.wol.apgar			         = NULL;
+    temp->protocol.wol.anongame_player           = NULL;
 
 
     temp->protocol.cr_time                       = now;
@@ -636,6 +638,9 @@ extern void conn_destroy(t_connection * c, t_elem ** elem, int conn_or_dead_list
 
     if (c->protocol.wol.apgar)
 		xfree((void *)c->protocol.wol.apgar); /* avoid warning */
+
+    if(c->protocol.wol.anongame_player)
+		anongame_wol_destroy(c);
 
     /* ADDED BY UNDYING SOULZZ 4/8/02 */
     if (c->protocol.w3.w3_playerinfo)
@@ -2115,9 +2120,9 @@ extern int conn_set_game(t_connection * c, char const * gamename, char const * g
     }
 
     if (gamename) {
-	if (!(c->protocol.game = gamelist_find_game(gamename,c->protocol.client.clienttag,type))
-	    /* do not allow creation of games with same name of same clienttag (yet) */
-	    && !gamelist_find_game(gamename,c->protocol.client.clienttag,game_type_all)) {
+	if (!(c->protocol.game = gamelist_find_game_available(gamename,c->protocol.client.clienttag,type))
+	    && !gamelist_find_game_available(gamename,c->protocol.client.clienttag,game_type_all)) {
+        /* do not allow creation of games with same name of same clienttag when game is not started or done */
 	    c->protocol.game = game_create(gamename,gamepass,gameinfo,type,version,c->protocol.client.clienttag,conn_get_gameversion(c));
 
 	    if (c->protocol.game && conn_get_realm(c) && conn_get_charname(c)) {
@@ -4062,6 +4067,34 @@ extern int conn_wol_get_pageme(t_connection * c)
     }
 
     return c->protocol.wol.pageme;
+}
+
+extern void conn_wol_set_anongame_player(t_connection * c, t_anongame_wol_player * anongame_player)
+{
+    if (!c)
+    {
+    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
+    	return;
+    }
+
+    if (!anongame_player)
+    {
+    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL anongame_player");
+    	return;
+    }
+
+    c->protocol.wol.anongame_player = anongame_player;
+}
+
+extern t_anongame_wol_player * conn_wol_get_anongame_player(t_connection * c)
+{
+    if (!c)
+    {
+    	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
+    	return NULL;
+    }
+
+    return c->protocol.wol.anongame_player;
 }
 
 }
