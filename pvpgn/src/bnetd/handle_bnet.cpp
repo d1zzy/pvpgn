@@ -4566,20 +4566,28 @@ static int _client_clan_disbandreq(t_connection * c, t_packet const *const packe
 
     if ((rpacket = packet_create(packet_class_bnet))) {
 	t_clan *clan;
-	t_account *myacc;
-	myacc = conn_get_account(c);
-	clan = account_get_clan(myacc);
+		t_clanmember *member;
+		t_account *account;
+
 	packet_set_size(rpacket, sizeof(t_server_clan_disbandreply));
 	packet_set_type(rpacket, SERVER_CLAN_DISBANDREPLY);
 	bn_int_set(&rpacket->u.server_clan_disbandreply.count, bn_int_get(packet->u.client_clan_disbandreq.count));
-	if ((clanlist_remove_clan(clan) == 0) && (clan_remove(clan_get_clantag(clan)) == 0)) {
-	    bn_byte_set(&rpacket->u.server_clan_disbandreply.result, SERVER_CLAN_DISBANDREPLY_RESULT_OK);
+
+		if (!((account = conn_get_account(c)) && (clan = account_get_clan(account)) && (member = account_get_clanmember(account)) && (clanmember_get_status(member) >= CLAN_CHIEFTAIN))) {
+			eventlog(eventlog_level_warn, __FUNCTION__, "[%d] got suspicious CLAN_DISBANDREQ packet (request without required privileges)", conn_get_socket(c));
+			bn_byte_set(&rpacket->u.server_clan_disbandreply.result, CLAN_RESPONSE_NOT_AUTHORIZED);
+			conn_push_outqueue(c, rpacket);
+			packet_del_ref(rpacket);
+		}
+		else if ((clanlist_remove_clan(clan) == 0) && (clan_remove(clan_get_clantag(clan)) == 0)) {
+			bn_byte_set(&rpacket->u.server_clan_disbandreply.result, CLAN_RESPONSE_SUCCESS);
 	    clan_close_status_window_on_disband(clan);
 	    clan_send_packet_to_online_members(clan, rpacket);
 	    packet_del_ref(rpacket);
 	    clan_destroy(clan);
-	} else {
-	    bn_byte_set(&rpacket->u.server_clan_disbandreply.result, SERVER_CLAN_DISBANDREPLY_RESULT_EXCEPTION);
+		}
+		else {
+			bn_byte_set(&rpacket->u.server_clan_disbandreply.result, CLAN_RESPONSE_FAIL);
 	    conn_push_outqueue(c, rpacket);
 	    packet_del_ref(rpacket);
 	}
@@ -4727,7 +4735,7 @@ static int _client_clan_createinvitereply(t_connection * c, t_packet const *cons
 	    packet_set_size(rpacket, sizeof(t_server_clan_createinvitereply));
 	    packet_set_type(rpacket, SERVER_CLAN_CREATEINVITEREPLY);
 	    bn_int_set(&rpacket->u.server_clan_createinvitereply.count, bn_int_get(packet->u.client_clan_createinvitereply.count));
-	    bn_byte_set(&rpacket->u.server_clan_createinvitereply.status, 0);
+	    bn_byte_set(&rpacket->u.server_clan_createinvitereply.status, CLAN_RESPONSE_SUCCESS);
 	    packet_append_string(rpacket, "");
 	    conn_push_outqueue(conn, rpacket);
 	    packet_del_ref(rpacket);
@@ -4914,6 +4922,7 @@ static int _client_clan_invitereq(t_connection * c, t_packet const *const packet
 	    		(member = account_get_clanmember(account)) &&
 	    		(clanmember_get_status(member) >= CLAN_SHAMAN) &&
 	    		(clantag = clan_get_clantag(clan)))) {
+	    	eventlog(eventlog_level_warn, __FUNCTION__, "[%d] got suspicious CLAN_INVITEREQ packet (request without required privileges)", conn_get_socket(c));
 	    	response_code = CLAN_RESPONSE_NOT_AUTHORIZED;
 	    } else {
 
@@ -4932,10 +4941,11 @@ static int _client_clan_invitereq(t_connection * c, t_packet const *const packet
 
 	    	// valid invitereq
 	    	} else {
-                if (prefs_get_clan_newer_time() > 0)
+                if (prefs_get_clan_newer_time() > 0) {
                     clan_add_member(clan, conn_account, CLAN_NEW);
-                else
+                } else {
                     clan_add_member(clan, conn_account, CLAN_PEON);
+                }
 	    		packet_set_size(rpacket, sizeof(t_server_clan_invitereq));
    				packet_set_type(rpacket, SERVER_CLAN_INVITEREQ);
    				bn_int_set(&rpacket->u.server_clan_invitereq.count, bn_int_get(packet->u.client_clan_invitereq.count));
