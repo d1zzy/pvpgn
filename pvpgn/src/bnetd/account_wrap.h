@@ -236,7 +236,8 @@ extern char const * account_get_wol_apgar(t_account * account);
 extern int account_set_wol_apgar(t_account * account, char const * apgar);
 extern int account_get_locale(t_account * account);
 extern int account_set_locale(t_account * account, int locale);
-
+extern int account_get_ladder_points(t_account * account, t_clienttag clienttag, t_ladder_id id);
+extern int account_set_ladder_points(t_account * account, t_clienttag clienttag, t_ladder_id id, unsigned int points);
 }
 
 }

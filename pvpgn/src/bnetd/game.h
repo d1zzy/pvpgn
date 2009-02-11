@@ -24,12 +24,14 @@
 #ifdef JUST_NEED_TYPES
 # include "account.h"
 # include "connection.h"
+# include "channel.h"
 # include "common/tag.h"
 # include "common/elist.h"
 #else
 # define JUST_NEED_TYPES
 # include "account.h"
 # include "connection.h"
+# include "channel.h"
 # include "common/tag.h"
 # include "common/elist.h"
 # undef JUST_NEED_TYPES
@@ -211,6 +213,8 @@ typedef struct game
     t_game_result * * reported_results;
     char const * *    report_heads;
     char const * *    report_bodies;
+    
+    t_channel *       channel; /* For Games with server-side chat support */
 
     std::time_t            create_time;
     std::time_t            start_time;
@@ -247,6 +251,7 @@ typedef int (*t_glist_func)(t_game *, void *);
 #define JUST_NEED_TYPES
 #include "account.h"
 #include "connection.h"
+#include "channel.h"
 #include "common/list.h"
 #include "common/tag.h"
 #undef JUST_NEED_TYPES
@@ -330,7 +335,8 @@ extern t_game_flag game_get_flag(t_game const * game);
 extern int game_get_count_by_clienttag(t_clienttag ct);
 extern int game_is_ladder(t_game *game);
 extern int game_discisloss(t_game *game);
-
+extern int game_set_channel(t_game * game, t_channel * channel);
+extern t_channel * game_get_channel(t_game * game);
 }
 
 }

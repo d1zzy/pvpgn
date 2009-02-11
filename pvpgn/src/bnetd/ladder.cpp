@@ -30,6 +30,7 @@
 #include <string>
 #include <list>
 #include <map>
+#include <cmath>
 #include <algorithm>
 
 #ifdef HAVE_SYS_STAT_H
@@ -99,26 +100,57 @@ extern int ladder_init_account(t_account * account, t_clienttag clienttag, t_lad
 	    return -1;
 	}
 	account_adjust_ladder_rating(account,clienttag,id,prefs_get_ladder_init_rating());
+	
+    uid = account_get_uid(account);
+    rating = account_get_ladder_rating(account,clienttag,id);
 
-	uid = account_get_uid(account);
-	rating = account_get_ladder_rating(account,clienttag,id);
-
-	LadderList* ladderlist_cr = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_highestrated, ladder_time_current));
-	LadderList* ladderlist_cw = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostwins, ladder_time_current));
-	LadderList* ladderlist_cg = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostgames, ladder_time_current));
+    LadderList* ladderlist_cr = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_highestrated, ladder_time_current));
+    LadderList* ladderlist_cw = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostwins, ladder_time_current));
+    LadderList* ladderlist_cg = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_mostgames, ladder_time_current));
 
 	LadderReferencedObject reference(account);
 
-	ladderlist_cr->updateEntry(uid,rating,0,0,reference);
-	ladderlist_cg->updateEntry(uid,0,rating,0,reference);
-	ladderlist_cw->updateEntry(uid,0,rating,0,reference);
-	
+    ladderlist_cr->updateEntry(uid,rating,0,0,reference);
+    ladderlist_cg->updateEntry(uid,0,rating,0,reference);
+    ladderlist_cw->updateEntry(uid,0,rating,0,reference);
+
 	INFO2("initialized account for \"%s\" for \"%s\" ladder", account_get_name(account), clienttag_uint_to_str(clienttag));
     }
 
     return 0;
 }
 
+extern int ladder_init_account_wol(t_account * account, t_clienttag clienttag, t_ladder_id id)
+{
+    unsigned int uid, rating;
+
+    if (!account)
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"got NULL account");
+	return -1;
+    }
+    if (!clienttag)
+    {
+	eventlog(eventlog_level_error,__FUNCTION__,"got bad clienttag");
+	return -1;
+    }
+
+    if ((account_get_ladder_points(account,clienttag,id)==0) && (account_get_ladder_wins(account,clienttag,id)==0)
+     && (account_get_ladder_losses(account,clienttag,id)==0))
+    {
+	uid = account_get_uid(account);
+    
+    LadderList* ladderlist = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_default,ladder_time_default));
+ 
+	LadderReferencedObject reference(account);
+
+    ladderlist->updateEntry(uid,0,0,0,reference);
+
+	INFO2("initialized WOL account for \"%s\" for \"%s\" ladder", account_get_name(account), clienttag_uint_to_str(clienttag));
+    }
+
+    return 0;
+}
 
 /*
  * Update player ratings, rankings, etc due to game results.
@@ -195,6 +227,52 @@ extern int ladder_update(t_clienttag clienttag, t_ladder_id id, unsigned int cou
     return 0;
 }
 
+static int _cb_count_points(int * points_win, int * points_loss, int pl1_points, int pl2_points)
+{
+    *points_win = static_cast<int>(64 * (1 - 1 / (powf(10, static_cast<float>(pl2_points - pl1_points) / 400) + 1)) + 0.5);
+    *points_loss = std::min(64 - *points_win, pl1_points / 10);
+   
+    return 0;
+}
+
+extern int ladder_update_wol(t_clienttag clienttag, t_ladder_id id, t_account * * players, t_game_result * results)
+{
+    unsigned int wins, losses, points; 
+    int curr;
+    int uid;
+    int pl1_points = account_get_ladder_points(players[0], clienttag, id);
+    int pl2_points = account_get_ladder_points(players[1], clienttag, id);
+
+    for (curr=0; curr<2; curr++) {
+	    t_account * account = players[curr];
+	    int mypoints = account_get_ladder_points(players[curr], clienttag, id);
+	    int points_win = 0;
+	    int points_loss = 0;
+	    uid = account_get_uid(account);
+
+	    if (results[curr] == game_result_win) {
+	        _cb_count_points(&points_win, &points_loss, mypoints, (mypoints == pl1_points ? pl2_points : pl1_points));
+            account_set_ladder_points(players[curr], clienttag, id, mypoints+points_win);
+            DEBUG3("Player %s WIN, had %u points and now have %u points", account_get_name(account), mypoints, mypoints+points_win);
+        }
+        else {
+	        _cb_count_points(&points_win, &points_loss, mypoints, (mypoints == pl1_points ? pl2_points : pl1_points));
+            account_set_ladder_points(players[curr], clienttag, id, mypoints-points_loss);
+            DEBUG3("Player %s LOSS, had %u points and now have %u points", account_get_name(account), mypoints, mypoints-points_loss);
+        }
+
+        LadderReferencedObject reference(account);
+        wins = account_get_ladder_wins(account,clienttag,id);
+        losses = account_get_ladder_losses(account,clienttag,id);
+        points = account_get_ladder_points(account,clienttag,id);
+	
+        LadderList* ladderlist = ladders.getLadderList(LadderKey(id,clienttag,ladder_sort_default,ladder_time_default));
+        ladderlist->updateEntry(uid,points,wins,0,reference);
+    }
+
+	ladders.update();
+    return 0;
+}
 
 extern int ladder_check_map(char const * mapname, t_game_maptype maptype, t_clienttag clienttag)
 {
@@ -540,14 +618,21 @@ LadderReferencedObject::getData(const LadderKey& ladderKey_, unsigned int& uid_,
 	if (referenceType == referenceTypeAccount)
 	{
 		uid_ = account_get_uid(account);
-		if (clienttag == CLIENTTAG_WARCRAFT3_UINT || clienttag == CLIENTTAG_WAR3XP_UINT)
-		{
+		if (clienttag == CLIENTTAG_WARCRAFT3_UINT || clienttag == CLIENTTAG_WAR3XP_UINT) {
 			if (!(primary_ = account_get_ladder_level(account,clienttag,ladderId)))
 				return false;
 			secondary_ = account_get_ladder_xp(account,clienttag,ladderId);
 			tertiary_ = 0;
 			return true;
-		}else{
+		}
+		else if (tag_check_wolv1(clienttag) || tag_check_wolv2(clienttag)) {
+			if (!(primary_ = account_get_ladder_points(account,clienttag,ladderId)))
+				return false;
+			secondary_ = account_get_ladder_wins(account,clienttag,ladderId);
+			tertiary_ = 0;
+			return true;
+		}
+        else{
 			t_ladder_sort ladderSort = ladderKey_.getLadderSort();
 			unsigned int rating, wins, games;
 			// current ladders
@@ -1207,6 +1292,7 @@ LadderList::writeStatusfile() const
 
 Ladders::Ladders()
 {
+/* Westwood online clients: */
   // WAR3 ladders
   LadderKey WAR3_solo(ladder_id_solo, CLIENTTAG_WARCRAFT3_UINT, ladder_sort_default, ladder_time_default);
   ladderMap.insert(std::make_pair(WAR3_solo,LadderList(WAR3_solo, referenceTypeAccount)));
@@ -1308,6 +1394,14 @@ Ladders::Ladders()
   
   LadderKey W2BN_cgi(ladder_id_ironman, CLIENTTAG_WARCIIBNE_UINT, ladder_sort_mostgames, ladder_time_current);
   ladderMap.insert(std::make_pair(W2BN_cgi,LadderList(W2BN_cgi, referenceTypeAccount)));
+
+  //TSUN ladders
+  LadderKey TSUN_solo(ladder_id_solo, CLIENTTAG_TIBERNSUN_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(TSUN_solo,LadderList(TSUN_solo, referenceTypeAccount)));
+
+  //RAL2 ladders
+  LadderKey RAL2_solo(ladder_id_solo, CLIENTTAG_REDALERT2_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(RAL2_solo,LadderList(RAL2_solo, referenceTypeAccount)));
 
 }
 

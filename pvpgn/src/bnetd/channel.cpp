@@ -61,7 +61,7 @@ static char * channel_format_name(char const * sname, char const * country, char
 
 extern int channel_set_userflags(t_connection * c);
 
-extern t_channel * channel_create(char const * fullname, char const * shortname, t_clienttag clienttag, int permflag, int botflag, int operflag, int logflag, char const * country, char const * realmname, int maxmembers, int moderated, int clanflag, int autoname)
+extern t_channel * channel_create(char const * fullname, char const * shortname, t_clienttag clienttag, int permflag, int botflag, int operflag, int logflag, char const * country, char const * realmname, int maxmembers, int moderated, int clanflag, int autoname, t_list * channellist)
 {
     t_channel * channel;
 
@@ -231,12 +231,19 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
     channel->gameTournament = 0;
     channel->gameExtension = NULL;
 
-    list_append_data(channellist_head,channel);
+    if (channellist)
+        list_append_data(channellist, channel);
+    else
+        DEBUG0("channel was not added into any channellist");
 
     eventlog(eventlog_level_debug,__FUNCTION__,"channel created successfully");
     return channel;
 }
 
+extern t_channel * channel_create(char const * fullname, char const * shortname, t_clienttag clienttag, int permflag, int botflag, int operflag, int logflag, char const * country, char const * realmname, int maxmembers, int moderated, int clanflag, int autoname)
+{
+    return channel_create(fullname, shortname, clienttag, permflag, botflag, operflag, logflag, country, realmname, maxmembers, moderated, clanflag, autoname, channellist_head);
+}
 
 extern int channel_destroy(t_channel * channel, t_elem ** curr)
 {
@@ -257,8 +264,9 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
 
     if (list_remove_data(channellist_head,channel,curr)<0)
     {
-        eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
-        return -1;
+//        eventlog(eventlog_level_error,__FUNCTION__,"could not remove item from list");
+        eventlog(eventlog_level_info,__FUNCTION__,"channel was not removed from any list");
+//        return -1;
     }
 
     eventlog(eventlog_level_info,__FUNCTION__,"destroying channel \"%s\"",channel->name);

@@ -24,6 +24,8 @@
 
 #define JUST_NEED_TYPES
 #include "connection.h"
+#include "game.h"
+#include "account.h"
 #include "common/packet.h"
 #undef JUST_NEED_TYPES
 
@@ -42,6 +44,16 @@ typedef enum {
     wol_gameres_type_string = 7,
     wol_gameres_type_bigint = 20
 } wol_gameres_type;
+
+typedef struct wol_gameres_result
+{
+    t_game * game;
+    t_game_result * results;
+    int senderid;
+    t_account * myaccount;
+    t_account * otheraccount;
+    
+} t_wol_gameres_result;
 
 extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const packet);
 

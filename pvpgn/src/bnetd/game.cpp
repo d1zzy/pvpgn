@@ -31,6 +31,7 @@
 #include "common/bnettime.h"
 
 #include "connection.h"
+#include "channel.h"
 #include "server.h"
 #include "account.h"
 #include "account_wrap.h"
@@ -736,6 +737,15 @@ static int game_report(t_game * game)
     // war3 game reporting is done elsewhere, so we can skip this function
 	    return 0;
 
+    if ((game->clienttag == CLIENTTAG_WCHAT_UINT) || (game->clienttag == CLIENTTAG_TIBSUNXP_UINT)
+     || (game->clienttag == CLIENTTAG_REDALERT_UINT) || (game->clienttag == CLIENTTAG_DUNE2000_UINT)
+     || (game->clienttag == CLIENTTAG_NOX_UINT) || (game->clienttag == CLIENTTAG_NOXQUEST_UINT)
+     || (game->clienttag == CLIENTTAG_RENEGADE_UINT) || (game->clienttag == CLIENTTAG_RENGDFDS_UINT)
+     || (game->clienttag == CLIENTTAG_YURISREV_UINT) || (game->clienttag == CLIENTTAG_EMPERORBD_UINT)
+     || (game->clienttag == CLIENTTAG_LOFLORE3_UINT) || (game->clienttag == CLIENTTAG_WWOL_UINT))
+     // PELISH: We are not supporting ladders for all WOL clients yet
+	    return 0;
+
     if (game->clienttag==CLIENTTAG_DIABLOSHR_UINT ||
         game->clienttag==CLIENTTAG_DIABLORTL_UINT ||
         game->clienttag==CLIENTTAG_DIABLO2ST_UINT ||
@@ -813,72 +823,99 @@ static int game_report(t_game * game)
 	    {
 		eventlog(eventlog_level_debug,__FUNCTION__,"realplayer %u result=%u",i+1,(unsigned int)game->results[i]);
 
-		ladder_init_account(game->players[i],game->clienttag,id);
-
-		switch (game->results[i])
-		{
-		case game_result_win:
-		    account_inc_ladder_wins(game->players[i],game->clienttag,id);
-		    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_win));
-		    break;
-		case game_result_loss:
-		    account_inc_ladder_losses(game->players[i],game->clienttag,id);
-		    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_loss));
-		    break;
-		case game_result_draw:
-		    account_inc_ladder_draws(game->players[i],game->clienttag,id);
-		    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_draw));
-		    break;
-		case game_result_disconnect:
-		    account_inc_ladder_disconnects(game->players[i],game->clienttag,id);
-		    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_disconnect));
-		    break;
-		default:
-		    eventlog(eventlog_level_error,__FUNCTION__,"bad ladder game realplayer results[%u] = %u",i,game->results[i]);
-		    account_inc_ladder_disconnects(game->players[i],game->clienttag,id);
-		    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_disconnect));
+        if ((tag_check_wolv1(game->clienttag)) || (tag_check_wolv2(game->clienttag))) {
+    	    id = ladder_id_solo;
+		    ladder_init_account_wol(game->players[i],game->clienttag,id);
+		    switch (game->results[i])
+		    {
+                case game_result_win:
+                    account_inc_ladder_wins(game->players[i],game->clienttag,id);
+                    break;
+                case game_result_loss:
+                    account_inc_ladder_losses(game->players[i],game->clienttag,id);
+                    break;
+                case game_result_disconnect:
+                    account_inc_ladder_disconnects(game->players[i],game->clienttag,id);
+                    break;
+                default:
+                    eventlog(eventlog_level_error,__FUNCTION__,"bad ladder game realplayer results[%u] = %u",i,game->results[i]);
+                    account_inc_ladder_disconnects(game->players[i],game->clienttag,id);
+		    }
 		}
-		account_set_ladder_last_time(game->players[i],game->clienttag,id,bnettime());
+		else {
+		    ladder_init_account(game->players[i],game->clienttag,id);
+		    switch (game->results[i])
+		    {
+                case game_result_win:
+                    account_inc_ladder_wins(game->players[i],game->clienttag,id);
+                    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_win));
+                    break;
+                case game_result_loss:
+                    account_inc_ladder_losses(game->players[i],game->clienttag,id);
+                    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_loss));
+                    break;
+                case game_result_draw:
+                    account_inc_ladder_draws(game->players[i],game->clienttag,id);
+                    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_draw));
+                    break;
+                case game_result_disconnect:
+                    account_inc_ladder_disconnects(game->players[i],game->clienttag,id);
+                    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_disconnect));
+                    break;
+                default:
+                    eventlog(eventlog_level_error,__FUNCTION__,"bad ladder game realplayer results[%u] = %u",i,game->results[i]);
+                    account_inc_ladder_disconnects(game->players[i],game->clienttag,id);
+                    account_set_ladder_last_result(game->players[i],game->clienttag,id,game_result_get_str(game_result_disconnect));
+		    }
+		    account_set_ladder_last_time(game->players[i],game->clienttag,id,bnettime());
+        }
 	    }
 
-	    ladder_info = (t_ladder_info*)xmalloc(sizeof(t_ladder_info)*realcount);
-	    if (ladder_update(game->clienttag,id,
-		realcount,game->players,game->results,ladder_info)<0)
-	    {
-		eventlog(eventlog_level_info,__FUNCTION__,"unable to update ladder stats");
-		xfree(ladder_info);
-		ladder_info = NULL;
-	    }
+        if ((tag_check_wolv1(game->clienttag)) || (tag_check_wolv2(game->clienttag))) {
+            ladder_update_wol(game->clienttag, id, game->players, game->results);
+        }        
+        else {
+    	    ladder_info = (t_ladder_info*)xmalloc(sizeof(t_ladder_info)*realcount);
+    	    if (ladder_update(game->clienttag,id,
+    		realcount,game->players,game->results,ladder_info)<0)
+    	    {
+    		eventlog(eventlog_level_info,__FUNCTION__,"unable to update ladder stats");
+    		xfree(ladder_info);
+    		ladder_info = NULL;
+    	    }
+        }
 	}
 	else
 	{
-	    for (i=0; i<realcount; i++)
-	    {
-		switch (game->results[i])
-		{
-		case game_result_win:
-		    account_inc_normal_wins(game->players[i],game->clienttag);
-		    account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_win));
-		    break;
-		case game_result_loss:
-		    account_inc_normal_losses(game->players[i],game->clienttag);
-		    account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_loss));
-		    break;
-		case game_result_draw:
-		    account_inc_normal_draws(game->players[i],game->clienttag);
-		    account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_draw));
-		    break;
-		case game_result_disconnect:
-		    account_inc_normal_disconnects(game->players[i],game->clienttag);
-		    account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_disconnect));
-		    break;
-		default:
-		    eventlog(eventlog_level_error,__FUNCTION__,"bad normal game realplayer results[%u] = %u",i,game->results[i]);
-		    account_inc_normal_disconnects(game->players[i],game->clienttag);
-		    account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_disconnect));
-		}
-		account_set_normal_last_time(game->players[i],game->clienttag,bnettime());
-	    }
+	    if (!(tag_check_wolv1(game->clienttag)) || !(tag_check_wolv2(game->clienttag))) {
+	        for (i=0; i<realcount; i++)
+	        {
+		    switch (game->results[i])
+		    {
+		    case game_result_win:
+		        account_inc_normal_wins(game->players[i],game->clienttag);
+		        account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_win));
+		        break;
+		    case game_result_loss:
+		        account_inc_normal_losses(game->players[i],game->clienttag);
+		        account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_loss));
+		        break;
+		    case game_result_draw:
+		        account_inc_normal_draws(game->players[i],game->clienttag);
+		        account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_draw));
+		        break;
+		    case game_result_disconnect:
+		        account_inc_normal_disconnects(game->players[i],game->clienttag);
+		        account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_disconnect));
+		        break;
+		    default:
+		        eventlog(eventlog_level_error,__FUNCTION__,"bad normal game realplayer results[%u] = %u",i,game->results[i]);
+		        account_inc_normal_disconnects(game->players[i],game->clienttag);
+		        account_set_normal_last_result(game->players[i],game->clienttag,game_result_get_str(game_result_disconnect));
+		    }
+		    account_set_normal_last_time(game->players[i],game->clienttag,bnettime());
+	        }
+        }
 	}
     }
 
@@ -1520,7 +1557,7 @@ extern int game_add_player(t_game * game, char const * pass, int startver, t_con
 	eventlog(eventlog_level_error,__FUNCTION__,"got NULL connection");
         return -1;
     }
-    if (game->type==game_type_ladder && account_get_normal_wins(conn_get_account(c),conn_get_clienttag(c))<10)
+    if (game->type==game_type_ladder && (account_get_normal_wins(conn_get_account(c),conn_get_clienttag(c))<10 && conn_get_wol(c)==0))
     /* if () ... */
     {
 	eventlog(eventlog_level_error,__FUNCTION__,"can not join ladder game without 10 normal wins");
@@ -2286,6 +2323,33 @@ extern int game_discisloss(t_game *game)
 
     /* all other games are handled as usual */
     return  game->option==game_option_ladder_countasloss;
+}
+
+extern int game_set_channel(t_game * game, t_channel * channel)
+{
+    if (!game) {
+        eventlog(eventlog_level_error, __FUNCTION__, "got NULL game");
+        return -1;
+    }
+
+    if (!channel) {
+        eventlog(eventlog_level_error, __FUNCTION__, "got NULL channel");
+        return -1;
+    }
+
+    game->channel = channel;
+    return 0;
+}
+
+extern t_channel * game_get_channel(t_game * game)
+{
+    if (!game) {
+        eventlog(eventlog_level_error, __FUNCTION__, "got NULL game");
+        return NULL;
+    }
+
+    return game->channel;
+
 }
 
 }
