@@ -3905,7 +3905,7 @@ typedef struct{
   bn_int               count;
   bn_int               clantag;
   /*Clan_Name (\0 terminated)
-  Player_Name invited (\0 terminated) */
+  Player_Name inviter (\0 terminated) */
 } PACKED_ATTR() t_server_clan_invitereq;
 
 #define CLIENT_CLAN_INVITEREPLY 0x79ff
@@ -3913,7 +3913,7 @@ typedef struct{
   t_bnet_header        h;
   bn_int               count;
   bn_int               clantag;
-  /*Player_Name invited (\0 terminated)
+  /*Player_Name inviter (\0 terminated)
   bn_byte            reply */
 } PACKED_ATTR() t_client_clan_invitereply;
 
