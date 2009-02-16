@@ -1469,6 +1469,97 @@ extern const char * clantag_to_str(t_clantag tag)
 	return tagstr;
 }
 
+/*
+ * Classes for clan list and member management.
+ *
+ * Copyright (C) 2009 - Olaf Freyer
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ */
+
+Clans clans;
+
+ClanKey::ClanKey(t_clantag clantag_)
+:clantag(clantag_)
+{
+	// TODO: convert clantag to lowercase clankey
+}
+
+ClanKey::~ClanKey() throw ()
+{
+}
+
+bool
+ClanKey::operator== (const ClanKey& right) const
+{
+	return (clankey == right.clankey);
+}
+
+
+bool
+ClanKey::operator< (const ClanKey& right) const
+{
+	return (clankey < right.clankey);
+}
+
+
+ClanMember::ClanMember(Clan *clan_, t_account *account_, t_clan_rank rank_, std::time_t join_time_)
+:clan(clan_), account(account_), rank(rank_), join_time(join_time_)
+{
+}
+
+ClanMember::~ClanMember() throw ()
+{
+}
+
+
+Clan::Clan(ClanKey clanKey_, t_account *creator_)
+:clanKey(clanKey_)
+{
+	if (creator_ != NULL) {
+		ClanMember creator = ClanMember(this, creator_, chieftain);
+		members.push_back(creator);
+	}
+}
+
+Clan::~Clan() throw ()
+{
+}
+
+const ClanMember&
+Clan::invite(t_account *invitee_)
+{
+	ClanMember *member = new ClanMember(this, invitee_);
+	invitees.push_back(*member);
+	return *member;
+}
+
+
+Clans::Clans()
+{
+}
+
+Clans::~Clans() throw ()
+{
+}
+
+Clan&
+Clans::createClan(ClanKey clanKey_, t_account *creator_)
+{
+	Clan *clan = new Clan(clanKey_, creator_);
+	// TODO: also add clanMember to account !!!
+	emergingClans.insert(std::make_pair(clanKey_, *clan));
+	return *clan;
+}
+
 }
 
 }

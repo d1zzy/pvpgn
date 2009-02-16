@@ -17,6 +17,9 @@
 #ifndef INCLUDED_CLAN_TYPES
 #define INCLUDED_CLAN_TYPES
 
+#include <vector>
+#include <map>
+
 #include "common/tag.h"
 #ifdef JUST_NEED_TYPES
 # include "common/bn_type.h"
@@ -192,6 +195,102 @@ extern int clan_save_motd_chg(t_connection * c, t_packet const *const packet);
 
 extern t_clantag str_to_clantag(const char *str);
 extern const char* clantag_to_str(t_clantag tag);
+
+/*
+ * Classes for clan list and member management.
+ *
+ * Copyright (C) 2009 - Olaf Freyer
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License
+ * as published by the Free Software Foundation; either version 3
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ */
+
+// defined and maintained in server.cpp
+extern std::time_t now;
+
+// foreward decalaration due to cyclic dependencies
+class Clan;
+
+// definition of all clan ranks
+typedef enum {
+	chieftain	=  4,
+	shaman		=  3,
+	grunt		=  2,
+	peon		=  1,
+	apprentice	=  0,
+	invitee		= -1
+} t_clan_rank;
+
+// basically just the lower case version of the clantag
+// required so we can easily assure case insensitive uniqueness of clan tags
+class ClanKey {
+public:
+	ClanKey(t_clantag clantag_);
+	~ClanKey() throw ();
+	bool operator== (const ClanKey& right) const;
+	bool operator< (const ClanKey& right) const;
+	t_clantag getClantag() const;
+	t_tag getClanKey() const;
+private:
+	t_clantag clantag;
+	t_tag clankey;
+};
+
+// a member or invitee of a clan
+class ClanMember {
+public:
+	// create a clan member, omit 3rd and 4th parameter during normal invitations
+	ClanMember(Clan *clan_, t_account *account_, t_clan_rank rank_=invitee, std::time_t join_time_=now);
+	~ClanMember() throw ();
+	t_account* getAccount() const;
+	t_clan_rank getRank() const;
+	const Clan& getClan() const;
+private:
+	Clan		*clan;
+	t_account	*account;
+    t_clan_rank	rank;
+    std::time_t	join_time;
+};
+
+// a clan with all its members and invitees
+class Clan {
+public:
+	// create a Clan, omit 2nd parameter when used to load a clan
+	explicit Clan(ClanKey clanKey_, t_account *creator_=NULL);
+	~Clan() throw ();
+	const ClanKey& getClanKey() const;
+	const ClanMember& invite(t_account *invitee);
+private:
+	typedef std::vector<ClanMember> CMList;
+	ClanKey clanKey;
+	CMList members;
+	CMList invitees;
+};
+
+// all established(permanent) and emerging(transient) clans
+class Clans {
+public:
+	Clans();
+	~Clans() throw ();
+	Clan& createClan(ClanKey clanKey_, t_account *creator_);
+	Clan& getClan(ClanKey clanKey) const;
+private:
+	typedef std::map<ClanKey, Clan> KeyClanMap;
+
+	// collection of established clans
+	KeyClanMap establishedClans;
+	// collection of clans currently in the process of creation
+	KeyClanMap emergingClans;
+};
+
+extern Clans clans;
 
 }
 
