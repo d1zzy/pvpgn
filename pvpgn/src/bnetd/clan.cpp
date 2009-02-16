@@ -101,7 +101,8 @@ extern int clan_send_message_to_online_members(t_clan * clan, t_message_type typ
             continue;
         }
 
-        if ((dest_conn = clanmember_get_conn(dest_member)) && (dest_conn != me)) {
+        if ((dest_conn = clanmember_get_conn(dest_member)) && (dest_conn != me) && 
+            (clanmember_get_fullmember(dest_member) == 1)) {
             message_send_text(dest_conn,type,me,text);
             heard = true;
         }
