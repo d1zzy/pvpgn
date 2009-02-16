@@ -24,6 +24,9 @@
 #include <cctype>
 #include <cstdlib>
 
+#include "compat/snprintf.h"
+#include "compat/strcasecmp.h"
+
 #include "common/irc_protocol.h"
 #include "common/packet.h"
 #include "common/eventlog.h"
