@@ -475,6 +475,16 @@ extern int irc_unget_paramelems(char ** elems)
     return irc_unget_elems(elems);
 }
 
+extern char ** irc_get_ladderelems(char * list)
+{
+    return irc_split_elems(list,':',1);
+}
+
+extern int irc_unget_ladderelems(char ** elems)
+{
+    return irc_unget_elems(elems);
+}
+
 static char * irc_message_preformat(t_irc_message_from const * from, char const * command, char const * dest, char const * text)
 {
     char * myfrom;

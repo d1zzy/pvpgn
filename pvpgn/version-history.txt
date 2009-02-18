@@ -20,6 +20,7 @@ PvPGN Version History:
   -- fixed voice flag not shown for clients in channel
   -- fixed bug in RedAlert2/Yuri when game owner changes maximum players
   -- added QuickMatch support for RA2/YURI
+  -- added Ladders support for Tiberian Sun and Red Alert 2 clients
 
 [WAR3]
   -- added support for SRP3 based account creation/login

@@ -35,6 +35,8 @@
 #include "common/addr.h"
 #include "common/trans.h"
 
+#include "common/packet.h"
+
 #include "compat/snprintf.h"
 
 #include "prefs.h"
@@ -1649,24 +1651,236 @@ static int _handle_userip_command(t_connection * conn, int numparams, char ** pa
 /**
  * LADDER Server commands:
  */
+static int _ladder_send(t_connection * conn, char const * command)
+{
+    t_packet * p;
+    char data[MAX_IRC_MESSAGE_LEN+1];
+    unsigned len;
+
+    p = packet_create(packet_class_raw);
+
+    if (command)
+        len = (std::strlen(command)+6);
+
+   	if (len > MAX_IRC_MESSAGE_LEN) {
+	    eventlog(eventlog_level_error,__FUNCTION__,"message to send is too large (%u bytes)",len);
+	    return -1;
+	}
+	else {
+	    std::sprintf(data,"\r\n\r\n\r\n%s",command);
+ 	    //std::sprintf(data,"%s",command);
+    }
+    
+    packet_set_size(p,0);
+    packet_append_data(p,data,len);
+    eventlog(eventlog_level_debug,__FUNCTION__,"[%d] sent \"%s\"",conn_get_socket(conn),data);
+    conn_push_outqueue(conn,p);
+    packet_del_ref(p);
+
+    /* In ladder server we must destroy connection after send packet */
+    conn_set_state(conn, conn_state_destroy);
+
+    return 0;
+}
+
+static int _ladder_is_integer(char * test)
+{
+    for(char const* ptr = test;*ptr;++ptr) {
+        if (!std::isdigit(*ptr)) {
+	        return 0; /* Is not integer */
+        }
+        else 
+   	        return 1; /* Is integer */
+    }
+}
+
 static int _handle_listsearch_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-	// FIXME: Not implemetned yet
-	conn_set_state(conn, conn_state_destroy);
+    char ** e;
+	int i = 0;
+	unsigned rank = 0;
+	unsigned points = 0;
+	unsigned wins = 0;
+	unsigned losses = 0;
+	unsigned disconnects = 0;
+	char temp[MAX_IRC_MESSAGE_LEN];
+	char data[MAX_IRC_MESSAGE_LEN];
+    t_account * cl_account;
+    t_clienttag cl_tag;
+    t_ladder_id id = ladder_id_solo;
+
+   	std::memset(data,0,sizeof(data));
+
+    if ((numparams>=1) && (params[0]) && (text)) {
+        cl_tag = tag_sku_to_uint(std::atoi(params[0]));
+
+        e = irc_get_ladderelems(text);
+
+        //TIMESTAMP 1147130452
+        //TOTAL 12033
+        //NOTFOUND
+        // TIMESTAMP 1188740860
+        // 'TOTAL 27466
+        /*    std::sprintf(temp,"TIMESTAMP %lu\n", std::time(NULL));
+            std::strcat(data,temp);
+            std::sprintf(temp,"TOTAL 88\n");
+            std::strcat(data,temp);*/
+
+        for (i=0;e[i];i++) {
+            /* Now we have in e[i] names */
+            if (e[i] && (std::strcmp(e[i], ":") != 0)) {
+                cl_account = accountlist_find_account(e[i]);
+                if (cl_account && cl_tag && (rank = account_get_ladder_rank(cl_account, cl_tag, id))) {
+                    points = account_get_ladder_points(cl_account, cl_tag, id);
+                    wins = account_get_ladder_wins(cl_account, cl_tag, id);
+                    losses = account_get_ladder_losses(cl_account, cl_tag, id);
+                    disconnects = account_get_ladder_disconnects(cl_account, cl_tag, id);
+                    std::sprintf(temp,"%u  %s  %u  %u  %u  0  %u\r\n",rank,e[i],points,wins,losses,disconnects);
+                    std::strcat(data,temp);
+                }
+                else
+                    std::strcat(data,"NOTFOUND\r\n");
+            }
+        }
+
+	    if (e)
+            irc_unget_ladderelems(e);
+
+	    _ladder_send(conn,data);
+    }
+    else {
+        WARN0("Not enough parameters");
+        conn_set_state(conn, conn_state_destroy);
+        return 0;
+    }
 	return 0;
 }
 
 static int _handle_rungsearch_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-	// FIXME: Not implemetned yet
-	conn_set_state(conn, conn_state_destroy);
+	char temp[MAX_IRC_MESSAGE_LEN];
+	char data[MAX_IRC_MESSAGE_LEN];
+	unsigned rank = 0;
+	unsigned points = 0;
+	unsigned wins = 0;
+	unsigned losses = 0;
+	unsigned disconnects = 0;
+    t_account * cl_account;
+    t_clienttag cl_tag;
+    t_ladder_id id = ladder_id_solo;
+    
+   	std::memset(data,0,sizeof(data));
+
+    if ((numparams>=4) && (params[0]) && (params[1]) && (params[3])) {
+        cl_tag = tag_sku_to_uint(std::atoi(params[3]));
+
+        if ((cl_tag != CLIENTTAG_TIBERNSUN_UINT) && (cl_tag != CLIENTTAG_REDALERT2_UINT)) {
+            // PELISH: We are not supporting ladders for all WOL clients yet
+            std::strcat(data,"\r\n");
+            _ladder_send(conn,data);
+            DEBUG1("Wants rung search for SKU %s", params[0]);
+	        return 0;
+        }
+
+        if (_ladder_is_integer(params[0]) == 0) {
+            /* rungsearch want to line for one player (nick is in params[0]) */
+            cl_account = accountlist_find_account(params[0]);
+            if (cl_account && cl_tag && (rank = account_get_ladder_rank(cl_account, cl_tag, id))) {
+                points = account_get_ladder_points(cl_account, cl_tag, id);
+                wins = account_get_ladder_wins(cl_account, cl_tag, id);
+                losses = account_get_ladder_losses(cl_account, cl_tag, id);
+                disconnects = account_get_ladder_disconnects(cl_account, cl_tag, id);
+                std::sprintf(temp,"%u  %s  %u  %u  %u  0  %u\r\n",rank,params[0],points,wins,losses,disconnects);
+            }
+            else
+                 std::sprintf(temp,"\r\n");
+            _ladder_send(conn,temp);
+        }
+        else {
+            /* Standard RUNG search */
+            int i;
+            unsigned start = std::atoi(params[0]);
+            unsigned count = std::atoi(params[1]);
+
+    	    eventlog(eventlog_level_debug, __FUNCTION__, "Start(%u) Count(%u)", start, count);
+	    
+        	LadderList* ladderList = NULL;
+
+        	ladderList = ladders.getLadderList(LadderKey(id, cl_tag, ladder_sort_default, ladder_time_default));
+        	for (i = start; i < start + count; i++) {
+        		const LadderReferencedObject* referencedObject = NULL;
+        		cl_account = NULL;
+                if (((referencedObject = ladderList->getReferencedObject(i))) && (cl_account = referencedObject->getAccount())) {
+                    rank = account_get_ladder_rank(cl_account, cl_tag, id);
+                    points = account_get_ladder_points(cl_account, cl_tag, id);
+                    wins = account_get_ladder_wins(cl_account, cl_tag, id);
+                    losses = account_get_ladder_losses(cl_account, cl_tag, id);
+                    disconnects = account_get_ladder_disconnects(cl_account, cl_tag, id);
+                    std::sprintf(temp,"%u  %s  %u  %u  %u  0  %u\r\n",rank, account_get_name(cl_account),points,wins,losses,disconnects);
+                    std::strcat(data, temp);
+                }
+                else {
+                    std::strcat(data,"\r\n");
+                    _ladder_send(conn,data);
+                    return 0;
+                }
+            }
+            _ladder_send(conn,data);
+        }
+    }
+    else {
+        WARN0("Not enough parameters");
+        conn_set_state(conn, conn_state_destroy);
+        return 0;
+    }
 	return 0;
 }
 
 static int _handle_highscore_command(t_connection * conn, int numparams, char ** params, char * text)
 {
-	// FIXME: Not implemetned yet
-	conn_set_state(conn, conn_state_destroy);
+/*    char ** e;
+	int i = 0;
+	unsigned rank = 2;
+	unsigned points = 258;
+	unsigned wins = 0;
+	unsigned losses = 0;
+	unsigned unknown = 0;  // Here is nuber before Nick and Honor Badges in Yuri (1-999)
+	unsigned disconnects = 0;
+	char temp[MAX_IRC_MESSAGE_LEN];
+	char data[MAX_IRC_MESSAGE_LEN];
+    t_account * cl_account;
+    t_clienttag cltag;
+
+   	std::memset(temp,0,sizeof(temp));
+   	std::memset(data,0,sizeof(data));
+
+    if (text)
+        e = irc_get_ladderelems(text);
+    
+    if (params[0])
+        cltag = tag_sku_to_uint(std::atoi(params[0]));
+
+    for (i=0;e[i];i++) {
+        if (e[i] && (std::strcmp(e[i], ":") != 0)) {
+           cl_account = accountlist_find_account(e[i]);
+           if (cl_account) {
+               wins = account_get_normal_wins(cl_account, cltag);
+               losses = account_get_normal_losses(cl_account, cltag);
+               disconnects = account_get_normal_disconnects(cl_account, cltag);
+               std::sprintf(temp,"%u  %s  %u  %u  %u  %u  %u\r\n",rank+i,e[i],points,wins,losses,unknown,disconnects);
+               std::strcat(data,temp);
+           }
+           else
+               std::strcat(data,"NOTFOUND\r\n");
+        }
+    }
+
+	if (e)
+	     irc_unget_ladderelems(e);
+
+	_ladder_send(conn,data);
+*/
+    conn_set_state(conn, conn_state_destroy);
 	return 0;
 }
 

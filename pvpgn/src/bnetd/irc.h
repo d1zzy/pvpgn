@@ -44,6 +44,8 @@ extern char const * irc_convert_ircname(char const * pircname);
 extern char ** irc_get_listelems(char * list);
 extern int irc_unget_listelems(char ** elems);
 extern char ** irc_get_paramelems(char * list);
+extern char ** irc_get_ladderelems(char * list);
+extern int irc_unget_ladderelems(char ** elems);
 extern int irc_unget_paramelems(char ** elems);
 extern int irc_message_postformat(t_packet * packet, t_connection const * dest);
 extern int irc_message_format(t_packet * packet, t_message_type type, t_connection * me, t_connection * dst, char const * text, unsigned int dstflags);
