@@ -1034,7 +1034,7 @@ extern unsigned int account_get_ladder_draws(t_account * account, t_clienttag cl
 	eventlog(eventlog_level_error,__FUNCTION__,"got bad clienttag");
 	return 0;
     }
-    std::sprintf(key,"Record\\%s\\%d\\draws",tag_uint_to_str(clienttag_str,clienttag),(int)id);
+    std::sprintf(key,"Record\\%s\\%s\\draws",tag_uint_to_str(clienttag_str,clienttag),ladder_id_str[(int)id]);
     return account_get_numattr(account,key);
 }
 
@@ -1049,7 +1049,7 @@ extern int account_inc_ladder_draws(t_account * account, t_clienttag clienttag, 
        eventlog(eventlog_level_error,__FUNCTION__,"got bad clienttag");
        return -1;
     }
-    std::sprintf(key,"Record\\%s\\%d\\draws",tag_uint_to_str(clienttag_str,clienttag),(int)id);
+    std::sprintf(key,"Record\\%s\\%s\\draws",tag_uint_to_str(clienttag_str,clienttag),ladder_id_str[(int)id]);
     return account_set_numattr(account,key,account_get_ladder_draws(account,clienttag,id)+1);
 }
 
@@ -1078,7 +1078,7 @@ extern unsigned int account_get_ladder_disconnects(t_account * account, t_client
 	eventlog(eventlog_level_error,__FUNCTION__,"got bad clienttag");
 	return 0;
     }
-    std::sprintf(key,"Record\\%s\\%d\\disconnects",tag_uint_to_str(clienttag_str,clienttag),ladder_id_str[(int)id]);
+    std::sprintf(key,"Record\\%s\\%s\\disconnects",tag_uint_to_str(clienttag_str,clienttag),ladder_id_str[(int)id]);
     return account_get_numattr(account,key);
 }
 
@@ -1093,7 +1093,7 @@ extern int account_inc_ladder_disconnects(t_account * account, t_clienttag clien
        eventlog(eventlog_level_error,__FUNCTION__,"got bad clienttag");
        return -1;
     }
-    std::sprintf(key,"Record\\%s\\%d\\disconnects",tag_uint_to_str(clienttag_str,clienttag),(int)id);
+    std::sprintf(key,"Record\\%s\\%s\\disconnects",tag_uint_to_str(clienttag_str,clienttag),ladder_id_str[(int)id]);
     return account_set_numattr(account,key,account_get_ladder_disconnects(account,clienttag,id)+1);
 }
 
@@ -1107,7 +1107,7 @@ extern int account_set_ladder_disconnects(t_account * account, t_clienttag clien
        eventlog(eventlog_level_error,__FUNCTION__,"got bad clienttag");
        return -1;
     }
-    std::sprintf(key,"Record\\%s\\%d\\disconnects",tag_uint_to_str(clienttag_str,clienttag),ladder_id_str[(int)id]);
+    std::sprintf(key,"Record\\%s\\%s\\disconnects",tag_uint_to_str(clienttag_str,clienttag),ladder_id_str[(int)id]);
     return account_set_numattr(account,key,discs);
 }
 
