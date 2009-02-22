@@ -280,7 +280,7 @@ extern int conf_load_cmdline(int argc, char **argv, t_conf_entry *conftab)
 	}
 
 	if (!val)	/* option without argument, so it's like boolean */
-	    val = "true";
+	    val = (char *)("true");
 
 	_process_option(key, val, conftab);
 
