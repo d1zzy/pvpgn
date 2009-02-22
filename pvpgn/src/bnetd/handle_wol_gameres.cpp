@@ -732,7 +732,7 @@ extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const pa
                     snprintf (ch_data, sizeof(ch_data), "%u", (unsigned int) bn_int_nget(*((bn_int *)data)));
                     break;
                 case wol_gameres_type_string:
-                    snprintf (ch_data, sizeof(ch_data), "%s", data);
+                    snprintf (ch_data, sizeof(ch_data), "%s", (char *) data);
                     break;
                 case wol_gameres_type_bigint:
                     snprintf (ch_data, sizeof(ch_data), "%u", wol_gameres_get_long_from_data(datalen, data));
@@ -919,7 +919,7 @@ static int _client_trny(t_wol_gameres_result * game_result, wol_gameres_type typ
             else if (std::strcmp("TN  ", (const char *) data) == 0) /* for RNGD */
                 tournament = false; 
             else {
-                WARN1("got unknown string for TRNY: %s", data);
+                WARN1("got unknown string for TRNY: %s", (char *) data);
                 tournament = false;
             }
             break;
@@ -1057,7 +1057,7 @@ static int _client_mode(t_wol_gameres_result * game_result, wol_gameres_type typ
       
     switch (type) {
         case wol_gameres_type_string:
-            DEBUG1("Game mode: %s", data); /* For RNGD */
+            DEBUG1("Game mode: %s", (char *) data); /* For RNGD */
             break;
         default:
             WARN1("got unknown gameres type %u for MODE", type);
@@ -1090,7 +1090,7 @@ static int _client_crat(t_wol_gameres_result * game_result, wol_gameres_type typ
             else if (std::strcmp("OFF", (const char *) data) == 0)
                 crates = false; 
             else {
-                WARN1("got unknown string for CRAT: %s", data);
+                WARN1("got unknown string for CRAT: %s", (char *) data);
                 crates = false;
             }
             break;
@@ -1141,10 +1141,10 @@ static int _client_scen(t_wol_gameres_result * game_result, wol_gameres_type typ
 {
     switch (type) {
         case wol_gameres_type_string:
-            DEBUG1("Secnario %s",data);
+            DEBUG1("Secnario %s", (char *) data);
             break;
         case wol_gameres_type_int:
-            DEBUG1("Secnario num %u",data);
+            DEBUG1("Secnario num %u", (unsigned int) data);
             break;
         default:
             WARN1("got unknown gameres type %u for SCEN", type);
@@ -1248,7 +1248,7 @@ static int _client_time(t_wol_gameres_result * game_result, wol_gameres_type typ
 
     switch (type) {
         case wol_gameres_type_string:
-            DEBUG1("Game was start at %s ", data);
+            DEBUG1("Game was start at %s ", (char *) data);
             break;
         case wol_gameres_type_time:
             time = (std::time_t) bn_int_nget(*((bn_int *)data));
@@ -1281,7 +1281,7 @@ static int _client_proc(t_wol_gameres_result * game_result, wol_gameres_type typ
 {
     switch (type) {
         case wol_gameres_type_string:
-            DEBUG1("Procesor %s", data);
+            DEBUG1("Procesor %s", (char *) data);
             break;
         default:
             WARN1("got unknown gameres type %u for PROC", type);
@@ -1328,7 +1328,7 @@ static int _client_vers(t_wol_gameres_result * game_result, wol_gameres_type typ
     unsigned int version;
 
     if (type == wol_gameres_type_string) {
-        DEBUG1("Version of client %s",data);
+        DEBUG1("Version of client %s", (char *) data);
     }
     else if (type == wol_gameres_type_int) {
         version = (unsigned int) bn_int_nget(*((bn_int *)data));
@@ -1346,7 +1346,7 @@ static int _client_date(t_wol_gameres_result * game_result, wol_gameres_type typ
 
     switch (type) {
         case wol_gameres_type_string:
-            DEBUG1("Date %s",data);
+            DEBUG1("Date %s", (char *) data);
             break;
         default:
             WARN1("got unknown gameres type %u for DATE", type);
@@ -1371,7 +1371,7 @@ static int _client_base(t_wol_gameres_result * game_result, wol_gameres_type typ
             else if (std::strcmp("OFF", (const char *) data) == 0)
                 bases = false; 
             else {
-                WARN1("got unknown string for BASE: %s", data);
+                WARN1("got unknown string for BASE: %s", (char *) data);
                 bases = false;
             }
             break;
@@ -1400,7 +1400,7 @@ static int _client_tibr(t_wol_gameres_result * game_result, wol_gameres_type typ
             DEBUG0("Game has tiberium OFF");
     }
     else if (type == wol_gameres_type_string) {
-        DEBUG1("Game has tiberium %s", data);
+        DEBUG1("Game has tiberium %s", (char *) data);
     }
     else
         WARN1("got unknown gameres type %u for TIBR", type);
@@ -1410,10 +1410,6 @@ static int _client_tibr(t_wol_gameres_result * game_result, wol_gameres_type typ
 
 static int _client_shad(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
 {
-    //SHAD 00 02 00 01 [00 FF FF FF]
-    //SHAD 00 02 00 01 [00 00 00 00]
-    //SHAD 00 07 00 04 [OFF 00]
-   
     bool shadows;
 
     switch (type) {
@@ -1426,7 +1422,7 @@ static int _client_shad(t_wol_gameres_result * game_result, wol_gameres_type typ
             else if (std::strcmp("OFF", (const char *) data) == 0)
                 shadows = false; 
             else {
-                WARN1("got unknown string for SHAD: %s", data);
+                WARN1("got unknown string for SHAD: %s", (char *) data);
                 shadows = false;
             }
             break;
@@ -1457,7 +1453,7 @@ static int _client_flag(t_wol_gameres_result * game_result, wol_gameres_type typ
             else if (std::strcmp("OFF", (const char *) data) == 0)
                 captureflag = false; 
             else {
-                WARN1("got unknown string for FLAG: %s", data);
+                WARN1("got unknown string for FLAG: %s", (char *) data);
                 captureflag = false;
             }
             break;
@@ -1511,7 +1507,6 @@ static int _client_acco(t_wol_gameres_result * game_result, wol_gameres_type typ
     unsigned int acco;
 
     /* This tag sends YURI */
-    //ACCO 00 06 00 04 00 00 00 00
 
     switch (type) {
         case wol_gameres_type_int:
@@ -1584,7 +1579,7 @@ static int _client_snam(t_wol_gameres_result * game_result, wol_gameres_type typ
 
     switch (type) {
         case wol_gameres_type_string:
-            DEBUG1("Server name: %s", data);
+            DEBUG1("Server name: %s", (char *) data);
             break;
         default:
             WARN1("got unknown gameres type %u for SNAM", type);
@@ -1599,7 +1594,7 @@ static int _client_gmap(t_wol_gameres_result * game_result, wol_gameres_type typ
       
     switch (type) {
         case wol_gameres_type_string:
-            DEBUG1("Game map: %s", data);
+            DEBUG1("Game map: %s", (char *) data);
             break;
         default:
             WARN1("got unknown gameres type %u for GMAP", type);
@@ -1631,7 +1626,7 @@ static int _client_pnam(t_wol_gameres_result * game_result, wol_gameres_type typ
 {
     switch (type) {
         case wol_gameres_type_string:
-            DEBUG1("Player name: %s", data);
+            DEBUG1("Player name: %s", (char *) data);
             break;
         default:
             WARN1("got unknown gameres type %u for PNAM", type);
@@ -2097,12 +2092,12 @@ static int _cl_nam_general(t_wol_gameres_result * game_result, int num, wol_game
     int senderid = game_result->senderid;
     t_account * account = accountlist_find_account((char const *) data);
 
-    DEBUG2("Name of palyer %u: %s", num, data);
+    DEBUG2("Name of palyer %u: %s", (char *) num, data);
 
     game_result->otheraccount = account;
 
     if (senderid == num) {
-        DEBUG1("Packet was sent by %s", data);
+        DEBUG1("Packet was sent by %s", (char *) data);
         game_result->myaccount = account;
     }
 
