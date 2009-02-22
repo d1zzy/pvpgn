@@ -408,7 +408,7 @@ extern int ipbanlist_add(t_connection * c, char const * cp, std::time_t endtime)
 	if (endtime == 0)
 	{
             std::sprintf(tstr,"%s banned permamently by %s.",cp,conn_get_username(c));
-            eventlog(eventlog_level_info,__FUNCTION__,tstr);
+            eventlog(eventlog_level_info,__FUNCTION__,"%s",tstr);
             message_send_admins(c,message_type_info,tstr);
 	    std::sprintf(tstr,"%s banned permamently.",cp);
 	    message_send_text(c,message_type_info,c,tstr);
@@ -416,7 +416,7 @@ extern int ipbanlist_add(t_connection * c, char const * cp, std::time_t endtime)
 	else
 	{
             std::sprintf(tstr,"%s banned for %.48s by %s.",cp,seconds_to_timestr(entry->endtime - now),conn_get_username(c));
-            eventlog(eventlog_level_info,__FUNCTION__,tstr);
+            eventlog(eventlog_level_info,__FUNCTION__,"%s",tstr);
             message_send_admins(c,message_type_info,tstr);
 	    std::sprintf(tstr,"%s banned for %.48s.",cp,seconds_to_timestr(entry->endtime - now));
 	    message_send_text(c,message_type_info,c,tstr);
