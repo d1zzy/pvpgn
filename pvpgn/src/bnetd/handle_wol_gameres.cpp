@@ -1127,12 +1127,15 @@ static int _client_unit(t_wol_gameres_result * game_result, wol_gameres_type typ
 {
     unsigned int units;
 
-    if (type == wol_gameres_type_int) {
-        units = (unsigned int) bn_int_nget(*((bn_int *)data));
-        DEBUG1("Game was started with %u units", units);
+    switch (type) {
+        case wol_gameres_type_int:
+            units = (unsigned int) bn_int_nget(*((bn_int *)data));
+            DEBUG1("Game was started with %u units", units);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for UNIT", type);
+            break;
     }
-    else
-        WARN1("got unknown gameres type %u for UNIT", type);
 
     return 0;
 }
@@ -1144,7 +1147,7 @@ static int _client_scen(t_wol_gameres_result * game_result, wol_gameres_type typ
             DEBUG1("Secnario %s", (char *) data);
             break;
         case wol_gameres_type_int:
-            DEBUG1("Secnario num %u", (unsigned int) data);
+            DEBUG1("Secnario num %u", (unsigned int) bn_int_nget(*((bn_int *)data)));
             break;
         default:
             WARN1("got unknown gameres type %u for SCEN", type);

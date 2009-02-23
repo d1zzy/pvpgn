@@ -824,7 +824,7 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
             if (text)
                 std::sprintf(temp,"%s :%s",conn_get_chatname(me),text);
             else
-                std::sprintf(temp,"%s :");
+                std::sprintf(temp,"%s :",conn_get_chatname(me));
             msg = irc_message_preformat(&from,"KICK",irc_convert_channel(conn_get_channel(me),dst),temp);
             conn_unget_chatname(me,from.nick);
         }
