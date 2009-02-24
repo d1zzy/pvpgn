@@ -1,7 +1,10 @@
 # generate the configs with proper line endings
 set(OUTPUT_CONFS ad.conf anongame_infos.conf address_translation.conf 
   autoupdate.conf bnalias.conf bnban.conf bnetd_default_user.plain 
-  bnhelp.conf bnissue.txt bnmaps.conf bnmotd.txt bnxpcalc.conf 
+  bnhelp.conf bnissue.txt bnmaps.conf bnxpcalc.conf bnmotd-enUS.txt 
+  bnmotd-csCZ.txt bnmotd-deDE.txt bnmotd-esES.txt bnmotd-frFR.txt 
+  bnmotd-nlNL.txt bnmotd-plPL.txt bnmotd-ruRU.txt bnmotd-zhCN.txt 
+  bnmotd-zhTW.txt bnmotd-ptBR.txt 
   bnxplevel.conf channel.conf command_groups.conf news.txt realm.conf 
   sql_DB_layout2.conf sql_DB_layout.conf supportfile.conf topics.conf 
   tournament.conf versioncheck.conf)
@@ -17,7 +20,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/d2dbs.conf.in ${CMAKE_CURRENT_BINARY_
 if(WITH_BNETD)
   set(BNETD_CONFS bnetd.conf ad.conf anongame_infos.conf address_translation.conf 
   autoupdate.conf bnalias.conf bnban.conf 
-  bnetd_default_user.plain bnhelp.conf bnissue.txt bnmaps.conf bnmotd.txt 
+  bnetd_default_user.plain bnhelp.conf bnissue.txt bnmaps.conf bnmotd-enUS.txt 
+  bnmotd-csCZ.txt bnmotd-deDE.txt bnmotd-esES.txt bnmotd-frFR.txt bnmotd-nlNL.txt
+  bnmotd-plPL.txt bnmotd-ruRU.txt bnmotd-zhCN.txt bnmotd-zhTW.txt bnmotd-ptBR.txt  
   bnxpcalc.conf bnxplevel.conf channel.conf command_groups.conf news.txt 
   realm.conf sql_DB_layout.conf sql_DB_layout2.conf supportfile.conf topics.conf 
   tournament.conf versioncheck.conf)

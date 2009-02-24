@@ -1,0 +1,11 @@
+%IAhoj %l, vítejte na %s!
+%IServer bìží na %h verze %v.
+%ITento server hostuje %H
+%I
+%INa tomto serveru je %a uživatelských úètù.
+%IAktuálnì je zde %U uživatelù ve %G hrách typu %N,
+%Ia %u uživatelù ve %g hrách a %c kanálech.
+%IMáte problémy s pøíkazy? Pro více informací
+%Izadejte /help
+%I
+%I%m

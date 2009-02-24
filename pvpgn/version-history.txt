@@ -31,6 +31,7 @@ PvPGN Version History:
   -- added /clan create/invite/disband subcommands
   -- added clan_min_invites to bnetd.conf for miminum accepted
      invitations need in clan-creating process (default is 2)
+  -- added support for multilingual motd
 
  ChangeLog for 1.8.5 (since 1.8.4)
 =========================================

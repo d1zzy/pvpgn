@@ -121,16 +121,57 @@ static void conn_send_welcome(t_connection * c)
 	c->protocol.cflags|= conn_flags_welcomed;
 	return;
     }
-    if ((filename = prefs_get_motdfile()))
-    {
-	if ((fp = std::fopen(filename,"r")))
-	{
-	    message_send_file(c,fp);
-	    if (std::fclose(fp)<0)
-	      { eventlog(eventlog_level_error,__FUNCTION__,"could not close MOTD file \"%s\" after reading (std::fopen: %s)",filename,std::strerror(errno)); }
-	}
-	else
-	  { eventlog(eventlog_level_error,__FUNCTION__,"could not open MOTD file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno)); }
+    if (filename = prefs_get_motdfile()) {
+        char lang_str[5];
+        char * lang_filename;
+        char * tempmotdfile;
+        char * def_langtag;
+        char * extention;
+ 
+        tag_uint_to_str(lang_str,conn_get_gamelang(c));
+
+        tempmotdfile = xstrdup(filename);
+        def_langtag = std::strrchr(tempmotdfile,'-');
+        if (!def_langtag) {
+            extention = std::strrchr(tempmotdfile,'.');
+            lang_filename = (char*)xmalloc(std::strlen(tempmotdfile)+6);
+        }
+        else {
+            *def_langtag = '\0';
+            def_langtag++;
+            extention = std::strrchr(def_langtag,'.');
+            lang_filename = (char*)xmalloc(std::strlen(tempmotdfile));
+        }
+        *extention = '\0';
+        extention++;        
+
+        if (lang_str)
+            std::sprintf(lang_filename, "%s-%s.%s", tempmotdfile, lang_str, extention);
+        else
+            std::sprintf(lang_filename, "%s", filename);
+
+        if (fp = std::fopen(lang_filename,"r")) {
+            message_send_file(c,fp);
+            if (std::fclose(fp)<0) {
+                eventlog(eventlog_level_error,__FUNCTION__,"could not close MOTD file \"%s\" after reading (std::fopen: %s)",lang_filename,std::strerror(errno));
+            }
+        }
+        else {
+            INFO1("motd file %s not found, sending default motd file",lang_filename);
+            if (fp = std::fopen(filename,"r"))  {
+                message_send_file(c,fp);
+                if (std::fclose(fp)<0) {
+                    eventlog(eventlog_level_error,__FUNCTION__,"could not close MOTD file \"%s\" after reading (std::fopen: %s)",filename,std::strerror(errno));
+                }
+            }
+            else {
+                eventlog(eventlog_level_error,__FUNCTION__,"could not open MOTD file \"%s\" for reading (std::fopen: %s)",filename,std::strerror(errno));
+            }
+        }
+        if (tempmotdfile)
+            xfree((void *)tempmotdfile);
+        if (lang_filename)           
+            xfree((void *)lang_filename);
     }
     c->protocol.cflags|= conn_flags_welcomed;
 }
