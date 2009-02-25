@@ -73,7 +73,7 @@ char *sql_tables[] = { "BNET", "Record", "profile", "friend", "Team", NULL };
 
 const char* tab_prefix = SQL_DEFAULT_PREFIX;
 
-static char query[512];
+static char query[1024];
 
 extern int sql_init(const char *dbpath)
 {
@@ -456,6 +456,7 @@ extern int sql_load_clans(t_load_clans_func cb)
 
 extern int sql_write_clan(void *data)
 {
+    char esc_motd[CLAN_MOTD_MAX * 2 + 1];
     t_sql_res *result;
     t_sql_row *row;
     t_elem *curr;
@@ -481,10 +482,11 @@ extern int sql_write_clan(void *data)
 	}
 	num = std::atol(row[0]);
 	sql->free_result(result);
+	sql->escape_string(esc_motd, clan->clan_motd, std::strlen(clan->clan_motd));
 	if (num < 1)
-	    snprintf(query, sizeof(query), "INSERT INTO %sclan (cid, short, name, motd, creation_time) VALUES('%u', '%d', '%s', '%s', '%u')", tab_prefix, clan->clanid, clan->tag, clan->clanname, clan->clan_motd, (unsigned) clan->creation_time);
+	    snprintf(query, sizeof(query), "INSERT INTO %sclan (cid, short, name, motd, creation_time) VALUES('%u', '%d', '%s', '%s', '%u')", tab_prefix, clan->clanid, clan->tag, clan->clanname, esc_motd, (unsigned) clan->creation_time);
 	else
-	    snprintf(query, sizeof(query), "UPDATE %sclan SET short='%d', name='%s', motd='%s', creation_time='%u' WHERE cid='%u'", tab_prefix, clan->tag, clan->clanname, clan->clan_motd, (unsigned) clan->creation_time, clan->clanid);
+	    snprintf(query, sizeof(query), "UPDATE %sclan SET short='%d', name='%s', motd='%s', creation_time='%u' WHERE cid='%u'", tab_prefix, clan->tag, clan->clanname, esc_motd, (unsigned) clan->creation_time, clan->clanid);
 	if (sql->query(query) < 0)
 	{
 	    eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"%s\"", query);
