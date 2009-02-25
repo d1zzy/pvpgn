@@ -18,6 +18,7 @@
 
 #ifdef WITH_SQL_MYSQL
 #include "common/setup_before.h"
+#define NO_CLIENT_LONG_LONG
 #include "sql_mysql.h"
 
 #ifdef HAVE_WINDOWS_H
