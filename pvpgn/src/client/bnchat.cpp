@@ -1793,7 +1793,7 @@ extern int main(int argc, char * argv[])
 			    int offset;
 
 			    offset = sizeof(t_server_clan_invitereq);
-			    if (!(clan = packet_get_str_const(rpacket,offset,MAX_CLANNAME_LEN)))
+			    if (!(clan = packet_get_str_const(rpacket,offset,CLAN_NAME_MAX)))
 			    {
 				munge(&client);
 				std::printf("Got SERVER_CLAN_INVITEREQ with bad or missing clanname\n");
@@ -1849,7 +1849,7 @@ extern int main(int argc, char * argv[])
 			    int offset;
 
 			    offset = sizeof(t_server_clan_createinvitereq);
-			    if (!(clan = packet_get_str_const(rpacket,offset,MAX_CLANNAME_LEN)))
+			    if (!(clan = packet_get_str_const(rpacket,offset,CLAN_NAME_MAX)))
 			    {
 				munge(&client);
 				std::printf("Got SERVER_CLAN_CREATEINVITEREQ with bad or missing clanname\n");

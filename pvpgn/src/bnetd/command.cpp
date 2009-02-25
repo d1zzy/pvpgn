@@ -717,7 +717,7 @@ static int _handle_clan_command(t_connection * c, char const * text)
       else if (strstart(text,"create")==0 || strstart(text,"cre")==0) {
           unsigned int i,j;
           char clantag[CLANSHORT_NAME_MAX+1];
-          char clanname[MAX_CLANNAME_LEN+1];
+          char clanname[CLAN_NAME_MAX+1];
 
           for (i=0; text[i]!=' ' && text[i]!='\0'; i++); /* skip command */
           for (; text[i]==' '; i++);

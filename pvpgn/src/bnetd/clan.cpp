@@ -421,7 +421,7 @@ extern int clan_save_motd_chg(t_connection * c, t_packet const *const packet)
     if ((clan = account_get_clan(account)) == NULL)
 	return -1;
     offset = sizeof(packet->u.client_clan_motdchg);
-    motd = packet_get_str_const(packet, offset, 25);
+    motd = packet_get_str_const(packet, offset, CLAN_MOTD_MAX);
     eventlog(eventlog_level_trace, __FUNCTION__, "[%d] got W3XP_CLAN_MOTDCHG packet : %s", conn_get_socket(c), motd);
     if (clan_set_motd(clan, motd) != 0)
     {

@@ -34,7 +34,7 @@ const int UNCHECKED_NAME_STR = 32; /* including terminating NUL char */
                                    *  proper error packets can be returned) */
 const int CLANSHORT_NAME_MAX = 4;
 const unsigned CLAN_NAME_MAX = 25; /* including terminating NUL char */
-const int MAX_CLANNAME_LEN = 64;
+const unsigned CLAN_MOTD_MAX = 223; 
 const int MAX_CHANNELNAME_LEN = 32; /* including terminating NUL char */
 const unsigned MAX_CHARNAME_LEN = 16;
 const unsigned MIN_CHARNAME_LEN = 2;
