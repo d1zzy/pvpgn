@@ -322,10 +322,7 @@ extern int handle_irc_common_packet(t_connection * conn, t_packet const * const 
     data = (const char *)packet_get_raw_data_const(packet,0);
 
     for (i=0; i < packet_get_size(packet); i++) {
-	if ((data[i] == '\r')||(data[i] == '\0')) {
-	    /* kindly ignore \r and NUL ... */
-	}
-    else if (data[i] == '\n') {
+    if (data[i] == '\n') {
 	    /* end of line */
 	    handle_irc_common_line(conn,ircline);
 	    std::memset(ircline,0,sizeof(ircline));

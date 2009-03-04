@@ -478,6 +478,7 @@ static int sd_tcpinput(t_connection * c)
     unsigned int currsize;
     t_packet *   packet;
     int		 csocket = conn_get_socket(c);
+    bool	 skip;
 
     currsize = conn_get_in_size(c);
 
@@ -591,6 +592,7 @@ static int sd_tcpinput(t_connection * c)
 		     * some bots even send them after login (eg. UltimateBot)
 		     */
 		    currsize--;
+		    skip = true;
 		    break;
 		}
 
@@ -598,12 +600,47 @@ static int sd_tcpinput(t_connection * c)
 		{
 		    conn_set_in_size(c,currsize);
 		    packet_set_size(packet,currsize+1);
+		    skip = true;
 		    break; /* no end of line, get another char */
 		}
 	    }
-	    /* got a complete line or overflow... fall through */
+	    skip = false;
+	    break;
+
+	case conn_class_ircinit:
+	case conn_class_irc:
+	case conn_class_wol:
+	case conn_class_wserv:
+	case conn_class_wladder:
+	    if (currsize<MAX_PACKET_SIZE)
+				/* if we overflow, we can't wait for the end of the line.
+					     handle_*_packet() should take care of it */
+	    {
+		char const * const temp=(char const * const)packet_get_raw_data_const(packet,0);
+
+		if ((temp[currsize-1]=='\r')||(temp[currsize-1]=='\0')) {
+			/* kindly ignore \r and NUL ... */
+		    currsize--;
+		    skip = true;
+		    break;
+		}
+
+		if (temp[currsize-1]!='\n')
+		{
+		    conn_set_in_size(c,currsize);
+		    packet_set_size(packet,currsize+1);
+		    skip = true;
+		    break; /* no end of line, get another char */
+		}
+	    }
+	    skip = false;
+	    break;
 
 	default:
+		skip = false;
+	}
+
+	if (!skip) {
 	    conn_put_in_queue(c,NULL);
 
 	    if (hexstrm)
