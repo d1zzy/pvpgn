@@ -464,7 +464,7 @@ static int append_game_info(t_game* game, void* vdata)
     gamelist_data* data = static_cast<gamelist_data*>(vdata);
     t_channel *  gamechannel = game_get_channel(game);
     const char * gamename = irc_convert_channel(gamechannel, data->conn);
-    char * topic;
+    char * topic = NULL;
   
   	std::memset(temp,0,sizeof(temp));
 	std::memset(temp_a,0,sizeof(temp_a));
@@ -484,22 +484,37 @@ static int append_game_info(t_game* game, void* vdata)
         ERROR0("game have no channel");
         return 0;
     }
-    
+    if (!gamename) {
+        ERROR0("game have no name");
+        return 0;
+    }
+
     topic = channel_get_topic(channel_get_name(gamechannel));
+
+    if (topic) {
+        if (std::strlen(gamename)+1+20+1+1+strlen(topic)>MAX_IRC_MESSAGE_LEN) {
+            WARN0("LISTREPLY length exceeded");
+            return 0;
+        }
+    }
+    else {
+        if (std::strlen(gamename)+1+20+1+1>MAX_IRC_MESSAGE_LEN) {
+            WARN0("LISTREPLY length exceeded");
+            return 0;
+        }
+    }
     
-    if (std::strlen(gamename)+1+20+1+1+strlen(topic)<MAX_IRC_MESSAGE_LEN) {
-      /***
-       * WOLv1:
-       * : 326 u #nick's_game 1 0 2 0 0 1122334455 128::
-       * WOLv2:
-       * : 326 u #nick's_game 1 0 21 0 16777216 1122334455 128::g040
-       * : 326 u #nick's_game 1 0 41 1 2048 1122334455 128::g12P25,2097731398,0,0,0,WATERF~3.YRM // anon_game
-       */
-      /**
-	   *  The layout of the game list entry is something like this:
-       *
-	   *   #game_channel_name users unknown gameType gameIsTournment gameExtension longIP LOCK::topic
-	   */
+    /***
+     * WOLv1:
+     * : 326 u #nick's_game 1 0 2 0 0 1122334455 128::
+     * WOLv2:
+     * : 326 u #nick's_game 1 0 21 0 16777216 1122334455 128::g040
+     * : 326 u #nick's_game 1 0 41 1 2048 1122334455 128::g12P25,2097731398,0,0,0,WATERF~3.YRM // anon_game
+     */
+    /**
+     *  The layout of the game list entry is something like this:
+     *  #game_channel_name users unknown gameType gameIsTournment gameExtension longIP LOCK::topic
+     */
 
        std::strcat(temp,gamename);
        std::strcat(temp," ");
@@ -539,10 +554,6 @@ static int append_game_info(t_game* game, void* vdata)
 //     channel_get_length(channel),channel_wol_get_game_type(channel),channel_wol_get_game_tournament(channel),
 //     channel_wol_get_game_extension(channel),channel_wol_get_game_ownerip(channel));
 
-    }
-    else {
-       WARN0("LISTREPLY length exceeded");
-    }
     data->counter++;
     irc_send(data->conn,RPL_GAME_CHANNEL,temp);
 
