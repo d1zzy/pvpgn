@@ -462,12 +462,12 @@ static int append_game_info(t_game* game, void* vdata)
     char temp[MAX_IRC_MESSAGE_LEN];
     char temp_a[MAX_IRC_MESSAGE_LEN];
     gamelist_data* data = static_cast<gamelist_data*>(vdata);
-    t_channel *  gamechannel = game_get_channel(game);
-    const char * gamename = irc_convert_channel(gamechannel, data->conn);
+    t_channel *  gamechannel;
+    const char * gamename;
     char * topic = NULL;
   
   	std::memset(temp,0,sizeof(temp));
-	std::memset(temp_a,0,sizeof(temp_a));
+  	std::memset(temp_a,0,sizeof(temp_a));
 
     data->tcount++;
 
@@ -480,11 +480,11 @@ static int append_game_info(t_game* game, void* vdata)
         return 0;
     }
 
-    if (!gamechannel) {
+    if (!(gamechannel = game_get_channel(game))) {
         ERROR0("game have no channel");
         return 0;
     }
-    if (!gamename) {
+    if (!(gamename = irc_convert_channel(gamechannel, data->conn))) {
         ERROR0("game have no name");
         return 0;
     }
