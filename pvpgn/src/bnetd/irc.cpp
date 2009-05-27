@@ -1529,7 +1529,8 @@ extern int _handle_mode_command(t_connection * conn, int numparams, char ** para
         t_channel * channel;
         char const * ircname = irc_convert_ircname(params[0]);
 
-        if (!(channel = channellist_find_channel_by_name(ircname,NULL,NULL))) {
+        /* FIXME: Supports more than one channel in MODE command */
+        if (!(channel = conn_get_channel(conn))) {
             snprintf(temp,sizeof(temp),"%s :No such channel", params[0]);
             irc_send(conn,ERR_NOSUCHCHANNEL,temp);
      	    return 0;
