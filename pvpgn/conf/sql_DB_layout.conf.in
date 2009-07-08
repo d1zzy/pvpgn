@@ -27,6 +27,7 @@
 "auth_operator varchar(16)","'false'"
 "new_at_team_flag int","'0'"
 "auth_lockk varchar(16)","'0'"
+"auth_mute varchar(16)","'0'"
 "auth_command_groups varchar(128)","'1'"
 "acct_lastlogin_time int","'0'"
 "acct_lastlogin_owner varchar(128)","NULL"

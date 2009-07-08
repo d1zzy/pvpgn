@@ -1,6 +1,6 @@
 PvPGN Version History:
 
- Changelog for SVN TRUNK (since 1.8.4)
+ Changelog for SVN TRUNK (since 1.8.5)
 =========================================
  -- The list of changes mentioned in here is most propably incomplete.
  For more details also take a peek view into conversion-changelog.
@@ -27,6 +27,7 @@ PvPGN Version History:
   -- added support for passchange for SRP3 based accounts
 
 [MISC]
+  -- added /muteacct and /unmuteacct commands for admins
   -- added /clan whisper subcommand
   -- added /clan create/invite/disband subcommands
   -- added clan_min_invites to bnetd.conf for miminum accepted

@@ -675,6 +675,12 @@ extern void channel_message_send(t_channel const * channel, t_message_type type,
         if (type!=message_type_join && type!=message_type_part)
             return;
 
+	if (account_get_auth_mute(acc)==1)
+    {
+      message_send_text(me,message_type_error,me,"Your account has been muted, you can't talk on the channel.");
+      return;
+    }  
+			
     if(channel_get_flags(channel) & channel_flags_moderated) // moderated channel - only admins,OPs and voices may talk
     {
 	if (type==message_type_talk || type==message_type_emote)

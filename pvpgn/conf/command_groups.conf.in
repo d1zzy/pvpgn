@@ -148,7 +148,7 @@
 
 3	/serverban /ipban
 
-4	/kill /killsession /addacct /lockacct /unlockacct
+4	/kill /killsession /addacct /lockacct /unlockacct /muteacct /unmuteacct
 
 5	/ladderactivate
 # 5 	/rank_all_accounts 

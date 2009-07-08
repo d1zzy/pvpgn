@@ -111,6 +111,12 @@ static void do_whisper(t_connection * user_c, char const * dest, char const * te
     t_connection * dest_c;
     char const *   tname;
 
+	if (account_get_auth_mute(conn_get_account(user_c))==1)
+	{
+      message_send_text(user_c,message_type_error,user_c,"Your account has been muted, you can't whisper to other users.");
+      return;
+	}  
+	
     if (!(dest_c = connlist_find_connection_by_name(dest,conn_get_realm(user_c))))
     {
 	message_send_text(user_c,message_type_error,user_c,"That user is not logged on.");
@@ -334,6 +340,8 @@ static int _handle_netinfo_command(t_connection * c, char const * text);
 static int _handle_quota_command(t_connection * c, char const * text);
 static int _handle_lockacct_command(t_connection * c, char const * text);
 static int _handle_unlockacct_command(t_connection * c, char const * text);
+static int _handle_muteacct_command(t_connection * c, char const * text);
+static int _handle_unmuteacct_command(t_connection * c, char const * text);
 static int _handle_flag_command(t_connection * c, char const * text);
 static int _handle_tag_command(t_connection * c, char const * text);
 //static int _handle_ipban_command(t_connection * c, char const * text); Redirected to handle_ipban_command() in ipban.c [Omega]
@@ -345,7 +353,6 @@ static int _handle_topic_command(t_connection * c, char const * text);
 static int _handle_moderate_command(t_connection * c, char const * text);
 static int _handle_clearstats_command(t_connection * c, char const * text);
 static int _handle_tos_command(t_connection * c, char const * text);
-
 
 static const t_command_table_row standard_command_table[] =
 {
@@ -417,17 +424,17 @@ static const t_command_table_row extended_command_table[] =
 	{ "/con"                , _handle_connections_command },
 	{ "/finger"             , _handle_finger_command },
 	{ "/operator"           , _handle_operator_command },
-	{ "/aop"		, _handle_aop_command },
-	{ "/op"           	, _handle_op_command },
+	{ "/aop"                , _handle_aop_command },
+	{ "/op"                 , _handle_op_command },
 	{ "/tmpop"           	, _handle_tmpop_command },
 	{ "/deop"           	, _handle_deop_command },
-	{ "/voice"		, _handle_voice_command },
-	{ "/devoice"		, _handle_devoice_command },
-	{ "/vop"		, _handle_vop_command },
+	{ "/voice"              , _handle_voice_command },
+	{ "/devoice"            , _handle_devoice_command },
+	{ "/vop"                , _handle_vop_command },
 	{ "/admins"             , _handle_admins_command },
 	{ "/logout"             , _handle_quit_command },
 	{ "/quit"               , _handle_quit_command },
-	{ "/std::exit"               , _handle_quit_command },
+	{ "/exit"               , _handle_quit_command },
 	{ "/kill"               , _handle_kill_command },
 	{ "/killsession"        , _handle_killsession_command },
 	{ "/gameinfo"           , _handle_gameinfo_command },
@@ -442,6 +449,8 @@ static const t_command_table_row extended_command_table[] =
 	{ "/quota"              , _handle_quota_command },
 	{ "/lockacct"           , _handle_lockacct_command },
 	{ "/unlockacct"         , _handle_unlockacct_command },
+	{ "/muteacct"           , _handle_muteacct_command },
+	{ "/unmuteacct"         , _handle_unmuteacct_command },
 	{ "/flag"               , _handle_flag_command },
 	{ "/tag"                , _handle_tag_command },
 	{ "/help"               , handle_help_command },
@@ -452,11 +461,11 @@ static const t_command_table_row extended_command_table[] =
 	{ "/latency"            , _handle_ping_command },
 	{ "/ping"               , _handle_ping_command },
 	{ "/p"                  , _handle_ping_command },
-	{ "/commandgroups"	, _handle_commandgroups_command },
-	{ "/cg"			, _handle_commandgroups_command },
-	{ "/topic"		, _handle_topic_command },
-	{ "/moderate"		, _handle_moderate_command },
-	{ "/clearstats"		, _handle_clearstats_command },
+	{ "/commandgroups"      , _handle_commandgroups_command },
+	{ "/cg"	                , _handle_commandgroups_command },
+	{ "/topic"              , _handle_topic_command },
+	{ "/moderate"           , _handle_moderate_command },
+	{ "/clearstats"         , _handle_clearstats_command },
 
         { NULL                  , NULL }
 
@@ -4328,6 +4337,59 @@ static int _handle_unlockacct_command(t_connection * c, char const *text)
 
   account_set_auth_lock(account,0);
   message_send_text(c,message_type_error,c,"That user account is now unlocked.");
+  return 0;
+}
+
+
+static int _handle_muteacct_command(t_connection * c, char const *text)
+{
+  t_connection * user;
+  t_account *    account;
+
+  text = skip_command(text);
+
+  if (text[0]=='\0')
+    {
+      message_send_text(c,message_type_info,c,"usage: /muteacct <username>");
+      return 0;
+    }
+
+  if (!(account = accountlist_find_account(text)))
+    {
+      message_send_text(c,message_type_error,c,"Invalid user.");
+      return 0;
+    }
+  if ((user = connlist_find_connection_by_accountname(text)))
+    message_send_text(user,message_type_info,user,"Your account has just been muted by admin.");
+
+  account_set_auth_mute(account,1);
+  message_send_text(c,message_type_error,c,"That user account is now muted.");
+  return 0;
+}
+
+static int _handle_unmuteacct_command(t_connection * c, char const *text)
+{
+  t_connection * user;
+  t_account *    account;
+
+  text = skip_command(text);
+
+  if (text[0]=='\0')
+    {
+      message_send_text(c,message_type_info,c,"usage: /unmuteacct <username>");
+      return 0;
+    }
+  if (!(account = accountlist_find_account(text)))
+    {
+      message_send_text(c,message_type_error,c,"Invalid user.");
+      return 0;
+    }
+
+  if ((user = connlist_find_connection_by_accountname(text)))
+    message_send_text(user,message_type_info,user,"Your account has just been unmuted by admin.");
+
+  account_set_auth_mute(account,0);
+  message_send_text(c,message_type_error,c,"That user account is now unmuted.");
   return 0;
 }
 

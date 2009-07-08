@@ -371,6 +371,17 @@ extern int account_set_auth_lock(t_account * account, int val)
 }
 
 
+extern int account_set_auth_mute(t_account * account, int val)
+{
+	return account_set_boolattr(account,"BNET\\auth\\mute",val);
+}
+
+
+extern int account_get_auth_mute(t_account * account)
+{
+	return account_get_boolattr(account,"BNET\\auth\\mute");
+}
+
 
 
 /****************************************************************/

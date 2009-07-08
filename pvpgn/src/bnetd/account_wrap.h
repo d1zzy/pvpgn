@@ -79,6 +79,8 @@ extern int account_get_auth_createladdergame(t_account * account);
 extern int account_get_auth_joinladdergame(t_account * account);
 extern int account_get_auth_lock(t_account * account);
 extern int account_set_auth_lock(t_account * account, int val);
+extern int account_set_auth_mute(t_account * account, int val);
+extern int account_get_auth_mute(t_account * account);
 
 /* profile */
 extern char const * account_get_sex(t_account * account); /* the profile attributes are updated directly in bnetd.c */
