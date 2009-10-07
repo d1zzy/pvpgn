@@ -114,7 +114,7 @@ extern int autoupdate_load(char const * filename)
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing updatefile on line %u of file \"%s\"",line,filename);
 	    continue;
 	}
-	if ((!(path = std::strtok(NULL," \t"))) && tag_check_wolv1(tag_str_to_uint(clienttag)) && tag_check_wolv2(tag_str_to_uint(clienttag))) { /* Only in WOL is needed to have path*/
+	if ((!(path = std::strtok(NULL," \t"))) && tag_check_wolv1(tag_str_to_uint(clienttag)) && tag_check_wolv2(tag_str_to_uint(clienttag))) { /* Only in WOL is needed to have path */
 	    eventlog(eventlog_level_error,__FUNCTION__,"missing path on line %u of file \"%s\"",line,filename);
 	}
 
@@ -134,6 +134,8 @@ extern int autoupdate_load(char const * filename)
 	entry->updatefile = xstrdup(updatefile);
 	if (path)
 	    entry->path = xstrdup(path);
+	else
+		entry->path = NULL;
 
 	eventlog(eventlog_level_debug,__FUNCTION__,"update '%s' version '%s' with file %s",clienttag,versiontag,updatefile);
 
