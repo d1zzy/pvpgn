@@ -1419,37 +1419,6 @@ extern int _handle_topic_command(t_connection * conn, int numparams, char ** par
 	return 0;
 }
 
-extern int _handle_names_command(t_connection * conn, int numparams, char ** params, char * text)
-{
-	t_channel * channel;
-
-    if (numparams>=1) {
-		char ** e;
-		char const * ircname;
-		char const * verytemp;
-		char temp[MAX_IRC_MESSAGE_LEN];
-		int i;
-
-		e = irc_get_listelems(params[0]);
-		for (i=0;((e)&&(e[i]));i++) {
-			verytemp = irc_convert_ircname(e[i]);
-
-			if (!verytemp)
-				continue; /* something is wrong with the name ... */
-			channel = channellist_find_channel_by_name(verytemp,NULL,NULL);
-			if (!channel)
-				continue; /* channel doesn't exist */
-			irc_send_rpl_namreply(conn,channel);
-		}
-		if (e)
-		irc_unget_listelems(e);
-    }
-	else if (numparams==0) {
-		irc_send_rpl_namreply(conn, NULL);
-    }
-	return 0;
-}
-
 extern int _handle_kick_command(t_connection * conn, int numparams, char ** params, char * text)
 {
     char temp[MAX_IRC_MESSAGE_LEN];

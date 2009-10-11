@@ -58,7 +58,6 @@ extern int _handle_pong_command(t_connection * conn, int numparams, char ** para
 extern int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text);
 extern int irc_send_topic(t_connection * c, t_channel const * channel);
 extern int _handle_topic_command(t_connection * conn, int numparams, char ** params, char * text);
-extern int _handle_names_command(t_connection * conn, int numparams, char ** params, char * text);
 extern int _handle_kick_command(t_connection * conn, int numparams, char ** params, char * text);
 extern int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text);
 extern int _handle_time_command(t_connection * conn, int numparams, char ** params, char * text);

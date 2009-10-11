@@ -70,6 +70,7 @@ static int _handle_quit_command(t_connection * conn, int numparams, char ** para
 
 static int _handle_who_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_list_command(t_connection * conn, int numparams, char ** params, char * text);
+static int _handle_names_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_userhost_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_ison_command(t_connection * conn, int numparams, char ** params, char * text);
 static int _handle_whois_command(t_connection * conn, int numparams, char ** params, char * text);
@@ -518,6 +519,37 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 		irc_unget_listelems(e);
     }
     irc_send(conn,RPL_LISTEND,":End of LIST command");
+	return 0;
+}
+
+static int _handle_names_command(t_connection * conn, int numparams, char ** params, char * text)
+{
+	t_channel * channel;
+
+    if (numparams>=1) {
+		char ** e;
+		char const * ircname;
+		char const * verytemp;
+		char temp[MAX_IRC_MESSAGE_LEN];
+		int i;
+
+		e = irc_get_listelems(params[0]);
+		for (i=0;((e)&&(e[i]));i++) {
+			verytemp = irc_convert_ircname(e[i]);
+
+			if (!verytemp)
+				continue; /* something is wrong with the name ... */
+			channel = channellist_find_channel_by_name(verytemp,NULL,NULL);
+			if (!channel)
+				continue; /* channel doesn't exist */
+			irc_send_rpl_namreply(conn,channel);
+		}
+		if (e)
+		irc_unget_listelems(e);
+    }
+	else if (numparams==0) {
+		irc_send_rpl_namreply(conn, NULL);
+    }
 	return 0;
 }
 
