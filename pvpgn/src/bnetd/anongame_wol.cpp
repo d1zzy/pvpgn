@@ -56,11 +56,15 @@ static t_list * anongame_wol_matchlist_head=NULL;
 
 static int _handle_address_tag(t_anongame_wol_player * player, char * param);
 static int _handle_port_tag(t_anongame_wol_player * player, char * param);
+static int _handle_country_tag(t_anongame_wol_player * player, char * param);
+static int _handle_colour_tag(t_anongame_wol_player * player, char * param);
 
 static const t_wol_anongame_tag_table_row t_wol_anongame_tag_table[] =
 {
     { MATCHTAG_ADDRESS   , _handle_address_tag },
     { MATCHTAG_PORT      , _handle_port_tag },
+    { MATCHTAG_COUNTRY   , _handle_country_tag },
+    { MATCHTAG_COLOUR    , _handle_colour_tag },
 
     { NULL                        , NULL }
 };
@@ -170,6 +174,52 @@ static int _handle_port_tag(t_anongame_wol_player * player, char * param)
         player->port =  std::atoi(param);
 
 	return 0;
+}
+
+static int anongame_wol_player_get_country(t_anongame_wol_player const * player)
+{
+    if (!player) {
+        ERROR0("got NULL player");
+        return -1;
+    }
+
+    return player->country;
+}
+
+static int _handle_country_tag(t_anongame_wol_player * player, char * param)
+{
+    if (!player) {
+        ERROR0("got NULL player");
+        return -1;
+    }
+
+	if (param)
+        player->country = std::atoi(param);
+
+    return 0;
+}
+
+static int anongame_wol_player_get_colour(t_anongame_wol_player const * player)
+{
+    if (!player) {
+        ERROR0("got NULL player");
+        return -1;
+    }
+
+    return player->colour;
+}
+
+static int _handle_colour_tag(t_anongame_wol_player * player, char * param)
+{
+    if (!player) {
+        ERROR0("got NULL player");
+        return -1;
+    }
+
+	if (param)
+        player->colour = std::atoi(param);
+
+    return 0;
 }
 
 /* Matchlist functions:*/
@@ -301,9 +351,9 @@ static int anongame_wol_trystart(t_anongame_wol_player const * player1)
     * Expected start message is
     *
     * Red Alert 2:
-    * :Start [rand_num],0,0,[credits],0,1,0,1,1,0,1,x,2,1,[mapsize_kilobytes],[mapname],1:
-    *     [nick1_name],[nick1_loc],[nick1_rat],[nick1_addr_hex],[nick1_nat],[nick1_prt_hex],
-    *     [nick2_name],[nick2_loc],[nick2_rat],[nick2_addr_hex],[nick2_nat],[nick2_prt_hex]
+    * :Start [rand_num],0,0,[credits],0,1,[super_weapon],1,1,0,1,x,2,1,[mapsize_kilobytes],[mapname],1:
+    *     [nick1_name],[nick1_country],[nick1_colour],[nick1_addr_hex],[nick1_nat],[nick1_prt_hex],
+    *     [nick2_name],[nick2_country],[nick2_colour],[nick2_addr_hex],[nick2_nat],[nick2_prt_hex]
     *
     * Yuris Revenge Quick game:
     * 
@@ -452,9 +502,8 @@ static int anongame_wol_tokenize_line(t_connection * conn, char const * text)
      * :user!YURI@host PRIVMSG matchbot :Pings nickname,2;
      */
 
-    line = (char *) xmalloc(std::strlen(text)+1);
-    std::memset(line,0,sizeof(line));
-    snprintf(line, sizeof(line), "%s", text);
+    line = (char *) xmalloc(std::strlen(text)+2);
+    strcpy(line, text);
 
     command = line;
 	if (!(temp = strchr(command,' '))) {

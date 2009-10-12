@@ -30,7 +30,7 @@
 #define MATCHTAG_ADDRESS           "ADR"
 #define MATCHTAG_PORT              "PRT"
 #define MATCHTAG_COUNTRY           "COU"
-#define MATCHTAG_COLOR             "COL"
+#define MATCHTAG_COLOUR            "COL"
 #define MATCHTAG_MATCHRESOLUTION   "MBR"
 #define MATCHTAG_LOCATION          "LOC"
 #define MATCHTAG_SCREENRESOLUTION  "RES"
@@ -55,6 +55,8 @@ typedef struct anongame_wol_player
     /* Red Alert 2 and Yuri's Revnenge */
     int                  address;
     int                  port;
+    int                  country;
+    int                  colour;
 }
 #endif
 t_anongame_wol_player;
