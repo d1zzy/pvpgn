@@ -33,6 +33,7 @@ PvPGN Version History:
   -- added clan_min_invites to bnetd.conf for miminum accepted
      invitations need in clan-creating process (default is 2)
   -- added support for multilingual motd
+  -- added /ipscan command for admins
 
  ChangeLog for 1.8.5 (since 1.8.4)
 =========================================

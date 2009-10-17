@@ -146,7 +146,7 @@
 
 2	/realmann /ann /announce
 
-3	/serverban /ipban
+3	/serverban /ipban /ipscan
 
 4	/kill /killsession /addacct /lockacct /unlockacct /muteacct /unmuteacct
 

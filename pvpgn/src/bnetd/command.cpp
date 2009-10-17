@@ -345,6 +345,7 @@ static int _handle_unmuteacct_command(t_connection * c, char const * text);
 static int _handle_flag_command(t_connection * c, char const * text);
 static int _handle_tag_command(t_connection * c, char const * text);
 //static int _handle_ipban_command(t_connection * c, char const * text); Redirected to handle_ipban_command() in ipban.c [Omega]
+static int _handle_ipscan_command(t_connection * c, char const * text);
 static int _handle_set_command(t_connection * c, char const * text);
 static int _handle_motd_command(t_connection * c, char const * text);
 static int _handle_ping_command(t_connection * c, char const * text);
@@ -456,6 +457,7 @@ static const t_command_table_row extended_command_table[] =
 	{ "/help"               , handle_help_command },
 	{ "/mail"               , handle_mail_command },
 	{ "/ipban"              , handle_ipban_command }, // in ipban.c
+	{ "/ipscan"             , _handle_ipscan_command },
 	{ "/set"                , _handle_set_command },
 	{ "/motd"               , _handle_motd_command },
 	{ "/latency"            , _handle_ping_command },
@@ -4458,6 +4460,67 @@ static int _handle_tag_command(t_connection * c, char const *text)
     else
     snprintf(msgtemp, sizeof(msgtemp), "Invalid clienttag %.128s specified",dest);
     message_send_text(c,message_type_info,c,msgtemp);
+    return 0;
+}
+
+static int _handle_ipscan_command(t_connection * c, char const * text)
+{  
+    text = skip_command(text);
+    t_account * account;
+    t_connection * conn;
+    char const * ip;
+
+    /*
+      Description of _handle_ipscan_command
+      ---------------------------------------
+      Finds all currently logged in users with the given ip address.
+     */
+
+    if (text[0]=='\0') {
+        message_send_text(c,message_type_error,c,"usage: /ipscan <name or ip-address>");
+        return 0;
+    }
+    
+    if (account = accountlist_find_account(text)) {
+        conn = account_get_conn(account);
+        if (conn) {
+           // conn_get_addr returns int, so there can never be a NULL string construct
+           ip = addr_num_to_ip_str(conn_get_addr(conn));
+           snprintf(msgtemp, sizeof(msgtemp), "Scanning online users for IP %s!", ip);
+           message_send_text(c,message_type_error,c,msgtemp);
+        }
+        else {
+            message_send_text(c,message_type_info,c,"Warning: that user is not online, using last known address");
+            if (!(ip = account_get_ll_ip(account))) {
+                message_send_text(c,message_type_error,c,"Sorry, no address could be retrieved");
+                return 0;
+            } 
+        }
+    }
+    else {
+        ip = text;
+    }
+
+    t_elem const * curr;
+    int count = 0;
+    LIST_TRAVERSE_CONST(connlist(),curr) {
+        conn = (t_connection *) elem_get_data(curr);
+        if (!conn) {
+            // got empty element
+            continue;
+        }
+    
+        if(std::strcmp(ip,addr_num_to_ip_str(conn_get_addr(conn))) == 0) {
+            snprintf(msgtemp, sizeof(msgtemp), "%s", conn_get_loggeduser(conn));
+            message_send_text(c,message_type_info,c,msgtemp);
+            count ++;
+        }
+    }
+  
+    if (count == 0) {
+        message_send_text(c,message_type_error,c,"There are no online users with that address");
+    }
+
     return 0;
 }
 
