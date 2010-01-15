@@ -123,7 +123,7 @@ static void conn_send_welcome(t_connection * c)
     }
     if (filename = prefs_get_motdfile()) {
         t_tag gamelang = conn_get_gamelang(c);
-        char lang_str[5];
+        char lang_str[sizeof(t_tag)+1];
         char * lang_filename;
         char * tempmotdfile;
         char * def_langtag;
@@ -136,7 +136,7 @@ static void conn_send_welcome(t_connection * c)
         def_langtag = std::strrchr(tempmotdfile,'-');
         if (!def_langtag) {
             extention = std::strrchr(tempmotdfile,'.');
-            lang_filename = (char*)xmalloc(std::strlen(tempmotdfile)+6);
+            lang_filename = (char*)xmalloc(std::strlen(tempmotdfile)+7);
         }
         else {
             *def_langtag = '\0';
@@ -144,11 +144,17 @@ static void conn_send_welcome(t_connection * c)
             extention = std::strrchr(def_langtag,'.');
             lang_filename = (char*)xmalloc(std::strlen(tempmotdfile));
         }
-        *extention = '\0';
-        extention++;        
+        
+        if (extention) {
+            *extention = '\0';
+            extention++;
+        }
 
         if ((gamelang) && (lang_str))
-            std::sprintf(lang_filename, "%s-%s.%s", tempmotdfile, lang_str, extention);
+            if (extention)
+                std::sprintf(lang_filename, "%s-%s.%s", tempmotdfile, lang_str, extention);
+            else
+                std::sprintf(lang_filename, "%s-%s", tempmotdfile, lang_str);
         else {
             INFO0("client does not specifed proper gamelang, sending default motd");
             std::sprintf(lang_filename, "%s", filename);
