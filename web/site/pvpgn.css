@@ -1,0 +1,86 @@
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	background-color: #000000;
+	color: #FFFFFF;
+}
+a {
+	color: #FFB019;
+	text-decoration: underline;
+}
+a.link {
+	display: block;
+	text-decoration: none;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+	color: #FFB019;
+	BORDER: none;
+}
+a.link:hover {
+	background-color: #333333;
+}
+a.link2 {
+	font-weight: bold;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	color: #FFB019;
+	text-decoration: none;
+}
+.text13 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	color: #FFFFFF;
+}
+.text12 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #FFFFFF;
+}
+.text9 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	color: #FFFFFF;
+}
+.helptitle {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+	color: #FFB019;
+}
+.newstitle {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	color: #FFB019;
+}
+.newsarchive {
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 13px;
+	color: #FFFFFF;
+}
+.hostedby {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	color: #FFFFFF;
+	text-align: right;
+}
+.footer {
+	font-size: 9px;
+	color: #666666;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	text-align: center;
+	border: 0px;
+}
+td.topbar {
+	height: 68px;
+	vertical-align: bottom;
+	background-image: url(images/topbar-bg.gif);
+}
+td.botbar {
+	height: 63px;
+	vertical-align: top;
+	background-image: url(images/botbar-bg.gif);
+	text-align: right;
+}
