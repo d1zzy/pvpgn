@@ -243,6 +243,26 @@ extern int ladder_update_wol(t_clienttag clienttag, t_ladder_id id, t_account * 
     int pl1_points = account_get_ladder_points(players[0], clienttag, id);
     int pl2_points = account_get_ladder_points(players[1], clienttag, id);
 
+    if (!players) {
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL players");
+        return -1;
+    }
+
+    if (!results) {
+        eventlog(eventlog_level_error,__FUNCTION__,"got NULL results");
+        return -1;
+    }
+
+    if (!clienttag) {
+        eventlog(eventlog_level_error,__FUNCTION__,"got bad clienttag");
+        return -1;
+    }
+
+    if (((results[0]) && (results[1])) && ((results[0] == results[1]) && (results[0] = game_result_disconnect))) {
+        DEBUG0("Both players got game_result_disconnect - points counting terminated");
+        return 0;
+    }
+
     for (curr=0; curr<2; curr++) {
 	    t_account * account = players[curr];
 	    int mypoints = account_get_ladder_points(players[curr], clienttag, id);
@@ -1292,7 +1312,6 @@ LadderList::writeStatusfile() const
 
 Ladders::Ladders()
 {
-/* Westwood online clients: */
   // WAR3 ladders
   LadderKey WAR3_solo(ladder_id_solo, CLIENTTAG_WARCRAFT3_UINT, ladder_sort_default, ladder_time_default);
   ladderMap.insert(std::make_pair(WAR3_solo,LadderList(WAR3_solo, referenceTypeAccount)));
@@ -1399,9 +1418,17 @@ Ladders::Ladders()
   LadderKey TSUN_solo(ladder_id_solo, CLIENTTAG_TIBERNSUN_UINT, ladder_sort_default, ladder_time_default);
   ladderMap.insert(std::make_pair(TSUN_solo,LadderList(TSUN_solo, referenceTypeAccount)));
 
+  //TSXP ladders
+  LadderKey TSXP_solo(ladder_id_solo, CLIENTTAG_TIBSUNXP_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(TSXP_solo,LadderList(TSXP_solo, referenceTypeAccount)));
+
   //RAL2 ladders
   LadderKey RAL2_solo(ladder_id_solo, CLIENTTAG_REDALERT2_UINT, ladder_sort_default, ladder_time_default);
   ladderMap.insert(std::make_pair(RAL2_solo,LadderList(RAL2_solo, referenceTypeAccount)));
+
+  //YURI ladders
+  LadderKey YURI_solo(ladder_id_solo, CLIENTTAG_YURISREV_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(YURI_solo,LadderList(YURI_solo, referenceTypeAccount)));
 
 }
 

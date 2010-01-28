@@ -81,7 +81,7 @@ storage_path = "file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}
 filedir     = "${LOCALSTATEDIR}/files"
 reportdir   = "${LOCALSTATEDIR}/reports"
 chanlogdir  = "${LOCALSTATEDIR}/chanlogs"
-motdfile    = "${SYSCONFDIR}/bnmotd.txt"
+motdfile    = "${SYSCONFDIR}/bnmotd-enUS.txt"
 issuefile   = "${SYSCONFDIR}/bnissue.txt"
 channelfile = "${SYSCONFDIR}/channel.conf"
 newsfile    = "${SYSCONFDIR}/news.txt"
