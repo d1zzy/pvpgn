@@ -803,6 +803,13 @@ static int game_report(t_game * game)
 	    eventlog(eventlog_level_info,__FUNCTION__,"game results ignored due to inconsistencies");
 	    game->bad = 1;
         }
+        
+        if (((tag_check_wolv1(game->clienttag)) || (tag_check_wolv2(game->clienttag))) && (realcount == 2) 
+            && (game->results[0] == game_result_disconnect) && (game->results[0] == game->results[1])) {
+            //FIXME: Find more general solution for that (we are not supporting more than 2 players now)
+            DEBUG0("WOL Both players got game_result_disconnect - ignoring game");
+            game->bad = 1;
+        }
     }
 
     eventlog(eventlog_level_debug,__FUNCTION__,"realcount=%d count=%u",realcount,game->count);
@@ -871,6 +878,7 @@ static int game_report(t_game * game)
 	    }
 
         if ((tag_check_wolv1(game->clienttag)) || (tag_check_wolv2(game->clienttag))) {
+    	    id = ladder_id_solo;
             ladder_update_wol(game->clienttag, id, game->players, game->results);
         }        
         else {
