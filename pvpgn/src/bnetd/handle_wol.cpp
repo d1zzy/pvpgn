@@ -1010,11 +1010,8 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	*   Heres the output expected:
 	*   user!WWOL@hostname JOINGAME [MinPlayers] [MaxPlayers] [channelType] unknown clanID [longIP] [gameIsTournament] :[#Game_channel_name]
 	*/
-	if((numparams==2)) {
+	if((numparams==2) || (numparams==3)) {
 	    char ** e;
-
-	    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] JOINGAME: * Join * (%s, %s)",
-		     params[0],params[1]);
 
 	    e = irc_get_listelems(params[0]);
 	    if ((e)&&(e[0])) {
@@ -1024,38 +1021,63 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	   	 	t_game_type gametype;
             t_channel * channel;
 	   	 	t_channel * old_channel = conn_get_channel(conn);
+	   	 	char * gamepass;
+
+            if ((conn_get_clienttag(conn) == CLIENTTAG_REDALERT_UINT)
+                && (channellist_find_channel_by_name(gamename, NULL, NULL) != NULL)
+                && (gamelist_find_game_available(gamename, conn_get_clienttag(conn), game_type_all) == NULL)) {
+                /* BUG in Red Alert 1 v3.03e - forwarding to _handle_join_command */
+                DEBUG0("BUG in RA1 v3.03e - forwarding to _handle_join_command");
+                _handle_join_command(conn, numparams, params, text);
+                if (e)
+                    irc_unget_listelems(e);
+     	        return 0;
+            }
 
             if (!(gamename) || !(game = gamelist_find_game_available(gamename, conn_get_clienttag(conn), game_type_all))) {
-			     snprintf(_temp, sizeof(_temp), "%s :Game channel has closed",e[0]);
-			     irc_send(conn,ERR_GAMEHASCLOSED,_temp);
-			     if (e)
-		             irc_unget_listelems(e);
-     	         return 0;
+    		    snprintf(_temp, sizeof(_temp), "%s :Game channel has closed",e[0]);
+			    irc_send(conn,ERR_GAMEHASCLOSED,_temp);
+                if (e)
+                    irc_unget_listelems(e);
+     	        return 0;
             }
 
             channel = game_get_channel(game);
 
             if (game_get_ref(game) == game_get_maxplayers(game)) {
-	   	 	     snprintf(_temp, sizeof(_temp), "%s :Channel is full",e[0]);
-                 irc_send(conn,ERR_CHANNELISFULL,_temp);
-			     if (e)
-		             irc_unget_listelems(e);
-			     return 0;
+                snprintf(_temp, sizeof(_temp), "%s :Channel is full", e[0]);
+                irc_send(conn,ERR_CHANNELISFULL,_temp);
+                if (e)
+                    irc_unget_listelems(e);
+     	        return 0;
             }
 
             if (channel_check_banning(channel,conn)) {
-	   	 	     snprintf(_temp, sizeof(_temp), "%s :You are banned from that channel.",e[0]);
-	   	 	     irc_send(conn,ERR_BANNEDFROMCHAN,_temp);
-	   	 	     if (e)
-	   	 	         irc_unget_listelems(e);
-	   	 	     return 0;
+                snprintf(_temp, sizeof(_temp), "%s :You are banned from that channel.", e[0]);
+	   	 	    irc_send(conn,ERR_BANNEDFROMCHAN,_temp);
+                if (e)
+                    irc_unget_listelems(e);
+     	        return 0;
             }
 
-			conn_wol_set_ingame(conn,1);
+            if (std::strcmp(game_get_pass(game),"") != 0) {
+                if ((params[2]) && (std::strcmp(params[2], game_get_pass(game)) == 0))
+                    gamepass = params[2];
+                else {
+                    snprintf(_temp, sizeof(_temp), "%s :Bad password", e[0]);
+                    irc_send(conn,ERR_BADCHANNELKEY,_temp);
+                    if (e)
+                        irc_unget_listelems(e);
+     	            return 0;
+                }
+            }
+            else
+                gamepass = "";
 
+			conn_wol_set_ingame(conn,1);
 	   	 	gametype = game_get_type(game);
 
-			if ((conn_set_game(conn, gamename, "", "", gametype, 0))<0) {
+			if ((conn_set_game(conn, gamename, gamepass, "", gametype, 0))<0) {
 				irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed");
 				conn_wol_set_ingame(conn,0);
 			}
@@ -1102,13 +1124,6 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 		    irc_unget_listelems(e);
     	    return 0;
 	}
-	/**
-	* HACK: Check for 3 params, because in that case we must be running RA1
-	* then just forward to _handle_join_command
-	*/
-	else if((numparams==3)) {
-	    _handle_join_command(conn,numparams,params,text);
-	}
 	else if((numparams>=7)) {
 	    char ** e;
 
@@ -1136,6 +1151,7 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	    if ((e)&&(e[0])) {
     		char const * gamename = irc_convert_ircname(e[0]);
     		t_game_type gametype;
+            char * gamepass;
     		
     		if (std::atoi(params[6]) == 1)
     		    gametype = game_type_ladder;
@@ -1143,7 +1159,12 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
     		    gametype = game_type_ffa;		    
 //    		    gametype = game_type_none;
 
-			if ((!(gamename)) || ((conn_set_game(conn, gamename, "", "", gametype, 0))<0)) {
+            if (params[8])
+                gamepass = params[8];
+            else
+                gamepass = "";
+
+			if ((!(gamename)) || ((conn_set_game(conn, gamename, gamepass, "", gametype, 0))<0)) {
 				irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed"); /* FIXME: be more precise; what is the real error code for that? */
 			}
             else {
