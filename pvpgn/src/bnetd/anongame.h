@@ -130,6 +130,8 @@ extern void		anongame_set_joined(t_anongame * a, char joined);
 extern int		handle_w3route_packet(t_connection * c, t_packet const * const packet);
 extern int		handle_anongame_join(t_connection * c);
 
+/* Currently used by WOL RAL2 and YURI clients*/
+extern const char * anongame_get_map_from_prefs(int queue, t_clienttag clienttag);
 }
 
 }

@@ -32,11 +32,13 @@
 #include "common/eventlog.h"
 #include "common/tag.h"
 #include "common/list.h"
+#include "common/anongame_protocol.h"
 
 #include "irc.h"
 #include "handle_wol.h"
 #include "connection.h"
 #include "channel.h"
+#include "anongame.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -66,7 +68,7 @@ static const t_wol_anongame_tag_table_row t_wol_anongame_tag_table[] =
     { MATCHTAG_COUNTRY   , _handle_country_tag },
     { MATCHTAG_COLOUR    , _handle_colour_tag },
 
-    { NULL                        , NULL }
+    { NULL               , NULL }
 };
 
 static int anongame_wol_set_playersetting(t_anongame_wol_player * player, char const * tag, char * param)
@@ -342,6 +344,7 @@ static int anongame_wol_trystart(t_anongame_wol_player const * player1)
     t_connection * conn_pl1;
     t_connection * conn_pl2;
     char const * channelname;
+    const char * mapname;
     t_clienttag ctag;
     
     std::memset(temp,0,sizeof(temp));
@@ -379,10 +382,11 @@ static int anongame_wol_trystart(t_anongame_wol_player const * player1)
                 case CLIENTTAG_REDALERT2_UINT:
                     random = rand();
                     if (std::strcmp(channelname , RAL2_CHANNEL_FFA) == 0) {
-                        DEBUG0("Generating FFA game for Red Alert 2");
+                        mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
+                        DEBUG0("Generating SOLO game for Red Alert 2");
 
                          /* We have madatory of game */
-                        snprintf(_temp, sizeof(_temp), ":Start %u,0,0,10000,0,1,0,1,1,0,1,x,2,1,165368,eb3.map,1:",random);
+                        snprintf(_temp, sizeof(_temp), ":Start %u,0,0,10000,0,1,0,1,1,0,1,x,2,1,165368,%s,1:", random, mapname);
                         std::strcat(temp,_temp);
 
                         /* GameHost informations */
@@ -403,10 +407,11 @@ static int anongame_wol_trystart(t_anongame_wol_player const * player1)
                     random = rand();
                     
                     if (std::strcmp(channelname , YURI_CHANNEL_FFA) == 0) {
-                        DEBUG0("Generating FFA game for Yuri's Revenge");
+                        mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
+                        DEBUG0("Generating SOLO game for Yuri's Revenge");
 
                         /* We have madatory of game */
-                        snprintf(_temp, sizeof(_temp), ":Start %u,0,0,10000,0,0,1,1,1,0,3,0,x,2,1,163770,xgrinder.map,1:",random);
+                        snprintf(_temp, sizeof(_temp), ":Start %u,0,0,10000,0,0,1,1,1,0,3,0,x,2,1,163770,%s,1:", random, mapname);
                         std::strcat(temp,_temp);
 
                         /* GameHost informations */

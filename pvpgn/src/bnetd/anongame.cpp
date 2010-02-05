@@ -242,13 +242,16 @@ static const char * _get_map_from_prefs(int queue, t_uint32 cur_prefs, t_clientt
     char *res_maps[32];
     char clienttag_str[5];
 
-    if (clienttag == CLIENTTAG_WARCRAFT3_UINT)
-	default_map = "Maps\\(8)PlainsOfSnow.w3m";
-    else if (clienttag == CLIENTTAG_WAR3XP_UINT)
-	default_map = "Maps\\(8)PlainsOfSnow.w3m";
-    else {
-	eventlog(eventlog_level_error, __FUNCTION__, "invalid clienttag : %s", tag_uint_to_str(clienttag_str,clienttag));
-	return "Maps\\(8)PlainsOfSnow.w3m";
+    switch (clienttag) {
+        case CLIENTTAG_WARCRAFT3_UINT:
+            default_map = "Maps\\(8)PlainsOfSnow.w3m";
+            break;
+        case CLIENTTAG_WAR3XP_UINT:
+            default_map = "Maps\\(8)PlainsOfSnow.w3m";
+            break;
+        default:
+            ERROR1("invalid clienttag: %s", tag_uint_to_str(clienttag_str,clienttag));
+            return "Maps\\(8)PlainsOfSnow.w3m";
     }
 
     for (i = 0; i < 32; i++)
@@ -2018,6 +2021,43 @@ extern int handle_anongame_join(t_connection * c)
 	packet_del_ref(rpacket);
     }
     return 0;
+}
+
+extern const char * anongame_get_map_from_prefs(int queue, t_clienttag clienttag)
+{
+    int i, j = 0;
+    const char *default_map, *selected;
+    char *res_maps[32];
+    char clienttag_str[5];
+
+    switch (clienttag) {
+        case CLIENTTAG_REDALERT2_UINT:
+            default_map = "eb2.map";
+            break;
+        case CLIENTTAG_YURISREV_UINT:
+            default_map = "xgrinder.map";
+            break;
+        default:
+            ERROR1("invalid clienttag: %s", tag_uint_to_str(clienttag_str,clienttag));
+            return "eb2.map";
+    }
+
+    for (i = 0; i < 32; i++)
+	res_maps[i] = NULL;
+
+    for (i = 0; i < maplists_get_totalmaps_by_queue(clienttag, queue); i++) {
+	    res_maps[j++] = maplists_get_map(queue, clienttag, i + 1);
+    }
+
+    i = std::rand() % j;
+    if (res_maps[i])
+	selected = res_maps[i];
+    else
+	selected = default_map;
+
+    eventlog(eventlog_level_trace, __FUNCTION__, "got map %s from prefs", selected);
+    return selected;
+
 }
 
 }

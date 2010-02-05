@@ -288,3 +288,31 @@ W3XP		at2v2v2		Maps\FrozenThrone\(6)RuinsOfStratholme.w3x
 W3XP		at2v2v2		Maps\FrozenThrone\(6)Typhoon.w3x
 W3XP		at2v2v2		Maps\FrozenThrone\(6)UpperKingdom.w3x
 W3XP		at2v2v2		Maps\FrozenThrone\(8)Mur'gulOasis.w3x
+
+######### COMMAND & CONQUER: RED ALERT 2 ############
+RAL2		1v1		eb2.map
+RAL2		1v1		mp02t2.map
+RAL2		1v1		mp06mw.map
+RAL2		1v1		mp06t2.map
+RAL2		1v1		mp08mw.map
+RAL2		1v1		mp08t2.map
+RAL2		1v1		mp11t2.map
+RAL2		1v1		mp14mv.map
+RAL2		1v1		mp14t2.map
+RAL2		1v1		mp21s2.map
+RAL2		1v1		mp24t2.map
+RAL2		1v1		mp29mw.map
+RAL2		1v1		mp29u2.map
+RAL2		1v1		mp31s2.map
+RAL2		1v1		mp09du.map
+RAL2		1v1		mp09t3.map
+RAL2		1v1		mp18s3.map
+
+######### COMMAND & CONQUER: YURI'S REVENGE #########
+YURI		1v1		xgrinder.map
+YURI		1v1		xeb1.map
+YURI		1v1		xeb1mw.map
+YURI		1v1		xeb2.map
+YURI		1v1		xeb3.map
+YURI		1v1		xeb4.map
+YURI		1v1		xeb5.map
