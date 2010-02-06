@@ -187,6 +187,15 @@ static int _client_col5(t_wol_gameres_result * game_result, wol_gameres_type typ
 static int _client_col6(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 static int _client_col7(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 
+static int _client_crd0(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_crd1(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_crd2(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_crd3(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_crd4(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_crd5(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_crd6(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_crd7(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+
 static int _client_inb0(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 static int _client_inb1(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 static int _client_inb2(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
@@ -455,6 +464,15 @@ static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_COL5_UINT, _client_col5},
     {CLIENT_COL6_UINT, _client_col6},
     {CLIENT_COL7_UINT, _client_col7},
+
+    {CLIENT_CRD0_UINT, _client_crd0},
+    {CLIENT_CRD1_UINT, _client_crd1},
+    {CLIENT_CRD2_UINT, _client_crd2},
+    {CLIENT_CRD3_UINT, _client_crd3},
+    {CLIENT_CRD4_UINT, _client_crd4},
+    {CLIENT_CRD5_UINT, _client_crd5},
+    {CLIENT_CRD6_UINT, _client_crd6},
+    {CLIENT_CRD7_UINT, _client_crd7},
 
     {CLIENT_INB0_UINT, _client_inb0},
     {CLIENT_INB1_UINT, _client_inb1},
@@ -2526,6 +2544,59 @@ static int _client_col6(t_wol_gameres_result * game_result, wol_gameres_type typ
 static int _client_col7(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
 {
     return _cl_col_general(7, type, size, data);
+}
+
+static int _cl_crd_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_time:
+            DEBUG2("Player %u had %u credits on end of game", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for CRD%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_crd0(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_crd_general(0, type, size, data);
+}
+
+static int _client_crd1(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_crd_general(1, type, size, data);
+}
+
+static int _client_crd2(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_crd_general(2, type, size, data);
+}
+
+static int _client_crd3(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_crd_general(3, type, size, data);
+}
+
+static int _client_crd4(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_crd_general(4, type, size, data);
+}
+
+static int _client_crd5(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_crd_general(5, type, size, data);
+}
+
+static int _client_crd6(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_crd_general(6, type, size, data);
+}
+
+static int _client_crd7(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_crd_general(7, type, size, data);
 }
 
 static int _cl_inb_general(int num, wol_gameres_type type, int size, void const * data)

@@ -514,7 +514,7 @@ static int append_game_info(t_game* game, void* vdata)
      */
     /**
      *  The layout of the game list entry is something like this:
-     *  #game_channel_name users unknown gameType gameIsTournment gameExtension longIP LOCK::topic
+     *  #game_channel_name currentusers maxplayers gameType gameIsTournment gameExtension longIP LOCK::topic
      */
 
        std::strcat(temp,gamename);
@@ -543,7 +543,7 @@ static int append_game_info(t_game* game, void* vdata)
        else
            std::strcat(temp,"384"); /* game is loocked 384 == pass */
 
-       std::strcat(temp,"::");  
+       std::strcat(temp,"::");
 
        if (topic) {
            snprintf(temp_a, sizeof(temp_a), "%s", topic);  /* topic */

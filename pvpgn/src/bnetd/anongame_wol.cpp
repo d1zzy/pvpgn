@@ -97,6 +97,8 @@ static t_anongame_wol_player * anongame_wol_player_create(t_connection * conn)
     /* Used only in Red Alert 2 and Yuri's Revenge */
     player->address = 0;
     player->port = 0;
+    player->country = -2; /* Default values are form packet dumps - not prefered country */
+    player->colour = -2; /* Default values are form packet dumps - not prefered colour */
 
     conn_wol_set_anongame_player(conn, player);
 
@@ -333,6 +335,25 @@ static int _send_msg(t_connection * conn, char const * command, char const * tex
     return 0;
 }
 
+static int _get_pair(int * i, int * j, int max, bool different)
+{
+    max++; /* We want to use just real maximum number - no metter what function do */
+
+    if (*i == -2)
+        *i = (max * rand() / (RAND_MAX + 1));
+  
+    if (*j == -2)
+        *j = (max * rand() / (RAND_MAX + 1));
+
+    if ((different) && (*i == *j)) {
+        do {
+            *j = (max * rand() / (RAND_MAX + 1));
+        } while (*i == *j);
+    }
+    return 0;
+}
+
+
 static int anongame_wol_trystart(t_anongame_wol_player const * player1)
 {
     t_elem * curr;
@@ -379,22 +400,31 @@ static int anongame_wol_trystart(t_anongame_wol_player const * player1)
 
    	    if ((player1 != player2) && ((conn_get_channel(conn_pl1)) == (conn_get_channel(conn_pl2)))) {
             switch (ctag) {
-                case CLIENTTAG_REDALERT2_UINT:
+                case CLIENTTAG_REDALERT2_UINT: {
                     random = rand();
+                    
                     if (std::strcmp(channelname , RAL2_CHANNEL_FFA) == 0) {
-                        mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
+                        int pl1_colour = anongame_wol_player_get_colour(player1);
+                        int pl1_country = anongame_wol_player_get_country(player1);
+                        int pl2_colour = anongame_wol_player_get_colour(player2);
+                        int pl2_country = anongame_wol_player_get_country(player2);
+
                         DEBUG0("Generating SOLO game for Red Alert 2");
 
-                         /* We have madatory of game */
+                        _get_pair(&pl1_colour,&pl2_colour, 7, true);
+                        _get_pair(&pl1_country,&pl2_country, 8, false);
+                        mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
+                        
+                        /* We have madatory of game */
                         snprintf(_temp, sizeof(_temp), ":Start %u,0,0,10000,0,1,0,1,1,0,1,x,2,1,165368,%s,1:", random, mapname);
                         std::strcat(temp,_temp);
 
                         /* GameHost informations */
-                        snprintf(_temp, sizeof(_temp),"%s,8,4,%x,1,%x,",conn_get_chatname(conn_pl1),anongame_wol_player_get_address(player1),anongame_wol_player_get_port(player1));
+                        snprintf(_temp, sizeof(_temp),"%s,%d,%d,%x,1,%x,", conn_get_chatname(conn_pl1), pl1_country, pl1_colour, anongame_wol_player_get_address(player1),anongame_wol_player_get_port(player1));
                         std::strcat(temp,_temp);
                         
                          /* GameJoinie informations */
-                        snprintf(_temp, sizeof(_temp),"%s,5,2,%x,1,%x",conn_get_chatname(conn_pl2),anongame_wol_player_get_address(player2),anongame_wol_player_get_port(player2));
+                        snprintf(_temp, sizeof(_temp),"%s,%d,%d,%x,1,%x", conn_get_chatname(conn_pl2), pl2_country, pl2_colour, anongame_wol_player_get_address(player2),anongame_wol_player_get_port(player2));
                         std::strcat(temp,_temp);
 
                         _send_msg(conn_pl1,"PRIVMSG",temp);
@@ -402,26 +432,35 @@ static int anongame_wol_trystart(t_anongame_wol_player const * player1)
                     }
                     else
                         ERROR1("undefined channel type for %s channel", channelname);
+                    }
                     return 0;
-                case CLIENTTAG_YURISREV_UINT:
+                case CLIENTTAG_YURISREV_UINT: {
                     random = rand();
-                    
+                   
                     if (std::strcmp(channelname , YURI_CHANNEL_FFA) == 0) {
-                        mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
+                        int pl1_colour = anongame_wol_player_get_colour(player1);
+                        int pl1_country = anongame_wol_player_get_country(player1);
+                        int pl2_colour = anongame_wol_player_get_colour(player2);
+                        int pl2_country = anongame_wol_player_get_country(player2);
+
                         DEBUG0("Generating SOLO game for Yuri's Revenge");
+
+                        _get_pair(&pl1_colour,&pl2_colour, 7, true);
+                        _get_pair(&pl1_country,&pl2_country, 9, false);
+                        mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
 
                         /* We have madatory of game */
                         snprintf(_temp, sizeof(_temp), ":Start %u,0,0,10000,0,0,1,1,1,0,3,0,x,2,1,163770,%s,1:", random, mapname);
                         std::strcat(temp,_temp);
 
                         /* GameHost informations */
-                        snprintf(_temp, sizeof(_temp),"%s,1,4,-2,-2,",conn_get_chatname(conn_pl1));
+                        snprintf(_temp, sizeof(_temp),"%s,%d,%d,-2,-2,", conn_get_chatname(conn_pl1), pl1_country, pl1_colour);
                         std::strcat(temp,_temp);
                         snprintf(_temp, sizeof(_temp),"%x,1,%x,",anongame_wol_player_get_address(player1),anongame_wol_player_get_port(player1));
                         std::strcat(temp,_temp);
 
                         /* GameJoinie informations */
-                        snprintf(_temp, sizeof(_temp),"%s,6,5,-2,-2,",conn_get_chatname(anongame_wol_player_get_conn(player2)));
+                        snprintf(_temp, sizeof(_temp),"%s,%d,%d,-2,-2,",conn_get_chatname(conn_pl2), pl2_country, pl2_colour);
                         std::strcat(temp,_temp);
                         snprintf(_temp, sizeof(_temp),"%x,1,%x",anongame_wol_player_get_address(player2),anongame_wol_player_get_port(player2));
                         std::strcat(temp,_temp);
@@ -457,6 +496,7 @@ static int anongame_wol_trystart(t_anongame_wol_player const * player1)
                     }
                     else
                         ERROR1("undefined channel type for %s channel", channelname);
+                    }
                     return 0;
                 default:
                     DEBUG0("unsupported client for WOL Matchgame");
