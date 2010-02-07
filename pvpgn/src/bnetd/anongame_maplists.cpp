@@ -174,7 +174,7 @@ static void _maplists_add_map(t_clienttag clienttag, char * mapname, int queue)
 
 	if (maplists_yuri[queue][0] < MAXMAPS_PER_QUEUE) {
 	    maplists_yuri[queue][0]++;
-	    maplists_yuri[queue][(int)maplists_ral2[queue][0]] = j;
+	    maplists_yuri[queue][(int)maplists_yuri[queue][0]] = j;
 	} else {
 	    eventlog(eventlog_level_error,__FUNCTION__,
 		"cannot add map \"%s\" for gametype: %s (maxmaps per qametype: %d)",
