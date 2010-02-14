@@ -1021,7 +1021,9 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	   	 	t_game_type gametype;
             t_channel * channel;
 	   	 	t_channel * old_channel = conn_get_channel(conn);
-	   	 	char * gamepass;
+            char gamepass [MAX_GAMEPASS_LEN];
+
+            std::memset(gamepass,0,sizeof(gamepass));
 
             if ((conn_get_clienttag(conn) == CLIENTTAG_REDALERT_UINT)
                 && (channellist_find_channel_by_name(gamename, NULL, NULL) != NULL)
@@ -1061,8 +1063,9 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
             }
 
             if (std::strcmp(game_get_pass(game),"") != 0) {
-                if ((params[2]) && (std::strcmp(params[2], game_get_pass(game)) == 0))
-                    gamepass = params[2];
+                if ((numparams==3) && (params[2]) && (std::strcmp(params[2], game_get_pass(game)) == 0)) {
+                    strcpy(gamepass, params[2]);
+                }
                 else {
                     snprintf(_temp, sizeof(_temp), "%s :Bad password", e[0]);
                     irc_send(conn,ERR_BADCHANNELKEY,_temp);
@@ -1071,8 +1074,6 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
      	            return 0;
                 }
             }
-            else
-                gamepass = "";
 
 			conn_wol_set_ingame(conn,1);
 	   	 	gametype = game_get_type(game);
@@ -1120,9 +1121,9 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 				}
 			}
 		}
-    		if (e)
-		    irc_unget_listelems(e);
-    	    return 0;
+    	if (e)
+		irc_unget_listelems(e);
+    	return 0;
 	}
 	else if((numparams>=7)) {
 	    char ** e;
@@ -1151,18 +1152,19 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	    if ((e)&&(e[0])) {
     		char const * gamename = irc_convert_ircname(e[0]);
     		t_game_type gametype;
-            char * gamepass;
-    		
-    		if (std::atoi(params[6]) == 1)
+            char gamepass [MAX_GAMEPASS_LEN];
+
+            std::memset(gamepass,0,sizeof(gamepass));
+
+            if (std::strcmp(params[6], "1") == 0)   		
     		    gametype = game_type_ladder;
 		    else
     		    gametype = game_type_ffa;		    
 //    		    gametype = game_type_none;
 
-            if (params[8])
-                gamepass = params[8];
-            else
-                gamepass = "";
+            if ((numparams>=8) && (params[8])) {
+                strcpy(gamepass, params[8]);
+            }
 
 			if ((!(gamename)) || ((conn_set_game(conn, gamename, gamepass, "", gametype, 0))<0)) {
 				irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed"); /* FIXME: be more precise; what is the real error code for that? */
