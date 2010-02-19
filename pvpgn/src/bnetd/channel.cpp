@@ -224,11 +224,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 	channel->log = NULL;
     }
 
-    channel->gameOwner = NULL;
-    channel->gameOwnerIP = 0;
-
     channel->gameType = 0;
-    channel->gameTournament = 0;
     channel->gameExtension = NULL;
 
     if (channellist)
@@ -273,9 +269,6 @@ extern int channel_destroy(t_channel * channel, t_elem ** curr)
 
     if (channel->gameExtension)
         xfree(channel->gameExtension);
-
-    if (channel->gameOwner)
-        xfree(channel->gameOwner);
 
     LIST_TRAVERSE(channel->banlist,ban)
     {
@@ -476,15 +469,15 @@ extern int channel_add_connection(t_channel * channel, t_connection * connection
         {
              message_send_text(connection,message_type_adduser,user,NULL);
              /* In WOL gamechannels we send JOINGAME ack explicitely to self */
-             if (conn_wol_get_ingame(connection)==0)
+             if (!conn_get_game(connection))
                  message_send_text(user,message_type_join,connection,NULL);
         }
     else {
-        if (conn_wol_get_ingame(connection)==0)
+        if (!conn_get_game(connection))
             message_send_text(connection,message_type_join,connection,NULL);
     }
 
-    if (conn_is_irc_variant(connection) && (!conn_wol_get_ingame(connection))) {
+    if (conn_is_irc_variant(connection) && (!conn_get_game(connection))) {
         channel_set_userflags(connection);
         message_send_text(connection,message_type_topic,connection,NULL);
         message_send_text(connection,message_type_namreply,connection,NULL);
@@ -1633,63 +1626,6 @@ extern int channel_set_min(t_channel * channel, int minmembers)
     return 1;
 }
 
-extern char const * channel_wol_get_game_owner(t_channel const * channel)
-{
-	if (!channel)
-	{
-	  ERROR0("got NULL channel");
-	  return 0;
-	}
-
-	return channel->gameOwner;
-}
-
-extern int channel_wol_set_game_owner(t_channel * channel, char const * gameOwner)
-{
-	if (!channel)
-	{
-	  ERROR0("got NULL channel");
-	  return -1;
-	}
-
-	if (!gameOwner)
-	{
-	  ERROR0("got NULL gameOwner");
-	  return -1;
-	}
-
-	if (channel->gameOwner)
-	    xfree(channel->gameOwner);
-	channel->gameOwner = xstrdup(gameOwner);
-
-	return 0;
-}
-
-extern int channel_wol_get_game_ownerip(t_channel const * channel)
-{
-	if (!channel)
-	{
-	  ERROR0("got NULL channel");
-	  return -1;
-	}
-
-	return channel->gameOwnerIP;
-}
-
-extern int channel_wol_set_game_ownerip(t_channel * channel, int gameOwnerIP)
-{
-	if (!channel)
-	{
-	  ERROR0("got NULL channel");
-	  return -1;
-	}
-
-	if (gameOwnerIP)
-  	   channel->gameOwnerIP = gameOwnerIP;
-
-	return 0;
-}
-
 extern int channel_wol_get_game_type(t_channel const * channel)
 {
 	if (!channel)
@@ -1711,31 +1647,6 @@ extern int channel_wol_set_game_type(t_channel * channel, int gameType)
 
 	if (gameType)
   	   channel->gameType = gameType;
-
-	return 0;
-}
-
-extern int channel_wol_get_game_tournament(t_channel const * channel)
-{
-	if (!channel)
-	{
-	  ERROR0("got NULL channel");
-	  return -1;
-	}
-
-	return channel->gameTournament;
-}
-
-extern int channel_wol_set_game_tournament(t_channel * channel, int gameTournament)
-{
-	if (!channel)
-	{
-	  ERROR0("got NULL channel");
-	  return -1;
-	}
-
-	if (gameTournament)
- 	   channel->gameTournament = gameTournament;
 
 	return 0;
 }

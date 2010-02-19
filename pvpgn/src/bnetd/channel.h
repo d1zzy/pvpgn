@@ -98,11 +98,8 @@ typedef struct channel
     *  Westwood Online Extensions
     */
     int               minmembers;
-    char *            gameOwner;
-    int               gameOwnerIP;
 
     int               gameType;
-    int               gameTournament;
     char *            gameExtension;
 }
 #endif
@@ -181,17 +178,8 @@ extern int channellist_get_length(void);
 extern int channel_get_min(t_channel const * channel);
 extern int channel_set_min(t_channel * channel, int minmembers);
 
-extern char const * channel_wol_get_game_owner(t_channel const * channel);
-extern int channel_wol_set_game_owner(t_channel * channel, char const * gameOwner);
-
-extern int channel_wol_get_game_ownerip(t_channel const * channel);
-extern int channel_wol_set_game_ownerip(t_channel * channel, int gameOwnerIP);
-
 extern int channel_wol_get_game_type(t_channel const * channel);
 extern int channel_wol_set_game_type(t_channel * channel, int gameType);
-
-extern int channel_wol_get_game_tournament(t_channel const * channel);
-extern int channel_wol_set_game_tournament(t_channel * channel, int tournament);
 
 extern char const * channel_wol_get_game_extension(t_channel const * channel);
 extern int channel_wol_set_game_extension(t_channel * channel, char const * gameExtension);

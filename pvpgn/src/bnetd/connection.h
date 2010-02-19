@@ -454,16 +454,14 @@ extern int conn_is_irc_variant(t_connection * c);
 
 /* Westwood Online Extensions */
 extern int conn_get_wol(t_connection * c);
-extern void conn_wol_set_ingame(t_connection * c, int wol_ingame);
-extern int conn_wol_get_ingame(t_connection * c);
 extern void conn_wol_set_apgar(t_connection * c, char const * apgar);
 extern char const * conn_wol_get_apgar(t_connection * c);
 extern void conn_wol_set_codepage(t_connection * c, int codepage);
 extern int conn_wol_get_codepage(t_connection * c);
-extern void conn_wol_set_findme(t_connection * c, int findme);
-extern int conn_wol_get_findme(t_connection * c);
-extern void conn_wol_set_pageme(t_connection * c, int pageme);
-extern int conn_wol_get_pageme(t_connection * c);
+extern void conn_wol_set_findme(t_connection * c, bool findme);
+extern bool conn_wol_get_findme(t_connection * c);
+extern void conn_wol_set_pageme(t_connection * c, bool pageme);
+extern bool conn_wol_get_pageme(t_connection * c);
 extern void conn_wol_set_anongame_player(t_connection * c, t_anongame_wol_player * anongame_player);
 extern t_anongame_wol_player * conn_wol_get_anongame_player(t_connection * c);
 

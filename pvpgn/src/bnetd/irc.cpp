@@ -42,6 +42,7 @@
 
 #include "message.h"
 #include "channel.h"
+#include "game.h"
 #include "connection.h"
 #include "server.h"
 #include "account.h"
@@ -842,6 +843,13 @@ extern int irc_message_format(t_packet * packet, t_message_type type, t_connecti
             from.user = ctag;
             msg = irc_message_preformat(&from,"QUIT","\r",temp);
         }
+        else {
+             from.nick = conn_get_chatname(me);
+    	     from.user = ctag;
+    	     from.host = addr_num_to_ip_str(conn_get_addr(me));
+    	     msg = irc_message_preformat(&from,"PART","\r",irc_convert_channel(conn_get_channel(me),dst));
+    	     conn_unget_chatname(me,from.nick);
+        }
         break;
 
    	/**
@@ -985,6 +993,7 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
 	    if (!first) std::strcat(temp," ");
             if (conn_get_wol(c) == 1) {
                 char _temp[MAX_IRC_MESSAGE_LEN];
+                t_game * game = conn_get_game(m);
                 if ((first) && ((std::strcmp(ircname, "#Lob_38_0") == 0) ||
                     (std::strcmp(ircname, "#Lob_39_0") == 0) ||
                     (std::strcmp(ircname, "#Lob_40_0") == 0))) {
@@ -995,9 +1004,11 @@ int irc_send_rpl_namreply_internal(t_connection * c, t_channel const * channel){
 
                 }               
 
-                if ((channel_wol_get_game_owner(channel) != NULL) && (std::strcmp(channel_wol_get_game_owner(channel),name) == 0)) {
-                    /* PELISH: Only game owners will have OP flag (this prevent official OP to be normal player) */
-                    std::strcat(temp,"@");
+                if ((game) && (game_get_channel(game) == channel)) {
+                    if (game_get_owner(game) == m) {
+                        /* PELISH: Only game owners will have OP flag (this prevent official OP to be normal player) */
+                        std::strcat(temp,"@");
+                    }
                 }
                 else {
                      if ((flags & MF_BNET) || (flags & MF_GAVEL))

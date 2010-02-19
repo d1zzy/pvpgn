@@ -97,7 +97,7 @@ static int handle_irc_common_set_class(t_connection * conn, char const * command
         return -1;
     }
     else {
-        if (std::strcmp(command, "verchk") == 0) {
+        if (strcasecmp(command, "VERCHK") == 0) {
             DEBUG0("Got WSERV packet");
             if (std::strcmp(prefs_get_wolv2_addrs(),"") != 0)
                 conn_set_class(conn,conn_class_wserv);
@@ -105,7 +105,7 @@ static int handle_irc_common_set_class(t_connection * conn, char const * command
                 conn_set_state(conn,conn_state_destroy);
             return 0;
         }
-        else if ((std::strcmp(command, "CVERS") == 0) || (std::strcmp(command, "cvers") == 0)) {
+        else if (strcasecmp(command, "CVERS") == 0) {
             DEBUG0("Got WOL packet");
             /* FIXME: We can check it not by address but check if client is supported by tag_check_in_list() */
             if ((std::strcmp(prefs_get_wolv1_addrs(),"") != 0) || (std::strcmp(prefs_get_wolv2_addrs(),"") != 0))
@@ -114,9 +114,9 @@ static int handle_irc_common_set_class(t_connection * conn, char const * command
                 conn_set_state(conn,conn_state_destroy);
             return 0;
         }
-        else if ((std::strcmp(command, "LISTSEARCH") == 0) ||
-                (std::strcmp(command, "RUNGSEARCH") == 0) ||
-                (std::strcmp(command, "HIGHSCORE") == 0)) {
+        else if ((strcasecmp(command, "LISTSEARCH") == 0) ||
+                (strcasecmp(command, "RUNGSEARCH") == 0) ||
+                (strcasecmp(command, "HIGHSCORE") == 0)) {
             DEBUG0("Got WOL Ladder packet");
             if (std::strcmp(prefs_get_wolv2_addrs(),"") != 0)
                 conn_set_class(conn,conn_class_wladder); /* is handled in handle_wol.* now */
@@ -124,8 +124,8 @@ static int handle_irc_common_set_class(t_connection * conn, char const * command
                 conn_set_state(conn,conn_state_destroy);
             return 0;
         }
-        else if ((std::strcmp(command, "CRYPT") == 0) ||
-                (std::strcmp(command, "LOGIN") == 0)) {
+        else if ((strcasecmp(command, "CRYPT") == 0) ||
+                (strcasecmp(command, "LOGIN") == 0)) {
             DEBUG0("Got GameSpy packet");
             if (std::strcmp(prefs_get_irc_addrs(),"") != 0)
                 conn_set_class(conn,conn_class_irc);

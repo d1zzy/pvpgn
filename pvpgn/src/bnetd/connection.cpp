@@ -469,8 +469,8 @@ extern t_connection * conn_create(int tsock, int usock, unsigned int real_local_
     temp->protocol.wol.ingame			         = 0;
 
     temp->protocol.wol.codepage	                 = 0;
-    temp->protocol.wol.pageme                    = 33;
-    temp->protocol.wol.findme                    = 17;
+    temp->protocol.wol.pageme                    = true;
+    temp->protocol.wol.findme                    = true;
 
     temp->protocol.wol.apgar			         = NULL;
     temp->protocol.wol.anongame_player           = NULL;
@@ -4003,28 +4003,6 @@ extern int conn_get_wol(t_connection * c)
     return 0;
 }
 
-extern void conn_wol_set_ingame(t_connection * c, int ingame)
-{
-    if (!c)
-    {
-    	eventlog(eventlog_level_error,__FUNCTION__,"get NULL conn");
-    	return;
-    }
-
-    c->protocol.wol.ingame = ingame;
-}
-
-extern int conn_wol_get_ingame(t_connection * c)
-{
-    if (!c)
-    {
-    	eventlog(eventlog_level_error,__FUNCTION__,"get NULL conn");
-    	return -1;
-    }
-
-    return c->protocol.wol.ingame;
-}
-
 extern void conn_wol_set_apgar(t_connection * c, char const * apgar)
 {
     if (!c)
@@ -4076,7 +4054,7 @@ extern int conn_wol_get_codepage(t_connection * c)
     return c->protocol.wol.codepage;
 }
 
-extern void conn_wol_set_findme(t_connection * c, int findme)
+extern void conn_wol_set_findme(t_connection * c, bool findme)
 {
     if (!c)
     {
@@ -4087,18 +4065,18 @@ extern void conn_wol_set_findme(t_connection * c, int findme)
     c->protocol.wol.findme = findme;
 }
 
-extern int conn_wol_get_findme(t_connection * c)
+extern bool conn_wol_get_findme(t_connection * c)
 {
     if (!c)
     {
     	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
-    	return 0;
+    	return false;
     }
 
     return c->protocol.wol.findme;
 }
 
-extern void conn_wol_set_pageme(t_connection * c, int pageme)
+extern void conn_wol_set_pageme(t_connection * c, bool pageme)
 {
     if (!c)
     {
@@ -4109,12 +4087,12 @@ extern void conn_wol_set_pageme(t_connection * c, int pageme)
     c->protocol.wol.pageme = pageme;
 }
 
-extern int conn_wol_get_pageme(t_connection * c)
+extern bool conn_wol_get_pageme(t_connection * c)
 {
     if (!c)
     {
     	eventlog(eventlog_level_error,__FUNCTION__,"got NULL conn");
-    	return 0;
+    	return false;
     }
 
     return c->protocol.wol.pageme;
