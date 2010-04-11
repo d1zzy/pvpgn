@@ -1018,7 +1018,8 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	   	 	gametype = game_get_type(game);
 
 			if ((conn_set_game(conn, gamename, gamepass, "", gametype, 0))<0) {
-				irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed");
+    		    snprintf(_temp, sizeof(_temp), "%s :JOINGAME failed",e[0]);
+			    irc_send(conn,ERR_GAMEHASCLOSED,_temp);
 			}
 			else {
                 /*conn_set_channel()*/
@@ -1054,7 +1055,8 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
   					irc_send_rpl_namreply(conn,channel);
 				}
 				else {
-				    irc_send(conn,ERR_NOSUCHCHANNEL,":JOINGAME failed");
+    		        snprintf(_temp, sizeof(_temp), "%s :JOINGAME failed", e[0]);
+			        irc_send(conn,ERR_GAMEHASCLOSED,_temp);
 				}
 			}
 		}
@@ -1743,11 +1745,12 @@ static int _handle_rungsearch_command(t_connection * conn, int numparams, char *
     if ((numparams>=4) && (params[0]) && (params[1]) && (params[3])) {
         cl_tag = tag_sku_to_uint(std::atoi(params[3]));
 
-        if ((cl_tag != CLIENTTAG_TIBERNSUN_UINT) && (cl_tag != CLIENTTAG_REDALERT2_UINT)) {
+        if ((cl_tag != CLIENTTAG_TIBERNSUN_UINT) && (cl_tag != CLIENTTAG_TIBSUNXP_UINT)
+             && (cl_tag != CLIENTTAG_REDALERT2_UINT)  && (cl_tag != CLIENTTAG_YURISREV_UINT)) {
             // PELISH: We are not supporting ladders for all WOL clients yet
             std::strcat(data,"\r\n");
             _ladder_send(conn,data);
-            DEBUG1("Wants rung search for SKU %s", params[0]);
+            DEBUG1("Wants rung search for SKU %s", params[3]);
 	        return 0;
         }
 

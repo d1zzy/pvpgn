@@ -136,14 +136,13 @@ static void conn_send_welcome(t_connection * c)
         def_langtag = std::strrchr(tempmotdfile,'-');
         if (!def_langtag) {
             extention = std::strrchr(tempmotdfile,'.');
-            lang_filename = (char*)xmalloc(std::strlen(tempmotdfile)+7);
         }
         else {
             *def_langtag = '\0';
             def_langtag++;
             extention = std::strrchr(def_langtag,'.');
-            lang_filename = (char*)xmalloc(std::strlen(tempmotdfile));
         }
+        lang_filename = (char*)xmalloc(std::strlen(tempmotdfile)+1+std::strlen(lang_str)+1+std::strlen(extention)+1);
         
         if (extention) {
             *extention = '\0';
