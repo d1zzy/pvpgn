@@ -764,6 +764,7 @@ static int _handle_clan_command(t_connection * c, char const * text)
                   clan_save(clan);
               }
               else {
+                  clan_set_created(clan, -prefs_get_clan_min_invites()+1); //Pelish: +1 means that creator of clan is allready invited
                   snprintf(msgtemp, sizeof(msgtemp), "Clan %s is pre-created, please invite", clan_get_name(clan));
                   message_send_text(c,message_type_info,c,msgtemp);
                   snprintf(msgtemp, sizeof(msgtemp), "at last %u players to your clan by using",prefs_get_clan_min_invites());
