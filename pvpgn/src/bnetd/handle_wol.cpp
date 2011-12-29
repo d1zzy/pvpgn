@@ -1606,8 +1606,9 @@ static int _handle_userip_command(t_connection * conn, int numparams, char ** pa
     if ((numparams>=1)&&(params[0])) {
         if((user = connlist_find_connection_by_accountname(params[0]))) {
             addr = addr_num_to_ip_str(conn_get_addr(user));
-            snprintf(temp,sizeof(temp),"%s",addr);
-            message_send_text(conn,message_wol_userip,conn,temp);
+            //FIXME: We are not sure of first parameter. It can be also nickname of command sender
+            snprintf(temp,sizeof(temp),"%s %s", params[0], addr);
+            message_send_text(conn, message_wol_userip, conn, temp);
         }
         else {
             snprintf(temp,sizeof(temp),"%s :No such nick", params[0]);
