@@ -85,6 +85,8 @@ extern char const * clienttag_uint_to_str(t_clienttag clienttag)
              return CLIENTTAG_TIBSUNXP;
         case CLIENTTAG_REDALERT_UINT:
              return CLIENTTAG_REDALERT;
+         case CLIENTTAG_REDALAFM_UINT:
+             return CLIENTTAG_REDALAFM;
         case CLIENTTAG_REDALERT2_UINT:
              return CLIENTTAG_REDALERT2;
         case CLIENTTAG_DUNE2000_UINT:
@@ -218,6 +220,7 @@ extern int tag_check_client(t_tag tag_uint)
     case CLIENTTAG_TIBERNSUN_UINT:
     case CLIENTTAG_TIBSUNXP_UINT:
     case CLIENTTAG_REDALERT_UINT:
+    case CLIENTTAG_REDALAFM_UINT:
     case CLIENTTAG_REDALERT2_UINT:
     case CLIENTTAG_DUNE2000_UINT:
     case CLIENTTAG_NOX_UINT:
@@ -272,6 +275,7 @@ extern int tag_check_wolv2(t_tag tag_uint)
         case CLIENTTAG_TIBERNSUN_UINT:
         case CLIENTTAG_TIBSUNXP_UINT:
         case CLIENTTAG_REDALERT_UINT:
+        case CLIENTTAG_REDALAFM_UINT:
         case CLIENTTAG_REDALERT2_UINT:
         case CLIENTTAG_DUNE2000_UINT:
         case CLIENTTAG_NOX_UINT:
@@ -326,6 +330,8 @@ extern char const * clienttag_get_title(t_clienttag clienttag)
         return "Tiberian Sun: Firestorm";
       case CLIENTTAG_REDALERT_UINT:
         return "Red Alert";
+      case CLIENTTAG_REDALAFM_UINT:
+        return "Red Alert: Aftermath";
       case CLIENTTAG_REDALERT2_UINT:
         return "Red Alert 2";
       case CLIENTTAG_DUNE2000_UINT:
@@ -405,6 +411,7 @@ extern t_clienttag tag_sku_to_uint(int sku)
    }
 
    switch (sku) {
+/*    case 500:  Red Alert: Aftermath ladders  */
       case 1000:  /* Westwood Chat */
            return CLIENTTAG_WCHAT_UINT;
 /*    case 1002: Internet Registration  */

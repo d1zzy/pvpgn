@@ -455,6 +455,7 @@ static int _handle_privmsg_command(t_connection * conn, int numparams, char ** p
 struct gamelist_data {
     unsigned tcount, counter;
     t_connection *conn;
+    t_clienttag clienttag;
 };
 
 static int append_game_info(t_game* game, void* vdata)
@@ -475,7 +476,7 @@ static int append_game_info(t_game* game, void* vdata)
         eventlog(eventlog_level_debug, __FUNCTION__, "[%d] not listing because game is not open", conn_get_socket(data->conn));
         return 0;
     }
-    if (game_get_clienttag(game) != conn_get_clienttag(data->conn)) {
+    if (game_get_clienttag(game) != data->clienttag) {
         eventlog(eventlog_level_debug, __FUNCTION__, "[%d] not listing because game is for a different client", conn_get_socket(data->conn));
         return 0;
     }
@@ -514,6 +515,13 @@ static int append_game_info(t_game* game, void* vdata)
     /**
      *  The layout of the game list entry is something like this:
      *  #game_channel_name currentusers maxplayers gameType gameIsTournment gameExtension longIP LOCK::topic
+     *  
+     *  Known channel game types:
+     *  0 = Westwood Chat channels, 1 = Command & Conquer Win95 channels, 2 = Red Alert Win95 channels,
+     *  3 = Red Alert Counterstrike channels, 4 = Red Alert Aftermath channels, 5 = CnC Sole Survivor channels,
+     *  12 = C&C Renegade channels, 14 = Dune 2000 channels, 16 = Nox channels, 18 = Tiberian Sun channels,
+     *  21 = Red Alert 1 v 3.03 channels, 31 = Emperor: Battle for Dune, 33 = Red Alert 2,
+     *  37 = Nox Quest channels, 38,39,40 = Quickgame channels, 41 = Yuri's Revenge
      */
 
        std::strcat(temp,gamename);
@@ -562,12 +570,12 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
 
     irc_send(conn,RPL_LISTSTART,"Channel :Users Names"); /* backward compatibility */
 
-    if ((numparams == 0) || ((numparams == 2) && (params[0]) && (params[1]) && (std::strcmp(params[0], params[1]) != 0))) {
+    if ((numparams == 0) || ((numparams == 2) && (params[0]) && ((std::strcmp(params[0], "0") == 0) 
+       || (std::strcmp(params[0], "-1") == 0)))) {
         /**
          * LIST all chat channels 
          * Emperor sends as params[0] == -1 if want QuickMatch channels too, 0 if not.
          * This sends also NOX but we dunno why.
-         * DUNE 2000 use params[0] to determine channels by channeltype
          */
 
         LIST_TRAVERSE_CONST(channellist(),curr) {
@@ -601,21 +609,18 @@ static int _handle_list_command(t_connection * conn, int numparams, char ** para
             irc_send(conn,RPL_CHANNEL,temp);
         }
     }
-    /**
-    *  Known channel game types:
-    *  0 = Westwood Chat channels, 1 = Command & Conquer Win95 channels, 2 = Red Alert Win95 channels,
-    *  3 = Red Alert Counterstrike channels, 4 = Red Alert Aftermath channels, 5 = CnC Sole Survivor channels,
-    *  12 = C&C Renegade channels, 14 = Dune 2000 channels, 16 = Nox channels, 18 = Tiberian Sun channels,
-    *  21 = Red Alert 1 v 3.03 channels, 31 = Emperor: Battle for Dune, 33 = Red Alert 2,
-    *  37 = Nox Quest channels, 38,39,40 = Quickgame channels, 41 = Yuri's Revenge
-	*/
-    if ((numparams == 0) || ((numparams == 2) && (params[0]) && (params[1]) && (std::strcmp(params[0], params[1]) == 0))) {
+    if ((numparams == 0) || ((numparams == 2) && (params[0]) && ((std::strcmp(params[0], "0") != 0) 
+       && (std::strcmp(params[0], "-1") != 0)))) {
    		    eventlog(eventlog_level_debug,__FUNCTION__,"[** WOL **] LIST [Game]");
               /* list games */
             struct gamelist_data data;
             data.tcount = 0;
             data.counter = 0;
             data.conn = conn;
+            if ((numparams == 2) && (params[0]))
+                data.clienttag = tag_channeltype_to_uint(std::atoi(params[0]));
+            else
+                data.clienttag = conn_get_clienttag(conn);
             gamelist_traverse(&append_game_info, &data);
             DEBUG3("[%d] LIST sent %u of %u games", conn_get_socket(conn), data.counter, data.tcount);
 		}
@@ -1685,6 +1690,13 @@ static int _handle_listsearch_command(t_connection * conn, int numparams, char *
 
     if ((numparams>=1) && (params[0]) && (text)) {
         cl_tag = tag_sku_to_uint(std::atoi(params[0]));
+        
+        if (std::strcmp(params[0], "1005") == 0)
+            cl_tag = CLIENTTAG_REDALERT_UINT;
+        if (std::strcmp(params[0], "500") == 0)
+            cl_tag = CLIENTTAG_REDALAFM_UINT;
+
+        DEBUG1("Client wants LISTSEARCH for %s client", clienttag_get_title(cl_tag));
 
         e = irc_get_ladderelems(text);
 
