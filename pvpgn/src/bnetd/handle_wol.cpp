@@ -946,14 +946,14 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 	*  hack in here, for Red Alert 1, it use's JOINGAME for some reason to join a lobby channel.
 	*
 	*   Here is WOLv1 input expected:
-    *   JOINGAME [#Game_channel_name] [MinPlayers] [MaxPlayers] [channelType] 1 1 [gameIsTournament]
+    *   JOINGAME [#Game_channel_name] [MinPlayers] [MaxPlayers] [channelType] [currentPlayers] 1 [gameIsTournament]
     *   Knowed channelTypes (0-chat, 1-cnc, 2-ra1, 3-racs, 4-raam, 5-solsurv... listed in tag.cpp)
     *
 	*   Here is WOLv2 input expected:
-	*   JOINGAME [#Game_channel_name] [MinPlayers] [MaxPlayers] [channelType] unknown unknown [gameIsTournament] [gameExtension] [password_optional]
+	*   JOINGAME [#Game_channel_name] [MinPlayers] [MaxPlayers] [channelType] [currentPlayers] unknown [gameIsTournament] [gameExtension] [password_optional]
 	*
 	*   Heres the output expected:
-	*   user!WWOL@hostname JOINGAME [MinPlayers] [MaxPlayers] [channelType] unknown clanID [longIP] [gameIsTournament] :[#Game_channel_name]
+	*   user!WWOL@hostname JOINGAME [MinPlayers] [MaxPlayers] [channelType] [currentPlayers] [clanID] [longIP] [gameIsTournament] :[#Game_channel_name]
 	*/
 	if((numparams==2) || (numparams==3)) {
 	    char ** e;
@@ -1036,8 +1036,8 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
 			    if (channel!=old_channel) {
                     if (tag_check_wolv1(conn_get_clienttag(conn))) {
                         /* WOLv1 JOINGAME message */
-                        std::sprintf(_temp,"%u %u %u 1 1 %u :%s", channel_get_min(channel), game_get_maxplayers(game), channel_wol_get_game_type(channel),
-                                    ((game_get_type(game) == game_type_ladder) ? 1 : 0), irc_convert_channel(channel,conn));
+                        std::sprintf(_temp,"%u %u %u %u 1 %u :%s", channel_get_min(channel), game_get_maxplayers(game), channel_wol_get_game_type(channel),
+                                    game_get_ref(game), ((game_get_type(game) == game_type_ladder) ? 1 : 0), irc_convert_channel(channel,conn));
                     }
                     else {
                         /* WOLv2 JOINGAME message with BATTLECLAN support */
@@ -1047,8 +1047,8 @@ static int _handle_joingame_command(t_connection * conn, int numparams, char ** 
                         if (clan)
                             clanid = clan_get_clanid(clan);
 
-                        std::sprintf(_temp,"%u %u %u 1 %u %u %u :%s", channel_get_min(channel), game_get_maxplayers(game), channel_wol_get_game_type(channel),
-                                     clanid, conn_get_addr(conn), ((game_get_type(game) == game_type_ladder) ? 1 : 0), irc_convert_channel(channel,conn));
+                        std::sprintf(_temp,"%u %u %u %u %u %u %u :%s", channel_get_min(channel), game_get_maxplayers(game), channel_wol_get_game_type(channel),
+                                     game_get_ref(game), clanid, conn_get_addr(conn), ((game_get_type(game) == game_type_ladder) ? 1 : 0), irc_convert_channel(channel,conn));
                     }
 
    					channel_set_userflags(conn);
