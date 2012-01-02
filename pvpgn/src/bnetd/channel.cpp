@@ -224,6 +224,7 @@ extern t_channel * channel_create(char const * fullname, char const * shortname,
 	channel->log = NULL;
     }
 
+    channel->minmembers = 0;
     channel->gameType = 0;
     channel->gameExtension = NULL;
 

@@ -45,6 +45,7 @@ namespace bnetd
 
 /* handlers prototypes */
 static int _client_sern(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_sidn(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 static int _client_sdfx(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 static int _client_idno(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 static int _client_gsku(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
@@ -313,6 +314,25 @@ static int _client_blc5(t_wol_gameres_result * game_result, wol_gameres_type typ
 static int _client_blc6(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 static int _client_blc7(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 
+static int _client_cra0(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_cra1(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_cra2(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_cra3(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_cra4(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_cra5(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_cra6(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_cra7(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+
+static int _client_hrv0(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_hrv1(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_hrv2(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_hrv3(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_hrv4(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_hrv5(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_hrv6(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_hrv7(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+
+
 typedef int (* t_wol_gamerestag)(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 
 typedef struct {
@@ -323,6 +343,7 @@ typedef struct {
 /* handler table */
 static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_SERN_UINT, _client_sern},
+    {CLIENT_SIDN_UINT, _client_sidn},
     {CLIENT_SDFX_UINT, _client_sdfx},
     {CLIENT_IDNO_UINT, _client_idno},
     {CLIENT_GSKU_UINT, _client_gsku},
@@ -591,6 +612,24 @@ static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_BLC6_UINT, _client_blc6},
     {CLIENT_BLC7_UINT, _client_blc7},
 
+    {CLIENT_CRA0_UINT, _client_cra0},
+    {CLIENT_CRA1_UINT, _client_cra1},
+    {CLIENT_CRA2_UINT, _client_cra2},
+    {CLIENT_CRA3_UINT, _client_cra3},
+    {CLIENT_CRA4_UINT, _client_cra4},
+    {CLIENT_CRA5_UINT, _client_cra5},
+    {CLIENT_CRA6_UINT, _client_cra6},
+    {CLIENT_CRA7_UINT, _client_cra7},
+
+    {CLIENT_HRV0_UINT, _client_hrv0},
+    {CLIENT_HRV1_UINT, _client_hrv1},
+    {CLIENT_HRV2_UINT, _client_hrv2},
+    {CLIENT_HRV3_UINT, _client_hrv3},
+    {CLIENT_HRV4_UINT, _client_hrv4},
+    {CLIENT_HRV5_UINT, _client_hrv5},
+    {CLIENT_HRV6_UINT, _client_hrv6},
+    {CLIENT_HRV7_UINT, _client_hrv7},
+
     {1, NULL}
 };
 
@@ -799,6 +838,27 @@ extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const pa
 static int _client_sern(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
 {
     /* SER# */
+    return 0;
+}
+
+static int _client_sidn(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    /* SID# */
+
+    switch (type) {
+        case wol_gameres_type_string:
+            DEBUG1("Sender id NO is: %s", (char *) data);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for SIDN", type);
+            break;
+    }
+
+//In WOLv1 clients we just got this TAG from Game host - so sender ID1
+
+        DEBUG1("Setting sender ID to %u", 1);
+        game_result->senderid = 1;
+    
     return 0;
 }
 
@@ -1177,16 +1237,69 @@ static int _client_scen(t_wol_gameres_result * game_result, wol_gameres_type typ
 
 static int _client_cmpl(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
 {
-    int cmpl;
+    t_game * game = game_result->game;
+    t_game_result result;
+	t_game_result * results =  game_result->results;
+    int resultnum;
       
     switch (type) {
         case wol_gameres_type_byte:
-            cmpl = (unsigned int) bn_byte_get(*((bn_byte *)data));
-            DEBUG1("CMPL is: %u", cmpl);
+            resultnum = (unsigned int) bn_byte_get(*((bn_byte *)data));
             break;
         default:
             WARN1("got unknown gameres type %u for CMPL", type);
             break;
+    }
+    
+    switch (resultnum) {
+        case 0:
+            DEBUG0("Game NOT started");
+            result = game_result_disconnect;
+            break;
+        case 1:
+            DEBUG0("Player 1 - WIN");
+            result = game_result_win;
+            break;
+        case 4:
+            DEBUG0("Player 1 - LOSS");
+            result = game_result_loss;
+            break;
+        default:
+            DEBUG1("Got wrong resultnum %u", resultnum);
+            result = game_result_disconnect;
+            break;
+    }
+    
+    if (!game) {
+        ERROR0 ("got corrupt gameres packet - game == NULL");
+        return 0;
+    }
+    
+    if (results) {
+        results[0] = result;
+
+        switch (result) {
+            case game_result_disconnect:
+                DEBUG0("Game NOT started");
+                results[1] = game_result_disconnect;
+                break;
+            case game_result_loss:
+                DEBUG0("Player 2 - WIN");
+                results[1] = game_result_win;
+                break;
+            case game_result_win:
+                DEBUG0("Player 2 - LOSS");
+                results[1] = game_result_loss;
+                break;
+        }
+        
+        game_result->results = results;
+        DEBUG0("game result was set");
+    }
+
+    if (game_result->senderid == -1) {
+        game_result->senderid = 2;
+        DEBUG0("Have not got SIDN tag - setting senderid to 2");
     }
 
     return 0;
@@ -1288,6 +1401,7 @@ static int _client_afps(t_wol_gameres_result * game_result, wol_gameres_type typ
 
     switch (type) {
         case wol_gameres_type_int:
+        case wol_gameres_type_time:
             afps = (unsigned int) bn_int_nget(*((bn_int *)data));
             DEBUG1("Average Frames per Second %u ", afps);
             break;
@@ -1368,6 +1482,9 @@ static int _client_date(t_wol_gameres_result * game_result, wol_gameres_type typ
     switch (type) {
         case wol_gameres_type_string:
             DEBUG1("Date %s", (char *) data);
+            break;
+        case wol_gameres_type_bigint:
+            DEBUG1("Date %u", wol_gameres_get_long_from_data(size, data));
             break;
         default:
             WARN1("got unknown gameres type %u for DATE", type);
@@ -2285,6 +2402,9 @@ static int _cl_sid_general(t_wol_gameres_result * game_result, int num, wol_game
         case wol_gameres_type_int:
             sideid = (unsigned int) bn_int_nget(*((bn_int *)data));
             DEBUG2("Side ID of player%u: %u", num, sideid);
+            break;
+        case wol_gameres_type_string:
+            DEBUG2("Side name of player%u: %s", num, data);
             break;
         default:
             WARN2("got unknown gameres type %u for SID%u", type, num);
@@ -3334,6 +3454,111 @@ static int _client_blc7(t_wol_gameres_result * game_result, wol_gameres_type typ
     return _cl_blc_general(7, type, size, data);
 }
 
+static int _cl_cra_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_bigint:
+            DEBUG2("Player %u obtain %u creates", num, wol_gameres_get_long_from_data(size, data));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for CRA%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_cra0(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_cra_general(0, type, size, data);
+}
+
+static int _client_cra1(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_cra_general(1, type, size, data);
+}
+
+static int _client_cra2(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_cra_general(2, type, size, data);
+}
+
+static int _client_cra3(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_cra_general(3, type, size, data);
+}
+
+static int _client_cra4(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_cra_general(4, type, size, data);
+}
+
+static int _client_cra5(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_cra_general(5, type, size, data);
+}
+
+static int _client_cra6(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_cra_general(6, type, size, data);
+}
+
+static int _client_cra7(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_cra_general(7, type, size, data);
+}
+
+static int _cl_hrv_general(int num, wol_gameres_type type, int size, void const * data)
+{
+    switch (type) {
+        case wol_gameres_type_int:
+            DEBUG2("Player %u harvested %u credits", num, (unsigned int) bn_int_nget(*((bn_int *)data)));
+            break;
+        default:
+            WARN2("got unknown gameres type %u for HRV%u", type, num);
+            break;
+    }
+    return 0;
+}
+
+static int _client_hrv0(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_hrv_general(0, type, size, data);
+}
+
+static int _client_hrv1(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_hrv_general(1, type, size, data);
+}
+
+static int _client_hrv2(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_hrv_general(2, type, size, data);
+}
+
+static int _client_hrv3(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_hrv_general(3, type, size, data);
+}
+
+static int _client_hrv4(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_hrv_general(4, type, size, data);
+}
+
+static int _client_hrv5(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_hrv_general(5, type, size, data);
+}
+
+static int _client_hrv6(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_hrv_general(6, type, size, data);
+}
+
+static int _client_hrv7(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    return _cl_hrv_general(7, type, size, data);
+}
 
 }
 
