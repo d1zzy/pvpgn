@@ -132,6 +132,7 @@ typedef struct _user_info
     char		curr_gamepass[MAX_GAMEPASS_LEN];
     int			count, clantag;
     char const *	inviter;
+    int			ignoreversion;
 
 } t_user_info;
 
@@ -368,6 +369,7 @@ void usage(char const * progname)
 	    "    -o NAME, --owner=NAME       report CD owner as NAME\n"
 	    "    -k KEY, --cdkey=KEY         report CD key as KEY\n"
 	    "    -l LANG --lang=LANG         report language as LANG (default \"enUS\")\n"
+	    "    -i, --ignore-version        ignore version request (do not send game version, CD owner/key)\n"
             "    -h, --help, --usage         show this information and exit\n"
             "    -v, --version               print version number and exit\n");
     std::exit(EXIT_FAILURE);
@@ -382,6 +384,7 @@ int read_commandline(int argc, char * * argv,
 		     char const * * cdowner,
 		     char const * * cdkey,
 		     char const * * gamelang,
+		     int * ignoreversion,
 		     int * useansi)
 {
   int a;
@@ -636,6 +639,10 @@ int read_commandline(int argc, char * * argv,
 	    std::fprintf(stderr,"%s: option \"%s\" requires an argument\n",argv[0],argv[a]);
 	    usage(argv[0]);
 	}
+	else if (std::strcmp(argv[a], "-i")==0 || std::strcmp(argv[a], "--ignore-version")==0)
+	{
+	    *ignoreversion = 1;
+	}
 	else
 	{
 	    std::fprintf(stderr,"%s: unknown option \"%s\"\n",argv[0],argv[a]);
@@ -721,9 +728,10 @@ extern int main(int argc, char * argv[])
     /* default values */
     user.archtag = ARCHTAG_WINX86;
     user.gamelang = CLIENT_COUNTRYINFO_109_GAMELANG;
+    user.ignoreversion = 0;
 
     read_commandline(argc,argv,&servname,&servport,&user.clienttag,&user.archtag,&changepass,
-                     &newacct,&user.channel,&user.cdowner,&user.cdkey,&user.gamelang,&client.useansi);
+                     &newacct,&user.channel,&user.cdowner,&user.cdkey,&user.gamelang,&user.ignoreversion,&client.useansi);
 
     client.fd_stdin = fileno(stdin);
     if (tcgetattr(client.fd_stdin,&client.in_attr_old)>=0)
@@ -771,7 +779,7 @@ extern int main(int argc, char * argv[])
     }
 
     if ((client.sd = client_connect(argv[0],
-			     servname,servport,user.cdowner,user.cdkey,user.clienttag,
+			     servname,servport,user.cdowner,user.cdkey,user.clienttag,user.ignoreversion,
 			     &client.saddr,&client.sessionkey,&client.sessionnum,user.archtag,user.gamelang))<0)
     {
 	std::fprintf(stderr,"%s: fatal error during handshake\n",argv[0]);

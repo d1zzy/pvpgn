@@ -97,6 +97,7 @@ void usage(char const * progname)
     std::fprintf(stderr,
 	    "    -o NAME, --owner=NAME       report CD owner as NAME\n"
 	    "    -k KEY, --cdkey=KEY         report CD key as KEY\n"
+	    "    -i, --ignore-version        ignore version request (do not send game version, CD owner/key)\n"
 	    "    -p PLR, --player=PLR        print stats for player PLR\n"
 	    "    --bnetd                     also print BNETD-specific stats\n"
 	    "    --fsgs                      also print FSGS-specific stats\n"
@@ -134,6 +135,7 @@ extern int main(int argc, char * argv[])
     int                use_fsgs=0;
     unsigned int       screen_width,screen_height;
     int                munged=0;
+    int                ignoreversion=0;
 
     if (argc<1 || !argv || !argv[0])
     {
@@ -332,6 +334,8 @@ extern int main(int argc, char * argv[])
 	else if (std::strcmp(argv[a],"-h")==0 || std::strcmp(argv[a],"--help")==0 || std::strcmp(argv[a],"--usage")
 ==0)
             usage(argv[0]);
+	else if (std::strcmp(argv[a],"-i")==0 || std::strcmp(argv[a],"--ignore-version")==0)
+            ignoreversion=1;
 	else if (std::strcmp(argv[a],"-v")==0 || std::strcmp(argv[a],"--version")==0)
 	{
             std::printf("version "PVPGN_VERSION"\n");
@@ -388,7 +392,7 @@ extern int main(int argc, char * argv[])
 	}
     }
 
-    if ((sd = client_connect(argv[0],servname,servport,cdowner,cdkey,clienttag,&saddr,&sessionkey,&sessionnum,ARCHTAG_WINX86,CLIENT_COUNTRYINFO_109_GAMELANG))<0)
+    if ((sd = client_connect(argv[0],servname,servport,cdowner,cdkey,clienttag,ignoreversion,&saddr,&sessionkey,&sessionnum,ARCHTAG_WINX86,CLIENT_COUNTRYINFO_109_GAMELANG))<0)
     {
 	std::fprintf(stderr,"%s: fatal error during handshake\n",argv[0]);
 	if (changed_in)
