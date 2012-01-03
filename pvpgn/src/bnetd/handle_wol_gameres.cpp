@@ -1264,6 +1264,10 @@ static int _client_cmpl(t_wol_gameres_result * game_result, wol_gameres_type typ
             DEBUG0("Player 1 - LOSS");
             result = game_result_loss;
             break;
+        case 64:
+            DEBUG0("Player 1 - DRAW");
+            result = game_result_draw;
+            break;
         default:
             DEBUG1("Got wrong resultnum %u", resultnum);
             result = game_result_disconnect;
@@ -1290,6 +1294,10 @@ static int _client_cmpl(t_wol_gameres_result * game_result, wol_gameres_type typ
             case game_result_win:
                 DEBUG0("Player 2 - LOSS");
                 results[1] = game_result_loss;
+                break;
+            case game_result_draw:
+                DEBUG0("Player 2 - DRAW");
+                results[1] = game_result_draw;
                 break;
         }
         
