@@ -259,7 +259,7 @@ extern int ladder_update_wol(t_clienttag clienttag, t_ladder_id id, t_account * 
     }
 
     if (((results[0]) && (results[1])) && ((results[0] == results[1]) && 
-        ((results[0] = game_result_disconnect) || (results[0] = game_result_draw)))) {
+        ((results[0] == game_result_disconnect) || (results[0] == game_result_draw)))) {
         DEBUG0("Both players got game_result_disconnect or draw - points counting terminated");
         return 0;
     }
