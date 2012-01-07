@@ -1149,8 +1149,8 @@ static int _handle_gameopt_command(t_connection * conn, int numparams, char ** p
     char temp[MAX_IRC_MESSAGE_LEN];
 
     /**
-    *  Basically this has 2 modes as like in PRIVMSG - whisper and talk. What is in
-    *  text is pretty much unknown, we just dump this to the client to deal with...
+    *   Basically this has 2 modes as like in PRIVMSG - whisper and talk. What is in
+    *   text is pretty much unknown, we just dump this to the client to deal with...
     *
     *	Heres the output expected (when gameopt is channel talk):
     *	user!WWOL@hostname GAMEOPT #game_channel_name :gameOptions
