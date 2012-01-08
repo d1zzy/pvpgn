@@ -131,6 +131,8 @@ static int _client_nam_generic(t_wol_gameres_result* game_result, wol_gameres_ty
 return _cl_nam_general(N, game_result, type, size, data);
 }
 
+static int _client_quit(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+
 static int _cl_ipa_general(int num, t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 template<int N>
 static int _client_ipa_generic(t_wol_gameres_result* game_result, wol_gameres_type type, int size, void const* data) {
@@ -293,6 +295,8 @@ static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_AIPL_UINT, _client_aipl},
     {CLIENT_UNIT_UINT, _client_unit},
     {CLIENT_SCEN_UINT, _client_scen},
+    {CLIENT_ADR1_UINT, &_client_ipa_generic<1>}, //For WOLv1 we use the same function as in WOLv2 for IPAx
+    {CLIENT_ADR2_UINT, &_client_ipa_generic<2>}, //For WOLv1 we use the same function as in WOLv2 for IPAx
     {CLIENT_CMPL_UINT, _client_cmpl},
     {CLIENT_PNGS_UINT, _client_pngs},
     {CLIENT_PNGR_UINT, _client_pngr},
@@ -361,6 +365,8 @@ static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_NAM5_UINT, &_client_nam_generic<5>},
     {CLIENT_NAM6_UINT, &_client_nam_generic<6>},
     {CLIENT_NAM7_UINT, &_client_nam_generic<7>},
+    
+    {CLIENT_QUIT_UINT, _client_quit},  //WOLv1 sends QUIT as second TAG by name, but it does not include number of player
 
     {CLIENT_IPA0_UINT, &_client_ipa_generic<0>},
     {CLIENT_IPA1_UINT, &_client_ipa_generic<1>},
@@ -637,6 +643,7 @@ static t_wol_gameres_result * gameres_result_create()
     gameres_result->results      = NULL;
     gameres_result->senderid     = -1;
     gameres_result->myaccount    = NULL;
+    gameres_result->accounts     = NULL;
 
     return gameres_result;
 }
@@ -649,6 +656,9 @@ static int gameres_result_destroy(t_wol_gameres_result * gameres_result)
     }
 
     eventlog(eventlog_level_info,__FUNCTION__,"destroying gameres_result");
+
+    if (gameres_result->accounts)
+        xfree((void *)gameres_result->accounts); /* avoid warning */
 
     xfree(gameres_result);
 
@@ -664,8 +674,10 @@ extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const pa
     unsigned datalen;
     void const * data;
     wol_gameres_type type;
+    t_game_result * unsorted_results = NULL;
     t_wol_gameres_result * gameres_result;
-    unsigned int i;
+    
+    unsigned int i, j, max;
 
     DEBUG2("[%d] got WOL Gameres packet length %u", conn_get_socket(c), packet_get_size(packet));
     offset = sizeof(t_wolgameres_header);
@@ -736,23 +748,55 @@ extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const pa
         offset += datalen;
     }
 
-    if (!(gameres_result->game)) {
+    if (!(gameres_result->game))
+    {
         ERROR0("game not found (game == NULL)");
         return -1;
     }
-    if (!(gameres_result->myaccount)) {
+    if (!(gameres_result->myaccount))
+    {
         ERROR0("have not account of sender");
         return -1;
     }
-    if (!(gameres_result->results)) {
+    if (!(gameres_result->results))
+    {
         ERROR0("have not results of game");
         return -1;
+    }
+    if (!(gameres_result->accounts))
+    {
+        ERROR0("have not accounts");
+        return -1;
+    }
+
+    unsorted_results = (t_game_result*)xmalloc(sizeof(t_game_result) * game_get_count(gameres_result->game));
+    
+    for (i=0; i<game_get_count(gameres_result->game); i++)
+        unsorted_results[i] = gameres_result->results[i];
+
+    for (i=0; i<game_get_count(gameres_result->game); i++)
+    {
+        for (j=0; j<game_get_count(gameres_result->game); j++)
+        {
+            if (!gameres_result->accounts[j])
+            {
+                ERROR0("got NULL account");
+                break;
+            }
+            if (game_get_player(gameres_result->game,i) == gameres_result->accounts[j])
+            {
+                gameres_result->results[i] = unsorted_results[j];
+                break;
+            }
+        }
     }
 
     game_set_report(gameres_result->game, gameres_result->myaccount, "head", "body");
 
 	if (game_set_reported_results(gameres_result->game, gameres_result->myaccount, gameres_result->results) < 0)
 	    xfree((void *) gameres_result->results);
+ 
+    xfree((void *) unsorted_results);
 
     conn_set_game(account_get_conn(gameres_result->myaccount), NULL, NULL, NULL, game_type_none, 0);
 
@@ -784,10 +828,10 @@ static int _client_sidn(t_wol_gameres_result * game_result, wol_gameres_type typ
             break;
     }
 
-//In WOLv1 clients we just got this TAG from Game host - so sender ID1
+    //In WOLv1 clients we just got this TAG from Game host - so sender ID0
 
-        DEBUG1("Setting sender ID to %u", 1);
-        game_result->senderid = 1;
+        DEBUG1("Setting sender ID to %u", 0);
+        game_result->senderid = 0;
     
     return 0;
 }
@@ -832,6 +876,7 @@ static int _client_idno(t_wol_gameres_result * game_result, wol_gameres_type typ
         DEBUG2("found started game \"%s\" for gameid %u", game_get_name(game), gameidnumber);
         game_result->game = game;
         game_result->results = (t_game_result*)xmalloc(sizeof(t_game_result) * game_get_count(game));
+	    game_result->accounts = (t_account**)xmalloc(sizeof(t_account*) * game_get_count(game));
     }
 
     return 0;
@@ -1167,7 +1212,6 @@ static int _client_scen(t_wol_gameres_result * game_result, wol_gameres_type typ
 
 static int _client_cmpl(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
 {
-    t_game * game = game_result->game;
     t_game_result result;
     t_game_result * results =  game_result->results;
     int resultnum;
@@ -1204,11 +1248,6 @@ static int _client_cmpl(t_wol_gameres_result * game_result, wol_gameres_type typ
             break;
     }
     
-    if (!game) {
-        ERROR0 ("got corrupt gameres packet - game == NULL");
-        return 0;
-    }
-    
     if (results) {
         results[0] = result;
 
@@ -1231,12 +1270,11 @@ static int _client_cmpl(t_wol_gameres_result * game_result, wol_gameres_type typ
                 break;
         }
         
-        game_result->results = results;
         DEBUG0("game result was set");
     }
 
     if (game_result->senderid == -1) {
-        game_result->senderid = 2;
+        game_result->senderid = 1;
         DEBUG0("Have not got SIDN tag - setting senderid to 2");
     }
 
@@ -2166,16 +2204,47 @@ static int _client_flgc(t_wol_gameres_result * game_result, wol_gameres_type typ
 static int _cl_nam_general(int num, t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
 {
     int senderid = game_result->senderid;
-    t_account * account = accountlist_find_account((char const *) data);
+    t_account * account;
+    int plnum;
 
     DEBUG2("Name of palyer %u: %s", (char *) num, data);
+    
+    if ((game_result->game) && (game_get_clienttag(game_result->game) == CLIENTTAG_REDALERT_UINT))
+        plnum = num - 1;
+    else
+        plnum = num;
+    
+    if (account = accountlist_find_account((char const *) data))
+        game_result->accounts[plnum] = account;
+    else
+        ERROR1("account %s not found", (char *) data);
 
-    game_result->otheraccount = account;
-
-    if (senderid == num) {
+    if (senderid == plnum)
+    {
         DEBUG1("Packet was sent by %s", (char *) data);
         game_result->myaccount = account;
     }
+
+    return 0;
+}
+
+static int _client_quit(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    int quit;
+
+    switch (type) {
+        case wol_gameres_type_bool:
+            quit = (unsigned int) bn_byte_get(*((bn_byte *)data));
+            break;
+        default:
+            WARN1("got unknown gameres type %u for QUIT", type);
+            break;
+    }
+
+    if (quit)
+        DEBUG0("QUIT == true");
+    else
+        DEBUG0("QUIT == false");
 
     return 0;
 }
@@ -2188,6 +2257,9 @@ static int _cl_ipa_general(int num, t_wol_gameres_result * game_result, wol_game
         case wol_gameres_type_int:
             ipaddress = (unsigned int) bn_int_nget(*((bn_int *)data));
             DEBUG2("IP address of player%u: %u", num, ipaddress);
+            break;
+        case wol_gameres_type_string:                        //PELISH: WOLv1 sends TAG ADR with tape string so we use ipa for that too
+            DEBUG2("IP address of player%u: %s", num, data);
             break;
         default:
             WARN2("got unknown gameres type %u for IPA%u", type, num);
@@ -2252,14 +2324,11 @@ static int _cl_cmp_general(int num, t_wol_gameres_result * game_result, wol_game
     //CMPx 00 06 00 04 00 00 02 00
     //0x0100=WIN 0x0200(0x0210)=LOSE 0x0300=DISCONECT
 
-    t_account * other_account = game_result->otheraccount;
-    t_game * game = game_result->game;
-    t_game_result result;
     t_game_result * results =  game_result->results;
     int resultnum;
-    int i;
 
-    switch (type) {
+    switch (type)
+    {
         case wol_gameres_type_int:
             resultnum = (unsigned int) bn_int_nget(*((bn_int *)data));
             break;
@@ -2269,44 +2338,36 @@ static int _cl_cmp_general(int num, t_wol_gameres_result * game_result, wol_game
     }
 
     DEBUG2("Got %u player resultnum %u", num , resultnum);
-   
-    resultnum &= 0x0000FF00;
-    resultnum = resultnum >> 8;
-    
-    if ((!game) || (!other_account)) {
-        ERROR0 ("got corrupt gameres packet - game == NULL || other_account == NULL");
+
+    if (!results)
+    {
+        ERROR0 ("have not game_result->results");
         return 0;
     }
-    
-    for (i=0; i<game_get_count(game); i++) {
-        if (game_get_player(game,i) == other_account) break;
-    }
 
-    switch (resultnum) {
+    resultnum &= 0x0000FF00;
+    resultnum = resultnum >> 8;
+
+    switch (resultnum)
+    {
         case 1:
             DEBUG0("WIN");
-            result = game_result_win;
+            results[num] = game_result_win;
             break;
         case 2:
             DEBUG0("LOSS");
-            result = game_result_loss;
+            results[num] = game_result_loss;
             break;
         case 3:
             DEBUG0("DISCONECT");
-            result = game_result_disconnect;
+            results[num] = game_result_disconnect;
             break;
         default:
             DEBUG2("Got wrong %u player resultnum %u", num , resultnum);
-            result = game_result_disconnect;
+            results[num] = game_result_disconnect;
             break;
     }
     
-    if (results) {
-        results[i] = result;
-        game_result->results = results;
-        DEBUG0("game result was set");
-    }
-
     return 0;
 }
 
