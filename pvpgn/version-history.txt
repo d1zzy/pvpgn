@@ -13,15 +13,15 @@ PvPGN Version History:
   -- disable account creation via irc/wol when new_accounts=false
   -- added support to allow/deny WOL clients in bnetd.conf
   -- added support for battle clans
-  -- added various protocol related fixes
   -- added apiregister support
   -- added autoupdate support for WOLv2 clients
   -- added variables into bnetd.conf for wol FTP update server specification
   -- fixed voice flag not shown for clients in channel
   -- fixed bug in RedAlert2/Yuri when game owner changes maximum players
   -- added QuickMatch support for RA2/YURI
-  -- added Ladders support for Red Alert v3.03, Tiberian Sun, Firestorm,
-     Red Alert 2 and Yuri's Revenge clients
+  -- added solo ladders support for Red Alert v3.03, Dune 2000, Tiberian Sun,
+     Firestorm, Red Alert 2 and Yuri's Revenge clients
+  -- various protocol related fixes
 
 [WAR3]
   -- added support for SRP3 based account creation/login

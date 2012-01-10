@@ -74,6 +74,7 @@ const t_tag CLIENT_SERN_UINT = 0x53455223;
 const t_tag CLIENT_SIDN_UINT = 0x53494423;
 const t_tag CLIENT_SDFX_UINT = 0x53444658;
 const t_tag CLIENT_IDNO_UINT = 0x49444E4F;
+const t_tag CLIENT_GMID_UINT = 0x474D4944;
 const t_tag CLIENT_GSKU_UINT = 0x47534B55;
 const t_tag CLIENT_DCON_UINT = 0x44434F4E;
 const t_tag CLIENT_LCON_UINT = 0x4C434F4E;
@@ -120,6 +121,8 @@ const t_tag CLIENT_SVID_UINT = 0x53564944;
 const t_tag CLIENT_SNAM_UINT = 0x534e414d;
 const t_tag CLIENT_GMAP_UINT = 0x474d4150;
 const t_tag CLIENT_DSVR_UINT = 0x44535652;
+const t_tag CLIENT_GSET_UINT = 0x47534554;
+const t_tag CLIENT_GEND_UINT = 0x47454e44;
 
 /* RNDG Player tags */
 const t_tag CLIENT_PNAM_UINT = 0x504e414d;
@@ -361,6 +364,13 @@ const t_tag CLIENT_HRV4_UINT = 0x48525634;
 const t_tag CLIENT_HRV5_UINT = 0x48525635;
 const t_tag CLIENT_HRV6_UINT = 0x48525636;
 const t_tag CLIENT_HRV7_UINT = 0x48525637;
+
+/* Dune 2000 specific */
+const t_tag CLIENT_PL_0_UINT = 0x504c5f30;
+const t_tag CLIENT_PL_1_UINT = 0x504c5f31;
+
+const t_tag CLIENT_SCR0_UINT = 0x53435230;
+const t_tag CLIENT_SCR1_UINT = 0x53435231;
 
 }
 

@@ -92,6 +92,8 @@ static int _client_svid(t_wol_gameres_result * game_result, wol_gameres_type typ
 static int _client_snam(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 static int _client_gmap(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 static int _client_dsvr(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_gset(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+static int _client_gend(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 
 /* Renegade Player related functions */
 static int _client_pnam(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
@@ -265,6 +267,18 @@ static int _client_hrv_generic(t_wol_gameres_result* game_result, wol_gameres_ty
 return _cl_hrv_general(N, game_result, type, size, data);
 }
 
+static int _cl_pln_general(int num, t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+template<int N>
+static int _client_pln_generic(t_wol_gameres_result* game_result, wol_gameres_type type, int size, void const* data) {
+return _cl_pln_general(N, game_result, type, size, data);
+}
+
+static int _cl_scr_general(int num, t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
+template<int N>
+static int _client_scr_generic(t_wol_gameres_result* game_result, wol_gameres_type type, int size, void const* data) {
+return _cl_scr_general(N, game_result, type, size, data);
+}
+
 typedef int (* t_wol_gamerestag)(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data);
 
 typedef struct {
@@ -278,6 +292,7 @@ static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_SIDN_UINT, _client_sidn},
     {CLIENT_SDFX_UINT, _client_sdfx},
     {CLIENT_IDNO_UINT, _client_idno},
+    {CLIENT_GMID_UINT, _client_idno}, //PELISH: Dune 2000 uses GMID when sending IDNO
     {CLIENT_GSKU_UINT, _client_gsku},
     {CLIENT_DCON_UINT, _client_dcon},
     {CLIENT_LCON_UINT, _client_lcon},
@@ -324,6 +339,8 @@ static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_SNAM_UINT, _client_snam},
     {CLIENT_GMAP_UINT, _client_gmap},
     {CLIENT_DSVR_UINT, _client_dsvr},
+    {CLIENT_GSET_UINT, _client_gset}, //Dune 2000
+    {CLIENT_GEND_UINT, _client_gend}, //Dune 2000
     
     /* Renegade Player related tags */
     {CLIENT_PNAM_UINT, _client_pnam},
@@ -565,6 +582,12 @@ static const t_wol_gamerestag_table_row wol_gamreres_htable[] = {
     {CLIENT_HRV5_UINT, &_client_hrv_generic<5>},
     {CLIENT_HRV6_UINT, &_client_hrv_generic<6>},
     {CLIENT_HRV7_UINT, &_client_hrv_generic<7>},
+
+    {CLIENT_PL_0_UINT, &_client_pln_generic<0>},
+    {CLIENT_PL_1_UINT, &_client_pln_generic<1>},
+
+    {CLIENT_SCR0_UINT, &_client_scr_generic<0>},
+    {CLIENT_SCR1_UINT, &_client_scr_generic<1>},
 
     {1, NULL}
 };
@@ -1275,7 +1298,7 @@ static int _client_cmpl(t_wol_gameres_result * game_result, wol_gameres_type typ
 
     if (game_result->senderid == -1) {
         game_result->senderid = 1;
-        DEBUG0("Have not got SIDN tag - setting senderid to 2");
+        DEBUG0("Have not got SIDN tag - setting senderid to 1");
     }
 
     return 0;
@@ -1361,6 +1384,7 @@ static int _client_time(t_wol_gameres_result * game_result, wol_gameres_type typ
             DEBUG1("Game was start at %s ", (char *) data);
             break;
         case wol_gameres_type_time:
+        case wol_gameres_type_int:
             time = (std::time_t) bn_int_nget(*((bn_int *)data));
             DEBUG1("Game was start at %s ", ctime(&time));
             break;
@@ -1729,6 +1753,50 @@ static int _client_dsvr(t_wol_gameres_result * game_result, wol_gameres_type typ
             break;
         default:
             WARN1("got unknown gameres type %u for SCEN", type);
+            break;
+    }
+    return 0;
+}
+
+/* Dune 2000 specific tag handlers */
+
+static int _client_gset(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    /**
+     *  This is used by Dune 2000
+     *
+     *  imput expected:
+     *  Worms 0 Crates 1 Credits 7000 Techlevel 7
+     */
+
+    switch (type) {
+        case wol_gameres_type_string:
+            DEBUG1("Game start settings: %s", (char *) data);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for GSET", type);
+            break;
+    }
+    return 0;
+}
+
+static int _client_gend(t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    /**
+     *  This is used by Dune 2000
+     *
+     *  imput expected:
+     *  END_STATUS : OPPONENT SURRENDERED
+     *  END_STATUS : ENDED NORMALLY
+     *  END_STATUS : WASH GAME
+     */
+
+    switch (type) {
+        case wol_gameres_type_string:
+            DEBUG1("Game ended with: %s", (char *) data);
+            break;
+        default:
+            WARN1("got unknown gameres type %u for GEND", type);
             break;
     }
     return 0;
@@ -2628,6 +2696,126 @@ static int _cl_hrv_general(int num, t_wol_gameres_result * game_result, wol_game
             WARN2("got unknown gameres type %u for HRV%u", type, num);
             break;
     }
+    return 0;
+}
+
+static int _cl_pln_general(int num, t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    t_game_result * results = game_result->results;
+    t_account * account;
+    char * line;        /* copy of data */
+    char * nickname;
+    char * temp;
+
+    /**
+     *  This is used by Dune 2000
+     *  here is imput expected in string type:
+     *  [nick]/[side]/1/1/CONNECTION_ALIVE
+     *
+     *  example:
+     *  test2/Atreides/1/1/CONNECTION_ALIVE
+     */
+
+    switch (type) {
+        case wol_gameres_type_string:
+            DEBUG2("Player %u data: %s", num, (char *) data);
+            break;
+        default:
+            WARN2("got unknown gameres type %u for PL_%u", type, num);
+            break;
+    }
+
+    line = (char *) xmalloc(std::strlen((char *) data)+1);
+    strcpy(line,(char *) data);
+
+    nickname = line;
+	if (!(temp = strchr(nickname,'/'))) {
+	    WARN0("got malformed line (missing nickname)");
+	    xfree(line);
+	    return 0;
+	}
+	*temp++ = '\0';
+
+    if (account = accountlist_find_account((char const *) nickname))
+        game_result->accounts[num] = account;
+    else
+    {
+        ERROR1("account %s not found", (char *) nickname);
+        xfree(line);
+        return 0;
+    }
+
+    if (game_result->senderid == -1) {
+        game_result->senderid = 1;
+        DEBUG0("Have not got SIDN tag - setting senderid to 1");
+    }
+
+    if (game_result->senderid == num)
+    {
+        DEBUG1("Packet was sent by %s", (char *) nickname);
+        game_result->myaccount = account;
+    }
+    
+    if (line)
+        xfree(line);
+
+    return 0;
+}
+
+static int _cl_scr_general(int num, t_wol_gameres_result * game_result, wol_gameres_type type, int size, void const * data)
+{
+    t_game_result * results = game_result->results;
+    char * line;        /* copy of data */
+    char * result;      /* 0 or 1 */
+    char * temp;
+
+    /**
+     *  This is used by Dune 2000
+     *  here is imput expected in string type:
+     *  [player_result]/6/[Building Lost]/[Building Destroyed]/13/[Casualties Received]/[Casualties Inflicted]/[Spice Harvested]
+     *
+     *  example:
+     *  1/6/0/2/13/8/11/2800
+     *
+     *  known [player_result] 0==LOSS 1==WIN
+     */
+
+    switch (type) {
+        case wol_gameres_type_string:
+            DEBUG2("Player %u data: %s", num, (char *) data);
+            break;
+        default:
+            WARN2("got unknown gameres type %u for SCR%u", type, num);
+            return 0;
+    }
+    
+    line = (char *) xmalloc(std::strlen((char *) data)+1);
+    strcpy(line,(char *) data);
+
+    result = line;
+	if (!(temp = strchr(result,'/'))) {
+	    WARN0("got malformed line (missing result)");
+	    xfree(line);
+	    return 0;
+	}
+	*temp++ = '\0';
+
+	if (std::strcmp(result, "0") == 0)
+    {
+        DEBUG1("Player %u - LOSS", num);
+        results[num] = game_result_loss;
+    }
+    else if (std::strcmp(result, "1") == 0)
+    {
+        DEBUG1("Player %u - WIN", num);
+        results[num] = game_result_win;
+    }
+    else
+        WARN1("got unknown result %s", result);
+    
+    if (line)
+        xfree(line);
+
     return 0;
 }
 
