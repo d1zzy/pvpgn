@@ -487,6 +487,12 @@ extern int handle_command(t_connection * c,  char const * text)
 {
   t_command_table_row const *p;
 
+  if ((text[0]!='\0') && (conn_quota_exceeded(c,text)))
+  {
+	message_send_text(c,message_type_error,c,"You are sending commands to Battle.net too quickly and risk being disconnected for flooding. Please slow down.");
+	return 0;
+  }   
+
   for (p = standard_command_table; p->command_string != NULL; p++)
     {
       if (strstart(text, p->command_string)==0)
