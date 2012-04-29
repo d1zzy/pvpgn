@@ -83,7 +83,7 @@ SET(LOCALE_INSTALL_DIR
 
 
 SET(SYSCONF_INSTALL_DIR
-  "${EXEC_INSTALL_PREFIX}/etc"
+  "${EXEC_INSTALL_PREFIX}conf"
   CACHE PATH "The ${APPLICATION_NAME} sysconfig install dir (default prefix/etc)"
   FORCE
 )

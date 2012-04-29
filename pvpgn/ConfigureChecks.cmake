@@ -37,6 +37,9 @@ check_library_exists(resolv inet_aton "" HAVE_LIBRESOLV)
 check_library_exists(bind __inet_aton "" HAVE_LIBBIND)
 
 # storage module checks
+if(WITH_ODBC)
+    find_package(ODBC REQUIRED)
+endif(WITH_ODBC)
 if(WITH_MYSQL)
     find_package(MySQL REQUIRED)
     # disable strict ANSI checking when using MySQL headers

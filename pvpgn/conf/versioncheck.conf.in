@@ -61,139 +61,51 @@
 
 # -=-=-=-=-=-=- Latest Versions -=-=-=-=-=-=- No Update Required -=-=-=-=-=-=-
 
-# Warcraft III - TFT (Expansion) 1.22a
+# Warcraft III - TFT (Expansion) 1.26a
 # Note: this version check is sent in both FT and ROC mode
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
  IX86ver1.mpq \
  IX86 \
  W3XP \
- "war3.exe 06/27/08 00:01:35 471040" \
- 0x00000016 \
- 1.22.0.184 \
- 0x909998db \
- W3XP_122A
+ "war3.exe 03/18/11 20:03:55 471040" \
+ 0x0000001a \
+ 1.26.0.1 \
+ 0xf2e7cec2 \
+ W3XP_126A
 
-# Warcraft III - ROC 1.22a
+# Warcraft III - ROC 1.26a
 # Note: this version check is sent in both FT and ROC mode
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
  IX86ver1.mpq \
  IX86 \
  WAR3 \
- "war3.exe 06/27/08 00:01:35 471040" \
- 0x00000016 \
- 1.22.0.184 \
- 0x909998db \
- WAR3_122A
+ "war3.exe 03/18/11 20:03:55 471040" \
+ 0x0000001a \
+ 1.26.0.1 \
+ 0xf2e7cec2 \
+ WAR3_126A
 
-# Diablo II - LoD (Expansion) 1.12a
+# Diablo II - LoD (Expansion) 1.13c
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
  IX86ver1.mpq \
  IX86 \
  D2XP \
- "Game.exe 05/28/08 01:44:02 61440" \
- 0x0000000c \
- 1.0.12.0 \
- 0x3d421510 \
- D2XP_112A
+ "Game.exe 03/09/10 04:10:51 61440" \
+ 0x0000000d \
+ 1.0.13.0 \
+ 0x7686beca \
+ D2XP_113C
 
-# Diablo II 1.12a
+# Diablo II 1.13c
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
  IX86ver1.mpq \
  IX86 \
  D2DV \
- "Game.exe 07/05/08 17:19:40 57344" \
- 0x0000000c \
- 1.0.12.0 \
- 0x243ac143 \
- D2DV_112A
-
-# Diablo II - LoD (Expansion) 1.11b
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
- IX86 \
- D2XP \
- "Game.exe 08/17/05 01:12:38 2129920" \
- 0x0000000b \
- 1.0.11.0 \
- 0xbfc36199 \
- D2XP_111B
-
-# Diablo II 1.11b
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
- IX86 \
- D2DV \
- "Game.exe 08/17/05 01:11:43 2125824" \
- 0x0000000b \
- 1.0.11.0 \
- 0x602f8323 \
- D2DV_111B
-
-# Diablo II - LoD (Expansion) 1.11
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
- IX86 \
- D2XP \
- "Game.exe 07/26/05 23:22:13 2129920" \
- 0x0000000b \
- 1.0.11.0 \
- 0xfb0c59b2 \
- D2XP_111
-
-# Diablo II 1.11
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
- IX86 \
- D2DV \
- "Game.exe 27/06/05 23:21:18 2125824" \
- 0x0000000b \
- 1.0.11.0 \
- 0xbdf86a85 \
- D2DV_111
-
-# Diablo II - LoD (Expansion) 1.10
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
- IX86 \
- D2XP \
- "Game.exe 10/13/03 08:35:30 1198857" \
- 0x0000000a \
- 1.0.10.0 \
- 0x210126ec \
- D2XP_110
-
-# Diablo II 1.10
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
- IX86 \
- D2DV \
- "Game.exe 10/13/03 08:34:46 1194761" \
- 0x0000000a \
- 1.0.10.0 \
- 0x3132dda6 \
- D2DV_110
-
-# Diablo II - LoD (Expansion) 1.09d
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
- IX86 \
- D2XP \
- "Game.exe 11/30/01 04:00:17 448675" \
- 9 \
- 1.0.9.0 \
- 0xfa39efbb \
- D2XP_109D
-
-# Diablo II 1.09d
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
- IX86 \
- D2DV \
- "Game.exe 11/30/01 03:59:45 444579" \
- 9 \
- 1.0.9.0 \
- 0x41e223a3 \
- D2DV_109D
+ "Game.exe 03/09/10 04:11:00 57344" \
+ 0x0000000d \
+ 1.0.13.0 \
+ 0xfc04b9f6 \
+ D2DV_113C
 
 # Starcraft - Broodwar (Expansion) 1.16.1 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
@@ -227,119 +139,117 @@
  1.16.1.0 \
  0x02623d85 \
  STAR_1161
-
-##### Mac OS X (XMAC) ########################################################
-
-# -=-=-=-=-=-=- Latest Versions -=-=-=-=-=-=- No Update Required -=-=-=-=-=-=-
-
-# Diablo II LOD v1.11b MacOS X
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- D2XP \
- "Diablo II (Carbon) 08/16/105 17:00:00 5877766" \
- 0x0000000b \
- 5.0.1.70 \
- 0xeb219644 \
- D2XP_111B
-
-# Diablo II LOD v1.11 MacOS X
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- D2XP \
- "Diablo II (Carbon) 07/26/105 16:00:00 5877574" \
- 0x0000000b \
- 5.0.1.69 \
- 0x6a5e0678 \
- D2XP_111
-
-# Diablo II LOD v1.10 MacOS X
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- D2XP \
- "Diablo II (Carbon) 10/29/103 12:32:05 5691846" \
- 0x0000000a \
- 5.0.0.65 \
- 0x9b01cc98 \
- D2XP_110
-
-# StarCraft - Broodwar (Expansion) 1.15.1 - (Broodwar Mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ 
+# Starcraft - Broodwar (Expansion) 1.16.1 - (Broodwar mode) - MAC
+ "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
  "XMACver1.mpq" \
  XMAC \
  SEXP \
- "Starcraft (Carbon) 07/16/107 18:00:00 1400709" \
- 0x000000d1 \
- 0x010f0001 \
- 0xa380ad83 \
- SEXP_1151
-
-# StarCraft - Broodwar (Expansion) 1.15.1 - (Starcraft Mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 07/16/107 18:00:00 1400709" \
- 0x000000d1 \
- 0x010f0001 \
- 0xa380ad83 \
- STAR_1151
-
-##### Mac OS Classic (PMAC) ##################################################
-
-# -=-=-=-=-=-=- Latest Versions -=-=-=-=-=-=- No Update Required -=-=-=-=-=-=-
-
-# Diablo II LOD v1.10 MacOS Classic
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- D2XP \
- "Diablo II 10/13/103 01:26:09 4829910" \
- 0x0000000a \
- 5.0.0.57 \
- 0xcc2c2193 \
- D2XP_110
-
-# Starcraft - Broodwar (Expansion) 1.13e - (Broodwar mode) MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- SEXP \
- "Starcraft 09/07/105 10:00:00 1593704" \
- 0x000000cd \
- 1.1.3.9 \
- 0x375482e4 \
- SEXP_113E
-
-# Starcraft - Broodwar (Expansion) 1.13e - (Starcraft mode) MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- STAR \
- "Starcraft 09/07/105 10:00:00 1593704" \
- 0x000000cd \
- 1.1.3.9 \
- 0x375482e4 \
- STAR_113E
-
-# StarCraft v1.13e MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- STAR \
- "Starcraft 09/07/105 10:00:00 1593704" \
- 0x000000cd \
- 1.1.3.8 \
- 0x375482e4 \
- STAR_113E
-
-##### Intel (IX86) ###########################################################
+ "Starcraft (Carbon) 100/50/58 100:50:46 1402780" \
+ 0x000000d3 \
+ 0x010a6425 \
+ 0xd6802c9e \
+ SEXP_1161
 
 # -=-=-=-=-=- Older Versions -=-=-=-=-=-=- Update Required -=-=-=-=-=-
 
 # =================== WarCraft 3 Expansion Entries ==================
+
+# Warcraft III - TFT (Expansion) 1.25b
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 02/12/11 03:32:48 471040" \
+ 0x00000019 \
+ 1.25.1.253 \
+ 0x41a8664c \
+ W3XP_125B
+
+# Warcraft III - TFT (Expansion) 1.24e
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 02/26/10 20:41:08 471040" \
+ 0x00000018 \
+ 1.24.4.243 \
+ 0xde4443c5 \
+ W3XP_124E
+
+# Warcraft III - TFT (Expansion) 1.24d
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 01/13/10 00:35:02 471040" \
+ 0x00000018 \
+ 1.24.3.240 \
+ 0x2a7b4a96 \
+ W3XP_124D
+
+# Warcraft III - TFT (Expansion) 1.24c
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 10/21/09 19:14:23 471040" \
+ 0x00000018 \
+ 1.24.2.234 \
+ 0x307c4598 \
+ W3XP_124C
+
+# Warcraft III - TFT (Expansion) 1.24b
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 08/07/09 19:20:53 471040" \
+ 0x00000018 \
+ 1.24.1.230 \
+ 0xcaa59e30 \
+ W3XP_124B
+
+# Warcraft III - TFT (Expansion) 1.24a
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 07/23/09 20:15:12 471040" \
+ 0x00000018 \
+ 1.24.0.228 \
+ 0xf3c22f0b \
+ W3XP_124A
+
+# Warcraft III - TFT (Expansion) 1.23a
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 03/12/09 23:23:40 471040" \
+ 0x00000017 \
+ 1.23.0.208 \
+ 0xfad9bc05 \
+ W3XP_123A
+
+# Warcraft III - TFT (Expansion) 1.22a
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 06/27/08 00:01:35 471040" \
+ 0x00000016 \
+ 1.22.0.184 \
+ 0x909998db \
+ W3XP_122A
 
 # Warcraft III - TFT (Expansion) 1.21b
 # Note: this version check is sent in both FT and ROC mode
@@ -547,55 +457,151 @@
 
 # Warcraft III - TFT (Expansion) 1.12a
 # Note: this version check is sent in both FT and ROC mode
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# W3XP \
-# "war3.exe 07/22/03 22:43:15 1568211" \
-# 0x0000000c \
-# 1.0.12.148 \
-# 0xa9c022bd \
-# W3XP_112A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 07/22/03 22:43:15 1568211" \
+ 0x0000000c \
+ 1.0.12.148 \
+ 0xa9c022bd \
+ W3XP_112A
 
 # Warcraft III - TFT (Expansion) 1.11a
 # Note: this version check is sent in both FT and ROC mode
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# W3XP \
-# "war3.exe 07/01/03 18:22:52 1568211" \
-# 0x0000000b \
-# 1.0.11.147 \
-# 0x5fce4f04 \
-# W3XP_111A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 07/01/03 18:22:52 1568211" \
+ 0x0000000b \
+ 1.0.11.147 \
+ 0x5fce4f04 \
+ W3XP_111A
 
 # Warcraft III - TFT (Expansion) 1.10a
 # Note: this version check is sent in both FT and ROC mode
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# W3XP \
-# "war3.exe 06/17/03 16:37:46 1568211" \
-# 0x0000000a \
-# 1.0.10.146 \
-# 0x75d1c16f \
-# W3XP_110A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 06/17/03 16:37:46 1568211" \
+ 0x0000000a \
+ 1.0.10.146 \
+ 0x75d1c16f \
+ W3XP_110A
 
 # Warcraft III - TFT (Expansion) 1.07a
 # Note: this version check is sent in both FT and ROC mode
 # exeinfo is NULL here because it's the date of install
 # but that's ok because we have the checksum
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# W3XP \
-# NULL \
-# 0x00000007 \
-# 1.0.7.142 \
-# 0xde80b55b \
-# W3XP_107A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ NULL \
+ 0x00000007 \
+ 1.0.7.142 \
+ 0xde80b55b \
+ W3XP_107A
 
 # ====================== WarCraft 3 Entries ========================
+
+# Warcraft III - ROC 1.25b
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 02/12/11 03:32:48 471040" \
+ 0x00000019 \
+ 1.25.1.253 \
+ 0x41a8664c \
+ W3XP_125B
+
+# Warcraft III - ROC 1.24e
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 02/26/10 20:41:08 471040" \
+ 0x00000018 \
+ 1.24.4.243 \
+ 0xde4443c5 \
+ W3XP_124E
+
+# Warcraft III - ROC 1.24d
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 01/13/10 00:35:02 471040" \
+ 0x00000018 \
+ 1.24.3.240 \
+ 0x2a7b4a96 \
+ WAR3_124D
+
+# Warcraft III - ROC 1.24c
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 10/21/09 19:14:23 471040" \
+ 0x00000018 \
+ 1.24.2.234 \
+ 0x307c4598 \
+ WAR3_124C
+
+# Warcraft III - ROC 1.24b
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 08/07/09 19:20:53 471040" \
+ 0x00000018 \
+ 1.24.1.230 \
+ 0xcaa59e30 \
+ WAR3_124B
+
+# Warcraft III - ROC 1.24a
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 07/23/09 20:15:12 471040" \
+ 0x00000018 \
+ 1.24.0.228 \
+ 0xf3c22f0b \
+ WAR3_124A
+
+# Warcraft III - ROC 1.23a
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 03/12/09 23:23:40 471040" \
+ 0x00000017 \
+ 1.23.0.208 \
+ 0xfad9bc05 \
+ WAR3_123A
+
+# Warcraft III - ROC 1.22a
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 06/27/08 00:01:35 471040" \
+ 0x00000016 \
+ 1.22.0.184 \
+ 0x909998db \
+ WAR3_122A
 
 # Warcraft III - ROC 1.21b
 # Note: this version check is sent in both FT and ROC mode
@@ -803,353 +809,473 @@
 
 # Warcraft III - ROC 1.12a
 # Note: this version check is sent in both FT and ROC mode
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 07/22/03 22:43:15 1568211" \
-# 0x0000000c \
-# 1.0.12.148 \
-# 0xa9c022bd \
-# WAR3_112A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 07/22/03 22:43:15 1568211" \
+ 0x0000000c \
+ 1.0.12.148 \
+ 0xa9c022bd \
+ WAR3_112A
 
 # Warcraft III - RoC 1.11a
 #"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 07/01/03 18:22:52 1568211" \
-# 0x0000000b \
-# 1.0.11.147 \
-# 0x5fce4f04 \
-# WAR3_111A
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 07/01/03 18:22:52 1568211" \
+ 0x0000000b \
+ 1.0.11.147 \
+ 0x5fce4f04 \
+ WAR3_111A
 
 # Warcraft III - RoC 1.10a
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 06/17/03 16:37:46 1568211" \
-# 0x0000000a \
-# 1.0.10.146 \
-# 0x75d1c16f \
-# WAR3_110A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 06/17/03 16:37:46 1568211" \
+ 0x0000000a \
+ 1.0.10.146 \
+ 0x75d1c16f \
+ WAR3_110A
 
 # Warcraft III - RoC 1.07 (Used for TFT 1.07a in RoC Mode)
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# NULL \
-# 0x00000007 \
-# 1.0.7.142 \
-# 0xde80b55b \
-# WAR3_107A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ NULL \
+ 0x00000007 \
+ 1.0.7.142 \
+ 0xde80b55b \
+ WAR3_107A
 
 # WarCraft III - RoC 1.06a
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 05/23/03 19:50:08 1461715" \
-# 0x00000006 \
-# 1.0.6.0 \
-# 0x302dca19 \
-# WAR3_106A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 05/23/03 19:50:08 1461715" \
+ 0x00000006 \
+ 1.0.6.0 \
+ 0x302dca19 \
+ WAR3_106A
 
 # WarCraft III - RoC 1.05a
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 01/30/03 03:08:10 1170899" \
-# 0x00000005 \
-# 1.0.5.0 \
-# 0xbe284ba9 \
-# WAR3_105A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 01/30/03 03:08:10 1170899" \
+ 0x00000005 \
+ 1.0.5.0 \
+ 0xbe284ba9 \
+ WAR3_105A
 
 # WarCraft III - RoC 1.04c
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 01/16/03 02:44:48 1166807" \
-# 0x00000004 \
-# 1.0.4.1 \
-# 0x3f06d9fa \
-# WAR3_104C
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 01/16/03 02:44:48 1166807" \
+ 0x00000004 \
+ 1.0.4.1 \
+ 0x3f06d9fa \
+ WAR3_104C
 
 # WarCraft III - RoC 1.04b
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 10/31/02 17:29:22 1068499" \
-# 0x00000004 \
-# 1.0.3.0 \
-# 0x56f4cc37 \
-# WAR3_104B
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 10/31/02 17:29:22 1068499" \
+ 0x00000004 \
+ 1.0.3.0 \
+ 0x56f4cc37 \
+ WAR3_104B
 
 # WarCraft III - RoC 1.04a
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 10/29/02 23:26:17 713495" \
-# 0x00000004 \
-# 1.0.3.0 \
-# 0x0e529b2d \
-# WAR3_104A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 10/29/02 23:26:17 713495" \
+ 0x00000004 \
+ 1.0.3.0 \
+ 0x0e529b2d \
+ WAR3_104A
 
 # Warcraft III - RoC 1.03a
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 10/08/02 20:54:49 713495" \
-# 0x00000003 \
-# 1.0.3.0 \
-# 0xae4ac7fa \
-# WAR3_103A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 10/08/02 20:54:49 713495" \
+ 0x00000003 \
+ 1.0.3.0 \
+ 0xae4ac7fa \
+ WAR3_103A
 
 # Warcraft III - RoC 1.02a
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 09/06/02 02:41:02 713495" \
-# 0x00000002 \
-# 1.0.1.0 \
-# 0xa67d9a0e \
-# WAR3_102A
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 09/06/02 02:41:02 713495" \
+ 0x00000002 \
+ 1.0.1.0 \
+ 0xa67d9a0e \
+ WAR3_102A
 
 # Warcraft III - RoC 1.02
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 08/12/02 18:21:15 713495" \
-# 0x00000002 \
-# 1.0.1.0 \
-# 0x03d8be54 \
-# WAR3_102
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 08/12/02 18:21:15 713495" \
+ 0x00000002 \
+ 1.0.1.0 \
+ 0x03d8be54 \
+ WAR3_102
 
 # Warcraft III - RoC 1.01b
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 07/10/02 18:59:10 713495" \
-# 0x00000001 \
-# 1.0.1.1 \
-# 0x062ef7dc \
-# WAR3_101B
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 07/10/02 18:59:10 713495" \
+ 0x00000001 \
+ 1.0.1.1 \
+ 0x062ef7dc \
+ WAR3_101B
 
 # Warcraft III - RoC 1.01
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# "war3.exe 06/28/02 18:41:18 713495" \
-# 0x00000001 \
-# 1.0.1.0 \
-# 0x62c2e1a2 \
-# WAR3_101
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 06/28/02 18:41:18 713495" \
+ 0x00000001 \
+ 1.0.1.0 \
+ 0x62c2e1a2 \
+ WAR3_101
 
 # Warcraft III - RoC 1.00
 # exeinfo is NULL here because it's the date of install
 # but that's ok because we have the checksum
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# WAR3 \
-# NULL \
-# 0x00000000 \
-# 1.0.0.0 \
-# 0xf891f129 \
-# WAR3_100
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ NULL \
+ 0x00000000 \
+ 1.0.0.0 \
+ 0xf891f129 \
+ WAR3_100
 
 # ====================== Diablo II LOD entries ===========================
 
+# Diablo II - LoD (Expansion) 1.12a
+
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 05/28/08 01:44:02 61440" \
+ 0x0000000c \
+ 1.0.12.0 \
+ 0x3d421510 \
+ D2XP_112A
+
+# Diablo II - LoD (Expansion) 1.11b
+
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 08/17/05 01:12:38 2129920" \
+ 0x0000000b \
+ 1.0.11.0 \
+ 0xbfc36199 \
+ D2XP_111B
+
+# Diablo II - LoD (Expansion) 1.11
+
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 07/26/05 23:22:13 2129920" \
+ 0x0000000b \
+ 1.0.11.0 \
+ 0xfb0c59b2 \
+ D2XP_111
+
+# Diablo II - LoD (Expansion) 1.10
+
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 10/13/03 08:35:30 1198857" \
+ 0x0000000a \
+ 1.0.10.0 \
+ 0x210126ec \
+ D2XP_110
+
+# Diablo II - LoD (Expansion) 1.09d
+
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 11/30/01 04:00:17 448675" \
+ 9 \
+ 1.0.9.0 \
+ 0xfa39efbb \
+ D2XP_109D
+
 # Diablo II - LoD (Expansion) 1.09b
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2XP \
-# "Game.exe 08/31/01 22:40:56 428163" \
-# 9 \
-# 1.0.9.0 \
-# 0x1436c138 \
-# D2XP_109B
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 08/31/01 22:40:56 428163" \
+ 9 \
+ 1.0.9.0 \
+ 0x1436c138 \
+ D2XP_109B
 
 # Diablo II - LoD (Expansion) 1.09
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2XP \
-# "Game.exe 08/16/01 23:05:03 428163" \
-# 9 \
-# 1.0.9.0 \
-# 0x15abc72d \
-# D2XP_109
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 08/16/01 23:05:03 428163" \
+ 9 \
+ 1.0.9.0 \
+ 0x15abc72d \
+ D2XP_109
 
 # Diablo II - LoD (Expansion) 1.08
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2XP \
-# "Game.exe 06/19/01 02:24:32 428163" \
-# 8 \
-# 1.0.8.0 \
-# 0x3a8664ff \
-# D2XP_108
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 06/19/01 02:24:32 428163" \
+ 8 \
+ 1.0.8.0 \
+ 0x3a8664ff \
+ D2XP_108
 
 # Diablo II - LoD (Expansion) 1.07
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2XP \
-# "Game.exe 01/23/02 06:39:26 424067" \
-# 7 \
-# 1.0.7.0 \
-# 0x4f3079e6 \
-# D2XP_107
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 01/23/02 06:39:26 424067" \
+ 7 \
+ 1.0.7.0 \
+ 0x4f3079e6 \
+ D2XP_107
 
 # ==================== Diablo 2 (original) entries =====================
 
+# Diablo II 1.12a
+
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 07/05/08 17:19:40 57344" \
+ 0x0000000c \
+ 1.0.12.0 \
+ 0x243ac143 \
+ D2DV_112A
+
+# Diablo II 1.11b
+
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 08/17/05 01:11:43 2125824" \
+ 0x0000000b \
+ 1.0.11.0 \
+ 0x602f8323 \
+ D2DV_111B
+
+# Diablo II 1.11
+
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 27/06/05 23:21:18 2125824" \
+ 0x0000000b \
+ 1.0.11.0 \
+ 0xbdf86a85 \
+ D2DV_111
+
+# Diablo II 1.10
+
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 10/13/03 08:34:46 1194761" \
+ 0x0000000a \
+ 1.0.10.0 \
+ 0x3132dda6 \
+ D2DV_110
+
+# Diablo II 1.09d
+
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 11/30/01 03:59:45 444579" \
+ 9 \
+ 1.0.9.0 \
+ 0x41e223a3 \
+ D2DV_109D
+
 # Diablo II 1.09b
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 08/31/01 22:40:35 424067" \
-# 9 \
-# 1.0.9.0 \
-# 0xb9cb2cb1 \
-# D2DV_109B
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 08/31/01 22:40:35 424067" \
+ 9 \
+ 1.0.9.0 \
+ 0xb9cb2cb1 \
+ D2DV_109B
 
 # Diablo II 1.09
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 08/16/01 23:04:40 424067" \
-# 9 \
-# 1.0.9.0 \
-# 0xc43f1764 \
-# D2DV_109
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 08/16/01 23:04:40 424067" \
+ 9 \
+ 1.0.9.0 \
+ 0xc43f1764 \
+ D2DV_109
 
 # Diablo II 1.08
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 06/19/01 02:24:04 424067" \
-# 8 \
-# 1.0.8.0 \
-# 0x9e488d3d \
-# D2DV_108
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 06/19/01 02:24:04 424067" \
+ 8 \
+ 1.0.8.0 \
+ 0x9e488d3d \
+ D2DV_108
 
 # Diablo II 1.06b
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 05/16/01 18:55:11 419971" \
-# 6 \
-# 1.0.6.0 \
-# 0xb2fb38b7 \
-# D2DV_106B
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 05/16/01 18:55:11 419971" \
+ 6 \
+ 1.0.6.0 \
+ 0xb2fb38b7 \
+ D2DV_106B
 
 # Diablo II 1.06
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 04/19/01 02:05:33 419971" \
-# 6 \
-# 1.0.6.0 \
-# 0xaa348e13 \
-# D2DV_106
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 04/19/01 02:05:33 419971" \
+ 6 \
+ 1.0.6.0 \
+ 0xaa348e13 \
+ D2DV_106
 
 # Diablo II 1.05b
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 02/01/01 21:21:16 399491" \
-# 5 \
-# 1.0.5.1 \
-# 0x36869f98 \
-# D2DV_105B
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 02/01/01 21:21:16 399491" \
+ 5 \
+ 1.0.5.1 \
+ 0x36869f98 \
+ D2DV_105B
 
 # Diablo II 1.05
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 01/27/01 01:16:00 399491" \
-# 5 \
-# 1.0.5.0 \
-# 0xd6dec09b \
-# D2DV_105
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 01/27/01 01:16:00 399491" \
+ 5 \
+ 1.0.5.0 \
+ 0xd6dec09b \
+ D2DV_105
 
 # Diablo II 1.04c
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 12/23/00 18:28:04 387107" \
-# 4 \
-# 1.0.4.2 \
-# 0xc6d40aaf \
-# D2DV_104B
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 12/23/00 18:28:04 387107" \
+ 4 \
+ 1.0.4.2 \
+ 0xc6d40aaf \
+ D2DV_104B
 
 # Diablo II 1.04b
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 12/22/00 18:08:34 403587" \
-# 4 \
-# 1.0.4.1 \
-# 0x3882960e \
-# D2DV_104B
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 12/22/00 18:08:34 403587" \
+ 4 \
+ 1.0.4.1 \
+ 0x3882960e \
+ D2DV_104B
 
 # Diablo II 1.03
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 08/01/00 00:34:00 346243" \
-# 3 \
-# 1.0.3.0 \
-# 0x0120ed90 \
-# D2DV_103
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 08/01/00 00:34:00 346243" \
+ 3 \
+ 1.0.3.0 \
+ 0x0120ed90 \
+ D2DV_103
 
 # Diablo II 1.01
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 06/26/00 22:31:00 346243" \
-# 1 \
-# 1.0.0.1 \
-# 0x5aef7e66 \
-# D2DV_101
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 06/26/00 22:31:00 346243" \
+ 1 \
+ 1.0.0.1 \
+ 0x5aef7e66 \
+ D2DV_101
 
 # Diablo II 1.00 (installation)
 # 1.00 have 0 versionid used as a wildchar in versioncheck
 # but we don't care because we have exeinfo and checksum
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# D2DV \
-# "Game.exe 01/01/97 02:05:09 309379" \
-# 0 \
-# 1.0.0.1 \
-# 0xac5e46cb \
-# D2DV_100
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 01/01/97 02:05:09 309379" \
+ 0 \
+ 1.0.0.1 \
+ 0xac5e46cb \
+ D2DV_100
 
 # ==================== StarCraft Broodwar entries ============================
 
@@ -1616,96 +1742,96 @@
  SEXP_108_STAR
 
 # Starcraft - Broodwar (Expansion) 1.07 - (Broodwar mode)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# SEXP \
-# "starcraft.exe 10/30/99 03:54:30 1043456" \
-# 0x000000c1 \
-# 1.0.7.1 \
-# 0xacf13dce \
-# SEXP_107
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ SEXP \
+ "starcraft.exe 10/30/99 03:54:30 1043456" \
+ 0x000000c1 \
+ 1.0.7.1 \
+ 0xacf13dce \
+ SEXP_107
 
 # Starcraft - Broodwar (Expansion) 1.07 - (StarCraft mode)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# STAR \
-# "starcraft.exe 10/30/99 03:54:30 1043456" \
-# 0x000000c1 \
-# 1.0.7.1 \
-# 0xacf13dce \
-# SEXP_107_STAR
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ STAR \
+ "starcraft.exe 10/30/99 03:54:30 1043456" \
+ 0x000000c1 \
+ 1.0.7.1 \
+ 0xacf13dce \
+ SEXP_107_STAR
 
 # Starcraft - Broodwar (Expansion) 1.06 - (Broodwar mode)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# SEXP \
-# "starcraft.exe 09/28/99 19:41:34 1042432" \
-# 0x000000bd \
-# 1.0.6.1 \
-# 0x1acce912 \
-# SEXP_106
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ SEXP \
+ "starcraft.exe 09/28/99 19:41:34 1042432" \
+ 0x000000bd \
+ 1.0.6.1 \
+ 0x1acce912 \
+ SEXP_106
 
 # Starcraft - Broodwar (Expansion) 1.06 - (StarCraft mode)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# STAR \
-# "starcraft.exe 09/28/99 19:41:34 1042432" \
-# 0x000000bd \
-# 1.0.6.1 \
-# 0x1acce912 \
-# SEXP_106_STAR
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ STAR \
+ "starcraft.exe 09/28/99 19:41:34 1042432" \
+ 0x000000bd \
+ 1.0.6.1 \
+ 0x1acce912 \
+ SEXP_106_STAR
 
 # Starcraft - Broodwar (Expansion) 1.05 - (Broodwar mode)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# SEXP \
-# "starcraft.exe 03/08/99 22:37:32 1042432" \
-# 0x000000bd \
-# 1.0.5.1 \
-# 0x9a2d64e6 \
-# SEXP_105
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ SEXP \
+ "starcraft.exe 03/08/99 22:37:32 1042432" \
+ 0x000000bd \
+ 1.0.5.1 \
+ 0x9a2d64e6 \
+ SEXP_105
 
 # Starcraft - Broodwar (Expansion) 1.05 - (StarCraft mode)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# STAR \
-# "starcraft.exe 03/08/99 22:37:32 1042432" \
-# 0x000000bd \
-# 1.0.5.1 \
-# 0x9a2d64e6 \
-# SEXP_105_STAR
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ STAR \
+ "starcraft.exe 03/08/99 22:37:32 1042432" \
+ 0x000000bd \
+ 1.0.5.1 \
+ 0x9a2d64e6 \
+ SEXP_105_STAR
 
 # Starcraft - Broodwar (Expansion) 1.04 - (Broodwar mode)
 # exeinfo is NULL here because it's the date of install
 # but that's ok because we have the checksum
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# SEXP \
-# NULL \
-# 0x000000bb \
-# 1.0.4.1 \
-# 0xfd581427 \
-# SEXP_104
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ SEXP \
+ NULL \
+ 0x000000bb \
+ 1.0.4.1 \
+ 0xfd581427 \
+ SEXP_104
  
 # Starcraft - Broodwar (Expansion) 1.04 - (StarCraft mode)
 # exeinfo is NULL here because it's the date of install
 # but that's ok because we have the checksum
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# STAR \
-# NULL \
-# 0x000000bb \
-# 1.0.4.1 \
-# 0xfd581427 \
-# SEXP_104_STAR
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ STAR \
+ NULL \
+ 0x000000bb \
+ 1.0.4.1 \
+ 0xfd581427 \
+ SEXP_104_STAR
 
 # ==================== StarCraft (original) entries ==========================
 
@@ -1941,59 +2067,59 @@
  STAR_108
 
 # Starcraft 1.07
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# STAR \
-# "starcraft.exe 10/30/99 02:20:12 1043456" \
-# 0x000000c1 \
-# 1.0.7.0 \
-# 0x79126108 \
-# STAR_107
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ STAR \
+ "starcraft.exe 10/30/99 02:20:12 1043456" \
+ 0x000000c1 \
+ 1.0.7.0 \
+ 0x79126108 \
+ STAR_107
 
 # Starcraft 1.06
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# STAR \
-# "starcraft.exe 09/25/99 22:40:10 1042432" \
-# 0x000000bd \
-# 1.0.6.0 \
-# 0xfea28485 \
-# STAR_106
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ STAR \
+ "starcraft.exe 09/25/99 22:40:10 1042432" \
+ 0x000000bd \
+ 1.0.6.0 \
+ 0xfea28485 \
+ STAR_106
 
 # Starcraft 1.05
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# STAR \
-# "starcraft.exe 03/08/99 22:41:50 1042432" \
-# 0x000000bd \
-# 1.0.5.0 \
-# 0xc243123c \
-# STAR_105
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ STAR \
+ "starcraft.exe 03/08/99 22:41:50 1042432" \
+ 0x000000bd \
+ 1.0.5.0 \
+ 0xc243123c \
+ STAR_105
 
 # # Starcraft 1.04
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# STAR \
-# "starcraft.exe 12/16/98 22:24:18 1041408" \
-# 0x000000bb \
-# 1.0.4.0 \
-# 0x2779bdc8 \
-# STAR_104
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ STAR \
+ "starcraft.exe 12/16/98 22:24:18 1041408" \
+ 0x000000bb \
+ 1.0.4.0 \
+ 0x2779bdc8 \
+ STAR_104
 
 # Starcraft 1.03
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# STAR \
-# "starcraft.exe 10/09/98 23:18:22 987648" \
-# 0x000000a9 \
-# 1.0.3.0 \
-# 0x1309eaad \
-# STAR_103
+"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
+ "IX86ver1.mpq" \
+ IX86 \
+ STAR \
+ "starcraft.exe 10/09/98 23:18:22 987648" \
+ 0x000000a9 \
+ 1.0.3.0 \
+ 0x1309eaad \
+ STAR_103
 
 # ==================== Diablo (original) entries =======================
 
@@ -2020,15 +2146,15 @@
  DRTL_109
 
 # Diablo 108
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# DRTL \
-# "Diablo.exe 05/24/00 01:16:01 764928" \
-# 0x00000028 \
-# 1.0.8.1 \
-# 0x09eb1213 \
-# DRTL_108
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ DRTL \
+ "Diablo.exe 05/24/00 01:16:01 764928" \
+ 0x00000028 \
+ 1.0.8.1 \
+ 0x09eb1213 \
+ DRTL_108
 
 # =========================== WARCRAFT2 BNE ===========================
 
@@ -2055,714 +2181,23 @@
  W2BN_202A
  
 # Warcraft II BNE v2.01
-#"A=2383634235 B=711286254 C=3710735432 4 A=A+S B=B^C C=C+A A=A^B" \
-# "IX86ver4.mpq" \
-# IX86 \
-# W2BN \
-# "Warcraft II BNE.exe ??/??/?? ??:??:?? 704512" \
-# 0x0000004b \
-# 2.0.0.154 \
-# 0x0 \
-# W2BN_201
+"A=2383634235 B=711286254 C=3710735432 4 A=A+S B=B^C C=C+A A=A^B" \
+ "IX86ver4.mpq" \
+ IX86 \
+ W2BN \
+ "Warcraft II BNE.exe ??/??/?? ??:??:?? 704512" \
+ 0x0000004b \
+ 2.0.0.154 \
+ 0x0 \
+ W2BN_201
 
 # Warcraft II BNE v2.00
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# IX86ver1.mpq \
-# IX86 \
-# W2BN \
-# NULL \
-# 0x0000004b \
-# 2.0.0.154 \
-# 0x7133f5ed \
-# W2BN_200
-
-##### Mac OS X (XMAC) ########################################################
-
-# -=-=-=-=-=- Older Versions -=-=-=-=-=-=- Update Required -=-=-=-=-=-
-
-# ================ StarCraft (original) entries =====================
-
-# StarCraft v1.13e MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 09/07/105 10:00:00 1388225" \
- 0x000000cd \
- 1.1.3.8 \
- 0xcf5a3fe0 \
- STAR_113E
-
-# StarCraft v1.12 MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 02/09/105 22:00:00 1387464" \
- 0x000000cb \
- 1.1.2.0 \
- 0x5ecb12a9 \
- STAR_112
-
-# StarCraft v1.11b MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 05/25/104 17:00:00 1358712" \
- 0x000000c9 \
- 1.1.1.2 \
- 0x510432e3 \
- STAR_111B
-
-# StarCraft v1.11 MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 04/26/104 21:00:00 1358518" \
- 0x000000c9 \
- 1.1.1.0 \
- 0x0c065d2d \
- STAR_111
-
-# StarCraft v1.10 MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 03/24/103 19:00:00 1350192" \
- 0x000000c7 \
- 1.1.0.0 \
- 0x8ae3c718 \
- STAR_110
-
-# StarCraft v1.09b MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- NULL \
- 0x000000c5 \
- 1.0.9.2 \
- 0x0 \
- STAR_109B
-
-# ================== StarCraft Broodwar entries =====================
-
-# StarCraft - Broodwar (Expansion) 1.15 - (Broodwar Mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- SEXP \
- "Starcraft (Carbon) 05/08/107 15:40:00 1400487" \
- 0x000000d1 \
- 0x010f0001 \
- 0xe02b5360 \
- SEXP_115
-
-# StarCraft - Broodwar (Expansion) 1.15 - (Starcraft Mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 05/08/107 15:40:00 1400487" \
- 0x000000d1 \
- 0x010f0001 \
- 0xe02b5360 \
- STAR_115
-
-# StarCraft - Broodwar (Expansion) 1.14 - (Broodwar Mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- SEXP \
- "Starcraft (Carbon) 05/17/106 15:00:00 1392433" \
- 0x000000cf \
- 0x01140001 \
- 0x32c2574f \
- SEXP_114
-
-# StarCraft - Broodwar (Expansion) 1.14 - (Starcraft Mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 05/17/106 15:00:00 1392433" \
- 0x000000cf \
- 0x01140001 \
- 0x32c2574f \
- STAR_114
-
-# StarCraft - Broodwar (Expansion) 1.13e - (Broodwar Mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- SEXP \
- "Starcraft (Carbon) 09/07/105 10:00:00 1388225" \
- 0x000000cd \
- 1.1.3.9 \
- 0xcf5a3fe0 \
- SEXP_113E
-
-# StarCraft - Broodwar (Expansion) 1.13e - (Starcraft Mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 09/07/105 10:00:00 1388225" \
- 0x000000cd \
- 1.1.3.9 \
- 0xcf5a3fe0 \
- STAR_113E
-
-# StarCraft - Broodwar (Expansion) 1.13c - (Broodwar Mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- SEXP \
- "Starcraft (Carbon) 08/18/105 16:00:00 1387936" \
- 0x000000cd \
- 1.1.3.5 \
- 0xae03c804 \
- SEXP_113C
-
-# StarCraft - Broodwar (Expansion) 1.13c - (Starcraft Mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 08/18/105 16:00:00 1387936" \
- 0x000000cd \
- 1.1.3.5 \
- 0xae03c804 \
- SEXP_113C_STAR
-
-# Starcraft - Broodwar (Expansion) 1.13 - (Broodwar mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- SEXP \
- "Starcraft (Carbon) 06/24/105 10:00:00 1387810" \
- 0x000000cd \
- 1.1.3.1 \
- 0x23813cb6 \
- SEXP_113
-
-# Starcraft - Broodwar (Expansion) 1.13 - (Starcraft mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 06/24/105 10:00:00 1387810" \
- 0x000000cd \
- 1.1.3.1 \
- 0x23813cb6 \
- SEXP_113_STAR
-
-# Starcraft - Broodwar (Expansion) 1.12 - (Broodwar mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- SEXP \
- "Starcraft (Carbon) 02/09/105 22:00:00 1387464" \
- 0x000000cb \
- 1.1.2.1 \
- 0x5ecb12a9 \
- SEXP_112
-
-# Starcraft - Broodwar (Expansion) 1.12 - (Starcraft mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 02/09/105 22:00:00 1387464" \
- 0x000000cb \
- 1.1.2.1 \
- 0x5ecb12a9 \
- SEXP_112_STAR
-
-# Starcraft - Broodwar (Expansion) 1.11b - (Broodwar mode) MacOS X
- "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- SEXP \
- "Starcraft (Carbon) 05/25/104 17:00:00 1358712" \
- 0x000000c9 \
- 1.1.1.3 \
- 0x510432e3 \
- SEXP_111B
-
-# Starcraft - Broodwar (Expansion) 1.11b - (Starcraft mode) MacOS X
- "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 05/25/104 17:00:00 1358712" \
- 0x000000c9 \
- 1.1.1.3 \
- 0x510432e3 \
- SEXP_111B_STAR
-
-# Starcraft - Broodwar (Expansion) 1.11 - (Broodwar mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- SEXP \
- "Starcraft (Carbon) 04/26/104 21:00:00 1358518" \
- 0x000000c9 \
- 1.1.1.1 \
- 0x0c065d2d \
- SEXP_111
-
-# Starcraft - Broodwar (Expansion) 1.11 - (Starcraft Mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 04/26/104 21:00:00 1358518" \
- 0x000000c9 \
- 1.1.1.1 \
- 0x0c065d2d \
- SEXP_111_STAR
-
-# Starcraft - Broodwar (Expansion) 1.10 - (Broodwar mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- SEXP \
- "Starcraft (Carbon) 03/24/103 19:00:00 1350192" \
- 0x000000c7 \
- 1.1.0.1 \
- 0x8ae3c718 \
- SEXP_110
-
-# Starcraft - Broodwar (Expansion) 1.10 - (Starcraft mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- STAR \
- "Starcraft (Carbon) 03/24/103 19:00:00 1350192" \
- 0x000000c7 \
- 1.1.0.1 \
- 0x8ae3c718 \
- SEXP_110_STAR
-
-# Starcraft - Broodwar (Expansion) 1.09b - (Broodwar mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- SEXP \
- "Starcraft (Carbon) 02/27/102 13:00:00 1360535" \
- 0x000000c5 \
- 1.0.9.3 \
- 0xf744ebdb \
- SEXP_109B
-
-# Starcraft - Broodwar (Expansion) 1.08b - (Broodwar mode) MacOS X
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "XMACver1.mpq" \
- XMAC \
- SEXP \
- "Starcraft (Carbon) 11/20/101 16:00:00 1362631" \
- 0x000000c3 \
- 1.0.8.3 \
- 0x6fc0e12d \
- SEXP_108B
-
-##### Mac OS Classic (PMAC) ##################################################
-
-# -=-=-=-=-=- Older Versions -=-=-=-=-=-=- Update Required -=-=-=-=-=-
-
-# ================== StarCraft (original) entries ===================
-
-# StarCraft v1.12 MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- STAR \
- "Starcraft 02/09/105 22:00:00 1592719" \
- 0x000000cb \
- 1.1.2.0 \
- 0xd120708b \
- STAR_112
-
-# StarCraft v1.11b MacOS Classic
- "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- STAR \
- "Starcraft 05/25/104 17:00:00 1563500" \
- 0x000000c9 \
- 1.1.1.2 \
- 0x050a61c9 \
- STAR_111B
-
-# StarCraft v1.11 MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- STAR \
- "Starcraft 04/26/104 21:00:00 1563244" \
- 0x000000c9 \
- 1.1.1.0 \
- 0x780fe83e \
- STAR_111
-
-# StarCraft v1.10 MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- STAR \
- "Starcraft 03/24/103 19:01:00 1561070" \
- 0x000000c7 \
- 1.1.0.0 \
- 0xec432fff \
- STAR_110
-
-# StarCraft v1.09b MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- STAR \
- NULL \
- 0x000000c5 \
- 1.0.9.2 \
- 0x0 \
- STAR_109B
-
-# ================== StarCraft Broodwar entries =====================
-
-# Starcraft - Broodwar (Expansion) 1.12 - (Broodwar mode) MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- SEXP \
- "Starcraft 02/09/105 22:00:00 1592719" \
- 0x000000cb \
- 1.1.2.1 \
- 0xd120708b \
- SEXP_112
-
-# Starcraft - Broodwar (Expansion) 1.12 - (Starcraft mode) MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- STAR \
- "Starcraft 02/09/105 22:00:00 1592719" \
- 0x000000cb \
- 1.1.2.1 \
- 0xd120708b \
- SEXP_112_STAR
-
-# Starcraft - Broodwar (Expansion) 1.11b - (Broodwar mode) MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- SEXP \
- "Starcraft 05/25/104 17:00:00 1563500" \
- 0x000000c9 \
- 1.1.1.3 \
- 0x050a61c9 \
- SEXP_111B
-
-# Starcraft - Broodwar (Expansion) 1.11b - (Starcraft mode) MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- STAR \
- "Starcraft 05/25/104 17:00:00 1563500" \
- 0x000000c9 \
- 1.1.1.3 \
- 0x050a61c9 \
- SEXP_111B_STAR
-
-# Starcraft - Broodwar (Expansion) 1.11 - (Broodwar mode) MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- SEXP \
- "Starcraft 04/26/104 21:00:00 1563244" \
- 0x000000c9 \
- 1.1.1.1 \
- 0x780fe83e \
- SEXP_111
-
-# Starcraft - Broodwar (Expansion) 1.11 - (Starcraft Mode) MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- STAR \
- "Starcraft 04/26/104 21:00:00 1563244" \
- 0x000000c9 \
- 1.1.1.1 \
- 0x780fe83e \
- SEXP_111_STAR
-
-# Starcraft - Broodwar (Expansion) 1.10 - (Broodwar Mode) MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- SEXP \
- "Starcraft 03/24/103 19:00:00 1561070" \
- 0x000000c7 \
- 1.1.0.1 \
- 0xec432fff \
- SEXP_110
-
-# Starcraft - Broodwar (Expansion) 1.10 - (Starcraft Mode) MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- STAR \
- "Starcraft 03/24/103 19:00:00 1561070" \
- 0x000000c7 \
- 1.1.0.1 \
- 0xec432fff \
- SEXP_110_STAR
-
-# Starcraft - Broodwar (Expansion) 1.09b - (Broodwar Mode) MacOS Classic
-"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- SEXP \
- NULL \
- 0x000000c5 \
- 1.0.9.11 \
- 0x0 \
- SEXP_109B
-
-# ==================== Diablo 2 (original) entries ==================
-
-# Diablo II v1.09d MacOS Classic
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- "PMACver1.mpq" \
- PMAC \
- D2DV \
+ IX86ver1.mpq \
+ IX86 \
+ W2BN \
  NULL \
- 0 \
- 1.0.9.0 \
- 0x0 \
- D2DV_109D
-
-##### Intel (IX86) ###########################################################
-
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=- NULL Versionchecks -=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-# You probably don't wont to enable these since they will match fake versions.
-
-# WarCraft III - TFT (Expansion)
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# W3XP \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# W3XP_1xx
-
-# WarCraft III - RoC
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# WAR3 \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# WAR3_1xx
-
-# Diablo II - LoD (Expansion)
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# D2XP \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# D2XP_1xx
-
-# Diablo II
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# D2DV \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# D2DV_1xx
-
-# Starcraft - Broodwar (Expansion)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# SEXP \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# SEXP_1xx
-
-# Starcraft
-# (Unfortunately it also matches Brood War in StarCraft original mode.)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# STAR \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# STAR_1xx
-
-# Diablo
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# DRTL \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# DRTL_1xx
-
-# Warcraft II BNE
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "IX86ver1.mpq" \
-# IX86 \
-# W2BN \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# W2BN_1xx
-
-##### Mac OS X (XMAC) ########################################################
-
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=- NULL Versionchecks -=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-# You probably don't wont to enable these since they will match fake versions.
-
-# Diablo II - LoD (Expansion)
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "XMACver1.mpq" \
-# XMAC \
-# D2XP \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# D2XP_1xx
-
-# Diablo II
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "XMACver1.mpq" \
-# XMAC \
-# D2DV \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# D2DV_1xx
-
-# Starcraft - Broodwar (Expansion)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "XMACver1.mpq" \
-# XMAC \
-# SEXP \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# SEXP_1xx
-
-# StarCraft
-# (Unfortunately it also matches Brood War in StarCraft original mode.)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "XMACver1.mpq" \
-# XMAC \
-# STAR \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# STAR_1xx
-
-# Diablo
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "XMACver1.mpq" \
-# XMAC \
-# DRTL \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# DRTL_1xx
-
-##### Mac OS Classic (PMAC) ##################################################
-
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=- NULL Versionchecks -=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-# You probably don't wont to enable these since they will match fake versions.
-
-# Diablo II - LoD (Expansion)
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "PMACver1.mpq" \
-# PMAC \
-# D2XP \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# D2XP_1xx
-
-# Diablo II
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "PMACver1.mpq" \
-# PMAC \
-# D2DV \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# D2DV_1xx
-
-# Starcraft - Broodwar (Expansion)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "PMACver1.mpq" \
-# PMAC \
-# SEXP \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# SEXP_1xx
-
-# StarCraft
-# (Unfortunately it also matches Brood War in StarCraft original mode.)
-#"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
-# "PMACver1.mpq" \
-# PMAC \
-# STAR \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# STAR_1xx
-
-# Diablo
-#"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
-# "PMACver1.mpq" \
-# PMAC \
-# DRTL \
-# NULL \
-# 0 \
-# 0.0.0.0 \
-# 0x0 \
-# DRTL_1xx
-
-#                                                                            #
-##############################################################################
+ 0x0000004b \
+ 2.0.0.154 \
+ 0x7133f5ed \
+ W2BN_200

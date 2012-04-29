@@ -25,7 +25,7 @@ endif(WIN32)
 option(WITH_MYSQL "include MySQL user accounts support" OFF)
 option(WITH_SQLITE3 "include SQLite3 user accounts support" OFF)
 option(WITH_PGSQL "include PostgreSQL user accounts support" OFF)
-
+option(WITH_ODBC "include ODBC user accounts support" OFF)
 include(ConfigureChecks.cmake)
 
 subdirs(src conf man files)

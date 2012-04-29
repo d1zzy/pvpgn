@@ -1,6 +1,6 @@
 # add aditional includes corresponding to the additional libraries bellow
 include_directories(${ZLIB_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} 
-  ${SQLITE3_INCLUDE_DIR} ${PGSQL_INCLUDE_DIR}
+  ${SQLITE3_INCLUDE_DIR} ${PGSQL_INCLUDE_DIR} ${ODBC_INCLUDE_DIR}
 )
 
 set(BNETD_SOURCES
@@ -50,5 +50,5 @@ else(WITH_WIN32_GUI)
 endif(WITH_WIN32_GUI)
 
   target_link_libraries(bnetd common compat win32 tinycdb ${NETWORK_LIBRARIES}
-    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES})
+    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES})
   install(TARGETS bnetd DESTINATION ${SBINDIR})
