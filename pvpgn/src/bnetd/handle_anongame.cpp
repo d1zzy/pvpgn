@@ -540,38 +540,6 @@ static int _client_anongame_get_icon(t_connection * c, t_packet const * const pa
     return 0;
 }
 
-
-
-
-
-//static int _client_anongame_set_icon(t_connection * c, t_packet const * const packet)
-//{
-//    //BlacKDicK 04/20/2003
-//    unsigned int desired_icon;
-//    char user_icon[5];
-//
-//    /*FIXME: In this case we do not get a 'count' but insted of it we get the icon
-//    that the client wants to set.'W3H2' for an example. For now it is ok, since they share
-//    the same position	on the packet*/
-//    desired_icon=bn_int_get(packet->u.client_findanongame.count);
-//    user_icon[4]=0;
-//    if (desired_icon==0){
-//	std::strcpy(user_icon,"NULL");
-//	eventlog(eventlog_level_info,__FUNCTION__,"[%d] Set icon packet to DEFAULT ICON [%4.4s]",conn_get_socket(c),user_icon);
-//    }else{
-//	std::memcpy(user_icon,&desired_icon,4);
-//	eventlog(eventlog_level_info,__FUNCTION__,"[%d] Set icon packet to ICON [%s]",conn_get_socket(c),user_icon);
-//    }
-//
-//    account_set_user_icon(conn_get_account(c),conn_get_clienttag(c),user_icon);
-//    //FIXME: Still need a way to 'refresh the user/channel'
-//    //_handle_rejoin_command(conn_get_account(c),"");
-//    /* ??? channel_update_userflags() */
-//	conn_update_w3_playerinfo(c);
-//
-//    channel_rejoin(c);
-//    return 0;
-//}
 static int _client_anongame_set_icon(t_connection * c, t_packet const * const packet)
 {
     //BlacKDicK 04/20/2003

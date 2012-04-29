@@ -1,11 +1,14 @@
-%IAhoj %l, vítejte na %s!
-%IServer bìží na %h verze %v.
-%ITento server hostuje %H
+%IAhoj %l,
+%IVitej na serveru %s, verze %v.
 %I
-%INa tomto serveru je %a uživatelských úètù.
-%IAktuálnì je zde %U uživatelù ve %G hrách typu %N,
-%Ia %u uživatelù ve %g hrách a %c kanálech.
-%IMáte problémy s pøíkazy? Pro více informací
-%Izadejte /help
 %I
-%I%m
+%IMomentalne je zde registrovanych %a uzivatelu, z toho je %u online, hrajicich %g hry.
+%I
+%I%N si muzes zahrat s %U hraci, v %G prave probihajicich hrach nebo si muzes pokecat v %c chatech.
+%I
+%I
+%INevis si rady ? Napis /help pro napovedu.
+%I
+%I
+%ITvoje IP adresa: %r, tvoje ID %i a tvuj klient %t.
+%ICZ MOTD by Machy_CZ

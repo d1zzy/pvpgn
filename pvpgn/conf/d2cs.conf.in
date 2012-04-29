@@ -102,16 +102,17 @@ loglevels = fatal,error,warn,info,debug,trace
 # Use absolute paths in these lines to avoid problems!				#
 #-------------------------------------------------------------------------------#
 #										#
-logfile			=	var\d2cs.log
-charsavedir		=	var\charsave
-charinfodir		=	var\charinfo
-bak_charsavedir		=	var\bak\charsave
-bak_charinfodir		=	var\bak\charinfo
-ladderdir		=	var\ladders
-newbiefile		=	files\newbie.save
-transfile		=	conf\address_translation.conf
-d2gsconffile		=	conf\d2server.ini
-#pidfile			=	var\d2cs.pid
+logfile			=	"${LOCALSTATEDIR}/d2cs.log"
+charsavedir		=	"${LOCALSTATEDIR}/charsave"
+charinfodir		=	"${LOCALSTATEDIR}/charinfo"
+bak_charsavedir		=	"${LOCALSTATEDIR}/bak/charsave"
+bak_charinfodir		=	"${LOCALSTATEDIR}/bak/charinfo"
+ladderdir		=	"${LOCALSTATEDIR}/ladders"
+newbiefile		=	"${LOCALSTATEDIR}/files/newbie.save"
+transfile		=	"${SYSCONFDIR}/address_translation.conf"
+d2gsconffile		=	"${SYSCONFDIR}/d2server.ini"
+#pidfile		=	"${LOCALSTATEDIR}/d2cs.pid"
+
 #										#
 #################################################################################
 
@@ -132,7 +133,7 @@ check_multilogin	=	0
 # Max allowed value is 18 (enforced by server)
 maxchar			=	8
 
-# Character sorting. Options are: level, mtime, name, none. (none assumed if
+# Character sorting. Options are: level, ctime, mtime, name, none. (none assumed if
 # not specified).
 #charlist_sort = "none"
 
