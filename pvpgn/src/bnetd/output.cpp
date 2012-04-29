@@ -84,7 +84,7 @@ static int _glist_cb_simple(t_game *game, void *data)
 	return 0;
     }
 
-    std::fprintf((std::FILE*)data,"game%d=%s,%s\n",number,tag_uint_to_str(clienttag_str,game_get_clienttag(game)),game_get_name(game));
+    std::fprintf((std::FILE*)data,"game%d=%s,%u,%s\n",number,tag_uint_to_str(clienttag_str,game_get_clienttag(game)),game_get_id(game),game_get_name(game));
     number++;
 
     return 0;
@@ -95,10 +95,13 @@ int output_standard_writer(std::FILE * fp)
     t_elem const	*curr;
     t_connection	*conn;
     t_channel const	*channel;
+	t_game *game;
+
     char const		*channel_name;
     int			number;
     char		clienttag_str[5];
     int uptime = server_get_uptime();
+
 
     if (prefs_get_XML_status_output())
     {
@@ -131,7 +134,7 @@ int output_standard_writer(std::FILE * fp)
 			
 			if ((game = conn_get_game(conn)))
 				std::fprintf(fp,"<gameid>%u</gameid>", game_get_id(game));
-			fprintf(fp,"</user>\n");
+			std::fprintf(fp,"</user>\n");
     }
 
 	std::fprintf(fp,"\t\t</Users>\n");
@@ -176,11 +179,15 @@ int output_standard_writer(std::FILE * fp)
 	number=1;
 	LIST_TRAVERSE_CONST(connlist(),curr)
 	{
-    	    conn = (t_connection*)elem_get_data(curr);
-    	    if (conn_get_account(conn))
+    	conn = (t_connection*)elem_get_data(curr);
+    	if (conn_get_account(conn))
 	    {
-		std::fprintf(fp,"user%d=%s,%s\n",number,tag_uint_to_str(clienttag_str,conn_get_clienttag(conn)),conn_get_username(conn));
-		number++;
+			std::fprintf(fp,"user%d=%s,%s,%s",number,tag_uint_to_str(clienttag_str,conn_get_clienttag(conn)),conn_get_username(conn),conn_get_clientver(conn));
+
+			if ((game = conn_get_game(conn)))
+				std::fprintf(fp,",%u", game_get_id(game));
+			std::fprintf(fp,"\n");
+			number++;
 	    }
 	}
 
