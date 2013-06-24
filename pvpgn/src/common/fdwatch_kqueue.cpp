@@ -26,6 +26,7 @@
 #include "fdwatch_kqueue.h"
 
 #include <cstring>
+#include <stdint.h>
 
 #include "common/eventlog.h"
 #include "fdwatch.h"
@@ -140,9 +141,9 @@ FDWKqueueBackend::del(int idx)
 		nochanges--;
 		if (rridx[idx] < nochanges)
 		{
-			int oidx;
+			intptr_t oidx;
 
-			oidx = (int)(kqchanges[nochanges].udata);
+			oidx = (intptr_t)(kqchanges[nochanges].udata);
 			if (kqchanges[nochanges].filter == EVFILT_READ &&
 			    rridx[oidx] == nochanges)
 			{
@@ -169,9 +170,9 @@ FDWKqueueBackend::del(int idx)
 		nochanges--;
 		if (wridx[idx] < nochanges)
 		{
-			int oidx;
+			intptr_t oidx;
 
-			oidx = (int)(kqchanges[nochanges].udata);
+			oidx = (intptr_t)(kqchanges[nochanges].udata);
 			if (kqchanges[nochanges].filter == EVFILT_READ &&
 			    rridx[oidx] == nochanges)
 			{
@@ -216,7 +217,7 @@ FDWKqueueBackend::handle()
 	for (unsigned i = 0; i < sr; i++)
 	{
 /*      eventlog(eventlog_level_trace, __FUNCTION__, "checking %d ident: %d read: %d write: %d", i, kqevents[i].ident, kqevents[i].filter & EVFILT_READ, kqevents[i].filter & EVFILT_WRITE); */
-		t_fdwatch_fd *cfd = fdw_fds + (int)kqevents[i].udata;
+		t_fdwatch_fd *cfd = fdw_fds + (intptr_t)kqevents[i].udata;
 		if (fdw_rw(cfd) & fdwatch_type_read && kqevents[i].filter == EVFILT_READ)
 			if (fdw_hnd(cfd) (fdw_data(cfd), fdwatch_type_read) == -2)
 				continue;
