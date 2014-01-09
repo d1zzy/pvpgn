@@ -1,5 +1,6 @@
 Player versus Player Gaming Network
 =====
+![](http://harpywar.com/images/items/pvpgn.gif)
 
 Original PvPGN 1.99 source with tweaks.
 
@@ -19,3 +20,10 @@ Minor changes
 * add ODBC support for CMake
 * add latest versioncheck.conf
 * skip_versioncheck, allow_bad_version are enabled by default in bnetd.conf - for easy start
+
+
+Build source code
+--
+[Русский](http://harpywar.com/?a=articles&b=2&c=1&d=74) | [English](http://harpywar.com/?a=articles&b=2&c=1&d=74&lang=en)
+
+[![Vimeo](http://habrastorage.org/storage3/48c/5a9/4b1/48c5a94b1173242e311f8376be80a585.png)](https://vimeo.com/83763862)
