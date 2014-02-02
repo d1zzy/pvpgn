@@ -9,8 +9,14 @@ Source Code changes
 * fix command send flooding <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/74f9e4faafe24699597e4be5bfda83bf255ba72e)</sup>
 * fix compile error when pointer size is larger than int <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/1ea116434ce009bad4903ff72bd69bbb8987ce06)</sup>
 * fix Warcraft 3 ICON SWITCH hack <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/84811bcfe875d6c42cd8271bbdae757f0b5d445b)</sup>
+* fix saving sql fields with custom characters in the name <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/18713ffe35cbe9a12193e5c1f1caf5031d4c4731)</sup>
 * add game id field in status.xml output <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/b989d26e1182a3ee8cf62f3ee79dfb231fd66e23)</sup>
 * add game id field and user game version in status.dat output (the same as status.xml) <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/39d0b2be71c7ddd808a20f97fe6ac17078ce013f)</sup>
+
+New commands
+--
+* `/save` immediately save changes of accounts and clans from the cache to a storage (useful for testing) <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/be8d65d16f910b2090b0db9e7eb2c043b816dae7)</sup>
+
 
 
 Minor changes
