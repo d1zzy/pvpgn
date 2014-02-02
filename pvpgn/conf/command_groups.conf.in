@@ -160,7 +160,7 @@
 
 7	/set /commandgroups /cg /clearstats
 
-8	/shutdown /rehash
+8	/shutdown /rehash /save
 
 #	//////////////////////////////////////
 #	///// End of Command Groups File /////

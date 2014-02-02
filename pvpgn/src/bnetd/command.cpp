@@ -76,6 +76,8 @@
 #include "common/setup_after.h"
 #include "common/flags.h"
 
+#include "attrlayer.h"
+
 namespace pvpgn
 {
 
@@ -330,6 +332,7 @@ static int _handle_killsession_command(t_connection * c, char const * text);
 static int _handle_gameinfo_command(t_connection * c, char const * text);
 static int _handle_ladderactivate_command(t_connection * c, char const * text);
 static int _handle_rehash_command(t_connection * c, char const * text);
+static int _handle_save_command(t_connection * c, char const * text);
 
 //static int _handle_rank_all_accounts_command(t_connection * c, char const * text);
 static int _handle_shutdown_command(t_connection * c, char const * text);
@@ -441,6 +444,7 @@ static const t_command_table_row extended_command_table[] =
 	{ "/gameinfo"           , _handle_gameinfo_command },
 	{ "/ladderactivate"     , _handle_ladderactivate_command },
 	{ "/rehash"             , _handle_rehash_command },
+	{ "/save"				, _handle_save_command },
 //	{ "/rank_all_accounts"  , _handle_rank_all_accounts_command },
 	{ "/shutdown"           , _handle_shutdown_command },
 	{ "/ladderinfo"         , _handle_ladderinfo_command },
@@ -3833,6 +3837,20 @@ static int _handle_rehash_command(t_connection * c, char const *text)
 {
   server_restart_wraper();
   return 0;
+}
+
+/**
+* Save changes of accounts and clans from the cache to a storage
+*/
+static int _handle_save_command(t_connection * c, char const *text)
+{
+	clanlist_save();
+
+	accountlist_save(FS_FORCE | FS_ALL);
+	accountlist_flush(FS_FORCE | FS_ALL);
+
+	message_send_text(c, message_type_info, c, "Changes of accounts and clans are saved to the database.");
+	return 0;
 }
 
 /*
