@@ -30,6 +30,7 @@
 #include "compat/uint.h"
 
 #include "common/setup_after.h"
+#include <algorithm>
 
 namespace pvpgn
 {
