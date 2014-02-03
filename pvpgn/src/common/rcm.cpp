@@ -28,53 +28,53 @@
 namespace pvpgn
 {
 
-extern void rcm_init(t_rcm *rcm)
-{
-    assert(rcm);
+	extern void rcm_init(t_rcm *rcm)
+	{
+		assert(rcm);
 
-    elist_init(&rcm->refs);
-    rcm->count = 0;
-}
+		elist_init(&rcm->refs);
+		rcm->count = 0;
+	}
 
-extern void rcm_regref_init(t_rcm_regref *regref, t_chref_cb cb, void *data)
-{
-    assert(regref);
+	extern void rcm_regref_init(t_rcm_regref *regref, t_chref_cb cb, void *data)
+	{
+		assert(regref);
 
-    elist_init(&regref->refs_link);
-    regref->chref = cb;
-    regref->data = data;
-}
+		elist_init(&regref->refs_link);
+		regref->chref = cb;
+		regref->data = data;
+	}
 
-extern void rcm_get(t_rcm *rcm, t_rcm_regref *regref)
-{
-    assert(rcm);
-    assert(regref);
+	extern void rcm_get(t_rcm *rcm, t_rcm_regref *regref)
+	{
+		assert(rcm);
+		assert(regref);
 
-    rcm->count++;
-    elist_add_tail(&rcm->refs,&regref->refs_link);
-}
+		rcm->count++;
+		elist_add_tail(&rcm->refs, &regref->refs_link);
+	}
 
-extern void rcm_put(t_rcm *rcm, t_rcm_regref *regref)
-{
-    assert(rcm);
-    assert(regref);
-    assert(rcm->count);	/* might use eventlog but I want this stopped fast */
+	extern void rcm_put(t_rcm *rcm, t_rcm_regref *regref)
+	{
+		assert(rcm);
+		assert(regref);
+		assert(rcm->count);	/* might use eventlog but I want this stopped fast */
 
-    rcm->count--;
-    elist_del(&regref->refs_link);
-}
+		rcm->count--;
+		elist_del(&regref->refs_link);
+	}
 
-extern void rcm_chref(t_rcm *rcm, void *newref)
-{
-    t_elist *curr, *save;
-    t_rcm_regref *regref;
+	extern void rcm_chref(t_rcm *rcm, void *newref)
+	{
+		t_elist *curr, *save;
+		t_rcm_regref *regref;
 
-    assert(rcm);
+		assert(rcm);
 
-    elist_for_each_safe(curr,&rcm->refs,save) {
-	regref = elist_entry(curr,t_rcm_regref,refs_link);
-	if (regref->chref) regref->chref(regref->data,newref);
-    }
-}
+		elist_for_each_safe(curr, &rcm->refs, save) {
+			regref = elist_entry(curr, t_rcm_regref, refs_link);
+			if (regref->chref) regref->chref(regref->data, newref);
+		}
+	}
 
 }

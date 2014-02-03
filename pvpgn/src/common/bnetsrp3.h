@@ -26,44 +26,44 @@
 namespace pvpgn
 {
 
-class BnetSRP3
-{
-public:
-	BnetSRP3(const char* username, BigInt& salt);
-	BnetSRP3(const std::string& username, BigInt& salt);
-	BnetSRP3(const char* username, const char* password);
-	BnetSRP3(const std::string& username, const std::string& password);
-	~BnetSRP3();
-	BigInt getVerifier() const;
-	BigInt getSalt() const;
-	void   setSalt(BigInt salt);
-	BigInt getClientSessionPublicKey() const;
-	BigInt getServerSessionPublicKey(BigInt& v);
-	BigInt getHashedClientSecret(BigInt& B) const;
-	BigInt getHashedServerSecret(BigInt& A, BigInt& v);
-	BigInt getClientPasswordProof(BigInt& A, BigInt& B, BigInt& K) const;
-	BigInt getServerPasswordProof(BigInt& A, BigInt& M, BigInt& K) const;
+	class BnetSRP3
+	{
+	public:
+		BnetSRP3(const char* username, BigInt& salt);
+		BnetSRP3(const std::string& username, BigInt& salt);
+		BnetSRP3(const char* username, const char* password);
+		BnetSRP3(const std::string& username, const std::string& password);
+		~BnetSRP3();
+		BigInt getVerifier() const;
+		BigInt getSalt() const;
+		void   setSalt(BigInt salt);
+		BigInt getClientSessionPublicKey() const;
+		BigInt getServerSessionPublicKey(BigInt& v);
+		BigInt getHashedClientSecret(BigInt& B) const;
+		BigInt getHashedServerSecret(BigInt& A, BigInt& v);
+		BigInt getClientPasswordProof(BigInt& A, BigInt& B, BigInt& K) const;
+		BigInt getServerPasswordProof(BigInt& A, BigInt& M, BigInt& K) const;
 
-private:
-	int	init(const char* username, const char* password, BigInt* salt);
-        BigInt	getClientPrivateKey() const;
-	BigInt	getScrambler(BigInt& B) const;
-	BigInt	getClientSecret(BigInt& B) const;
-	BigInt	getServerSecret(BigInt& A, BigInt& v);
-	BigInt  hashSecret(BigInt& secret) const;
-	static BigInt	N;	// modulus
-	static BigInt	g;	// generator
-	static BigInt	I;	// H(g) xor H(N) where H() is standard SHA1
-	BigInt	a;	// client session private key
-	BigInt	b;	// server session private key
-	BigInt	s;	// salt
-	BigInt *B;	// server public key cache
-	char*	username;
-	size_t	username_length;
-	char*	password;
-	size_t	password_length;
-	unsigned char raw_salt[32];
-};
+	private:
+		int	init(const char* username, const char* password, BigInt* salt);
+		BigInt	getClientPrivateKey() const;
+		BigInt	getScrambler(BigInt& B) const;
+		BigInt	getClientSecret(BigInt& B) const;
+		BigInt	getServerSecret(BigInt& A, BigInt& v);
+		BigInt  hashSecret(BigInt& secret) const;
+		static BigInt	N;	// modulus
+		static BigInt	g;	// generator
+		static BigInt	I;	// H(g) xor H(N) where H() is standard SHA1
+		BigInt	a;	// client session private key
+		BigInt	b;	// server session private key
+		BigInt	s;	// salt
+		BigInt *B;	// server public key cache
+		char*	username;
+		size_t	username_length;
+		char*	password;
+		size_t	password_length;
+		unsigned char raw_salt[32];
+	};
 
 }
 

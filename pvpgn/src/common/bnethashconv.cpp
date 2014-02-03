@@ -26,43 +26,43 @@
 namespace pvpgn
 {
 
-extern void bnhash_to_hash(bn_int const * bnhash, t_hash * hash)
-{
-    unsigned int i;
+	extern void bnhash_to_hash(bn_int const * bnhash, t_hash * hash)
+	{
+		unsigned int i;
 
-    if (!bnhash)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL bnhash");
-        return;
-    }
-    if (!hash)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hash");
-        return;
-    }
+		if (!bnhash)
+		{
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL bnhash");
+			return;
+		}
+		if (!hash)
+		{
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL hash");
+			return;
+		}
 
-    for (i=0; i<5; i++)
-        (*hash)[i] = bn_int_get(bnhash[i]);
-}
+		for (i = 0; i < 5; i++)
+			(*hash)[i] = bn_int_get(bnhash[i]);
+	}
 
 
-extern void hash_to_bnhash(t_hash const * hash, bn_int * bnhash)
-{
-    unsigned int i;
+	extern void hash_to_bnhash(t_hash const * hash, bn_int * bnhash)
+	{
+		unsigned int i;
 
-    if (!bnhash)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL bnhash");
-        return;
-    }
-    if (!hash)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"got NULL hash");
-        return;
-    }
+		if (!bnhash)
+		{
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL bnhash");
+			return;
+		}
+		if (!hash)
+		{
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL hash");
+			return;
+		}
 
-    for (i=0; i<5; i++)
-        bn_int_set(&bnhash[i],(*hash)[i]);
-}
+		for (i = 0; i < 5; i++)
+			bn_int_set(&bnhash[i], (*hash)[i]);
+	}
 
 }

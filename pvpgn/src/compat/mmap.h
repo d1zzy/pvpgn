@@ -61,8 +61,8 @@
 namespace pvpgn
 {
 
-extern void * pmmap(void *addr, unsigned len, int prot, int flags, int fd, unsigned offset);
-extern int pmunmap(void *addr, unsigned len);
+	extern void * pmmap(void *addr, unsigned len, int prot, int flags, int fd, unsigned offset);
+	extern int pmunmap(void *addr, unsigned len);
 
 }
 

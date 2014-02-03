@@ -27,28 +27,28 @@
 namespace pvpgn
 {
 
-class FDWBackend
-{
-public:
-	class InitError:public std::runtime_error
+	class FDWBackend
 	{
 	public:
-		explicit InitError(const std::string& str = "")
-		:std::runtime_error(str) {}
-		~InitError() throw() {}
+		class InitError :public std::runtime_error
+		{
+		public:
+			explicit InitError(const std::string& str = "")
+				:std::runtime_error(str) {}
+			~InitError() throw() {}
+		};
+
+		explicit FDWBackend(int nfds_);
+		virtual ~FDWBackend() throw();
+
+		virtual int add(int idx, unsigned rw) = 0;
+		virtual int del(int idx) = 0;
+		virtual int watch(long timeout_msecs) = 0;
+		virtual void handle() = 0;
+
+	protected:
+		int nfds;
 	};
-
-	explicit FDWBackend(int nfds_);
-	virtual ~FDWBackend() throw();
-
-	virtual int add(int idx, unsigned rw) = 0;
-	virtual int del(int idx) = 0;
-	virtual int watch(long timeout_msecs) = 0;
-	virtual void handle() = 0;
-
-protected:
-	int nfds;
-};
 
 }
 

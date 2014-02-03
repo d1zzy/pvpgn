@@ -29,78 +29,78 @@
 namespace pvpgn
 {
 
-static t_oom_cb oom_cb = NULL;
+	static t_oom_cb oom_cb = NULL;
 
-void *xmalloc_real(std::size_t size, const char *fn, unsigned ln)
-{
-    void *res;
+	void *xmalloc_real(std::size_t size, const char *fn, unsigned ln)
+	{
+		void *res;
 
-    res = malloc(size);
-    if (!res) {
-	eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)",fn,ln);
-	if (oom_cb && oom_cb() && (res = malloc(size))) return res;
-	std::abort();
-    }
+		res = malloc(size);
+		if (!res) {
+			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)", fn, ln);
+			if (oom_cb && oom_cb() && (res = malloc(size))) return res;
+			std::abort();
+		}
 
-    return res;
-}
+		return res;
+	}
 
-void *xcalloc_real(std::size_t nmemb, std::size_t size, const char *fn, unsigned ln)
-{
-    void *res;
+	void *xcalloc_real(std::size_t nmemb, std::size_t size, const char *fn, unsigned ln)
+	{
+		void *res;
 
-    res = calloc(nmemb,size);
-    if (!res) {
-	eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)",fn,ln);
-	if (oom_cb && oom_cb() && (res = calloc(nmemb,size))) return res;
-	std::abort();
-    }
+		res = calloc(nmemb, size);
+		if (!res) {
+			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)", fn, ln);
+			if (oom_cb && oom_cb() && (res = calloc(nmemb, size))) return res;
+			std::abort();
+		}
 
-    return res;
-}
+		return res;
+	}
 
-void *xrealloc_real(void *ptr, std::size_t size, const char *fn, unsigned ln)
-{
-    void *res;
+	void *xrealloc_real(void *ptr, std::size_t size, const char *fn, unsigned ln)
+	{
+		void *res;
 
-    res = std::realloc(ptr,size);
-    if (!res) {
-	eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)",fn,ln);
-	if (oom_cb && oom_cb() && (res = std::realloc(ptr,size))) return res;
-	std::abort();
-    }
+		res = std::realloc(ptr, size);
+		if (!res) {
+			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)", fn, ln);
+			if (oom_cb && oom_cb() && (res = std::realloc(ptr, size))) return res;
+			std::abort();
+		}
 
-    return res;
-}
+		return res;
+	}
 
-char *xstrdup_real(const char *str, const char *fn, unsigned ln)
-{
-    char *res;
+	char *xstrdup_real(const char *str, const char *fn, unsigned ln)
+	{
+		char *res;
 
-    res = strdup(str);
-    if (!res) {
-	eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)",fn,ln);
-	if (oom_cb && oom_cb() && (res = strdup(str))) return res;
-	std::abort();
-    }
+		res = strdup(str);
+		if (!res) {
+			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)", fn, ln);
+			if (oom_cb && oom_cb() && (res = strdup(str))) return res;
+			std::abort();
+		}
 
-    return res;
-}
+		return res;
+	}
 
-void xfree_real(void *ptr, const char *fn, unsigned ln)
-{
-    if (!ptr) {
-	eventlog(eventlog_level_error, __FUNCTION__, "got NULL ptr (from %s:%u)",fn,ln);
-	return;
-    }
+	void xfree_real(void *ptr, const char *fn, unsigned ln)
+	{
+		if (!ptr) {
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL ptr (from %s:%u)", fn, ln);
+			return;
+		}
 
-    free(ptr);
-}
+		free(ptr);
+	}
 
-void xalloc_setcb(t_oom_cb cb)
-{
-    oom_cb = cb;
-}
+	void xalloc_setcb(t_oom_cb cb)
+	{
+		oom_cb = cb;
+	}
 
 }
 

@@ -25,23 +25,23 @@
 namespace pvpgn
 {
 
-extern int vsnprintf(char *str, int size, const char *format, va_list ap)
-{
-    FILE b;
-    int ret;
+	extern int vsnprintf(char *str, int size, const char *format, va_list ap)
+	{
+		FILE b;
+		int ret;
 #ifdef VMS
-    b->_flag = _IOWRT|_IOSTRG;
-    b->_ptr = str;
-    b->_cnt = size;
+		b->_flag = _IOWRT | _IOSTRG;
+		b->_ptr = str;
+		b->_cnt = size;
 #else
-    b._flag = _IOWRT|_IOSTRG;
-    b._ptr = str;
-    b._cnt = size;
+		b._flag = _IOWRT | _IOSTRG;
+		b._ptr = str;
+		b._cnt = size;
 #endif
-    ret = _doprnt(format, ap, &b);
-    putc('\0', &b);
-    return ret;
-}
+		ret = _doprnt(format, ap, &b);
+		putc('\0', &b);
+		return ret;
+	}
 
 }
 

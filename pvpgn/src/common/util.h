@@ -28,35 +28,35 @@
 namespace pvpgn
 {
 
-extern int strstart(char const * full, char const * part) ;
-extern char * file_get_line(std::FILE * fp) ;
-extern char * strreverse(char * str);
-extern int str_to_uint(char const * str, unsigned int * num);
-extern int str_to_ushort(char const * str, unsigned short * num);
-extern int str_print_term(std::FILE * fp, char const * str, unsigned int len, int allow_nl);
-extern int str_get_bool(char const * str) ;
-extern char const * seconds_to_timestr(unsigned int totsecs); /* FIXME: can this be marked pure? */
-extern int clockstr_to_seconds(char const * clockstr, unsigned int * totsecs);
-extern char * escape_fs_chars(char const * in, unsigned int len) ;
-extern char * escape_chars(char const * in, unsigned int len) ;
-extern char * unescape_chars(char const * in) ;
-extern void str_to_hex(char * target, char const * data, int datalen);
-extern int hex_to_str(char const * source, char * data, int datalen);
-extern char * buildpath(char const *root, const char *suffix);
-extern int timestr_to_time(char const * timestr, std::time_t* ptime);
-extern void strlower(char* str);
+	extern int strstart(char const * full, char const * part);
+	extern char * file_get_line(std::FILE * fp);
+	extern char * strreverse(char * str);
+	extern int str_to_uint(char const * str, unsigned int * num);
+	extern int str_to_ushort(char const * str, unsigned short * num);
+	extern int str_print_term(std::FILE * fp, char const * str, unsigned int len, int allow_nl);
+	extern int str_get_bool(char const * str);
+	extern char const * seconds_to_timestr(unsigned int totsecs); /* FIXME: can this be marked pure? */
+	extern int clockstr_to_seconds(char const * clockstr, unsigned int * totsecs);
+	extern char * escape_fs_chars(char const * in, unsigned int len);
+	extern char * escape_chars(char const * in, unsigned int len);
+	extern char * unescape_chars(char const * in);
+	extern void str_to_hex(char * target, char const * data, int datalen);
+	extern int hex_to_str(char const * source, char * data, int datalen);
+	extern char * buildpath(char const *root, const char *suffix);
+	extern int timestr_to_time(char const * timestr, std::time_t* ptime);
+	extern void strlower(char* str);
 
-static inline char * str_skip_space(char *str)
-{
-    for(;*str == ' ' || *str == '\t';str++);
-    return str;
-}
+	static inline char * str_skip_space(char *str)
+	{
+		for (; *str == ' ' || *str == '\t'; str++);
+		return str;
+	}
 
-static inline char * str_skip_word(char *str)
-{
-    for(;*str != ' ' && *str != '\t' && *str;str++);
-    return str;
-}
+	static inline char * str_skip_word(char *str)
+	{
+		for (; *str != ' ' && *str != '\t' && *str; str++);
+		return str;
+	}
 
 }
 

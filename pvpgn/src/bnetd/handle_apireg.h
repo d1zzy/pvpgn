@@ -28,35 +28,35 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
-          
-typedef struct apiregmember
+	namespace bnetd
+	{
+
+		typedef struct apiregmember
 #ifdef APIREGISTER_INTERNAL_ACCESS
-{
-    t_connection *  conn;
-    char const *    email;
-    char const *    bday;
-    char const *    bmonth;
-    char const *    byear;
-    char const *    langcode;
-    char const *    sku;          /* here are SKUs of all installed games */
-    char const *    ver;          /* same as with SKU - versions of all installed games */
-    char const *    serial;       /* also serials of all installed games */
-    char const *    sysid;
-    char const *    syscheck;
-    char const *    oldnick;      /* client send also all nicks that was registerd in the past */
-    char const *    oldpass;      /* and passwords for oldnicks */
-    char const *    newnick;
-    char const *    newpass;
-    char const *    newpass2;
-    char const *    parentemail;
-    bool            newsletter;   /* do user want to sending news by e-mail? */
-    bool            shareinfo;    /* can EA/Westwood shared e-mail contact for sending news? :) */
-    char const *    request;      /* API Register request (knowed requests are defined below) */
-}
+		{
+			t_connection *  conn;
+			char const *    email;
+			char const *    bday;
+			char const *    bmonth;
+			char const *    byear;
+			char const *    langcode;
+			char const *    sku;          /* here are SKUs of all installed games */
+			char const *    ver;          /* same as with SKU - versions of all installed games */
+			char const *    serial;       /* also serials of all installed games */
+			char const *    sysid;
+			char const *    syscheck;
+			char const *    oldnick;      /* client send also all nicks that was registerd in the past */
+			char const *    oldpass;      /* and passwords for oldnicks */
+			char const *    newnick;
+			char const *    newpass;
+			char const *    newpass2;
+			char const *    parentemail;
+			bool            newsletter;   /* do user want to sending news by e-mail? */
+			bool            shareinfo;    /* can EA/Westwood shared e-mail contact for sending news? :) */
+			char const *    request;      /* API Register request (knowed requests are defined below) */
+		}
 #endif
-t_apiregmember;
+		t_apiregmember;
 
 #ifndef INCLUDED_HANDLE_APIREG_PROTOS
 #define INCLUDED_HANDLE_APIREG_PROTOS
@@ -64,12 +64,12 @@ t_apiregmember;
 #define REQUEST_AGEVERIFY    "apireg_ageverify"
 #define REQUEST_GETNICK      "apireg_getnick"
 
-extern int apireglist_create(void);
-extern int apireglist_destroy(void);
+		extern int apireglist_create(void);
+		extern int apireglist_destroy(void);
 
-extern int handle_apireg_packet(t_connection * conn,t_packet const * const packet);
+		extern int handle_apireg_packet(t_connection * conn, t_packet const * const packet);
 
-}
+	}
 
 }
 

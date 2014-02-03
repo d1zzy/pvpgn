@@ -23,7 +23,7 @@
 namespace pvpgn
 {
 
-extern char * strdup(char const * str);
+	extern char * strdup(char const * str);
 
 }
 #else

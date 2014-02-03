@@ -30,25 +30,25 @@
 namespace pvpgn
 {
 
-/* reference change mechanism main object
- * an object which wishes to be referenced using RCM has to include this */
-typedef struct {
-    unsigned count;
-    t_elist refs;	/* list of registered references */
-} t_rcm;
+	/* reference change mechanism main object
+	 * an object which wishes to be referenced using RCM has to include this */
+	typedef struct {
+		unsigned count;
+		t_elist refs;	/* list of registered references */
+	} t_rcm;
 
-/* callback called when the object referenced is moved/deleted */
-typedef int (*t_chref_cb)(void *data, void *newref);
+	/* callback called when the object referenced is moved/deleted */
+	typedef int(*t_chref_cb)(void *data, void *newref);
 
-/* registered reference object
- * an object which wants to register it's references to an rcm enabled object
- * will have to include one of this for every rcm enabled referenced object
- */
-typedef struct {
-    t_chref_cb chref;
-    void *data;
-    t_elist refs_link;
-} t_rcm_regref;
+	/* registered reference object
+	 * an object which wants to register it's references to an rcm enabled object
+	 * will have to include one of this for every rcm enabled referenced object
+	 */
+	typedef struct {
+		t_chref_cb chref;
+		void *data;
+		t_elist refs_link;
+	} t_rcm_regref;
 
 }
 
@@ -60,13 +60,13 @@ typedef struct {
 namespace pvpgn
 {
 
-extern void rcm_init(t_rcm *rcm);
-extern void rcm_regref_init(t_rcm_regref *regref, t_chref_cb cb, void *data);
-extern void rcm_get(t_rcm *rcm, t_rcm_regref *regref);
-extern void rcm_put(t_rcm *rcm, t_rcm_regref *regref);
-/* the main function, cycles through the registered references and calls the
- * registered callback with the new reference */
-extern void rcm_chref(t_rcm *rcm, void *newref);
+	extern void rcm_init(t_rcm *rcm);
+	extern void rcm_regref_init(t_rcm_regref *regref, t_chref_cb cb, void *data);
+	extern void rcm_get(t_rcm *rcm, t_rcm_regref *regref);
+	extern void rcm_put(t_rcm *rcm, t_rcm_regref *regref);
+	/* the main function, cycles through the registered references and calls the
+	 * registered callback with the new reference */
+	extern void rcm_chref(t_rcm *rcm, void *newref);
 
 }
 

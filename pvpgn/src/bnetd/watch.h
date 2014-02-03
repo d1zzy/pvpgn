@@ -30,59 +30,59 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
-
-class Watch
-{
-public:
-	enum EventType
+	namespace bnetd
 	{
-		ET_login=1,
-		ET_logout=2,
-		ET_joingame=4,
-		ET_leavegame=8
-	};
 
-	Watch(t_connection* owner_, t_account* who_, unsigned what_, t_clienttag ctag_);
-	~Watch() throw();
+		class Watch
+		{
+		public:
+			enum EventType
+			{
+				ET_login = 1,
+				ET_logout = 2,
+				ET_joingame = 4,
+				ET_leavegame = 8
+			};
 
-	t_connection* getOwner() const;
-	t_account* getAccount() const;
-	unsigned getEventMask() const;
-	t_clienttag getClientTag() const;
+			Watch(t_connection* owner_, t_account* who_, unsigned what_, t_clienttag ctag_);
+			~Watch() throw();
 
-	void setEventMask(unsigned what_);
+			t_connection* getOwner() const;
+			t_account* getAccount() const;
+			unsigned getEventMask() const;
+			t_clienttag getClientTag() const;
 
-private:
-	t_connection * owner; /* who to notify */
-	t_account *    who;   /* when this account */
-	unsigned       what;  /* does one of these things */
-	t_clienttag    ctag;  /* while logged in with this clienttag (0 for any) */
-};
+			void setEventMask(unsigned what_);
 
-class WatchComponent
-{
-public:
-	WatchComponent();
-	~WatchComponent() throw();
+		private:
+			t_connection * owner; /* who to notify */
+			t_account *    who;   /* when this account */
+			unsigned       what;  /* does one of these things */
+			t_clienttag    ctag;  /* while logged in with this clienttag (0 for any) */
+		};
 
-	void add(t_connection * owner, t_account * who, t_clienttag clienttag, unsigned events);
-	int del(t_connection * owner, t_account * who, t_clienttag clienttag, unsigned events);
-	void del(t_connection * owner);
-	int dispatch(t_account * who, char const * gamename, t_clienttag clienttag, Watch::EventType event) const;
+		class WatchComponent
+		{
+		public:
+			WatchComponent();
+			~WatchComponent() throw();
 
-private:
-	typedef std::list<Watch> WatchList;
+			void add(t_connection * owner, t_account * who, t_clienttag clienttag, unsigned events);
+			int del(t_connection * owner, t_account * who, t_clienttag clienttag, unsigned events);
+			void del(t_connection * owner);
+			int dispatch(t_account * who, char const * gamename, t_clienttag clienttag, Watch::EventType event) const;
 
-	WatchList wlist;
+		private:
+			typedef std::list<Watch> WatchList;
 
-	int dispatch_whisper(t_account *account, char const *gamename, t_clienttag clienttag, Watch::EventType event) const;
-};
+			WatchList wlist;
 
-extern scoped_ptr<WatchComponent> watchlist;
+			int dispatch_whisper(t_account *account, char const *gamename, t_clienttag clienttag, Watch::EventType event) const;
+		};
 
-}
+		extern scoped_ptr<WatchComponent> watchlist;
+
+	}
 
 }
 

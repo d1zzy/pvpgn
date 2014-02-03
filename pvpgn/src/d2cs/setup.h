@@ -25,44 +25,44 @@
 
 #define BEGIN_LIST_TRAVERSE_DATA(list,data,type) \
 {\
-	t_elem * curr_elem_;\
-	for (curr_elem_=list_get_first(list); curr_elem_ && (data=(type*)elem_get_data(curr_elem_)); \
-		curr_elem_=elem_get_next(list,curr_elem_))
+	t_elem * curr_elem_; \
+for (curr_elem_ = list_get_first(list); curr_elem_ && (data = (type*)elem_get_data(curr_elem_)); \
+	curr_elem_ = elem_get_next(list, curr_elem_))
 
 #define END_LIST_TRAVERSE_DATA() \
 }
 
 #define BEGIN_LIST_TRAVERSE_DATA_CONST(list,data,type)\
 {\
-	t_elem const * curr_elem_;\
-	for (curr_elem_=list_get_first_const(list); curr_elem_ && (data=(type*)elem_get_data(curr_elem_)); \
-		curr_elem_=elem_get_next_const(list,curr_elem_))
+	t_elem const * curr_elem_; \
+for (curr_elem_ = list_get_first_const(list); curr_elem_ && (data = (type*)elem_get_data(curr_elem_)); \
+	curr_elem_ = elem_get_next_const(list, curr_elem_))
 
 #define END_LIST_TRAVERSE_DATA_CONST() \
 }
 
 #define BEGIN_HASHTABLE_TRAVERSE_DATA(hashtable,data,type)\
 {\
-	t_entry * curr_entry_;\
-	for (curr_entry_=hashtable_get_first(hashtable); curr_entry_ && (data=(type*)entry_get_data(curr_entry_));\
-		curr_entry_=entry_get_next(curr_entry_))
+	t_entry * curr_entry_; \
+for (curr_entry_ = hashtable_get_first(hashtable); curr_entry_ && (data = (type*)entry_get_data(curr_entry_)); \
+	curr_entry_ = entry_get_next(curr_entry_))
 
 #define END_HASHTABLE_TRAVERSE_DATA()	\
 }
 
 #define BEGIN_HASHTABLE_TRAVERSE_MATCHING_DATA(hashtable,data,hash,type)\
 {\
-	t_entry * curr_entry_;\
-	for (curr_entry_=hashtable_get_first_matching(hashtable,hash); \
-		curr_entry_ && (data=(type*)entry_get_data(curr_entry_)); \
-		curr_entry_ = entry_get_next_matching(curr_entry_))
+	t_entry * curr_entry_; \
+for (curr_entry_ = hashtable_get_first_matching(hashtable, hash); \
+	curr_entry_ && (data = (type*)entry_get_data(curr_entry_)); \
+	curr_entry_ = entry_get_next_matching(curr_entry_))
 
 #define END_HASHTABLE_TRAVERSE_DATA()	\
 }
 
 #define CASE(condition,func) case condition:\
-				func;\
-				break;\
+	func; \
+	break; \
 
 #define ASSERT(var,retval) if (!var) { eventlog(eventlog_level_error,__FUNCTION__,"got NULL " #var); return retval; }
 #define DECLARE_PACKET_HANDLER(handler) static int handler(t_connection *, t_packet *);

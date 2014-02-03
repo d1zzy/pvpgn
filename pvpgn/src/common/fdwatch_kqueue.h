@@ -41,28 +41,28 @@
 namespace pvpgn
 {
 
-class FDWKqueueBackend: public FDWBackend
-{
-public:
-	explicit FDWKqueueBackend(int nfds_);
-	~FDWKqueueBackend() throw();
+	class FDWKqueueBackend : public FDWBackend
+	{
+	public:
+		explicit FDWKqueueBackend(int nfds_);
+		~FDWKqueueBackend() throw();
 
-	int add(int idx, unsigned rw);
-	int del(int idx);
-	int watch(long timeout_msecs);
-	void handle();
+		int add(int idx, unsigned rw);
+		int del(int idx);
+		int watch(long timeout_msecs);
+		void handle();
 
-private:
-	int sr;
-	int kq;
-	/* changes to make to kqueue */
-	scoped_array<struct kevent> kqchanges;
-	/* events to investigate */
-	scoped_array<struct kevent> kqevents;
-	/* r/w indices from idx to the kqchanges index where the change is stored */
-	scoped_array<int> rridx, wridx;
-	unsigned nochanges;
-};
+	private:
+		int sr;
+		int kq;
+		/* changes to make to kqueue */
+		scoped_array<struct kevent> kqchanges;
+		/* events to investigate */
+		scoped_array<struct kevent> kqevents;
+		/* r/w indices from idx to the kqchanges index where the change is stored */
+		scoped_array<int> rridx, wridx;
+		unsigned nochanges;
+	};
 
 }
 

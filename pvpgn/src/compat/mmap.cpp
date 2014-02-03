@@ -35,47 +35,47 @@
 namespace pvpgn
 {
 
-extern void * pmmap(void *addr, unsigned len, int prot, int flags, int fd, unsigned offset)
-{
-    void *mem;
+	extern void * pmmap(void *addr, unsigned len, int prot, int flags, int fd, unsigned offset)
+	{
+		void *mem;
 #ifdef WIN32
-    HANDLE	hFile, hMapping;
+		HANDLE	hFile, hMapping;
 
-    /* under win32 we only support readonly mappings, the only ones used in pvpgn now :) */
-    if (prot != PROT_READ) return NULL;
-    hFile = (HANDLE) _get_osfhandle(fd);
-    if (hFile == (HANDLE) - 1) return MAP_FAILED;
-    hMapping = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
-    if (!hMapping) return MAP_FAILED;
-    mem = MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0 ,0);
+		/* under win32 we only support readonly mappings, the only ones used in pvpgn now :) */
+		if (prot != PROT_READ) return NULL;
+		hFile = (HANDLE)_get_osfhandle(fd);
+		if (hFile == (HANDLE)-1) return MAP_FAILED;
+		hMapping = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+		if (!hMapping) return MAP_FAILED;
+		mem = MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0);
 #else /* systems without mmap or win32 */
-    unsigned pos;
-    int res;
+		unsigned pos;
+		int res;
 
-    mem = xmalloc(len);
-    pos = 0;
-    while(pos < len) {
-	res = read(fd, (char *)mem + pos, len - pos);
-	if (res < 0) {
-	    xfree(mem);
-	    return MAP_FAILED;
+		mem = xmalloc(len);
+		pos = 0;
+		while (pos < len) {
+			res = read(fd, (char *)mem + pos, len - pos);
+			if (res < 0) {
+				xfree(mem);
+				return MAP_FAILED;
+			}
+			pos += res;
+		}
+#endif
+
+		return mem;
 	}
-	pos += res;
-    }
-#endif
 
-    return mem;
-}
-
-extern int pmunmap(void *addr, unsigned len)
-{
+	extern int pmunmap(void *addr, unsigned len)
+	{
 #ifdef WIN32
-    UnmapViewOfFile(addr);
+		UnmapViewOfFile(addr);
 #else
-    xfree(addr);
+		xfree(addr);
 #endif
-    return 0;
-}
+		return 0;
+	}
 
 }
 

@@ -28,8 +28,8 @@
 namespace pvpgn
 {
 
-extern void hexdump(std::FILE * stream, void const * data, unsigned int len);
-extern void hexdump_string(unsigned char * data, unsigned int datalen, char * dst, unsigned int counter);
+	extern void hexdump(std::FILE * stream, void const * data, unsigned int len);
+	extern void hexdump_string(unsigned char * data, unsigned int datalen, char * dst, unsigned int counter);
 
 }
 

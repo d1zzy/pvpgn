@@ -7,12 +7,12 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern t_file_engine file_cdb;
+		extern t_file_engine file_cdb;
 
-}
+	}
 
 }
 

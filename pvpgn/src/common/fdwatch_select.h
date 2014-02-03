@@ -33,24 +33,24 @@
 namespace pvpgn
 {
 
-class FDWSelectBackend: public FDWBackend
-{
-public:
-	explicit FDWSelectBackend(int nfds_);
-	~FDWSelectBackend() throw();
+	class FDWSelectBackend : public FDWBackend
+	{
+	public:
+		explicit FDWSelectBackend(int nfds_);
+		~FDWSelectBackend() throw();
 
-	int add(int idx, unsigned rw);
-	int del(int idx);
-	int watch(long timeout_msecs);
-	void handle();
+		int add(int idx, unsigned rw);
+		int del(int idx);
+		int watch(long timeout_msecs);
+		void handle();
 
-	int cb(t_fdwatch_fd* cfd);
+		int cb(t_fdwatch_fd* cfd);
 
-private:
-	int sr, smaxfd;
-	scoped_ptr<t_psock_fd_set> rfds, wfds, /* working sets (updated often) */
-	                              trfds, twfds; /* templates (updated rare) */
-};
+	private:
+		int sr, smaxfd;
+		scoped_ptr<t_psock_fd_set> rfds, wfds, /* working sets (updated often) */
+			trfds, twfds; /* templates (updated rare) */
+	};
 
 }
 

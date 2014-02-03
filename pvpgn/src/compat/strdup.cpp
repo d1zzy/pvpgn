@@ -27,15 +27,15 @@
 namespace pvpgn
 {
 
-extern char * strdup(char const * str)
-{
-    char * out;
+	extern char * strdup(char const * str)
+	{
+		char * out;
 
-    if (!(out = (char *)std::malloc(std::strlen(str)+1)))
-        return NULL;
-    std::strcpy(out,str);
-    return out;
-}
+		if (!(out = (char *)std::malloc(std::strlen(str) + 1)))
+			return NULL;
+		std::strcpy(out, str);
+		return out;
+	}
 
 }
 

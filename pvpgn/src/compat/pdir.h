@@ -42,40 +42,40 @@
 namespace pvpgn
 {
 
-class Directory
-{
-public:
-	class OpenError: public std::runtime_error
+	class Directory
 	{
 	public:
-		OpenError(const std::string& path)
-		:std::runtime_error("Error opening directory: " + path) {}
-		~OpenError() throw() {}
-	};
+		class OpenError : public std::runtime_error
+		{
+		public:
+			OpenError(const std::string& path)
+				:std::runtime_error("Error opening directory: " + path) {}
+			~OpenError() throw() {}
+		};
 
-	explicit Directory(const std::string& fname, bool lazyread = false);
-	~Directory() throw();
-	void rewind();
-	char const * read() const;
-	void open(const std::string& fname, bool lazyread = false);
-	operator bool() const;
+		explicit Directory(const std::string& fname, bool lazyread = false);
+		~Directory() throw();
+		void rewind();
+		char const * read() const;
+		void open(const std::string& fname, bool lazyread = false);
+		operator bool() const;
 
-private:
-	std::string        path;
-	bool lazyread;
+	private:
+		std::string        path;
+		bool lazyread;
 #ifdef WIN32
-	long               lFindHandle;
-	mutable struct _finddata_t fileinfo;
-	mutable int        status; /* -1 == failure, 0 == freshly opened, 1 == opened and read, 2 == eof */
+		long               lFindHandle;
+		mutable struct _finddata_t fileinfo;
+		mutable int        status; /* -1 == failure, 0 == freshly opened, 1 == opened and read, 2 == eof */
 #else /* POSIX */
-	DIR *              dir;
+		DIR *              dir;
 #endif
 
-	/* do not allow copying for the time being */
-	Directory(const Directory&);
-	Directory& operator=(const Directory&);
-	void close();
-};
+		/* do not allow copying for the time being */
+		Directory(const Directory&);
+		Directory& operator=(const Directory&);
+		void close();
+	};
 
 }
 

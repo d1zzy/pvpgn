@@ -30,12 +30,12 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int handle_telnet_packet(t_connection * c, t_packet const * const packet);
+		extern int handle_telnet_packet(t_connection * c, t_packet const * const packet);
 
-}
+	}
 
 }
 

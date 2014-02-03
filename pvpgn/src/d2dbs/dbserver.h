@@ -23,38 +23,38 @@
 namespace pvpgn
 {
 
-namespace d2dbs
-{
+	namespace d2dbs
+	{
 
-typedef struct {
-	int		sd;
-	unsigned int	ipaddr;
-	unsigned char	major;
-	unsigned char	minor;
-	unsigned char	type;
-	unsigned char	stats;
-	unsigned int	serverid;
-	unsigned int	verified;
-	unsigned char	serverip[16];
-	int		last_active;
-	int nCharsInReadBuffer;
-	int nCharsInWriteBuffer;
-	char ReadBuf[kBufferSize];
-	char WriteBuf[kBufferSize];
-} t_d2dbs_connection;
+		typedef struct {
+			int		sd;
+			unsigned int	ipaddr;
+			unsigned char	major;
+			unsigned char	minor;
+			unsigned char	type;
+			unsigned char	stats;
+			unsigned int	serverid;
+			unsigned int	verified;
+			unsigned char	serverip[16];
+			int		last_active;
+			int nCharsInReadBuffer;
+			int nCharsInWriteBuffer;
+			char ReadBuf[kBufferSize];
+			char WriteBuf[kBufferSize];
+		} t_d2dbs_connection;
 
-typedef struct raw_preset_d2gsid {
-	unsigned int	ipaddr;
-	unsigned int	d2gsid;
-	struct raw_preset_d2gsid	*next;
-} t_preset_d2gsid;
+		typedef struct raw_preset_d2gsid {
+			unsigned int	ipaddr;
+			unsigned int	d2gsid;
+			struct raw_preset_d2gsid	*next;
+		} t_preset_d2gsid;
 
-int dbs_server_main(void);
-int dbs_server_shutdown_connection(t_d2dbs_connection* conn);
+		int dbs_server_main(void);
+		int dbs_server_shutdown_connection(t_d2dbs_connection* conn);
 
-extern t_list * dbs_server_connection_list;
+		extern t_list * dbs_server_connection_list;
 
-}
+	}
 
 }
 

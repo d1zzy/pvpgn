@@ -23,16 +23,16 @@
 namespace pvpgn
 {
 
-typedef struct
-{
+	typedef struct
+	{
 #ifdef BNETTIME_INTERNAL_ACCESS
-    unsigned int u;
-    unsigned int l;
+		unsigned int u;
+		unsigned int l;
 #else
-    unsigned int _private1;
-    unsigned int _private2;
+		unsigned int _private1;
+		unsigned int _private2;
 #endif
-} t_bnettime;
+	} t_bnettime;
 
 }
 
@@ -52,17 +52,17 @@ typedef struct
 namespace pvpgn
 {
 
-extern t_bnettime secs_to_bnettime(double secs) ;
-extern double bnettime_to_secs(t_bnettime bntime) ;
-extern t_bnettime time_to_bnettime(std::time_t stdtime, unsigned int usec) ;
-extern std::time_t bnettime_to_time(t_bnettime bntime) ;
-extern t_bnettime bnettime(void);
-extern char const * bnettime_get_str(t_bnettime bntime);
-extern int bnettime_set_str(t_bnettime * bntime, char const * timestr);
-extern int local_tzbias(void);
-extern t_bnettime bnettime_add_tzbias(t_bnettime bntime, int tzbias);
-extern void bnettime_to_bn_long(t_bnettime in, bn_long * out);
-extern void bn_long_to_bnettime(bn_long in, t_bnettime * out);
+	extern t_bnettime secs_to_bnettime(double secs);
+	extern double bnettime_to_secs(t_bnettime bntime);
+	extern t_bnettime time_to_bnettime(std::time_t stdtime, unsigned int usec);
+	extern std::time_t bnettime_to_time(t_bnettime bntime);
+	extern t_bnettime bnettime(void);
+	extern char const * bnettime_get_str(t_bnettime bntime);
+	extern int bnettime_set_str(t_bnettime * bntime, char const * timestr);
+	extern int local_tzbias(void);
+	extern t_bnettime bnettime_add_tzbias(t_bnettime bntime, int tzbias);
+	extern void bnettime_to_bn_long(t_bnettime in, bn_long * out);
+	extern void bn_long_to_bnettime(bn_long in, t_bnettime * out);
 
 }
 

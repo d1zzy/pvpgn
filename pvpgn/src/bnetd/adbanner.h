@@ -28,66 +28,66 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-class AdBanner
-{
-public:
-	AdBanner(unsigned id_, bn_int extag, unsigned delay_, unsigned next_, const std::string& fname, const std::string& link_, t_clienttag client_, t_gamelang lang_);
-	~AdBanner() throw();
+		class AdBanner
+		{
+		public:
+			AdBanner(unsigned id_, bn_int extag, unsigned delay_, unsigned next_, const std::string& fname, const std::string& link_, t_clienttag client_, t_gamelang lang_);
+			~AdBanner() throw();
 
-	unsigned getId() const;
-	unsigned getNextId() const;
-	unsigned getExtensionTag() const;
-	char const * getFilename() const;
-	char const * getLink() const;
-	t_clienttag getClient() const;
-	t_gamelang getGameLang() const;
+			unsigned getId() const;
+			unsigned getNextId() const;
+			unsigned getExtensionTag() const;
+			char const * getFilename() const;
+			char const * getLink() const;
+			t_clienttag getClient() const;
+			t_gamelang getGameLang() const;
 
-private:
-	unsigned id;
-	unsigned extensiontag;
-	unsigned delay; /* in seconds */
-	unsigned next; /* adid or 0 */
-	const std::string filename;
-	const std::string link;
-	t_clienttag client;
-	t_gamelang lang;
-};
+		private:
+			unsigned id;
+			unsigned extensiontag;
+			unsigned delay; /* in seconds */
+			unsigned next; /* adid or 0 */
+			const std::string filename;
+			const std::string link;
+			t_clienttag client;
+			t_gamelang lang;
+		};
 
-class AdBannerComponent
-{
-public:
-	explicit AdBannerComponent(const std::string& fname);
-	~AdBannerComponent() throw();
+		class AdBannerComponent
+		{
+		public:
+			explicit AdBannerComponent(const std::string& fname);
+			~AdBannerComponent() throw();
 
-	typedef std::pair<t_clienttag, t_gamelang> AdKey;
-	const AdBanner* pick(t_clienttag ctag, t_gamelang lang, unsigned prev_id) const;
-	const AdBanner* find(t_clienttag ctag, t_gamelang lang, unsigned id) const;
+			typedef std::pair<t_clienttag, t_gamelang> AdKey;
+			const AdBanner* pick(t_clienttag ctag, t_gamelang lang, unsigned prev_id) const;
+			const AdBanner* find(t_clienttag ctag, t_gamelang lang, unsigned id) const;
 
-private:
-	typedef std::map<unsigned, AdBanner> AdIdMap;
-	typedef std::map<AdKey, AdIdMap> AdCtagMap;
-	typedef std::map<unsigned, AdIdMap::const_iterator> AdIdRefMap;
-	typedef std::map<AdKey, AdIdRefMap> AdCtagRefMap;
+		private:
+			typedef std::map<unsigned, AdBanner> AdIdMap;
+			typedef std::map<AdKey, AdIdMap> AdCtagMap;
+			typedef std::map<unsigned, AdIdMap::const_iterator> AdIdRefMap;
+			typedef std::map<AdKey, AdIdRefMap> AdCtagRefMap;
 
-	AdCtagMap adlist;
-	AdCtagRefMap adlist_init;
-	AdCtagRefMap adlist_start;
-	AdCtagRefMap adlist_norm;
+			AdCtagMap adlist;
+			AdCtagRefMap adlist_init;
+			AdCtagRefMap adlist_start;
+			AdCtagRefMap adlist_norm;
 
-	const AdBanner* pick(AdKey adKey, unsigned prev_id) const;
-	const AdBanner* find(AdKey adKey, unsigned id) const;
-	const AdBanner* finder(AdKey adKey, unsigned id) const;
-	const AdBanner* findRandom(const AdCtagRefMap& where, AdKey adKey) const;
-	const AdBanner* randomFinder(const AdCtagRefMap& where, AdKey adKey) const;
-	void insert(AdCtagRefMap& where, const std::string& fname, unsigned id, unsigned delay, const std::string& link, unsigned next_id, const std::string& client, const std::string& lang);
-};
+			const AdBanner* pick(AdKey adKey, unsigned prev_id) const;
+			const AdBanner* find(AdKey adKey, unsigned id) const;
+			const AdBanner* finder(AdKey adKey, unsigned id) const;
+			const AdBanner* findRandom(const AdCtagRefMap& where, AdKey adKey) const;
+			const AdBanner* randomFinder(const AdCtagRefMap& where, AdKey adKey) const;
+			void insert(AdCtagRefMap& where, const std::string& fname, unsigned id, unsigned delay, const std::string& link, unsigned next_id, const std::string& client, const std::string& lang);
+		};
 
-extern scoped_ptr<AdBannerComponent> adbannerlist;
+		extern scoped_ptr<AdBannerComponent> adbannerlist;
 
-}
+	}
 
 }
 

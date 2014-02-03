@@ -25,27 +25,27 @@
 namespace pvpgn
 {
 
-typedef struct
-{
-	bn_int		type;
-	bn_int		offset;
-	bn_int		number;
-} t_d2ladderfile_ladderindex;
+	typedef struct
+	{
+		bn_int		type;
+		bn_int		offset;
+		bn_int		number;
+	} t_d2ladderfile_ladderindex;
 
-typedef struct
-{
-	bn_int		experience;
-	bn_short	status;
-	bn_byte		level;
-	bn_byte		chclass;
-	char		charname[MAX_CHARNAME_LEN];
-} t_d2ladderfile_ladderinfo;
+	typedef struct
+	{
+		bn_int		experience;
+		bn_short	status;
+		bn_byte		level;
+		bn_byte		chclass;
+		char		charname[MAX_CHARNAME_LEN];
+	} t_d2ladderfile_ladderinfo;
 
-typedef struct
-{
-	bn_int		maxtype;
-	bn_int		checksum;
-} t_d2ladderfile_header;
+	typedef struct
+	{
+		bn_int		maxtype;
+		bn_int		checksum;
+	} t_d2ladderfile_header;
 
 }
 

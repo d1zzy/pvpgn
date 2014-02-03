@@ -25,73 +25,73 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef struct attr_struct {
-    const char 		*key;
-    const char 		*val;
-    int			dirty;
-    t_hlist		link;
-} t_attr;
+		typedef struct attr_struct {
+			const char 		*key;
+			const char 		*val;
+			int			dirty;
+			t_hlist		link;
+		} t_attr;
 
-static inline t_attr *attr_create(const char *key, const char *val)
-{
-    t_attr *attr;
+		static inline t_attr *attr_create(const char *key, const char *val)
+		{
+			t_attr *attr;
 
-    attr = (t_attr*)xmalloc(sizeof(t_attr));
-    attr->dirty = 0;
-    hlist_init(&attr->link);
-    attr->key = key ? xstrdup(key) : NULL;
-    attr->val = val ? xstrdup(val) : NULL;
+			attr = (t_attr*)xmalloc(sizeof(t_attr));
+			attr->dirty = 0;
+			hlist_init(&attr->link);
+			attr->key = key ? xstrdup(key) : NULL;
+			attr->val = val ? xstrdup(val) : NULL;
 
-    return attr;
-}
+			return attr;
+		}
 
-static inline int attr_destroy(t_attr *attr)
-{
-    if (attr->key) xfree((void*)attr->key);
-    if (attr->val) xfree((void*)attr->val);
+		static inline int attr_destroy(t_attr *attr)
+		{
+			if (attr->key) xfree((void*)attr->key);
+			if (attr->val) xfree((void*)attr->val);
 
-    xfree((void*)attr);
+			xfree((void*)attr);
 
-    return 0;
-}
+			return 0;
+		}
 
-static inline int attr_get_dirty(t_attr *attr)
-{
-    return attr->dirty;
-}
+		static inline int attr_get_dirty(t_attr *attr)
+		{
+			return attr->dirty;
+		}
 
-static inline void attr_clear_dirty(t_attr *attr)
-{
-    attr->dirty = 0;
-}
+		static inline void attr_clear_dirty(t_attr *attr)
+		{
+			attr->dirty = 0;
+		}
 
-static inline const char *attr_get_key(t_attr *attr)
-{
-    return attr->key;
-}
+		static inline const char *attr_get_key(t_attr *attr)
+		{
+			return attr->key;
+		}
 
-static inline const char *attr_get_val(t_attr *attr)
-{
-    return attr->val;
-}
+		static inline const char *attr_get_val(t_attr *attr)
+		{
+			return attr->val;
+		}
 
-static inline void attr_set_val(t_attr *attr, const char *val)
-{
-    if (attr->val) xfree((void*)attr->val);
+		static inline void attr_set_val(t_attr *attr, const char *val)
+		{
+			if (attr->val) xfree((void*)attr->val);
 
-    if (val) attr->val = xstrdup(val);
-    else attr->val = NULL;
-}
+			if (val) attr->val = xstrdup(val);
+			else attr->val = NULL;
+		}
 
-static inline void attr_set_dirty(t_attr *attr)
-{
-    attr->dirty = 1;
-}
+		static inline void attr_set_dirty(t_attr *attr)
+		{
+			attr->dirty = 1;
+		}
 
-}
+	}
 
 }
 

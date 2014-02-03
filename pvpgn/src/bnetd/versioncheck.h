@@ -26,44 +26,44 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
 #ifdef VERSIONCHECK_INTERNAL_ACCESS
-typedef struct
-{
-    char const * exe;
-    int          time;
-    int		 size;
-} t_parsed_exeinfo;
+		typedef struct
+		{
+			char const * exe;
+			int          time;
+			int		 size;
+		} t_parsed_exeinfo;
 #endif
 
 #ifdef VERSIONCHECK_INTERNAL_ACCESS
-typedef struct
-{
-    char const *       eqn;
-    char const *       mpqfile;
-    t_tag              archtag;
-    t_tag              clienttag;
-    char const *       versiontag;
-    t_parsed_exeinfo * parsed_exeinfo;
-    unsigned long      versionid;
-    unsigned long      gameversion;
-    unsigned long      checksum;
-} t_versioninfo;
+		typedef struct
+		{
+			char const *       eqn;
+			char const *       mpqfile;
+			t_tag              archtag;
+			t_tag              clienttag;
+			char const *       versiontag;
+			t_parsed_exeinfo * parsed_exeinfo;
+			unsigned long      versionid;
+			unsigned long      gameversion;
+			unsigned long      checksum;
+		} t_versioninfo;
 #endif
 
-typedef struct s_versioncheck
+		typedef struct s_versioncheck
 #ifdef VERSIONCHECK_INTERNAL_ACCESS
-{
-    char const * eqn;
-    char const * mpqfile;
-    char const * versiontag;
-}
+		{
+			char const * eqn;
+			char const * mpqfile;
+			char const * versiontag;
+		}
 #endif
-t_versioncheck;
+		t_versioncheck;
 
-}
+	}
 
 }
 
@@ -76,22 +76,22 @@ t_versioncheck;
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern t_versioncheck * versioncheck_create(t_tag archtag, t_tag clienttag);
-extern int versioncheck_destroy(t_versioncheck * vc);
-extern char const * versioncheck_get_mpqfile(t_versioncheck const * vc);
-extern char const * versioncheck_get_eqn(t_versioncheck const * vc);
-extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clienttag, char const * exeinfo, unsigned long versionid, unsigned long gameversion, unsigned long checksum);
+		extern t_versioncheck * versioncheck_create(t_tag archtag, t_tag clienttag);
+		extern int versioncheck_destroy(t_versioncheck * vc);
+		extern char const * versioncheck_get_mpqfile(t_versioncheck const * vc);
+		extern char const * versioncheck_get_eqn(t_versioncheck const * vc);
+		extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clienttag, char const * exeinfo, unsigned long versionid, unsigned long gameversion, unsigned long checksum);
 
-extern int versioncheck_load(char const * filename);
-extern int versioncheck_unload(void);
+		extern int versioncheck_load(char const * filename);
+		extern int versioncheck_unload(void);
 
-extern char const * versioncheck_get_versiontag(t_versioncheck const * vc);
-extern int versioncheck_set_versiontag(t_versioncheck * vc, char const * versiontag);
+		extern char const * versioncheck_get_versiontag(t_versioncheck const * vc);
+		extern int versioncheck_set_versiontag(t_versioncheck * vc, char const * versiontag);
 
-}
+	}
 
 }
 

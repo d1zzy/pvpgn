@@ -25,36 +25,36 @@
 
 extern int psock_init(void)
 {
-    WORD    wVersionRequested;
-    WSADATA wsaData;
-    
-    wVersionRequested = MAKEWORD(2, 2);
-    
-    if (WSAStartup(wVersionRequested, &wsaData)!=0)
-    {
-	/* FIXME: Tell the user that we could not find a usable WinSock DLL. */
-	return -1;
-    }
-    
-    return 0;
+	WORD    wVersionRequested;
+	WSADATA wsaData;
+
+	wVersionRequested = MAKEWORD(2, 2);
+
+	if (WSAStartup(wVersionRequested, &wsaData) != 0)
+	{
+		/* FIXME: Tell the user that we could not find a usable WinSock DLL. */
+		return -1;
+	}
+
+	return 0;
 }
 
 extern int psock_deinit(void)
 {
-   
-    if (WSACleanup()!=0)
-    {
-        return -1;
-    }
 
-    return 0;
+	if (WSACleanup() != 0)
+	{
+		return -1;
+	}
+
+	return 0;
 }
 
 extern int psock_ctl(int sd, int mode)
 {
-    unsigned long nParam=1; /* u_long or DWORD or what? */
-    
-    return ioctlsocket(sd,mode,&nParam);
+	unsigned long nParam = 1; /* u_long or DWORD or what? */
+
+	return ioctlsocket(sd, mode, &nParam);
 }
 
 #else
@@ -75,12 +75,12 @@ extern int psock_ctl(int sd, int mode)
 
 extern int psock_ctl(int sd, long int mode)
 {
-    long int oldmode;
-    
-    if ((oldmode = fcntl(sd,F_GETFL))<0)
-	oldmode = 0;
-    oldmode |= mode;
-    return fcntl(sd,F_SETFL,mode);
+	long int oldmode;
+
+	if ((oldmode = fcntl(sd, F_GETFL)) < 0)
+		oldmode = 0;
+	oldmode |= mode;
+	return fcntl(sd, F_SETFL, mode);
 }
 
 #endif

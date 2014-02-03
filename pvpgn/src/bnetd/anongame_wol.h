@@ -44,24 +44,24 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef struct anongame_wol_player
+		typedef struct anongame_wol_player
 #ifdef ANONGAME_WOL_INTERNAL_ACCESS
-{
-    t_connection       * conn;
+		{
+			t_connection       * conn;
 
-    /* Red Alert 2 and Yuri's Revnenge */
-    int                  address;
-    int                  port;
-    int                  country;
-    int                  colour;
-}
+			/* Red Alert 2 and Yuri's Revnenge */
+			int                  address;
+			int                  port;
+			int                  country;
+			int                  colour;
+		}
 #endif
-t_anongame_wol_player;
+		t_anongame_wol_player;
 
-}
+	}
 
 }
 
@@ -79,16 +79,16 @@ t_anongame_wol_player;
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int anongame_wol_matchlist_create(void);
-extern int anongame_wol_matchlist_destroy(void);
+		extern int anongame_wol_matchlist_create(void);
+		extern int anongame_wol_matchlist_destroy(void);
 
-extern int anongame_wol_destroy(t_connection * conn);
-extern int anongame_wol_privmsg(t_connection * conn, int numparams, char ** params, char * text);
+		extern int anongame_wol_destroy(t_connection * conn);
+		extern int anongame_wol_privmsg(t_connection * conn, int numparams, char ** params, char * text);
 
-}
+	}
 
 }
 

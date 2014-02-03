@@ -30,63 +30,64 @@
 namespace pvpgn
 {
 
-namespace d2cs
-{
+	namespace d2cs
+	{
 
-static t_connection * bnetd_connection=NULL;
+		static t_connection * bnetd_connection = NULL;
 
-extern int bnetd_init(void)
-{
-	return bnetd_check();
-}
+		extern int bnetd_init(void)
+		{
+			return bnetd_check();
+		}
 
-extern int bnetd_check(void)
-{
-	static unsigned int	prev_connecting_checktime=0;
+		extern int bnetd_check(void)
+		{
+			static unsigned int	prev_connecting_checktime = 0;
 
-	if (bnetd_connection) {
-		if (d2cs_conn_get_state(bnetd_connection)==conn_state_connecting) {
-			if (std::time(NULL) - prev_connecting_checktime > prefs_get_s2s_timeout()) {
-				eventlog(eventlog_level_warn,__FUNCTION__,"connection to bnetd s2s timeout");
-				d2cs_conn_set_state(bnetd_connection,conn_state_destroy);
+			if (bnetd_connection) {
+				if (d2cs_conn_get_state(bnetd_connection) == conn_state_connecting) {
+					if (std::time(NULL) - prev_connecting_checktime > prefs_get_s2s_timeout()) {
+						eventlog(eventlog_level_warn, __FUNCTION__, "connection to bnetd s2s timeout");
+						d2cs_conn_set_state(bnetd_connection, conn_state_destroy);
+						return -1;
+					}
+				}
+				return 0;
+			}
+			if (!(bnetd_connection = s2s_create(prefs_get_bnetdaddr(), BNETD_SERV_PORT, conn_class_bnetd))) {
 				return -1;
 			}
+			if (d2cs_conn_get_state(bnetd_connection) == conn_state_init) {
+				handle_bnetd_init(bnetd_connection);
+			}
+			else {
+				prev_connecting_checktime = std::time(NULL);
+			}
+			return 0;
 		}
-		return 0;
+
+
+		extern t_connection * bnetd_conn(void)
+		{
+			return bnetd_connection;
+		}
+
+		extern int bnetd_set_connection(t_connection * c)
+		{
+			bnetd_connection = c;
+			return 0;
+		}
+
+		extern int bnetd_destroy(t_connection * c)
+		{
+			if (bnetd_connection != c) {
+				eventlog(eventlog_level_error, __FUNCTION__, "bnetd connection do not match");
+				return -1;
+			}
+			bnetd_connection = NULL;
+			return 0;
+		}
+
 	}
-	if (!(bnetd_connection=s2s_create(prefs_get_bnetdaddr(),BNETD_SERV_PORT,conn_class_bnetd))) {
-		return -1;
-	}
-	if (d2cs_conn_get_state(bnetd_connection)==conn_state_init) {
-		handle_bnetd_init(bnetd_connection);
-	} else {
-		prev_connecting_checktime=std::time(NULL);
-	}
-	return 0;
-}
-
-
-extern t_connection * bnetd_conn(void)
-{
-	return bnetd_connection;
-}
-
-extern int bnetd_set_connection(t_connection * c)
-{
-	bnetd_connection=c;
-	return 0;
-}
-
-extern int bnetd_destroy(t_connection * c)
-{
-	if (bnetd_connection != c) {
-		eventlog(eventlog_level_error,__FUNCTION__,"bnetd connection do not match");
-		return -1;
-	}
-	bnetd_connection=NULL;
-	return 0;
-}
-
-}
 
 }

@@ -43,72 +43,72 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-class Mail
-{
-public:
-	Mail(const std::string& sender, const std::string& mess, const std::time_t timestamp);
-	~Mail() throw();
+		class Mail
+		{
+		public:
+			Mail(const std::string& sender, const std::string& mess, const std::time_t timestamp);
+			~Mail() throw();
 
-	const std::string& sender() const;
-	const std::string& message() const;
-	const std::time_t& timestamp() const;
+			const std::string& sender() const;
+			const std::string& message() const;
+			const std::time_t& timestamp() const;
 
-private:
-	const std::string sender_;
-	const std::string message_;
-	const std::time_t timestamp_;
-};
+		private:
+			const std::string sender_;
+			const std::string message_;
+			const std::time_t timestamp_;
+		};
 
-typedef std::deque<Mail> MailList;
+		typedef std::deque<Mail> MailList;
 
-class Mailbox {
-public:
-	class ReadError: public std::runtime_error {
-	public:
-		ReadError(const std::string& mess)
-		:std::runtime_error(mess) {}
-		~ReadError() throw() {}
-	};
+		class Mailbox {
+		public:
+			class ReadError : public std::runtime_error {
+			public:
+				ReadError(const std::string& mess)
+					:std::runtime_error(mess) {}
+				~ReadError() throw() {}
+			};
 
-	class DeliverError: public std::runtime_error {
-	public:
-		DeliverError(const std::string& mess)
-		:std::runtime_error(mess) {}
-		~DeliverError() throw() {}
-	};
+			class DeliverError : public std::runtime_error {
+			public:
+				DeliverError(const std::string& mess)
+					:std::runtime_error(mess) {}
+				~DeliverError() throw() {}
+			};
 
-	explicit Mailbox(unsigned uid);
-	~Mailbox() throw();
+			explicit Mailbox(unsigned uid);
+			~Mailbox() throw();
 
-	unsigned size() const;
-	bool empty() const;
-	void deliver(const std::string& sender, const std::string& mess);
-	Mail read(unsigned int) const;
-	void readAll(MailList& dest) const;
-	void erase(unsigned int);
-	void clear();
+			unsigned size() const;
+			bool empty() const;
+			void deliver(const std::string& sender, const std::string& mess);
+			Mail read(unsigned int) const;
+			void readAll(MailList& dest) const;
+			void erase(unsigned int);
+			void clear();
 
-private:
-	unsigned uid;
-	const std::string path;
-	mutable Directory mdir;
+		private:
+			unsigned uid;
+			const std::string path;
+			mutable Directory mdir;
 
-	std::string buildPath(const std::string& root) const;
-	void createOpenDir();
-	Mail read(const std::string& fname, const std::time_t& timestamp) const;
+			std::string buildPath(const std::string& root) const;
+			void createOpenDir();
+			Mail read(const std::string& fname, const std::time_t& timestamp) const;
 
-	Mailbox(const Mailbox&);
-	Mailbox& operator=(const Mailbox&);
-};
+			Mailbox(const Mailbox&);
+			Mailbox& operator=(const Mailbox&);
+		};
 
 
-extern int handle_mail_command(t_connection *, char const *);
-extern unsigned check_mail(t_connection const * c);
+		extern int handle_mail_command(t_connection *, char const *);
+		extern unsigned check_mail(t_connection const * c);
 
-}
+	}
 
 }
 

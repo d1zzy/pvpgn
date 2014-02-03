@@ -32,32 +32,32 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef enum {
-    wol_gameres_type_unknown = 0,
-    wol_gameres_type_byte = 1,
-    wol_gameres_type_bool = 2,
-    wol_gameres_type_time = 5,
-    wol_gameres_type_int = 6,
-    wol_gameres_type_string = 7,
-    wol_gameres_type_bigint = 20
-} wol_gameres_type;
+		typedef enum {
+			wol_gameres_type_unknown = 0,
+			wol_gameres_type_byte = 1,
+			wol_gameres_type_bool = 2,
+			wol_gameres_type_time = 5,
+			wol_gameres_type_int = 6,
+			wol_gameres_type_string = 7,
+			wol_gameres_type_bigint = 20
+		} wol_gameres_type;
 
-typedef struct wol_gameres_result
-{
-    t_game * game;
-    t_game_result * results;
-    int senderid;
-    t_account * myaccount;
-    t_account * otheraccount;
-    
-} t_wol_gameres_result;
+		typedef struct wol_gameres_result
+		{
+			t_game * game;
+			t_game_result * results;
+			int senderid;
+			t_account * myaccount;
+			t_account * otheraccount;
 
-extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const packet);
+		} t_wol_gameres_result;
 
-}
+		extern int handle_wol_gameres_packet(t_connection * c, t_packet const * const packet);
+
+	}
 
 }
 

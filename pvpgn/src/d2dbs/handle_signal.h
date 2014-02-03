@@ -21,21 +21,21 @@
 namespace pvpgn
 {
 
-namespace d2dbs
-{
+	namespace d2dbs
+	{
 
 #ifndef WIN32
- extern int d2dbs_handle_signal_init(void);
+		extern int d2dbs_handle_signal_init(void);
 #else
- extern void d2dbs_signal_quit_wrapper(void);
- extern void d2dbs_signal_reload_config_wrapper(void);
- extern void d2dbs_signal_save_ladder_wrapper(void);
- extern void d2dbs_signal_exit_wrapper(void);
+		extern void d2dbs_signal_quit_wrapper(void);
+		extern void d2dbs_signal_reload_config_wrapper(void);
+		extern void d2dbs_signal_save_ladder_wrapper(void);
+		extern void d2dbs_signal_exit_wrapper(void);
 #endif
 
-extern int d2dbs_handle_signal(void);
+		extern int d2dbs_handle_signal(void);
 
-}
+	}
 
 }
 

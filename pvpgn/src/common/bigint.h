@@ -24,51 +24,51 @@
 namespace pvpgn
 {
 
-class BigInt
-{
-public:
-	BigInt();
-	explicit BigInt(t_uint8 input);
-	explicit BigInt(t_uint16 input);
-	explicit BigInt(t_uint32 input);
-	BigInt(const BigInt& input);
-	BigInt& operator=(const BigInt& input);
-	BigInt(unsigned char const* input, int input_size, int blockSize=1, bool bigEndian=true);
-	~BigInt() throw ();
-	bool operator== (const BigInt& right) const;
-	bool operator<  (const BigInt& right) const;
-	bool operator>  (const BigInt& right) const;
-	BigInt operator+ (const BigInt& right) const;
-	BigInt operator- (const BigInt& right) const;
-	BigInt operator* (const BigInt& right) const;
-	BigInt operator/ (const BigInt& right) const;
-	BigInt operator% (const BigInt& right) const;
-	BigInt operator<< (int bytesToShift) const;
-	static BigInt random(int size);
-	static void status();
-	BigInt powm(const BigInt& exp, const BigInt& mod) const;
-	unsigned char* getData(int byteCount, int blockSize=1, bool bigEndian=true) const;
-	void getData(unsigned char* out, int byteCount, int blockSize=1, bool bigEndian=true) const;
-	std::string toHexString() const;
+	class BigInt
+	{
+	public:
+		BigInt();
+		explicit BigInt(t_uint8 input);
+		explicit BigInt(t_uint16 input);
+		explicit BigInt(t_uint32 input);
+		BigInt(const BigInt& input);
+		BigInt& operator=(const BigInt& input);
+		BigInt(unsigned char const* input, int input_size, int blockSize = 1, bool bigEndian = true);
+		~BigInt() throw ();
+		bool operator== (const BigInt& right) const;
+		bool operator<  (const BigInt& right) const;
+		bool operator>  (const BigInt& right) const;
+		BigInt operator+ (const BigInt& right) const;
+		BigInt operator- (const BigInt& right) const;
+		BigInt operator* (const BigInt& right) const;
+		BigInt operator/ (const BigInt& right) const;
+		BigInt operator% (const BigInt& right) const;
+		BigInt operator<< (int bytesToShift) const;
+		static BigInt random(int size);
+		static void status();
+		BigInt powm(const BigInt& exp, const BigInt& mod) const;
+		unsigned char* getData(int byteCount, int blockSize = 1, bool bigEndian = true) const;
+		void getData(unsigned char* out, int byteCount, int blockSize = 1, bool bigEndian = true) const;
+		std::string toHexString() const;
 
-private:
+	private:
 
 #ifdef  HAVE_UINT64_T
-	explicit BigInt(t_uint64 input);
-	typedef t_uint32 bigint_base;
-	typedef t_uint64 bigint_extended;
-	#define bigint_base_mask 0xffffffff
+		explicit BigInt(t_uint64 input);
+		typedef t_uint32 bigint_base;
+		typedef t_uint64 bigint_extended;
+#define bigint_base_mask 0xffffffff
 #else
-	typedef t_uint16 bigint_base;
-	typedef t_uint32 bigint_extended;
-	#define bigint_base_mask 0xffff
+		typedef t_uint16 bigint_base;
+		typedef t_uint32 bigint_extended;
+#define bigint_base_mask 0xffff
 #endif
-	#define bigint_extended_carry bigint_base_mask+0x01
-	#define bigint_base_bitcount (sizeof(bigint_base)*8)
+#define bigint_extended_carry bigint_base_mask+0x01
+#define bigint_base_bitcount (sizeof(bigint_base)*8)
 
-        bigint_base	*segment;
-	int 		segment_count;
-};
+		bigint_base	*segment;
+		int 		segment_count;
+	};
 
 }
 

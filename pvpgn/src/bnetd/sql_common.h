@@ -22,34 +22,34 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef unsigned int t_sql_info;
+		typedef unsigned int t_sql_info;
 
-/* used as a pointer to it */
+		/* used as a pointer to it */
 #define t_sql_res void
 
-typedef char * t_sql_row;
+		typedef char * t_sql_row;
 
-typedef char * t_sql_field;
+		typedef char * t_sql_field;
 
-typedef struct {
-    int (*init)(const char *host, const char *port, const char *socket, const char *name, const char *user, const char *pass);
-    int (*close)(void);
-    t_sql_res * (*query_res)(const char *);
-    int (*query)(const char *);
-    t_sql_row * (*fetch_row)(t_sql_res *);
-    void (*free_result)(t_sql_res *);
-    unsigned int (*num_rows)(t_sql_res *);
-    unsigned int (*num_fields)(t_sql_res *);
-    unsigned int (*affected_rows)(void);
-    t_sql_field * (*fetch_fields)(t_sql_res *);
-    int (*free_fields)(t_sql_field *);
-    void (*escape_string)(char *, const char *, int);
-} t_sql_engine;
+		typedef struct {
+			int(*init)(const char *host, const char *port, const char *socket, const char *name, const char *user, const char *pass);
+			int(*close)(void);
+			t_sql_res * (*query_res)(const char *);
+			int(*query)(const char *);
+			t_sql_row * (*fetch_row)(t_sql_res *);
+			void(*free_result)(t_sql_res *);
+			unsigned int(*num_rows)(t_sql_res *);
+			unsigned int(*num_fields)(t_sql_res *);
+			unsigned int(*affected_rows)(void);
+			t_sql_field * (*fetch_fields)(t_sql_res *);
+			int(*free_fields)(t_sql_field *);
+			void(*escape_string)(char *, const char *, int);
+		} t_sql_engine;
 
-}
+	}
 
 }
 
@@ -64,10 +64,10 @@ typedef struct {
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern t_storage storage_sql;
+		extern t_storage storage_sql;
 
 #ifdef SQL_INTERNAL
 
@@ -83,32 +83,32 @@ extern t_storage storage_sql;
 
 #define SQL_ON_DEMAND	1
 
-extern t_sql_engine *sql;
-extern unsigned int sql_defacct;
-extern const char* tab_prefix;
+		extern t_sql_engine *sql;
+		extern unsigned int sql_defacct;
+		extern const char* tab_prefix;
 
 #ifndef SQL_ON_DEMAND
-extern char *sql_tables[];
+		extern char *sql_tables[];
 #endif /* SQL_ON_DEMAND */
 
-extern int sql_init(const char *);
-extern int sql_close(void);
-extern unsigned sql_read_maxuserid(void);
-extern int sql_read_accounts(int flag,t_read_accounts_func cb, void *data);
-extern int sql_cmp_info(t_storage_info * info1, t_storage_info * info2);
-extern int sql_free_info(t_storage_info * info);
-extern t_storage_info *sql_get_defacct(void);
-extern int sql_load_clans(t_load_clans_func cb);
-extern int sql_write_clan(void *data);
-extern int sql_remove_clan(int clantag);
-extern int sql_remove_clanmember(int uid);
-extern int sql_load_teams(t_load_teams_func cb);
-extern int sql_write_team(void *data);
-extern int sql_remove_team(unsigned int teamid);
+		extern int sql_init(const char *);
+		extern int sql_close(void);
+		extern unsigned sql_read_maxuserid(void);
+		extern int sql_read_accounts(int flag, t_read_accounts_func cb, void *data);
+		extern int sql_cmp_info(t_storage_info * info1, t_storage_info * info2);
+		extern int sql_free_info(t_storage_info * info);
+		extern t_storage_info *sql_get_defacct(void);
+		extern int sql_load_clans(t_load_clans_func cb);
+		extern int sql_write_clan(void *data);
+		extern int sql_remove_clan(int clantag);
+		extern int sql_remove_clanmember(int uid);
+		extern int sql_load_teams(t_load_teams_func cb);
+		extern int sql_write_team(void *data);
+		extern int sql_remove_team(unsigned int teamid);
 
 #endif /* SQL_INTERNAL */
 
-}
+	}
 
 }
 

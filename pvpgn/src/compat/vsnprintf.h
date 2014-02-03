@@ -31,7 +31,7 @@
 namespace pvpgn
 {
 
-extern int vsnprintf(char *str, int size, const char *format, va_list ap);
+	extern int vsnprintf(char *str, int size, const char *format, va_list ap);
 
 }
 #else

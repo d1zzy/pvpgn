@@ -22,12 +22,12 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int support_check_files(char const * supportfile);
+		extern int support_check_files(char const * supportfile);
 
-}
+	}
 
 }
 

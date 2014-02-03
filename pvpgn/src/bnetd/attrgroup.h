@@ -38,40 +38,40 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-/* attrgroup represents a group of attributes which are read/saved/flush together
- * ex: each account stores it's data into a attrgroup */
-typedef struct attrgroup_struct
+		/* attrgroup represents a group of attributes which are read/saved/flush together
+		 * ex: each account stores it's data into a attrgroup */
+		typedef struct attrgroup_struct
 #ifdef ATTRGROUP_INTERNAL_ACCESS
-{
-    t_hlist		list;
-    t_storage_info	*storage;
-    int			flags;
-    std::time_t		lastaccess;
-    std::time_t		dirtytime;
-    t_elist		loadedlist;
-    t_elist		dirtylist;
-}
+		{
+			t_hlist		list;
+			t_storage_info	*storage;
+			int			flags;
+			std::time_t		lastaccess;
+			std::time_t		dirtytime;
+			t_elist		loadedlist;
+			t_elist		dirtylist;
+		}
 #endif
-t_attrgroup;
+		t_attrgroup;
 
-typedef int (*t_attr_cb)(t_attrgroup *, void *);
+		typedef int(*t_attr_cb)(t_attrgroup *, void *);
 
-extern t_attrgroup *attrgroup_create_storage(t_storage_info *storage);
-extern t_attrgroup *attrgroup_create_newuser(const char *name);
-extern t_attrgroup *attrgroup_create_nameuid(const char *name, unsigned uid);
-extern int attrgroup_destroy(t_attrgroup *attrgroup);
-extern int attrgroup_load(t_attrgroup *attrgroup);
-extern int attrgroup_unload(t_attrgroup *attrgroup);
-extern int attrgroup_read_accounts(int flag, t_attr_cb cb, void *data);
-extern const char *attrgroup_get_attr(t_attrgroup *attrgroup, const char *key);
-extern int attrgroup_set_attr(t_attrgroup *attrgroup, const char *key, const char *val);
-extern int attrgroup_save(t_attrgroup *attrgroup, int flags);
-extern int attrgroup_flush(t_attrgroup *attrgroup, int flags);
+		extern t_attrgroup *attrgroup_create_storage(t_storage_info *storage);
+		extern t_attrgroup *attrgroup_create_newuser(const char *name);
+		extern t_attrgroup *attrgroup_create_nameuid(const char *name, unsigned uid);
+		extern int attrgroup_destroy(t_attrgroup *attrgroup);
+		extern int attrgroup_load(t_attrgroup *attrgroup);
+		extern int attrgroup_unload(t_attrgroup *attrgroup);
+		extern int attrgroup_read_accounts(int flag, t_attr_cb cb, void *data);
+		extern const char *attrgroup_get_attr(t_attrgroup *attrgroup, const char *key);
+		extern int attrgroup_set_attr(t_attrgroup *attrgroup, const char *key, const char *val);
+		extern int attrgroup_save(t_attrgroup *attrgroup, int flags);
+		extern int attrgroup_flush(t_attrgroup *attrgroup, int flags);
 
-}
+	}
 
 }
 

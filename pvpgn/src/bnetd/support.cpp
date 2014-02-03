@@ -34,60 +34,60 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int support_check_files(char const * supportfile)
-{
+		extern int support_check_files(char const * supportfile)
+		{
 
-  std::FILE *fp;
-  char *buff;
-  unsigned int line;
-  int filedirlen;
-  char * namebuff;
+			std::FILE *fp;
+			char *buff;
+			unsigned int line;
+			int filedirlen;
+			char * namebuff;
 
-  if (!(supportfile))
-  {
-    eventlog(eventlog_level_error,__FUNCTION__,"got NULL supportfile");
-    return -1;
-  }
+			if (!(supportfile))
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL supportfile");
+				return -1;
+			}
 
-  if (!(fp = std::fopen(supportfile,"r")))
-  {
-    eventlog(eventlog_level_error,__FUNCTION__,"could not open file \"%s\" for reading (std::fopen: %s)",supportfile,std::strerror(errno));
-    eventlog(eventlog_level_error,__FUNCTION__,"can't guarantee that everything will run smooth");
-    return 0;
-  }
+			if (!(fp = std::fopen(supportfile, "r")))
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (std::fopen: %s)", supportfile, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "can't guarantee that everything will run smooth");
+				return 0;
+			}
 
-  filedirlen = std::strlen(prefs_get_filedir());
+			filedirlen = std::strlen(prefs_get_filedir());
 
-  for (line=1; (buff = file_get_line(fp)); line++)
-  {
-    if (buff[0]=='#' || buff[0]=='\0')
-    {
-      continue;
-    }
+			for (line = 1; (buff = file_get_line(fp)); line++)
+			{
+				if (buff[0] == '#' || buff[0] == '\0')
+				{
+					continue;
+				}
 
-    namebuff = (char*)xmalloc(filedirlen + 1 + std::strlen(buff) + 1);
-    std::sprintf(namebuff,"%s/%s",prefs_get_filedir(),buff);
+				namebuff = (char*)xmalloc(filedirlen + 1 + std::strlen(buff) + 1);
+				std::sprintf(namebuff, "%s/%s", prefs_get_filedir(), buff);
 
-    if (access(namebuff, F_OK) < 0)
-    {
-      eventlog(eventlog_level_fatal,__FUNCTION__,"necessary file \"%s\" missing",namebuff);
-      xfree((void *)namebuff);
-      std::fclose(fp);
-      return -1;
-    }
+				if (access(namebuff, F_OK) < 0)
+				{
+					eventlog(eventlog_level_fatal, __FUNCTION__, "necessary file \"%s\" missing", namebuff);
+					xfree((void *)namebuff);
+					std::fclose(fp);
+					return -1;
+				}
 
-    xfree((void *)namebuff);
-  }
+				xfree((void *)namebuff);
+			}
 
-  file_get_line(NULL); // clear file_get_line buffer
-  std::fclose(fp);
+			file_get_line(NULL); // clear file_get_line buffer
+			std::fclose(fp);
 
-  return 0;
-}
+			return 0;
+		}
 
-}
+	}
 
 }

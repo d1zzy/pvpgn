@@ -30,7 +30,7 @@
 namespace pvpgn
 {
 
-extern int strcasecmp(char const * str1, char const * str2);
+	extern int strcasecmp(char const * str1, char const * str2);
 
 }
 

@@ -33,39 +33,39 @@
 namespace pvpgn
 {
 
-namespace d2dbs
-{
+	namespace d2dbs
+	{
 
-typedef struct
-{
-	unsigned int	experience;
-	unsigned short	status;
-	unsigned char	level;
-	unsigned char	chclass;
-	char		charname[MAX_CHARNAME_LEN];
-} t_d2ladder_info;
+		typedef struct
+		{
+			unsigned int	experience;
+			unsigned short	status;
+			unsigned char	level;
+			unsigned char	chclass;
+			char		charname[MAX_CHARNAME_LEN];
+		} t_d2ladder_info;
 
-typedef struct
-{
-	unsigned int			type;
-	t_d2ladder_info *		info;
-	unsigned int			len;
-} t_d2ladder;
+		typedef struct
+		{
+			unsigned int			type;
+			t_d2ladder_info *		info;
+			unsigned int			len;
+		} t_d2ladder;
 
-typedef t_list t_d2ladderlist;
+		typedef t_list t_d2ladderlist;
 
 #define D2LADDER_MAXNUM			200
 #define D2LADDER_OVERALL_MAXNUM		1000
 #define D2LADDER_MAXTYPE		35
 
-extern int d2dbs_d2ladder_init(void);
-extern int d2dbs_d2ladder_destroy(void);
-extern int d2ladder_rebuild(void);
-extern int d2ladder_update(t_d2ladder_info * pcharladderinfo);
-extern int d2ladder_print(std::FILE * ladderstrm);
-extern int d2ladder_saveladder(void);
+		extern int d2dbs_d2ladder_init(void);
+		extern int d2dbs_d2ladder_destroy(void);
+		extern int d2ladder_rebuild(void);
+		extern int d2ladder_update(t_d2ladder_info * pcharladderinfo);
+		extern int d2ladder_print(std::FILE * ladderstrm);
+		extern int d2ladder_saveladder(void);
 
-}
+	}
 
 }
 

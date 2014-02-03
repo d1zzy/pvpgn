@@ -33,7 +33,7 @@
 namespace pvpgn
 {
 
-extern char const * inet_ntoa(struct in_addr const * addr);
+	extern char const * inet_ntoa(struct in_addr const * addr);
 
 }
 

@@ -27,15 +27,15 @@
 namespace pvpgn
 {
 
-struct utsname
-{
-    char sysname[SYS_NMLN];
-    char nodename[SYS_NMLN];
-    char release[SYS_NMLN];
-    char version[SYS_NMLN];
-    char machine[SYS_NMLN];
-    char domainname[SYS_NMLN];
-};
+	struct utsname
+	{
+		char sysname[SYS_NMLN];
+		char nodename[SYS_NMLN];
+		char release[SYS_NMLN];
+		char version[SYS_NMLN];
+		char machine[SYS_NMLN];
+		char domainname[SYS_NMLN];
+	};
 
 }
 
@@ -51,7 +51,7 @@ struct utsname
 namespace pvpgn
 {
 
-extern int uname(struct utsname * buf);
+	extern int uname(struct utsname * buf);
 
 }
 #endif

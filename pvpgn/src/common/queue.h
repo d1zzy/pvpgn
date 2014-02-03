@@ -31,15 +31,15 @@
 namespace pvpgn
 {
 
-typedef struct queue
+	typedef struct queue
 #ifdef QUEUE_INTERNAL_ACCESS
-{
-    unsigned ulen, alen;
-    t_packet ** ring;
-    unsigned head, tail;
-}
+	{
+		unsigned ulen, alen;
+		t_packet ** ring;
+		unsigned head, tail;
+	}
 #endif
-t_queue;
+	t_queue;
 
 }
 
@@ -58,11 +58,11 @@ t_queue;
 namespace pvpgn
 {
 
-extern t_packet * queue_pull_packet(t_queue * * queue);
-extern t_packet * queue_peek_packet(t_queue const * const * queue);
-extern void queue_push_packet(t_queue * * queue, t_packet * packet);
-extern int queue_get_length(t_queue const * const * queue);
-extern void queue_clear(t_queue * * queue);
+	extern t_packet * queue_pull_packet(t_queue * * queue);
+	extern t_packet * queue_peek_packet(t_queue const * const * queue);
+	extern void queue_push_packet(t_queue * * queue, t_packet * packet);
+	extern int queue_get_length(t_queue const * const * queue);
+	extern void queue_clear(t_queue * * queue);
 
 }
 #endif

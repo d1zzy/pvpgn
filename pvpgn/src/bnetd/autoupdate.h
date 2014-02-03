@@ -26,21 +26,21 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
 #ifdef AUTOUPDATE_INTERNAL_ACCESS
-typedef struct
-{
-    t_tag         archtag;
-    t_tag         clienttag;
-    char const *  versiontag;
-    char const *  updatefile;  /* used for bnet *.mpq file or wol *.rtp file */
-    char const *  path;        /* Used only for WOL FTP update */
-} t_autoupdate;
+		typedef struct
+		{
+			t_tag         archtag;
+			t_tag         clienttag;
+			char const *  versiontag;
+			char const *  updatefile;  /* used for bnet *.mpq file or wol *.rtp file */
+			char const *  path;        /* Used only for WOL FTP update */
+		} t_autoupdate;
 #endif
 
-}
+	}
 
 }
 
@@ -55,14 +55,14 @@ typedef struct
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int autoupdate_load(char const * filename);
-extern int autoupdate_unload(void);
-extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, char const * versiontag, char const * sku);
+		extern int autoupdate_load(char const * filename);
+		extern int autoupdate_unload(void);
+		extern char * autoupdate_check(t_tag archtag, t_tag clienttag, t_tag gamelang, char const * versiontag, char const * sku);
 
-}
+	}
 
 }
 

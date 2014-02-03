@@ -25,12 +25,12 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern unsigned int get_ticks(void);
+		extern unsigned int get_ticks(void);
 
-}
+	}
 
 }
 

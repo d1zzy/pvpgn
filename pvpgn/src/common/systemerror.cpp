@@ -27,15 +27,15 @@
 namespace pvpgn
 {
 
-SystemError::SystemError(const std::string& prefix, int err)
-:std::runtime_error((prefix + ": ") + pstrerror(err))
-{
-}
+	SystemError::SystemError(const std::string& prefix, int err)
+		:std::runtime_error((prefix + ": ") + pstrerror(err))
+	{
+	}
 
 
-SystemError::~SystemError() throw()
-{
-}
+	SystemError::~SystemError() throw()
+	{
+	}
 
 
 }

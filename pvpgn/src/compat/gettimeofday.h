@@ -27,19 +27,19 @@
 namespace pvpgn
 {
 
-/* FIXME: these might already exist even if gettimeofday() doesn't */
-struct timeval
-{
-    long tv_sec;
-    long tv_usec;
-};
+	/* FIXME: these might already exist even if gettimeofday() doesn't */
+	struct timeval
+	{
+		long tv_sec;
+		long tv_usec;
+	};
 
 
-struct timezone
-{
-    int tz_minuteswest;
-    int tz_dsttime;
-};
+	struct timezone
+	{
+		int tz_minuteswest;
+		int tz_dsttime;
+	};
 
 }
 
@@ -55,7 +55,7 @@ struct timezone
 namespace pvpgn
 {
 
-extern int gettimeofday(struct timeval * tv, struct timezone * tz);
+	extern int gettimeofday(struct timeval * tv, struct timezone * tz);
 
 }
 #endif

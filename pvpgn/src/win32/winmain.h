@@ -22,12 +22,12 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
-          
-extern void guiOnUpdateUserList(void);
+	namespace bnetd
+	{
 
-}
+		extern void guiOnUpdateUserList(void);
+
+	}
 
 }
 

@@ -37,7 +37,7 @@
 #define CHANNEL_TYPE   "#"
 
 /* Reply Defines */
-/* The following defines were taken from include/numeric.h 
+/* The following defines were taken from include/numeric.h
  * of the undernet-ircd distribution.
  * See http://www.undernet.org/
  */
@@ -47,7 +47,7 @@
 #define RPL_CREATED            3
 #define RPL_MYINFO             4
 #define RPL_ISUPPORT           5        /* Undernet/Dalnet extension */
-     /* RPL_BOUNCE                         IRCnet extension */
+/* RPL_BOUNCE                         IRCnet extension */
 /*	RPL_MAP		       6	unreal */
 /*	RPL_MAPEND	       7	unreal */
 #define RPL_SNOMASK            8        /* Undernet extension */
@@ -76,8 +76,8 @@
 #define RPL_TRACENEWTYPE     208
 #define RPL_TRACECLASS       209
 /*      RPL_STATS            210 aircd extension, used instead of having
-                                 multiple stats numerics */
-/*      RPL_TRACERECONNECT   210 IRCnet extension */                                 
+								 multiple stats numerics */
+/*      RPL_TRACERECONNECT   210 IRCnet extension */
 #define RPL_STATSLINKINFO    211
 #define RPL_STATSCOMMANDS    212
 #define RPL_STATSCLINE       213
@@ -90,7 +90,7 @@
 #define RPL_STATSYLINE       218
 #define RPL_ENDOFSTATS       219        /* See also RPL_STATSDLINE */
 /*      RPL_STATSPLINE       220           Hybrid - Because 217 was for
-                                           old Q: lines. */
+										   old Q: lines. */
 /*      RPL_STATSBLINE       220	   Numerics List: Dalnet,unreal */
 #define RPL_UMODEIS          221
 /*	RPL_SQLINE_NICK	     222	   Numerics List: Dalnet */
@@ -100,10 +100,10 @@
 /*	RPL_STATSTLINE	     224	   unreal */
 /*      RPL_STATSDLINE       225           Hybrid extension */
 /*	RPL_STATSZLINE	     225	   Dalnet
- 	RPL_STATSELINE	     225	   unreal
- 	RPL_STATSCOUNT	     226	   Dalnet
+	RPL_STATSELINE	     225	   unreal
+	RPL_STATSCOUNT	     226	   Dalnet
 	RPL_STATSNLINE	     226	   unreal
-	RPL_STATSGLINE	     227	   Dalnet 
+	RPL_STATSGLINE	     227	   Dalnet
 	RPL_STATSVLINE	     227	   unreal */
 
 #define RPL_SERVICEINFO      231	/* unused */
@@ -198,7 +198,7 @@
 #define RPL_UNAWAY           305
 #define RPL_NOWAWAY          306
 #define RPL_USERIP           307        /* Undernet extension */
-                                        /* NotAway, aircd */
+/* NotAway, aircd */
 /*	RPL_WHOISREGNICK     307 	Numeric List: Dalnet */
 /*	RPL_SUSERHOST	     307	austnet */
 /*      RPL_NOTIFYACTION     308         aircd */
@@ -219,7 +219,7 @@
 /*      RPL_WHOISCHANOP      316           removed from RFC1459 */
 #define RPL_WHOISIDLE        317
 #define RPL_ENDOFWHOIS       318        /* See RPL_WHOISUSER/RPL_WHOISSERVER/
-                                           RPL_WHOISOPERATOR/RPL_WHOISIDLE */
+										   RPL_WHOISOPERATOR/RPL_WHOISIDLE */
 #define RPL_WHOISCHANNELS    319
 /*      RPL_WHOIS_HIDDEN     320         Anothernet +h, ick! */
 /*	RPL_WHOISSPECIAL     320	unreal */
@@ -256,7 +256,7 @@
 #define RPL_WHOREPLY         352        /* See also RPL_ENDOFWHO */
 #define RPL_NAMREPLY         353        /* See also RPL_ENDOFNAMES */
 #define RPL_WHOSPCRPL        354        /* Undernet extension,
-                                           See also RPL_ENDOFWHO */
+										   See also RPL_ENDOFWHO */
 
 #define RPL_KILLDONE         361	/* not used */
 #define RPL_CLOSING          362
@@ -289,8 +289,8 @@
 /*	RPL_QLIST	     386	unreal */
 /*	RPL_ENDOFQLIST	     387	unreal */
 /*	RPL_ALIST	     388	unreal */
-/*	RPL_ENDOFALIST	     389	unreal */ 
- 
+/*	RPL_ENDOFALIST	     389	unreal */
+
 #define RPL_TIME             391
 /*      RPL_START_USERS      392        Dalnet/EFnet/IRCnet */
 /*      RPL_USERS            393        Dalnet/EFnet/IRCnet */
@@ -313,16 +313,16 @@
 		RPL_MAPMORE          610		   unreal
 
 		RPL_MAPMORE          615		   PTlink
-	
+
 		RPL_DCCSTATUS        617		   dalnet
 		RPL_DCCLIST          618		   dalnet
 		RPL_ENDOFDCCLIST     619		   dalnet
 		RPL_DCCINFO          620		   dalnet
-	
+
 		RPL_DUMPING			 640		   unreal
 		RPL_DUMPRPL			 641		   unreal
 		RPL_EODUMP			 642		   unreal
-*/
+		*/
 
 /**
 * Westwood Online Extensions
@@ -396,9 +396,9 @@
 #define ERR_NOTEXTTOSEND     412
 #define ERR_NOTOPLEVEL       413
 #define ERR_WILDTOPLEVEL     414
-     /* ERR_BADMASK          415           IRCnet extension */
+/* ERR_BADMASK          415           IRCnet extension */
 #define ERR_QUERYTOOLONG     416        /* Undernet extension */
-     /* ERR_TOOMANYMATCHES   416           IRCnet extension */
+/* ERR_TOOMANYMATCHES   416           IRCnet extension */
 /*      ERR_LENGTHTRUNCATED  419           aircd */
 
 #define ERR_UNKNOWNCOMMAND   421
@@ -416,9 +416,9 @@
 /*	ERR_BANONCHAN	     435   dalnet */
 #define ERR_NICKCOLLISION    436
 #define ERR_BANNICKCHANGE    437        /* Undernet extension */
-     /* ERR_UNAVAILRESOURCE  437           IRCnet extension */
+/* ERR_UNAVAILRESOURCE  437           IRCnet extension */
 #define ERR_NICKTOOFAST      438        /* Undernet extension */
-     /* ERR_DEAD             438           IRCnet reserved for later use */
+/* ERR_DEAD             438           IRCnet reserved for later use */
 #define ERR_TARGETTOOFAST    439        /* Undernet extension */
 /*	ERR_SERVICESDOWN     440	Dalnet,unreal */
 #define ERR_USERNOTINCHANNEL 441
@@ -461,7 +461,7 @@
 /* 	ERR_LINKFAIL	     479	unreal */
 
 #define ERR_BADCHANNAME      479        /* EFNet extension */
-                                        /* 479 Undernet extension badchan */
+/* 479 Undernet extension badchan */
 /*	ERR_CANNOTKNOCK	     480	unreal */
 /*	ERR_NOULINE	     480	austnet */
 #define ERR_NOPRIVILEGES     481

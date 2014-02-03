@@ -19,20 +19,20 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
 #ifdef COMMAND_GROUPS_INTERNAL_ACCESS
 
-typedef struct
-{
-    char *	 command;
-    unsigned int group;
-} t_command_groups;
+		typedef struct
+		{
+			char *	 command;
+			unsigned int group;
+		} t_command_groups;
 
 #endif
 
-}
+	}
 
 }
 
@@ -45,15 +45,15 @@ typedef struct
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int command_groups_load(char const * filename);
-extern int command_groups_unload(void);
-extern int command_groups_reload(char const * filename);
-extern unsigned int command_get_group(char const * command);
+		extern int command_groups_load(char const * filename);
+		extern int command_groups_unload(void);
+		extern int command_groups_reload(char const * filename);
+		extern unsigned int command_get_group(char const * command);
 
-}
+	}
 
 }
 

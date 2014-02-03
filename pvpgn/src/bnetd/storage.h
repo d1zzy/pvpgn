@@ -29,39 +29,39 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef const void t_storage_info;
-typedef int (*t_read_attr_func)(const char *, const char *, void *);
-typedef int (*t_read_accounts_func)(t_storage_info *, void*);
-typedef int (*t_load_clans_func)(void*);
-typedef int (*t_load_teams_func)(void*);
+		typedef const void t_storage_info;
+		typedef int(*t_read_attr_func)(const char *, const char *, void *);
+		typedef int(*t_read_accounts_func)(t_storage_info *, void*);
+		typedef int(*t_load_clans_func)(void*);
+		typedef int(*t_load_teams_func)(void*);
 
-typedef struct {
-    int (*init)(const char *);
-    int (*close)(void);
-    unsigned (*read_maxuserid)(void);
-    t_storage_info * (*create_account)(char const * );
-    t_storage_info * (*get_defacct)(void);
-    int (*free_info)(t_storage_info *);
-    int (*read_attrs)(t_storage_info *, t_read_attr_func, void *);
-    int (*write_attrs)(t_storage_info *, const t_hlist *);
-    t_attr * (*read_attr)(t_storage_info *, const char *);
-    int (*read_accounts)(int,t_read_accounts_func, void *);
-    t_storage_info * (*read_account)(const char *,unsigned);
-    int (*cmp_info)(t_storage_info *, t_storage_info *);
-    const char * (*escape_key)(const char *);
-    int (*load_clans)(t_load_clans_func);
-    int (*write_clan)(void *);
-    int (*remove_clan)(int);
-    int (*remove_clanmember)(int);
-    int (*load_teams)(t_load_teams_func);
-    int (*write_team)(void *);
-    int (*remove_team)(unsigned int);
-} t_storage;
+		typedef struct {
+			int(*init)(const char *);
+			int(*close)(void);
+			unsigned(*read_maxuserid)(void);
+			t_storage_info * (*create_account)(char const *);
+			t_storage_info * (*get_defacct)(void);
+			int(*free_info)(t_storage_info *);
+			int(*read_attrs)(t_storage_info *, t_read_attr_func, void *);
+			int(*write_attrs)(t_storage_info *, const t_hlist *);
+			t_attr * (*read_attr)(t_storage_info *, const char *);
+			int(*read_accounts)(int, t_read_accounts_func, void *);
+			t_storage_info * (*read_account)(const char *, unsigned);
+			int(*cmp_info)(t_storage_info *, t_storage_info *);
+			const char * (*escape_key)(const char *);
+			int(*load_clans)(t_load_clans_func);
+			int(*write_clan)(void *);
+			int(*remove_clan)(int);
+			int(*remove_clanmember)(int);
+			int(*load_teams)(t_load_teams_func);
+			int(*write_team)(void *);
+			int(*remove_team)(unsigned int);
+		} t_storage;
 
-}
+	}
 
 }
 
@@ -74,15 +74,15 @@ typedef struct {
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern t_storage *storage;
+		extern t_storage *storage;
 
-extern int storage_init(const char *);
-extern void storage_close(void);
+		extern int storage_init(const char *);
+		extern void storage_close(void);
 
-}
+	}
 
 }
 

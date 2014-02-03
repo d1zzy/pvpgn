@@ -22,11 +22,11 @@
 namespace pvpgn
 {
 
-namespace d2dbs
-{
+	namespace d2dbs
+	{
 
-extern int dbsdupecheck(char * data, unsigned int datalen);
+		extern int dbsdupecheck(char * data, unsigned int datalen);
 
-}
+	}
 
 }

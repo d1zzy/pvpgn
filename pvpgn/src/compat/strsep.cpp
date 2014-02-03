@@ -27,27 +27,27 @@
 namespace pvpgn
 {
 
-extern char * strsep(char * * str, char const * delims)
-{
-    char * begin;
+	extern char * strsep(char * * str, char const * delims)
+	{
+		char * begin;
 
-    begin = *str;
+		begin = *str;
 
-    if (!begin)
-        return NULL; /* already returned last token */
+		if (!begin)
+			return NULL; /* already returned last token */
 
-    /* FIXME: optimiz case of 1 char delims (maybe not worth the effort) */
-    for (; **str!='\0'; (*str)++)
-		if (std::strchr(delims,**str))
-        {
-            **str = '\0'; /* terminate token */
-            (*str)++; /* remember the position of the next char */
-            return begin;
-        }
+		/* FIXME: optimiz case of 1 char delims (maybe not worth the effort) */
+		for (; **str != '\0'; (*str)++)
+		if (std::strchr(delims, **str))
+		{
+			**str = '\0'; /* terminate token */
+			(*str)++; /* remember the position of the next char */
+			return begin;
+		}
 
-    *str = NULL;
-    return begin; /* return the whole input string */
-}
+		*str = NULL;
+		return begin; /* return the whole input string */
+	}
 
 }
 

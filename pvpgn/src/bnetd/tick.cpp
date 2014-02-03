@@ -31,33 +31,33 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-/*
- * This routine returns the number of miliseconds that have passed since one second
- * before it is first called. This is used for timing fields in some packets.
- */
-extern unsigned int get_ticks(void)
-{
-    static int first=1;
-    static long beginsec;
-    struct timeval tv;
+		/*
+		 * This routine returns the number of miliseconds that have passed since one second
+		 * before it is first called. This is used for timing fields in some packets.
+		 */
+		extern unsigned int get_ticks(void)
+		{
+			static int first = 1;
+			static long beginsec;
+			struct timeval tv;
 
-    if (gettimeofday(&tv,NULL)<0)
-    {
-	eventlog(eventlog_level_error,__FUNCTION__,"could not get std::time (gettimeofday: %s)",std::strerror(errno));
-	return 0;
-    }
-    if (first)
-    {
-	beginsec = tv.tv_sec-1;
-	first = 0;
-    }
+			if (gettimeofday(&tv, NULL) < 0)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "could not get std::time (gettimeofday: %s)", std::strerror(errno));
+				return 0;
+			}
+			if (first)
+			{
+				beginsec = tv.tv_sec - 1;
+				first = 0;
+			}
 
-    return (unsigned int)((tv.tv_sec-beginsec)*1000+tv.tv_usec/1000);
-}
+			return (unsigned int)((tv.tv_sec - beginsec) * 1000 + tv.tv_usec / 1000);
+		}
 
-}
+	}
 
 }

@@ -32,31 +32,31 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef union
-{
-    unsigned long n;
-    void *        p;
-} t_timer_data;
+		typedef union
+		{
+			unsigned long n;
+			void *        p;
+		} t_timer_data;
 
-typedef void (* t_timer_cb)(t_connection * owner, std::time_t when, t_timer_data data);
+		typedef void(*t_timer_cb)(t_connection * owner, std::time_t when, t_timer_data data);
 
-typedef struct timer_struct
+		typedef struct timer_struct
 #ifdef TIMER_INTERNAL_ACCESS
-{
-    t_connection * owner; 	/* who to notify */
-    std::time_t         when;  	/* when the timer expires */
-    t_timer_cb     cb;    	/* what to call */
-    t_timer_data   data;  	/* data argument */
-    t_elist	   owners;	/* list to the setup timers of same owner */
-    t_elist	   timers;	/* timers list, used for final cleaning */
-}
+		{
+			t_connection * owner; 	/* who to notify */
+			std::time_t         when;  	/* when the timer expires */
+			t_timer_cb     cb;    	/* what to call */
+			t_timer_data   data;  	/* data argument */
+			t_elist	   owners;	/* list to the setup timers of same owner */
+			t_elist	   timers;	/* timers list, used for final cleaning */
+		}
 #endif
-t_timer;
+		t_timer;
 
-}
+	}
 
 }
 
@@ -75,16 +75,16 @@ t_timer;
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int timerlist_create(void);
-extern int timerlist_destroy(void);
-extern int timerlist_add_timer(t_connection * owner, std::time_t when, t_timer_cb cb, t_timer_data data);
-extern int timerlist_del_all_timers(t_connection * owner);
-extern int timerlist_check_timers(std::time_t when);
+		extern int timerlist_create(void);
+		extern int timerlist_destroy(void);
+		extern int timerlist_add_timer(t_connection * owner, std::time_t when, t_timer_cb cb, t_timer_data data);
+		extern int timerlist_del_all_timers(t_connection * owner);
+		extern int timerlist_check_timers(std::time_t when);
 
-}
+	}
 
 }
 

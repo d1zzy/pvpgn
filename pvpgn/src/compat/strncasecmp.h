@@ -30,7 +30,7 @@
 namespace pvpgn
 {
 
-extern int strncasecmp(char const * str1, char const * str2, unsigned int cnt);
+	extern int strncasecmp(char const * str1, char const * str2, unsigned int cnt);
 
 }
 

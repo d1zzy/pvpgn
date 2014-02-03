@@ -22,19 +22,19 @@
 namespace pvpgn
 {
 
-typedef enum
-{
-    eventlog_level_none = 0,
-    eventlog_level_trace= 1,
-    eventlog_level_debug= 2,
-    eventlog_level_info = 4,
-    eventlog_level_warn = 8,
-    eventlog_level_error=16,
-    eventlog_level_fatal=32
+	typedef enum
+	{
+		eventlog_level_none = 0,
+		eventlog_level_trace = 1,
+		eventlog_level_debug = 2,
+		eventlog_level_info = 4,
+		eventlog_level_warn = 8,
+		eventlog_level_error = 16,
+		eventlog_level_fatal = 32
 #ifdef WIN32_GUI
-   ,eventlog_level_gui  =64
+		, eventlog_level_gui = 64
 #endif
-} t_eventlog_level;
+	} t_eventlog_level;
 
 }
 
@@ -51,18 +51,18 @@ typedef enum
 namespace pvpgn
 {
 
-extern void eventlog_set_debugmode(int debugmode);
-extern void eventlog_set(std::FILE * fp);
-extern std::FILE * eventlog_get(void);
-extern int eventlog_open(char const * filename);
-extern int eventlog_close(void);
-extern void eventlog_clear_level(void);
-extern int eventlog_add_level(char const * levelname);
-extern int eventlog_del_level(char const * levelname);
-extern char const * eventlog_get_levelname_str(t_eventlog_level level);
-extern void eventlog_hexdump_data(void const * data, unsigned int len);
-extern void eventlog(t_eventlog_level level, char const * module, char const * fmt, ...) PRINTF_ATTR(3,4);
-extern void eventlog_step(char const * filename, t_eventlog_level level, char const * module, char const * fmt, ...) PRINTF_ATTR(4,5);
+	extern void eventlog_set_debugmode(int debugmode);
+	extern void eventlog_set(std::FILE * fp);
+	extern std::FILE * eventlog_get(void);
+	extern int eventlog_open(char const * filename);
+	extern int eventlog_close(void);
+	extern void eventlog_clear_level(void);
+	extern int eventlog_add_level(char const * levelname);
+	extern int eventlog_del_level(char const * levelname);
+	extern char const * eventlog_get_levelname_str(t_eventlog_level level);
+	extern void eventlog_hexdump_data(void const * data, unsigned int len);
+	extern void eventlog(t_eventlog_level level, char const * module, char const * fmt, ...) PRINTF_ATTR(3, 4);
+	extern void eventlog_step(char const * filename, t_eventlog_level level, char const * module, char const * fmt, ...) PRINTF_ATTR(4, 5);
 
 #define FATAL0(fmt) eventlog(eventlog_level_fatal,__FUNCTION__,fmt)
 #define FATAL1(fmt,arg1) eventlog(eventlog_level_fatal,__FUNCTION__,fmt,arg1)

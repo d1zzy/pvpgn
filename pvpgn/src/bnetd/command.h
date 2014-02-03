@@ -27,12 +27,12 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int handle_command(t_connection * c, char const * text);
+		extern int handle_command(t_connection * c, char const * text);
 
-}
+	}
 
 }
 

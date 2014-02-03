@@ -23,7 +23,7 @@
 namespace pvpgn
 {
 
-extern unsigned long strtoul(char const * str, char * * endptr, int base);
+	extern unsigned long strtoul(char const * str, char * * endptr, int base);
 
 }
 

@@ -23,24 +23,24 @@
 namespace pvpgn
 {
 
-namespace d2dbs
-{
+	namespace d2dbs
+	{
 
-extern int cmdline_load(int argc, char * * argv);
-extern void cmdline_unload(void);
+		extern int cmdline_load(int argc, char * * argv);
+		extern void cmdline_unload(void);
 
-/* options exported by cmdline */
+		/* options exported by cmdline */
 #ifdef DO_DAEMONIZE
-extern int cmdline_get_foreground(void);
+		extern int cmdline_get_foreground(void);
 #endif
-extern const char* cmdline_get_preffile(void);
-extern const char* cmdline_get_logfile(void);
+		extern const char* cmdline_get_preffile(void);
+		extern const char* cmdline_get_logfile(void);
 #ifdef WIN32_GUI
-extern unsigned cmdline_get_console(void);
-extern unsigned cmdline_get_gui(void);
+		extern unsigned cmdline_get_console(void);
+		extern unsigned cmdline_get_gui(void);
 #endif
 
-}
+	}
 
 }
 

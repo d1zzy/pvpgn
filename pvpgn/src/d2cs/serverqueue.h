@@ -24,36 +24,36 @@
 namespace pvpgn
 {
 
-namespace d2cs
-{
+	namespace d2cs
+	{
 
-typedef struct serverqueue
-{
-	unsigned int		seqno;
-	unsigned int		ctime;
-	unsigned int		clientid;
-	t_packet		* packet;
-	unsigned int		gameid;
-	unsigned int		gametoken;
-} t_sq;
+		typedef struct serverqueue
+		{
+			unsigned int		seqno;
+			unsigned int		ctime;
+			unsigned int		clientid;
+			t_packet		* packet;
+			unsigned int		gameid;
+			unsigned int		gametoken;
+		} t_sq;
 
-extern t_list * sqlist(void);
-extern int sqlist_create(void);
-extern int sqlist_destroy(void);
+		extern t_list * sqlist(void);
+		extern int sqlist_create(void);
+		extern int sqlist_destroy(void);
 
-extern int sq_destroy(t_sq * sq,t_elem ** curr);
-extern int sqlist_check_timeout(void);
-extern t_sq * sqlist_find_sq(unsigned int seqno);
-extern t_sq * sq_create(unsigned int clientid, t_packet * packet,unsigned int gameid);
+		extern int sq_destroy(t_sq * sq, t_elem ** curr);
+		extern int sqlist_check_timeout(void);
+		extern t_sq * sqlist_find_sq(unsigned int seqno);
+		extern t_sq * sq_create(unsigned int clientid, t_packet * packet, unsigned int gameid);
 
-extern unsigned int sq_get_clientid(t_sq const * sq);
-extern unsigned int sq_get_gameid(t_sq const * sq);
-extern unsigned int sq_get_seqno(t_sq const * sq);
-extern int sq_set_gametoken(t_sq * sq, unsigned int gametoken);
-extern unsigned int sq_get_gametoken(t_sq const * sq);
-extern t_packet * sq_get_packet(t_sq const * sq);
+		extern unsigned int sq_get_clientid(t_sq const * sq);
+		extern unsigned int sq_get_gameid(t_sq const * sq);
+		extern unsigned int sq_get_seqno(t_sq const * sq);
+		extern int sq_set_gametoken(t_sq * sq, unsigned int gametoken);
+		extern unsigned int sq_get_gametoken(t_sq const * sq);
+		extern t_packet * sq_get_packet(t_sq const * sq);
 
-}
+	}
 
 }
 

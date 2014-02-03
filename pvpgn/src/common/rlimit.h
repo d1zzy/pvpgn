@@ -21,7 +21,7 @@
 namespace pvpgn
 {
 
-extern int get_socket_limit(void);
+	extern int get_socket_limit(void);
 
 }
 

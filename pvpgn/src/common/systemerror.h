@@ -26,12 +26,12 @@
 namespace pvpgn
 {
 
-class SystemError: public std::runtime_error
-{
-public:
-	SystemError(const std::string& prefix, int err = errno);
-	~SystemError() throw();
-};
+	class SystemError : public std::runtime_error
+	{
+	public:
+		SystemError(const std::string& prefix, int err = errno);
+		~SystemError() throw();
+	};
 
 }
 

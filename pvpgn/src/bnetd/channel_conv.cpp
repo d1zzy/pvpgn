@@ -24,30 +24,30 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern unsigned int cflags_to_bncflags(unsigned flags)
-{
-    unsigned int res;
+		extern unsigned int cflags_to_bncflags(unsigned flags)
+		{
+			unsigned int res;
 
-    res = 0;
-    if (flags&channel_flags_public)
-        res |= CF_PUBLIC;
-    if (flags&channel_flags_moderated)
-        res |= CF_MODERATED;
-    if (flags&channel_flags_restricted)
-        res |= CF_RESTRICTED;
-    if (flags&channel_flags_thevoid)
-        res |= CF_THEVOID;
-    if (flags&channel_flags_system)
-        res |= CF_SYSTEM;
-    if (flags&channel_flags_official)
-        res |= CF_OFFICIAL;
+			res = 0;
+			if (flags&channel_flags_public)
+				res |= CF_PUBLIC;
+			if (flags&channel_flags_moderated)
+				res |= CF_MODERATED;
+			if (flags&channel_flags_restricted)
+				res |= CF_RESTRICTED;
+			if (flags&channel_flags_thevoid)
+				res |= CF_THEVOID;
+			if (flags&channel_flags_system)
+				res |= CF_SYSTEM;
+			if (flags&channel_flags_official)
+				res |= CF_OFFICIAL;
 
-    return res;
-}
+			return res;
+		}
 
-}
+	}
 
 }

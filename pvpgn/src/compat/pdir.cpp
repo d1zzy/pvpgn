@@ -28,118 +28,119 @@
 namespace pvpgn
 {
 
-Directory::Directory(const std::string& path_, bool lazyread_)
-{
-	open(path_, lazyread_);
-}
+	Directory::Directory(const std::string& path_, bool lazyread_)
+	{
+		open(path_, lazyread_);
+	}
 
-Directory::~Directory() throw()
-{
-	close();
-}
+	Directory::~Directory() throw()
+	{
+		close();
+	}
 
-void
-Directory::close()
-{
+	void
+		Directory::close()
+	{
 #ifdef WIN32
-	if (lFindHandle >= 0)
-		_findclose(lFindHandle);
+			if (lFindHandle >= 0)
+				_findclose(lFindHandle);
 #else /* POSIX */
-	if (dir) closedir(dir);
+			if (dir) closedir(dir);
 #endif /* WIN32-POSIX */
-}
+		}
 
-void
-Directory::open(const std::string& path_, bool lazyread_)
-{
+	void
+		Directory::open(const std::string& path_, bool lazyread_)
+	{
 #ifdef WIN32
-	std::string tmp(path_);
+			std::string tmp(path_);
 
-	if (tmp.size() + 1 + 3 >= _MAX_PATH)
-		throw std::runtime_error("pvpgn::Directory::Directory(): WIN32: path too long");
-	tmp += "/*.*";
+			if (tmp.size() + 1 + 3 >= _MAX_PATH)
+				throw std::runtime_error("pvpgn::Directory::Directory(): WIN32: path too long");
+			tmp += "/*.*";
 
-	status = 0;
-	std::memset(&fileinfo, 0, sizeof(fileinfo));
-	lFindHandle = _findfirst(tmp.c_str(), &fileinfo);
-	if (lFindHandle < 0 && !lazyread_)
-		throw OpenError(tmp);
+			status = 0;
+			std::memset(&fileinfo, 0, sizeof(fileinfo));
+			lFindHandle = _findfirst(tmp.c_str(), &fileinfo);
+			if (lFindHandle < 0 && !lazyread_)
+				throw OpenError(tmp);
 
-	path = tmp;
+			path = tmp;
 #else /* POSIX style */
-	if (!(dir=opendir(path_.c_str())) && !lazyread_)
-		throw OpenError(path);
-	path = path_;
+			if (!(dir = opendir(path_.c_str())) && !lazyread_)
+				throw OpenError(path);
+			path = path_;
 #endif /* WIN32-POSIX */
 
-	lazyread = lazyread_;
-}
+			lazyread = lazyread_;
+		}
 
-void
-Directory::rewind()
-{
+	void
+		Directory::rewind()
+	{
 #ifdef WIN32
-	close();
-	status = 0;
-	std::memset(&fileinfo, 0, sizeof(fileinfo));
-	lFindHandle = _findfirst(path.c_str(), &fileinfo);
-	if (lFindHandle < 0 && !lazyread) {
-		ERROR0("WIN32: couldn't rewind directory");
-		status = -1;
-	}
+			close();
+			status = 0;
+			std::memset(&fileinfo, 0, sizeof(fileinfo));
+			lFindHandle = _findfirst(path.c_str(), &fileinfo);
+			if (lFindHandle < 0 && !lazyread) {
+				ERROR0("WIN32: couldn't rewind directory");
+				status = -1;
+			}
 #else /* POSIX */
-	if (dir) rewinddir(dir);
+			if (dir) rewinddir(dir);
 #endif
-}
+		}
 
 
-char const *
-Directory::read() const
-{
-	const char * result;
+	char const *
+		Directory::read() const
+	{
+			const char * result;
 
 #ifdef WIN32
-	switch (status) {
-	default:
-	case -1: /* couldn't rewind */
-		ERROR0("got status -1");
-		return 0;
-	case 0: /* freshly opened */
-		status = 1;
-		if (lFindHandle < 0) return 0;
-		result = fileinfo.name;
-		break;
-	case 1: /* reading */
-		if (lFindHandle < 0) return 0;
+			switch (status) {
+			default:
+			case -1: /* couldn't rewind */
+				ERROR0("got status -1");
+				return 0;
+			case 0: /* freshly opened */
+				status = 1;
+				if (lFindHandle < 0) return 0;
+				result = fileinfo.name;
+				break;
+			case 1: /* reading */
+				if (lFindHandle < 0) return 0;
 
-		if (_findnext(lFindHandle, &fileinfo)<0) {
-			status = 2;
-			return 0;
-		} else result = fileinfo.name;
-		break;
-	case 2: /* EOF */
-		return 0;
-	}
+				if (_findnext(lFindHandle, &fileinfo) < 0) {
+					status = 2;
+					return 0;
+				}
+				else result = fileinfo.name;
+				break;
+			case 2: /* EOF */
+				return 0;
+			}
 #else /* POSIX */
-	struct dirent *dentry = dir ? readdir(dir) : 0;
-	if (!dentry) return 0;
+			struct dirent *dentry = dir ? readdir(dir) : 0;
+			if (!dentry) return 0;
 
-	result = dentry->d_name;
+			result = dentry->d_name;
 #endif /* WIN32-POSIX */
 
-	if (!(strcmp(result, ".") && strcmp(result, "..")))
-		/* here we presume we don't get an infinite number of "." or ".." ;) */
-		return read();
-	return result;
-}
+			if (!(strcmp(result, ".") && strcmp(result, "..")))
+				/* here we presume we don't get an infinite number of "." or ".." ;) */
+				return read();
+			return result;
+		}
 
-Directory::operator bool() const
-{
+	Directory::operator bool() const
+	{
 #ifdef WIN32
-	return lFindHandle >= 0;
+		return lFindHandle >= 0;
 #else
-	return dir != 0;
+		return dir != 0;
 #endif
-}
+	}
 
 }

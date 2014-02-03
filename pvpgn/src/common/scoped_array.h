@@ -22,68 +22,68 @@
 namespace pvpgn
 {
 
-template<typename T>
-class scoped_array
-{
-public:
-	/** initilize the object aquiring ownership of the given parameter (0 for no onwership) */
-	explicit scoped_array(T* ptr_ = 0)
-	:ptr(ptr_) {}
+	template<typename T>
+	class scoped_array
+	{
+	public:
+		/** initilize the object aquiring ownership of the given parameter (0 for no onwership) */
+		explicit scoped_array(T* ptr_ = 0)
+			:ptr(ptr_) {}
 
-	/** initilize the object from a blind pointer supporting implicit conversions */
-	template<typename V>
-	explicit scoped_array(V* ptr_)
-	:ptr(ptr_) {}
+		/** initilize the object from a blind pointer supporting implicit conversions */
+		template<typename V>
+		explicit scoped_array(V* ptr_)
+			:ptr(ptr_) {}
 
-	/** release memory if aquired ownershipt */
-	~scoped_array() throw() {
-		cleanup();
-	}
+		/** release memory if aquired ownershipt */
+		~scoped_array() throw() {
+			cleanup();
+		}
 
-	/** get the wrapped array pointer */
-	T* get() const { return ptr; }
+		/** get the wrapped array pointer */
+		T* get() const { return ptr; }
 
-	/** release ownership of the array */
-	T* release() {
-		T* tmp = ptr;
-		ptr = 0;
-		return tmp;
-	}
+		/** release ownership of the array */
+		T* release() {
+			T* tmp = ptr;
+			ptr = 0;
+			return tmp;
+		}
 
-	/** reinitilize object, release owned resource first if any */
-	void reset(T* ptr_ = 0) {
-		cleanup();
-		ptr = ptr_;
-	}
+		/** reinitilize object, release owned resource first if any */
+		void reset(T* ptr_ = 0) {
+			cleanup();
+			ptr = ptr_;
+		}
 
-	/** reinitilize object, supports implicit conversions */
-	template<typename V>
-	void reset(V* ptr_) {
-		cleanup();
-		ptr = ptr_;
-	}
+		/** reinitilize object, supports implicit conversions */
+		template<typename V>
+		void reset(V* ptr_) {
+			cleanup();
+			ptr = ptr_;
+		}
 
-	/** allow indexed const dereferencing access to the wrapped array */
-	const T& operator[](unsigned idx) const {
-		return ptr[idx];
-	}
+		/** allow indexed const dereferencing access to the wrapped array */
+		const T& operator[](unsigned idx) const {
+			return ptr[idx];
+		}
 
-	/** allow indexed dereferencing access to the wrapped array */
-	T& operator[](unsigned idx) {
-		return ptr[idx];
-	}
+		/** allow indexed dereferencing access to the wrapped array */
+		T& operator[](unsigned idx) {
+			return ptr[idx];
+		}
 
-private:
-	T* ptr;
+	private:
+		T* ptr;
 
-	/* do not allow to copy a scoped_array */
-	scoped_array(const scoped_array&);
-	scoped_array& operator=(const scoped_array&);
+		/* do not allow to copy a scoped_array */
+		scoped_array(const scoped_array&);
+		scoped_array& operator=(const scoped_array&);
 
-	void cleanup() {
-		if (ptr) delete[] ptr;
-	}
-};
+		void cleanup() {
+			if (ptr) delete[] ptr;
+		}
+	};
 
 }
 

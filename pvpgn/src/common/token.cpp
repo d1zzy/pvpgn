@@ -28,58 +28,58 @@
 namespace pvpgn
 {
 
-/*
- * Given a string and an integer pointer skip past pos characters and return
- * the next white-space delimited string, setting pos to the new position.
- */
-extern char * next_token(char * ptr, unsigned int * pos)
-{
-    unsigned int i;
-    unsigned int start;
-    int          quoted;
-
-    if (!ptr || !pos)
-	return NULL;
-
-    /* skip leading whitespace */
-    for (i=*pos; std::isspace((int)ptr[i]); i++);
-
-    if (ptr[i]=='\0')
-	return NULL; /* if after whitespace, we're done */
-
-    if (ptr[i]=='"')
-    {
-	quoted = 1;
-	i++;
-    }
-    else
-	quoted = 0;
-
-    start = i;
-    for (;;)
-    {
-	if (ptr[i]=='\0')
-	    break;
-        if (quoted) /* FIXME: add handling of escape chars so quotes can be in tokens */
+	/*
+	 * Given a string and an integer pointer skip past pos characters and return
+	 * the next white-space delimited string, setting pos to the new position.
+	 */
+	extern char * next_token(char * ptr, unsigned int * pos)
 	{
-	    if (ptr[i]=='"')
-		break;
-        }
-	else
-	    if (std::isspace((int)ptr[i]))
-		break;
-	i++;
-    }
+		unsigned int i;
+		unsigned int start;
+		int          quoted;
 
-    if (ptr[i]!='\0')
-    {
-	ptr[i] = '\0'; /* terminate the string */
-	*pos = i+1; /* remember the position of the next char */
-    }
-    else
-	*pos = i; /* this was the last token, just remember the NUL */
+		if (!ptr || !pos)
+			return NULL;
 
-    return &ptr[start];
-}
+		/* skip leading whitespace */
+		for (i = *pos; std::isspace((int)ptr[i]); i++);
+
+		if (ptr[i] == '\0')
+			return NULL; /* if after whitespace, we're done */
+
+		if (ptr[i] == '"')
+		{
+			quoted = 1;
+			i++;
+		}
+		else
+			quoted = 0;
+
+		start = i;
+		for (;;)
+		{
+			if (ptr[i] == '\0')
+				break;
+			if (quoted) /* FIXME: add handling of escape chars so quotes can be in tokens */
+			{
+				if (ptr[i] == '"')
+					break;
+			}
+			else
+			if (std::isspace((int)ptr[i]))
+				break;
+			i++;
+		}
+
+		if (ptr[i] != '\0')
+		{
+			ptr[i] = '\0'; /* terminate the string */
+			*pos = i + 1; /* remember the position of the next char */
+		}
+		else
+			*pos = i; /* this was the last token, just remember the NUL */
+
+		return &ptr[start];
+	}
 
 }

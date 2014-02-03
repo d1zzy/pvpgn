@@ -22,14 +22,14 @@
 namespace pvpgn
 {
 
-/* a conf entry object with a set and a get method */
+	/* a conf entry object with a set and a get method */
 
-typedef struct {
-    const char *name;
-    int (*set)(const char *valstr);	/* called with NULL for cleanup */
-    const char * (*get)(void);
-    int (*setdef)(void);
-} t_conf_entry;
+	typedef struct {
+		const char *name;
+		int(*set)(const char *valstr);	/* called with NULL for cleanup */
+		const char * (*get)(void);
+		int(*setdef)(void);
+	} t_conf_entry;
 
 }
 
@@ -44,18 +44,18 @@ typedef struct {
 namespace pvpgn
 {
 
-/* helpfull utility functions for common conf types like bool, int and str */
-extern int conf_set_bool(unsigned *pbool, const char *valstr, unsigned def);
-extern int conf_set_int(unsigned *pint, const char *valstr, unsigned def);
-extern int conf_set_str(const char **pstr, const char *valstr, const char *def);
-extern int conf_set_timestr(std::time_t* ptime, const char *valstr, std::time_t def);
-extern const char* conf_get_int(unsigned ival);
-extern const char* conf_get_bool(unsigned ival);
+	/* helpfull utility functions for common conf types like bool, int and str */
+	extern int conf_set_bool(unsigned *pbool, const char *valstr, unsigned def);
+	extern int conf_set_int(unsigned *pint, const char *valstr, unsigned def);
+	extern int conf_set_str(const char **pstr, const char *valstr, const char *def);
+	extern int conf_set_timestr(std::time_t* ptime, const char *valstr, std::time_t def);
+	extern const char* conf_get_int(unsigned ival);
+	extern const char* conf_get_bool(unsigned ival);
 
-/* loading/unloading functions */
-extern int conf_load_file(std::FILE *fd, t_conf_entry *conftab);
-extern int conf_load_cmdline(int argc, char **argv, t_conf_entry *conftab);
-extern void conf_unload(t_conf_entry *conftab);
+	/* loading/unloading functions */
+	extern int conf_load_file(std::FILE *fd, t_conf_entry *conftab);
+	extern int conf_load_cmdline(int argc, char **argv, t_conf_entry *conftab);
+	extern void conf_unload(t_conf_entry *conftab);
 
 }
 

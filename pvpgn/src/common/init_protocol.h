@@ -29,22 +29,22 @@
 namespace pvpgn
 {
 
-/* There is no header for this packet class and there is only
- * one packet type.
- */
+	/* There is no header for this packet class and there is only
+	 * one packet type.
+	 */
 
-/*
- * There is a single byte sent upon initial connections that
- * reports the connection type.
- */
+	/*
+	 * There is a single byte sent upon initial connections that
+	 * reports the connection type.
+	 */
 
-/******************************************************/
+	/******************************************************/
 #define CLIENT_INITCONN 0x1
-typedef struct
-{
-    bn_byte cclass;
-} PACKED_ATTR() t_client_initconn;
-/******************************************************/
+	typedef struct
+	{
+		bn_byte cclass;
+	} PACKED_ATTR() t_client_initconn;
+	/******************************************************/
 
 }
 

@@ -24,10 +24,10 @@
 namespace pvpgn
 {
 
-typedef struct lstr {
-    char *str;
-    unsigned len;
-} t_lstr;
+	typedef struct lstr {
+		char *str;
+		unsigned len;
+	} t_lstr;
 
 }
 
@@ -39,25 +39,25 @@ typedef struct lstr {
 namespace pvpgn
 {
 
-static inline void lstr_set_str(t_lstr *lstr, char *str)
-{
-    lstr->str = str;
-}
+	static inline void lstr_set_str(t_lstr *lstr, char *str)
+	{
+		lstr->str = str;
+	}
 
-static inline char *lstr_get_str(t_lstr *lstr)
-{
-    return lstr->str;
-}
+	static inline char *lstr_get_str(t_lstr *lstr)
+	{
+		return lstr->str;
+	}
 
-static inline void lstr_set_len(t_lstr *lstr, unsigned len)
-{
-    lstr->len = len;
-}
+	static inline void lstr_set_len(t_lstr *lstr, unsigned len)
+	{
+		lstr->len = len;
+	}
 
-static inline unsigned lstr_get_len(t_lstr *lstr)
-{
-    return lstr->len;
-}
+	static inline unsigned lstr_get_len(t_lstr *lstr)
+	{
+		return lstr->len;
+	}
 
 }
 

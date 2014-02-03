@@ -19,55 +19,55 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
 #ifdef ANONGAME_GAMERESULT_INTERNAL_ACCESS
-typedef struct
-{
-	char			number;
-	int			result;
-	int			race;
-} t_anongame_player;
+		typedef struct
+		{
+			char			number;
+			int			result;
+			int			race;
+		} t_anongame_player;
 
-typedef struct
-{
-	int			level;
-	int			race_and_name;
-	int			hero_xp;
-} t_anongame_hero;
+		typedef struct
+		{
+			int			level;
+			int			race_and_name;
+			int			hero_xp;
+		} t_anongame_hero;
 #endif
 
-typedef struct anongame_gameresult_struct
+		typedef struct anongame_gameresult_struct
 #ifdef ANONGAME_GAMERESULT_INTERNAL_ACCESS
-{
-	char			number_of_results;
-	t_anongame_player	*players;
-	int			unit_score;
-	int			heroes_score;
-	int			resource_score;
-	int			units_produced;
-	int			units_killed;
-	int			buildings_produced;
-	int 			buildings_razed;
-	int			largest_army;
-	int			heroes_used_count;
-	t_anongame_hero		*heroes;
-	int			heroes_killed;
-	int			items_obtained;
-	int			mercenaries_hired;
-	int			total_hero_xp;
-	int			gold_mined;
-	int			lumber_harvested;
-	int			resources_traded_given;
-	int			resources_traded_taken;
-	int			tech_percentage;
-	int			gold_lost_to_upkeep;
-}
+		{
+			char			number_of_results;
+			t_anongame_player	*players;
+			int			unit_score;
+			int			heroes_score;
+			int			resource_score;
+			int			units_produced;
+			int			units_killed;
+			int			buildings_produced;
+			int 			buildings_razed;
+			int			largest_army;
+			int			heroes_used_count;
+			t_anongame_hero		*heroes;
+			int			heroes_killed;
+			int			items_obtained;
+			int			mercenaries_hired;
+			int			total_hero_xp;
+			int			gold_mined;
+			int			lumber_harvested;
+			int			resources_traded_given;
+			int			resources_traded_taken;
+			int			tech_percentage;
+			int			gold_lost_to_upkeep;
+		}
 #endif
-t_anongame_gameresult;
+		t_anongame_gameresult;
 
-}
+	}
 
 }
 
@@ -84,17 +84,17 @@ t_anongame_gameresult;
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern t_anongame_gameresult * anongame_gameresult_parse(t_packet const * const packet);
-extern int gameresult_destroy(t_anongame_gameresult * gameresult);
+		extern t_anongame_gameresult * anongame_gameresult_parse(t_packet const * const packet);
+		extern int gameresult_destroy(t_anongame_gameresult * gameresult);
 
-extern char gameresult_get_number_of_results(t_anongame_gameresult * gameresult);
-extern int gameresult_get_player_result(t_anongame_gameresult * gameresult, int player);
-extern int gameresult_get_player_number(t_anongame_gameresult * gameresult, int player);
+		extern char gameresult_get_number_of_results(t_anongame_gameresult * gameresult);
+		extern int gameresult_get_player_result(t_anongame_gameresult * gameresult, int player);
+		extern int gameresult_get_player_number(t_anongame_gameresult * gameresult, int player);
 
-}
+	}
 
 }
 

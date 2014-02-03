@@ -27,13 +27,13 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern std::FILE * runprog_open(char const * command);
-extern int runprog_close(std::FILE * pp);
+		extern std::FILE * runprog_open(char const * command);
+		extern int runprog_close(std::FILE * pp);
 
-}
+	}
 
 }
 

@@ -25,12 +25,12 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern t_sql_engine sql_odbc;
+		extern t_sql_engine sql_odbc;
 
-}
+	}
 
 }
 

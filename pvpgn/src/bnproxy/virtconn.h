@@ -20,18 +20,18 @@
 
 typedef enum
 {
-    virtconn_class_bnet,
-    virtconn_class_file,
-    virtconn_class_bot,
-    virtconn_class_none
+	virtconn_class_bnet,
+	virtconn_class_file,
+	virtconn_class_bot,
+	virtconn_class_none
 } t_virtconn_class;
 
 typedef enum
 {
-    virtconn_state_empty,
-    virtconn_state_initial,
-    virtconn_state_connected,
-    virtconn_state_connecting
+	virtconn_state_empty,
+	virtconn_state_initial,
+	virtconn_state_connected,
+	virtconn_state_connecting
 } t_virtconn_state;
 
 #ifdef VIRTCONN_INTERNAL_ACCESS
@@ -47,21 +47,21 @@ typedef enum
 typedef struct virtconn
 #ifdef VIRTCONN_INTERNAL_ACCESS
 {
-    int              csd;       /* client side socket descriptor */
-    int              ssd;       /* server side socket descriptor */
-    t_virtconn_class class;     /* normal, file, or bot */
-    t_virtconn_state state;     /* initial, connected, etc */
-    unsigned short   udpport;   /* real port # to send UDP to */
-    unsigned int     udpaddr;   /* real IP # to send UDP to */
-    t_queue *        coutqueue; /* client packets waiting to be sent */
-    unsigned int     coutsize;  /* client amount sent from the current output packet */
-    t_queue *        cinqueue;  /* client packet waiting to be processed */
-    unsigned int     cinsize;   /* client amount received into the current input packet */
-    t_queue *        soutqueue; /* server packets waiting to be sent */
-    unsigned int     soutsize;  /* server amount sent from the current output packet */
-    t_queue *        sinqueue;  /* server packet waiting to be processed */
-    unsigned int     sinsize;   /* server amount received into the current input packet */
-    unsigned int     fileleft;  /* number of bytes in file download from server left */
+	int              csd;       /* client side socket descriptor */
+	int              ssd;       /* server side socket descriptor */
+	t_virtconn_class class;     /* normal, file, or bot */
+	t_virtconn_state state;     /* initial, connected, etc */
+	unsigned short   udpport;   /* real port # to send UDP to */
+	unsigned int     udpaddr;   /* real IP # to send UDP to */
+	t_queue *        coutqueue; /* client packets waiting to be sent */
+	unsigned int     coutsize;  /* client amount sent from the current output packet */
+	t_queue *        cinqueue;  /* client packet waiting to be processed */
+	unsigned int     cinsize;   /* client amount received into the current input packet */
+	t_queue *        soutqueue; /* server packets waiting to be sent */
+	unsigned int     soutsize;  /* server amount sent from the current output packet */
+	t_queue *        sinqueue;  /* server packet waiting to be processed */
+	unsigned int     sinsize;   /* server amount received into the current input packet */
+	unsigned int     fileleft;  /* number of bytes in file download from server left */
 }
 #endif
 t_virtconn;
@@ -78,7 +78,7 @@ t_virtconn;
 #include "common/list.h"
 #undef JUST_NEED_TYPES
 
-extern t_virtconn * virtconn_create(int csd, int ssd, unsigned int udpaddr, unsigned short udpport) ;
+extern t_virtconn * virtconn_create(int csd, int ssd, unsigned int udpaddr, unsigned short udpport);
 extern void virtconn_destroy(t_virtconn * vc);
 extern t_virtconn_class virtconn_get_class(t_virtconn const * vc);
 extern void virtconn_set_class(t_virtconn * vc, t_virtconn_class class);

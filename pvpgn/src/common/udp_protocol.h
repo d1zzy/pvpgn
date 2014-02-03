@@ -22,84 +22,84 @@
 namespace pvpgn
 {
 
-/*
- * This file describes the UDP chat packets. The game packets aren't
- * in here and would probably go in another file.  The first 4 bytes
- * seem to be a little-endian 32 bit integer id for the packet type.
- * FIXME: add more UDP packet types
- */
-/******************************************************/
-typedef struct
-{
-    bn_int type;
-} PACKED_ATTR() t_udp_header;
-/******************************************************/
+	/*
+	 * This file describes the UDP chat packets. The game packets aren't
+	 * in here and would probably go in another file.  The first 4 bytes
+	 * seem to be a little-endian 32 bit integer id for the packet type.
+	 * FIXME: add more UDP packet types
+	 */
+	/******************************************************/
+	typedef struct
+	{
+		bn_int type;
+	} PACKED_ATTR() t_udp_header;
+	/******************************************************/
 
 
-/******************************************************/
-typedef struct
-{
-    t_udp_header h;
-} PACKED_ATTR() t_udp_generic;
-/******************************************************/
+	/******************************************************/
+	typedef struct
+	{
+		t_udp_header h;
+	} PACKED_ATTR() t_udp_generic;
+	/******************************************************/
 
 
-/******************************************************/
-/* client echos back with UDPOK packet */
-/*
-05 00 00 00 74 65 6E 62                              ....tenb
-*/
+	/******************************************************/
+	/* client echos back with UDPOK packet */
+	/*
+	05 00 00 00 74 65 6E 62                              ....tenb
+	*/
 #define SERVER_UDPTEST 0x00000005
-typedef struct
-{
-    t_udp_header h;
-    bn_int       bnettag;  /* 74 65 6E 62 */
-} PACKED_ATTR() t_server_udptest;
-/******************************************************/
+	typedef struct
+	{
+		t_udp_header h;
+		bn_int       bnettag;  /* 74 65 6E 62 */
+	} PACKED_ATTR() t_server_udptest;
+	/******************************************************/
 
 
-/******************************************************/
-/*
-07 00 00 00 49 41 19 00                              ....IA..
+	/******************************************************/
+	/*
+	07 00 00 00 49 41 19 00                              ....IA..
 
-07 00 00 00 11 60 1D 00                              .....`..
-*/
+	07 00 00 00 11 60 1D 00                              .....`..
+	*/
 #define CLIENT_UDPPING 0x00000007
-typedef struct
-{
-    t_udp_header h;
-    bn_int       unknown1;  /* time? */
-} PACKED_ATTR() t_client_udpping;
-/******************************************************/
+	typedef struct
+	{
+		t_udp_header h;
+		bn_int       unknown1;  /* time? */
+	} PACKED_ATTR() t_client_udpping;
+	/******************************************************/
 
 
-/******************************************************/
-/*
-From Brood War 1.04
-08 00 00 00 75 EC A0 28                              ....u..(
-*/
+	/******************************************************/
+	/*
+	From Brood War 1.04
+	08 00 00 00 75 EC A0 28                              ....u..(
+	*/
 #define CLIENT_SESSIONADDR1 0x00000008
-typedef struct
-{
-    t_udp_header h;
-    bn_int       sessionkey;
-} PACKED_ATTR() t_client_sessionaddr1;
-/******************************************************/
+	typedef struct
+	{
+		t_udp_header h;
+		bn_int       sessionkey;
+	} PACKED_ATTR() t_client_sessionaddr1;
+	/******************************************************/
 
 
-/******************************************************/
-/*
-From Brood War 1.07
-09 00 00 00 7A 11 07 ED   9D DF 01 00                ....z.......
-*/
+	/******************************************************/
+	/*
+	From Brood War 1.07
+	09 00 00 00 7A 11 07 ED   9D DF 01 00                ....z.......
+	*/
 #define CLIENT_SESSIONADDR2 0x00000009
-typedef struct
-{
-    t_udp_header h;
-    bn_int       sessionkey;
-    bn_int       sessionnum;
-} PACKED_ATTR() t_client_sessionaddr2;
-/******************************************************/
+	typedef struct
+	{
+		t_udp_header h;
+		bn_int       sessionkey;
+		bn_int       sessionnum;
+	} PACKED_ATTR() t_client_sessionaddr2;
+	/******************************************************/
 
 }
 

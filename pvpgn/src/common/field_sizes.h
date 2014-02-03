@@ -30,8 +30,8 @@ const unsigned MAX_USERNAME_LEN = 16; /* including terminating NUL char */
 const unsigned MIN_USERNAME_LEN = 2;
 const unsigned MAX_USERPASS_LEN = 12; /* max password length as allowed by clients */
 const int UNCHECKED_NAME_STR = 32; /* including terminating NUL char */
-                                  /* (longer than USER_NAME_MAX and CHAR_NAME_LEN so that
-                                   *  proper error packets can be returned) */
+/* (longer than USER_NAME_MAX and CHAR_NAME_LEN so that
+ *  proper error packets can be returned) */
 const int CLANSHORT_NAME_MAX = 4;
 const unsigned CLAN_NAME_MAX = 24; /* including terminating NUL char */
 const unsigned CLAN_MOTD_MAX = 224; /* including terminating NUL char */

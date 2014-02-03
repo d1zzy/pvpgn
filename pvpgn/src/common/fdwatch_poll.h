@@ -39,25 +39,25 @@
 namespace pvpgn
 {
 
-class FDWPollBackend: public FDWBackend
-{
-public:
-	explicit FDWPollBackend(int nfds_);
-	~FDWPollBackend() throw();
+	class FDWPollBackend : public FDWBackend
+	{
+	public:
+		explicit FDWPollBackend(int nfds_);
+		~FDWPollBackend() throw();
 
-	int add(int idx, unsigned rw);
-	int del(int idx);
-	int watch(long timeout_msecs);
-	void handle();
+		int add(int idx, unsigned rw);
+		int del(int idx);
+		int watch(long timeout_msecs);
+		void handle();
 
-private:
-	int sr;
-	scoped_array<struct pollfd> fds; /* working set */
-	scoped_array<int> rridx;
-	scoped_array<int> ridx;
-	unsigned nofds;
+	private:
+		int sr;
+		scoped_array<struct pollfd> fds; /* working set */
+		scoped_array<int> rridx;
+		scoped_array<int> ridx;
+		unsigned nofds;
 
-};
+	};
 
 }
 

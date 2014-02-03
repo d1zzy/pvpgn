@@ -44,28 +44,28 @@
 namespace pvpgn
 {
 
-extern int get_socket_limit(void)
-{
-	int socklimit = 0;
+	extern int get_socket_limit(void)
+	{
+		int socklimit = 0;
 #ifdef HAVE_GETRLIMIT
-	struct rlimit rlim;
-	if(getrlimit(RLIM_NUMFILES, &rlim) < 0)
-		eventlog(eventlog_level_error, __FUNCTION__, "getrlimit returned error: %s", std::strerror(errno));
-	socklimit = rlim.rlim_cur;
+		struct rlimit rlim;
+		if (getrlimit(RLIM_NUMFILES, &rlim) < 0)
+			eventlog(eventlog_level_error, __FUNCTION__, "getrlimit returned error: %s", std::strerror(errno));
+		socklimit = rlim.rlim_cur;
 #else
-	/* FIXME: WIN32: somehow get WSAData win32 socket limit here */
+		/* FIXME: WIN32: somehow get WSAData win32 socket limit here */
 #endif
 
 #if !(defined HAVE_POLL || defined HAVE_KQUEUE || defined HAVE_EPOLL)
-	if(!socklimit || FD_SETSIZE < socklimit)
-		socklimit = FD_SETSIZE;
+		if (!socklimit || FD_SETSIZE < socklimit)
+			socklimit = FD_SETSIZE;
 #endif
 
-	/* make socket limit smaller than file limit to make sure log files,
-	   db connections and save files will still work */
-	socklimit -= 64;
+		/* make socket limit smaller than file limit to make sure log files,
+		   db connections and save files will still work */
+		socklimit -= 64;
 
-	return socklimit;
-}
+		return socklimit;
+	}
 
 }

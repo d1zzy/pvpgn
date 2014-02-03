@@ -32,73 +32,73 @@
 namespace pvpgn
 {
 
-namespace d2cs
-{
-
-extern int d2charlist_add_char(t_elist * list_head, t_d2charinfo_file * charinfo, unsigned int expiration_time)
-{
-    t_d2charlist * charlist, * ccharlist;
-    char const * d2char_sort;
-    t_elist * curr;
-
-    d2char_sort = prefs_get_charlist_sort();
-    charlist = (t_d2charlist*)xmalloc(sizeof(t_d2charlist));
-    charlist->charinfo = charinfo;
-    charlist->expiration_time = expiration_time;
-
-    if (elist_empty(list_head))
-        elist_add(list_head,&charlist->list);
-    else
-    {
-        if (strcasecmp(d2char_sort, "name")==0)
-        {
-	    elist_for_each(curr,list_head)
-	    {
-	       ccharlist = elist_entry(curr,t_d2charlist,list);
-               if (strncasecmp((char*)charinfo->header.charname,(char*)ccharlist->charinfo->header.charname,std::strlen((char*)charinfo->header.charname))<0)
-	           break;
-	    }
-            elist_add_tail(curr,&charlist->list);
-        }
-        else if (strcasecmp(d2char_sort, "ctime")==0)
-        {
-            elist_for_each(curr,list_head)
-            {
-               ccharlist = elist_entry(curr,t_d2charlist,list);
-               if (bn_int_get(charinfo->header.create_time) < bn_int_get(ccharlist->charinfo->header.create_time))
-                   break;
-            }
-            elist_add_tail(curr,&charlist->list);
-        }
-	else if (strcasecmp(d2char_sort, "mtime")==0)
+	namespace d2cs
 	{
-	    elist_for_each(curr,list_head)
-	    {
-	       ccharlist = elist_entry(curr,t_d2charlist,list);
-               if (bn_int_get(charinfo->header.last_time) < bn_int_get(ccharlist->charinfo->header.last_time))
-	           break;
-	    }
-            elist_add_tail(curr,&charlist->list);
-	}
-        else if (strcasecmp(d2char_sort, "level")==0)
-        {
-	    elist_for_each(curr,list_head)
-	    {
-	       ccharlist = elist_entry(curr,t_d2charlist,list);
-               if (bn_int_get(charinfo->summary.experience) < bn_int_get(ccharlist->charinfo->summary.experience))
-	           break;
-	    }
-            elist_add_tail(curr,&charlist->list);
-        }
-        else
-        {
-	eventlog(eventlog_level_debug,__FUNCTION__,"unsorted");
-	elist_add_tail(list_head,&charlist->list);
-        }
-    }
-    return 0;
-}
 
-}
+		extern int d2charlist_add_char(t_elist * list_head, t_d2charinfo_file * charinfo, unsigned int expiration_time)
+		{
+			t_d2charlist * charlist, *ccharlist;
+			char const * d2char_sort;
+			t_elist * curr;
+
+			d2char_sort = prefs_get_charlist_sort();
+			charlist = (t_d2charlist*)xmalloc(sizeof(t_d2charlist));
+			charlist->charinfo = charinfo;
+			charlist->expiration_time = expiration_time;
+
+			if (elist_empty(list_head))
+				elist_add(list_head, &charlist->list);
+			else
+			{
+				if (strcasecmp(d2char_sort, "name") == 0)
+				{
+					elist_for_each(curr, list_head)
+					{
+						ccharlist = elist_entry(curr, t_d2charlist, list);
+						if (strncasecmp((char*)charinfo->header.charname, (char*)ccharlist->charinfo->header.charname, std::strlen((char*)charinfo->header.charname)) < 0)
+							break;
+					}
+					elist_add_tail(curr, &charlist->list);
+				}
+				else if (strcasecmp(d2char_sort, "ctime") == 0)
+				{
+					elist_for_each(curr, list_head)
+					{
+						ccharlist = elist_entry(curr, t_d2charlist, list);
+						if (bn_int_get(charinfo->header.create_time) < bn_int_get(ccharlist->charinfo->header.create_time))
+							break;
+					}
+					elist_add_tail(curr, &charlist->list);
+				}
+				else if (strcasecmp(d2char_sort, "mtime") == 0)
+				{
+					elist_for_each(curr, list_head)
+					{
+						ccharlist = elist_entry(curr, t_d2charlist, list);
+						if (bn_int_get(charinfo->header.last_time) < bn_int_get(ccharlist->charinfo->header.last_time))
+							break;
+					}
+					elist_add_tail(curr, &charlist->list);
+				}
+				else if (strcasecmp(d2char_sort, "level") == 0)
+				{
+					elist_for_each(curr, list_head)
+					{
+						ccharlist = elist_entry(curr, t_d2charlist, list);
+						if (bn_int_get(charinfo->summary.experience) < bn_int_get(ccharlist->charinfo->summary.experience))
+							break;
+					}
+					elist_add_tail(curr, &charlist->list);
+				}
+				else
+				{
+					eventlog(eventlog_level_debug, __FUNCTION__, "unsorted");
+					elist_add_tail(list_head, &charlist->list);
+				}
+			}
+			return 0;
+		}
+
+	}
 
 }

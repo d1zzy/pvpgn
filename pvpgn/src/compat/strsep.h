@@ -23,7 +23,7 @@
 namespace pvpgn
 {
 
-extern char * strsep(char * * str, char const * delim);
+	extern char * strsep(char * * str, char const * delim);
 
 }
 

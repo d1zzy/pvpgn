@@ -22,19 +22,19 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef struct
-{
-    double       prob;
-    unsigned int k;
-    int          adj;
-    unsigned int oldrating;
-    unsigned int oldrank;
-} t_ladder_info;
+		typedef struct
+		{
+			double       prob;
+			unsigned int k;
+			int          adj;
+			unsigned int oldrating;
+			unsigned int oldrank;
+		} t_ladder_info;
 
-}
+	}
 
 }
 
@@ -55,12 +55,12 @@ typedef struct
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int ladder_calc_info(t_clienttag clienttag, t_ladder_id id, unsigned int count, t_account * * players, t_game_result * results, t_ladder_info * info);
+		extern int ladder_calc_info(t_clienttag clienttag, t_ladder_id id, unsigned int count, t_account * * players, t_game_result * results, t_ladder_info * info);
 
-}
+	}
 
 }
 

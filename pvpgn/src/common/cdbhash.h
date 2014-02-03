@@ -22,19 +22,19 @@
 namespace pvpgn
 {
 
-typedef unsigned int t_cdbhash;
+	typedef unsigned int t_cdbhash;
 
-static inline t_cdbhash cdb_hash(const void* data, std::size_t len)
-{
-	t_cdbhash h;
-	const char* p = (const char*)data;
+	static inline t_cdbhash cdb_hash(const void* data, std::size_t len)
+	{
+		t_cdbhash h;
+		const char* p = (const char*)data;
 
-	for (h = 5381; len > 0; --len, ++p) {
-		h += h << 5;
-		h ^= *p;
+		for (h = 5381; len > 0; --len, ++p) {
+			h += h << 5;
+			h ^= *p;
+		}
+		return h;
 	}
-	return h;
-}
 
 }
 

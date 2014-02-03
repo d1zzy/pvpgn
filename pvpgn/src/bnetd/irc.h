@@ -31,37 +31,37 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int irc_send_cmd(t_connection * conn, char const * command, char const * params);
-extern int irc_send(t_connection * conn, int code, char const * params);
-extern int irc_send_ping(t_connection * conn);
-extern int irc_send_pong(t_connection * conn, char const * params);
-extern int irc_authenticate(t_connection * conn, char const * passhash);
-extern char const * irc_convert_channel(t_channel const * channel, t_connection * c);
-extern char const * irc_convert_ircname(char const * pircname);
-extern char ** irc_get_listelems(char * list);
-extern int irc_unget_listelems(char ** elems);
-extern char ** irc_get_paramelems(char * list);
-extern char ** irc_get_ladderelems(char * list);
-extern int irc_unget_ladderelems(char ** elems);
-extern int irc_unget_paramelems(char ** elems);
-extern int irc_message_postformat(t_packet * packet, t_connection const * dest);
-extern int irc_message_format(t_packet * packet, t_message_type type, t_connection * me, t_connection * dst, char const * text, unsigned int dstflags);
-extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel);
-extern int irc_who(t_connection * c, char const * name);
-extern int irc_send_motd(t_connection * conn);
-extern int _handle_nick_command(t_connection * conn, int numparams, char ** params, char * text);
-extern int _handle_ping_command(t_connection * conn, int numparams, char ** params, char * text);
-extern int _handle_pong_command(t_connection * conn, int numparams, char ** params, char * text);
-extern int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text);
-extern int irc_send_topic(t_connection * c, t_channel const * channel);
-extern int _handle_topic_command(t_connection * conn, int numparams, char ** params, char * text);
-extern int _handle_kick_command(t_connection * conn, int numparams, char ** params, char * text);
-extern int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text);
-extern int _handle_time_command(t_connection * conn, int numparams, char ** params, char * text);
-}
+		extern int irc_send_cmd(t_connection * conn, char const * command, char const * params);
+		extern int irc_send(t_connection * conn, int code, char const * params);
+		extern int irc_send_ping(t_connection * conn);
+		extern int irc_send_pong(t_connection * conn, char const * params);
+		extern int irc_authenticate(t_connection * conn, char const * passhash);
+		extern char const * irc_convert_channel(t_channel const * channel, t_connection * c);
+		extern char const * irc_convert_ircname(char const * pircname);
+		extern char ** irc_get_listelems(char * list);
+		extern int irc_unget_listelems(char ** elems);
+		extern char ** irc_get_paramelems(char * list);
+		extern char ** irc_get_ladderelems(char * list);
+		extern int irc_unget_ladderelems(char ** elems);
+		extern int irc_unget_paramelems(char ** elems);
+		extern int irc_message_postformat(t_packet * packet, t_connection const * dest);
+		extern int irc_message_format(t_packet * packet, t_message_type type, t_connection * me, t_connection * dst, char const * text, unsigned int dstflags);
+		extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel);
+		extern int irc_who(t_connection * c, char const * name);
+		extern int irc_send_motd(t_connection * conn);
+		extern int _handle_nick_command(t_connection * conn, int numparams, char ** params, char * text);
+		extern int _handle_ping_command(t_connection * conn, int numparams, char ** params, char * text);
+		extern int _handle_pong_command(t_connection * conn, int numparams, char ** params, char * text);
+		extern int _handle_join_command(t_connection * conn, int numparams, char ** params, char * text);
+		extern int irc_send_topic(t_connection * c, t_channel const * channel);
+		extern int _handle_topic_command(t_connection * conn, int numparams, char ** params, char * text);
+		extern int _handle_kick_command(t_connection * conn, int numparams, char ** params, char * text);
+		extern int _handle_mode_command(t_connection * conn, int numparams, char ** params, char * text);
+		extern int _handle_time_command(t_connection * conn, int numparams, char ** params, char * text);
+	}
 
 }
 

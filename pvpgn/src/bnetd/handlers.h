@@ -25,17 +25,17 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef int (* t_handler)(t_connection *, t_packet const * const);
+		typedef int(*t_handler)(t_connection *, t_packet const * const);
 
-typedef struct {
-   int type;
-   t_handler handler;
-} t_htable_row;
+		typedef struct {
+			int type;
+			t_handler handler;
+		} t_htable_row;
 
-}
+	}
 
 }
 

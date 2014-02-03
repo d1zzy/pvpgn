@@ -26,11 +26,11 @@
 namespace pvpgn
 {
 
-FDWBackend::FDWBackend(int nfds_)
-:nfds(nfds_)
-{}
+	FDWBackend::FDWBackend(int nfds_)
+		:nfds(nfds_)
+	{}
 
-FDWBackend::~ FDWBackend() throw()
-{}
+	FDWBackend::~FDWBackend() throw()
+	{}
 
 }

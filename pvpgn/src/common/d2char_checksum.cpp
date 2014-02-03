@@ -22,22 +22,22 @@
 namespace pvpgn
 {
 
-extern int d2charsave_checksum(unsigned char const * data, unsigned int len,unsigned int offset)
-{
-	int		checksum;
-	unsigned int	i;
-	unsigned int	ch;
+	extern int d2charsave_checksum(unsigned char const * data, unsigned int len, unsigned int offset)
+	{
+		int		checksum;
+		unsigned int	i;
+		unsigned int	ch;
 
-	if (!data) return 0;
-	checksum=0;
-	for (i=0; i<len; i++) {
-		if (i>=offset && i<offset+sizeof(int)) ch=0;
-		else ch = *data;
-		ch+=(checksum<0);
-		checksum=2*checksum+ch;
-		data++;
+		if (!data) return 0;
+		checksum = 0;
+		for (i = 0; i < len; i++) {
+			if (i >= offset && i < offset + sizeof(int)) ch = 0;
+			else ch = *data;
+			ch += (checksum < 0);
+			checksum = 2 * checksum + ch;
+			data++;
+		}
+		return checksum;
 	}
-	return checksum;
-}
 
 }

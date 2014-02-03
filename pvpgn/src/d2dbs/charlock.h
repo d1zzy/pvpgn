@@ -25,31 +25,31 @@
 namespace pvpgn
 {
 
-namespace d2dbs
-{
+	namespace d2dbs
+	{
 
-/* char locking info */
-typedef struct raw_charlockinfo {
-	unsigned char	charname[MAX_CHARNAME_LEN];
-	unsigned char	realmname[MAX_REALMNAME_LEN];
-	unsigned int	gsid;
-	struct raw_charlockinfo	*next;
-	struct raw_charlockinfo	*gsqnext;
-	struct raw_charlockinfo	*gsqprev;
-} t_charlockinfo;
+		/* char locking info */
+		typedef struct raw_charlockinfo {
+			unsigned char	charname[MAX_CHARNAME_LEN];
+			unsigned char	realmname[MAX_REALMNAME_LEN];
+			unsigned int	gsid;
+			struct raw_charlockinfo	*next;
+			struct raw_charlockinfo	*gsqnext;
+			struct raw_charlockinfo	*gsqprev;
+		} t_charlockinfo;
 
 
-/* functions */
-int cl_init(unsigned int tbllen, unsigned int maxgs);
-int cl_destroy(void);
-int cl_query_charlock_status(unsigned char *charname,
-		unsigned char *realmnamei, unsigned int *gsid);
-int cl_lock_char(unsigned char *charname,
-	        unsigned char *realmname, unsigned int gsid);
-int cl_unlock_char(unsigned char *charname, unsigned char *realmname, unsigned int gsid);
-int cl_unlock_all_char_by_gsid(unsigned int gsid);
+		/* functions */
+		int cl_init(unsigned int tbllen, unsigned int maxgs);
+		int cl_destroy(void);
+		int cl_query_charlock_status(unsigned char *charname,
+			unsigned char *realmnamei, unsigned int *gsid);
+		int cl_lock_char(unsigned char *charname,
+			unsigned char *realmname, unsigned int gsid);
+		int cl_unlock_char(unsigned char *charname, unsigned char *realmname, unsigned int gsid);
+		int cl_unlock_all_char_by_gsid(unsigned int gsid);
 
-}
+	}
 
 }
 

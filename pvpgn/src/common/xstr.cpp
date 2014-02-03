@@ -33,114 +33,114 @@
 namespace pvpgn
 {
 
-/* enlarge "dst" enough so it can hold more "size" characters (not including terminator) */
-static void xstr_enlarge(t_xstr* dst, int size)
-{
-	if (dst->alen < dst->ulen + size + 1) {
-		int nalen = ((dst->ulen + size + 10) / XSTR_INCREMENT + 1) * XSTR_INCREMENT;
+	/* enlarge "dst" enough so it can hold more "size" characters (not including terminator) */
+	static void xstr_enlarge(t_xstr* dst, int size)
+	{
+		if (dst->alen < dst->ulen + size + 1) {
+			int nalen = ((dst->ulen + size + 10) / XSTR_INCREMENT + 1) * XSTR_INCREMENT;
 
-		dst->str = (char*)xrealloc(dst->str, nalen);
-		dst->alen = nalen;
+			dst->str = (char*)xrealloc(dst->str, nalen);
+			dst->alen = nalen;
+		}
 	}
-}
 
-extern t_xstr* xstr_alloc(void)
-{
-	t_xstr* xstr = (t_xstr*)xmalloc(sizeof(t_xstr));
+	extern t_xstr* xstr_alloc(void)
+	{
+		t_xstr* xstr = (t_xstr*)xmalloc(sizeof(t_xstr));
 
-	xstr_init(xstr);
+		xstr_init(xstr);
 
-	return xstr;
-}
+		return xstr;
+	}
 
-extern void xstr_free(t_xstr* xstr)
-{
-	assert(xstr);
+	extern void xstr_free(t_xstr* xstr)
+	{
+		assert(xstr);
 
-	if (xstr->str) xfree(xstr->str);
-	xfree(xstr);
-}
-
+		if (xstr->str) xfree(xstr->str);
+		xfree(xstr);
+	}
 
 
-extern t_xstr * xstr_cpy_str(t_xstr * dst, const char * src)
-{
-	int len;
 
-	assert(dst);
+	extern t_xstr * xstr_cpy_str(t_xstr * dst, const char * src)
+	{
+		int len;
 
-	dst->ulen = 0;
-	/* so if we cpy a NULL string we delete the old one :) */
-	if (!src) return dst;
+		assert(dst);
 
-	len = std::strlen(src);
+		dst->ulen = 0;
+		/* so if we cpy a NULL string we delete the old one :) */
+		if (!src) return dst;
 
-	/* need to enlarge dst ? */
-	xstr_enlarge(dst, len);
+		len = std::strlen(src);
 
-	std::memcpy(dst->str, src, len + 1);
-	dst->ulen = len;
+		/* need to enlarge dst ? */
+		xstr_enlarge(dst, len);
 
-	return dst;
-}
+		std::memcpy(dst->str, src, len + 1);
+		dst->ulen = len;
 
-extern t_xstr* xstr_cat_xstr(t_xstr* dst, const t_xstr* src)
-{
-	assert(dst);
+		return dst;
+	}
 
-	if (!src || !src->ulen) return dst;
+	extern t_xstr* xstr_cat_xstr(t_xstr* dst, const t_xstr* src)
+	{
+		assert(dst);
 
-	/* need to enlarge dst ? */
-	xstr_enlarge(dst, src->ulen);
+		if (!src || !src->ulen) return dst;
 
-	std::memcpy(dst->str + dst->ulen, src->str, src->ulen + 1);
-	dst->ulen += src->ulen;
+		/* need to enlarge dst ? */
+		xstr_enlarge(dst, src->ulen);
 
-	return dst;
-}
+		std::memcpy(dst->str + dst->ulen, src->str, src->ulen + 1);
+		dst->ulen += src->ulen;
 
-extern t_xstr* xstr_cat_str(t_xstr* dst, const char* src)
-{
-	int len;
+		return dst;
+	}
 
-	assert(dst);
+	extern t_xstr* xstr_cat_str(t_xstr* dst, const char* src)
+	{
+		int len;
 
-	if (!src) return dst;
+		assert(dst);
 
-	len = std::strlen(src);
+		if (!src) return dst;
 
-	/* need to enlarge dst ? */
-	xstr_enlarge(dst, len);
+		len = std::strlen(src);
 
-	std::memcpy(dst->str + dst->ulen, src, len + 1);
-	dst->ulen += len;
+		/* need to enlarge dst ? */
+		xstr_enlarge(dst, len);
 
-	return dst;
-}
+		std::memcpy(dst->str + dst->ulen, src, len + 1);
+		dst->ulen += len;
 
-extern t_xstr* xstr_ncat_str(t_xstr * dst, const char * src, int len)
-{
-	const char *p;
+		return dst;
+	}
 
-	assert(dst);
+	extern t_xstr* xstr_ncat_str(t_xstr * dst, const char * src, int len)
+	{
+		const char *p;
 
-	if (!src || len < 1 || !src[0]) return dst;
+		assert(dst);
 
-	for(p = src; *p && p - src < len; ++p)
-		xstr_cat_char(dst, *p);
+		if (!src || len < 1 || !src[0]) return dst;
 
-	return dst;
-}
+		for (p = src; *p && p - src < len; ++p)
+			xstr_cat_char(dst, *p);
 
-extern t_xstr* xstr_cat_char(t_xstr * dst, const char ch)
-{
-	assert(dst);
+		return dst;
+	}
 
-	xstr_enlarge(dst, 1);
-	dst->str[dst->ulen++] = ch;
-	dst->str[dst->ulen] = '\0';
+	extern t_xstr* xstr_cat_char(t_xstr * dst, const char ch)
+	{
+		assert(dst);
 
-	return dst;
-}
+		xstr_enlarge(dst, 1);
+		dst->str[dst->ulen++] = ch;
+		dst->str[dst->ulen] = '\0';
+
+		return dst;
+	}
 
 }

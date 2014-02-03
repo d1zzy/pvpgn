@@ -21,7 +21,7 @@
 namespace pvpgn
 {
 
-extern char * next_token(char * ptr, unsigned int * pos);
+	extern char * next_token(char * ptr, unsigned int * pos);
 
 }
 #endif

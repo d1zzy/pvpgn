@@ -29,7 +29,7 @@
 namespace pvpgn
 {
 
-typedef char t_wolhash[9];
+	typedef char t_wolhash[9];
 
 }
 
@@ -46,8 +46,8 @@ typedef char t_wolhash[9];
 namespace pvpgn
 {
 
-extern int wol_hash(t_wolhash * hashout, unsigned int size, void const * datain);
-//extern int wolhash_eq(t_wolhash const h1, t_wolhash const h2) ;
+	extern int wol_hash(t_wolhash * hashout, unsigned int size, void const * datain);
+	//extern int wolhash_eq(t_wolhash const h1, t_wolhash const h2) ;
 
 }
 

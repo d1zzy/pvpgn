@@ -31,182 +31,182 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-static t_list * topiclist_head=NULL;
+		static t_list * topiclist_head = NULL;
 
-t_topic * get_topic(char const * channel_name)
-{
-  t_elem  * curr;
-  t_topic * topic;
+		t_topic * get_topic(char const * channel_name)
+		{
+			t_elem  * curr;
+			t_topic * topic;
 
-  if (topiclist_head)
-  {
-    LIST_TRAVERSE(topiclist_head,curr)
-    {
-      if (!(topic = (t_topic*)elem_get_data(curr)))
-      {
-        eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
-        continue;
-      }
-      if (strcasecmp(channel_name,topic->channel_name)==0) return topic;
-    }
-  }
-  return NULL;
-}
+			if (topiclist_head)
+			{
+				LIST_TRAVERSE(topiclist_head, curr)
+				{
+					if (!(topic = (t_topic*)elem_get_data(curr)))
+					{
+						eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
+						continue;
+					}
+					if (strcasecmp(channel_name, topic->channel_name) == 0) return topic;
+				}
+			}
+			return NULL;
+		}
 
-char * channel_get_topic(char const * channel_name)
-{
-  t_topic * topic;
+		char * channel_get_topic(char const * channel_name)
+		{
+			t_topic * topic;
 
-  if (!(topic = get_topic(channel_name)))
-    return NULL;
-  else
-    return topic->topic;
-}
+			if (!(topic = get_topic(channel_name)))
+				return NULL;
+			else
+				return topic->topic;
+		}
 
-int topiclist_save(char const * topic_file)
-{
-  t_elem  * curr;
-  t_topic * topic;
-  std::FILE * fp;
+		int topiclist_save(char const * topic_file)
+		{
+			t_elem  * curr;
+			t_topic * topic;
+			std::FILE * fp;
 
-  if (topiclist_head)
-  {
+			if (topiclist_head)
+			{
 
-    if ((fp = std::fopen(topic_file,"w"))==NULL)
-    {
-      eventlog(eventlog_level_error, __FUNCTION__,"can't open topic file");
-      return -1;
-    }
+				if ((fp = std::fopen(topic_file, "w")) == NULL)
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "can't open topic file");
+					return -1;
+				}
 
-    LIST_TRAVERSE(topiclist_head,curr)
-    {
-      if (!(topic = (t_topic*)elem_get_data(curr)))
-      {
-        eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
-        continue;
-      }
-      if (topic->save == DO_SAVE_TOPIC)
-        std::fprintf(fp,"\"%s\",\"%s\"\n",topic->channel_name,topic->topic);
-    }
+				LIST_TRAVERSE(topiclist_head, curr)
+				{
+					if (!(topic = (t_topic*)elem_get_data(curr)))
+					{
+						eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
+						continue;
+					}
+					if (topic->save == DO_SAVE_TOPIC)
+						std::fprintf(fp, "\"%s\",\"%s\"\n", topic->channel_name, topic->topic);
+				}
 
-    std::fclose(fp);
-  }
+				std::fclose(fp);
+			}
 
-  return 0;
-}
+			return 0;
+		}
 
-int topiclist_add_topic(char const * channel_name, char const * topic_text, int do_save)
-{
-  t_topic * topic;
+		int topiclist_add_topic(char const * channel_name, char const * topic_text, int do_save)
+		{
+			t_topic * topic;
 
-  topic = (t_topic*)xmalloc(sizeof(t_topic));
-  topic->channel_name = xstrdup(channel_name);
-  topic->topic = xstrdup(topic_text);
-  list_prepend_data(topiclist_head,topic);
-  topic->save = do_save;
-  return 0;
-}
+			topic = (t_topic*)xmalloc(sizeof(t_topic));
+			topic->channel_name = xstrdup(channel_name);
+			topic->topic = xstrdup(topic_text);
+			list_prepend_data(topiclist_head, topic);
+			topic->save = do_save;
+			return 0;
+		}
 
-int channel_set_topic(char const * channel_name, char const * topic_text, int do_save)
-{
-  t_topic * topic;
+		int channel_set_topic(char const * channel_name, char const * topic_text, int do_save)
+		{
+			t_topic * topic;
 
-  if (!(channel_name))
-  {
-    eventlog(eventlog_level_error,__FUNCTION__,"got NULL channel_name");
-    return -1;
-  }
+			if (!(channel_name))
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL channel_name");
+				return -1;
+			}
 
-  if (!(topic_text))
-  {
-    eventlog(eventlog_level_error,__FUNCTION__,"got NULL topic");
-    return -1;
-  }
+			if (!(topic_text))
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL topic");
+				return -1;
+			}
 
-  if ((topic = get_topic(channel_name)))
-  {
-    xfree((void *)topic->topic);
-    topic->topic = xstrdup(topic_text);
-  }
-  else
-  {
-    topiclist_add_topic(channel_name, topic_text,do_save);
-  }
+			if ((topic = get_topic(channel_name)))
+			{
+				xfree((void *)topic->topic);
+				topic->topic = xstrdup(topic_text);
+			}
+			else
+			{
+				topiclist_add_topic(channel_name, topic_text, do_save);
+			}
 
-  if (do_save == DO_SAVE_TOPIC)
-  {
-    if (topiclist_save(prefs_get_topicfile())<0)
-    {
-      eventlog(eventlog_level_error,__FUNCTION__,"error saving topic list");
-      return -1;
-    }
-  }
+			if (do_save == DO_SAVE_TOPIC)
+			{
+				if (topiclist_save(prefs_get_topicfile()) < 0)
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "error saving topic list");
+					return -1;
+				}
+			}
 
-  return 0;
-}
+			return 0;
+		}
 
-int topiclist_load(char const * topicfile)
-{
-  std::FILE * fp;
-  char channel_name[MAX_CHANNELNAME_LEN];
-  char topic[MAX_TOPIC_LEN];
+		int topiclist_load(char const * topicfile)
+		{
+			std::FILE * fp;
+			char channel_name[MAX_CHANNELNAME_LEN];
+			char topic[MAX_TOPIC_LEN];
 
-  // make sure to unload previous topiclist before loading again
-  if (topiclist_head) topiclist_unload();
+			// make sure to unload previous topiclist before loading again
+			if (topiclist_head) topiclist_unload();
 
-  if ((fp = std::fopen(topicfile,"r"))==NULL)
-  {
-    eventlog(eventlog_level_error, __FUNCTION__,"can't open topic file");
-    return -1;
-  }
+			if ((fp = std::fopen(topicfile, "r")) == NULL)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "can't open topic file");
+				return -1;
+			}
 
-  topiclist_head = list_create();
+			topiclist_head = list_create();
 
-  eventlog(eventlog_level_trace,__FUNCTION__,"start reading topic file");
+			eventlog(eventlog_level_trace, __FUNCTION__, "start reading topic file");
 
-  while (std::fscanf(fp,"\"%[^\"]\",\"%[^\"]\"\n",channel_name,topic)==2)
-  {
-    topiclist_add_topic(channel_name,topic,DO_SAVE_TOPIC);
-    eventlog(eventlog_level_trace,__FUNCTION__,"channel: %s topic: \"%s\"",channel_name,topic);
-  }
+			while (std::fscanf(fp, "\"%[^\"]\",\"%[^\"]\"\n", channel_name, topic) == 2)
+			{
+				topiclist_add_topic(channel_name, topic, DO_SAVE_TOPIC);
+				eventlog(eventlog_level_trace, __FUNCTION__, "channel: %s topic: \"%s\"", channel_name, topic);
+			}
 
-  eventlog(eventlog_level_trace,__FUNCTION__,"finished reading topic file");
+			eventlog(eventlog_level_trace, __FUNCTION__, "finished reading topic file");
 
-  std::fclose(fp);
-  return 0;
-}
+			std::fclose(fp);
+			return 0;
+		}
 
-int topiclist_unload(void)
-{
-  t_elem  * curr;
-  t_topic * topic;
+		int topiclist_unload(void)
+		{
+			t_elem  * curr;
+			t_topic * topic;
 
-  if (topiclist_head)
-  {
-    LIST_TRAVERSE(topiclist_head,curr)
-    {
-      if (!(topic = (t_topic*)elem_get_data(curr)))
-      {
-        eventlog(eventlog_level_error,__FUNCTION__,"found NULL entry in list");
-        continue;
-      }
+			if (topiclist_head)
+			{
+				LIST_TRAVERSE(topiclist_head, curr)
+				{
+					if (!(topic = (t_topic*)elem_get_data(curr)))
+					{
+						eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
+						continue;
+					}
 
-      if (topic->channel_name) xfree((void *)topic->channel_name);
-      if (topic->topic) xfree((void *)topic->topic);
-      xfree((void *)topic);
-      list_remove_elem(topiclist_head,&curr);
-    }
-    if (list_destroy(topiclist_head)<0)
-      return -1;
+					if (topic->channel_name) xfree((void *)topic->channel_name);
+					if (topic->topic) xfree((void *)topic->topic);
+					xfree((void *)topic);
+					list_remove_elem(topiclist_head, &curr);
+				}
+				if (list_destroy(topiclist_head) < 0)
+					return -1;
 
-    topiclist_head = NULL;
-  }
-  return 0;
-}
+				topiclist_head = NULL;
+			}
+			return 0;
+		}
 
-}
+	}
 
 }

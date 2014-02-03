@@ -31,22 +31,22 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef struct
-{
-    std::time_t	 inf;
-    unsigned int count;
-} t_qline;
+		typedef struct
+		{
+			std::time_t	 inf;
+			unsigned int count;
+		} t_qline;
 
-typedef struct
-{
-    unsigned int totcount;
-    t_list *     list;
-} t_quota;
+		typedef struct
+		{
+			unsigned int totcount;
+			t_list *     list;
+		} t_quota;
 
-}
+	}
 
 }
 

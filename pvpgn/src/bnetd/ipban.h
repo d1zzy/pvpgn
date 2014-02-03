@@ -38,29 +38,29 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef enum
-{
-    ipban_type_exact,     /* 192.168.0.10              */
-    ipban_type_wildcard,  /* 192.168.*.*               */
-    ipban_type_range,     /* 192.168.0.10-192.168.0.25 */
-    ipban_type_netmask,   /* 192.168.0.0/255.255.0.0   */
-    ipban_type_prefix     /* 192.168.0.0/16            */
-} t_ipban_type;
+		typedef enum
+		{
+			ipban_type_exact,     /* 192.168.0.10              */
+			ipban_type_wildcard,  /* 192.168.*.*               */
+			ipban_type_range,     /* 192.168.0.10-192.168.0.25 */
+			ipban_type_netmask,   /* 192.168.0.0/255.255.0.0   */
+			ipban_type_prefix     /* 192.168.0.0/16            */
+		} t_ipban_type;
 
-typedef struct ipban_entry_struct
-{
-    char *                      info1; /* third octet */
-    char *                      info2; /* third octet */
-    char *                      info3; /* third octet */
-    char *                      info4; /* fourth octet */
-    int                         type;
-    std::time_t			endtime;
-} t_ipban_entry;
+		typedef struct ipban_entry_struct
+		{
+			char *                      info1; /* third octet */
+			char *                      info2; /* third octet */
+			char *                      info3; /* third octet */
+			char *                      info4; /* fourth octet */
+			int                         type;
+			std::time_t			endtime;
+		} t_ipban_entry;
 
-}
+	}
 
 }
 
@@ -83,20 +83,20 @@ typedef struct ipban_entry_struct
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int ipbanlist_create(void);
-extern int ipbanlist_destroy(void);
-extern int ipbanlist_load(char const * filename);
-extern int ipbanlist_save(char const * filename);
-extern int ipbanlist_check(char const * addr);
-extern int ipbanlist_add(t_connection * c, char const * cp, std::time_t endtime);
-extern int ipbanlist_unload_expired(void);
-extern std::time_t ipbanlist_str_to_time_t(t_connection * c, char const * timestr);
-extern int handle_ipban_command(t_connection * c, char const * text);
+		extern int ipbanlist_create(void);
+		extern int ipbanlist_destroy(void);
+		extern int ipbanlist_load(char const * filename);
+		extern int ipbanlist_save(char const * filename);
+		extern int ipbanlist_check(char const * addr);
+		extern int ipbanlist_add(t_connection * c, char const * cp, std::time_t endtime);
+		extern int ipbanlist_unload_expired(void);
+		extern std::time_t ipbanlist_str_to_time_t(t_connection * c, char const * timestr);
+		extern int handle_ipban_command(t_connection * c, char const * text);
 
-}
+	}
 
 }
 

@@ -27,22 +27,22 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef struct news_index
+		typedef struct news_index
 #ifdef NEWS_INTERNAL_ACCESS
-{
-	std::time_t 		date;
-	t_lstr		body;
-	t_elist		list;
-}
+		{
+			std::time_t 		date;
+			t_lstr		body;
+			t_elist		list;
+		}
 #endif
-t_news_index;
+		t_news_index;
 
-typedef int (*t_news_cb)(std::time_t, t_lstr *, void *);
+		typedef int(*t_news_cb)(std::time_t, t_lstr *, void *);
 
-}
+	}
 
 }
 
@@ -57,18 +57,18 @@ typedef int (*t_news_cb)(std::time_t, t_lstr *, void *);
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int news_load(const char *filename);
-extern int news_unload(void);
+		extern int news_load(const char *filename);
+		extern int news_unload(void);
 
-extern unsigned int news_get_firstnews(void);
-extern unsigned int news_get_lastnews(void);
+		extern unsigned int news_get_firstnews(void);
+		extern unsigned int news_get_lastnews(void);
 
-extern void news_traverse(t_news_cb cb, void *data);
+		extern void news_traverse(t_news_cb cb, void *data);
 
-}
+	}
 
 }
 

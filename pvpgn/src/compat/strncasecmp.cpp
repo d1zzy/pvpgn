@@ -28,41 +28,41 @@
 namespace pvpgn
 {
 
-extern int strncasecmp(char const * str1, char const * str2, unsigned int cnt)
-{
-    unsigned int i;
-    int          a;
-    int          b;
+	extern int strncasecmp(char const * str1, char const * str2, unsigned int cnt)
+	{
+		unsigned int i;
+		int          a;
+		int          b;
 
-    if (!str1 || !str2)
-        return -1;
+		if (!str1 || !str2)
+			return -1;
 
-    /* some versions of tolower() break when given already lowercase characters */
-    for (i=0; i<cnt && str1[i]!='\0' && str2[i]!='\0'; i++)
-    {
-	if (isupper((int)str1[i]))
-	    a = (int)tolower((int)str1[i]);
-	else
-	    a = (int)str1[i];
+		/* some versions of tolower() break when given already lowercase characters */
+		for (i = 0; i < cnt && str1[i] != '\0' && str2[i] != '\0'; i++)
+		{
+			if (isupper((int)str1[i]))
+				a = (int)tolower((int)str1[i]);
+			else
+				a = (int)str1[i];
 
-	if (isupper((int)str2[i]))
-	    b = (int)tolower((int)str2[i]);
-	else
-	    b = (int)str2[i];
+			if (isupper((int)str2[i]))
+				b = (int)tolower((int)str2[i]);
+			else
+				b = (int)str2[i];
 
-	if (a<b)
-	    return -1;
-	if (a>b)
-	    return +1;
-    }
+			if (a<b)
+				return -1;
+			if (a>b)
+				return +1;
+		}
 
-    if (i<cnt && str1[i]!='\0')
-	return -1;
-    if (i<cnt && str2[i]!='\0')
-	return +1;
+		if (i < cnt && str1[i] != '\0')
+			return -1;
+		if (i < cnt && str2[i] != '\0')
+			return +1;
 
-    return 0;
-}
+		return 0;
+	}
 
 }
 

@@ -29,14 +29,14 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int handle_irc_con_command(t_connection * conn, char const * command, int numparams, char ** params, char * text);
-extern int handle_irc_log_command(t_connection * conn, char const * command, int numparams, char ** params, char * text);
-extern int handle_irc_welcome(t_connection * conn);
+		extern int handle_irc_con_command(t_connection * conn, char const * command, int numparams, char ** params, char * text);
+		extern int handle_irc_log_command(t_connection * conn, char const * command, int numparams, char ** params, char * text);
+		extern int handle_irc_welcome(t_connection * conn);
 
-}
+	}
 
 }
 

@@ -31,12 +31,12 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern unsigned int cflags_to_bncflags(unsigned flags);
+		extern unsigned int cflags_to_bncflags(unsigned flags);
 
-}
+	}
 
 }
 

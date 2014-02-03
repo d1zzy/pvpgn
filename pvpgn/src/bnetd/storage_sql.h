@@ -25,12 +25,12 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern t_storage storage_sql;
+		extern t_storage storage_sql;
 
-}
+	}
 
 }
 

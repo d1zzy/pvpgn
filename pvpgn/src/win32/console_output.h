@@ -25,14 +25,14 @@
 namespace pvpgn
 {
 
-class Console {
-public:
-	Console();
-	~Console() throw ();
-	void RedirectIOToConsole();
-private:
-	bool initialised;
-};
+	class Console {
+	public:
+		Console();
+		~Console() throw ();
+		void RedirectIOToConsole();
+	private:
+		bool initialised;
+	};
 
 }
 

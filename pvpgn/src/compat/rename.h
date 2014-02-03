@@ -24,15 +24,15 @@
 namespace pvpgn
 {
 
-static inline int p_rename(const char * oldpath, const char * newpath)
-{
+	static inline int p_rename(const char * oldpath, const char * newpath)
+	{
 #ifdef WIN32
-    if(access(newpath, F_OK) == 0)
-        if(std::remove(newpath) < 0)
-            return -1;
+		if (access(newpath, F_OK) == 0)
+		if (std::remove(newpath) < 0)
+			return -1;
 #endif
-    return std::rename(oldpath, newpath);
-}
+		return std::rename(oldpath, newpath);
+	}
 
 }
 

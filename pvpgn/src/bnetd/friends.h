@@ -22,35 +22,35 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef struct friend_struct {
-   char mutual; /* -1 - unloaded(used to remove deleted elems when reload); 0 - not mutual ; 1 - is mutual */
-   t_account *friendacc;
-} t_friend;
+		typedef struct friend_struct {
+			char mutual; /* -1 - unloaded(used to remove deleted elems when reload); 0 - not mutual ; 1 - is mutual */
+			t_account *friendacc;
+		} t_friend;
 
 #ifndef JUST_NEED_TYPES
 
-extern t_account * friend_get_account(t_friend *);
-extern int friend_set_account(t_friend *, t_account * acc);
-extern char friend_get_mutual(t_friend *);
-extern int friend_set_mutual(t_friend *, char);
+		extern t_account * friend_get_account(t_friend *);
+		extern int friend_set_account(t_friend *, t_account * acc);
+		extern char friend_get_mutual(t_friend *);
+		extern int friend_set_mutual(t_friend *, char);
 
-extern int friendlist_unload(t_list *);
-extern int friendlist_close(t_list *);
-extern int friendlist_purge(t_list *);
-extern int friendlist_add_account(t_list *, t_account *, int);
-extern int friendlist_remove_friend(t_list * flist, t_friend *);
-extern int friendlist_remove_account(t_list *, t_account *);
-extern int friendlist_remove_username(t_list *, const char *);
-extern t_friend * friendlist_find_account(t_list *, t_account *);
-extern t_friend * friendlist_find_username(t_list *, const char *);
-extern t_friend * friendlist_find_uid(t_list *, unsigned);
+		extern int friendlist_unload(t_list *);
+		extern int friendlist_close(t_list *);
+		extern int friendlist_purge(t_list *);
+		extern int friendlist_add_account(t_list *, t_account *, int);
+		extern int friendlist_remove_friend(t_list * flist, t_friend *);
+		extern int friendlist_remove_account(t_list *, t_account *);
+		extern int friendlist_remove_username(t_list *, const char *);
+		extern t_friend * friendlist_find_account(t_list *, t_account *);
+		extern t_friend * friendlist_find_username(t_list *, const char *);
+		extern t_friend * friendlist_find_uid(t_list *, unsigned);
 
 #endif
 
-}
+	}
 
 }
 

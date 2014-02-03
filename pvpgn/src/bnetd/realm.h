@@ -31,30 +31,30 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-struct connection;
+		struct connection;
 
-typedef struct realm
+		typedef struct realm
 #ifdef REALM_INTERNAL_ACCESS
-{
-    char const *   name;
-    char const *   description;
-    unsigned int   sessionnum;
-    unsigned int   active;
-    unsigned int   ip;
-    unsigned short port;
-    unsigned int   player_number;
-    unsigned int   game_number;
-    int		   tcp_sock;
-    struct	   connection * conn;
-    t_rcm	   rcm;
-}
+		{
+			char const *   name;
+			char const *   description;
+			unsigned int   sessionnum;
+			unsigned int   active;
+			unsigned int   ip;
+			unsigned short port;
+			unsigned int   player_number;
+			unsigned int   game_number;
+			int		   tcp_sock;
+			struct	   connection * conn;
+			t_rcm	   rcm;
+		}
 #endif
-t_realm;
+		t_realm;
 
-}
+	}
 
 }
 
@@ -75,36 +75,36 @@ t_realm;
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern char const * realm_get_name(t_realm const * realm) ;
-extern char const * realm_get_description(t_realm const * realm) ;
-extern unsigned short realm_get_port(t_realm const * realm) ;
-extern unsigned int realm_get_ip(t_realm const * realm) ;
-extern int realm_set_name(t_realm * realm, char const * name);
-extern unsigned int realm_get_active(t_realm const * realm);
-extern unsigned int realm_get_player_number(t_realm const * realm);
-extern int realm_add_player_number(t_realm * realm, int number);
-extern unsigned int realm_get_game_number(t_realm const * realm);
-extern int realm_add_game_number(t_realm * realm, int number);
-extern int realm_set_active(t_realm * realm, unsigned int active);
-extern int realm_active(t_realm * realm, struct connection * c);
-extern int realm_deactive(t_realm * realm);
+		extern char const * realm_get_name(t_realm const * realm);
+		extern char const * realm_get_description(t_realm const * realm);
+		extern unsigned short realm_get_port(t_realm const * realm);
+		extern unsigned int realm_get_ip(t_realm const * realm);
+		extern int realm_set_name(t_realm * realm, char const * name);
+		extern unsigned int realm_get_active(t_realm const * realm);
+		extern unsigned int realm_get_player_number(t_realm const * realm);
+		extern int realm_add_player_number(t_realm * realm, int number);
+		extern unsigned int realm_get_game_number(t_realm const * realm);
+		extern int realm_add_game_number(t_realm * realm, int number);
+		extern int realm_set_active(t_realm * realm, unsigned int active);
+		extern int realm_active(t_realm * realm, struct connection * c);
+		extern int realm_deactive(t_realm * realm);
 
-extern int realmlist_create(char const * filename);
-extern int realmlist_destroy(void);
-extern int realmlist_reload(char const * filename);
-extern t_realm * realmlist_find_realm(char const * realmname);
-extern t_realm * realmlist_find_realm_by_ip(unsigned long ip); /* ??? */
-extern t_list * realmlist(void);
+		extern int realmlist_create(char const * filename);
+		extern int realmlist_destroy(void);
+		extern int realmlist_reload(char const * filename);
+		extern t_realm * realmlist_find_realm(char const * realmname);
+		extern t_realm * realmlist_find_realm_by_ip(unsigned long ip); /* ??? */
+		extern t_list * realmlist(void);
 
-extern struct connection * realm_get_conn(t_realm * realm);
+		extern struct connection * realm_get_conn(t_realm * realm);
 
-extern t_realm * realm_get(t_realm * realm, t_rcm_regref * regref);
-extern void realm_put(t_realm * realm, t_rcm_regref * regref);
+		extern t_realm * realm_get(t_realm * realm, t_rcm_regref * regref);
+		extern void realm_put(t_realm * realm, t_rcm_regref * regref);
 
-}
+	}
 
 }
 

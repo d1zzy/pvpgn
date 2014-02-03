@@ -36,23 +36,23 @@
 namespace pvpgn
 {
 
-class FDWEpollBackend: public FDWBackend
-{
-public:
-	explicit FDWEpollBackend(int nfds_);
-	~FDWEpollBackend() throw();
+	class FDWEpollBackend : public FDWBackend
+	{
+	public:
+		explicit FDWEpollBackend(int nfds_);
+		~FDWEpollBackend() throw();
 
-	int add(int idx, unsigned rw);
-	int del(int idx);
-	int watch(long timeout_msecs);
-	void handle();
+		int add(int idx, unsigned rw);
+		int del(int idx);
+		int watch(long timeout_msecs);
+		void handle();
 
-private:
-	int sr;
-	int epfd;
-	/* events to investigate */
-	scoped_array<struct epoll_event> epevents;
-};
+	private:
+		int sr;
+		int epfd;
+		/* events to investigate */
+		scoped_array<struct epoll_event> epevents;
+	};
 
 }
 

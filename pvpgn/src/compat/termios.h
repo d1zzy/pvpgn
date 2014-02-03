@@ -24,11 +24,11 @@
 namespace pvpgn
 {
 
-struct termios
-{
-    int c_lflag;
-    int c_cc[1];
-};
+	struct termios
+	{
+		int c_lflag;
+		int c_cc[1];
+	};
 
 }
 

@@ -22,24 +22,24 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int cmdline_load(int argc, char * * argv);
-extern void cmdline_unload(void);
+		extern int cmdline_load(int argc, char * * argv);
+		extern void cmdline_unload(void);
 
-/* options exported by cmdline */
+		/* options exported by cmdline */
 #ifdef DO_DAEMONIZE
-extern int cmdline_get_foreground(void);
+		extern int cmdline_get_foreground(void);
 #endif
-extern const char* cmdline_get_preffile(void);
-extern const char* cmdline_get_hexfile(void);
+		extern const char* cmdline_get_preffile(void);
+		extern const char* cmdline_get_hexfile(void);
 #ifdef WIN32_GUI
-extern unsigned cmdline_get_console(void);
-extern unsigned cmdline_get_gui(void);
+		extern unsigned cmdline_get_console(void);
+		extern unsigned cmdline_get_gui(void);
 #endif
 
-}
+	}
 
 }
 

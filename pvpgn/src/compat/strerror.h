@@ -22,7 +22,7 @@
 namespace pvpgn
 {
 
-extern char const * pstrerror(int errornum);
+	extern char const * pstrerror(int errornum);
 
 }
 

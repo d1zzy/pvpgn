@@ -21,7 +21,7 @@
 namespace pvpgn
 {
 
-extern int give_up_root_privileges(char const * user_name, char const * group_name);
+	extern int give_up_root_privileges(char const * user_name, char const * group_name);
 
 }
 

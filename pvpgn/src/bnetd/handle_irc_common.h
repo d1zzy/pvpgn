@@ -28,12 +28,12 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-extern int handle_irc_common_packet(t_connection * conn, t_packet const * const packet);
+		extern int handle_irc_common_packet(t_connection * conn, t_packet const * const packet);
 
-}
+	}
 
 }
 

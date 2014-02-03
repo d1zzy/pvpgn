@@ -26,16 +26,16 @@
 namespace pvpgn
 {
 
-extern int snprintf(char *str, size_t size, const char *format, ...)
-{
-    int result;
-    va_list args;
+	extern int snprintf(char *str, size_t size, const char *format, ...)
+	{
+		int result;
+		va_list args;
 
-    va_start(args,format);
-    result = vsnprintf(str,size,format,args);
-    va_end(args);
-    return result;
-}
+		va_start(args, format);
+		result = vsnprintf(str, size, format, args);
+		va_end(args);
+		return result;
+	}
 
 }
 

@@ -62,7 +62,7 @@
    egrep '@\([^@]*@@[a-z_]*\)@' |
    sed -e 's/@(\([^:]*\):\([a-z_]*\)@@\([a-z_]*\))@/\1 \2 \3/g' |
    awk '{ if ( $2 != $3 ) printf("%s: %s->%s\n",$1,$2,$3); }'
-*/
+   */
 
 /* this will test get/unget memory management in account.c */
 #undef TESTUNGET
@@ -193,7 +193,7 @@ const int BNETD_W3ROUTE_PORT = 6200;
 const char * const BNETD_SERVERNAME = "PvPGN Realm";
 const char * const BNETD_IRC_ADDRS = ""; /* this means none */
 const int BNETD_IRC_PORT = 6667; /* used if port not specified */
-const char * const BNETD_IRC_NETWORK_NAME  = "PvPGN";
+const char * const BNETD_IRC_NETWORK_NAME = "PvPGN";
 const char * const BNETD_TRACK_ADDRS = "track.pvpgn.org";
 const int BNETD_TRACK_PORT = 6114; /* use this port if not specified */
 const int BNETD_DEF_TEST_PORT = 6112; /* default guess for UDP test port */

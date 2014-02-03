@@ -21,8 +21,8 @@
 namespace pvpgn
 {
 
-/* out of memory callback function */
-typedef int (*t_oom_cb)(void);
+	/* out of memory callback function */
+	typedef int(*t_oom_cb)(void);
 
 }
 
@@ -41,16 +41,16 @@ namespace pvpgn
 
 
 #define xmalloc(size) xmalloc_real(size,__FILE__,__LINE__)
-void *xmalloc_real(std::size_t size, const char *fn, unsigned ln);
+	void *xmalloc_real(std::size_t size, const char *fn, unsigned ln);
 #define xcalloc(no,size) xcalloc_real(no,size,__FILE__,__LINE__)
-void *xcalloc_real(std::size_t nmemb, std::size_t size, const char *fn, unsigned ln);
+	void *xcalloc_real(std::size_t nmemb, std::size_t size, const char *fn, unsigned ln);
 #define xrealloc(ptr,size) xrealloc_real(ptr,size,__FILE__,__LINE__)
-void *xrealloc_real(void *ptr, std::size_t size, const char *fn, unsigned ln);
+	void *xrealloc_real(void *ptr, std::size_t size, const char *fn, unsigned ln);
 #define xstrdup(str) xstrdup_real(str,__FILE__,__LINE__)
-char *xstrdup_real(const char *str, const char *fn, unsigned ln);
+	char *xstrdup_real(const char *str, const char *fn, unsigned ln);
 #define xfree(ptr) xfree_real(ptr,__FILE__,__LINE__)
-void xfree_real(void *ptr, const char *fn, unsigned ln);
-void xalloc_setcb(t_oom_cb cb);
+	void xfree_real(void *ptr, const char *fn, unsigned ln);
+	void xalloc_setcb(t_oom_cb cb);
 
 }
 

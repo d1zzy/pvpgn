@@ -33,7 +33,7 @@
 #else /* FIXME: will this work on all nix like systems? */
 
 # include <dlfcn.h>		/* for dlopen() & dlsym() & dlclose() */
-				/* link to 'libdl.so' */
+/* link to 'libdl.so' */
 # define OpenLibrary(l)		dlopen(l, RTLD_LOCAL | RTLD_LAZY) /* is this the correct mode? */
 # define GetFunction(h,f)	dlsym(h,f)
 # define CloseLibrary(h)	dlclose(h)

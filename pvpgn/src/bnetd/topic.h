@@ -20,20 +20,20 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef struct s_topic
+		typedef struct s_topic
 #ifdef TOPIC_INTERNAL_ACCESS
-{
-  char *   channel_name;
-  char *   topic;
-  int      save;
-}
+		{
+			char *   channel_name;
+			char *   topic;
+			int      save;
+		}
 #endif
-t_topic;
+		t_topic;
 
-}
+	}
 
 }
 
@@ -49,15 +49,15 @@ t_topic;
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-int    topiclist_load(char const * topicfile);
-int    topiclist_unload(void);
-int    channel_set_topic(char const * channel_name, char const * topic_text, int do_save);
-char * channel_get_topic(char const * channel_name);
+		int    topiclist_load(char const * topicfile);
+		int    topiclist_unload(void);
+		int    channel_set_topic(char const * channel_name, char const * topic_text, int do_save);
+		char * channel_get_topic(char const * channel_name);
 
-}
+	}
 
 }
 

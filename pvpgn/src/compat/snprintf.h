@@ -27,7 +27,7 @@
 namespace pvpgn
 {
 
-extern int snprintf(char *str, size_t size, const char *format, ...);
+	extern int snprintf(char *str, size_t size, const char *format, ...);
 
 }
 #endif

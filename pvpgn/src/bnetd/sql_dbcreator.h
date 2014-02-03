@@ -22,49 +22,49 @@
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-typedef struct sqlcommand
+		typedef struct sqlcommand
 #ifdef SQL_DBCREATOR_INTERNAL_ACCESS
-{
-  char * sql_command;
-  char * mode;
-  char * extra_cmd;
-}
+		{
+			char * sql_command;
+			char * mode;
+			char * extra_cmd;
+		}
 #endif
-t_sqlcommand;
+		t_sqlcommand;
 
-typedef struct column
+		typedef struct column
 #ifdef SQL_DBCREATOR_INTERNAL_ACCESS
-{
-  char * name;
-  char * value;
-  char * mode;
-  char * extra_cmd;
-}
+		{
+			char * name;
+			char * value;
+			char * mode;
+			char * extra_cmd;
+		}
 #endif
-t_column;
+		t_column;
 
-typedef struct table
+		typedef struct table
 #ifdef SQL_DBCREATOR_INTERNAL_ACCESS
-{
-  char   * name;
-  t_list * columns;
-  t_list * sql_commands;
-}
+		{
+			char   * name;
+			t_list * columns;
+			t_list * sql_commands;
+		}
 #endif
-t_table;
+		t_table;
 
-typedef struct db_layout
+		typedef struct db_layout
 #ifdef SQL_DBCREATOR_INTERNAL_ACCESS
-{
-  t_list * tables;
-}
+		{
+			t_list * tables;
+		}
 #endif
-t_db_layout;
+		t_db_layout;
 
-}
+	}
 
 }
 
@@ -84,12 +84,12 @@ t_db_layout;
 namespace pvpgn
 {
 
-namespace bnetd
-{
+	namespace bnetd
+	{
 
-int sql_dbcreator(t_sql_engine * sql);
+		int sql_dbcreator(t_sql_engine * sql);
 
-}
+	}
 
 }
 

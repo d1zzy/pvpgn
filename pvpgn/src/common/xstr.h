@@ -24,10 +24,10 @@
 namespace pvpgn
 {
 
-typedef struct {
-	unsigned alen, ulen;
-	char *str;
-} t_xstr;
+	typedef struct {
+		unsigned alen, ulen;
+		char *str;
+	} t_xstr;
 
 }
 
@@ -45,38 +45,38 @@ typedef struct {
 namespace pvpgn
 {
 
-extern t_xstr* xstr_alloc(void);
-extern void xstr_free(t_xstr*);
-extern t_xstr* xstr_cpy_str(t_xstr* dst, const char* src);
-extern t_xstr* xstr_cat_xstr(t_xstr* dst, const t_xstr* src);
-extern t_xstr* xstr_cat_str(t_xstr* dst, const char* src);
-extern t_xstr* xstr_ncat_str(t_xstr* dst, const char* src, int len);
-extern t_xstr* xstr_cat_char(t_xstr* dst, const char ch);
+	extern t_xstr* xstr_alloc(void);
+	extern void xstr_free(t_xstr*);
+	extern t_xstr* xstr_cpy_str(t_xstr* dst, const char* src);
+	extern t_xstr* xstr_cat_xstr(t_xstr* dst, const t_xstr* src);
+	extern t_xstr* xstr_cat_str(t_xstr* dst, const char* src);
+	extern t_xstr* xstr_ncat_str(t_xstr* dst, const char* src, int len);
+	extern t_xstr* xstr_cat_char(t_xstr* dst, const char ch);
 
-static inline void xstr_init(t_xstr* xstr)
-{
-	xstr->alen = xstr->ulen = 0;
-	xstr->str = NULL;
-}
+	static inline void xstr_init(t_xstr* xstr)
+	{
+		xstr->alen = xstr->ulen = 0;
+		xstr->str = NULL;
+	}
 
-static inline const char* xstr_get_str(t_xstr* xstr)
-{
-	if (xstr->alen && xstr->ulen) return xstr->str;
-	return NULL;
-}
+	static inline const char* xstr_get_str(t_xstr* xstr)
+	{
+		if (xstr->alen && xstr->ulen) return xstr->str;
+		return NULL;
+	}
 
-static inline unsigned xstr_get_len(t_xstr* xstr)
-{
-	return xstr->alen ? xstr->ulen : 0;
-}
+	static inline unsigned xstr_get_len(t_xstr* xstr)
+	{
+		return xstr->alen ? xstr->ulen : 0;
+	}
 
-static inline t_xstr* xstr_clear(t_xstr* xstr)
-{
-    /* reset the string content, don't touch the allocation space */
-    xstr->ulen = 0;
+	static inline t_xstr* xstr_clear(t_xstr* xstr)
+	{
+		/* reset the string content, don't touch the allocation space */
+		xstr->ulen = 0;
 
-    return xstr;
-}
+		return xstr;
+	}
 
 }
 
