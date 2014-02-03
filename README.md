@@ -18,7 +18,6 @@ New commands
 * `/save` immediately save changes of accounts and clans from the cache to a storage (useful for testing) <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/be8d65d16f910b2090b0db9e7eb2c043b816dae7)</sup>
 
 
-
 Minor changes
 --
 * add original MOTD files with UTF-8 encoding 
@@ -26,7 +25,8 @@ Minor changes
 * add ODBC support for CMake
 * add latest versioncheck.conf
 * skip_versioncheck, allow_bad_version are enabled by default in bnetd.conf - for easy start
-
+* source code is formatted for better reading
+* unused files are removed, only pvpgn source here
 
 Build source code
 --
