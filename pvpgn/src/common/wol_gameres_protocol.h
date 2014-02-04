@@ -71,8 +71,10 @@ const int DATA_TYPE_BIGINT = 20;
 
 /* Game resolution tags */
 const t_tag CLIENT_SERN_UINT = 0x53455223;
+const t_tag CLIENT_SIDN_UINT = 0x53494423;
 const t_tag CLIENT_SDFX_UINT = 0x53444658;
 const t_tag CLIENT_IDNO_UINT = 0x49444E4F;
+const t_tag CLIENT_GMID_UINT = 0x474D4944;
 const t_tag CLIENT_GSKU_UINT = 0x47534B55;
 const t_tag CLIENT_DCON_UINT = 0x44434F4E;
 const t_tag CLIENT_LCON_UINT = 0x4C434F4E;
@@ -90,6 +92,8 @@ const t_tag CLIENT_CRAT_UINT = 0x43524154;
 const t_tag CLIENT_AIPL_UINT = 0x4149504C;
 const t_tag CLIENT_UNIT_UINT = 0x554E4954;
 const t_tag CLIENT_SCEN_UINT = 0x5343454E;
+const t_tag CLIENT_ADR1_UINT = 0x41445231;
+const t_tag CLIENT_ADR2_UINT = 0x41445232;
 const t_tag CLIENT_CMPL_UINT = 0x434D504C;
 const t_tag CLIENT_PNGS_UINT = 0x504E4753;
 const t_tag CLIENT_PNGR_UINT = 0x504E4752;
@@ -117,6 +121,8 @@ const t_tag CLIENT_SVID_UINT = 0x53564944;
 const t_tag CLIENT_SNAM_UINT = 0x534e414d;
 const t_tag CLIENT_GMAP_UINT = 0x474d4150;
 const t_tag CLIENT_DSVR_UINT = 0x44535652;
+const t_tag CLIENT_GSET_UINT = 0x47534554;
+const t_tag CLIENT_GEND_UINT = 0x47454e44;
 
 /* RNDG Player tags */
 const t_tag CLIENT_PNAM_UINT = 0x504e414d;
@@ -158,6 +164,8 @@ const t_tag CLIENT_NAM4_UINT = 0x4E414D34;
 const t_tag CLIENT_NAM5_UINT = 0x4E414D35;
 const t_tag CLIENT_NAM6_UINT = 0x4E414D36;
 const t_tag CLIENT_NAM7_UINT = 0x4E414D37;
+
+const t_tag CLIENT_QUIT_UINT = 0x51554954;
 
 const t_tag CLIENT_IPA0_UINT = 0x49504130;
 const t_tag CLIENT_IPA1_UINT = 0x49504131;
@@ -338,6 +346,31 @@ const t_tag CLIENT_BLC4_UINT = 0x424c4334;
 const t_tag CLIENT_BLC5_UINT = 0x424c4335;
 const t_tag CLIENT_BLC6_UINT = 0x424c4336;
 const t_tag CLIENT_BLC7_UINT = 0x424c4337;
+
+const t_tag CLIENT_CRA0_UINT = 0x43524130;
+const t_tag CLIENT_CRA1_UINT = 0x43524131;
+const t_tag CLIENT_CRA2_UINT = 0x43524132;
+const t_tag CLIENT_CRA3_UINT = 0x43524133;
+const t_tag CLIENT_CRA4_UINT = 0x43524134;
+const t_tag CLIENT_CRA5_UINT = 0x43524135;
+const t_tag CLIENT_CRA6_UINT = 0x43524136;
+const t_tag CLIENT_CRA7_UINT = 0x43524137;
+
+const t_tag CLIENT_HRV0_UINT = 0x48525630;
+const t_tag CLIENT_HRV1_UINT = 0x48525631;
+const t_tag CLIENT_HRV2_UINT = 0x48525632;
+const t_tag CLIENT_HRV3_UINT = 0x48525633;
+const t_tag CLIENT_HRV4_UINT = 0x48525634;
+const t_tag CLIENT_HRV5_UINT = 0x48525635;
+const t_tag CLIENT_HRV6_UINT = 0x48525636;
+const t_tag CLIENT_HRV7_UINT = 0x48525637;
+
+/* Dune 2000 specific */
+const t_tag CLIENT_PL_0_UINT = 0x504c5f30;
+const t_tag CLIENT_PL_1_UINT = 0x504c5f31;
+
+const t_tag CLIENT_SCR0_UINT = 0x53435230;
+const t_tag CLIENT_SCR1_UINT = 0x53435231;
 
 }
 

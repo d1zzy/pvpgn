@@ -258,8 +258,9 @@ extern int ladder_update_wol(t_clienttag clienttag, t_ladder_id id, t_account * 
         return -1;
     }
 
-    if (((results[0]) && (results[1])) && ((results[0] == results[1]) && (results[0] = game_result_disconnect))) {
-        DEBUG0("Both players got game_result_disconnect - points counting terminated");
+    if (((results[0]) && (results[1])) && ((results[0] == results[1]) && 
+        ((results[0] == game_result_disconnect) || (results[0] == game_result_draw)))) {
+        DEBUG0("Both players got game_result_disconnect or draw - points counting terminated");
         return 0;
     }
 
@@ -1429,7 +1430,14 @@ Ladders::Ladders()
   //YURI ladders
   LadderKey YURI_solo(ladder_id_solo, CLIENTTAG_YURISREV_UINT, ladder_sort_default, ladder_time_default);
   ladderMap.insert(std::make_pair(YURI_solo,LadderList(YURI_solo, referenceTypeAccount)));
+  
+  //RALT ladders
+  LadderKey RALT_solo(ladder_id_solo, CLIENTTAG_REDALERT_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(RALT_solo,LadderList(RALT_solo, referenceTypeAccount)));
 
+  //DUNE2000 ladders
+  LadderKey DN2K_solo(ladder_id_solo, CLIENTTAG_DUNE2000_UINT, ladder_sort_default, ladder_time_default);
+  ladderMap.insert(std::make_pair(DN2K_solo,LadderList(DN2K_solo, referenceTypeAccount)));
 }
 
 Ladders::~Ladders() throw ()
