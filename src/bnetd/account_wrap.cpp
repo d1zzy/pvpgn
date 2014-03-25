@@ -453,6 +453,11 @@ namespace pvpgn
 
 		/****************************************************************/
 
+		/* Account creation time */
+		extern unsigned int account_get_ll_ctime(t_account * account)
+		{
+			return account_get_numattr(account, "BNET\\acct\\ctime");
+		}
 
 		extern unsigned int account_get_ll_time(t_account * account)
 		{

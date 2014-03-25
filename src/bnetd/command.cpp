@@ -3441,6 +3441,8 @@ namespace pvpgn
 			char const *   ip;
 			char *         tok;
 			t_clanmember * clanmemb;
+			std::time_t      then;
+			struct std::tm * tmthen;
 
 			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
 			for (; text[i] == ' '; i++);
@@ -3460,10 +3462,17 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, "Invalid user.");
 				return 0;
 			}
+
+			then = account_get_ll_ctime(account);
+			tmthen = std::localtime(&then); /* FIXME: determine user's timezone */
+
 			snprintf(msgtemp, sizeof(msgtemp), "Login: %-16.16s "UID_FORMAT" Sex: %.14s",
 				account_get_name(account),
 				account_get_uid(account),
 				account_get_sex(account));
+			message_send_text(c, message_type_info, c, msgtemp);
+
+			std::strftime(msgtemp, sizeof(msgtemp), "Created: %a %b %d %H:%M %Y ", tmthen);
 			message_send_text(c, message_type_info, c, msgtemp);
 
 			if ((clanmemb = account_get_clanmember(account)))
@@ -3517,8 +3526,6 @@ namespace pvpgn
 				ip = "unknown";
 
 			{
-				std::time_t      then;
-				struct std::tm * tmthen;
 
 				then = account_get_ll_time(account);
 				tmthen = std::localtime(&then); /* FIXME: determine user's timezone */
@@ -3540,13 +3547,17 @@ namespace pvpgn
 			if ((account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr")))
 			{
 				/* the player who requested /finger has admin privileges
-				   give him more info about the one he querys;
-				   is_admin, is_operator, is_locked, email */
-				snprintf(msgtemp, sizeof(msgtemp), "email:%.128s , is_operator: %d , is_admin: %d , is_acc_locked: %d",
+				give him more info about the one he querys;
+				is_admin, is_operator, is_locked, email */
+				snprintf(msgtemp, sizeof(msgtemp), "Email: %.128s, Operator: %s, Admin: %s, Locked: %s, Muted: %s",
 					account_get_email(account),
-					account_get_auth_operator(account, NULL),
-					account_get_auth_admin(account, NULL),
-					account_get_auth_lock(account));
+					account_get_auth_operator(account, NULL) == 1 ? "Yes" : "No",
+					account_get_auth_admin(account, NULL) == 1 ? "Yes" : "No",
+					account_get_auth_lock(account) == 1 ? "Yes" : "No",
+					account_get_auth_mute(account) == 1 ? "Yes" : "No");
+				message_send_text(c, message_type_info, c, msgtemp);
+				snprintf(msgtemp, sizeof(msgtemp), "Last login Owner: %.128s",
+					account_get_ll_owner(account));
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
