@@ -193,6 +193,12 @@ namespace pvpgn
 		extern char const * prefs_get_wol_autoupdate_serverhost(void);
 		extern char const * prefs_get_wol_autoupdate_username(void);
 		extern char const * prefs_get_wol_autoupdate_password(void);
+
+		/**
+		*  Magic Mod Extensions
+		*/
+		extern char const * prefs_get_bot_username(void);
+		extern int prefs_get_bot_redirect_disabled_commands(void);
 	}
 
 }

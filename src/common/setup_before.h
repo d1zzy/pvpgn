@@ -183,6 +183,8 @@ const int BNETD_WOLV2_PORT = 4005;
 const char * const BNETD_WGAMERES_ADDRS = "";
 const int BNETD_WGAMERES_PORT = 4807;
 
+/* Magic Mod default configuration values */
+const char * const BNETD_BOT_USERNAME = "";
 
 /* other default configuration values */
 const char * const BNETD_LOG_LEVELS = "warn,error";

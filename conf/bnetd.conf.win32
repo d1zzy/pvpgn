@@ -625,3 +625,15 @@ clan_channel_default_private = 0
 # without accepted invitations need. This does not affect WAR3/W3XP ingame
 # clan management.
 clan_min_invites = 2
+
+
+###############################################################################
+# Magic Mod configuration                                           		  #
+#-----------------------------------------------------------------------------#
+
+# Bot login, it should has full admin rights
+bot_username = "admin"
+
+# redirect commands that are removed from command_groups.conf 
+# but not removed from the code
+bot_redirect_disabled_commands = true

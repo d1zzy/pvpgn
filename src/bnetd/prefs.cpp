@@ -144,6 +144,7 @@ namespace pvpgn
 			char const * tournament_file;
 			char const * aliasfile;
 			char const * anongame_infos_file;
+			char const * magicfile;
 			unsigned int max_conns_per_IP;
 			unsigned int max_friends;
 			unsigned int clan_newer_time;
@@ -171,6 +172,10 @@ namespace pvpgn
 			char const * wol_autoupdate_serverhost;
 			char const * wol_autoupdate_username;
 			char const * wol_autoupdate_password;
+
+			char const * bot_username;
+			unsigned int bot_redirect_disabled_commands;
+
 		} prefs_runtime_config;
 
 		static int conf_set_filedir(const char *valstr);
@@ -689,6 +694,16 @@ namespace pvpgn
 		static const char *conf_get_wol_autoupdate_password(void);
 		static int conf_setdef_wol_autoupdate_password(void);
 
+
+		static int conf_setdef_bot_username(void);
+		static int conf_set_bot_username(const char *valstr);
+		static const char *conf_get_bot_username(void);
+
+		static int conf_set_bot_redirect_disabled_commands(const char *valstr);
+		static const char *conf_get_bot_redirect_disabled_commands(void);
+		static int conf_setdef_bot_redirect_disabled_commands(void);
+
+
 		/*    directive                 set method                     get method         */
 		static t_conf_entry conf_table[] =
 		{
@@ -796,6 +811,7 @@ namespace pvpgn
 			{ "tournament_file", conf_set_tournament_file, conf_get_tournament_file, conf_setdef_tournament_file },
 			{ "aliasfile", conf_set_aliasfile, conf_get_aliasfile, conf_setdef_aliasfile },
 			{ "anongame_infos_file", conf_set_anongame_infos_file, conf_get_anongame_infos_file, conf_setdef_anongame_infos_file },
+
 			{ "max_conns_per_IP", conf_set_max_conns_per_IP, conf_get_max_conns_per_IP, conf_setdef_max_conns_per_IP },
 			{ "max_friends", conf_set_max_friends, conf_get_max_friends, conf_setdef_max_friends },
 			{ "clan_newer_time", conf_set_clan_newer_time, conf_get_clan_newer_time, conf_setdef_clan_newer_time },
@@ -822,6 +838,9 @@ namespace pvpgn
 			{ "wol_autoupdate_serverhost", conf_set_wol_autoupdate_serverhost, conf_get_wol_autoupdate_serverhost, conf_setdef_wol_autoupdate_serverhost },
 			{ "wol_autoupdate_username", conf_set_wol_autoupdate_username, conf_get_wol_autoupdate_username, conf_setdef_wol_autoupdate_username },
 			{ "wol_autoupdate_password", conf_set_wol_autoupdate_password, conf_get_wol_autoupdate_password, conf_setdef_wol_autoupdate_password },
+
+			{ "bot_username", conf_set_bot_username, conf_get_bot_username, conf_setdef_bot_username },
+			{ "bot_redirect_disabled_commands", conf_set_bot_redirect_disabled_commands, conf_get_bot_redirect_disabled_commands, conf_setdef_bot_redirect_disabled_commands },
 
 			{ NULL, NULL, NULL, NONE },
 		};
@@ -3602,6 +3621,49 @@ namespace pvpgn
 			return conf_set_str(&prefs_runtime_config.wol_autoupdate_password, NULL, 0);
 		}
 
+
+		/**
+		*  Magic Mod Extensions
+		*/
+		extern char const * prefs_get_bot_username(void)
+		{
+			return prefs_runtime_config.bot_username;
+		}
+
+		static int conf_set_bot_username(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.bot_username, valstr, NULL);
+		}
+
+		static int conf_setdef_bot_username(void)
+		{
+			return conf_set_str(&prefs_runtime_config.bot_username, NULL, BNETD_BOT_USERNAME);
+		}
+
+		static const char* conf_get_bot_username(void)
+		{
+			return prefs_runtime_config.bot_username;
+		}
+
+		extern int prefs_get_bot_redirect_disabled_commands(void)
+		{
+			return prefs_runtime_config.bot_redirect_disabled_commands;
+		}
+
+		static int conf_set_bot_redirect_disabled_commands(const char *valstr)
+		{
+			return conf_set_bool(&prefs_runtime_config.bot_redirect_disabled_commands, valstr, 0);
+		}
+
+		static int conf_setdef_bot_redirect_disabled_commands(void)
+		{
+			return conf_set_bool(&prefs_runtime_config.bot_redirect_disabled_commands, NULL, 1);
+		}
+
+		static const char* conf_get_bot_redirect_disabled_commands(void)
+		{
+			return conf_get_bool(prefs_runtime_config.bot_redirect_disabled_commands);
+		}
 	}
 
 }
