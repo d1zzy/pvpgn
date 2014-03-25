@@ -1665,7 +1665,7 @@ namespace pvpgn
 					return 0;
 				}
 			}
-			else if (strstart(text, "list") == 0 || strstart(text, "l") == 0) {
+			else if (strstart(text, "list") == 0 || strstart(text, "l") == 0 || strstart(text, "online") == 0 || strstart(text, "o") == 0) {
 				char const * frienduid;
 				char status[128];
 				char software[64];
@@ -1678,8 +1678,17 @@ namespace pvpgn
 				t_list  * flist;
 				int num;
 				unsigned int uid;
+				bool online_only = false;
 
-				message_send_text(c, message_type_info, c, "Your PvPGN - Friends List");
+				if (strstart(text, "online") == 0 || strstart(text, "o") == 0) {
+					online_only = true;
+				}
+				if (!online_only) {
+					message_send_text(c, message_type_info, c, "Your PvPGN - Friends List");
+				}
+				else {
+					message_send_text(c, message_type_info, c, "Your PvPGN - Online Friends List");
+				}
 				message_send_text(c, message_type_info, c, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 				num = account_get_friendcount(my_acc);
 
@@ -1694,8 +1703,12 @@ namespace pvpgn
 						}
 						software[0] = '\0';
 						friend_acc = friend_get_account(fr);
-						if (!(dest_c = connlist_find_connection_by_account(friend_acc)))
+						if (!(dest_c = connlist_find_connection_by_account(friend_acc))) {
+							if (online_only) {
+								continue;
+							}
 							std::sprintf(status, ", offline");
+						}
 						else {
 							std::sprintf(software, " using %s", clienttag_get_title(conn_get_clienttag(dest_c)));
 
@@ -1737,6 +1750,7 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, "Type: /f promote <username> (promote a friend in your list)");
 				message_send_text(c, message_type_info, c, "Type: /f demote <username> (demote a friend in your list)");
 				message_send_text(c, message_type_info, c, "Type: /f list (shows your full friends list)");
+				message_send_text(c, message_type_info, c, "Type: /f online (shows your online friends list)");
 				message_send_text(c, message_type_info, c, "Type: /f msg (whispers a message to all your friends at once)");
 			}
 

@@ -115,6 +115,7 @@ whois <player> - looks up some basic information on a user, including their acco
 /friends promote <username> - promote user in your friends list
 /friends demote <username> - demote user in your friends list
 /friends list - list all users in your friends list
+/friends online - list all online users in your friends list
 /friends msg <msgtext> - whispers to all your online friends
 %mail
 /mail <command> [<options>] - mail management commands
