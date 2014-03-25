@@ -106,6 +106,7 @@ namespace pvpgn
 		extern int accountlist_flush(unsigned flags);
 		extern t_account * accountlist_find_account(char const * username);
 		extern t_account * accountlist_find_account_by_uid(unsigned int uid);
+		extern char const *accountlist_find_vague_account(t_account * account, char const *vague_username);
 		extern int accountlist_allow_add(void);
 		extern t_account * accountlist_create_account(const char *username, const char *passhash1);
 		extern void accounts_get_attr(char const *);

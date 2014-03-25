@@ -50,6 +50,7 @@
 #include "common/xstr.h"
 #include "common/trans.h"
 #include "common/lstr.h"
+#include "common/hashtable.h"
 
 #include "connection.h"
 #include "message.h"
@@ -333,6 +334,7 @@ namespace pvpgn
 		static int _handle_gameinfo_command(t_connection * c, char const * text);
 		static int _handle_ladderactivate_command(t_connection * c, char const * text);
 		static int _handle_rehash_command(t_connection * c, char const * text);
+		static int _handle_find_command(t_connection * c, char const *text);
 		static int _handle_save_command(t_connection * c, char const * text);
 
 		//static int _handle_rank_all_accounts_command(t_connection * c, char const * text);
@@ -445,6 +447,7 @@ namespace pvpgn
 			{ "/gameinfo", _handle_gameinfo_command },
 			{ "/ladderactivate", _handle_ladderactivate_command },
 			{ "/rehash", _handle_rehash_command },
+			{ "/find", _handle_find_command },
 			{ "/save", _handle_save_command },
 			//	{ "/rank_all_accounts"  , _handle_rank_all_accounts_command },
 			{ "/shutdown", _handle_shutdown_command },
@@ -3874,6 +3877,48 @@ namespace pvpgn
 		static int _handle_rehash_command(t_connection * c, char const *text)
 		{
 			server_restart_wraper();
+			return 0;
+		}
+
+		/**
+		* /find <substr to search for inside username>
+		*/
+		static int _handle_find_command(t_connection * c, char const *text)
+		{
+			unsigned int  i = 0;
+			t_account *account;
+			char const *tname;
+			t_entry *curr;
+			t_hashtable *accountlist_head = accountlist();
+
+			text = skip_command(text);
+
+			if (text[0] == '\0') {
+				/* In need of a better description */
+				message_send_text(c, message_type_info, c, "Usage: /find <substring to search in acct name>");
+				message_send_text(c, message_type_info, c, "  <substring> has to be in lower case");
+				return -1;
+			}
+
+			std::sprintf(msgtemp, " -- name -- similar to %s", text);
+			message_send_text(c, message_type_info, c, msgtemp);
+
+
+			HASHTABLE_TRAVERSE(accountlist_head, curr)
+			{
+				if (!curr)
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "found NULL account in list");
+				}
+				else
+				{
+					account = (t_account *)entry_get_data(curr);
+					if ((tname = accountlist_find_vague_account(account, text)) != NULL) {
+						message_send_text(c, message_type_info, c, tname);
+						return 0;
+					}
+				}
+			}
 			return 0;
 		}
 

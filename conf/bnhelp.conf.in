@@ -202,5 +202,12 @@ Disband your clan
 /clearstats - used to clear game statistics of a given user/clienttag
 Syntax: /clearstats <user> <clienttag>
   <clienttag> can be one of DSHR,DRTL,SSHR,STAR,SEXP,W2BNE,WAR3,W3XP,ALL
+%find
+/find - used to find users with similar name  
+Syntax: /find <substring to find>
+    <substring to find> needs to be in lower case
+%save
+/save - used to force save accounts changes from a cache into database 
+Syntax: /save
 #                                                                            #
 ##############################################################################
