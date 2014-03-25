@@ -53,7 +53,8 @@ whois <player> - looks up some basic information on a user, including their acco
 %lusers
 /lusers - shows list of banned players in this channel
 %games
-/games [<gametag>] - displays current game list
+/games [<gametag>] - displays current game list of client type gametag, e.g. W3XP - Warcraft 3 TFT 
+/games [lobby], /games [l] - displays current list of games that are in the lobby (i.e. haven't started)
 %channels chs
 /channels /chs [all] - displays current channel list
 %connections con

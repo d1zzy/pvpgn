@@ -2982,6 +2982,7 @@ namespace pvpgn
 			t_game_difficulty diff;
 			t_clienttag tag;
 			t_connection *c;
+			bool lobby;
 		};
 
 		static int _glist_cb(t_game *game, void *data)
@@ -2990,7 +2991,8 @@ namespace pvpgn
 
 			if ((!cbdata->tag || !prefs_get_hide_pass_games() || game_get_flag(game) != game_flag_private) &&
 				(!cbdata->tag || game_get_clienttag(game) == cbdata->tag) &&
-				(cbdata->diff == game_difficulty_none || game_get_difficulty(game) == cbdata->diff))
+				(cbdata->diff == game_difficulty_none || game_get_difficulty(game) == cbdata->diff) &&
+				(cbdata->lobby == false || (game_get_status(game) != game_status_started && game_get_status(game) != game_status_done)))
 			{
 				snprintf(msgtemp, sizeof(msgtemp), " %-16.16s %1.1s %-8.8s %-21.21s %5u ",
 					game_get_name(game),
@@ -3020,7 +3022,7 @@ namespace pvpgn
 			unsigned int   i;
 			unsigned int   j;
 			char           clienttag_str[5];
-			char           dest[5];
+			char           dest[6];
 			struct glist_cb_struct cbdata;
 
 			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
@@ -3031,6 +3033,7 @@ namespace pvpgn
 			for (; text[i] == ' '; i++);
 
 			cbdata.c = c;
+			cbdata.lobby = false;
 
 			if (std::strcmp(&text[i], "norm") == 0)
 				cbdata.diff = game_difficulty_normal;
@@ -3050,6 +3053,12 @@ namespace pvpgn
 			{
 				cbdata.tag = 0;
 				message_send_text(c, message_type_info, c, "All current games:");
+			}
+			else if (strcasecmp(&dest[0], "lobby") == 0 || strcasecmp(&dest[0], "l") == 0)
+			{
+				cbdata.tag = conn_get_clienttag(c);
+				cbdata.lobby = true;
+				message_send_text(c, message_type_info, c, "Games in lobby:");
 			}
 			else
 			{
