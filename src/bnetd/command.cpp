@@ -4678,11 +4678,19 @@ namespace pvpgn
 			key = arg2;
 			value = arg3;
 
+			// disallow get/set value for password hash and username (hash can be cracked easily, account name should be permanent)
+			if (std::strcmp(key, "bnet\\acct\\passhash1") == 0 || std::strcmp(key, "bnet\\acct\\username") == 0 || std::strcmp(key, "bnet\\username") == 0)
+			{
+				message_send_text(c, message_type_info, c, "Access denied due to security reason.");
+				return 0;
+			}
+
 			if ((arg1[0] == '\0') || (arg2[0] == '\0'))
 			{
 				message_send_text(c, message_type_info, c, "usage: /set <username> <key> [value]");
+				return 0;
 			}
-
+			
 			if (!(account = accountlist_find_account(accname)))
 			{
 				message_send_text(c, message_type_error, c, "Invalid user.");
@@ -4693,7 +4701,7 @@ namespace pvpgn
 			{
 				if (account_get_strattr(account, key))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "current value of %.64s is \"%.128s\"", key, account_get_strattr(account, key));
+					snprintf(msgtemp, sizeof(msgtemp), "Current value of %.64s is \"%.128s\"", key, account_get_strattr(account, key));
 					message_send_text(c, message_type_error, c, msgtemp);
 				}
 				else
@@ -4701,11 +4709,18 @@ namespace pvpgn
 				return 0;
 			}
 
-			if (account_set_strattr(account, key, value) < 0)
-				message_send_text(c, message_type_error, c, "Unable to set key");
-			else{
-				message_send_text(c, message_type_error, c, "Key set succesfully");
+			std::sprintf(msgtemp, "for \"%s\" (%.64s = \"%.128s\")", account_get_name(account), key, value);
 
+			if (account_set_strattr(account, key, value) < 0)
+			{
+				std::sprintf(msgtemp2, "Unable to set key %s", msgtemp);
+				message_send_text(c, message_type_error, c, msgtemp2);
+			}
+			else
+			{
+				std::sprintf(msgtemp2, "Key set succesfully %s", msgtemp);
+				message_send_text(c, message_type_error, c, msgtemp2);
+				eventlog(eventlog_level_warn, __FUNCTION__, "Key set by \"%s\" %s", account_get_name(conn_get_account(c)), msgtemp);
 			}
 			return 0;
 		}
