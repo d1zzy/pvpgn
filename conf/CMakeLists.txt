@@ -23,7 +23,7 @@ if(WITH_BNETD)
   bnetd_default_user.plain bnhelp.conf bnissue.txt bnmaps.conf bnmotd-enUS.txt 
   bnmotd-csCZ.txt bnmotd-deDE.txt bnmotd-esES.txt bnmotd-frFR.txt bnmotd-nlNL.txt
   bnmotd-plPL.txt bnmotd-ruRU.txt bnmotd-zhCN.txt bnmotd-zhTW.txt bnmotd-ptBR.txt  
-  bnxpcalc.conf bnxplevel.conf channel.conf command_groups.conf news.txt 
+  bnxpcalc.conf bnxplevel.conf channel.conf command_groups.conf news.txt bnmotd_w3.txt 
   realm.conf sql_DB_layout.conf sql_DB_layout2.conf supportfile.conf topics.conf 
   tournament.conf versioncheck.conf)
 

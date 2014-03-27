@@ -40,6 +40,7 @@ namespace pvpgn
 		extern char const * prefs_get_logfile(void);
 		extern char const * prefs_get_loglevels(void);
 		extern char const * prefs_get_motdfile(void);
+		extern char const * prefs_get_motdw3file(void);
 		extern char const * prefs_get_newsfile(void);
 		extern char const * prefs_get_adfile(void);
 		extern char const * prefs_get_topicfile(void);

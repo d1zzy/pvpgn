@@ -43,6 +43,7 @@ namespace pvpgn
 			char const * logfile;
 			char const * loglevels;
 			char const * motdfile;
+			char const * motdw3file;
 			char const * newsfile;
 			char const * channelfile;
 			char const * pidfile;
@@ -192,6 +193,10 @@ namespace pvpgn
 		static int conf_set_motdfile(const char *valstr);
 		static const char *conf_get_motdfile(void);
 		static int conf_setdef_motdfile(void);
+
+		static int conf_set_motdw3file(const char *valstr);
+		static const char *conf_get_motdw3file(void);
+		static int conf_setdef_motdw3file(void);
 
 		static int conf_set_newsfile(const char *valstr);
 		static const char *conf_get_newsfile(void);
@@ -697,6 +702,7 @@ namespace pvpgn
 			{ "logfile", conf_set_logfile, conf_get_logfile, conf_setdef_logfile },
 			{ "loglevels", conf_set_loglevels, conf_get_loglevels, conf_setdef_loglevels },
 			{ "motdfile", conf_set_motdfile, conf_get_motdfile, conf_setdef_motdfile },
+			{ "motdw3file", conf_set_motdw3file, conf_get_motdw3file, conf_setdef_motdw3file },
 			{ "newsfile", conf_set_newsfile, conf_get_newsfile, conf_setdef_newsfile },
 			{ "channelfile", conf_set_channelfile, conf_get_channelfile, conf_setdef_channelfile },
 			{ "pidfile", conf_set_pidfile, conf_get_pidfile, conf_setdef_pidfile },
@@ -960,6 +966,27 @@ namespace pvpgn
 		static const char* conf_get_motdfile(void)
 		{
 			return prefs_runtime_config.motdfile;
+		}
+
+
+		extern char const * prefs_get_motdw3file(void)
+		{
+			return prefs_runtime_config.motdw3file;
+		}
+
+		static int conf_set_motdw3file(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.motdw3file, valstr, NULL);
+		}
+
+		static int conf_setdef_motdw3file(void)
+		{
+			return conf_set_str(&prefs_runtime_config.motdw3file, NULL, BNETD_MOTDW3_FILE);
+		}
+
+		static const char* conf_get_motdw3file(void)
+		{
+			return prefs_runtime_config.motdw3file;
 		}
 
 

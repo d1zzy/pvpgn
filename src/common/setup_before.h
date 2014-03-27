@@ -130,6 +130,7 @@ const char * const BNETD_STORAGE_PATH = "";
 const char * const BNETD_REPORT_DIR = "reports";
 const char * const BNETD_LOG_FILE = "logs/bnetd.log";
 const char * const BNETD_MOTD_FILE = "conf/bnmotd.txt";
+const char * const BNETD_MOTDW3_FILE = "conf/bnmotd_w3.txt";
 const char * const BNETD_NEWS_DIR = "news";
 const char * const BNETD_AD_FILE = "conf/ad.conf";
 const char * const BNETD_CHANNEL_FILE = "conf/channel.conf";
