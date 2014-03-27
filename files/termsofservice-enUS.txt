@@ -19,3 +19,5 @@ Battle.net(R) and Blizzard Entertainment(R) are trademarks or registered tradema
 
 Besides all this... Happy gaming..
 PvPGN Project Page: http://pvpgn.berlios.de/
+
+(edit this text in var/files/termsofservice-enUS.txt)

@@ -1,5 +1,5 @@
 %IHallo %l, welom bij %s!
-%IWe draaien versie %v op %h.
+%EWe draaien versie %v op %h.
 %IDeze server wordt gehost bij %H
 %I
 %IEr zijn %a gebruikers accounts op deze server.
@@ -8,4 +8,6 @@
 %IProblemen met een commando? Type /help om
 %Ier meer te weten over te komen.
 %I
-%I%m
+%I(edit this text in conf/bnmotd-nlNL.txt)
+%I
+%M%m

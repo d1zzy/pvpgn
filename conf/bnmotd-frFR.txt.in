@@ -1,4 +1,4 @@
-%IBonjour %l, bienvenue sur %s!
+%EBonjour %l, bienvenue sur %s!
 %IUtilisant la version %v sur %h.
 %ICe serveur est hébergé par %H
 %I
@@ -8,4 +8,6 @@
 %IUn problème avec une commande ? Tappez /help pour
 %Ien savoir plus.
 %I
-%I%m
+%I(edit this text in conf/bnmotd-ptBR.txt)
+%I
+%M%m

@@ -1,4 +1,4 @@
-%IHej %l, välkommen till %s!
+%EHej %l, välkommen till %s!
 %IKör version %v på %h.
 %IVärden för den här servern är %H
 %I
@@ -8,4 +8,6 @@
 %IHar du problem med ett kommando? Skriv /help för
 %Iatt lära dig mer om det.
 %I
-%I%m
+%I(edit this text in conf/bnmotd-svSE.txt)
+%I
+%M%m

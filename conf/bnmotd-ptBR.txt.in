@@ -1,4 +1,4 @@
-%IOlá %l, Bem vindo a %s!
+%EOlá %l, Bem vindo a %s!
 %IRodando a versão %v em %h.
 %IEste servidor é hosteado por %H
 %I
@@ -8,4 +8,6 @@
 %ITendo algum problema com comando? Digite /help ra
 %Aprender mais sobre.
 %I
-%I%m
+%I(edit this text in conf/bnmotd-ptBR.txt)
+%I
+%M%m
