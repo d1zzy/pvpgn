@@ -36,7 +36,13 @@ namespace pvpgn
 		extern char const * prefs_get_charinfo_dir(void);
 		extern char const * prefs_get_bak_charsave_dir(void);
 		extern char const * prefs_get_bak_charinfo_dir(void);
-		extern char const * prefs_get_charsave_newbie(void);
+		extern char const * prefs_get_charsave_newbie_amazon(void);
+		extern char const * prefs_get_charsave_newbie_sorceress(void);
+		extern char const * prefs_get_charsave_newbie_necromancer(void);
+		extern char const * prefs_get_charsave_newbie_paladin(void);
+		extern char const * prefs_get_charsave_newbie_barbarian(void);
+		extern char const * prefs_get_charsave_newbie_druid(void);
+		extern char const * prefs_get_charsave_newbie_assasin(void);
 		extern char const * prefs_get_motd(void);
 		extern char const * prefs_get_realmname(void);
 		extern char const * prefs_get_d2gs_list(void);
