@@ -158,7 +158,7 @@
 
 6	/operator /admin /flag /tag
 
-7	/set /commandgroups /cg /clearstats
+7	/set /commandgroups /cg /clearstats /icon
 
 8	/shutdown /rehash /find /save
 

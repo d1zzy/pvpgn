@@ -361,6 +361,7 @@ namespace pvpgn
 		static int _handle_moderate_command(t_connection * c, char const * text);
 		static int _handle_clearstats_command(t_connection * c, char const * text);
 		static int _handle_tos_command(t_connection * c, char const * text);
+		static int _handle_icon_command(t_connection * c, char const * text);
 
 		static const t_command_table_row standard_command_table[] =
 		{
@@ -477,6 +478,7 @@ namespace pvpgn
 			{ "/topic", _handle_topic_command },
 			{ "/moderate", _handle_moderate_command },
 			{ "/clearstats", _handle_clearstats_command },
+			{ "/icon", _handle_icon_command },
 
 			{ NULL, NULL }
 
@@ -4712,6 +4714,9 @@ namespace pvpgn
 			if ((arg1[0] == '\0') || (arg2[0] == '\0'))
 			{
 				message_send_text(c, message_type_info, c, "usage: /set <username> <key> [value]");
+				message_send_text(c, message_type_info, c, " example: /set joe BNET\\auth\\botlogin true");
+				message_send_text(c, message_type_info, c, " example: /set joe Record\\W3XP\\ffa_wins 123");
+				message_send_text(c, message_type_info, c, " (set value = null to unset value)");
 				return 0;
 			}
 			
@@ -5321,6 +5326,89 @@ namespace pvpgn
 			ladders.update();
 
 			return 0;
+		}
+
+		/* Set usericon */
+		static int _handle_icon_command(t_connection * c, char const *text)
+		{
+			t_account * account;
+			t_connection * con;
+			char *accname;
+			char *code;
+			const char *usericon;
+			t_clienttag clienttag;
+			char t[MAX_MESSAGE_LEN];
+			unsigned int i, j;
+			char         arg1[256];
+			char         arg2[256];
+
+			std::strncpy(t, text, MAX_MESSAGE_LEN - 1);
+			for (i = 0; t[i] != ' ' && t[i] != '\0'; i++); /* skip command /icon */
+
+			for (; t[i] == ' '; i++); /* skip spaces */
+			for (j = 0; t[i] != ' ' && t[i] != '\0'; i++) /* get username */
+			if (j < sizeof(arg1)-1) arg1[j++] = t[i];
+			arg1[j] = '\0';
+
+			for (; t[i] == ' '; i++); /* skip spaces */
+			for (j = 0; t[i] != ' ' && t[i] != '\0'; i++) /* get code  */
+			if (j < sizeof(arg2)-1) arg2[j++] = t[i];
+			arg2[j] = '\0';
+
+			accname = arg1;
+			code = arg2;
+
+			if ((arg1[0] == '\0') || (arg2[0] == '\0') || strlen(arg2) != 4)
+			{
+				message_send_text(c, message_type_info, c, "usage: /icon <username> [CODE]");
+				message_send_text(c, message_type_info, c, " for example: /icon joe W3D6");
+				message_send_text(c, message_type_info, c, " (set code = null to unset icon)");
+				return 0;
+			}
+
+			if (!(account = accountlist_find_account(accname)))
+			{
+				message_send_text(c, message_type_error, c, "Invalid user.");
+				return 0;
+			}
+
+			clienttag = account_get_ll_clienttag(account);
+
+			if (code == '\0')
+			{
+				if (usericon = account_get_user_icon(account, clienttag))
+				{
+					snprintf(msgtemp, sizeof(msgtemp), "%.64s has custom icon \"%.4s\"", account_get_name(account), strreverse((char*)usericon));
+					message_send_text(c, message_type_error, c, msgtemp);
+				}
+				else
+				{
+					snprintf(msgtemp, sizeof(msgtemp), "Custom icon for %.64s currently not set", account_get_name(account));
+					message_send_text(c, message_type_error, c, msgtemp);
+				}
+					
+				return 0;
+			}
+			for (int i = 0; i < strlen(code); i++)
+				code[i] = toupper(code[i]);
+
+			// unset value
+			if (strcasecmp(code, "null") == 0)
+				usericon = NULL;
+			else
+				usericon = strreverse(xstrdup(code));
+
+
+			snprintf(msgtemp, sizeof(msgtemp), "Set icon \"%.4s\" to %.64s", code, account_get_name(account));
+			message_send_text(c, message_type_error, c, msgtemp);
+
+			// if user online then force him to rejoin channel
+			if (con = account_get_conn(account))
+			{
+				account_set_user_icon(account, clienttag, usericon);
+				conn_update_w3_playerinfo(con);
+				channel_rejoin(con);
+			}
 		}
 
 	}

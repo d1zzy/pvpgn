@@ -2562,6 +2562,7 @@ namespace pvpgn
 				if (!usericon && (icon = get_custom_icon(account, clienttag)))
 					strcpy(revtag, icon->icon_code);
 
+				// FIXME: it replaces tag with icon on a client side for all clients (HarpyWar)
 				std::strcpy(playerinfo, revtag);
 			}
 			else if (clienttag == CLIENTTAG_BNCHATBOT_UINT)
