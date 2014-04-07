@@ -24,6 +24,7 @@
 #include "handle_bnet.h"
 
 #include <fstream>
+#include <cerrno>
 #include <sstream>
 #include <cstring>
 #include <cctype>
