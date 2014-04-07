@@ -304,7 +304,7 @@ namespace pvpgn
 								t_icon_info * icon_info = (t_icon_info*)xmalloc(sizeof(t_icon_info));
 								icon_info->rating = atoi(rating);
 								icon_info->rank = xstrdup(rank);
-								icon_info->icon_code = xstrdup(_strrev(icon)); // save reversed icon code
+								icon_info->icon_code = xstrdup(strreverse(icon)); // save reversed icon code
 								list_prepend_data(icon_set->icon_info, icon_info);
 							}
 						}
