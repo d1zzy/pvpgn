@@ -4,10 +4,10 @@ set(OUTPUT_CONFS ad.conf anongame_infos.conf address_translation.conf
   bnhelp.conf bnissue.txt bnmaps.conf bnxpcalc.conf bnmotd-enUS.txt 
   bnmotd-csCZ.txt bnmotd-deDE.txt bnmotd-esES.txt bnmotd-frFR.txt 
   bnmotd-nlNL.txt bnmotd-plPL.txt bnmotd-ruRU.txt bnmotd-zhCN.txt 
-  bnmotd-zhTW.txt bnmotd-ptBR.txt 
+  bnmotd-zhTW.txt bnmotd-ptBR.txt bnmotd_w3.txt 
   bnxplevel.conf channel.conf command_groups.conf news.txt realm.conf 
   sql_DB_layout2.conf sql_DB_layout.conf supportfile.conf topics.conf 
-  tournament.conf versioncheck.conf)
+  tournament.conf versioncheck.conf icons.conf)
 foreach(CONF ${OUTPUT_CONFS})
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${CONF}.in ${CMAKE_CURRENT_BINARY_DIR}/${CONF} @ONLY)
 endforeach(CONF)
@@ -25,16 +25,16 @@ if(WITH_BNETD)
   bnmotd-plPL.txt bnmotd-ruRU.txt bnmotd-zhCN.txt bnmotd-zhTW.txt bnmotd-ptBR.txt  
   bnxpcalc.conf bnxplevel.conf channel.conf command_groups.conf news.txt bnmotd_w3.txt 
   realm.conf sql_DB_layout.conf sql_DB_layout2.conf supportfile.conf topics.conf 
-  tournament.conf versioncheck.conf)
+  tournament.conf versioncheck.conf icons.conf)
 
-  # special treatement for non .in files
+  # special treatment for non .in files
   install(FILES bnetd_default_user.cdb DESTINATION ${SYSCONFDIR})
 endif(WITH_BNETD)
 
 if(WITH_D2CS)
   set(D2CS_CONFS d2cs.conf anongame_infos.conf)
 
-  # special treatement for non .in files
+  # special treatment for non .in files
   install(FILES d2server.ini DESTINATION ${SYSCONFDIR})
 endif(WITH_D2CS)
 

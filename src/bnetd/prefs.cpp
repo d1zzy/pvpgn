@@ -143,6 +143,7 @@ namespace pvpgn
 			unsigned int account_force_username;
 			char const * command_groups_file;
 			char const * tournament_file;
+			char const * customicons_file;
 			char const * aliasfile;
 			char const * anongame_infos_file;
 			unsigned int max_conns_per_IP;
@@ -586,6 +587,10 @@ namespace pvpgn
 		static const char *conf_get_tournament_file(void);
 		static int conf_setdef_tournament_file(void);
 
+		static int conf_set_customicons_file(const char *valstr);
+		static const char *conf_get_customicons_file(void);
+		static int conf_setdef_customicons_file(void);
+
 		static int conf_set_aliasfile(const char *valstr);
 		static const char *conf_get_aliasfile(void);
 		static int conf_setdef_aliasfile(void);
@@ -800,6 +805,7 @@ namespace pvpgn
 			{ "account_force_username", conf_set_account_force_username, conf_get_account_force_username, conf_setdef_account_force_username },
 			{ "command_groups_file", conf_set_command_groups_file, conf_get_command_groups_file, conf_setdef_command_groups_file },
 			{ "tournament_file", conf_set_tournament_file, conf_get_tournament_file, conf_setdef_tournament_file },
+			{ "customicons_file", conf_set_customicons_file, conf_get_customicons_file, conf_setdef_customicons_file },
 			{ "aliasfile", conf_set_aliasfile, conf_get_aliasfile, conf_setdef_aliasfile },
 			{ "anongame_infos_file", conf_set_anongame_infos_file, conf_get_anongame_infos_file, conf_setdef_anongame_infos_file },
 			{ "max_conns_per_IP", conf_set_max_conns_per_IP, conf_get_max_conns_per_IP, conf_setdef_max_conns_per_IP },
@@ -3036,6 +3042,27 @@ namespace pvpgn
 		static const char* conf_get_tournament_file(void)
 		{
 			return prefs_runtime_config.tournament_file;
+		}
+
+
+		extern char const * prefs_get_customicons_file(void)
+		{
+			return prefs_runtime_config.customicons_file;
+		}
+
+		static int conf_set_customicons_file(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.customicons_file, valstr, NULL);
+		}
+
+		static int conf_setdef_customicons_file(void)
+		{
+			return conf_set_str(&prefs_runtime_config.customicons_file, NULL, BNETD_CUSTOMICONS_FILE);
+		}
+
+		static const char* conf_get_customicons_file(void)
+		{
+			return prefs_runtime_config.customicons_file;
 		}
 
 

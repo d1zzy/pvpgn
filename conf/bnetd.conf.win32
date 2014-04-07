@@ -86,6 +86,7 @@ aliasfile   = conf\bnalias.conf
 anongame_infos_file = conf\anongame_infos.conf
 DBlayoutfile = conf\sql_DB_layout.conf
 supportfile = conf\supportfile.conf
+customicons_file = conf\icons.conf
 
 fortunecmd  = bin\fortune.exe
 

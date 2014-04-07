@@ -108,6 +108,7 @@ anongame_infos_file = "${SYSCONFDIR}/anongame_infos.conf"
 DBlayoutfile = "${SYSCONFDIR}/sql_DB_layout.conf"
 supportfile = "${SYSCONFDIR}/supportfile.conf"
 transfile   = "${SYSCONFDIR}/address_translation.conf"
+customicons_file = "${SYSCONFDIR}/icons.conf"
 
 fortunecmd  = /usr/games/fortune
 

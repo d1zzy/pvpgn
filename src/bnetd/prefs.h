@@ -157,6 +157,7 @@ namespace pvpgn
 
 		extern char const * prefs_get_command_groups_file(void);
 		extern char const * prefs_get_tournament_file(void);
+		extern char const * prefs_get_customicons_file(void);
 		extern char const * prefs_get_aliasfile(void);
 
 		extern char const * prefs_get_anongame_infos_file(void);

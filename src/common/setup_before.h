@@ -153,6 +153,7 @@ const char * const BNETD_SUPPORT_FILE = "conf/supportfile.conf";
 
 const char * const BNETD_COMMAND_GROUPS_FILE = "conf/command_groups.conf";
 const char * const BNETD_TOURNAMENT_FILE = "conf/tournament.conf";
+const char * const BNETD_CUSTOMICONS_FILE = "conf/icons.conf";
 const char * const BNETD_ALIASFILE = "conf/bnalias.conf";
 /* time limit for new member as newer(whom cannot be promoted) in clan, (hrs) */
 const unsigned CLAN_NEWER_TIME = 168;

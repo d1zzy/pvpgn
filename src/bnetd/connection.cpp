@@ -74,6 +74,7 @@
 #include "attrlayer.h"
 #include "anongame_wol.h"
 #include "common/setup_after.h"
+#include "icons.h"
 
 namespace pvpgn
 {
@@ -2521,13 +2522,14 @@ namespace pvpgn
 			return 0;
 		}
 
-
+		/* Player icon that displayed in a channel in all games (except Warcraft 3) */
 		extern char const * conn_get_playerinfo(t_connection const * c)
 		{
 			t_account *  account;
 			static char  playerinfo[MAX_PLAYERINFO_STR];
 			t_clienttag  clienttag;
 			char         revtag[5];
+			char const *	usericon;
 
 			if (!c)
 			{
@@ -2547,7 +2549,22 @@ namespace pvpgn
 			}
 			tag_uint_to_revstr(revtag, clienttag);
 
-			if (clienttag == CLIENTTAG_BNCHATBOT_UINT)
+			// allow set icon to a user directly from the database (override default tag always if not null)
+			if (usericon = account_get_user_icon(account, clienttag))
+				std::sprintf(revtag, usericon);
+
+			// if custom_icons is enabled then set a custom client tag by player rating
+			if (prefs_get_custom_icons() == 1)
+			{
+				t_icon_info * icon;
+
+				// do not override userselectedicon if it's not null
+				if (!usericon && (icon = get_custom_icon(account, clienttag)))
+					strcpy(revtag, icon->icon_code);
+
+				std::strcpy(playerinfo, revtag);
+			}
+			else if (clienttag == CLIENTTAG_BNCHATBOT_UINT)
 			{
 				std::strcpy(playerinfo, revtag); /* FIXME: what to return here? */
 			}
@@ -3674,6 +3691,7 @@ namespace pvpgn
 			return count;
 		}
 
+		/* Warcraft 3 icon that displayed in a channel */
 		extern int conn_update_w3_playerinfo(t_connection * c)
 		{
 			t_account * 	account;
@@ -3725,15 +3743,35 @@ namespace pvpgn
 				while ((*clantag_str) == 0) clantag_str++;
 			}
 
-			if (acctlevel == 0) {
+			// allow set icon to a user directly from the database (override default icon always if not null)
+			usericon = account_get_user_icon(account, clienttag);
+
+			// if custom stats is enabled then set a custom client icon by player rating
+			if (prefs_get_custom_icons() == 1)
+			{
+				t_icon_info * icon;
+
+				// do not override userselectedicon if it's not null
+				if (!usericon && (icon = get_custom_icon(account, clienttag)))
+					usericon = xstrdup(icon->icon_code);
+
+				acctlevel = 0;
+				if (clantag)
+					std::sprintf(tempplayerinfo, "%s %s %u %s", revtag, usericon, acctlevel, clantag_str);
+				else
+					std::sprintf(tempplayerinfo, "%s %s %u", revtag, usericon, acctlevel);
+			}
+			// default icon "WAR3" or "W3XP"
+			else if (acctlevel == 0 && !usericon) {
 				if (clantag)
 					std::sprintf(tempplayerinfo, "%s %s 0 %s", revtag, revtag, clantag_str);
 				else
 					std::strcpy(tempplayerinfo, revtag);
 				eventlog(eventlog_level_info, __FUNCTION__, "[%d] %s", conn_get_socket(c), revtag);
 			}
-			else {
-				usericon = account_get_user_icon(account, clienttag);
+			// display race icon with a level number
+			else 
+			{
 				if (!usericon) {
 					if (clantag)
 						std::sprintf(tempplayerinfo, "%s %1u%c3W %u %s", revtag, raceiconnumber, raceicon, acctlevel, clantag_str);

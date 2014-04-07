@@ -76,6 +76,7 @@
 #include "clan.h"
 #include "common/setup_after.h"
 #include "common/flags.h"
+#include "icons.h"
 
 #include "attrlayer.h"
 
@@ -2184,6 +2185,29 @@ namespace pvpgn
 			}
 
 			clienttag_uint = tag_case_str_to_uint(clienttag);
+
+			
+			// custom stats
+			if (prefs_get_custom_icons() == 1)
+			{
+				const char *text;
+
+				// if text is not empty
+				if (text = get_custom_stats_text(account, clienttag_uint))
+				{
+					// split by lines
+					char* output_array = strtok((char*)text, "\n");
+					while (output_array)
+					{
+						message_send_text(c, message_type_info, c, output_array);
+						output_array = strtok(NULL, "\n");
+					}
+					xfree((char*)text);
+
+					return 0;
+				}
+			}
+
 
 			switch (clienttag_uint)
 			{
@@ -4679,7 +4703,7 @@ namespace pvpgn
 			value = arg3;
 
 			// disallow get/set value for password hash and username (hash can be cracked easily, account name should be permanent)
-			if (std::strcmp(key, "bnet\\acct\\passhash1") == 0 || std::strcmp(key, "bnet\\acct\\username") == 0 || std::strcmp(key, "bnet\\username") == 0)
+			if (strcasecmp(key, "bnet\\acct\\passhash1") == 0 || strcasecmp(key, "bnet\\acct\\username") == 0 || strcasecmp(key, "bnet\\username") == 0)
 			{
 				message_send_text(c, message_type_info, c, "Access denied due to security reason.");
 				return 0;
@@ -4708,6 +4732,10 @@ namespace pvpgn
 					message_send_text(c, message_type_error, c, "value currently not set");
 				return 0;
 			}
+
+			// unset value
+			if (strcasecmp(value, "null") == 0)
+				value = NULL;
 
 			std::sprintf(msgtemp, "for \"%s\" (%.64s = \"%.128s\")", account_get_name(account), key, value);
 
