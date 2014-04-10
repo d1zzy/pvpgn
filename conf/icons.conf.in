@@ -29,6 +29,7 @@ custom_icons = false
 
 ##############################################################################
 # Warcraft 3 icon set                                                        #
+# Use MPQ editor to edit icons-WAR3.bni (just change extension bni->mpq)     #
 #----------------------------------------------------------------------------#
 
 [W3XP]
@@ -67,6 +68,8 @@ FFA games: [{{ffa_level->rank}}] {{ffa_xp}} xp ({{ffa_wins}} - {{ffa_losses}})
 
 ##############################################################################
 # Starcraft icon set                                                         #
+# Use Bni Icon Builder to edit icons.bni (icons_STAR.bni is not used)        #
+#  https://github.com/HarpyWar/bni-icon-builder                              #
 #----------------------------------------------------------------------------#
 
 [SEXP]
