@@ -5358,7 +5358,7 @@ namespace pvpgn
 			accname = arg1;
 			code = arg2;
 
-			if ((arg1[0] == '\0') || (arg2[0] == '\0') || strlen(arg2) != 4)
+			if (accname == '\0')
 			{
 				message_send_text(c, message_type_info, c, "usage: /icon <username> [CODE]");
 				message_send_text(c, message_type_info, c, " for example: /icon joe W3D6");
@@ -5374,7 +5374,8 @@ namespace pvpgn
 
 			clienttag = account_get_ll_clienttag(account);
 
-			if (code == '\0')
+			// output current usericon code
+			if (code == '\0' || strlen(arg2) != 4)
 			{
 				if (usericon = account_get_user_icon(account, clienttag))
 				{
