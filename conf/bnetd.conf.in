@@ -81,7 +81,8 @@ storage_path = "file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}
 filedir     = "${LOCALSTATEDIR}/files"
 reportdir   = "${LOCALSTATEDIR}/reports"
 chanlogdir  = "${LOCALSTATEDIR}/chanlogs"
-motdfile    = "${SYSCONFDIR}/bnmotd-enUS.txt"
+motdfile    = "${SYSCONFDIR}/bnmotd.txt"
+motdw3file  = "${SYSCONFDIR}/bnmotd_w3.txt"
 issuefile   = "${SYSCONFDIR}/bnissue.txt"
 channelfile = "${SYSCONFDIR}/channel.conf"
 newsfile    = "${SYSCONFDIR}/news.txt"
@@ -107,6 +108,7 @@ anongame_infos_file = "${SYSCONFDIR}/anongame_infos.conf"
 DBlayoutfile = "${SYSCONFDIR}/sql_DB_layout.conf"
 supportfile = "${SYSCONFDIR}/supportfile.conf"
 transfile   = "${SYSCONFDIR}/address_translation.conf"
+customicons_file = "${SYSCONFDIR}/icons.conf"
 
 fortunecmd  = /usr/games/fortune
 

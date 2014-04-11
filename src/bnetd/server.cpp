@@ -83,6 +83,7 @@
 #include "command_groups.h"
 #include "alias_command.h"
 #include "tournament.h"
+#include "icons.h"
 #include "anongame_infos.h"
 #include "topic.h"
 #include "common/setup_after.h"
@@ -1408,6 +1409,9 @@ namespace pvpgn
 						eventlog(eventlog_level_error, __FUNCTION__, "could not reload trans list");
 
 					tournament_reload(prefs_get_tournament_file());
+
+					customicons_unload();
+					customicons_load(prefs_get_customicons_file());
 
 					anongame_infos_unload();
 					anongame_infos_load(prefs_get_anongame_infos_file());

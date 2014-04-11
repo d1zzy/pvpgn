@@ -1,4 +1,4 @@
-%IHallo %l, willkommen zu %s!
+%EHallo %l, willkommen zu %s!
 %ILaufende Version %v auf %h.
 %IDer Server ist von %H gehostet
 %I
@@ -8,4 +8,6 @@
 %IEin Problem mit den Kommandos? Schreibe /help und
 %Ilerne mehr über die Kommandos.
 %I
-%I%m
+%I(edit this text in conf/bnmotd-deDE.txt)
+%I
+%M%m

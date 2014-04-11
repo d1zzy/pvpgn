@@ -81,6 +81,7 @@
 #include "command_groups.h"
 #include "alias_command.h"
 #include "tournament.h"
+#include "icons.h"
 #include "anongame_infos.h"
 #include "anongame_wol.h"
 #include "clan.h"
@@ -294,6 +295,7 @@ char * write_to_pidfile(void)
 	return pidfile;
 }
 
+/* Initialize config files */
 int pre_server_startup(void)
 {
 	pvpgn_greeting();
@@ -364,6 +366,7 @@ int pre_server_startup(void)
 	if (trans_load(prefs_get_transfile(), TRANS_BNETD) < 0)
 		eventlog(eventlog_level_error, __FUNCTION__, "could not load trans list");
 	tournament_init(prefs_get_tournament_file());
+	customicons_load(prefs_get_customicons_file());
 	anongame_infos_load(prefs_get_anongame_infos_file());
 	anongame_wol_matchlist_create();
 	clanlist_load();

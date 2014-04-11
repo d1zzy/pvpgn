@@ -38,6 +38,7 @@
 #include "tournament.h"
 #include "channel.h"
 #include "common/setup_after.h"
+#include "icons.h"
 
 namespace pvpgn
 {
@@ -439,10 +440,10 @@ namespace pvpgn
 			return 0;
 		}
 
+		/* Open portrait in Warcraft 3 user profile */
 		static int _client_anongame_get_icon(t_connection * c, t_packet const * const packet)
 		{
 			t_packet * rpacket;
-
 			//BlacKDicK 04/20/2003 Need some huge re-work on this.
 			{
 				struct
@@ -491,7 +492,16 @@ namespace pvpgn
 				packet_set_type(rpacket, SERVER_FINDANONGAME_ICONREPLY);
 				bn_int_set(&rpacket->u.server_findanongame_iconreply.count, bn_int_get(packet->u.client_findanongame_inforeq.count));
 				bn_byte_set(&rpacket->u.server_findanongame_iconreply.option, CLIENT_FINDANONGAME_GET_ICON);
-				if ((uicon = account_get_user_icon(acc, clienttag)))
+				
+				
+				if (prefs_get_custom_icons() == 1)
+				{
+					// get current custom icon
+					t_icon_info * icon;
+					if (icon = get_custom_icon(acc, clienttag))
+						std::memcpy(&rpacket->u.server_findanongame_iconreply.curricon, icon->icon_code, 4);
+				}
+				else if ((uicon = account_get_user_icon(acc, clienttag)))
 				{
 					std::memcpy(&rpacket->u.server_findanongame_iconreply.curricon, uicon, 4);
 				}
@@ -517,7 +527,10 @@ namespace pvpgn
 							//Building the icon for the races
 							bn_short_set(&tempicon.required_wins, icon_req_race_wins);
 							if (account_get_racewins(acc, race[i], clienttag) >= icon_req_race_wins) {
-								tempicon.client_enabled = 1;
+								if (prefs_get_custom_icons() == 1)
+									tempicon.client_enabled = 0;
+								else
+									tempicon.client_enabled = 1;
 							}
 							else{
 								tempicon.client_enabled = 0;
@@ -528,7 +541,10 @@ namespace pvpgn
 							icon_req_tourney_wins = anongame_infos_get_ICON_REQ_TOURNEY(j + 1);
 							bn_short_set(&tempicon.required_wins, icon_req_tourney_wins);
 							if (account_get_racewins(acc, race[i], clienttag) >= icon_req_tourney_wins) {
-								tempicon.client_enabled = 1;
+								if (prefs_get_custom_icons() == 1)
+									tempicon.client_enabled = 0;
+								else
+									tempicon.client_enabled = 1;
 							}
 							else{
 								tempicon.client_enabled = 0;
@@ -544,6 +560,7 @@ namespace pvpgn
 			return 0;
 		}
 
+		/* Choose icon by user from profile > portrait */
 		static int _client_anongame_set_icon(t_connection * c, t_packet const * const packet)
 		{
 			//BlacKDicK 04/20/2003
@@ -551,6 +568,12 @@ namespace pvpgn
 			char user_icon[5];
 			t_account * account;
 			t_clienttag ctag;
+
+			// disable with custom icons
+			if (prefs_get_custom_icons() == 1)
+			{
+				return 0;
+			}
 
 			/*FIXME: In this case we do not get a 'count' but insted of it we get the icon
 			that the client wants to set.'W3H2' for an example. For now it is ok, since they share
@@ -568,6 +591,7 @@ namespace pvpgn
 
 			account = conn_get_account(c);
 
+			// ICON SWITCH HACK PROTECTION
 			if (check_user_icon(account, user_icon) == 0)
 			{
 				eventlog(eventlog_level_info, __FUNCTION__, "[%s] \"%s\" ICON SWITCH hack attempt, icon set to default ", conn_get_username(c), user_icon);
@@ -585,7 +609,7 @@ namespace pvpgn
 			return 0;
 		}
 
-		// check user for illegal icon
+		/* Check user choice for illegal icon */
 		static int check_user_icon(t_account * account, const char * user_icon)
 		{
 			unsigned int i, len;

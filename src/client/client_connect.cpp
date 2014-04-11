@@ -142,6 +142,9 @@ namespace {
 		*exeinfo = "";
 		*checksum = 0;
 
+		if (std::strcmp(clienttag, CLIENTTAG_BNCHATBOT) == 0)
+			return 0;
+
 		std::fprintf(stderr, "%s: unsupported clienttag \"%s\"\n", progname, clienttag);
 		// aaron: dunno what we should return in case of this.. but returning nothing was definetly wrong
 		return -1;
@@ -155,7 +158,7 @@ namespace pvpgn
 	namespace client
 	{
 
-		extern int client_connect(char const * progname, char const * servname, unsigned short servport, char const * cdowner, char const * cdkey, char const * clienttag, struct sockaddr_in * saddr, unsigned int * sessionkey, unsigned int * sessionnum, char const * archtag, char const * gamelang)
+		extern int client_connect(char const * progname, char const * servname, unsigned short servport, char const * cdowner, char const * cdkey, char const * clienttag, int ignoreversion, struct sockaddr_in * saddr, unsigned int * sessionkey, unsigned int * sessionnum, char const * archtag, char const * gamelang)
 		{
 			struct hostent * host;
 			char const *     username;
@@ -329,45 +332,49 @@ namespace pvpgn
 				*sessionnum = bn_int_get(rpacket->u.server_authreq_109.sessionnum);
 				/* FIXME: also get filename and equation */
 
-				if (!(packet = packet_create(packet_class_bnet)))
+				if (!ignoreversion)
 				{
-					std::fprintf(stderr, "%s: could not create packet\n", progname);
-					goto error_rpacket;
-				}
-				packet_set_size(packet, sizeof(t_client_authreq_109));
-				packet_set_type(packet, CLIENT_AUTHREQ_109);
-				bn_int_set(&packet->u.client_authreq_109.ticks, std::time(NULL));
 
-				{
-					t_cdkey_info cdkey_info;
+					if (!(packet = packet_create(packet_class_bnet)))
+					{
+						std::fprintf(stderr, "%s: could not create packet\n", progname);
+						goto error_rpacket;
+					}
+					packet_set_size(packet, sizeof(t_client_authreq_109));
+					packet_set_type(packet, CLIENT_AUTHREQ_109);
+					bn_int_set(&packet->u.client_authreq_109.ticks, std::time(NULL));
 
-					bn_int_set(&packet->u.client_authreq_109.gameversion, gameversion);
+					{
+						t_cdkey_info cdkey_info;
 
-					bn_int_set(&packet->u.client_authreq_109.cdkey_number, 1); /* only one */
-					std::memset(&cdkey_info, '0', sizeof(cdkey_info));
-					/* FIXME: put the input cdkey here */
-					packet_append_data(packet, &cdkey_info, sizeof(cdkey_info));
-					packet_append_string(packet, exeinfo);
-					packet_append_string(packet, cdowner);
-				}
-				bn_int_set(&packet->u.client_authreq_109.spawn, 0x0000);
-				bn_int_set(&packet->u.client_authreq_109.checksum, checksum);
-				client_blocksend_packet(sd, packet);
-				packet_del_ref(packet);
+						bn_int_set(&packet->u.client_authreq_109.gameversion, gameversion);
 
-				/* now wait for reply */
-				do
-				if (client_blockrecv_packet(sd, rpacket) < 0)
-				{
-					std::fprintf(stderr, "%s: server closed connection\n", progname);
-					goto error_rpacket;
-				}
-				while (packet_get_type(rpacket) != SERVER_AUTHREPLY_109);
-				//FIXME: check if AUTHREPLY_109 is success or fail
-				if (bn_int_get(rpacket->u.server_authreply_109.message) != SERVER_AUTHREPLY_109_MESSAGE_OK)
-				{
-					std::fprintf(stderr, "AUTHREPLY_109 failed - closing connection\n");
-					goto error_rpacket;
+						bn_int_set(&packet->u.client_authreq_109.cdkey_number, 1); /* only one */
+						std::memset(&cdkey_info, '0', sizeof(cdkey_info));
+						/* FIXME: put the input cdkey here */
+						packet_append_data(packet, &cdkey_info, sizeof(cdkey_info));
+						packet_append_string(packet, exeinfo);
+						packet_append_string(packet, cdowner);
+					}
+					bn_int_set(&packet->u.client_authreq_109.spawn, 0x0000);
+					bn_int_set(&packet->u.client_authreq_109.checksum, checksum);
+					client_blocksend_packet(sd, packet);
+					packet_del_ref(packet);
+
+					/* now wait for reply */
+					do
+					if (client_blockrecv_packet(sd, rpacket) < 0)
+					{
+						std::fprintf(stderr, "%s: server closed connection\n", progname);
+						goto error_rpacket;
+					}
+					while (packet_get_type(rpacket) != SERVER_AUTHREPLY_109);
+					//FIXME: check if AUTHREPLY_109 is success or fail
+					if (bn_int_get(rpacket->u.server_authreply_109.message) != SERVER_AUTHREPLY_109_MESSAGE_OK)
+					{
+						std::fprintf(stderr, "AUTHREPLY_109 failed - closing connection\n");
+						goto error_rpacket;
+					}
 				}
 			}
 			else

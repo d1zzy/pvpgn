@@ -50,6 +50,7 @@
 #include "common/xstr.h"
 #include "common/trans.h"
 #include "common/lstr.h"
+#include "common/hashtable.h"
 
 #include "connection.h"
 #include "message.h"
@@ -75,6 +76,7 @@
 #include "clan.h"
 #include "common/setup_after.h"
 #include "common/flags.h"
+#include "icons.h"
 
 #include "attrlayer.h"
 
@@ -333,6 +335,7 @@ namespace pvpgn
 		static int _handle_gameinfo_command(t_connection * c, char const * text);
 		static int _handle_ladderactivate_command(t_connection * c, char const * text);
 		static int _handle_rehash_command(t_connection * c, char const * text);
+		static int _handle_find_command(t_connection * c, char const *text);
 		static int _handle_save_command(t_connection * c, char const * text);
 
 		//static int _handle_rank_all_accounts_command(t_connection * c, char const * text);
@@ -358,6 +361,7 @@ namespace pvpgn
 		static int _handle_moderate_command(t_connection * c, char const * text);
 		static int _handle_clearstats_command(t_connection * c, char const * text);
 		static int _handle_tos_command(t_connection * c, char const * text);
+		static int _handle_icon_command(t_connection * c, char const * text);
 
 		static const t_command_table_row standard_command_table[] =
 		{
@@ -445,6 +449,7 @@ namespace pvpgn
 			{ "/gameinfo", _handle_gameinfo_command },
 			{ "/ladderactivate", _handle_ladderactivate_command },
 			{ "/rehash", _handle_rehash_command },
+			{ "/find", _handle_find_command },
 			{ "/save", _handle_save_command },
 			//	{ "/rank_all_accounts"  , _handle_rank_all_accounts_command },
 			{ "/shutdown", _handle_shutdown_command },
@@ -473,6 +478,7 @@ namespace pvpgn
 			{ "/topic", _handle_topic_command },
 			{ "/moderate", _handle_moderate_command },
 			{ "/clearstats", _handle_clearstats_command },
+			{ "/icon", _handle_icon_command },
 
 			{ NULL, NULL }
 
@@ -1665,7 +1671,7 @@ namespace pvpgn
 					return 0;
 				}
 			}
-			else if (strstart(text, "list") == 0 || strstart(text, "l") == 0) {
+			else if (strstart(text, "list") == 0 || strstart(text, "l") == 0 || strstart(text, "online") == 0 || strstart(text, "o") == 0) {
 				char const * frienduid;
 				char status[128];
 				char software[64];
@@ -1678,8 +1684,17 @@ namespace pvpgn
 				t_list  * flist;
 				int num;
 				unsigned int uid;
+				bool online_only = false;
 
-				message_send_text(c, message_type_info, c, "Your PvPGN - Friends List");
+				if (strstart(text, "online") == 0 || strstart(text, "o") == 0) {
+					online_only = true;
+				}
+				if (!online_only) {
+					message_send_text(c, message_type_info, c, "Your PvPGN - Friends List");
+				}
+				else {
+					message_send_text(c, message_type_info, c, "Your PvPGN - Online Friends List");
+				}
 				message_send_text(c, message_type_info, c, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 				num = account_get_friendcount(my_acc);
 
@@ -1694,8 +1709,12 @@ namespace pvpgn
 						}
 						software[0] = '\0';
 						friend_acc = friend_get_account(fr);
-						if (!(dest_c = connlist_find_connection_by_account(friend_acc)))
+						if (!(dest_c = connlist_find_connection_by_account(friend_acc))) {
+							if (online_only) {
+								continue;
+							}
 							std::sprintf(status, ", offline");
+						}
 						else {
 							std::sprintf(software, " using %s", clienttag_get_title(conn_get_clienttag(dest_c)));
 
@@ -1737,6 +1756,7 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, "Type: /f promote <username> (promote a friend in your list)");
 				message_send_text(c, message_type_info, c, "Type: /f demote <username> (demote a friend in your list)");
 				message_send_text(c, message_type_info, c, "Type: /f list (shows your full friends list)");
+				message_send_text(c, message_type_info, c, "Type: /f online (shows your online friends list)");
 				message_send_text(c, message_type_info, c, "Type: /f msg (whispers a message to all your friends at once)");
 			}
 
@@ -2167,6 +2187,29 @@ namespace pvpgn
 			}
 
 			clienttag_uint = tag_case_str_to_uint(clienttag);
+
+			
+			// custom stats
+			if (prefs_get_custom_icons() == 1)
+			{
+				const char *text;
+
+				// if text is not empty
+				if (text = get_custom_stats_text(account, clienttag_uint))
+				{
+					// split by lines
+					char* output_array = strtok((char*)text, "\n");
+					while (output_array)
+					{
+						message_send_text(c, message_type_info, c, output_array);
+						output_array = strtok(NULL, "\n");
+					}
+					xfree((char*)text);
+
+					return 0;
+				}
+			}
+
 
 			switch (clienttag_uint)
 			{
@@ -2982,6 +3025,7 @@ namespace pvpgn
 			t_game_difficulty diff;
 			t_clienttag tag;
 			t_connection *c;
+			bool lobby;
 		};
 
 		static int _glist_cb(t_game *game, void *data)
@@ -2990,7 +3034,8 @@ namespace pvpgn
 
 			if ((!cbdata->tag || !prefs_get_hide_pass_games() || game_get_flag(game) != game_flag_private) &&
 				(!cbdata->tag || game_get_clienttag(game) == cbdata->tag) &&
-				(cbdata->diff == game_difficulty_none || game_get_difficulty(game) == cbdata->diff))
+				(cbdata->diff == game_difficulty_none || game_get_difficulty(game) == cbdata->diff) &&
+				(cbdata->lobby == false || (game_get_status(game) != game_status_started && game_get_status(game) != game_status_done)))
 			{
 				snprintf(msgtemp, sizeof(msgtemp), " %-16.16s %1.1s %-8.8s %-21.21s %5u ",
 					game_get_name(game),
@@ -3020,7 +3065,7 @@ namespace pvpgn
 			unsigned int   i;
 			unsigned int   j;
 			char           clienttag_str[5];
-			char           dest[5];
+			char           dest[6];
 			struct glist_cb_struct cbdata;
 
 			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
@@ -3031,6 +3076,7 @@ namespace pvpgn
 			for (; text[i] == ' '; i++);
 
 			cbdata.c = c;
+			cbdata.lobby = false;
 
 			if (std::strcmp(&text[i], "norm") == 0)
 				cbdata.diff = game_difficulty_normal;
@@ -3050,6 +3096,12 @@ namespace pvpgn
 			{
 				cbdata.tag = 0;
 				message_send_text(c, message_type_info, c, "All current games:");
+			}
+			else if (strcasecmp(&dest[0], "lobby") == 0 || strcasecmp(&dest[0], "l") == 0)
+			{
+				cbdata.tag = conn_get_clienttag(c);
+				cbdata.lobby = true;
+				message_send_text(c, message_type_info, c, "Games in lobby:");
 			}
 			else
 			{
@@ -3415,6 +3467,8 @@ namespace pvpgn
 			char const *   ip;
 			char *         tok;
 			t_clanmember * clanmemb;
+			std::time_t      then;
+			struct std::tm * tmthen;
 
 			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
 			for (; text[i] == ' '; i++);
@@ -3434,10 +3488,17 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, "Invalid user.");
 				return 0;
 			}
+
+			then = account_get_ll_ctime(account);
+			tmthen = std::localtime(&then); /* FIXME: determine user's timezone */
+
 			snprintf(msgtemp, sizeof(msgtemp), "Login: %-16.16s "UID_FORMAT" Sex: %.14s",
 				account_get_name(account),
 				account_get_uid(account),
 				account_get_sex(account));
+			message_send_text(c, message_type_info, c, msgtemp);
+
+			std::strftime(msgtemp, sizeof(msgtemp), "Created: %a %b %d %H:%M %Y ", tmthen);
 			message_send_text(c, message_type_info, c, msgtemp);
 
 			if ((clanmemb = account_get_clanmember(account)))
@@ -3491,8 +3552,6 @@ namespace pvpgn
 				ip = "unknown";
 
 			{
-				std::time_t      then;
-				struct std::tm * tmthen;
 
 				then = account_get_ll_time(account);
 				tmthen = std::localtime(&then); /* FIXME: determine user's timezone */
@@ -3514,13 +3573,17 @@ namespace pvpgn
 			if ((account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr")))
 			{
 				/* the player who requested /finger has admin privileges
-				   give him more info about the one he querys;
-				   is_admin, is_operator, is_locked, email */
-				snprintf(msgtemp, sizeof(msgtemp), "email:%.128s , is_operator: %d , is_admin: %d , is_acc_locked: %d",
+				give him more info about the one he querys;
+				is_admin, is_operator, is_locked, email */
+				snprintf(msgtemp, sizeof(msgtemp), "Email: %.128s, Operator: %s, Admin: %s, Locked: %s, Muted: %s",
 					account_get_email(account),
-					account_get_auth_operator(account, NULL),
-					account_get_auth_admin(account, NULL),
-					account_get_auth_lock(account));
+					account_get_auth_operator(account, NULL) == 1 ? "Yes" : "No",
+					account_get_auth_admin(account, NULL) == 1 ? "Yes" : "No",
+					account_get_auth_lock(account) == 1 ? "Yes" : "No",
+					account_get_auth_mute(account) == 1 ? "Yes" : "No");
+				message_send_text(c, message_type_info, c, msgtemp);
+				snprintf(msgtemp, sizeof(msgtemp), "Last login Owner: %.128s",
+					account_get_ll_owner(account));
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
@@ -3851,6 +3914,48 @@ namespace pvpgn
 		static int _handle_rehash_command(t_connection * c, char const *text)
 		{
 			server_restart_wraper();
+			return 0;
+		}
+
+		/**
+		* /find <substr to search for inside username>
+		*/
+		static int _handle_find_command(t_connection * c, char const *text)
+		{
+			unsigned int  i = 0;
+			t_account *account;
+			char const *tname;
+			t_entry *curr;
+			t_hashtable *accountlist_head = accountlist();
+
+			text = skip_command(text);
+
+			if (text[0] == '\0') {
+				/* In need of a better description */
+				message_send_text(c, message_type_info, c, "Usage: /find <substring to search in acct name>");
+				message_send_text(c, message_type_info, c, "  <substring> has to be in lower case");
+				return -1;
+			}
+
+			std::sprintf(msgtemp, " -- name -- similar to %s", text);
+			message_send_text(c, message_type_info, c, msgtemp);
+
+
+			HASHTABLE_TRAVERSE(accountlist_head, curr)
+			{
+				if (!curr)
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "found NULL account in list");
+				}
+				else
+				{
+					account = (t_account *)entry_get_data(curr);
+					if ((tname = accountlist_find_vague_account(account, text)) != NULL) {
+						message_send_text(c, message_type_info, c, tname);
+						return 0;
+					}
+				}
+			}
 			return 0;
 		}
 
@@ -4599,11 +4704,22 @@ namespace pvpgn
 			key = arg2;
 			value = arg3;
 
+			// disallow get/set value for password hash and username (hash can be cracked easily, account name should be permanent)
+			if (strcasecmp(key, "bnet\\acct\\passhash1") == 0 || strcasecmp(key, "bnet\\acct\\username") == 0 || strcasecmp(key, "bnet\\username") == 0)
+			{
+				message_send_text(c, message_type_info, c, "Access denied due to security reason.");
+				return 0;
+			}
+
 			if ((arg1[0] == '\0') || (arg2[0] == '\0'))
 			{
 				message_send_text(c, message_type_info, c, "usage: /set <username> <key> [value]");
+				message_send_text(c, message_type_info, c, " example: /set joe BNET\\auth\\botlogin true");
+				message_send_text(c, message_type_info, c, " example: /set joe Record\\W3XP\\ffa_wins 123");
+				message_send_text(c, message_type_info, c, " (set value = null to unset value)");
+				return 0;
 			}
-
+			
 			if (!(account = accountlist_find_account(accname)))
 			{
 				message_send_text(c, message_type_error, c, "Invalid user.");
@@ -4614,7 +4730,7 @@ namespace pvpgn
 			{
 				if (account_get_strattr(account, key))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "current value of %.64s is \"%.128s\"", key, account_get_strattr(account, key));
+					snprintf(msgtemp, sizeof(msgtemp), "Current value of %.64s is \"%.128s\"", key, account_get_strattr(account, key));
 					message_send_text(c, message_type_error, c, msgtemp);
 				}
 				else
@@ -4622,11 +4738,22 @@ namespace pvpgn
 				return 0;
 			}
 
-			if (account_set_strattr(account, key, value) < 0)
-				message_send_text(c, message_type_error, c, "Unable to set key");
-			else{
-				message_send_text(c, message_type_error, c, "Key set succesfully");
+			// unset value
+			if (strcasecmp(value, "null") == 0)
+				value = NULL;
 
+			std::sprintf(msgtemp, "for \"%s\" (%.64s = \"%.128s\")", account_get_name(account), key, value);
+
+			if (account_set_strattr(account, key, value) < 0)
+			{
+				std::sprintf(msgtemp2, "Unable to set key %s", msgtemp);
+				message_send_text(c, message_type_error, c, msgtemp2);
+			}
+			else
+			{
+				std::sprintf(msgtemp2, "Key set succesfully %s", msgtemp);
+				message_send_text(c, message_type_error, c, msgtemp2);
+				eventlog(eventlog_level_warn, __FUNCTION__, "Key set by \"%s\" %s", account_get_name(conn_get_account(c)), msgtemp);
 			}
 			return 0;
 		}
@@ -5199,6 +5326,94 @@ namespace pvpgn
 			ladders.update();
 
 			return 0;
+		}
+
+		/* Set usericon */
+		static int _handle_icon_command(t_connection * c, char const *text)
+		{
+			t_account * user_account;
+			t_connection * user_c;
+			char *accname;
+			char *code;
+			const char *usericon;
+			t_clienttag user_clienttag;
+			char t[MAX_MESSAGE_LEN];
+			unsigned int i, j;
+			char         arg1[256];
+			char         arg2[256];
+
+			std::strncpy(t, text, MAX_MESSAGE_LEN - 1);
+			for (i = 0; t[i] != ' ' && t[i] != '\0'; i++); /* skip command /icon */
+
+			for (; t[i] == ' '; i++); /* skip spaces */
+			for (j = 0; t[i] != ' ' && t[i] != '\0'; i++) /* get username */
+			if (j < sizeof(arg1)-1) arg1[j++] = t[i];
+			arg1[j] = '\0';
+
+			for (; t[i] == ' '; i++); /* skip spaces */
+			for (j = 0; t[i] != ' ' && t[i] != '\0'; i++) /* get code  */
+			if (j < sizeof(arg2)-1) arg2[j++] = t[i];
+			arg2[j] = '\0';
+
+			accname = arg1;
+			code = arg2;
+
+			if (accname == '\0')
+			{
+				message_send_text(c, message_type_info, c, "usage: /icon <username> [CODE]");
+				message_send_text(c, message_type_info, c, " for example: /icon joe W3D6");
+				message_send_text(c, message_type_info, c, " (set code = null to unset icon)");
+				return 0;
+			}
+
+			if (!(user_account = accountlist_find_account(accname)))
+			{
+				message_send_text(c, message_type_error, c, "Invalid user.");
+				return 0;
+			}
+
+			if (user_c = account_get_conn(user_account))
+				user_clienttag = conn_get_clienttag(user_c);
+			else
+				user_clienttag = account_get_ll_clienttag(user_account); // if user offline then retrieve last clienttag
+
+			// output current usericon code
+			if (code == '\0' || strlen(arg2) != 4)
+			{
+				if (usericon = account_get_user_icon(user_account, user_clienttag))
+				{
+					snprintf(msgtemp, sizeof(msgtemp), "%.64s has custom icon \"%.4s\"", account_get_name(user_account), strreverse((char*)usericon));
+					message_send_text(c, message_type_error, c, msgtemp);
+				}
+				else
+				{
+					snprintf(msgtemp, sizeof(msgtemp), "Custom icon for %.64s currently not set", account_get_name(user_account));
+					message_send_text(c, message_type_error, c, msgtemp);
+				}
+					
+				return 0;
+			}
+			for (int i = 0; i < strlen(code); i++)
+				code[i] = toupper(code[i]);
+
+			// unset value
+			if (strcasecmp(code, "null") == 0)
+				usericon = NULL;
+			else
+				usericon = strreverse(xstrdup(code));
+
+
+			snprintf(msgtemp, sizeof(msgtemp), "Set icon \"%.4s\" to %.64s", code, account_get_name(user_account));
+			message_send_text(c, message_type_error, c, msgtemp);
+
+			account_set_user_icon(user_account, user_clienttag, usericon);
+			
+			// if user online then force him to rejoin channel
+			if (user_c)
+			{
+				conn_update_w3_playerinfo(user_c);
+				channel_rejoin(user_c);
+			}
 		}
 
 	}

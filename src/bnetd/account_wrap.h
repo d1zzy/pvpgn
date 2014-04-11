@@ -89,6 +89,7 @@ namespace pvpgn
 		extern char const * account_get_desc(t_account * account);
 
 		/* last login */
+		extern unsigned int account_get_ll_ctime(t_account * account);
 		extern unsigned int account_get_ll_time(t_account * account);
 		extern int account_set_ll_time(t_account * account, unsigned int t);
 		extern char const * account_get_ll_user(t_account * account);

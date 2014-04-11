@@ -31,7 +31,7 @@ set(BNETD_SOURCES
 	storage.cpp storage_file.cpp storage_file.h storage.h storage_sql2.cpp
 	storage_sql2.h storage_sql.cpp storage_sql.h support.cpp support.h
 	team.cpp team.h tick.cpp tick.h timer.cpp timer.h topic.cpp topic.h 
-	tournament.cpp tournament.h tracker.cpp tracker.h udptest_send.cpp 
+	tournament.cpp tournament.h icons.cpp icons.h tracker.cpp tracker.h udptest_send.cpp 
 	udptest_send.h versioncheck.cpp versioncheck.h watch.cpp watch.h
 	anongame_wol.cpp anongame_wol.h handle_wserv.cpp handle_wserv.h
 	../win32/winmain.cpp ../win32/winmain.h

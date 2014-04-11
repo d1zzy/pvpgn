@@ -62,6 +62,7 @@ filedir     = files
 reportdir   = var\reports
 chanlogdir  = var\chanlogs
 motdfile    = conf\bnmotd.txt
+motdw3file  = conf\bnmotd_w3.txt
 issuefile   = conf\bnissue.txt
 channelfile = conf\channel.conf
 newsfile    = conf\news.txt
@@ -85,6 +86,7 @@ aliasfile   = conf\bnalias.conf
 anongame_infos_file = conf\anongame_infos.conf
 DBlayoutfile = conf\sql_DB_layout.conf
 supportfile = conf\supportfile.conf
+customicons_file = conf\icons.conf
 
 fortunecmd  = bin\fortune.exe
 

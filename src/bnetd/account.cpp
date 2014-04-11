@@ -545,6 +545,38 @@ namespace pvpgn
 		}
 
 
+		extern char const *accountlist_find_vague_account(t_account * account, char const *vague_username)
+		{
+			char const *tname;
+			int i;
+
+			if (!vague_username) {
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL vague_username");
+				return NULL;
+			}
+			if (!account) {
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account");
+				return NULL;
+			}
+
+
+			if (tname = account_get_name(account)) {
+				char temp[MAX_USERNAME_LEN];
+				for (i = 0; i < std::strlen(tname); i++) {
+					temp[i] = tname[i];
+					if (isupper((int)temp[i])) {
+						temp[i] = tolower((int)temp[i]);
+					}
+				}
+				if (strstr(temp, vague_username)) {
+					return tname;
+				}
+				return NULL;
+			}
+			return NULL;
+		}
+
+
 		extern int accountlist_allow_add(void)
 		{
 			if (force_account_add)

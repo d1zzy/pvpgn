@@ -1,4 +1,4 @@
-%IHello %l, welcome to %s!
+%EHello %l, welcome to %s!
 %IRunning version %v on %h.
 %IThis server is hosted by %H
 %I
@@ -8,4 +8,6 @@
 %IHaving trouble with a command? Type /help to
 %Ilearn more about it.
 %I
-%I%m
+%I(edit this text in conf/bnmotd-enUS.txt)
+%I
+%M%m

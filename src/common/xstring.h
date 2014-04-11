@@ -28,6 +28,8 @@ namespace pvpgn
 	extern char * *		strtoargv(char const * str, unsigned int * count);
 	extern char *		arraytostr(char * * array, char const * delim, int count);
 	extern char *		str_strip_affix(char * str, char const * affix);
+	extern const char *str_replace(char *orig, char *rep, char *with);
+
 
 }
 
