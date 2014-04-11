@@ -5331,12 +5331,12 @@ namespace pvpgn
 		/* Set usericon */
 		static int _handle_icon_command(t_connection * c, char const *text)
 		{
-			t_account * account;
-			t_connection * con;
+			t_account * user_account;
+			t_connection * user_c;
 			char *accname;
 			char *code;
 			const char *usericon;
-			t_clienttag clienttag;
+			t_clienttag user_clienttag;
 			char t[MAX_MESSAGE_LEN];
 			unsigned int i, j;
 			char         arg1[256];
@@ -5366,25 +5366,28 @@ namespace pvpgn
 				return 0;
 			}
 
-			if (!(account = accountlist_find_account(accname)))
+			if (!(user_account = accountlist_find_account(accname)))
 			{
 				message_send_text(c, message_type_error, c, "Invalid user.");
 				return 0;
 			}
 
-			clienttag = account_get_ll_clienttag(account);
+			if (user_c = account_get_conn(user_account))
+				user_clienttag = conn_get_clienttag(user_c);
+			else
+				user_clienttag = account_get_ll_clienttag(user_account); // if user offline then retrieve last clienttag
 
 			// output current usericon code
 			if (code == '\0' || strlen(arg2) != 4)
 			{
-				if (usericon = account_get_user_icon(account, clienttag))
+				if (usericon = account_get_user_icon(user_account, user_clienttag))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s has custom icon \"%.4s\"", account_get_name(account), strreverse((char*)usericon));
+					snprintf(msgtemp, sizeof(msgtemp), "%.64s has custom icon \"%.4s\"", account_get_name(user_account), strreverse((char*)usericon));
 					message_send_text(c, message_type_error, c, msgtemp);
 				}
 				else
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "Custom icon for %.64s currently not set", account_get_name(account));
+					snprintf(msgtemp, sizeof(msgtemp), "Custom icon for %.64s currently not set", account_get_name(user_account));
 					message_send_text(c, message_type_error, c, msgtemp);
 				}
 					
@@ -5400,15 +5403,16 @@ namespace pvpgn
 				usericon = strreverse(xstrdup(code));
 
 
-			snprintf(msgtemp, sizeof(msgtemp), "Set icon \"%.4s\" to %.64s", code, account_get_name(account));
+			snprintf(msgtemp, sizeof(msgtemp), "Set icon \"%.4s\" to %.64s", code, account_get_name(user_account));
 			message_send_text(c, message_type_error, c, msgtemp);
 
+			account_set_user_icon(user_account, user_clienttag, usericon);
+			
 			// if user online then force him to rejoin channel
-			if (con = account_get_conn(account))
+			if (user_c)
 			{
-				account_set_user_icon(account, clienttag, usericon);
-				conn_update_w3_playerinfo(con);
-				channel_rejoin(con);
+				conn_update_w3_playerinfo(user_c);
+				channel_rejoin(user_c);
 			}
 		}
 

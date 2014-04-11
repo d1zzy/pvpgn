@@ -141,7 +141,7 @@ namespace pvpgn
 			// get attribute field name from a storage
 			if (!(attr_key = _find_attr_key((char*)clienttag_str)))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not find attr_key in iconset for tag %s", clienttag_str);
+				eventlog(eventlog_level_trace, __FUNCTION__, "could not find attr_key in iconset for tag %s", clienttag_str);
 				return NULL;
 			}
 
