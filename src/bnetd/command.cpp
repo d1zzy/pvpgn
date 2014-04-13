@@ -387,7 +387,7 @@ namespace pvpgn
 			{ "/nobeep", _handle_nobeep_command },
 			{ "/version", _handle_version_command },
 			{ "/copyright", _handle_copyright_command },
-			{ "/warrenty", _handle_copyright_command },
+			{ "/warranty", _handle_copyright_command },
 			{ "/license", _handle_copyright_command },
 			{ "/uptime", _handle_uptime_command },
 			{ "/stats", _handle_stats_command },
@@ -395,6 +395,7 @@ namespace pvpgn
 			{ "/time", _handle_time_command },
 			{ "/channel", _handle_channel_command },
 			{ "/join", _handle_channel_command },
+			{ "/j", _handle_channel_command },
 			{ "/rejoin", _handle_rejoin_command },
 			{ "/away", _handle_away_command },
 			{ "/dnd", _handle_dnd_command },
@@ -500,7 +501,7 @@ namespace pvpgn
 
 			if ((text[0] != '\0') && (conn_quota_exceeded(c, text)))
 			{
-				message_send_text(c, message_type_error, c, "You are sending commands to Battle.net too quickly and risk being disconnected for flooding. Please slow down.");
+				message_send_text(c, message_type_error, c, "You are sending commands to "PVPGN_SOFTWARE" too quickly and risk being disconnected for flooding. Please slow down.");
 				return 0;
 			}
 
@@ -575,7 +576,7 @@ namespace pvpgn
 			/* FIXME: can get clan as is in creating process */
 			if ((member = account_get_clanmember_forced(acc)) && (clan = clanmember_get_clan(member)) && (clanmember_get_fullmember(member) == 1)) {
 				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "usage:");
+					message_send_text(c, message_type_info, c, "Usage:");
 					message_send_text(c, message_type_info, c, "/clan msg <message>");
 					message_send_text(c, message_type_info, c, "Whispers a message to all your fellow clan members.");
 					if (clanmember_get_status(member) >= CLAN_SHAMAN) {
@@ -597,7 +598,7 @@ namespace pvpgn
 				if (strstart(text, "msg") == 0 || strstart(text, "m") == 0 || strstart(text, "w") == 0 || strstart(text, "whisper") == 0) {
 					char const *msg = skip_command(text);
 					if (msg[0] == '\0') {
-						message_send_text(c, message_type_info, c, "usage:");
+						message_send_text(c, message_type_info, c, "Usage:");
 						message_send_text(c, message_type_info, c, "/clan msg <message>");
 						message_send_text(c, message_type_info, c, "Whispers a message to all your fellow clan members.");
 					}
@@ -630,7 +631,7 @@ namespace pvpgn
 						const char * msg = skip_command(text);
 						if (msg[0] == '\0')
 						{
-							message_send_text(c, message_type_info, c, "usage:");
+							message_send_text(c, message_type_info, c, "Usage:");
 							message_send_text(c, message_type_info, c, "/clan motd <message>");
 							message_send_text(c, message_type_info, c, "Update the clan message of the day to <message>.");
 						}
@@ -645,7 +646,7 @@ namespace pvpgn
 						t_account * dest_account;
 						t_connection * dest_conn;
 						if (username[0] == '\0') {
-							message_send_text(c, message_type_info, c, "usage:");
+							message_send_text(c, message_type_info, c, "Usage:");
 							message_send_text(c, message_type_info, c, "/clan invite <username>");
 							message_send_text(c, message_type_info, c, "Invite <username> to your clan.");
 						}
@@ -689,7 +690,7 @@ namespace pvpgn
 			if ((member = account_get_clanmember_forced(acc)) && (clan = clanmember_get_clan(member)) && (clanmember_get_fullmember(member) == 0)) {
 				/* User is not in clan, but he can accept invitation to someone */
 				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "usage:");
+					message_send_text(c, message_type_info, c, "Usage:");
 					message_send_text(c, message_type_info, c, "/clan invite get     (show clanname wich you have been invited)");
 					message_send_text(c, message_type_info, c, "/clan invite accept  (accept invitation to clan)");
 					message_send_text(c, message_type_info, c, "/clan invite decline (decline invitation to clan)");
@@ -697,7 +698,7 @@ namespace pvpgn
 				if (strstart(text, "invite") == 0 || strstart(text, "inv") == 0) {
 					text = skip_command(text);
 					if (text[0] == '\0') {
-						message_send_text(c, message_type_info, c, "usage:");
+						message_send_text(c, message_type_info, c, "Usage:");
 						message_send_text(c, message_type_info, c, "/clan invite get     (show clanname wich you have been invited)");
 						message_send_text(c, message_type_info, c, "/clan invite accept  (accept invitation to clan)");
 						message_send_text(c, message_type_info, c, "/clan invite decline (decline invitation to clan)");
@@ -739,7 +740,7 @@ namespace pvpgn
 			}
 			else {
 				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "usage:");
+					message_send_text(c, message_type_info, c, "Usage:");
 					message_send_text(c, message_type_info, c, "/clan create <clantag> <clanname>  (Create a new clan)");
 				}
 				else if (strstart(text, "create") == 0 || strstart(text, "cre") == 0) {
@@ -760,13 +761,13 @@ namespace pvpgn
 					clanname[j] = '\0';
 
 					if ((clantag[0] == '\0') || (clanname[0] == '\0')) {
-						message_send_text(c, message_type_info, c, "usage:");
+						message_send_text(c, message_type_info, c, "Usage:");
 						message_send_text(c, message_type_info, c, "/clan create <clantag> <clanname>  (Create a new clan)");
 						return 0;
 					}
 
 					if (clan = clanlist_find_clan_by_clantag(str_to_clantag(clantag))) {
-						message_send_text(c, message_type_error, c, "Clan with your specifed <clantag> allready exist!");
+						message_send_text(c, message_type_error, c, "Clan with your specified <clantag> already exist!");
 						message_send_text(c, message_type_error, c, "Please choice another one.");
 						return 0;
 					}
@@ -781,7 +782,7 @@ namespace pvpgn
 							clan_save(clan);
 						}
 						else {
-							clan_set_created(clan, -prefs_get_clan_min_invites() + 1); //Pelish: +1 means that creator of clan is allready invited
+							clan_set_created(clan, -prefs_get_clan_min_invites() + 1); //Pelish: +1 means that creator of clan is already invited
 							snprintf(msgtemp, sizeof(msgtemp), "Clan %s is pre-created, please invite", clan_get_name(clan));
 							message_send_text(c, message_type_info, c, msgtemp);
 							snprintf(msgtemp, sizeof(msgtemp), "at last %u players to your clan by using", prefs_get_clan_min_invites());
@@ -810,7 +811,7 @@ namespace pvpgn
 			text = skip_command(text);
 
 			if ((text[0] == '\0') || ((text[0] != '+') && (text[0] != '-'))) {
-				message_send_text(c, message_type_info, c, "usage: /admin +username to promote user to Server Admin.");
+				message_send_text(c, message_type_info, c, "Usage: /admin +username to promote user to Server Admin.");
 				message_send_text(c, message_type_info, c, "       /admin -username to demote user from Server Admin.");
 				return -1;
 			}
@@ -819,7 +820,7 @@ namespace pvpgn
 			username = &text[1];
 
 			if (!*username) {
-				message_send_text(c, message_type_info, c, "You need to supply a username.");
+				message_send_text(c, message_type_info, c, "You must supply a username.");
 				return -1;
 			}
 
@@ -843,7 +844,7 @@ namespace pvpgn
 			}
 			else {
 				if (account_get_auth_admin(acc, NULL) != 1)
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s is no Server Admin, so you can't demote him", username);
+					snprintf(msgtemp, sizeof(msgtemp), "%.64s is not a Server Admin.", username);
 				else {
 					account_set_auth_admin(acc, NULL, 0);
 					snprintf(msgtemp, sizeof(msgtemp), "%.64s has been demoted from a Server Admin", username);
@@ -869,7 +870,7 @@ namespace pvpgn
 			text = skip_command(text);
 
 			if ((text[0] == '\0') || ((text[0] != '+') && (text[0] != '-'))) {
-				message_send_text(c, message_type_info, c, "usage: /operator +username to promote user to Server Operator.");
+				message_send_text(c, message_type_info, c, "Usage: /operator +username to promote user to Server Operator.");
 				message_send_text(c, message_type_info, c, "       /operator -username to demote user from Server Operator.");
 				return -1;
 			}
@@ -878,7 +879,7 @@ namespace pvpgn
 			username = &text[1];
 
 			if (!*username) {
-				message_send_text(c, message_type_info, c, "You need to supply a username.");
+				message_send_text(c, message_type_info, c, "You must supply a username.");
 				return -1;
 			}
 
@@ -937,7 +938,7 @@ namespace pvpgn
 			text = skip_command(text);
 
 			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You need to supply a username.");
+				message_send_text(c, message_type_info, c, "You must supply a username.");
 				return -1;
 			}
 
@@ -985,7 +986,7 @@ namespace pvpgn
 			text = skip_command(text);
 
 			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You need to supply a username.");
+				message_send_text(c, message_type_info, c, "You must supply a username.");
 				return -1;
 			}
 
@@ -1033,7 +1034,7 @@ namespace pvpgn
 			text = skip_command(text);
 
 			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You need to supply a username.");
+				message_send_text(c, message_type_info, c, "You must supply a username.");
 				return -1;
 			}
 
@@ -1054,10 +1055,10 @@ namespace pvpgn
 				else
 				{
 					if (channel_conn_has_tmpVOICE(conn_get_channel(c), dst_c))
-						snprintf(msgtemp, sizeof(msgtemp), "%.64s has already Voice in this channel", username);
+						snprintf(msgtemp, sizeof(msgtemp), "%.64s already has Voice in this channel", username);
 					else {
 						if (account_is_operator_or_admin(acc, channel))
-							snprintf(msgtemp, sizeof(msgtemp), "%.64s allready is operator or admin, no need to voice him", username);
+							snprintf(msgtemp, sizeof(msgtemp), "%.64s is already an operator or admin.", username);
 						else
 						{
 							conn_set_tmpVOICE_channel(dst_c, channel);
@@ -1097,7 +1098,7 @@ namespace pvpgn
 			text = skip_command(text);
 
 			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You need to supply a username.");
+				message_send_text(c, message_type_info, c, "You must supply a username.");
 				return -1;
 			}
 
@@ -1181,7 +1182,7 @@ namespace pvpgn
 			text = skip_command(text);
 
 			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You need to supply a username.");
+				message_send_text(c, message_type_info, c, "You must supply a username.");
 				return -1;
 			}
 
@@ -1196,7 +1197,7 @@ namespace pvpgn
 			if (OP_lvl == 1) // user is full op so he may fully op others
 			{
 				if (account_get_auth_operator(acc, channel) == 1)
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s is allready a Channel Operator", username);
+					snprintf(msgtemp, sizeof(msgtemp), "%.64s is already a Channel Operator", username);
 				else {
 					account_set_auth_operator(acc, channel, 1);
 					snprintf(msgtemp, sizeof(msgtemp), "%.64s has been promoted to a Channel Operator", username);
@@ -1210,7 +1211,7 @@ namespace pvpgn
 				else
 				{
 					if (account_is_operator_or_admin(acc, channel))
-						snprintf(msgtemp, sizeof(msgtemp), "%.64s allready is operator or admin, no need to tempOP him", username);
+						snprintf(msgtemp, sizeof(msgtemp), "%.64s already is operator or admin, no need to tempOP him", username);
 					else
 					{
 						conn_set_tmpOP_channel(dst_c, channel);
@@ -1248,7 +1249,7 @@ namespace pvpgn
 			text = skip_command(text);
 
 			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You need to supply a username.");
+				message_send_text(c, message_type_info, c, "You must supply a username.");
 				return -1;
 			}
 
@@ -1269,7 +1270,7 @@ namespace pvpgn
 				else
 				{
 					if (account_is_operator_or_admin(acc, channel))
-						snprintf(msgtemp, sizeof(msgtemp), "%.64s allready is operator or admin, no need to tempOP him", username);
+						snprintf(msgtemp, sizeof(msgtemp), "%.64s already is operator or admin, no need to tempOP him", username);
 					else
 					{
 						conn_set_tmpOP_channel(dst_c, channel);
@@ -1317,7 +1318,7 @@ namespace pvpgn
 			text = skip_command(text);
 
 			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You need to supply a username.");
+				message_send_text(c, message_type_info, c, "You must supply a username.");
 				return -1;
 			}
 
@@ -1418,7 +1419,7 @@ namespace pvpgn
 				text = skip_command(text);
 
 				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "usage: /f add <username>");
+					message_send_text(c, message_type_info, c, "Usage: /f add <username>");
 					return 0;
 				}
 
@@ -1541,7 +1542,7 @@ namespace pvpgn
 				if (cnt)
 					message_send_text(c, message_type_friendwhisperack, c, msg);
 				else
-					message_send_text(c, message_type_info, c, "All your friends are offline.");
+					message_send_text(c, message_type_info, c, "All of your friends are offline.");
 			}
 			else if (strstart(text, "r") == 0 || strstart(text, "remove") == 0
 				|| strstart(text, "del") == 0 || strstart(text, "delete") == 0) {
@@ -1553,7 +1554,7 @@ namespace pvpgn
 				text = skip_command(text);
 
 				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "usage: /f remove <username>");
+					message_send_text(c, message_type_info, c, "Usage: /f remove <username>");
 					return 0;
 				}
 
@@ -1595,7 +1596,7 @@ namespace pvpgn
 				text = skip_command(text);
 
 				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "usage: /f promote <username>");
+					message_send_text(c, message_type_info, c, "Usage: /f promote <username>");
 					return 0;
 				}
 
@@ -1610,7 +1611,7 @@ namespace pvpgn
 				{
 					account_set_friend(my_acc, n, account_get_friend(my_acc, n - 1));
 					account_set_friend(my_acc, n - 1, dest_uid);
-					snprintf(msgtemp, sizeof(msgtemp), "Premoted %.64s in your friends list.", dest_name);
+					snprintf(msgtemp, sizeof(msgtemp), "Promoted %.64s in your friends list.", dest_name);
 					message_send_text(c, message_type_info, c, msgtemp);
 
 					if ((conn_get_class(c) != conn_class_bnet) || (!(rpacket = packet_create(packet_class_bnet))))
@@ -1640,7 +1641,7 @@ namespace pvpgn
 				text = skip_command(text);
 
 				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "usage: /f demote <username>");
+					message_send_text(c, message_type_info, c, "Usage: /f demote <username>");
 					return 0;
 				}
 
@@ -1655,7 +1656,7 @@ namespace pvpgn
 				{
 					account_set_friend(my_acc, n, account_get_friend(my_acc, n + 1));
 					account_set_friend(my_acc, n + 1, dest_uid);
-					snprintf(msgtemp, sizeof(msgtemp), "Premoted %.64s in your friends list.", dest_name);
+					snprintf(msgtemp, sizeof(msgtemp), "Demoted %.64s in your friends list.", dest_name);
 					message_send_text(c, message_type_info, c, msgtemp);
 
 					if ((conn_get_class(c) != conn_class_bnet) || (!(rpacket = packet_create(packet_class_bnet))))
@@ -1690,10 +1691,10 @@ namespace pvpgn
 					online_only = true;
 				}
 				if (!online_only) {
-					message_send_text(c, message_type_info, c, "Your PvPGN - Friends List");
+					message_send_text(c, message_type_info, c, "Your "PVPGN_SOFTWARE" - Friends List");
 				}
 				else {
-					message_send_text(c, message_type_info, c, "Your PvPGN - Online Friends List");
+					message_send_text(c, message_type_info, c, "Your "PVPGN_SOFTWARE" - Online Friends List");
 				}
 				message_send_text(c, message_type_info, c, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 				num = account_get_friendcount(my_acc);
@@ -1794,7 +1795,7 @@ namespace pvpgn
 
 			if ((dest[0] == '\0') || (text[i] == '\0'))
 			{
-				message_send_text(c, message_type_info, c, "usage: /whisper <username> <text to whisper>");
+				message_send_text(c, message_type_info, c, "Usage: /whisper <username> <text to whisper>");
 				return 0;
 			}
 
@@ -1816,7 +1817,7 @@ namespace pvpgn
 			ctag[j] = '\0';
 
 			if (ctag[0] == '\0') {
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %d users online, in %d games and %d channels.",
+				snprintf(msgtemp, sizeof(msgtemp), "There are currently %d users online, in %d games, and in %d channels.",
 					connlist_login_get_length(),
 					gamelist_get_length(),
 					channellist_get_length());
@@ -1998,7 +1999,7 @@ namespace pvpgn
 
 			if (text[i] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /who <channel>");
+				message_send_text(c, message_type_info, c, "Usage: /who <channel>");
 				return 0;
 			}
 
@@ -2041,7 +2042,7 @@ namespace pvpgn
 
 			if (text[i] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /whois <username>");
+				message_send_text(c, message_type_info, c, "Usage: /whois <username>");
 				return 0;
 			}
 
@@ -2075,7 +2076,7 @@ namespace pvpgn
 
 			if (text[i] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /announce <announcement>");
+				message_send_text(c, message_type_info, c, "Usage: /announce <announcement>");
 				return 0;
 			}
 
@@ -2368,9 +2369,9 @@ namespace pvpgn
 			btlocal = bnettime_add_tzbias(btsystem, local_tzbias());
 			now = bnettime_to_time(btlocal);
 			if (!(tmnow = std::gmtime(&now)))
-				std::strcpy(msgtemp, "PvPGN Server Time: ?");
+				std::strcpy(msgtemp, PVPGN_SOFTWARE" Server Time: ?");
 			else
-				std::strftime(msgtemp, sizeof(msgtemp), "PvPGN Server Time: %a %b %d %H:%M:%S", tmnow);
+				std::strftime(msgtemp, sizeof(msgtemp), PVPGN_SOFTWARE" Server Time: %a %b %d %H:%M:%S", tmnow);
 			message_send_text(c, message_type_info, c, msgtemp);
 			if (conn_get_class(c) == conn_class_bnet)
 			{
@@ -2413,7 +2414,7 @@ namespace pvpgn
 				}
 
 				if ((channel = conn_get_channel(c)) && (strcasecmp(channel_get_name(channel), text) == 0))
-					return 0; // we don't have to do anything, we are allready in this channel
+					return 0; // we don't have to do anything, we are already in this channel
 
 				if (conn_set_channel(c, text) < 0)
 					conn_set_channel(c, CHANNEL_NAME_BANNED); /* should not fail */
@@ -2480,7 +2481,7 @@ namespace pvpgn
 				}
 				else
 				{
-					message_send_text(c, message_type_info, c, "Do Not Disturb mode cancelled.");
+					message_send_text(c, message_type_info, c, "Do Not Disturb mode canceled.");
 					conn_set_dndstr(c, NULL);
 				}
 			}
@@ -2505,7 +2506,7 @@ namespace pvpgn
 
 			if (text[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /squelch <username>");
+				message_send_text(c, message_type_info, c, "Usage: /squelch <username>");
 				return 0;
 			}
 
@@ -2545,7 +2546,7 @@ namespace pvpgn
 
 			if (text[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /unsquelch <username>");
+				message_send_text(c, message_type_info, c, "Usage: /unsquelch <username>");
 				return 0;
 			}
 
@@ -2592,7 +2593,7 @@ namespace pvpgn
 
 			if (dest[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /kick <username>");
+				message_send_text(c, message_type_info, c, "Usage: /kick <username>");
 				return 0;
 			}
 
@@ -2743,7 +2744,7 @@ namespace pvpgn
 
 			if (text[i] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /unban <username>");
+				message_send_text(c, message_type_info, c, "Usage: /unban <username>");
 				return 0;
 			}
 
@@ -2788,7 +2789,7 @@ namespace pvpgn
 
 			if (text[i] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /reply <replytext>");
+				message_send_text(c, message_type_info, c, "Usage: /reply <replytext>");
 				return 0;
 			}
 			do_whisper(c, dest, &text[i]);
@@ -2814,7 +2815,7 @@ namespace pvpgn
 
 			if (text[i] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /realmann <announcement text>");
+				message_send_text(c, message_type_info, c, "Usage: /realmann <announcement text>");
 				return 0;
 			}
 
@@ -2849,7 +2850,7 @@ namespace pvpgn
 
 			if (text[i] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /watch <username>");
+				message_send_text(c, message_type_info, c, "Usage: /watch <username>");
 				return 0;
 			}
 			if (!(account = accountlist_find_account(&text[i])))
@@ -2879,7 +2880,7 @@ namespace pvpgn
 
 			if (text[i] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /unwatch <username>");
+				message_send_text(c, message_type_info, c, "Usage: /unwatch <username>");
 				return 0;
 			}
 			if (!(account = accountlist_find_account(&text[i])))
@@ -3090,7 +3091,7 @@ namespace pvpgn
 			if (dest[0] == '\0')
 			{
 				cbdata.tag = conn_get_clienttag(c);
-				message_send_text(c, message_type_info, c, "Currently accessable games:");
+				message_send_text(c, message_type_info, c, "Currently accessible games:");
 			}
 			else if (strcasecmp(&dest[0], "all") == 0)
 			{
@@ -3149,7 +3150,7 @@ namespace pvpgn
 			if (text[i] == '\0')
 			{
 				clienttag = conn_get_clienttag(c);
-				message_send_text(c, message_type_info, c, "Currently accessable channels:");
+				message_send_text(c, message_type_info, c, "Currently accessible channels:");
 			}
 			else if (std::strcmp(&text[i], "all") == 0)
 			{
@@ -3229,7 +3230,7 @@ namespace pvpgn
 			pass[j] = '\0';
 
 			if (username[0] == '\0' || pass[0] == '\0') {
-				message_send_text(c, message_type_info, c, "usage: /addacct <username> <password>");
+				message_send_text(c, message_type_info, c, "Usage: /addacct <username> <password>");
 				return 0;
 			}
 
@@ -3300,7 +3301,7 @@ namespace pvpgn
 
 			if (pass[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /chpass [username] <password>");
+				message_send_text(c, message_type_info, c, "Usage: /chpass [username] <password>");
 				return 0;
 			}
 
@@ -3479,7 +3480,7 @@ namespace pvpgn
 
 			if (dest[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /finger <account>");
+				message_send_text(c, message_type_info, c, "Usage: /finger <account>");
 				return 0;
 			}
 
@@ -3573,15 +3574,19 @@ namespace pvpgn
 			if ((account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr")))
 			{
 				/* the player who requested /finger has admin privileges
-				give him more info about the one he querys;
+				give him more info about the one he queries;
 				is_admin, is_operator, is_locked, email */
-				snprintf(msgtemp, sizeof(msgtemp), "Email: %.128s, Operator: %s, Admin: %s, Locked: %s, Muted: %s",
-					account_get_email(account),
+				snprintf(msgtemp, sizeof(msgtemp), "Operator: %s, Admin: %s, Locked: %s, Muted: %s",
 					account_get_auth_operator(account, NULL) == 1 ? "Yes" : "No",
 					account_get_auth_admin(account, NULL) == 1 ? "Yes" : "No",
 					account_get_auth_lock(account) == 1 ? "Yes" : "No",
 					account_get_auth_mute(account) == 1 ? "Yes" : "No");
 				message_send_text(c, message_type_info, c, msgtemp);
+				
+				snprintf(msgtemp, sizeof(msgtemp), "Email: %.128s",
+					account_get_email(account);
+				message_send_text(c, message_type_info, c, msgtemp);
+				
 				snprintf(msgtemp, sizeof(msgtemp), "Last login Owner: %.128s",
 					account_get_ll_owner(account));
 				message_send_text(c, message_type_info, c, msgtemp);
@@ -3693,13 +3698,13 @@ namespace pvpgn
 
 			if (usrnick[0] == '\0' || (usrnick[0] == '#' && (usrnick[1] < '0' || usrnick[1] > '9')))
 			{
-				message_send_text(c, message_type_info, c, "usage: /kill {<username>|#<socket>} [<min>]");
+				message_send_text(c, message_type_info, c, "Usage: /kill {<username>|#<socket>} [<min>]");
 				return 0;
 			}
 
 			if (usrnick[0] == '#') {
 				if (!(user = connlist_find_connection_by_socket(std::atoi(usrnick + 1)))) {
-					message_send_text(c, message_type_error, c, "That connection doesnt exist.");
+					message_send_text(c, message_type_error, c, "That connection doesn't exist.");
 					return 0;
 				}
 			}
@@ -3713,7 +3718,7 @@ namespace pvpgn
 			if (text[i] != '\0' && ipbanlist_add(c, addr_num_to_ip_str(conn_get_addr(user)), ipbanlist_str_to_time_t(c, &text[i])) == 0)
 			{
 				ipbanlist_save(prefs_get_ipbanfile());
-				message_send_text(user, message_type_info, user, "Connection closed by admin and banned your ip.");
+				message_send_text(user, message_type_info, user, "An admin has closed your connection and banned your IP address.");
 			}
 			else
 				message_send_text(user, message_type_info, user, "Connection closed by admin.");
@@ -3739,7 +3744,7 @@ namespace pvpgn
 
 			if (session[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /killsession <session> [min]");
+				message_send_text(c, message_type_info, c, "Usage: /killsession <session> [min]");
 				return 0;
 			}
 			if (!std::isxdigit((int)session[0]))
@@ -3755,7 +3760,7 @@ namespace pvpgn
 			if (text[i] != '\0' && ipbanlist_add(c, addr_num_to_ip_str(conn_get_addr(user)), ipbanlist_str_to_time_t(c, &text[i])) == 0)
 			{
 				ipbanlist_save(prefs_get_ipbanfile());
-				message_send_text(user, message_type_info, user, "Connection closed by admin and banned your ip's.");
+				message_send_text(user, message_type_info, user, "Connection closed by admin and banned your IP's.");
 			}
 			else
 				message_send_text(user, message_type_info, user, "Connection closed by admin.");
@@ -3933,7 +3938,7 @@ namespace pvpgn
 			if (text[0] == '\0') {
 				/* In need of a better description */
 				message_send_text(c, message_type_info, c, "Usage: /find <substring to search in acct name>");
-				message_send_text(c, message_type_info, c, "  <substring> has to be in lower case");
+				message_send_text(c, message_type_info, c, "  <substring> must be lower case.");
 				return -1;
 			}
 
@@ -3969,7 +3974,7 @@ namespace pvpgn
 			accountlist_save(FS_FORCE | FS_ALL);
 			accountlist_flush(FS_FORCE | FS_ALL);
 
-			message_send_text(c, message_type_info, c, "Changes of accounts and clans are saved to the database.");
+			message_send_text(c, message_type_info, c, "Account and clan changes has been saved to the database.");
 			return 0;
 		}
 
@@ -4007,9 +4012,9 @@ namespace pvpgn
 			server_quit_delay(delay);
 
 			if (delay)
-				message_send_text(c, message_type_info, c, "You initialized the shutdown sequence.");
+				message_send_text(c, message_type_info, c, "You've initialized the shutdown sequence.");
 			else
-				message_send_text(c, message_type_info, c, "You canceled the shutdown sequence.");
+				message_send_text(c, message_type_info, c, "You've canceled the shutdown sequence.");
 
 			return 0;
 		}
@@ -4033,7 +4038,7 @@ namespace pvpgn
 
 			if (dest[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /ladderinfo <rank> [clienttag]");
+				message_send_text(c, message_type_info, c, "Usage: /ladderinfo <rank> [clienttag]");
 				return 0;
 			}
 			if (str_to_uint(dest, &rank) < 0 || rank < 1)
@@ -4062,7 +4067,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "Starcraft active  %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp, sizeof(msgtemp), "StarCraft active  %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal),
@@ -4071,14 +4076,14 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp, sizeof(msgtemp), "Starcraft active  %5u: <none>", rank);
+					snprintf(msgtemp, sizeof(msgtemp), "StarCraft active  %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "Starcraft current %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp, sizeof(msgtemp), "StarCraft current %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal),
@@ -4087,7 +4092,7 @@ namespace pvpgn
 						account_get_ladder_rating(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp, sizeof(msgtemp), "Starcraft current %5u: <none>", rank);
+					snprintf(msgtemp, sizeof(msgtemp), "StarCraft current %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 			else if (clienttag == CLIENTTAG_BROODWARS_UINT)
@@ -4130,7 +4135,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "Warcraft II standard active  %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp, sizeof(msgtemp), "WarCraft II standard active  %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal),
@@ -4139,14 +4144,14 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp, sizeof(msgtemp), "Warcraft II standard active  %5u: <none>", rank);
+					snprintf(msgtemp, sizeof(msgtemp), "WarCraft II standard active  %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman, clienttag, ladder_sort_highestrated, ladder_time_active));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "Warcraft II IronMan active   %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp, sizeof(msgtemp), "WarCraft II IronMan active   %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman),
@@ -4155,14 +4160,14 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman));
 				}
 				else
-					snprintf(msgtemp, sizeof(msgtemp), "Warcraft II IronMan active   %5u: <none>", rank);
+					snprintf(msgtemp, sizeof(msgtemp), "WarCraft II IronMan active   %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "Warcraft II standard current %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp, sizeof(msgtemp), "WarCraft II standard current %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal),
@@ -4171,14 +4176,14 @@ namespace pvpgn
 						account_get_ladder_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp, sizeof(msgtemp), "Warcraft II standard current %5u: <none>", rank);
+					snprintf(msgtemp, sizeof(msgtemp), "WarCraft II standard current %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman, clienttag, ladder_sort_highestrated, ladder_time_current));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "Warcraft II IronMan current  %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp, sizeof(msgtemp), "WarCraft II IronMan current  %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman),
@@ -4187,7 +4192,7 @@ namespace pvpgn
 						account_get_ladder_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman));
 				}
 				else
-					snprintf(msgtemp, sizeof(msgtemp), "Warcraft II IronMan current  %5u: <none>", rank);
+					snprintf(msgtemp, sizeof(msgtemp), "WarCraft II IronMan current  %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 			// --> aaron
@@ -4282,7 +4287,7 @@ namespace pvpgn
 
 			if (deltastr[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /timer <duration>");
+				message_send_text(c, message_type_info, c, "Usage: /timer <duration>");
 				return 0;
 			}
 
@@ -4299,7 +4304,7 @@ namespace pvpgn
 
 			if (timerlist_add_timer(c, std::time(NULL) + (std::time_t)delta, user_timer_cb, data) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not add timer");
+				eventlog(eventlog_level_error, __FUNCTION__, "Could not add timer");
 				xfree(data.p);
 				message_send_text(c, message_type_error, c, "Could not set timer.");
 			}
@@ -4327,7 +4332,7 @@ namespace pvpgn
 
 			if (dest[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /serverban <account>");
+				message_send_text(c, message_type_info, c, "Usage: /serverban <account>");
 				return 0;
 			}
 
@@ -4336,16 +4341,16 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, "That user is not logged on.");
 				return 0;
 			}
-			snprintf(msgtemp, sizeof(msgtemp), "Banning User %.64s who is using IP %.64s", conn_get_username(dest_c), addr_num_to_ip_str(conn_get_game_addr(dest_c)));
+			snprintf(msgtemp, sizeof(msgtemp), "Banning %.64s who is using IP address %.64s", conn_get_username(dest_c), addr_num_to_ip_str(conn_get_game_addr(dest_c)));
 			message_send_text(c, message_type_info, c, msgtemp);
-			message_send_text(c, message_type_info, c, "Users Account is also LOCKED! Only a Admin can Unlock it!");
+			message_send_text(c, message_type_info, c, "User's account is also LOCKED! Only an admin can unlock it!");
 			snprintf(msgtemp, sizeof(msgtemp), "/ipban a %.64s", addr_num_to_ip_str(conn_get_game_addr(dest_c)));
 			handle_ipban_command(c, msgtemp);
 			account_set_auth_lock(conn_get_account(dest_c), 1);
 			//now kill the connection
 			snprintf(msgtemp, sizeof(msgtemp), "You have been banned by Admin: %.64s", conn_get_username(c));
 			message_send_text(dest_c, message_type_error, dest_c, msgtemp);
-			message_send_text(dest_c, message_type_error, dest_c, "Your account is also LOCKED! Only a admin can UNLOCK it!");
+			message_send_text(dest_c, message_type_error, dest_c, "Your account is also LOCKED! Only an admin can UNLOCK it!");
 			conn_set_state(dest_c, conn_state_destroy);
 			return 0;
 		}
@@ -4426,9 +4431,9 @@ namespace pvpgn
 
 		static int _handle_quota_command(t_connection * c, char const * text)
 		{
-			snprintf(msgtemp, sizeof(msgtemp), "Your quota allows you to write %u lines per %u seconds.", prefs_get_quota_lines(), prefs_get_quota_time());
+			snprintf(msgtemp, sizeof(msgtemp), "Your quota allows you to write %u line(s) per %u second(s).", prefs_get_quota_lines(), prefs_get_quota_time());
 			message_send_text(c, message_type_info, c, msgtemp);
-			snprintf(msgtemp, sizeof(msgtemp), "Long lines will be considered to wrap every %u characters.", prefs_get_quota_wrapline());
+			snprintf(msgtemp, sizeof(msgtemp), "Long lines will be wrapped every %u characters.", prefs_get_quota_wrapline());
 			message_send_text(c, message_type_info, c, msgtemp);
 			snprintf(msgtemp, sizeof(msgtemp), "You are not allowed to send lines with more than %u characters.", prefs_get_quota_maxline());
 			message_send_text(c, message_type_info, c, msgtemp);
@@ -4445,7 +4450,7 @@ namespace pvpgn
 
 			if (text[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /lockacct <username>");
+				message_send_text(c, message_type_info, c, "Usage: /lockacct <username>");
 				return 0;
 			}
 
@@ -4455,10 +4460,10 @@ namespace pvpgn
 				return 0;
 			}
 			if ((user = connlist_find_connection_by_accountname(text)))
-				message_send_text(user, message_type_info, user, "Your account has just been locked by admin.");
+				message_send_text(user, message_type_info, user, "Your account has just been locked by an admin.");
 
 			account_set_auth_lock(account, 1);
-			message_send_text(c, message_type_error, c, "That user account is now locked.");
+			message_send_text(c, message_type_error, c, "That user's account is now locked.");
 			return 0;
 		}
 
@@ -4471,7 +4476,7 @@ namespace pvpgn
 
 			if (text[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /unlockacct <username>");
+				message_send_text(c, message_type_info, c, "Usage: /unlockacct <username>");
 				return 0;
 			}
 			if (!(account = accountlist_find_account(text)))
@@ -4481,10 +4486,10 @@ namespace pvpgn
 			}
 
 			if ((user = connlist_find_connection_by_accountname(text)))
-				message_send_text(user, message_type_info, user, "Your account has just been unlocked by admin.");
+				message_send_text(user, message_type_info, user, "Your account has just been unlocked by an admin.");
 
 			account_set_auth_lock(account, 0);
-			message_send_text(c, message_type_error, c, "That user account is now unlocked.");
+			message_send_text(c, message_type_error, c, "That user's account is now unlocked.");
 			return 0;
 		}
 
@@ -4498,7 +4503,7 @@ namespace pvpgn
 
 			if (text[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /muteacct <username>");
+				message_send_text(c, message_type_info, c, "Usage: /muteacct <username>");
 				return 0;
 			}
 
@@ -4508,10 +4513,10 @@ namespace pvpgn
 				return 0;
 			}
 			if ((user = connlist_find_connection_by_accountname(text)))
-				message_send_text(user, message_type_info, user, "Your account has just been muted by admin.");
+				message_send_text(user, message_type_info, user, "Your account has just been muted by an admin.");
 
 			account_set_auth_mute(account, 1);
-			message_send_text(c, message_type_error, c, "That user account is now muted.");
+			message_send_text(c, message_type_error, c, "That user's account is now muted.");
 			return 0;
 		}
 
@@ -4524,7 +4529,7 @@ namespace pvpgn
 
 			if (text[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /unmuteacct <username>");
+				message_send_text(c, message_type_info, c, "Usage: /unmuteacct <username>");
 				return 0;
 			}
 			if (!(account = accountlist_find_account(text)))
@@ -4534,10 +4539,10 @@ namespace pvpgn
 			}
 
 			if ((user = connlist_find_connection_by_accountname(text)))
-				message_send_text(user, message_type_info, user, "Your account has just been unmuted by admin.");
+				message_send_text(user, message_type_info, user, "Your account has just been unmuted by an admin.");
 
 			account_set_auth_mute(account, 0);
-			message_send_text(c, message_type_error, c, "That user account is now unmuted.");
+			message_send_text(c, message_type_error, c, "That user's account is now unmuted.");
 			return 0;
 		}
 
@@ -4556,7 +4561,7 @@ namespace pvpgn
 
 			if (dest[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /flag <flag>");
+				message_send_text(c, message_type_info, c, "Usage: /flag <flag>");
 				return 0;
 			}
 
@@ -4583,12 +4588,12 @@ namespace pvpgn
 
 			if (dest[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /tag <clienttag>");
+				message_send_text(c, message_type_info, c, "Usage: /tag <clienttag>");
 				return 0;
 			}
 			if (std::strlen(dest) != 4)
 			{
-				message_send_text(c, message_type_error, c, "Client tag should be four characters long.");
+				message_send_text(c, message_type_error, c, "Client tag must be four characters long.");
 				return 0;
 			}
 			newtag = tag_case_str_to_uint(dest);
@@ -4623,7 +4628,7 @@ namespace pvpgn
 			  */
 
 			if (text[0] == '\0') {
-				message_send_text(c, message_type_error, c, "usage: /ipscan <name or ip-address>");
+				message_send_text(c, message_type_error, c, "Usage: /ipscan <name or IP-address>");
 				return 0;
 			}
 
@@ -4636,9 +4641,9 @@ namespace pvpgn
 					message_send_text(c, message_type_error, c, msgtemp);
 				}
 				else {
-					message_send_text(c, message_type_info, c, "Warning: that user is not online, using last known address");
+					message_send_text(c, message_type_info, c, "Warning: That user is not online, using last known address.");
 					if (!(ip = account_get_ll_ip(account))) {
-						message_send_text(c, message_type_error, c, "Sorry, no address could be retrieved");
+						message_send_text(c, message_type_error, c, "Sorry, no IP address could be retrieved.");
 						return 0;
 					}
 				}
@@ -4664,7 +4669,7 @@ namespace pvpgn
 			}
 
 			if (count == 0) {
-				message_send_text(c, message_type_error, c, "There are no online users with that address");
+				message_send_text(c, message_type_error, c, "There are no online users with that IP address");
 			}
 
 			return 0;
@@ -4707,13 +4712,13 @@ namespace pvpgn
 			// disallow get/set value for password hash and username (hash can be cracked easily, account name should be permanent)
 			if (strcasecmp(key, "bnet\\acct\\passhash1") == 0 || strcasecmp(key, "bnet\\acct\\username") == 0 || strcasecmp(key, "bnet\\username") == 0)
 			{
-				message_send_text(c, message_type_info, c, "Access denied due to security reason.");
+				message_send_text(c, message_type_info, c, "Access denied due to security reasons.");
 				return 0;
 			}
 
 			if ((arg1[0] == '\0') || (arg2[0] == '\0'))
 			{
-				message_send_text(c, message_type_info, c, "usage: /set <username> <key> [value]");
+				message_send_text(c, message_type_info, c, "Usage: /set <username> <key> [value]");
 				message_send_text(c, message_type_info, c, " example: /set joe BNET\\auth\\botlogin true");
 				message_send_text(c, message_type_info, c, " example: /set joe Record\\W3XP\\ffa_wins 123");
 				message_send_text(c, message_type_info, c, " (set value = null to unset value)");
@@ -4734,7 +4739,7 @@ namespace pvpgn
 					message_send_text(c, message_type_error, c, msgtemp);
 				}
 				else
-					message_send_text(c, message_type_error, c, "value currently not set");
+					message_send_text(c, message_type_error, c, "Value currently not set");
 				return 0;
 			}
 
@@ -4751,7 +4756,7 @@ namespace pvpgn
 			}
 			else
 			{
-				std::sprintf(msgtemp2, "Key set succesfully %s", msgtemp);
+				std::sprintf(msgtemp2, "Key set successfully %s", msgtemp);
 				message_send_text(c, message_type_error, c, msgtemp2);
 				eventlog(eventlog_level_warn, __FUNCTION__, "Key set by \"%s\" %s", account_get_name(conn_get_account(c)), msgtemp);
 			}
@@ -4833,7 +4838,7 @@ namespace pvpgn
 			else
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "could not open tos file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
-				message_send_text(c, message_type_error, c, "Unable to send TOS (terms of service).");
+				message_send_text(c, message_type_error, c, "Unable to send TOS (Terms of Service).");
 			}
 			xfree((void *)filename);
 			return 0;
@@ -4869,7 +4874,7 @@ namespace pvpgn
 			else if ((user = connlist_find_connection_by_accountname(&text[i])))
 				snprintf(msgtemp, sizeof(msgtemp), "%.64s latency %9u", &text[i], conn_get_latency(user));
 			else
-				snprintf(msgtemp, sizeof(msgtemp), "Invalid user");
+				snprintf(msgtemp, sizeof(msgtemp), "Invalid user.");
 
 			message_send_text(c, message_type_info, c, msgtemp);
 			return 0;
@@ -4919,7 +4924,7 @@ namespace pvpgn
 			username = arg2;
 
 			if (arg1[0] == '\0') {
-				message_send_text(c, message_type_info, c, "usage: /cg <command> <username> [<group(s)>]");
+				message_send_text(c, message_type_info, c, "Usage: /cg <command> <username> [<group(s)>]");
 				return 0;
 			}
 
@@ -4932,7 +4937,7 @@ namespace pvpgn
 			}
 
 			if (arg2[0] == '\0') {
-				message_send_text(c, message_type_info, c, "usage: /cg <command> <username> [<group(s)>]");
+				message_send_text(c, message_type_info, c, "Usage: /cg <command> <username> [<group(s)>]");
 				return 0;
 			}
 
@@ -4959,7 +4964,7 @@ namespace pvpgn
 			}
 
 			if (arg3[0] == '\0') {
-				message_send_text(c, message_type_info, c, "usage: /cg <command> <username> [<group(s)>]");
+				message_send_text(c, message_type_info, c, "Usage: /cg <command> <username> [<group(s)>]");
 				return 0;
 			}
 
@@ -4973,7 +4978,7 @@ namespace pvpgn
 				else if (arg3[i] == '7') groups |= 64;
 				else if (arg3[i] == '8') groups |= 128;
 				else {
-					snprintf(msgtemp, sizeof(msgtemp), "got bad group: %c", arg3[i]);
+					snprintf(msgtemp, sizeof(msgtemp), "Got bad group: %c", arg3[i]);
 					message_send_text(c, message_type_info, c, msgtemp);
 					return 0;
 				}
@@ -4981,19 +4986,19 @@ namespace pvpgn
 
 			if (!std::strcmp(command, "add") || !std::strcmp(command, "a")) {
 				account_set_command_groups(account, usergroups | groups);
-				snprintf(msgtemp, sizeof(msgtemp), "groups %.64s has been added to user: %.64s", arg3, username);
+				snprintf(msgtemp, sizeof(msgtemp), "Groups %.64s has been added to %.64s", arg3, username);
 				message_send_text(c, message_type_info, c, msgtemp);
 				return 0;
 			}
 
 			if (!std::strcmp(command, "del") || !std::strcmp(command, "d")) {
 				account_set_command_groups(account, usergroups & (255 - groups));
-				snprintf(msgtemp, sizeof(msgtemp), "groups %.64s has been deleted from user: %.64s", arg3, username);
+				snprintf(msgtemp, sizeof(msgtemp), "Groups %.64s has been deleted from %.64s", arg3, username);
 				message_send_text(c, message_type_info, c, msgtemp);
 				return 0;
 			}
 
-			snprintf(msgtemp, sizeof(msgtemp), "got unknown command: %.128s", command);
+			snprintf(msgtemp, sizeof(msgtemp), "Got unknown command: %.128s", command);
 			message_send_text(c, message_type_info, c, msgtemp);
 			return 0;
 		}
@@ -5054,14 +5059,14 @@ namespace pvpgn
 
 			if (!(channel = channellist_find_channel_by_name(channel_name, conn_get_country(c), realm_get_name(conn_get_realm(c)))))
 			{
-				snprintf(msgtemp, sizeof(msgtemp), "no such channel, can't set topic");
+				snprintf(msgtemp, sizeof(msgtemp), "There is no such channel.");
 				message_send_text(c, message_type_error, c, msgtemp);
 				return -1;
 			}
 
 			if (std::strlen(topic) >= MAX_TOPIC_LEN)
 			{
-				snprintf(msgtemp, sizeof(msgtemp), "max topic length exceeded (max %d symbols)", MAX_TOPIC_LEN);
+				snprintf(msgtemp, sizeof(msgtemp), "Max topic length exceeded (max %d symbols)", MAX_TOPIC_LEN);
 				message_send_text(c, message_type_error, c, msgtemp);
 				return -1;
 			}
@@ -5109,9 +5114,9 @@ namespace pvpgn
 			}
 			else {
 				if (oldflags & channel_flags_moderated)
-					channel_message_send(channel, message_type_info, c, "Channel is now unmoderated");
+					channel_message_send(channel, message_type_info, c, "Channel is now unmoderated.");
 				else
-					channel_message_send(channel, message_type_info, c, "Channel is now moderated");
+					channel_message_send(channel, message_type_info, c, "Channel is now moderated.");
 			}
 
 			return 0;
@@ -5126,7 +5131,7 @@ namespace pvpgn
 				account_set_normal_vitality(account, ctag, 0),
 				account_set_normal_gold(account, ctag, 0);
 
-			snprintf(msgtemp, sizeof(msgtemp), "Resetted %.64s's %.64s Stats", account_get_name(account), clienttag_get_title(ctag));
+			snprintf(msgtemp, sizeof(msgtemp), "Reseted %.64s's %.64s Stats", account_get_name(account), clienttag_get_title(ctag));
 			message_send_text(c, message_type_info, c, msgtemp);
 		}
 
@@ -5250,7 +5255,7 @@ namespace pvpgn
 			// this would now need a way to delete the team for all members now
 			//account_set_atteamcount(account,ctag,0);
 
-			snprintf(msgtemp, sizeof(msgtemp), "Resetted %.64s's %.64s Stats", account_get_name(account), clienttag_get_title(ctag));
+			snprintf(msgtemp, sizeof(msgtemp), "Reseted %.64s's %.64s Stats", account_get_name(account), clienttag_get_title(ctag));
 			message_send_text(c, message_type_info, c, msgtemp);
 		}
 
@@ -5360,9 +5365,9 @@ namespace pvpgn
 
 			if (accname == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage: /icon <username> [CODE]");
+				message_send_text(c, message_type_info, c, "Usage: /icon <username> [CODE]");
 				message_send_text(c, message_type_info, c, " for example: /icon joe W3D6");
-				message_send_text(c, message_type_info, c, " (set code = null to unset icon)");
+				message_send_text(c, message_type_info, c, " (set [CODE] = null to enable default icon)");
 				return 0;
 			}
 

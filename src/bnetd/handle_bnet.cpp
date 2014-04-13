@@ -2028,7 +2028,7 @@ namespace pvpgn
 						account_set_salt(account, salt);
 						account_set_verifier(account, verifier);
 
-						eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) \"%s\" successfull passchange (right client password proof)", conn_get_socket(c), username);
+						eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) \"%s\" successful passchange (right client password proof)", conn_get_socket(c), username);
 						bn_int_set(&rpacket->u.server_passchangeproofreply.response, SERVER_PASSCHANGEPROOFREPLY_RESPONSE_OK);
 					}
 					else {

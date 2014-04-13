@@ -27,7 +27,7 @@
 #	    Add the following line to your user file to get access to all groups:
 #	    	"BNET\\auth\\command_groups"="255"
 #
-#	    For regualar users to be able to use the regualr commands make sure to
+#	    For regular users to be able to use the regular commands make sure to
 #	    	use the updated 'bnetd_default_user' file
 #
 #	SQL MODE:
@@ -35,7 +35,7 @@
 #	    	ALTER TABLE BNET ADD COLUMN auth_command_groups VARCHAR(128) default '1';
 #	    	UPDATE BNET SET auth_command_groups='255' WHERE uid='youruserid'
 #	    
-#	    For regular users to be able to use the reqular commands
+#	    For regular users to be able to use the regular commands
 #	    issue the following command:
 #	    	UPDATE BNET SET auth_command_groups='1' WHERE uid='0'
 #
@@ -49,14 +49,17 @@
 1	/c /clan
 1	/f /friends
 1	/me
-1	/msg /whisper /w /m /r /reply
+1	/msg /whisper /w /m 
+1	/r /reply
 1	/status /users /lusers
 1	/who /whois /whereis /where /whoami
 1	/beep /nobeep
-1	/version /copyright /warrenty /license
-1	/uptime /stats /astat /time
-1	/channel /join /rejoin
-1	/away /dnd /ignore /squelch /unignore /unsquelch
+1	/version /copyright /warranty /license
+1	/uptime 
+1	/stats /astat
+1	/time
+1	/channel /join /j /rejoin
+1	/away /dnd /ignore /unignore /squelch /unsquelch
 1	/watch /unwatch /watchall /unwatchall
 1	/news /games /channels /chs /admins
 1	/logout /quit /exit
@@ -144,11 +147,16 @@
 #	-- They are all locked out for regular users and require access to the Group to Use.
 #	-- Use the /cg command to assign groups to users.
 
-2	/realmann /ann /announce
+2	/realmann
+2	/ann /announce
 
-3	/serverban /ipban /ipscan
+3	/serverban /ipban
+3	/ipscan
 
-4	/kill /killsession /addacct /lockacct /unlockacct /muteacct /unmuteacct
+4	/kill /killsession
+4	/addacct
+4	/lockacct /unlockacct
+4	/muteacct /unmuteacct
 
 5	/ladderactivate
 # 5 	/rank_all_accounts 
@@ -158,7 +166,10 @@
 
 6	/operator /admin /flag /tag
 
-7	/set /commandgroups /cg /clearstats /icon
+7	/set
+7	/commandgroups /cg
+7	/clearstats
+7	/icon
 
 8	/shutdown /rehash /find /save
 
