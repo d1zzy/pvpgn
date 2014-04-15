@@ -371,6 +371,7 @@ namespace pvpgn
 			{ "/f", _handle_friends_command },
 			{ "/friends", _handle_friends_command },
 			{ "/me", _handle_me_command },
+			{ "/emote", _handle_me_command },
 			{ "/msg", _handle_whisper_command },
 			{ "/whisper", _handle_whisper_command },
 			{ "/w", _handle_whisper_command },
@@ -466,6 +467,7 @@ namespace pvpgn
 			{ "/flag", _handle_flag_command },
 			{ "/tag", _handle_tag_command },
 			{ "/help", handle_help_command },
+			{ "/?", handle_help_command },
 			{ "/mail", handle_mail_command },
 			{ "/ipban", handle_ipban_command }, // in ipban.c
 			{ "/ipscan", _handle_ipscan_command },
@@ -501,7 +503,8 @@ namespace pvpgn
 
 			if ((text[0] != '\0') && (conn_quota_exceeded(c, text)))
 			{
-				message_send_text(c, message_type_error, c, "You are sending commands to "PVPGN_SOFTWARE" too quickly and risk being disconnected for flooding. Please slow down.");
+				snprintf(msgtemp, sizeof(msgtemp), "You are sending commands to %s too quickly and risk being disconnected for flooding. Please slow down.", prefs_get_servername());
+				message_send_text(c, message_type_error, c, ,msgtemp);
 				return 0;
 			}
 
@@ -691,7 +694,7 @@ namespace pvpgn
 				/* User is not in clan, but he can accept invitation to someone */
 				if (text[0] == '\0') {
 					message_send_text(c, message_type_info, c, "Usage:");
-					message_send_text(c, message_type_info, c, "/clan invite get     (show clanname wich you have been invited)");
+					message_send_text(c, message_type_info, c, "/clan invite get     (show clanname which you have been invited)");
 					message_send_text(c, message_type_info, c, "/clan invite accept  (accept invitation to clan)");
 					message_send_text(c, message_type_info, c, "/clan invite decline (decline invitation to clan)");
 				}
@@ -699,7 +702,7 @@ namespace pvpgn
 					text = skip_command(text);
 					if (text[0] == '\0') {
 						message_send_text(c, message_type_info, c, "Usage:");
-						message_send_text(c, message_type_info, c, "/clan invite get     (show clanname wich you have been invited)");
+						message_send_text(c, message_type_info, c, "/clan invite get     (show clanname which you have been invited)");
 						message_send_text(c, message_type_info, c, "/clan invite accept  (accept invitation to clan)");
 						message_send_text(c, message_type_info, c, "/clan invite decline (decline invitation to clan)");
 					}
@@ -712,7 +715,7 @@ namespace pvpgn
 
 						clanmember_set_fullmember(member, 1);
 						clanmember_set_join_time(member, std::time(NULL));
-						snprintf(msgtemp, sizeof(msgtemp), "You are now clanmember of %s", clan_get_name(clan));
+						snprintf(msgtemp, sizeof(msgtemp), "You are now a clan member of %s", clan_get_name(clan));
 						message_send_text(c, message_type_info, c, msgtemp);
 						if (created > 0) {
 							DEBUG1("clan %s has already been created", clan_get_name(clan));
@@ -1687,14 +1690,19 @@ namespace pvpgn
 				unsigned int uid;
 				bool online_only = false;
 
-				if (strstart(text, "online") == 0 || strstart(text, "o") == 0) {
+				if (strstart(text, "online") == 0 || strstart(text, "o") == 0)
+				{
 					online_only = true;
 				}
-				if (!online_only) {
-					message_send_text(c, message_type_info, c, "Your "PVPGN_SOFTWARE" - Friends List");
+				if (!online_only)
+				{
+					snprintf(msgtemp, sizeof(msgtemp), "Your %s - Friends List", prefs_get_servername());
+					message_send_text(c, message_type_info, c, msgtemp);
 				}
-				else {
-					message_send_text(c, message_type_info, c, "Your "PVPGN_SOFTWARE" - Online Friends List");
+				else
+				{
+					snprintf(msgtemp, sizeof(msgtemp), "Your %s - Online Friends List", prefs_get_servername());
+					message_send_text(c, message_type_info, c, msgtemp);
 				}
 				message_send_text(c, message_type_info, c, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
 				num = account_get_friendcount(my_acc);
@@ -2369,9 +2377,9 @@ namespace pvpgn
 			btlocal = bnettime_add_tzbias(btsystem, local_tzbias());
 			now = bnettime_to_time(btlocal);
 			if (!(tmnow = std::gmtime(&now)))
-				std::strcpy(msgtemp, PVPGN_SOFTWARE" Server Time: ?");
+				std::strcpy(msgtemp, "%s Server Time: ?", prefs_get_servername());
 			else
-				std::strftime(msgtemp, sizeof(msgtemp), PVPGN_SOFTWARE" Server Time: %a %b %d %H:%M:%S", tmnow);
+				std::strftime(msgtemp, sizeof(msgtemp), "%s Server Time: %a %b %d %H:%M:%S", prefs_get_servername(), tmnow);
 			message_send_text(c, message_type_info, c, msgtemp);
 			if (conn_get_class(c) == conn_class_bnet)
 			{
@@ -2395,7 +2403,7 @@ namespace pvpgn
 
 			if (text[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "usage /channel <channel>");
+				message_send_text(c, message_type_info, c, "Usage: /channel <channel>");
 				return 0;
 			}
 
@@ -2408,7 +2416,7 @@ namespace pvpgn
 
 				if (!(std::strlen(text) < MAX_CHANNELNAME_LEN))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "max channel name length exceeded (max %d symbols)", MAX_CHANNELNAME_LEN - 1);
+					snprintf(msgtemp, sizeof(msgtemp), "Max channel name length exceeded (max %d symbols)", MAX_CHANNELNAME_LEN - 1);
 					message_send_text(c, message_type_error, c, msgtemp);
 					return 0;
 				}
