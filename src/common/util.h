@@ -24,6 +24,14 @@
 
 #include <cstdio>
 #include <ctime>
+#include <vector>
+
+/* platform dependent directory list api */
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <dirent.h>
+#endif
 
 namespace pvpgn
 {
@@ -45,6 +53,7 @@ namespace pvpgn
 	extern char * buildpath(char const *root, const char *suffix);
 	extern int timestr_to_time(char const * timestr, std::time_t* ptime);
 	extern void strlower(char* str);
+	extern std::vector<std::string> dir_getfiles(const std::string &directory, const char* ext, bool recursive);
 
 	static inline char * str_skip_space(char *str)
 	{

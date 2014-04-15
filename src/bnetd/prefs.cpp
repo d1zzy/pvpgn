@@ -144,9 +144,11 @@ namespace pvpgn
 			char const * command_groups_file;
 			char const * tournament_file;
 			char const * customicons_file;
+#ifdef WITH_LUA
+			char const * scriptdir;
+#endif
 			char const * aliasfile;
 			char const * anongame_infos_file;
-			char const * magicfile;
 			unsigned int max_conns_per_IP;
 			unsigned int max_friends;
 			unsigned int clan_newer_time;
@@ -596,6 +598,12 @@ namespace pvpgn
 		static const char *conf_get_customicons_file(void);
 		static int conf_setdef_customicons_file(void);
 
+#ifdef WITH_LUA
+		static int conf_set_scriptdir(const char *valstr);
+		static const char *conf_get_scriptdir(void);
+		static int conf_setdef_scriptdir(void);
+#endif
+
 		static int conf_set_aliasfile(const char *valstr);
 		static const char *conf_get_aliasfile(void);
 		static int conf_setdef_aliasfile(void);
@@ -821,6 +829,9 @@ namespace pvpgn
 			{ "command_groups_file", conf_set_command_groups_file, conf_get_command_groups_file, conf_setdef_command_groups_file },
 			{ "tournament_file", conf_set_tournament_file, conf_get_tournament_file, conf_setdef_tournament_file },
 			{ "customicons_file", conf_set_customicons_file, conf_get_customicons_file, conf_setdef_customicons_file },
+#ifdef WITH_LUA
+			{ "scriptdir", conf_set_scriptdir, conf_get_scriptdir, conf_setdef_scriptdir },
+#endif
 			{ "aliasfile", conf_set_aliasfile, conf_get_aliasfile, conf_setdef_aliasfile },
 			{ "anongame_infos_file", conf_set_anongame_infos_file, conf_get_anongame_infos_file, conf_setdef_anongame_infos_file },
 
@@ -3084,6 +3095,27 @@ namespace pvpgn
 			return prefs_runtime_config.customicons_file;
 		}
 
+#ifdef WITH_LUA
+		extern char const * prefs_get_scriptdir(void)
+		{
+			return prefs_runtime_config.scriptdir;
+		}
+
+		static int conf_set_scriptdir(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.scriptdir, valstr, NULL);
+		}
+
+		static int conf_setdef_scriptdir(void)
+		{
+			return conf_set_str(&prefs_runtime_config.scriptdir, NULL, BNETD_SCRIPT_DIR);
+		}
+
+		static const char* conf_get_scriptdir(void)
+		{
+			return prefs_runtime_config.scriptdir;
+		}
+#endif
 
 		extern char const * prefs_get_aliasfile(void)
 		{

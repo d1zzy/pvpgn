@@ -79,6 +79,7 @@ storage_path = "file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}
 #----------------------------------------------------------------------------#
 
 filedir     = "${LOCALSTATEDIR}/files"
+scriptdir   = "${LOCALSTATEDIR}/script"
 reportdir   = "${LOCALSTATEDIR}/reports"
 chanlogdir  = "${LOCALSTATEDIR}/chanlogs"
 motdfile    = "${SYSCONFDIR}/bnmotd.txt"

@@ -9,6 +9,7 @@
  * Copyright (C) 2003,2004  Aaron
  * Copyright (C) 2004  Donny Redmond (dredmond@linuxmail.org)
  * Copyright (C) 2008  Pelish (pelish@gmail.com)
+ * Copyright (C) 2014  HarpyWar (harpywar@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -79,6 +80,10 @@
 #include "icons.h"
 
 #include "attrlayer.h"
+
+#ifdef WITH_LUA
+#include "luainterface.h"
+#endif
 
 namespace pvpgn
 {
@@ -504,6 +509,10 @@ namespace pvpgn
 				return 0;
 			}
 
+#ifdef WITH_LUA
+			if (lua_handle_command(c, text) > 0)
+				return 0;
+#endif
 			for (p = standard_command_table; p->command_string != NULL; p++)
 			{
 				if (strstart(text, p->command_string) == 0)

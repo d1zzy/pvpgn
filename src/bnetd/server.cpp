@@ -88,6 +88,10 @@
 #include "topic.h"
 #include "common/setup_after.h"
 
+#ifdef WITH_LUA
+#include "luainterface.h"
+#endif
+
 extern std::FILE * hexstrm; /* from main.c */
 extern int g_ServiceStatus;
 
@@ -1419,6 +1423,11 @@ namespace pvpgn
 					topiclist_unload();
 					if (topiclist_load(prefs_get_topicfile()) < 0)
 						eventlog(eventlog_level_error, __FUNCTION__, "could not load new topic list");
+
+#ifdef WITH_LUA
+					lua_unload();
+					lua_load(prefs_get_scriptdir());
+#endif
 
 					eventlog(eventlog_level_info, __FUNCTION__, "done reconfiguring");
 
