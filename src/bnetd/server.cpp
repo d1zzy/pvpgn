@@ -139,8 +139,8 @@ namespace pvpgn
 				sigexittime = std::time(NULL) + (std::time_t)prefs_get_shutdown_delay();
 		}
 
-		extern void server_restart_wraper(void){
-			do_restart = 1;
+		extern void server_restart_wraper(int mode){
+			do_restart = mode;
 		}
 
 		extern void server_save_wraper(void){
@@ -1352,81 +1352,136 @@ namespace pvpgn
 
 				if (do_restart)
 				{
-					eventlog(eventlog_level_info, __FUNCTION__, "reading configuration files");
-					if (cmdline_get_preffile())
+					if (do_restart == restart_mode_all)
 					{
-						if (prefs_load(cmdline_get_preffile()) < 0)
-							eventlog(eventlog_level_error, __FUNCTION__, "could not parse configuration file");
+						eventlog(eventlog_level_info, __FUNCTION__, "reading configuration files");
+						if (cmdline_get_preffile())
+						{
+							if (prefs_load(cmdline_get_preffile()) < 0)
+								eventlog(eventlog_level_error, __FUNCTION__, "could not parse configuration file");
+						}
+						else
+						if (prefs_load(BNETD_DEFAULT_CONF_FILE) < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "using default configuration");
+
+						if (eventlog_open(prefs_get_logfile()) < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "could not use the file \"%s\" for the eventlog", prefs_get_logfile());
+
+						/* FIXME: load new network settings */
+
+						/* reload server name */
+						server_set_hostname();
+
+						attrlayer_load_default();
 					}
-					else
-					if (prefs_load(BNETD_DEFAULT_CONF_FILE) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "using default configuration");
 
-					if (eventlog_open(prefs_get_logfile()) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not use the file \"%s\" for the eventlog", prefs_get_logfile());
+					if (do_restart == restart_mode_all || do_restart == restart_mode_channels)
+					{
+						channellist_reload();
+					}
 
-					/* FIXME: load new network settings */
+					if (do_restart == restart_mode_all || do_restart == restart_mode_realms)
+					{
+						if (realmlist_reload(prefs_get_realmfile()) < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "could not reload realm list");
+					}
 
-					/* reload server name */
-					server_set_hostname();
+					if (do_restart == restart_mode_all || do_restart == restart_mode_autoupdate)
+					{
+						autoupdate_unload();
+						if (autoupdate_load(prefs_get_mpqfile()) < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "could not load autoupdate list");
+					}
 
-					attrlayer_load_default();
+					if (do_restart == restart_mode_all || do_restart == restart_mode_news)
+					{
+						news_unload();
+						if (news_load(prefs_get_newsfile()) < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "could not load news list");
+					}
 
-					channellist_reload();
+					if (do_restart == restart_mode_all || do_restart == restart_mode_versioncheck)
+					{
+						versioncheck_unload();
+						if (versioncheck_load(prefs_get_versioncheck_file()) < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "could not load versioncheck list");
+					}
 
-					if (realmlist_reload(prefs_get_realmfile()) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not reload realm list");
+					if (do_restart == restart_mode_all || do_restart == restart_mode_ipbans)
+					{
+						if (ipbanlist_destroy() < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "could not unload old IP ban list");
+						ipbanlist_create();
+						if (ipbanlist_load(prefs_get_ipbanfile()) < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "could not load new IP ban list");
+					}
 
-					autoupdate_unload();
-					if (autoupdate_load(prefs_get_mpqfile()) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not load autoupdate list");
+					if (do_restart == restart_mode_all || do_restart == restart_mode_helpfile)
+					{
+						helpfile_unload();
+						if (helpfile_init(prefs_get_helpfile()) < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "could not load the helpfile");
+					}
 
-					news_unload();
-					if (news_load(prefs_get_newsfile()) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not load news list");
+					if (do_restart == restart_mode_all || do_restart == restart_mode_banners)
+					{
+						adbannerlist.reset(new AdBannerComponent(prefs_get_adfile()));
+					}
 
-					versioncheck_unload();
-					if (versioncheck_load(prefs_get_versioncheck_file()) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not load versioncheck list");
+					if (do_restart == restart_mode_all || do_restart == restart_mode_tracker)
+					{
+						if (prefs_get_track())
+							tracker_set_servers(prefs_get_trackserv_addrs());
+					}
 
-					if (ipbanlist_destroy() < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not unload old IP ban list");
-					ipbanlist_create();
-					if (ipbanlist_load(prefs_get_ipbanfile()) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not load new IP ban list");
+					if (do_restart == restart_mode_all || do_restart == restart_mode_commandgroups)
+					{
+						if (command_groups_reload(prefs_get_command_groups_file()) < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "could not load new command_groups list");
+					}
 
-					helpfile_unload();
-					if (helpfile_init(prefs_get_helpfile()) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not load the helpfile");
+					if (do_restart == restart_mode_all || do_restart == restart_mode_aliasfile)
+					{
+						aliasfile_unload();
+						aliasfile_load(prefs_get_aliasfile());
+					}
 
-					adbannerlist.reset(new AdBannerComponent(prefs_get_adfile()));
+					if (do_restart == restart_mode_all || do_restart == restart_mode_transfile)
+					{
+						if (trans_reload(prefs_get_transfile(), TRANS_BNETD) < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "could not reload trans list");
+					}
 
-					if (prefs_get_track())
-						tracker_set_servers(prefs_get_trackserv_addrs());
-					if (command_groups_reload(prefs_get_command_groups_file()) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not load new command_groups list");
+					if (do_restart == restart_mode_all || do_restart == restart_mode_tournament)
+					{
+						tournament_reload(prefs_get_tournament_file());
+					}
 
-					aliasfile_unload();
-					aliasfile_load(prefs_get_aliasfile());
+					if (do_restart == restart_mode_all || do_restart == restart_mode_icons)
+					{
+						customicons_unload();
+						customicons_load(prefs_get_customicons_file());
+					}
 
-					if (trans_reload(prefs_get_transfile(), TRANS_BNETD) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not reload trans list");
+					if (do_restart == restart_mode_all || do_restart == restart_mode_anongame)
+					{
+						anongame_infos_unload();
+						anongame_infos_load(prefs_get_anongame_infos_file());
+					}
 
-					tournament_reload(prefs_get_tournament_file());
-
-					customicons_unload();
-					customicons_load(prefs_get_customicons_file());
-
-					anongame_infos_unload();
-					anongame_infos_load(prefs_get_anongame_infos_file());
-
-					topiclist_unload();
-					if (topiclist_load(prefs_get_topicfile()) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not load new topic list");
+					if (do_restart == restart_mode_all || do_restart == restart_mode_topiclist)
+					{
+						topiclist_unload();
+						if (topiclist_load(prefs_get_topicfile()) < 0)
+							eventlog(eventlog_level_error, __FUNCTION__, "could not load new topic list");
+					}
 
 #ifdef WITH_LUA
-					lua_unload();
-					lua_load(prefs_get_scriptdir());
+					if (do_restart == restart_mode_all || do_restart == restart_mode_lua)
+					{
+						lua_unload();
+						lua_load(prefs_get_scriptdir());
+					}
 #endif
 
 					eventlog(eventlog_level_info, __FUNCTION__, "done reconfiguring");

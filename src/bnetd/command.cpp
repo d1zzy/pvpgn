@@ -3922,7 +3922,61 @@ namespace pvpgn
 
 		static int _handle_rehash_command(t_connection * c, char const *text)
 		{
-			server_restart_wraper();
+			int mode = restart_mode_all; // all by default
+
+			text = skip_command(text);
+
+			if (text[0] == '\0')
+			{
+				message_send_text(c, message_type_info, c, "Usage:");
+				message_send_text(c, message_type_info, c, "/rehash <mode>");
+				message_send_text(c, message_type_info, c, " <mode> = all | channels | realms | autoupdate | news | versioncheck | ipbans | helpfile | banners | tracker | commandgroups | aliasfile | transfile | tournament | icons | anongame | topiclist | lua");
+				return 0;
+			}
+
+			if (!strcasecmp(text, "all"))
+				mode = restart_mode_channels;
+			else if (!strcasecmp(text, "channels"))
+				mode = restart_mode_channels;
+			else if (!strcasecmp(text, "realms"))
+				mode = restart_mode_realms;
+			else if (!strcasecmp(text, "autoupdate"))
+				mode = restart_mode_autoupdate;
+			else if (!strcasecmp(text, "news"))
+				mode = restart_mode_news;
+			else if (!strcasecmp(text, "versioncheck"))
+				mode = restart_mode_versioncheck;
+			else if (!strcasecmp(text, "ipbans"))
+				mode = restart_mode_ipbans;
+			else if (!strcasecmp(text, "helpfile"))
+				mode = restart_mode_helpfile;
+			else if (!strcasecmp(text, "banners"))
+				mode = restart_mode_banners;
+			else if (!strcasecmp(text, "tracker"))
+				mode = restart_mode_tracker;
+			else if (!strcasecmp(text, "commandgroups"))
+				mode = restart_mode_commandgroups;
+			else if (!strcasecmp(text, "aliasfile"))
+				mode = restart_mode_aliasfile;
+			else if (!strcasecmp(text, "transfile"))
+				mode = restart_mode_transfile;
+			else if (!strcasecmp(text, "tournament"))
+				mode = restart_mode_tournament;
+			else if (!strcasecmp(text, "icons"))
+				mode = restart_mode_icons;
+			else if (!strcasecmp(text, "anongame"))
+				mode = restart_mode_anongame;
+			else if (!strcasecmp(text, "topiclist"))
+				mode = restart_mode_topiclist;
+			else if (!strcasecmp(text, "lua"))
+				mode = restart_mode_lua;
+			else
+			{
+				message_send_text(c, message_type_info, c, "Invalid mode.");
+				return 0;
+			}
+
+			server_restart_wraper(mode);
 			return 0;
 		}
 

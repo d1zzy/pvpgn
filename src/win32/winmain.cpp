@@ -287,7 +287,7 @@ namespace pvpgn
 			else if (id == IDM_SAVE)
 				server_save_wraper();
 			else if (id == IDM_RESTART)
-				server_restart_wraper();
+				server_restart_wraper(restart_mode_all);
 			else if (id == IDM_SHUTDOWN)
 				server_quit_wraper();
 			else if (id == IDM_CLEAR)
