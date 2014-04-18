@@ -39,12 +39,39 @@ namespace pvpgn
 
 	namespace bnetd
 	{
+		typedef enum {
+			luaevent_game_create,
+			luaevent_game_report,
+			luaevent_game_end,
+			luaevent_game_destroy,
+			luaevent_game_changestatus,
+
+			luaevent_channel_create,
+			luaevent_channel_destroy,
+
+			luaevent_user_joingame,
+			luaevent_user_leftgame,
+			luaevent_user_joinchannel,
+			luaevent_user_leftchannel,
+
+			luaevent_user_message, // user-to-channel
+			luaevent_user_whisper, // user-to-user
+			luaevent_user_login,
+			luaevent_user_disconnect
+
+		} t_luaevent_type;
 
 
 		extern void lua_load(char const * scriptdir);
 		extern void lua_unload();
 
 		extern int lua_handle_command(t_connection * c, char const * text);
+		extern void lua_handle_game(t_game * game, t_luaevent_type luaevent); // game events
+		extern void lua_handle_user(t_connection * c, t_game * game, t_luaevent_type luaevent); // 
+		//extern void lua_handle_user(t_connection * c, t_connection * c_dst, const char * text, t_luaevent_type luaevent);
+		//extern void lua_handle_user(t_connection * c, t_channel * channel, const char * text, t_luaevent_type luaevent);
+		//extern void lua_handle_user(t_connection * c, t_channel * channel, t_luaevent_type luaevent);
+		//extern void lua_handle_user(t_connection * c, t_luaevent_type luaevent);
 
 	}
 

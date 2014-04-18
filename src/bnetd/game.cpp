@@ -42,6 +42,9 @@
 #include "game_conv.h"
 #include "common/setup_after.h"
 
+#ifdef WITH_LUA
+#include "luainterface.h"
+#endif
 namespace pvpgn
 {
 
@@ -471,6 +474,10 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL game");
 				return;
 			}
+			
+#ifdef WITH_LUA
+			lua_handle_game(game, luaevent_game_destroy);
+#endif
 
 			elist_del(&game->glist_link);
 			glist_length--;
@@ -735,6 +742,10 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "results array is NULL");
 				return -1;
 			}
+
+#ifdef WITH_LUA
+			lua_handle_game(game, luaevent_game_end);
+#endif
 
 			if (game->clienttag == CLIENTTAG_WARCRAFT3_UINT || game->clienttag == CLIENTTAG_WAR3XP_UINT)
 				// war3 game reporting is done elsewhere, so we can skip this function
@@ -1098,6 +1109,10 @@ namespace pvpgn
 			}
 
 			std::fprintf(fp, "\nThis game lasted %lu minutes (elapsed).\n", ((unsigned long int)std::difftime(now, game->start_time)) / 60);
+			
+#ifdef WITH_LUA
+			lua_handle_game(game, luaevent_game_report);
+#endif
 
 			if (std::fclose(fp) < 0)
 			{
@@ -1437,6 +1452,10 @@ namespace pvpgn
 			if (status == game_status_started && game->start_time == (std::time_t)0)
 				game->start_time = now;
 			game->status = status;
+
+#ifdef WITH_LUA
+			lua_handle_game(game, luaevent_game_changestatus);
+#endif
 		}
 
 
@@ -1730,6 +1749,9 @@ namespace pvpgn
 
 				game_choose_host(game);
 
+#ifdef WITH_LUA
+				lua_handle_user(c, game, luaevent_user_leftgame);
+#endif
 				return 0;
 			}
 

@@ -141,8 +141,8 @@ namespace lua
 		void get(int& v, int index) throw() { v = lua_tointeger(st, index); }
 		void get(double& v, int index) throw() { v = lua_tonumber(st, index); }
 		void get(const char*& v, int index) throw()
-		{ 
-			size_t len = 0; 
+		{
+			size_t len = 0;
 			v = lua_tolstring(st, index, &len);
 		}
 		void get(std::string& v, int index) throw()
