@@ -139,6 +139,7 @@ namespace lua
 		// recv from stack scalar
 		void get(unsigned int& v, int index) throw() { v = lua_tointeger(st, index); }
 		void get(int& v, int index) throw() { v = lua_tointeger(st, index); }
+		void get(bool& v, int index) throw() { v = lua_toboolean(st, index); }
 		void get(double& v, int index) throw() { v = lua_tonumber(st, index); }
 		void get(const char*& v, int index) throw()
 		{

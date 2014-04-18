@@ -87,8 +87,8 @@ namespace pvpgn
 
 		void _register_functions();
 
+		std::map<std::string, std::string> get_account_object(t_account *account);
 		std::map<std::string, std::string> get_account_object(const char *username);
-		std::map<std::string, std::string> get_account_object(t_connection * c);
 		std::map<std::string, std::string> get_game_object(t_game * game);
 
 
@@ -98,10 +98,20 @@ namespace pvpgn
 		int _sum(lua_State* L);
 		int __message_send_text(lua_State* L);
 		int __eventlog(lua_State* L);
-		int __get_account(lua_State* L);
+		int __account_get(lua_State* L);
+		int __account_get_attr(lua_State* L);
+		int __account_set_attr(lua_State* L);
 
 		char _msgtemp[MAX_MESSAGE_LEN];
 		char _msgtemp2[MAX_MESSAGE_LEN];
+
+
+		typedef enum {
+			attr_type_str,
+			attr_type_num,
+			attr_type_bool,
+			attr_type_raw
+		} t_attr_type;
 
 
 		/* Unload all the lua scripts */
@@ -120,7 +130,7 @@ namespace pvpgn
 				vm.initialize();
 
 				std::vector<std::string> files = dir_getfiles(std::string(scriptdir), ".lua", true);
-				
+
 				// load all files from the script directory
 				for (int i = 0; i < files.size(); ++i)
 				{
@@ -158,14 +168,10 @@ namespace pvpgn
 			vm.reg("sum", _sum);
 			vm.reg("message_send_text", __message_send_text);
 			vm.reg("eventlog", __eventlog);
-			vm.reg("get_account", __get_account); // FIXME:
+			vm.reg("account_get", __account_get);
+			vm.reg("account_get_attr", __account_get_attr);
+			vm.reg("account_set_attr", __account_set_attr);
 
-			// register package 'event'
-			static const luaL_Reg event[] =
-			{
-				{ 0, 0 }
-			};
-			vm.reg("event", event);
 		}
 
 
@@ -174,12 +180,17 @@ namespace pvpgn
 
 		extern int lua_handle_command(t_connection * c, char const * text)
 		{
+			t_account * account;
 			int result = 0;
-			std::map<std::string, std::string> o_account = get_account_object(c);
 			try
 			{
+				if (!(account = conn_get_account(c)))
+					return 0;
+
+				std::map<std::string, std::string> o_account = get_account_object(account);
 				// invoke lua method
 				lua::transaction(vm) << lua::lookup("handle_command") << o_account << text << lua::invoke >> result << lua::end;
+			
 			}
 			catch (const std::exception& e)
 			{
@@ -197,26 +208,27 @@ namespace pvpgn
 			const char * func_name;
 			switch (luaevent)
 			{
-				case luaevent_game_create:
-					func_name = "handle_game_create";
-					break;
-				case luaevent_game_report:
-					func_name = "handle_game_report";
-					break;
-				case luaevent_game_end:
-					func_name = "handle_game_end";
-					break;
-				case luaevent_game_destroy:
-					func_name = "handle_game_destroy";
-					break;
-				case luaevent_game_changestatus:
-					func_name = "handle_game_changestatus";
-					break;
+			case luaevent_game_create:
+				func_name = "handle_game_create";
+				break;
+			case luaevent_game_report:
+				func_name = "handle_game_report";
+				break;
+			case luaevent_game_end:
+				func_name = "handle_game_end";
+				break;
+			case luaevent_game_destroy:
+				func_name = "handle_game_destroy";
+				break;
+			case luaevent_game_changestatus:
+				func_name = "handle_game_changestatus";
+				break;
 			}
 
 			try
 			{
 				std::map<std::string, std::string> o_game = get_game_object(game);
+				// invoke lua method
 				lua::transaction(vm) << lua::lookup(func_name) << o_game << lua::invoke << lua::end;
 			}
 			catch (const std::exception& e)
@@ -231,6 +243,7 @@ namespace pvpgn
 
 		extern void lua_handle_user(t_connection * c, t_game * game, t_luaevent_type luaevent)
 		{
+			t_account * account;
 			const char * func_name;
 			switch (luaevent)
 			{
@@ -242,11 +255,14 @@ namespace pvpgn
 				func_name = "handle_user_leftgame";
 				break;
 			}
-
-			std::map<std::string, std::string> o_account = get_account_object(c);
-			std::map<std::string, std::string> o_game = get_game_object(game);
 			try
 			{
+				if (!(account = conn_get_account(c)))
+					return;
+
+				std::map<std::string, std::string> o_account = get_account_object(account);
+				std::map<std::string, std::string> o_game = get_game_object(game);
+
 				lua::transaction(vm) << lua::lookup("handle_user_leftgame") << o_account << o_game << lua::invoke << lua::end;
 			}
 			catch (const std::exception& e)
@@ -333,8 +349,8 @@ namespace pvpgn
 			return 0;
 		}
 
-		/* Log text into logfile */
-		int __get_account(lua_State* L)
+		/* Get account table object */
+		int __account_get(lua_State* L)
 		{
 			const char *username;
 			std::map<std::string, std::string> o_account;
@@ -360,7 +376,126 @@ namespace pvpgn
 			return 1;
 		}
 
+		/* Get account attribute value */
+		int __account_get_attr(lua_State* L)
+		{
+			const char *username, *attrkey;
+			int attrtype;
+			std::string attrvalue;
+			std::map<std::string, std::string> o_account;
 
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, username);
+				st.at(2, attrkey);
+				st.at(3, attrtype);
+
+				if (t_account *account = accountlist_find_account(username))
+				{
+					switch ((t_attr_type)attrtype)
+					{
+					case attr_type_str:
+						attrvalue = account_get_strattr(account, attrkey);
+						break;
+					case attr_type_num:
+						attrvalue = std::to_string(account_get_numattr(account, attrkey));
+						break;
+					case attr_type_bool:
+						attrvalue = account_get_boolattr(account, attrkey) == 0 ? "false" : "true";
+						break;
+					case attr_type_raw:
+						attrvalue = account_get_rawattr(account, attrkey);
+						break;
+					}
+				}
+
+				st.push(attrvalue);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+
+			return 1;
+		}
+
+		/* Set account attribute value
+		 * (Return 0 if attribute is not set, and 1 if set)
+		 */
+		int __account_set_attr(lua_State* L)
+		{
+			const char *username, *attrkey;
+			int attrtype;
+			std::map<std::string, std::string> o_account;
+			int result = 0;
+
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, username);
+				st.at(2, attrkey);
+				st.at(3, attrtype);
+
+				if (t_account *account = accountlist_find_account(username))
+				{
+					switch ((t_attr_type)attrtype)
+					{
+					case attr_type_str:
+						const char * strvalue;
+						st.at(4, strvalue);
+
+						if (account_set_strattr(account, attrkey, strvalue) >= 0)
+							result = 1;
+						break;
+					case attr_type_num:
+						int numvalue;
+						st.at(4, numvalue);
+
+						if (account_set_numattr(account, attrkey, numvalue) >= 0)
+							result = 1;
+						break;
+					case attr_type_bool:
+						bool boolvalue;
+						st.at(4, boolvalue);
+
+						if (account_set_boolattr(account, attrkey, boolvalue ? 1 : 0) >= 0)
+							result = 1;
+						break;
+					case attr_type_raw:
+						const char * rawvalue;
+						int length;
+						st.at(4, rawvalue);
+						st.at(5, length);
+
+						if (account_set_rawattr(account, attrkey, rawvalue, length) >= 0)
+							result = 1;
+						break;
+					}
+				}
+
+				st.push(result);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+
+			return 1;
+		}
+
+		// TODO: remove it
+		/* Just a test function */
 		int _sum(lua_State* L)
 		{
 			lua::stack st(L);
@@ -377,21 +512,19 @@ namespace pvpgn
 
 #endif
 
-
-		std::map<std::string, std::string> get_account_object(const char *username)
+		std::map<std::string, std::string> get_account_object(const char * username)
 		{
 			std::map<std::string, std::string> o_account;
-			if (t_connection *c = connlist_find_connection_by_accountname(username))
-				o_account = get_account_object(c);
-
-			return o_account;
+			
+			if (t_account * account = accountlist_find_account(username))
+				return get_account_object(account);
+			else
+				return o_account;
 		}
-
-		std::map<std::string, std::string> get_account_object(t_connection * c)
+		std::map<std::string, std::string> get_account_object(t_account * account)
 		{
 			std::map<std::string, std::string> o_account;
 
-			t_account * account = conn_get_account(c);
 			if (!account)
 				return o_account;
 
@@ -401,15 +534,20 @@ namespace pvpgn
 			o_account["commandgroups"] = std::to_string(account_get_command_groups(account));
 			o_account["locked"] = account_get_auth_lock(account) ? "true" : "false";
 			o_account["muted"] = account_get_auth_mute(account) ? "true" : "false";
-			o_account["country"] = conn_get_country(c);
-			o_account["clientver"] = conn_get_clientver(c);
-			o_account["latency"] = std::to_string(conn_get_latency(c));
-			if (t_clienttag clienttag = conn_get_clienttag(c))
-				o_account["clienttag"] = clienttag_uint_to_str(clienttag);
-			if (t_game *game = conn_get_game(c))
-				o_account["game_id"] = std::to_string(game_get_id(game));
-			if (t_channel *channel = conn_get_channel(c))
-				o_account["channel_id"] = std::to_string(channel_get_channelid(channel));
+
+			// if user online
+			if (t_connection * c = account_get_conn(account))
+			{
+				o_account["country"] = conn_get_country(c);
+				o_account["clientver"] = conn_get_clientver(c);
+				o_account["latency"] = std::to_string(conn_get_latency(c));
+				if (t_clienttag clienttag = conn_get_clienttag(c))
+					o_account["clienttag"] = clienttag_uint_to_str(clienttag);
+				if (t_game *game = conn_get_game(c))
+					o_account["game_id"] = std::to_string(game_get_id(game));
+				if (t_channel *channel = conn_get_channel(c))
+					o_account["channel_id"] = std::to_string(channel_get_channelid(channel));
+			}
 
 			return o_account;
 		}
