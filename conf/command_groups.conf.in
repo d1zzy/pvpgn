@@ -48,7 +48,7 @@
 
 1	/c /clan
 1	/f /friends
-1	/me
+1	/me /emote
 1	/msg /whisper /w /m 
 1	/r /reply
 1	/status /users /lusers
@@ -65,7 +65,7 @@
 1	/logout /quit /exit
 1	/ladderinfo
 1	/timer /quota
-1	/help
+1	/help /?
 1	/mail
 1	/motd
 1	/tos
