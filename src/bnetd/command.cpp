@@ -504,7 +504,7 @@ namespace pvpgn
 			if ((text[0] != '\0') && (conn_quota_exceeded(c, text)))
 			{
 				snprintf(msgtemp, sizeof(msgtemp), "You are sending commands to %s too quickly and risk being disconnected for flooding. Please slow down.", prefs_get_servername());
-				message_send_text(c, message_type_error, c, ,msgtemp);
+				message_send_text(c, message_type_error, c, msgtemp);
 				return 0;
 			}
 
@@ -2377,9 +2377,9 @@ namespace pvpgn
 			btlocal = bnettime_add_tzbias(btsystem, local_tzbias());
 			now = bnettime_to_time(btlocal);
 			if (!(tmnow = std::gmtime(&now)))
-				std::strcpy(msgtemp, "%s Server Time: ?", prefs_get_servername());
+				std::strcpy(msgtemp, "Server Time: ?");
 			else
-				std::strftime(msgtemp, sizeof(msgtemp), "%s Server Time: %a %b %d %H:%M:%S", prefs_get_servername(), tmnow);
+				std::strftime(msgtemp, sizeof(msgtemp), "Server Time: %a %b %d %H:%M:%S", tmnow);
 			message_send_text(c, message_type_info, c, msgtemp);
 			if (conn_get_class(c) == conn_class_bnet)
 			{
@@ -3592,7 +3592,7 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, msgtemp);
 				
 				snprintf(msgtemp, sizeof(msgtemp), "Email: %.128s",
-					account_get_email(account);
+					account_get_email(account));
 				message_send_text(c, message_type_info, c, msgtemp);
 				
 				snprintf(msgtemp, sizeof(msgtemp), "Last login Owner: %.128s",
