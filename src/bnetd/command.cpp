@@ -5382,7 +5382,7 @@ namespace pvpgn
 			{
 				if (usericon = account_get_user_icon(user_account, user_clienttag))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s has custom icon \"%.4s\"", account_get_name(user_account), strreverse((char*)usericon));
+					snprintf(msgtemp, sizeof(msgtemp), "%.64s has custom icon \"%.4s\"", account_get_name(user_account), strreverse(xstrdup(usericon)));
 					message_send_text(c, message_type_error, c, msgtemp);
 				}
 				else
@@ -5390,24 +5390,23 @@ namespace pvpgn
 					snprintf(msgtemp, sizeof(msgtemp), "Custom icon for %.64s currently not set", account_get_name(user_account));
 					message_send_text(c, message_type_error, c, msgtemp);
 				}
-					
 				return 0;
 			}
 			for (int i = 0; i < strlen(code); i++)
 				code[i] = toupper(code[i]);
 
+			snprintf(msgtemp, sizeof(msgtemp), "Set icon \"%.4s\" to %.64s", code, account_get_name(user_account));
+			message_send_text(c, message_type_error, c, msgtemp);
+
 			// unset value
 			if (strcasecmp(code, "null") == 0)
 				usericon = NULL;
 			else
-				usericon = strreverse(xstrdup(code));
+				usericon = strreverse(code);
 
-
-			snprintf(msgtemp, sizeof(msgtemp), "Set icon \"%.4s\" to %.64s", code, account_get_name(user_account));
-			message_send_text(c, message_type_error, c, msgtemp);
-
+			// set reversed
 			account_set_user_icon(user_account, user_clienttag, usericon);
-			
+
 			// if user online then force him to rejoin channel
 			if (user_c)
 			{
@@ -5417,5 +5416,4 @@ namespace pvpgn
 		}
 
 	}
-
 }
