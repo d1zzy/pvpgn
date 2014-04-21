@@ -9,205 +9,311 @@
 # end of the line.                                                           #
 #                                                                            #
 %whois whereis where
-whois <player> - looks up some basic information on a user, including their account number and their current location
+/whois <player> (aliases: /where /whereis)
+Displays where a <player> is on the server.
+Example: /whois user
 %msg whisper m w
-/msg, /whisper, /m, /w <player> <message> - sends a private message to a user online regardless of the channel they are in
+/whisper <player> <message> (aliases: /w /m /msg)
+Sends a private <message> to <player>
+Example: /whisper user How are you doing?
 %ignore squelch
-/ignore, /squelch <player> - ignores any future messages from that user effectively muting that user to you
+/squelch <username> (alias: ignore, see also: /unsquelch)
+Blocks future messages sent from <username>.
+Example: /squelch user
 %unignore unsquelch
-/unignore /unsquelch <player> - unignores a user so u can listen to him again
+/unsquelch <player> (alias: /unignore)
+Allows a previously squelched <player> to talk to you normally.
+Example: /unsquelch user
 %away
-/away [<message>] - displays a message that you are away from your keyboard whenever someone whispers to you or does a /whois command on you
+/away [<message>]
+Displays [<message>] to users who whisper to you. To disable, use the /away command again with no [<message>].
+Example: /away Eating dinner
 %dnd
-/dnd [<message>] - prevents ALL whispers from displaying to your screen
+/dnd [<message>]
+Prevents all whispers from displaying to your screen. To disable, use the command again with no [<message>].
+Example: /dnd I'm playing a game and don't want to hear whispers.
 %who
-/who <channel> - displays a list of all users in the given channel
+/who <channel>
+Displays a list of users in <channel>
+Example: /who Moderated Support
 %stats astat
-/stats /astat [<player>] [<gametag>] - displays a player's game record
+/stats [<player>] [<client>] (alias: /astat)
+Displays a [<player>]'s Win/Loss record.
+Example: /stats user
 %status users
-/status, /users - displays the number of users currently on this server
+/users (alias: /status)
+Displays the current number of users connected to the server.
 %time
-/time - displays the current server time
-%channel join
-/channel /join <channel> - switches to a channel without having to use the channel join screen
+/time
+Displays the current server and your local time.
+%channel join j
+/channel <channel> (alias: /join /j)
+Moves you to <channel>
+Example: /channel Moderated Support
 %rejoin
-/rejoin - join the channel you are already in
-%me
-/me <message> - displays emotion text, as in 'tN is rolling on the floor laughing'
+/rejoin (alias: /resign)
+Removes your status as the channel Operator.
+%me emote
+/me <message> (alias: /emote)
+Displays your name and <message> in a different color.
+Example: /emote wants to play a game.
 %kick
-/kick <player> - kicks a user out of the channel
+/kick <player>
+Kicks <player> from the channel.
+Example: /kick user
 %ban
-/ban <player> - kicks a user out of the channel and prevents them from returning until the current operator steps down or leaves the channel
+/ban <player> (see also: /unban)
+Bans <player> from the channel, and prevents him from returning.
+Example: /ban user
 %unban
-/unban <player> - allows a banned user to return to the channel
+/unban <player>
+Allows a banned <player> to return to the channel.
+Example: /unban user
 %whoami
-/whoami - looks up some basic information on yourself, including your account number and your current location
+/whoami
+Displays where you are on the server.
 %uptime
-/uptime - show the amount of time the server has been running
-%beep
-/beep - enable audible notifications
-%nobeep
-/nobeep - disable audible notifications
+/uptime
+Displays how long the server has been running.
 %version
-/version - shows the version of the server
+/version
+Displays the version of the server
 %lusers
-/lusers - shows list of banned players in this channel
+/lusers
+Displays a list of players who have been banned from the channel
 %games
-/games [<gametag>] - displays current game list of client type gametag, e.g. W3XP - Warcraft 3 TFT 
-/games [lobby], /games [l] - displays current list of games that are in the lobby (i.e. haven't started)
+/games [<gametag>]
+Displays a list of games.
 %channels chs
-/channels /chs [all] - displays current channel list
+/channels [all] (alias: /chs)
+Displays a list of channels.
 %connections con
-/connections /con - displays current connections
+/connections (alis: /con)
+Displays a list of connections.
 %finger
-/finger [<player>] - displays information about player
+/finger [<player>]
+Displays detailed information about [<player>]
+Example: /finger user
 %admins
-/admins - shows all currently logged in administrators
+/admins
+Displays a list of all currently logged in administrators.
 %reply r
-/reply /r <message> - reply to the last person that whispered to you
+/reply <message> (alias: /r)
+Replies to the last player who whispered you with <message>.
+Example: /r Hello user!
 %announce ann
-/announce /ann <message> - announces a message in all channels
+/announce <message> (alias: /ann)
+Announces <message> to everyone.
+Example: /ann Hello everyone!
 %realmann
-/realmann <message> - makes an announcement in the real u are currenlty in
-%copyright warranty license
-/copyright /warranty /license - shows the legal information for bnetd
+/realmann <message>
+Announces <message> to everyone in the current realm.
+Example: /realmann Hello everyone!
 %news
-/news - show some system-specific news
+/news
+Displays the news.
 %logout quit exit
-/logout /quit /exit - closes your connection to the server
+/logout (alias: /quit /exit)
+Disconnects you from the server.
 %kill
-/kill [<player>] [min] - close a player's connection to the server and ban players IP for min minutes
+/kill [<player>] [min]
+Disconnects [<player>] from the server and bans the player's IP address for [min] minutes.
+Example: /kill user 5
 %killsession
-/killsession [<sessionid>] [min] - close a connection to the server and ban sesion's IP for min minutes
+/killsession [<sessionid>] [min]
+Disconnects the session from the server and bans the session's IP address for [min] minutes.
+Example: /killsession 1 5
 %watch
-/watch <player> - sends notification when a player logs out or joins a game
+/watch <player>
+Enables notifications for <player>.
+Example: /watch user
 %unwatch
-/unwatch <player> - stops sending notification about a player
+/unwatch <player>
+Disables notifications for <player>.
+Example: /unwatch user
 %watchall
-/watchall - sends notification when any player logs in or out
+/watchall
+Enables notifications for everyone.
 %unwatchall
-/unwatchall - stops sending notification about all players
+/unwatchall
+Disables notifications for everyone.
 %gameinfo
-/gameinfo [<gamename>] - prints information about a game
+/gameinfo [<gamename>]
+Displays information about [<gamename>].
+Example: /gameinfo FS 1v1!!!
 %ladderactivate
-/ladderactivate - copy current ladder stats to active ladder stats
+/ladderactivate
+Copies current ladder statistics to active ladder statistics.
 %ladderinfo
-/ladderinfo <rank> [<gameid>] - display ladder info for given rank
+/ladderinfo <rank> [<gameid>]
+Displays ladder information for <rank> of [<gameid>]
+Example: /ladderinfo 1000 SEXP
 %timer
-/timer [<duration>] [<message>] - send notification after a period of time
+/timer [<duration>] [<message>]
+Displays [<message>] after [<duration>] seconds.
+Example: /timer 60 1 minute has passed.
 %netinfo
-/netinfo [<player>] - display a player's IP and port information
+/netinfo [<player>]
+Displays [<player>]'s network information.
+Example: /netinfo user
 %addacct
-/addacct <player> <password> - create a new player account
+/addacct <player> <password>
+Creates a new account named <player> with password <password>.
+Example: /addacct user password
 %chpass
 /chpass [<player>] <password> - change a player's password
+Changes [<player>]'s password to <password>.
+Example: /chpass user password
 %quota
-/quota - displays the channel quota
+/quota
+Displays your message quota.
 %shutdown
-/shutdown [<duration>] - starts the shutdown sequence or cancels if duration is zero
+/shutdown [<duration>]
+Sets the shutdown sequence at [<duration>] seconds or cancels it if set to zero.
+Example: /shutdown 300
 %lockacct 
-/lockacct <player> - locks that users account
+/lockacct <player>
+Locks <player>'s account to prevent him/her from logging in with it.
+Example: /lockacct user
 %unlockacct 
-/unlockacct <player> - unlocks that users account
+/unlockacct <player>
+Unlocks <player>'s account to allow him/her to log in with it.
+Example: /unlockacct user
 %friends f
-/friends add <username> - add user to your friends list
-/friends del <username> - remove user from your friends list
-/friends promote <username> - promote user in your friends list
-/friends demote <username> - demote user in your friends list
-/friends list - list all users in your friends list
-/friends online - list all online users in your friends list
-/friends msg <msgtext> - whispers to all your online friends
+/friends <command> [otions] (alias: /f)
+    /friends add <username>
+    Adds <username> to your friends list.
+    /friends del <username>
+    Removes <username> from your friends list.
+    /friends promote <username>
+    Promotes <username> one line up your friends list.
+    /friends demote <username>
+    Demotes <username> one line down your friends list
+    /friends list
+    Displays your friends list.
+    /friends online
+    Displays your online friends list.
+    /friends msg <msgtext>
+    Whisper <msgtext> to all of your online friends.
 %mail
-/mail <command> [<options>] - mail management commands
-    Syntax:
+/mail <command> [<options>]
     /mail send <receiver> <message>
+    Sends mail to <receiver> with <message>.
     /mail read [<index>]
+    Reads mail [<index>]
     /mail delete {all|<index>}
+    Deletes mail <index> or [all] mail.
 %flag
-/flag <number> - debug tool for icon flags
+/flag <number>
+A debug tool for icon flags.
 %tag
-/tag <gamename> - debug tool for client tags
+/tag <gamename>
+A debug tool for client tags.
 %help
-/help [<command>] - does this
+/help [<command>]
+Displays help about [<command>]
+Example: /help whisper
 %ipban
-/ipban [<command>] [option] [time] - ban management commands
-    Syntax:
-    /ipban [l[ist]] - shows banned IPs
-    /ipban c[heck] <IP> - check is IP banned
-    /ipban d[el] <IP|index> - deletes ban for IP, or rule number index
-    /ipban a[dd] <IP> [time] - ban specified IP for time minutes (time = 0 - permanently ban)
-    /ipban h[elp] - show help screen
+/ipban [<command>] [option] [time]
+    /ipban [l[ist]]
+	Displays a list of banned IP addresses
+    /ipban c[heck] <IP>
+	Checks if IP address <IP> is banned or not.
+    /ipban d[el] <IP|index>
+	Deletes IP address <IP> or <index>
+    /ipban a[dd] <IP> [time]
+	Bans IP address <IP> for [time] minutes. [time] = 0 - permanent ban
+    /ipban h[elp]
+	Displays help for this command.
 %set
-/set <account> <key> [value] - set an attribute in a player profile - if no value given returns current value
-   key is like BNET\acct\lastlogin_owner
+/set <account> <key> [value]
+Sets or returns the value of <key> for account <account>.
+Example: /set user BNET\acct\lastlogin_owner user
 %motd
-/motd - display the motd
+/motd
+Displays the MOTD.
 %tos
-/tos - shows terms of service once more
+/tos /warranty /license
+Displays the Terms of Service.
 %admin
-/admin - +username to make user a admin, or -username to remove admin status of a user
+/admin [+|-]<player>
+Promotes/demotes <player> to/from server administrator.
+Example: /admin +user
 %rank_all_accounts
-/rank_all_accounts - brute force adds all accounts to war3 ladder
+/rank_all_accounts
+Forces the server to add all accounts to the WarCraft 3 ladder.
 %rehash
-/rehash - forces reload of bnetd.conf
+/rehash
+Forces the server to reload bnetd.conf
 %clan
-/clan create <clantag> <clanname>
-Create a new clan
-/clan msg <message>
-Whispers a message to all your fellow clan members
-/clan public (alias: pub)
-Opens the clan channel up to the public so that anyone may enter
-/clan private  (alias: priv)
-Closes the clan channel such that only members of the clan may enter
-/clan motd <message>
-Update the clan message of the day to message
-/clan invite <username>
-Invite <username> to your clan
-/clan disband
-Disband your clan
+/clan [<command>] [option]
+    /clan public (alias: pub)
+    Opens the clan channel up to the public so that anyone may enter.
+    /clan private  (alias: priv)
+    Closes the clan channel such that only members of the clan may enter.
+    /clan motd <message>
+    Update the clan's Message of the Day to <message>.
 %ping p latency
-/ping, /p, /latency - returns your latency to the server
+/ping (alias: /p /latency)
+Displays your ping to the server.
 %command_groups cg
-/command_groups, /cg <command) <user> [<groups>] - adds, deletes, or lists command groups for user
-    Syntax:
-	/cg list <user> - shows command groups avialiable to user
-	/cg add <user> <group(s)> - adds group(s) to users command groups
-	/cg del <user> <group(s)> - deletes groups from users command groups
-	/cg help - show help screen
-%admin
-/admin +<username> - promote <username> to Server Admin
-/admin -<username> - demote <username> from Server Admin
+/command_groups <command) <user> [<groups>] (alias: /cg)
+	/cg list <user>
+	Displays <user>'s command groups.
+	/cg add <user> <group(s)>
+	Adds command group(s) <group(s)> to <user>.
+	/cg del <user> <group(s)>
+	Deletes command group(s) <group(s)> from <user>.
+	/cg help
+	Displays help for this command.
 %operator
-/operator +<username> - promote <username> to Server Operator
-/operator -<username> - demote <username> from Server Operator
+/operator [+|-]<player> (alias: /op)
+Promotes/demotes <player> to/from server operator.
+Example: /operator +user
 %aop
-/aop <username> - make user Channel Admin
+/aop <username>
+Promotes <username> to channel administrator.
+Example: /aop user
 %op
-/op <username> - make user Channel Operator
+/op <username>
+Promotes <username> to channel operator.
+Example: /op user
 %deop
-/deop - take away channel Admin/Operator privileges
+/deop <username>
+Demotes <username> from channel administrator or operator.
+Example: /deop user
 %tmpop
-/tmpop <username> - make user a temporary Channel Operator
+/tmpop <username>
+Promotes <username> to temporary channel operator.
+Example: /tmpop <username>
 %vop
-/vop <username> - add user to VOP list
+/vop <username>
+Adds <username> to the VOP list.
+Example: /vop user
 %voice
-/voice <username> - give temporary voice to user
+/voice <username>
+Temporarily gives voice privileges to <username>.
+Example: /voice user
 %devoice
-/devoice <username> - remove user from VOP list and take away temporary voice
+/devoice <username>
+Removes <username> from the VOP list and removes temporary voice privileges.
+Example: /devoice user
 %topic
-/topic [ [channel name] "topic " ] - used to get/set a channels topic
+/topic [[channel] "[message]"]
+Sets or displays [channel]'s topic.
+Example: /topic Moderated Support "Supported is given in this channel..."
 %moderate
-/moderate - used to get/set channel moderated status
+/moderate
+Toggles the current channel's moderated status.
 %clearstats
-/clearstats - used to clear game statistics of a given user/clienttag
-Syntax: /clearstats <user> <clienttag>
-  <clienttag> can be one of DSHR,DRTL,SSHR,STAR,SEXP,W2BNE,WAR3,W3XP,ALL
+/clearstats <player> <clienttag>
+Clears <player>'s <clienttag> statistics.
+Example: /clearstats user SEXP
 %find
-/find - used to find users with similar name  
-Syntax: /find <substring to find>
-    <substring to find> needs to be in lower case
+/find <substring>
+Finds users with <substring> in their username. <substring> MUST be lowercase!
 %save
-/save - used to force save accounts changes from a cache into database 
-Syntax: /save
+/save 
+Forces the server to save account and clan changes to the database.
 #                                                                            #
 ##############################################################################

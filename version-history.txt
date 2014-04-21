@@ -2,7 +2,7 @@ PvPGN Version History:
 
  Changelog for SVN TRUNK (since 1.8.5)
 =========================================
- -- The list of changes mentioned in here is most propably incomplete.
+ -- The list of changes mentioned in here is most probably incomplete.
  For more details also take a peek view into conversion-changelog.
 
 [CMAKE]
