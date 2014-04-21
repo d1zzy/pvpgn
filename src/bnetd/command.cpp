@@ -5014,86 +5014,48 @@ namespace pvpgn
 		static int _handle_topic_command(t_connection * c, char const * text)
 		{
 			char const * channel_name;
-			char const * topic;
-			char * tmp;
+			const char * topic;
 			t_channel * channel;
 			int  do_save = NO_SAVE_TOPIC;
 
-			channel_name = skip_command(text);
+			topic = skip_command(text);
 
-			if ((topic = std::strchr(channel_name, '"')))
-			{
-				tmp = (char *)topic;
-				for (tmp--; tmp[0] == ' '; tmp--);
-				tmp[1] = '\0';
-				topic++;
-				tmp = std::strchr((char *)topic, '"');
-				if (tmp) tmp[0] = '\0';
-			}
 
-			if (!(conn_get_channel(c))) {
+			if (!(channel = conn_get_channel(c))) {
 				message_send_text(c, message_type_error, c, "This command can only be used inside a channel.");
-				return -1;
-			}
-
-			if (channel_name[0] == '\0')
-			{
-				if (channel_get_topic(channel_get_name(conn_get_channel(c))))
-				{
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s topic: %.128s", channel_get_name(conn_get_channel(c)), channel_get_topic(channel_get_name(conn_get_channel(c))));
-				}
-				else
-				{
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s topic: no topic", channel_get_name(conn_get_channel(c)));
-				}
-				message_send_text(c, message_type_info, c, msgtemp);
-
-				return 0;
-			}
-
-			if (!(topic))
-			{
-				if (channel_get_topic(channel_name))
-				{
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s topic: %.128s", channel_name, channel_get_topic(channel_name));
-				}
-				else
-				{
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s topic: no topic", channel_name);
-				}
-				message_send_text(c, message_type_info, c, msgtemp);
-				return 0;
-			}
-
-			if (!(channel = channellist_find_channel_by_name(channel_name, conn_get_country(c), realm_get_name(conn_get_realm(c)))))
-			{
-				snprintf(msgtemp, sizeof(msgtemp), "There is no such channel.");
-				message_send_text(c, message_type_error, c, msgtemp);
-				return -1;
-			}
-
-			if (std::strlen(topic) >= MAX_TOPIC_LEN)
-			{
-				snprintf(msgtemp, sizeof(msgtemp), "Max topic length exceeded (max %d symbols)", MAX_TOPIC_LEN);
-				message_send_text(c, message_type_error, c, msgtemp);
 				return -1;
 			}
 
 			channel_name = channel_get_name(channel);
 
-			if (!(account_is_operator_or_admin(conn_get_account(c), channel_name))) {
-				snprintf(msgtemp, sizeof(msgtemp), "You must be at least a Channel Operator of %.64s to set the topic", channel_name);
-				message_send_text(c, message_type_error, c, msgtemp);
-				return -1;
+			// set channel topic
+			if (topic[0] != '\0')
+			{
+				if (std::strlen(topic) >= MAX_TOPIC_LEN)
+				{
+					snprintf(msgtemp, sizeof(msgtemp), "Max topic length exceeded (max %d symbols)", MAX_TOPIC_LEN);
+					message_send_text(c, message_type_error, c, msgtemp);
+					return -1;
+				}
+
+				if (!(account_is_operator_or_admin(conn_get_account(c), channel_name))) {
+					snprintf(msgtemp, sizeof(msgtemp), "You must be at least a Channel Operator of %.64s to set the topic", channel_name);
+					message_send_text(c, message_type_error, c, msgtemp);
+					return -1;
+				}
+
+				if (channel_get_permanent(channel))
+					do_save = DO_SAVE_TOPIC;
+
+				channel_set_topic(channel_name, topic, do_save);
 			}
 
-			if (channel_get_permanent(channel))
-				do_save = DO_SAVE_TOPIC;
-
-			channel_set_topic(channel_name, topic, do_save);
-
-			snprintf(msgtemp, sizeof(msgtemp), "%.64s topic: %.128s", channel_name, topic);
-			message_send_text(c, message_type_info, c, msgtemp);
+			// display channel topic
+			if (channel_display_topic(c, channel_name) < 0)
+			{
+				snprintf(msgtemp, sizeof(msgtemp), "%.64s topic: no topic", channel_name);
+				message_send_text(c, message_type_info, c, msgtemp);
+			}
 
 			return 0;
 		}

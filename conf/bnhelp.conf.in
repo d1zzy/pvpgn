@@ -299,9 +299,9 @@ Example: /voice user
 Removes <username> from the VOP list and removes temporary voice privileges.
 Example: /devoice user
 %topic
-/topic [[channel] "[message]"]
-Sets or displays [channel]'s topic.
-Example: /topic Moderated Support "Supported is given in this channel..."
+/topic [message]
+Sets or displays current channel's topic.
+Example: /topic Supported is given in this channel...\n(some text on a new line)
 %moderate
 /moderate
 Toggles the current channel's moderated status.

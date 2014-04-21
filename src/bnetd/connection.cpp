@@ -2071,12 +2071,10 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
-			if (channel_get_topic(channel_get_name(c->protocol.chat.channel)) && ((conn_is_irc_variant(c)) == 0))
+			
+			if (conn_is_irc_variant(c) == 0)
 			{
-				char msgtemp[MAX_MESSAGE_LEN];
-
-				std::sprintf(msgtemp, "%s topic: %s", channel_get_name(c->protocol.chat.channel), channel_get_topic(channel_get_name(c->protocol.chat.channel)));
-				message_send_text(c, message_type_info, c, msgtemp);
+				channel_display_topic(c, channel_get_name(c->protocol.chat.channel));
 			}
 
 			if (c->protocol.chat.channel && (channel_get_flags(c->protocol.chat.channel) & channel_flags_moderated))
