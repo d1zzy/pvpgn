@@ -155,11 +155,10 @@
 
 4	/kill /killsession
 4	/addacct
-4	/lockacct /unlockacct
-4	/muteacct /unmuteacct
+4	/lock /lockacct /unlock /unlockacct
+4	/mute /muteacct /unmute /unmuteacct
 
 5	/ladderactivate
-# 5 	/rank_all_accounts 
 
 #	-- Access to group '6' allows users to not only make others Server Admins & Server Operators
 #		but will allow them to make themselves Server Admin & Server Operator.

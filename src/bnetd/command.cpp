@@ -27,10 +27,14 @@
 #include "common/setup_before.h"
 #include "command.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cerrno>
 #include <cstring>
 #include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 #include "compat/strcasecmp.h"
 #include "compat/snprintf.h"
@@ -51,6 +55,7 @@
 #include "common/trans.h"
 #include "common/lstr.h"
 #include "common/hashtable.h"
+#include "common/xstring.h"
 
 #include "connection.h"
 #include "message.h"
@@ -85,7 +90,6 @@ namespace pvpgn
 
 	namespace bnetd
 	{
-
 		static char const * bnclass_get_str(unsigned int cclass);
 		static void do_whisper(t_connection * user_c, char const * dest, char const * text);
 		static void do_whois(t_connection * c, char const * dest);
@@ -308,8 +312,6 @@ namespace pvpgn
 		static int _handle_dnd_command(t_connection * c, char const * text);
 		static int _handle_squelch_command(t_connection * c, char const * text);
 		static int _handle_unsquelch_command(t_connection * c, char const * text);
-		//static int _handle_designate_command(t_connection * c, char const * text); Obsolete function [Omega]
-		//static int _handle_resign_command(t_connection * c, char const * text); Obsolete function [Omega]
 		static int _handle_kick_command(t_connection * c, char const * text);
 		static int _handle_ban_command(t_connection * c, char const * text);
 		static int _handle_unban_command(t_connection * c, char const * text);
@@ -338,7 +340,6 @@ namespace pvpgn
 		static int _handle_find_command(t_connection * c, char const *text);
 		static int _handle_save_command(t_connection * c, char const * text);
 
-		//static int _handle_rank_all_accounts_command(t_connection * c, char const * text);
 		static int _handle_shutdown_command(t_connection * c, char const * text);
 		static int _handle_ladderinfo_command(t_connection * c, char const * text);
 		static int _handle_timer_command(t_connection * c, char const * text);
@@ -351,7 +352,6 @@ namespace pvpgn
 		static int _handle_unmuteacct_command(t_connection * c, char const * text);
 		static int _handle_flag_command(t_connection * c, char const * text);
 		static int _handle_tag_command(t_connection * c, char const * text);
-		//static int _handle_ipban_command(t_connection * c, char const * text); Redirected to handle_ipban_command() in ipban.c [Omega]
 		static int _handle_ipscan_command(t_connection * c, char const * text);
 		static int _handle_set_command(t_connection * c, char const * text);
 		static int _handle_motd_command(t_connection * c, char const * text);
@@ -404,8 +404,6 @@ namespace pvpgn
 			{ "/squelch", _handle_squelch_command },
 			{ "/unignore", _handle_unsquelch_command },
 			{ "/unsquelch", _handle_unsquelch_command },
-			//	{ "/designate"          , _handle_designate_command }, Obsotele command [Omega]
-			//	{ "/resign"             , _handle_resign_command }, Obsolete command [Omega]
 			{ "/kick", _handle_kick_command },
 			{ "/ban", _handle_ban_command },
 			{ "/unban", _handle_unban_command },
@@ -453,7 +451,6 @@ namespace pvpgn
 			{ "/rehash", _handle_rehash_command },
 			{ "/find", _handle_find_command },
 			{ "/save", _handle_save_command },
-			//	{ "/rank_all_accounts"  , _handle_rank_all_accounts_command },
 			{ "/shutdown", _handle_shutdown_command },
 			{ "/ladderinfo", _handle_ladderinfo_command },
 			{ "/timer", _handle_timer_command },
@@ -461,9 +458,13 @@ namespace pvpgn
 			{ "/netinfo", _handle_netinfo_command },
 			{ "/quota", _handle_quota_command },
 			{ "/lockacct", _handle_lockacct_command },
+			{ "/lock", _handle_lockacct_command },
 			{ "/unlockacct", _handle_unlockacct_command },
+			{ "/unlock", _handle_unlockacct_command },
 			{ "/muteacct", _handle_muteacct_command },
+			{ "/mute", _handle_muteacct_command },
 			{ "/unmuteacct", _handle_unmuteacct_command },
+			{ "/unmute", _handle_unmuteacct_command },
 			{ "/flag", _handle_flag_command },
 			{ "/tag", _handle_tag_command },
 			{ "/help", handle_help_command },
@@ -487,14 +488,52 @@ namespace pvpgn
 
 		};
 
-		char const * skip_command(char const * org_text)
+		/* 
+		* Split text by spaces and return array of arguments.
+		*   First text argument is a command name (index = 0)
+		*   Last text argument always reads to end
+		*/
+		std::vector<std::string> split_command(char const * text, int args_count)
 		{
-			unsigned int i;
-			char * text = (char *)org_text;
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			if (text[i] != '\0') text[i++] = '\0';             /* \0-terminate command */
-			for (; text[i] == ' '; i++);
-			return &text[i];
+			int count = 1 + args_count;
+			std::vector<std::string> result(count);
+
+			std::string s(text);
+			std::istringstream iss(s);
+
+			int i = 0;
+			std::string tmp = std::string(); // to end
+			do
+			{
+				std::string sub;
+				iss >> sub;
+				
+				if (sub.empty())
+					continue;
+
+				// remove slash from the command
+				if (i == 0)
+					sub.erase(0,1);
+
+				if (i < args_count)
+				{
+					result[i] = sub;
+					i++;
+				}
+				else
+				{
+					if (!tmp.empty())
+						tmp += " ";
+					tmp += sub;
+				}
+
+			} while (iss);
+
+			// push remaining text at the end
+			if (tmp.length() > 0)
+				result[count-1] = tmp;
+
+			return result;
 		}
 
 		extern int handle_command(t_connection * c, char const * text)
@@ -575,87 +614,86 @@ namespace pvpgn
 				ERROR0("got NULL account");
 			}
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 2);
+
+			if (args[1].empty()) {
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+
 			/* FIXME: can get clan as is in creating process */
-			if ((member = account_get_clanmember_forced(acc)) && (clan = clanmember_get_clan(member)) && (clanmember_get_fullmember(member) == 1)) {
-				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "Usage:");
-					message_send_text(c, message_type_info, c, "/clan msg <message>");
-					message_send_text(c, message_type_info, c, "Whispers a message to all your fellow clan members.");
-					if (clanmember_get_status(member) >= CLAN_SHAMAN) {
-						message_send_text(c, message_type_info, c, "/clan public  /clan pub");
-						message_send_text(c, message_type_info, c, "Opens the clan channel up to the public so that anyone may enter.");
-						message_send_text(c, message_type_info, c, "/clan private  /clan priv");
-						message_send_text(c, message_type_info, c, "Closes the clan channel such that only members of the clan may enter.");
-						message_send_text(c, message_type_info, c, "/clan motd <message>");
-						message_send_text(c, message_type_info, c, "Update the clan message of the day to <message>.");
-						message_send_text(c, message_type_info, c, "/clan invite <username>");
-						message_send_text(c, message_type_info, c, "Invite <username> to your clan.");
-					}
-					if (clanmember_get_status(member) == CLAN_CHIEFTAIN) {
-						message_send_text(c, message_type_info, c, "/clan disband");
-						message_send_text(c, message_type_info, c, "Disband your clan.");
-					}
-					return 0;
-				}
-				if (strstart(text, "msg") == 0 || strstart(text, "m") == 0 || strstart(text, "w") == 0 || strstart(text, "whisper") == 0) {
-					char const *msg = skip_command(text);
-					if (msg[0] == '\0') {
-						message_send_text(c, message_type_info, c, "Usage:");
-						message_send_text(c, message_type_info, c, "/clan msg <message>");
-						message_send_text(c, message_type_info, c, "Whispers a message to all your fellow clan members.");
-					}
-					else {
+
+			// user in clan
+			if ((member = account_get_clanmember_forced(acc)) && (clan = clanmember_get_clan(member)))
+			{
+				// user is full member of clan
+				if (clanmember_get_fullmember(member) == 1)
+				{
+					if (args[1] == "msg" || args[1] == "m" || args[1] == "w" || args[1] == "whisper")
+					{
+						if (args[2].empty()) {
+							describe_command(c, args[0].c_str());
+							return -1;
+						}
+						char const *msg = args[2].c_str(); // message
+
 						if (clan_send_message_to_online_members(clan, message_type_whisper, c, msg) >= 1)
 							message_send_text(c, message_type_info, c, "Message was sent to all currently available clan members.");
 						else
 							message_send_text(c, message_type_info, c, "All fellow members of your clan are currently offline.");
+
+						return 0;
 					}
-				}
-				else
-				if (clanmember_get_status(member) >= CLAN_SHAMAN) {
-					if (strstart(text, "public") == 0 || strstart(text, "pub") == 0) {
-						if (clan_get_channel_type(clan) != 0) {
-							clan_set_channel_type(clan, 0);
-							message_send_text(c, message_type_info, c, "Clan channel is opened up!");
-						}
-						else
-							message_send_text(c, message_type_error, c, "Clan channel has already been opened up!");
-					}
-					else if (strstart(text, "private") == 0 || strstart(text, "priv") == 0) {
-						if (clan_get_channel_type(clan) != 1) {
-							clan_set_channel_type(clan, 1);
-							message_send_text(c, message_type_info, c, "Clan channel is closed!");
-						}
-						else
-							message_send_text(c, message_type_error, c, "Clan channel has already been closed!");
-					}
-					else if (strstart(text, "motd") == 0) {
-						const char * msg = skip_command(text);
-						if (msg[0] == '\0')
+					
+					if (clanmember_get_status(member) >= CLAN_SHAMAN)
+					{
+						if (args[1] == "public" || args[1] == "pub")
 						{
-							message_send_text(c, message_type_info, c, "Usage:");
-							message_send_text(c, message_type_info, c, "/clan motd <message>");
-							message_send_text(c, message_type_info, c, "Update the clan message of the day to <message>.");
+							if (clan_get_channel_type(clan) != 0) {
+								clan_set_channel_type(clan, 0);
+								message_send_text(c, message_type_info, c, "Clan channel is opened up!");
+							}
+							else
+								message_send_text(c, message_type_error, c, "Clan channel has already been opened up!");
+							return 0;
 						}
-						else
+						else if (args[1] == "private" || args[1] == "priv")
 						{
+							if (clan_get_channel_type(clan) != 1) {
+								clan_set_channel_type(clan, 1);
+								message_send_text(c, message_type_info, c, "Clan channel is closed!");
+							}
+							else
+								message_send_text(c, message_type_error, c, "Clan channel has already been closed!");
+							return 0;
+						}
+						else if (args[1] == "motd")
+						{
+							if (args[2].empty())
+							{
+								describe_command(c, args[0].c_str());
+								return -1;
+							}
+							const char * msg = args[2].c_str(); // message
+
 							clan_set_motd(clan, msg);
 							message_send_text(c, message_type_info, c, "Clan message of day is updated!");
+							return 0;
 						}
-					}
-					else if (strstart(text, "invite") == 0 || strstart(text, "inv") == 0) {
-						const char * username = skip_command(text);
-						t_account * dest_account;
-						t_connection * dest_conn;
-						if (username[0] == '\0') {
-							message_send_text(c, message_type_info, c, "Usage:");
-							message_send_text(c, message_type_info, c, "/clan invite <username>");
-							message_send_text(c, message_type_info, c, "Invite <username> to your clan.");
-						}
-						else {
+						else if (args[1] == "invite" || args[1] == "inv")
+						{
+							t_account * dest_account;
+							t_connection * dest_conn;
+							if (args[2].empty())
+							{
+								describe_command(c, args[0].c_str());
+								return -1;
+							}
+							const char * username = args[2].c_str();
+
 							if ((dest_account = accountlist_find_account(username)) && (dest_conn = account_get_conn(dest_account))
-								&& (account_get_clan(dest_account) == NULL) && (account_get_creating_clan(dest_account) == NULL)) {
+								&& (account_get_clan(dest_account) == NULL) && (account_get_creating_clan(dest_account) == NULL))
+							{
 								if (prefs_get_clan_newer_time() > 0)
 									clan_add_member(clan, dest_account, CLAN_NEW);
 								else
@@ -669,15 +707,14 @@ namespace pvpgn
 								snprintf(msgtemp, sizeof(msgtemp), "User %s is not online or is already member of clan!", username);
 								message_send_text(c, message_type_error, c, msgtemp);
 							}
+							return 0;
 						}
-					}
-					else if (strstart(text, "disband") == 0) {
-						const char * ack = skip_command(text);
-						if (ack[0] == '\0') {
-							message_send_text(c, message_type_info, c, "This is one-way action! If you really want");
-							message_send_text(c, message_type_info, c, "to disband your clan, type /clan disband yes");
-						}
-						else if (strstart(ack, "yes") == 0) {
+						else if (args[1] == "disband" || args[1] == "dis")
+						{
+							if (args[2] != "yes") {
+								message_send_text(c, message_type_info, c, "This is one-way action! If you really want");
+								message_send_text(c, message_type_info, c, "to disband your clan, type /clan disband yes");
+							}
 							/* PELISH: fixme - Find out better solution! */
 							if (clanlist_remove_clan(clan) == 0) {
 								if (clan_get_created(clan) == 1)
@@ -685,32 +722,26 @@ namespace pvpgn
 								clan_destroy(clan);
 								message_send_text(c, message_type_info, c, "Your clan was disbanded.");
 							}
+							return 0;
 						}
 					}
 				}
-			}
-			else
-			if ((member = account_get_clanmember_forced(acc)) && (clan = clanmember_get_clan(member)) && (clanmember_get_fullmember(member) == 0)) {
-				/* User is not in clan, but he can accept invitation to someone */
-				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "Usage:");
-					message_send_text(c, message_type_info, c, "/clan invite get     (show clanname which you have been invited)");
-					message_send_text(c, message_type_info, c, "/clan invite accept  (accept invitation to clan)");
-					message_send_text(c, message_type_info, c, "/clan invite decline (decline invitation to clan)");
-				}
-				if (strstart(text, "invite") == 0 || strstart(text, "inv") == 0) {
-					text = skip_command(text);
-					if (text[0] == '\0') {
-						message_send_text(c, message_type_info, c, "Usage:");
-						message_send_text(c, message_type_info, c, "/clan invite get     (show clanname which you have been invited)");
-						message_send_text(c, message_type_info, c, "/clan invite accept  (accept invitation to clan)");
-						message_send_text(c, message_type_info, c, "/clan invite decline (decline invitation to clan)");
+				// user is not full member (invitation was not accepted yet)
+				else if (clanmember_get_fullmember(member) == 0)
+				{
+					/* User is not in clan, but he can accept invitation to someone */
+					if (args[1] != "invite" && args[1] != "inv")
+					{
+						describe_command(c, args[0].c_str());
+						return -1;
 					}
-					else if (strstart(text, "get") == 0) {
+
+					if (args[2] == "get") {
 						snprintf(msgtemp, sizeof(msgtemp), "You have been invited to %s", clan_get_name(clan));
 						message_send_text(c, message_type_info, c, msgtemp);
+						return 0;
 					}
-					else if (strstart(text, "accept") == 0 || strstart(text, "acc") == 0) {
+					else if (args[2] == "accept" || args[2] == "acc") {
 						int created = clan_get_created(clan);
 
 						clanmember_set_fullmember(member, 1);
@@ -719,7 +750,7 @@ namespace pvpgn
 						message_send_text(c, message_type_info, c, msgtemp);
 						if (created > 0) {
 							DEBUG1("clan %s has already been created", clan_get_name(clan));
-							return 0;
+							return -1;
 						}
 						created++;
 						if (created >= 0) {
@@ -733,49 +764,40 @@ namespace pvpgn
 						}
 						else
 							clan_set_created(clan, created);
+						return 0;
 					}
-					else if (strstart(text, "decline") == 0 || strstart(text, "dec") == 0) {
+					else if (args[2] == "decline" || args[2] == "dec") {
 						clan_remove_member(clan, member);
 						snprintf(msgtemp, sizeof(msgtemp), "You are no longer ivited to %s", clan_get_name(clan));
 						message_send_text(c, message_type_info, c, msgtemp);
+						return 0;
 					}
 				}
 			}
-			else {
-				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "Usage:");
-					message_send_text(c, message_type_info, c, "/clan create <clantag> <clanname>  (Create a new clan)");
-				}
-				else if (strstart(text, "create") == 0 || strstart(text, "cre") == 0) {
-					unsigned int i, j;
-					char clantag[CLANSHORT_NAME_MAX + 1];
-					char clanname[CLAN_NAME_MAX];
+			// user not in clan
+			else
+			{
+				if ((args[1] == "create" || args[1] == "cre"))
+				{
+					char const *clantag, *clanname;
+					std::vector<std::string> args = split_command(text, 3);
 
-					for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-					for (; text[i] == ' '; i++);
-
-					for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get clantag */
-					if (j < sizeof(clantag)-1) clantag[j++] = text[i];
-					clantag[j] = '\0';
-
-					for (; text[i] == ' '; i++);                    /* skip spaces */
-					for (j = 0; text[i] != '\0'; i++)                 /* get clanname (spaces are allowed) */
-					if (j < sizeof(clanname)-1) clanname[j++] = text[i];
-					clanname[j] = '\0';
-
-					if ((clantag[0] == '\0') || (clanname[0] == '\0')) {
-						message_send_text(c, message_type_info, c, "Usage:");
-						message_send_text(c, message_type_info, c, "/clan create <clantag> <clanname>  (Create a new clan)");
-						return 0;
+					if (args[3].empty())
+					{
+						describe_command(c, args[0].c_str());
+						return -1;
 					}
+					clantag = args[2].c_str(); // clan tag
+					clanname = args[3].c_str(); // clan name
 
 					if (clan = clanlist_find_clan_by_clantag(str_to_clantag(clantag))) {
 						message_send_text(c, message_type_error, c, "Clan with your specified <clantag> already exist!");
 						message_send_text(c, message_type_error, c, "Please choice another one.");
-						return 0;
+						return -1;
 					}
 
-					if ((clan = clan_create(conn_get_account(c), str_to_clantag(clantag), clanname, NULL)) && clanlist_add_clan(clan)) {
+					if ((clan = clan_create(conn_get_account(c), str_to_clantag(clantag), clanname, NULL)) && clanlist_add_clan(clan))
+					{
 						member = account_get_clanmember_forced(acc);
 						if (prefs_get_clan_min_invites() == 0) {
 							clan_set_created(clan, 1);
@@ -788,14 +810,17 @@ namespace pvpgn
 							clan_set_created(clan, -prefs_get_clan_min_invites() + 1); //Pelish: +1 means that creator of clan is already invited
 							snprintf(msgtemp, sizeof(msgtemp), "Clan %s is pre-created, please invite", clan_get_name(clan));
 							message_send_text(c, message_type_info, c, msgtemp);
-							snprintf(msgtemp, sizeof(msgtemp), "at last %u players to your clan by using", prefs_get_clan_min_invites());
+							snprintf(msgtemp, sizeof(msgtemp), "at least %u players to your clan by using", prefs_get_clan_min_invites());
 							message_send_text(c, message_type_info, c, msgtemp);
 							message_send_text(c, message_type_info, c, "/clan invite <username> command.");
 						}
 					}
+					return 0;
 				}
 			}
-			return 0;
+
+			describe_command(c, args[0].c_str());
+			return -1;
 		}
 
 		static int command_set_flags(t_connection * c)
@@ -811,16 +836,16 @@ namespace pvpgn
 			t_connection *	dst_c;
 			int			changed = 0;
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if ((text[0] == '\0') || ((text[0] != '+') && (text[0] != '-'))) {
-				message_send_text(c, message_type_info, c, "Usage: /admin +username to promote user to Server Admin.");
-				message_send_text(c, message_type_info, c, "       /admin -username to demote user from Server Admin.");
+			if (args[1].empty() || (args[1][0] != '+' && args[1][0] != '-')) {
+				describe_command(c, args[0].c_str());
 				return -1;
 			}
 
-			command = text[0];
-			username = &text[1];
+			text = args[1].c_str();
+			command = text[0]; // command type (+/-)
+			username = &text[1]; // username
 
 			if (!*username) {
 				message_send_text(c, message_type_info, c, "You must supply a username.");
@@ -870,16 +895,16 @@ namespace pvpgn
 			t_connection *	dst_c;
 			int			changed = 0;
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if ((text[0] == '\0') || ((text[0] != '+') && (text[0] != '-'))) {
-				message_send_text(c, message_type_info, c, "Usage: /operator +username to promote user to Server Operator.");
-				message_send_text(c, message_type_info, c, "       /operator -username to demote user from Server Operator.");
+			if (args[1].empty() || (args[1][0] != '+' && args[1][0] != '-')) {
+				describe_command(c, args[0].c_str());
 				return -1;
 			}
 
-			command = text[0];
-			username = &text[1];
+			text = args[1].c_str();
+			command = text[0]; // command type (+/-)
+			username = &text[1]; // username
 
 			if (!*username) {
 				message_send_text(c, message_type_info, c, "You must supply a username.");
@@ -938,12 +963,13 @@ namespace pvpgn
 				return -1;
 			}
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You must supply a username.");
+			if (args[1].empty()) {
+				describe_command(c, args[0].c_str());
 				return -1;
 			}
+			username = args[1].c_str(); // username
 
 			if (!(acc = accountlist_find_account(username))) {
 				snprintf(msgtemp, sizeof(msgtemp), "There's no account with username %.64s.", username);
@@ -986,12 +1012,13 @@ namespace pvpgn
 				return -1;
 			}
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You must supply a username.");
+			if (args[1].empty()) {
+				describe_command(c, args[0].c_str());
 				return -1;
 			}
+			username = args[1].c_str(); // username
 
 			if (!(acc = accountlist_find_account(username))) {
 				snprintf(msgtemp, sizeof(msgtemp), "There's no account with username %.64s.", username);
@@ -1034,12 +1061,13 @@ namespace pvpgn
 				return -1;
 			}
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You must supply a username.");
+			if (args[1].empty()) {
+				describe_command(c, args[0].c_str());
 				return -1;
 			}
+			username = args[1].c_str(); // username
 
 			if (!(acc = accountlist_find_account(username))) {
 				snprintf(msgtemp, sizeof(msgtemp), "There's no account with username %.64s.", username);
@@ -1098,12 +1126,13 @@ namespace pvpgn
 				return -1;
 			}
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You must supply a username.");
+			if (args[1].empty()) {
+				describe_command(c, args[0].c_str());
 				return -1;
 			}
+			username = args[1].c_str(); // username
 
 			if (!(acc = accountlist_find_account(username))) {
 				snprintf(msgtemp, sizeof(msgtemp), "There's no account with username %.64s.", username);
@@ -1182,12 +1211,13 @@ namespace pvpgn
 				return -1;
 			}
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You must supply a username.");
+			if (args[1].empty()) {
+				describe_command(c, args[0].c_str());
 				return -1;
 			}
+			username = args[1].c_str(); // username
 
 			if (!(acc = accountlist_find_account(username))) {
 				snprintf(msgtemp, sizeof(msgtemp), "There's no account with username %.64s.", username);
@@ -1249,12 +1279,13 @@ namespace pvpgn
 				return -1;
 			}
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You must supply a username.");
+			if (args[1].empty()) {
+				describe_command(c, args[0].c_str());
 				return -1;
 			}
+			username = args[1].c_str(); // username
 
 			if (!(acc = accountlist_find_account(username))) {
 				snprintf(msgtemp, sizeof(msgtemp), "There's no account with username %.64s.", username);
@@ -1318,12 +1349,14 @@ namespace pvpgn
 				return -1;
 			}
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (!(username = &text[0])) {
-				message_send_text(c, message_type_info, c, "You must supply a username.");
+			if (args[1].empty()) {
+				describe_command(c, args[0].c_str());
 				return -1;
 			}
+			username = args[1].c_str(); // username
+
 
 			if (!(acc = accountlist_find_account(username))) {
 				snprintf(msgtemp, sizeof(msgtemp), "There's no account with username %.64s.", username);
@@ -1405,10 +1438,9 @@ namespace pvpgn
 			int i;
 			t_account *my_acc = conn_get_account(c);
 
-			text = skip_command(text);;
+			std::vector<std::string> args = split_command(text, 2);
 
-			if (strstart(text, "add") == 0 || strstart(text, "a") == 0) {
-				char msgtemp[MAX_MESSAGE_LEN];
+			if (args[1] == "add" || args[1] == "a") {
 				t_packet 	* rpacket;
 				t_connection 	* dest_c;
 				t_account    	* friend_acc;
@@ -1419,12 +1451,11 @@ namespace pvpgn
 				t_list * flist;
 				t_friend * fr;
 
-				text = skip_command(text);
-
-				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "Usage: /f add <username>");
+				if (args[2].empty()) {
+					describe_command(c, args[0].c_str());
 					return 0;
 				}
+				text = args[2].c_str(); // username
 
 				if (!(friend_acc = accountlist_find_account(text))) {
 					message_send_text(c, message_type_info, c, "That user does not exist.");
@@ -1509,7 +1540,7 @@ namespace pvpgn
 				conn_push_outqueue(c, rpacket);
 				packet_del_ref(rpacket);
 			}
-			else if (strstart(text, "msg") == 0 || strstart(text, "w") == 0 || strstart(text, "whisper") == 0 || strstart(text, "m") == 0)
+			else if (args[1] == "msg" || args[1] == "w" || args[1] == "whisper" || args[1] == "m")
 			{
 				char const *msg;
 				int cnt = 0;
@@ -1518,12 +1549,11 @@ namespace pvpgn
 				t_friend * fr;
 				t_list  * flist;
 
-				msg = skip_command(text);
-				/* if the message test is empty then ignore command */
-				if (msg[0] == '\0') {
-					message_send_text(c, message_type_info, c, "Did not message any friends. Type some text next time.");
-					return 0;
+				if (args[2].empty()) {
+					describe_command(c, args[0].c_str());
+					return -1;
 				}
+				msg = args[2].c_str(); // message
 
 				flist = account_get_friends(my_acc);
 				if (flist == NULL)
@@ -1547,19 +1577,16 @@ namespace pvpgn
 				else
 					message_send_text(c, message_type_info, c, "All of your friends are offline.");
 			}
-			else if (strstart(text, "r") == 0 || strstart(text, "remove") == 0
-				|| strstart(text, "del") == 0 || strstart(text, "delete") == 0) {
-
+			else if (args[1] == "r" || args[1] == "remove" || args[1] == "del" || args[1] == "delete")
+			{
 				int num;
-				char msgtemp[MAX_MESSAGE_LEN];
 				t_packet * rpacket;
 
-				text = skip_command(text);
-
-				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "Usage: /f remove <username>");
-					return 0;
+				if (args[2].empty()) {
+					describe_command(c, args[0].c_str());
+					return -1;
 				}
+				text = args[2].c_str(); // username
 
 				switch ((num = account_remove_friend2(my_acc, text))) {
 				case -1: return -1;
@@ -1585,10 +1612,9 @@ namespace pvpgn
 					return 0;
 				}
 			}
-			else if (strstart(text, "p") == 0 || strstart(text, "promote") == 0) {
+			else if (args[1] == "p" || args[1] == "promote") {
 				int num;
 				int n;
-				char msgtemp[MAX_MESSAGE_LEN];
 				char const * dest_name;
 				t_packet * rpacket;
 				t_list * flist;
@@ -1596,12 +1622,11 @@ namespace pvpgn
 				t_account * dest_acc;
 				unsigned int dest_uid;
 
-				text = skip_command(text);
-
-				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "Usage: /f promote <username>");
-					return 0;
+				if (args[2].empty()) {
+					describe_command(c, args[0].c_str());
+					return -1;
 				}
+				text = args[2].c_str(); // username
 
 				num = account_get_friendcount(my_acc);
 				flist = account_get_friends(my_acc);
@@ -1630,10 +1655,9 @@ namespace pvpgn
 					return 0;
 				}
 			}
-			else if (strstart(text, "d") == 0 || strstart(text, "demote") == 0) {
+			else if (args[1] == "d" || args[1] == "demote") {
 				int num;
 				int n;
-				char msgtemp[MAX_MESSAGE_LEN];
 				char const * dest_name;
 				t_packet * rpacket;
 				t_list * flist;
@@ -1641,12 +1665,11 @@ namespace pvpgn
 				t_account * dest_acc;
 				unsigned int dest_uid;
 
-				text = skip_command(text);
-
-				if (text[0] == '\0') {
-					message_send_text(c, message_type_info, c, "Usage: /f demote <username>");
-					return 0;
+				if (args[2].empty()) {
+					describe_command(c, args[0].c_str());
+					return -1;
 				}
+				text = args[2].c_str(); // username
 
 				num = account_get_friendcount(my_acc);
 				flist = account_get_friends(my_acc);
@@ -1675,11 +1698,10 @@ namespace pvpgn
 					return 0;
 				}
 			}
-			else if (strstart(text, "list") == 0 || strstart(text, "l") == 0 || strstart(text, "online") == 0 || strstart(text, "o") == 0) {
+			else if (args[1] == "list" || args[1] == "l" || args[1] == "online" || args[1] == "o") {
 				char const * frienduid;
 				char status[128];
 				char software[64];
-				char msgtemp[MAX_MESSAGE_LEN];
 				t_connection * dest_c;
 				t_account * friend_acc;
 				t_game const * game;
@@ -1690,7 +1712,7 @@ namespace pvpgn
 				unsigned int uid;
 				bool online_only = false;
 
-				if (strstart(text, "online") == 0 || strstart(text, "o") == 0)
+				if (args[1] == "online" || args[1] == "o")
 				{
 					online_only = true;
 				}
@@ -1759,14 +1781,7 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, "End of Friends List");
 			}
 			else {
-				message_send_text(c, message_type_info, c, "Friends List (Used in Arranged Teams and finding online friends.)");
-				message_send_text(c, message_type_info, c, "Type: /f add <username> (adds a friend to your list)");
-				message_send_text(c, message_type_info, c, "Type: /f del <username> (removes a friend from your list)");
-				message_send_text(c, message_type_info, c, "Type: /f promote <username> (promote a friend in your list)");
-				message_send_text(c, message_type_info, c, "Type: /f demote <username> (demote a friend in your list)");
-				message_send_text(c, message_type_info, c, "Type: /f list (shows your full friends list)");
-				message_send_text(c, message_type_info, c, "Type: /f online (shows your online friends list)");
-				message_send_text(c, message_type_info, c, "Type: /f msg (whispers a message to all your friends at once)");
+				describe_command(c, args[0].c_str());
 			}
 
 			return 0;
@@ -1779,216 +1794,65 @@ namespace pvpgn
 			if (!(channel = conn_get_channel(c)))
 			{
 				message_send_text(c, message_type_error, c, "You are not in a channel.");
-				return 0;
+				return -1;
 			}
+			
+			std::vector<std::string> args = split_command(text, 1);
+			
+			if (args[1].empty()) {
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			text = args[1].c_str(); // message
 
-			text = skip_command(text);
-
-			if ((text[0] != '\0') && (!conn_quota_exceeded(c, text)))
+			if (!conn_quota_exceeded(c, text))
 				channel_message_send(channel, message_type_emote, c, text);
 			return 0;
 		}
 
 		static int _handle_whisper_command(t_connection * c, char const *text)
 		{
-			char         dest[MAX_USERNAME_LEN + MAX_REALMNAME_LEN]; /* both include NUL, so no need to add one for middle @ or * */
-			unsigned int i, j;
+			char const * username; /* both include NUL, so no need to add one for middle @ or * */
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get dest */
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 2);
 
-			if ((dest[0] == '\0') || (text[i] == '\0'))
+			if (args[2].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /whisper <username> <text to whisper>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			username = args[1].c_str(); // username
+			text = args[2].c_str(); // message
 
-			do_whisper(c, dest, &text[i]);
+			do_whisper(c, username, text);
 
 			return 0;
 		}
 
 		static int _handle_status_command(t_connection * c, char const *text)
 		{
-			char ctag[5];
-			unsigned int i, j;
+			char const * ctag;
 			t_clienttag clienttag;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get clienttag */
-			if (j < sizeof(ctag)-1) ctag[j++] = text[i];
-			ctag[j] = '\0';
+			// get clienttag
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (ctag[0] == '\0') {
+			if (!args[1].empty() && (clienttag = tag_validate_client(args[1].c_str())))
+			{
+				// clienttag status
+				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
+					conn_get_user_count_by_clienttag(clienttag),
+					game_get_count_by_clienttag(clienttag),
+					clienttag_get_title(clienttag));
+				message_send_text(c, message_type_info, c, msgtemp);
+			}
+			else
+			{
+				// overall status
 				snprintf(msgtemp, sizeof(msgtemp), "There are currently %d users online, in %d games, and in %d channels.",
 					connlist_login_get_length(),
 					gamelist_get_length(),
 					channellist_get_length());
-				message_send_text(c, message_type_info, c, msgtemp);
-				tag_uint_to_str(ctag, conn_get_clienttag(c));
-			}
-
-			for (i = 0; i < std::strlen(ctag); i++)
-			if (isascii((int)ctag[i]) && std::islower((int)ctag[i]))
-				ctag[i] = std::toupper((int)ctag[i]);
-
-			if (std::strcmp(ctag, "ALL") == 0)
-				clienttag = 0;
-			else
-				clienttag = tag_case_str_to_uint(ctag);
-
-			switch (clienttag)
-			{
-			case 0:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %d users online, in %d games and %d channels.",
-					connlist_login_get_length(),
-					gamelist_get_length(),
-					channellist_get_length());
-				message_send_text(c, message_type_info, c, msgtemp);
-			case CLIENTTAG_WAR3XP_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_WAR3XP_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_WAR3XP_UINT),
-					clienttag_get_title(CLIENTTAG_WAR3XP_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_WARCRAFT3_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_WARCRAFT3_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_WARCRAFT3_UINT),
-					clienttag_get_title(CLIENTTAG_WARCRAFT3_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_DIABLO2XP_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_DIABLO2XP_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_DIABLO2XP_UINT),
-					clienttag_get_title(CLIENTTAG_DIABLO2XP_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_DIABLO2DV_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_DIABLO2DV_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_DIABLO2DV_UINT),
-					clienttag_get_title(CLIENTTAG_DIABLO2DV_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_BROODWARS_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_BROODWARS_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_BROODWARS_UINT),
-					clienttag_get_title(CLIENTTAG_BROODWARS_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_STARCRAFT_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_STARCRAFT_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_STARCRAFT_UINT),
-					clienttag_get_title(CLIENTTAG_STARCRAFT_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_WARCIIBNE_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_WARCIIBNE_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_WARCIIBNE_UINT),
-					clienttag_get_title(CLIENTTAG_WARCIIBNE_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_DIABLORTL_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_DIABLORTL_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_DIABLORTL_UINT),
-					clienttag_get_title(CLIENTTAG_DIABLORTL_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_WCHAT_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_WCHAT_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_WCHAT_UINT),
-					clienttag_get_title(CLIENTTAG_WCHAT_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_TIBERNSUN_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_TIBERNSUN_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_TIBERNSUN_UINT),
-					clienttag_get_title(CLIENTTAG_TIBERNSUN_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_TIBSUNXP_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_TIBSUNXP_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_TIBSUNXP_UINT),
-					clienttag_get_title(CLIENTTAG_TIBSUNXP_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_REDALERT_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_REDALERT_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_REDALERT_UINT),
-					clienttag_get_title(CLIENTTAG_REDALERT_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_REDALERT2_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_REDALERT2_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_REDALERT2_UINT),
-					clienttag_get_title(CLIENTTAG_REDALERT2_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_DUNE2000_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_DUNE2000_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_DUNE2000_UINT),
-					clienttag_get_title(CLIENTTAG_DUNE2000_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_NOX_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_NOX_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_NOX_UINT),
-					clienttag_get_title(CLIENTTAG_NOX_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_NOXQUEST_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_NOXQUEST_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_NOXQUEST_UINT),
-					clienttag_get_title(CLIENTTAG_NOXQUEST_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_RENEGADE_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_RENEGADE_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_RENEGADE_UINT),
-					clienttag_get_title(CLIENTTAG_RENEGADE_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_YURISREV_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_YURISREV_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_YURISREV_UINT),
-					clienttag_get_title(CLIENTTAG_YURISREV_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			case CLIENTTAG_EMPERORBD_UINT:
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(CLIENTTAG_EMPERORBD_UINT),
-					game_get_count_by_clienttag(CLIENTTAG_EMPERORBD_UINT),
-					clienttag_get_title(CLIENTTAG_EMPERORBD_UINT));
-				message_send_text(c, message_type_info, c, msgtemp);
-				if (clienttag) break;
-			default:
-				if (clienttag == 0) break;
-				snprintf(msgtemp, sizeof(msgtemp), "There are currently %u user(s) in %u games of %.128s",
-					conn_get_user_count_by_clienttag(conn_get_clienttag(c)),
-					game_get_count_by_clienttag(conn_get_clienttag(c)),
-					clienttag_get_title(conn_get_clienttag(c)));
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
@@ -2002,16 +1866,17 @@ namespace pvpgn
 			unsigned int         i;
 			char const *         tname;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (text[i] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /who <channel>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			char const * cname = args[1].c_str(); // channel name
 
-			if (!(channel = channellist_find_channel_by_name(&text[i], conn_get_country(c), realm_get_name(conn_get_realm(c)))))
+
+			if (!(channel = channellist_find_channel_by_name(cname, conn_get_country(c), realm_get_name(conn_get_realm(c)))))
 			{
 				message_send_text(c, message_type_error, c, "That channel does not exist.");
 				message_send_text(c, message_type_error, c, "(If you are trying to search for a user, use the /whois command.)");
@@ -2023,7 +1888,7 @@ namespace pvpgn
 				return 0;
 			}
 
-			snprintf(msgtemp, sizeof(msgtemp), "Users in channel %.64s:", &text[i]);
+			snprintf(msgtemp, sizeof(msgtemp), "Users in channel %.64s:", cname);
 			i = std::strlen(msgtemp);
 			for (conn = channel_get_first(channel); conn; conn = channel_get_next())
 			{
@@ -2043,18 +1908,16 @@ namespace pvpgn
 
 		static int _handle_whois_command(t_connection * c, char const * text)
 		{
-			unsigned int i;
+			std::vector<std::string> args = split_command(text, 1);
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-
-			if (text[i] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /whois <username>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			text = args[1].c_str(); // username
 
-			do_whois(c, &text[i]);
+			do_whois(c, text);
 
 			return 0;
 		}
@@ -2076,19 +1939,18 @@ namespace pvpgn
 
 		static int _handle_announce_command(t_connection * c, char const *text)
 		{
-			unsigned int i;
 			t_message *  message;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (text[i] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /announce <announcement>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			text = args[1].c_str(); // message
 
-			snprintf(msgtemp, sizeof(msgtemp), "Announcement from %.64s: %.128s", conn_get_username(c), &text[i]);
+			snprintf(msgtemp, sizeof(msgtemp), "Announcement from %.64s: %.128s", conn_get_username(c), text);
 			if (!(message = message_create(message_type_broadcast, c, msgtemp)))
 				message_send_text(c, message_type_info, c, "Could not broadcast message.");
 			else
@@ -2123,7 +1985,7 @@ namespace pvpgn
 		{
 			static char const * const info[] =
 			{
-				" Copyright (C) 2002 - 2008  See source for details",
+				" Copyright (C) 2002 - 2014  See source for details",
 				" ",
 				" PvPGN is free software; you can redistribute it and/or",
 				" modify it under the terms of the GNU General Public License",
@@ -2159,39 +2021,30 @@ namespace pvpgn
 
 		static int _handle_stats_command(t_connection * c, char const *text)
 		{
-			char         dest[MAX_USERNAME_LEN];
+			char const * username;
 			unsigned int i, j;
 			t_account *  account;
 			char const * clienttag = NULL;
 			t_clienttag  clienttag_uint;
 			char         clienttag_str[5];
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get dest */
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 2);
 
-			if (!dest[0]) {
+			// username
+			username = args[1].c_str();
+			if (args[1].empty()) {
 				account = conn_get_account(c);
 			}
-			else if (!(account = accountlist_find_account(dest))) {
+			else if (!(account = accountlist_find_account(username))) {
 				message_send_text(c, message_type_error, c, "Invalid user.");
 				return 0;
 			}
 
-			if (text[i] != '\0')
-				clienttag = &text[i];
+			// clienttag
+			if (!args[2].empty() && args[2].length() == 4)
+				clienttag = args[2].c_str();
 			else if (!(clienttag = tag_uint_to_str(clienttag_str, conn_get_clienttag(c)))) {
 				message_send_text(c, message_type_error, c, "Unable to determine client game.");
-				return 0;
-			}
-
-			if (std::strlen(clienttag) != 4) {
-				snprintf(msgtemp, sizeof(msgtemp), "You must supply a user name and a valid program ID. (Program ID \"%.32s\" is invalid.)", clienttag);
-				message_send_text(c, message_type_error, c, msgtemp);
-				message_send_text(c, message_type_error, c, "Example: /stats joe STAR");
 				return 0;
 			}
 
@@ -2399,13 +2252,14 @@ namespace pvpgn
 		{
 			t_channel * channel;
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (text[0] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /channel <channel>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			text = args[1].c_str(); // channelname
 
 			if (!conn_get_game(c)) {
 				if (strcasecmp(text, "Arranged Teams") == 0)
@@ -2450,8 +2304,8 @@ namespace pvpgn
 
 		static int _handle_away_command(t_connection * c, char const *text)
 		{
-
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
+			text = args[1].c_str(); // message
 
 			if (text[0] == '\0') /* toggle away mode */
 			{
@@ -2477,8 +2331,8 @@ namespace pvpgn
 
 		static int _handle_dnd_command(t_connection * c, char const *text)
 		{
-
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
+			text = args[1].c_str(); // message
 
 			if (text[0] == '\0') /* toggle dnd mode */
 			{
@@ -2506,17 +2360,18 @@ namespace pvpgn
 		{
 			t_account *  account;
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
+
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			text = args[1].c_str(); // username
 
 			/* D2 std::puts * before username */
 			if (text[0] == '*')
 				text++;
-
-			if (text[0] == '\0')
-			{
-				message_send_text(c, message_type_info, c, "Usage: /squelch <username>");
-				return 0;
-			}
 
 			if (!(account = accountlist_find_account(text)))
 			{
@@ -2546,17 +2401,18 @@ namespace pvpgn
 			t_account * account;
 			t_connection * dest_c;
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
+
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			text = args[1].c_str(); // username
 
 			/* D2 std::puts * before username */
 			if (text[0] == '*')
 				text++;
-
-			if (text[0] == '\0')
-			{
-				message_send_text(c, message_type_info, c, "Usage: /unsquelch <username>");
-				return 0;
-			}
 
 			if (!(account = accountlist_find_account(text)))
 			{
@@ -2586,24 +2442,21 @@ namespace pvpgn
 
 		static int _handle_kick_command(t_connection * c, char const *text)
 		{
-			char              dest[MAX_USERNAME_LEN];
+			char const * username;
 			unsigned int      i, j;
 			t_channel const * channel;
 			t_connection *    kuc;
 			t_account *	    acc;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get dest */
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 2);
 
-			if (dest[0] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /kick <username>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			username = args[1].c_str(); // username
+			text = args[2].c_str(); // reason
 
 			if (!(channel = conn_get_channel(c)))
 			{
@@ -2621,7 +2474,7 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, "You have to be at least a Channel Operator or tempOP to use this command.");
 				return 0;
 			}
-			if (!(kuc = connlist_find_connection_by_accountname(dest)))
+			if (!(kuc = connlist_find_connection_by_accountname(username)))
 			{
 				message_send_text(c, message_type_error, c, "That user is not logged in.");
 				return 0;
@@ -2655,8 +2508,8 @@ namespace pvpgn
 					return -1;
 				}
 
-				if (text[i] != '\0')
-					snprintf(msgtemp, sizeof(msgtemp), "%-.20s has been kicked by %-.20s (%.128s).", tname1, tname2, &text[i]);
+				if (text[0] != '\0')
+					snprintf(msgtemp, sizeof(msgtemp), "%-.20s has been kicked by %-.20s (%.128s).", tname1, tname2, text);
 				else
 					snprintf(msgtemp, sizeof(msgtemp), "%-.20s has been kicked by %-.20s.", tname1, tname2);
 				channel_message_send(channel, message_type_info, c, msgtemp);
@@ -2670,23 +2523,19 @@ namespace pvpgn
 
 		static int _handle_ban_command(t_connection * c, char const *text)
 		{
-			char           dest[MAX_USERNAME_LEN];
-			unsigned int   i, j;
+			char const * username;
 			t_channel *    channel;
 			t_connection * buc;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get dest */
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 2);
 
-			if (dest[0] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "usage. /ban <username>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			username = args[1].c_str(); // username
+			text = args[2].c_str(); // reason
 
 			if (!(channel = conn_get_channel(c)))
 			{
@@ -2704,7 +2553,7 @@ namespace pvpgn
 			{
 				t_account * account;
 
-				if (!(account = accountlist_find_account(dest)))
+				if (!(account = accountlist_find_account(username)))
 					message_send_text(c, message_type_info, c, "That account doesn't currently exist, banning anyway.");
 				else if (account_get_auth_admin(account, NULL) == 1 || account_get_auth_admin(account, channel_get_name(channel)) == 1)
 				{
@@ -2719,9 +2568,9 @@ namespace pvpgn
 				}
 			}
 
-			if (channel_ban_user(channel, dest) < 0)
+			if (channel_ban_user(channel, username) < 0)
 			{
-				snprintf(msgtemp, sizeof(msgtemp), "Unable to ban %-.20s.", dest);
+				snprintf(msgtemp, sizeof(msgtemp), "Unable to ban %-.20s.", username);
 				message_send_text(c, message_type_error, c, msgtemp);
 			}
 			else
@@ -2729,13 +2578,13 @@ namespace pvpgn
 				char const * tname;
 
 				tname = conn_get_loggeduser(c);
-				if (text[i] != '\0')
-					snprintf(msgtemp, sizeof(msgtemp), "%-.20s has been banned by %-.20s (%.128s).", dest, tname ? tname : "unknown", &text[i]);
+				if (text[0] != '\0')
+					snprintf(msgtemp, sizeof(msgtemp), "%-.20s has been banned by %-.20s (%.128s).", username, tname ? tname : "unknown", text);
 				else
-					snprintf(msgtemp, sizeof(msgtemp), "%-.20s has been banned by %-.20s.", dest, tname ? tname : "unknown");
+					snprintf(msgtemp, sizeof(msgtemp), "%-.20s has been banned by %-.20s.", username, tname ? tname : "unknown");
 				channel_message_send(channel, message_type_info, c, msgtemp);
 			}
-			if ((buc = connlist_find_connection_by_accountname(dest)) &&
+			if ((buc = connlist_find_connection_by_accountname(username)) &&
 				conn_get_channel(buc) == channel)
 				conn_set_channel(buc, CHANNEL_NAME_BANNED);
 
@@ -2745,16 +2594,15 @@ namespace pvpgn
 		static int _handle_unban_command(t_connection * c, char const *text)
 		{
 			t_channel *  channel;
-			unsigned int i;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (text[i] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /unban <username>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			text = args[1].c_str(); // username
 
 			if (!(channel = conn_get_channel(c)))
 			{
@@ -2770,11 +2618,11 @@ namespace pvpgn
 				return 0;
 			}
 
-			if (channel_unban_user(channel, &text[i]) < 0)
+			if (channel_unban_user(channel, text) < 0)
 				message_send_text(c, message_type_error, c, "That user is not banned.");
 			else
 			{
-				snprintf(msgtemp, sizeof(msgtemp), "%.64s is no longer banned from this channel.", &text[i]);
+				snprintf(msgtemp, sizeof(msgtemp), "%.64s is no longer banned from this channel.", text);
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
@@ -2783,7 +2631,6 @@ namespace pvpgn
 
 		static int _handle_reply_command(t_connection * c, char const *text)
 		{
-			unsigned int i;
 			char const * dest;
 
 			if (!(dest = conn_get_lastsender(c)))
@@ -2792,42 +2639,42 @@ namespace pvpgn
 				return 0;
 			}
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (text[i] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /reply <replytext>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
-			do_whisper(c, dest, &text[i]);
+			text = args[1].c_str(); // message
+
+			do_whisper(c, dest, text);
 			return 0;
 		}
 
 		static int _handle_realmann_command(t_connection * c, char const *text)
 		{
-			unsigned int i;
 			t_realm * realm;
 			t_realm * trealm;
 			t_connection * tc;
 			t_elem const * curr;
 			t_message    * message;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-
 			if (!(realm = conn_get_realm(c))) {
 				message_send_text(c, message_type_info, c, "You must join a realm first");
 				return 0;
 			}
 
-			if (text[i] == '\0')
-			{
-				message_send_text(c, message_type_info, c, "Usage: /realmann <announcement text>");
-				return 0;
-			}
+			std::vector<std::string> args = split_command(text, 1);
 
-			snprintf(msgtemp, sizeof(msgtemp), "Announcement from %.32s@%.32s: %.128s", conn_get_username(c), realm_get_name(realm), &text[i]);
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			text = args[1].c_str(); // message
+
+			snprintf(msgtemp, sizeof(msgtemp), "Announcement from %.32s@%.32s: %.128s", conn_get_username(c), realm_get_name(realm), text);
 			if (!(message = message_create(message_type_broadcast, c, msgtemp)))
 			{
 				message_send_text(c, message_type_info, c, "Could not broadcast message.");
@@ -2850,18 +2697,18 @@ namespace pvpgn
 
 		static int _handle_watch_command(t_connection * c, char const *text)
 		{
-			unsigned int i;
 			t_account *  account;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (text[i] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /watch <username>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
-			if (!(account = accountlist_find_account(&text[i])))
+			text = args[1].c_str(); // username
+
+			if (!(account = accountlist_find_account(text)))
 			{
 				message_send_text(c, message_type_info, c, "That user does not exist.");
 				return 0;
@@ -2871,7 +2718,7 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, "Add to watch list failed.");
 			else
 			{
-				snprintf(msgtemp, sizeof(msgtemp), "User %.64s added to your watch list.", &text[i]);
+				snprintf(msgtemp, sizeof(msgtemp), "User %.64s added to your watch list.", text);
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
@@ -2880,18 +2727,17 @@ namespace pvpgn
 
 		static int _handle_unwatch_command(t_connection * c, char const *text)
 		{
-			unsigned int i;
 			t_account *  account;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (text[i] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /unwatch <username>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
-			if (!(account = accountlist_find_account(&text[i])))
+			text = args[1].c_str(); // username
+			if (!(account = accountlist_find_account(text)))
 			{
 				message_send_text(c, message_type_info, c, "That user does not exist.");
 				return 0;
@@ -2901,7 +2747,7 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, "Removal from watch list failed.");
 			else
 			{
-				snprintf(msgtemp, sizeof(msgtemp), "User %.64s removed from your watch list.", &text[i]);
+				snprintf(msgtemp, sizeof(msgtemp), "User %.64s removed from your watch list.", text);
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
@@ -2911,17 +2757,18 @@ namespace pvpgn
 		static int _handle_watchall_command(t_connection * c, char const *text)
 		{
 			t_clienttag clienttag = 0;
-			char clienttag_str[5];
+			char const * clienttag_str;
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
+			clienttag_str = args[1].c_str(); // clienttag
 
-			if (text[0] != '\0') {
-				if (std::strlen(text) != 4) {
-					message_send_text(c, message_type_error, c, "You must supply a rank and a valid program ID.");
-					message_send_text(c, message_type_error, c, "Example: /watchall STAR");
-					return 0;
+			if (strlen(clienttag_str) > 0)
+			{
+				if ( !(clienttag = tag_validate_client(args[1].c_str())) )
+				{
+					describe_command(c, args[0].c_str());
+					return -1;
 				}
-				clienttag = tag_case_str_to_uint(text);
 			}
 
 			if (conn_add_watch(c, NULL, clienttag) < 0) /* FIXME: adds all events for now */
@@ -2929,7 +2776,7 @@ namespace pvpgn
 			else
 			if (clienttag) {
 				char msgtemp[MAX_MESSAGE_LEN];
-				snprintf(msgtemp, sizeof(msgtemp), "All %.128s users added to your watch list.", tag_uint_to_str(clienttag_str, clienttag));
+				snprintf(msgtemp, sizeof(msgtemp), "All %.128s users added to your watch list.", tag_uint_to_str((char*)clienttag_str, clienttag));
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 			else
@@ -2941,16 +2788,18 @@ namespace pvpgn
 		static int _handle_unwatchall_command(t_connection * c, char const *text)
 		{
 			t_clienttag clienttag = 0;
-			char clienttag_str[5];
+			char const * clienttag_str;
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
+			clienttag_str = args[1].c_str(); // clienttag
 
-			if (text[0] != '\0') {
-				if (std::strlen(text) != 4) {
-					message_send_text(c, message_type_error, c, "You must supply a rank and a valid program ID.");
-					message_send_text(c, message_type_error, c, "Example: /unwatchall STAR");
+			if (strlen(clienttag_str) > 0)
+			{
+				if (!(clienttag = tag_validate_client(args[1].c_str())))
+				{
+					describe_command(c, args[0].c_str());
+					return -1;
 				}
-				clienttag = tag_case_str_to_uint(text);
 			}
 
 			if (conn_del_watch(c, NULL, clienttag) < 0) /* FIXME: deletes all events for now */
@@ -2958,7 +2807,7 @@ namespace pvpgn
 			else
 			if (clienttag) {
 				char msgtemp[MAX_MESSAGE_LEN];
-				snprintf(msgtemp, sizeof(msgtemp), "All %.128s users removed from your watch list.", tag_uint_to_str(clienttag_str, clienttag));
+				snprintf(msgtemp, sizeof(msgtemp), "All %.128s users removed from your watch list.", tag_uint_to_str((char*)clienttag_str, clienttag));
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 			else
@@ -3071,27 +2920,29 @@ namespace pvpgn
 
 		static int _handle_games_command(t_connection * c, char const *text)
 		{
-			unsigned int   i;
-			unsigned int   j;
 			char           clienttag_str[5];
-			char           dest[6];
+			char const         * dest;
+			char const         * difficulty;
 			struct glist_cb_struct cbdata;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get dest */
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 2);
+
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			dest = args[1].c_str(); // clienttag
+			difficulty = args[1].c_str(); // difficulty (only for diablo)
 
 			cbdata.c = c;
 			cbdata.lobby = false;
 
-			if (std::strcmp(&text[i], "norm") == 0)
+			if (difficulty == "norm")
 				cbdata.diff = game_difficulty_normal;
-			else if (std::strcmp(&text[i], "night") == 0)
+			else if (difficulty == "night")
 				cbdata.diff = game_difficulty_nightmare;
-			else if (std::strcmp(&text[i], "hell") == 0)
+			else if (difficulty == "hell")
 				cbdata.diff = game_difficulty_hell;
 			else
 				cbdata.diff = game_difficulty_none;
@@ -3101,12 +2952,12 @@ namespace pvpgn
 				cbdata.tag = conn_get_clienttag(c);
 				message_send_text(c, message_type_info, c, "Currently accessible games:");
 			}
-			else if (strcasecmp(&dest[0], "all") == 0)
+			else if (strcasecmp(dest, "all") == 0)
 			{
 				cbdata.tag = 0;
 				message_send_text(c, message_type_info, c, "All current games:");
 			}
-			else if (strcasecmp(&dest[0], "lobby") == 0 || strcasecmp(&dest[0], "l") == 0)
+			else if (strcasecmp(dest, "lobby") == 0 || strcasecmp(dest, "l") == 0)
 			{
 				cbdata.tag = conn_get_clienttag(c);
 				cbdata.lobby = true;
@@ -3114,18 +2965,16 @@ namespace pvpgn
 			}
 			else
 			{
-				cbdata.tag = tag_case_str_to_uint(&dest[0]);
-
-				if (!tag_check_client(cbdata.tag))
+				if (!(cbdata.tag = tag_validate_client(dest)))
 				{
-					message_send_text(c, message_type_error, c, "No valid clienttag specified.");
+					describe_command(c, args[0].c_str());
 					return -1;
 				}
 
 				if (cbdata.diff == game_difficulty_none)
 					snprintf(msgtemp, sizeof(msgtemp), "Current games of type %.64s", tag_uint_to_str(clienttag_str, cbdata.tag));
 				else
-					snprintf(msgtemp, sizeof(msgtemp), "Current games of type %.64s %.128s", tag_uint_to_str(clienttag_str, cbdata.tag), &text[i]);
+					snprintf(msgtemp, sizeof(msgtemp), "Current games of type %.64s %.128s", tag_uint_to_str(clienttag_str, cbdata.tag), difficulty);
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
@@ -3151,24 +3000,33 @@ namespace pvpgn
 			char const * name;
 			int first;
 
+			std::vector<std::string> args = split_command(text, 1);
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			text = args[1].c_str(); // clienttag
 
-			if (text[i] == '\0')
+			if (text[0] == '\0')
 			{
 				clienttag = conn_get_clienttag(c);
 				message_send_text(c, message_type_info, c, "Currently accessible channels:");
 			}
-			else if (std::strcmp(&text[i], "all") == 0)
+			else if (strcasecmp(text, "all") == 0)
 			{
 				clienttag = 0;
 				message_send_text(c, message_type_info, c, "All current channels:");
 			}
 			else
 			{
-				clienttag = tag_case_str_to_uint(&text[i]);
-				snprintf(msgtemp, sizeof(msgtemp), "Current channels of type %.64s", &text[i]);
+				if (!(clienttag = tag_validate_client(text)))
+				{
+					describe_command(c, args[0].c_str());
+					return -1;
+				}
+				snprintf(msgtemp, sizeof(msgtemp), "Current channels of type %.64s", text);
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
@@ -3222,34 +3080,32 @@ namespace pvpgn
 			unsigned int i, j;
 			t_account  * temp;
 			t_hash       passhash;
-			char         username[MAX_USERNAME_LEN];
-			char         pass[256];
+			char const * username, *pass;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++);
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 2);
 
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get username */
-			if (j < sizeof(username)-1) username[j++] = text[i];
-			username[j] = '\0';
-
-			for (; text[i] == ' '; i++); /* skip spaces */
-			for (j = 0; text[i] != '\0'; i++) /* get pass (spaces are allowed) */
-			if (j < sizeof(pass)-1) pass[j++] = text[i];
-			pass[j] = '\0';
-
-			if (username[0] == '\0' || pass[0] == '\0') {
-				message_send_text(c, message_type_info, c, "Usage: /addacct <username> <password>");
-				return 0;
+			if (args[2].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			username = args[1].c_str(); // username
 
 			if (account_check_name(username) < 0) {
 				message_send_text(c, message_type_error, c, "Account name contains some invalid symbol!");
 				return 0;
 			}
 
-			/* FIXME: truncate or err on too long password */
-			for (i = 0; i < std::strlen(pass); i++)
-			if (std::isupper((int)pass[i])) pass[i] = std::tolower((int)pass[i]);
+			if (args[2].length() > MAX_USERPASS_LEN)
+			{
+				snprintf(msgtemp, sizeof(msgtemp), "Maximum password length allowed is %d", MAX_USERPASS_LEN);
+				message_send_text(c, message_type_error, c, msgtemp);
+				return 0;
+			}
+			for (i = 0; i < args[2].length(); i++)
+				if (std::isupper((int)args[2][i])) args[2][i] = std::tolower((int)args[2][i]);
+			pass = args[2].c_str(); // password
+
 
 			bnet_hash(&passhash, std::strlen(pass), pass);
 
@@ -3279,38 +3135,26 @@ namespace pvpgn
 			t_account  * account;
 			t_account  * temp;
 			t_hash       passhash;
-			char         arg1[256];
-			char         arg2[256];
 			char const * username;
-			char *       pass;
+			std::string       pass;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++);
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 2);
 
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get username/pass */
-			if (j < sizeof(arg1)-1) arg1[j++] = text[i];
-			arg1[j] = '\0';
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
 
-			for (; text[i] == ' '; i++); /* skip spaces */
-			for (j = 0; text[i] != '\0'; i++) /* get pass (spaces are allowed) */
-			if (j < sizeof(arg2)-1) arg2[j++] = text[i];
-			arg2[j] = '\0';
-
-			if (arg2[0] == '\0')
+			if (args[2].empty())
 			{
 				username = conn_get_username(c);
-				pass = arg1;
+				pass = args[1];
 			}
 			else
 			{
-				username = arg1;
-				pass = arg2;
-			}
-
-			if (pass[0] == '\0')
-			{
-				message_send_text(c, message_type_info, c, "Usage: /chpass [username] <password>");
-				return 0;
+				username = args[1].c_str();
+				pass = args[2];
 			}
 
 			temp = accountlist_find_account(username);
@@ -3331,19 +3175,19 @@ namespace pvpgn
 				return 0;
 			}
 
-			if (std::strlen(pass) > MAX_USERPASS_LEN)
+			if (pass.length() > MAX_USERPASS_LEN)
 			{
 				snprintf(msgtemp, sizeof(msgtemp), "Maximum password length allowed is %d", MAX_USERPASS_LEN);
 				message_send_text(c, message_type_error, c, msgtemp);
 				return 0;
 			}
 
-			for (i = 0; i < std::strlen(pass); i++)
-			if (std::isupper((int)pass[i])) pass[i] = std::tolower((int)pass[i]);
+			for (i = 0; i < pass.length(); i++)
+				if (std::isupper((int)pass[i])) pass[i] = std::tolower((int)pass[i]);
 
-			bnet_hash(&passhash, std::strlen(pass), pass);
+			bnet_hash(&passhash, pass.length(), pass.c_str());
 
-			snprintf(msgtemp, sizeof(msgtemp), "Trying to change password for account \"%.64s\" to \"%.128s\"", username, pass);
+			snprintf(msgtemp, sizeof(msgtemp), "Trying to change password for account \"%.64s\" to \"%.128s\"", username, pass.c_str());
 			message_send_text(c, message_type_info, c, msgtemp);
 
 			if (account_set_pass(temp, hash_get_str(passhash)) < 0)
@@ -3387,11 +3231,11 @@ namespace pvpgn
 			}
 
 			message_send_text(c, message_type_info, c, "Current connections:");
-			/* addon */
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
 
-			if (text[i] == '\0')
+			std::vector<std::string> args = split_command(text, 1);
+			text = args[1].c_str();
+
+			if (text[0] == '\0')
 			{
 				snprintf(msgtemp, sizeof(msgtemp), " -class -tag -----name------ -lat(ms)- ----channel---- --game--");
 				message_send_text(c, message_type_info, c, msgtemp);
@@ -3426,7 +3270,7 @@ namespace pvpgn
 					game_name = game_get_name(conn_get_game(conn));
 				else game_name = "none";
 
-				if (text[i] == '\0')
+				if (text[0] == '\0')
 					snprintf(msgtemp, sizeof(msgtemp), " %-6.6s %4.4s %-15.15s %9u %-16.16s %-8.8s",
 					conn_class_get_str(conn_get_class(conn)),
 					tag_uint_to_str(clienttag_str, conn_get_fake_clienttag(conn)),
@@ -3469,8 +3313,7 @@ namespace pvpgn
 
 		static int _handle_finger_command(t_connection * c, char const *text)
 		{
-			char           dest[MAX_USERNAME_LEN];
-			unsigned int   i, j;
+			char const * dest;
 			t_account *    account;
 			t_connection * conn;
 			char const *   ip;
@@ -3479,18 +3322,14 @@ namespace pvpgn
 			std::time_t      then;
 			struct std::tm * tmthen;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get dest */
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (dest[0] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /finger <account>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			dest = args[1].c_str(); // username;
 
 			if (!(account = accountlist_find_account(dest)))
 			{
@@ -3693,37 +3532,33 @@ namespace pvpgn
 
 		static int _handle_kill_command(t_connection * c, char const *text)
 		{
-			unsigned int	i, j;
 			t_connection *	user;
-			char		usrnick[MAX_USERNAME_LEN]; /* max length of nick + \0 */  /* FIXME: Is it somewhere defined? */
+			char const * username, * min;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get nick */
-			if (j < sizeof(usrnick)-1) usrnick[j++] = text[i];
-			usrnick[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 2);
+			username = args[1].c_str(); // username
+			min = args[2].c_str(); // minutes of ban
 
-			if (usrnick[0] == '\0' || (usrnick[0] == '#' && (usrnick[1] < '0' || usrnick[1] > '9')))
+			if (username[0] == '\0' || (username[0] == '#' && (username[1] < '0' || username[1] > '9')))
 			{
-				message_send_text(c, message_type_info, c, "Usage: /kill {<username>|#<socket>} [<min>]");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
 
-			if (usrnick[0] == '#') {
-				if (!(user = connlist_find_connection_by_socket(std::atoi(usrnick + 1)))) {
+			if (username[0] == '#') {
+				if (!(user = connlist_find_connection_by_socket(std::atoi(username + 1)))) {
 					message_send_text(c, message_type_error, c, "That connection doesn't exist.");
 					return 0;
 				}
 			}
 			else {
-				if (!(user = connlist_find_connection_by_accountname(usrnick))) {
+				if (!(user = connlist_find_connection_by_accountname(username))) {
 					message_send_text(c, message_type_error, c, "That user is not logged in?");
 					return 0;
 				}
 			}
 
-			if (text[i] != '\0' && ipbanlist_add(c, addr_num_to_ip_str(conn_get_addr(user)), ipbanlist_str_to_time_t(c, &text[i])) == 0)
+			if (min[0] != '\0' && ipbanlist_add(c, addr_num_to_ip_str(conn_get_addr(user)), ipbanlist_str_to_time_t(c, min)) == 0)
 			{
 				ipbanlist_save(prefs_get_ipbanfile());
 				message_send_text(user, message_type_info, user, "An admin has closed your connection and banned your IP address.");
@@ -3739,22 +3574,20 @@ namespace pvpgn
 
 		static int _handle_killsession_command(t_connection * c, char const *text)
 		{
-			unsigned int	i, j;
 			t_connection *	user;
-			char		session[16];
+			char const * session, *min;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get nick */
-			if (j < sizeof(session)-1) session[j++] = text[i];
-			session[j] = '\0';
-			for (; text[i] == ' '; i++);
 
-			if (session[0] == '\0')
+			std::vector<std::string> args = split_command(text, 2);
+
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /killsession <session> [min]");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			session = args[1].c_str(); // session id
+			min = args[1].c_str(); // minutes of ban
+
 			if (!std::isxdigit((int)session[0]))
 			{
 				message_send_text(c, message_type_error, c, "That is not a valid session.");
@@ -3765,7 +3598,7 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, "That session does not exist.");
 				return 0;
 			}
-			if (text[i] != '\0' && ipbanlist_add(c, addr_num_to_ip_str(conn_get_addr(user)), ipbanlist_str_to_time_t(c, &text[i])) == 0)
+			if (min[0] != '\0' && ipbanlist_add(c, addr_num_to_ip_str(conn_get_addr(user)), ipbanlist_str_to_time_t(c, min)) == 0)
 			{
 				ipbanlist_save(prefs_get_ipbanfile());
 				message_send_text(user, message_type_info, user, "Connection closed by admin and banned your IP's.");
@@ -3782,11 +3615,12 @@ namespace pvpgn
 			t_game const * game;
 			char clienttag_str[5];
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
+			text = args[1].c_str();
 
-			if (text[i] == '\0')
+			if (text[0] == '\0')
 			{
+				// current user game
 				if (!(game = conn_get_game(c)))
 				{
 					message_send_text(c, message_type_error, c, "You are not in a game.");
@@ -3794,7 +3628,7 @@ namespace pvpgn
 				}
 			}
 			else
-			if (!(game = gamelist_find_game_available(&text[i], conn_get_clienttag(c), game_type_all)))
+			if (!(game = gamelist_find_game_available(text, conn_get_clienttag(c), game_type_all)))
 			{
 				message_send_text(c, message_type_error, c, "That game does not exist.");
 				return 0;
@@ -3941,14 +3775,13 @@ namespace pvpgn
 			t_entry *curr;
 			t_hashtable *accountlist_head = accountlist();
 
-			text = skip_command(text);
-
-			if (text[0] == '\0') {
-				/* In need of a better description */
-				message_send_text(c, message_type_info, c, "Usage: /find <substring to search in acct name>");
-				message_send_text(c, message_type_info, c, "  <substring> must be lower case.");
+			std::vector<std::string> args = split_command(text, 1);
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
 				return -1;
 			}
+			text = args[1].c_str();
 
 			std::sprintf(msgtemp, " -- name -- similar to %s", text);
 			message_send_text(c, message_type_info, c, msgtemp);
@@ -3986,27 +3819,14 @@ namespace pvpgn
 			return 0;
 		}
 
-		/*
-		static int _handle_rank_all_accounts_command(t_connection * c, char const *text)
-		{
-		// rank all accounts here
-		accounts_rank_all();
-		return 0;
-		}
-		*/
-
 		static int _handle_shutdown_command(t_connection * c, char const *text)
 		{
-			char         dest[32];
+			char const * dest;
 			unsigned int i, j;
 			unsigned int delay;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get dest */
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
+			dest = args[1].c_str(); // delay
 
 			if (dest[0] == '\0')
 				delay = prefs_get_shutdown_delay();
@@ -4029,46 +3849,38 @@ namespace pvpgn
 
 		static int _handle_ladderinfo_command(t_connection * c, char const *text)
 		{
-			char         dest[32];
+			char const * rank_s, *tag_s;
 			unsigned int rank;
-			unsigned int i, j;
 			t_account *  account;
 			t_team * team;
 			t_clienttag clienttag;
 			const LadderReferencedObject* referencedObject;
 			LadderList* ladderList;
 
-			text = skip_command(text);
-			for (i = 0, j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get dest */
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
-
-			if (dest[0] == '\0')
+			std::vector<std::string> args = split_command(text, 2);
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /ladderinfo <rank> [clienttag]");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
-			if (str_to_uint(dest, &rank) < 0 || rank < 1)
+			rank_s = args[1].c_str(); // rank
+			tag_s = args[2].c_str(); // clienttag
+
+			if (str_to_uint(rank_s, &rank) < 0 || rank < 1)
 			{
 				message_send_text(c, message_type_error, c, "Invalid rank.");
 				return 0;
 			}
 
-			if (text[i] != '\0') {
-				if (std::strlen(&text[i]) != 4) {
-					message_send_text(c, message_type_error, c, text);
-					message_send_text(c, message_type_error, c, "You must supply a rank and a valid program ID.");
-					message_send_text(c, message_type_error, c, "Example: /ladderinfo 1 STAR not");
+			if (!(clienttag = tag_validate_client(tag_s)))
+			{
+				if (!(clienttag = conn_get_clienttag(c)))
+				{
+					message_send_text(c, message_type_error, c, "Unable to determine client game.");
 					return 0;
 				}
-				clienttag = tag_case_str_to_uint(&text[i]);
 			}
-			else if (!(clienttag = conn_get_clienttag(c)))
-			{
-				message_send_text(c, message_type_error, c, "Unable to determine client game.");
-				return 0;
-			}
+
 			if (clienttag == CLIENTTAG_STARCRAFT_UINT)
 			{
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_active));
@@ -4281,34 +4093,29 @@ namespace pvpgn
 
 		static int _handle_timer_command(t_connection * c, char const *text)
 		{
-			unsigned int i, j;
 			unsigned int delta;
-			char         deltastr[64];
 			t_timer_data data;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get comm */
-			if (j < sizeof(deltastr)-1) deltastr[j++] = text[i];
-			deltastr[j] = '\0';
-			for (; text[i] == ' '; i++);
-
-			if (deltastr[0] == '\0')
+			char const * delta_s, *msgtext_s;
+			std::vector<std::string> args = split_command(text, 2);
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /timer <duration>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			delta_s = args[1].c_str(); // timer delta
+			msgtext_s = args[2].c_str(); // message text display when timer elapsed
 
-			if (clockstr_to_seconds(deltastr, &delta) < 0)
+			if (clockstr_to_seconds(delta_s, &delta) < 0)
 			{
 				message_send_text(c, message_type_error, c, "Invalid duration.");
 				return 0;
 			}
 
-			if (text[i] == '\0')
+			if (msgtext_s[0] == '\0')
 				data.p = xstrdup("Your timer has expired.");
 			else
-				data.p = xstrdup(&text[i]);
+				data.p = xstrdup(msgtext_s);
 
 			if (timerlist_add_timer(c, std::time(NULL) + (std::time_t)delta, user_timer_cb, data) < 0)
 			{
@@ -4327,24 +4134,18 @@ namespace pvpgn
 
 		static int _handle_serverban_command(t_connection *c, char const *text)
 		{
-			char dest[MAX_USERNAME_LEN];
+			char const * username;
 			t_connection * dest_c;
-			unsigned int i, j;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); // skip command
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) // get dest
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
-
-			if (dest[0] == '\0')
+			std::vector<std::string> args = split_command(text, 1);
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /serverban <account>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			username = args[1].c_str(); // username
 
-			if (!(dest_c = connlist_find_connection_by_accountname(dest)))
+			if (!(dest_c = connlist_find_connection_by_accountname(username)))
 			{
 				message_send_text(c, message_type_error, c, "That user is not logged on.");
 				return 0;
@@ -4365,7 +4166,7 @@ namespace pvpgn
 
 		static int _handle_netinfo_command(t_connection * c, char const *text)
 		{
-			char           dest[MAX_USERNAME_LEN];
+			char const * username;
 			unsigned int   i, j;
 			t_connection * conn;
 			t_game const * game;
@@ -4374,17 +4175,13 @@ namespace pvpgn
 			unsigned int   taddr;
 			unsigned short tport;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); // skip command
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) // get dest
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
+			username = args[1].c_str(); // username
 
-			if (dest[0] == '\0')
-				std::strcpy(dest, conn_get_username(c));
+			if (username[0] == '\0')
+				username = conn_get_username(c);
 
-			if (!(conn = connlist_find_connection_by_accountname(dest)))
+			if (!(conn = connlist_find_connection_by_accountname(username)))
 			{
 				message_send_text(c, message_type_error, c, "That user is not logged on.");
 				return 0;
@@ -4454,13 +4251,13 @@ namespace pvpgn
 			t_connection * user;
 			t_account *    account;
 
-			text = skip_command(text);
-
-			if (text[0] == '\0')
+			std::vector<std::string> args = split_command(text, 1);
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /lockacct <username>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			text = args[1].c_str(); // username
 
 			if (!(account = accountlist_find_account(text)))
 			{
@@ -4480,13 +4277,14 @@ namespace pvpgn
 			t_connection * user;
 			t_account *    account;
 
-			text = skip_command(text);
-
-			if (text[0] == '\0')
+			std::vector<std::string> args = split_command(text, 1);
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /unlockacct <username>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			text = args[1].c_str(); // username
+
 			if (!(account = accountlist_find_account(text)))
 			{
 				message_send_text(c, message_type_error, c, "Invalid user.");
@@ -4507,13 +4305,13 @@ namespace pvpgn
 			t_connection * user;
 			t_account *    account;
 
-			text = skip_command(text);
-
-			if (text[0] == '\0')
+			std::vector<std::string> args = split_command(text, 1);
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /muteacct <username>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			text = args[1].c_str(); // username
 
 			if (!(account = accountlist_find_account(text)))
 			{
@@ -4533,13 +4331,14 @@ namespace pvpgn
 			t_connection * user;
 			t_account *    account;
 
-			text = skip_command(text);
-
-			if (text[0] == '\0')
+			std::vector<std::string> args = split_command(text, 1);
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /unmuteacct <username>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			text = args[1].c_str(); // username
+
 			if (!(account = accountlist_find_account(text)))
 			{
 				message_send_text(c, message_type_error, c, "Invalid user.");
@@ -4556,24 +4355,19 @@ namespace pvpgn
 
 		static int _handle_flag_command(t_connection * c, char const *text)
 		{
-			char         dest[32];
+			char const * flag_s;
 			unsigned int i, j;
 			unsigned int newflag;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get dest */
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
-
-			if (dest[0] == '\0')
+			std::vector<std::string> args = split_command(text, 1);
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /flag <flag>");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			flag_s = args[1].c_str(); // flag
 
-			newflag = std::strtoul(dest, NULL, 0);
+			newflag = std::strtoul(flag_s, NULL, 0);
 			conn_set_flags(c, newflag);
 
 			snprintf(msgtemp, sizeof(msgtemp), "Flags set to 0x%08x.", newflag);
@@ -4583,70 +4377,60 @@ namespace pvpgn
 
 		static int _handle_tag_command(t_connection * c, char const *text)
 		{
-			char         dest[8];
-			unsigned int i, j;
-			unsigned int newtag;
+			char const * tag_s;
+			t_clienttag clienttag;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get dest */
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			tag_s = args[1].c_str(); // flag
 
-			if (dest[0] == '\0')
-			{
-				message_send_text(c, message_type_info, c, "Usage: /tag <clienttag>");
-				return 0;
-			}
-			if (std::strlen(dest) != 4)
-			{
-				message_send_text(c, message_type_error, c, "Client tag must be four characters long.");
-				return 0;
-			}
-			newtag = tag_case_str_to_uint(dest);
-			if (tag_check_client(newtag))
+			if (clienttag = tag_validate_client(tag_s))
 			{
 				unsigned int oldflags = conn_get_flags(c);
-				conn_set_clienttag(c, newtag);
-				if ((newtag == CLIENTTAG_WARCRAFT3_UINT) || (newtag == CLIENTTAG_WAR3XP_UINT))
+				conn_set_clienttag(c, clienttag);
+				if ((clienttag == CLIENTTAG_WARCRAFT3_UINT) || (clienttag == CLIENTTAG_WAR3XP_UINT))
 					conn_update_w3_playerinfo(c);
 				channel_rejoin(c);
 				conn_set_flags(c, oldflags);
 				channel_update_userflags(c);
-				snprintf(msgtemp, sizeof(msgtemp), "Client tag set to %.128s.", dest);
+				snprintf(msgtemp, sizeof(msgtemp), "Client tag set to %.128s.", tag_s);
 			}
 			else
-				snprintf(msgtemp, sizeof(msgtemp), "Invalid clienttag %.128s specified", dest);
+				snprintf(msgtemp, sizeof(msgtemp), "Invalid clienttag %.128s specified", tag_s);
 			message_send_text(c, message_type_info, c, msgtemp);
 			return 0;
 		}
 
 		static int _handle_ipscan_command(t_connection * c, char const * text)
 		{
-			text = skip_command(text);
+			/*
+			Description of _handle_ipscan_command
+			---------------------------------------
+			Finds all currently logged in users with the given ip address.
+			*/
+
 			t_account * account;
 			t_connection * conn;
 			char const * ip;
 
-			/*
-			  Description of _handle_ipscan_command
-			  ---------------------------------------
-			  Finds all currently logged in users with the given ip address.
-			  */
-
-			if (text[0] == '\0') {
-				message_send_text(c, message_type_error, c, "Usage: /ipscan <name or IP-address>");
-				return 0;
+			std::vector<std::string> args = split_command(text, 1);
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			text = args[1].c_str(); // ip or username
+
 
 			if (account = accountlist_find_account(text)) {
 				conn = account_get_conn(account);
 				if (conn) {
 					// conn_get_addr returns int, so there can never be a NULL string construct
 					ip = addr_num_to_ip_str(conn_get_addr(conn));
-					snprintf(msgtemp, sizeof(msgtemp), "Scanning online users for IP %s!", ip);
-					message_send_text(c, message_type_error, c, msgtemp);
 				}
 				else {
 					message_send_text(c, message_type_info, c, "Warning: That user is not online, using last known address.");
@@ -4660,6 +4444,9 @@ namespace pvpgn
 				ip = text;
 			}
 
+			snprintf(msgtemp, sizeof(msgtemp), "Scanning online users for IP %s...", ip);
+			message_send_text(c, message_type_error, c, msgtemp);
+
 			t_elem const * curr;
 			int count = 0;
 			LIST_TRAVERSE_CONST(connlist(), curr) {
@@ -4670,7 +4457,7 @@ namespace pvpgn
 				}
 
 				if (std::strcmp(ip, addr_num_to_ip_str(conn_get_addr(conn))) == 0) {
-					snprintf(msgtemp, sizeof(msgtemp), "%s", conn_get_loggeduser(conn));
+					snprintf(msgtemp, sizeof(msgtemp), "   %s", conn_get_loggeduser(conn));
 					message_send_text(c, message_type_info, c, msgtemp);
 					count++;
 				}
@@ -4686,36 +4473,18 @@ namespace pvpgn
 		static int _handle_set_command(t_connection * c, char const *text)
 		{
 			t_account * account;
-			char *accname;
-			char *key;
-			char *value;
-			char t[MAX_MESSAGE_LEN];
-			unsigned int i, j;
-			char         arg1[256];
-			char         arg2[256];
-			char         arg3[256];
+			char const * username, *key, *value;
 
-			std::strncpy(t, text, MAX_MESSAGE_LEN - 1);
-			for (i = 0; t[i] != ' ' && t[i] != '\0'; i++); /* skip command /set */
+			std::vector<std::string> args = split_command(text, 3);
+			if (args[2].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			username = args[1].c_str(); // username
+			key = args[2].c_str(); // key
+			value = args[3].c_str(); // value
 
-			for (; t[i] == ' '; i++); /* skip spaces */
-			for (j = 0; t[i] != ' ' && t[i] != '\0'; i++) /* get username */
-			if (j < sizeof(arg1)-1) arg1[j++] = t[i];
-			arg1[j] = '\0';
-
-			for (; t[i] == ' '; i++); /* skip spaces */
-			for (j = 0; t[i] != ' ' && t[i] != '\0'; i++) /* get key */
-			if (j < sizeof(arg2)-1) arg2[j++] = t[i];
-			arg2[j] = '\0';
-
-			for (; t[i] == ' '; i++); /* skip spaces */
-			for (j = 0; t[i] != '\0'; i++) /* get value */
-			if (j < sizeof(arg3)-1) arg3[j++] = t[i];
-			arg3[j] = '\0';
-
-			accname = arg1;
-			key = arg2;
-			value = arg3;
 
 			// disallow get/set value for password hash and username (hash can be cracked easily, account name should be permanent)
 			if (strcasecmp(key, "bnet\\acct\\passhash1") == 0 || strcasecmp(key, "bnet\\acct\\username") == 0 || strcasecmp(key, "bnet\\username") == 0)
@@ -4724,16 +4493,7 @@ namespace pvpgn
 				return 0;
 			}
 
-			if ((arg1[0] == '\0') || (arg2[0] == '\0'))
-			{
-				message_send_text(c, message_type_info, c, "Usage: /set <username> <key> [value]");
-				message_send_text(c, message_type_info, c, " example: /set joe BNET\\auth\\botlogin true");
-				message_send_text(c, message_type_info, c, " example: /set joe Record\\W3XP\\ffa_wins 123");
-				message_send_text(c, message_type_info, c, " (set value = null to unset value)");
-				return 0;
-			}
-			
-			if (!(account = accountlist_find_account(accname)))
+			if (!(account = accountlist_find_account(username)))
 			{
 				message_send_text(c, message_type_error, c, "Invalid user.");
 				return 0;
@@ -4860,10 +4620,10 @@ namespace pvpgn
 			t_connection *	user;
 			t_game 	*	game;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 1);
+			text = args[1].c_str(); // username
 
-			if (text[i] == '\0')
+			if (text[0] == '\0')
 			{
 				if ((game = conn_get_game(c)))
 				{
@@ -4879,8 +4639,8 @@ namespace pvpgn
 				}
 				snprintf(msgtemp, sizeof(msgtemp), "Your latency %9u", conn_get_latency(c));
 			}
-			else if ((user = connlist_find_connection_by_accountname(&text[i])))
-				snprintf(msgtemp, sizeof(msgtemp), "%.64s latency %9u", &text[i], conn_get_latency(user));
+			else if ((user = connlist_find_connection_by_accountname(text)))
+				snprintf(msgtemp, sizeof(msgtemp), "%.64s latency %9u", text, conn_get_latency(user));
 			else
 				snprintf(msgtemp, sizeof(msgtemp), "Invalid user.");
 
@@ -4888,66 +4648,26 @@ namespace pvpgn
 			return 0;
 		}
 
-		/* Redirected to handle_ipban_command in ipban.c [Omega]
-		static int _handle_ipban_command(t_connection * c, char const *text)
-		{
-		handle_ipban_command(c,text);
-		return 0;
-		}
-		*/
-
 		static int _handle_commandgroups_command(t_connection * c, char const * text)
 		{
 			t_account *	account;
-			char *	command;
-			char *	username;
+			char const *	command, *username;
+
 			unsigned int usergroups;	// from user account
 			unsigned int groups = 0;	// converted from arg3
 			char	tempgroups[9];	// converted from usergroups
-			char 	t[MAX_MESSAGE_LEN];
-			unsigned int i, j;
-			char	arg1[256];
-			char	arg2[256];
-			char	arg3[256];
 
-			std::strncpy(t, text, MAX_MESSAGE_LEN - 1);
-			for (i = 0; t[i] != ' ' && t[i] != '\0'; i++); /* skip command /groups */
-
-			for (; t[i] == ' '; i++); /* skip spaces */
-			for (j = 0; t[i] != ' ' && t[i] != '\0'; i++) /* get command */
-			if (j < sizeof(arg1)-1) arg1[j++] = t[i];
-			arg1[j] = '\0';
-
-			for (; t[i] == ' '; i++); /* skip spaces */
-			for (j = 0; t[i] != ' ' && t[i] != '\0'; i++) /* get username */
-			if (j < sizeof(arg2)-1) arg2[j++] = t[i];
-			arg2[j] = '\0';
-
-			for (; t[i] == ' '; i++); /* skip spaces */
-			for (j = 0; t[i] != '\0'; i++) /* get groups */
-			if (j < sizeof(arg3)-1) arg3[j++] = t[i];
-			arg3[j] = '\0';
-
-			command = arg1;
-			username = arg2;
-
-			if (arg1[0] == '\0') {
-				message_send_text(c, message_type_info, c, "Usage: /cg <command> <username> [<group(s)>]");
-				return 0;
+			std::vector<std::string> args = split_command(text, 3);
+			// display help if [list] without [username], or not [list] without [groups]
+			if (((args[1] == "list" || args[1] == "l") && args[2].empty()) || !(args[1] == "list" || args[1] == "l") && args[3].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			command = args[1].c_str(); // command
+			username = args[2].c_str(); // username
+			//args[3]; // groups
 
-			if (!std::strcmp(command, "help") || !std::strcmp(command, "h")) {
-				message_send_text(c, message_type_info, c, "Command Groups (Defines the Groups of Commands a User Can Use.)");
-				message_send_text(c, message_type_info, c, "Type: /cg add <username> <group(s)> - adds group(s) to user profile");
-				message_send_text(c, message_type_info, c, "Type: /cg del <username> <group(s)> - deletes group(s) from user profile");
-				message_send_text(c, message_type_info, c, "Type: /cg list <username> - shows current groups user can use");
-				return 0;
-			}
-
-			if (arg2[0] == '\0') {
-				message_send_text(c, message_type_info, c, "Usage: /cg <command> <username> [<group(s)>]");
-				return 0;
-			}
 
 			if (!(account = accountlist_find_account(username))) {
 				message_send_text(c, message_type_error, c, "Invalid user.");
@@ -4971,22 +4691,17 @@ namespace pvpgn
 				return 0;
 			}
 
-			if (arg3[0] == '\0') {
-				message_send_text(c, message_type_info, c, "Usage: /cg <command> <username> [<group(s)>]");
-				return 0;
-			}
-
-			for (i = 0; arg3[i] != '\0'; i++) {
-				if (arg3[i] == '1') groups |= 1;
-				else if (arg3[i] == '2') groups |= 2;
-				else if (arg3[i] == '3') groups |= 4;
-				else if (arg3[i] == '4') groups |= 8;
-				else if (arg3[i] == '5') groups |= 16;
-				else if (arg3[i] == '6') groups |= 32;
-				else if (arg3[i] == '7') groups |= 64;
-				else if (arg3[i] == '8') groups |= 128;
+			for (char& g : args[3]) {
+				if (g == '1') groups |= 1;
+				else if (g == '2') groups |= 2;
+				else if (g == '3') groups |= 4;
+				else if (g == '4') groups |= 8;
+				else if (g == '5') groups |= 16;
+				else if (g == '6') groups |= 32;
+				else if (g == '7') groups |= 64;
+				else if (g == '8') groups |= 128;
 				else {
-					snprintf(msgtemp, sizeof(msgtemp), "Got bad group: %c", arg3[i]);
+					snprintf(msgtemp, sizeof(msgtemp), "Got bad group: %c", g);
 					message_send_text(c, message_type_info, c, msgtemp);
 					return 0;
 				}
@@ -4994,14 +4709,14 @@ namespace pvpgn
 
 			if (!std::strcmp(command, "add") || !std::strcmp(command, "a")) {
 				account_set_command_groups(account, usergroups | groups);
-				snprintf(msgtemp, sizeof(msgtemp), "Groups %.64s has been added to %.64s", arg3, username);
+				snprintf(msgtemp, sizeof(msgtemp), "Groups %.64s has been added to %.64s", args[3].c_str(), username);
 				message_send_text(c, message_type_info, c, msgtemp);
 				return 0;
 			}
 
 			if (!std::strcmp(command, "del") || !std::strcmp(command, "d")) {
 				account_set_command_groups(account, usergroups & (255 - groups));
-				snprintf(msgtemp, sizeof(msgtemp), "Groups %.64s has been deleted from %.64s", arg3, username);
+				snprintf(msgtemp, sizeof(msgtemp), "Groups %.64s has been deleted from %.64s", args[3].c_str(), username);
 				message_send_text(c, message_type_info, c, msgtemp);
 				return 0;
 			}
@@ -5018,8 +4733,8 @@ namespace pvpgn
 			t_channel * channel;
 			int  do_save = NO_SAVE_TOPIC;
 
-			topic = skip_command(text);
-
+			std::vector<std::string> args = split_command(text, 1);
+			topic = args[1].c_str();
 
 			if (!(channel = conn_get_channel(c))) {
 				message_send_text(c, message_type_error, c, "This command can only be used inside a channel.");
@@ -5231,45 +4946,29 @@ namespace pvpgn
 
 		static int _handle_clearstats_command(t_connection *c, char const *text)
 		{
-			char         dest[MAX_USERNAME_LEN];
-			unsigned int i, j, all;
+			char const * username, * tag;
+			unsigned int all;
 			t_account *  account;
 			t_clienttag  ctag = 0;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-
-			if (!text[i]) {
-				message_send_text(c, message_type_error, c, "Missing user, syntax error.");
-				message_send_text(c, message_type_error, c, "Usage example: /clearstats <username> <clienttag>");
-				message_send_text(c, message_type_error, c, "  where <clienttag> can be any valid client or ALL for all clients");
-				return 0;
+			std::vector<std::string> args = split_command(text, 2);
+			if (args[2].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			username = args[1].c_str();
+			tag = args[2].c_str(); // clienttag
 
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get dest */
-			if (j < sizeof(dest)-1) dest[j++] = text[i];
-			dest[j] = '\0';
-
-			account = accountlist_find_account(dest);
+			account = accountlist_find_account(username);
 			if (!account) {
 				message_send_text(c, message_type_error, c, "Invalid user.");
 				return 0;
 			}
 
-			for (; text[i] == ' '; i++);
-			if (!text[i]) {
-				message_send_text(c, message_type_error, c, "Missing clienttag, syntax error.");
-				message_send_text(c, message_type_error, c, "Usage example: /clearstats <username> <clienttag>");
-				message_send_text(c, message_type_error, c, "  where <clienttag> can be any valid client or ALL for all clients");
-				return 0;
-			}
-
-			if (strcasecmp(text + i, "all")) {
-				if (std::strlen(text + i) != 4) {
-					message_send_text(c, message_type_error, c, "Invalid clienttag, syntax error.");
-					return 0;
-				}
-				ctag = tag_case_str_to_uint(text + i);
+			if (strcasecmp(tag, "all"))
+			{
+				ctag = tag_validate_client(tag);
 				all = 0;
 			}
 			else all = 1;
@@ -5308,79 +5007,78 @@ namespace pvpgn
 		{
 			t_account * user_account;
 			t_connection * user_c;
-			char *accname;
-			char *code;
-			const char *usericon;
-			t_clienttag user_clienttag;
-			char t[MAX_MESSAGE_LEN];
-			unsigned int i, j;
-			char         arg1[256];
-			char         arg2[256];
+			char const * username, *code, *usericon;
+			t_clienttag clienttag;
 
-			std::strncpy(t, text, MAX_MESSAGE_LEN - 1);
-			for (i = 0; t[i] != ' ' && t[i] != '\0'; i++); /* skip command /icon */
+			std::vector<std::string> args = split_command(text, 3);
 
-			for (; t[i] == ' '; i++); /* skip spaces */
-			for (j = 0; t[i] != ' ' && t[i] != '\0'; i++) /* get username */
-			if (j < sizeof(arg1)-1) arg1[j++] = t[i];
-			arg1[j] = '\0';
-
-			for (; t[i] == ' '; i++); /* skip spaces */
-			for (j = 0; t[i] != ' ' && t[i] != '\0'; i++) /* get code  */
-			if (j < sizeof(arg2)-1) arg2[j++] = t[i];
-			arg2[j] = '\0';
-
-			accname = arg1;
-			code = arg2;
-
-			if (accname == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage: /icon <username> [CODE]");
-				message_send_text(c, message_type_info, c, " for example: /icon joe W3D6");
-				message_send_text(c, message_type_info, c, " (set [CODE] = null to enable default icon)");
-				return 0;
+				describe_command(c, args[0].c_str());
+				return -1;
 			}
+			username = args[1].c_str(); // username
 
-			if (!(user_account = accountlist_find_account(accname)))
+			// find user account
+			if (!(user_account = accountlist_find_account(username)))
 			{
 				message_send_text(c, message_type_error, c, "Invalid user.");
 				return 0;
 			}
+			user_c = account_get_conn(user_account);
 
-			if (user_c = account_get_conn(user_account))
-				user_clienttag = conn_get_clienttag(user_c);
+			// if clienttag is in parameters
+			if (clienttag = tag_validate_client(args[3].c_str()))
+			{
+				// if user offline then replace last clienttag with given
+				if (!user_c)
+					account_set_ll_clienttag(user_account, clienttag);
+			}
 			else
-				user_clienttag = account_get_ll_clienttag(user_account); // if user offline then retrieve last clienttag
+			{
+				if (user_c)
+					clienttag = conn_get_clienttag(user_c);
+				else // if user offline then retrieve last clienttag
+					clienttag = account_get_ll_clienttag(user_account); 
+			}
+
+			// icon code
+			std::transform(args[2].begin(), args[2].end(), args[2].begin(), std::toupper); // to upper
+			code = args[2].c_str();
 
 			// output current usericon code
-			if (code == '\0' || strlen(arg2) != 4)
+			if (strlen(code) != 4)
 			{
-				if (usericon = account_get_user_icon(user_account, user_clienttag))
+				if (usericon = account_get_user_icon(user_account, clienttag))
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s has custom icon \"%.4s\"", account_get_name(user_account), strreverse(xstrdup(usericon)));
+					snprintf(msgtemp, sizeof(msgtemp), "%.64s has custom icon \"%.4s\" of %.128s", account_get_name(user_account), strreverse(xstrdup(usericon)), clienttag_get_title(clienttag));
 					message_send_text(c, message_type_error, c, msgtemp);
 				}
 				else
 				{
-					snprintf(msgtemp, sizeof(msgtemp), "Custom icon for %.64s currently not set", account_get_name(user_account));
+					snprintf(msgtemp, sizeof(msgtemp), "Custom icon for %.64s currently not set of %.128s", account_get_name(user_account), clienttag_get_title(clienttag));
 					message_send_text(c, message_type_error, c, msgtemp);
 				}
 				return 0;
 			}
-			for (int i = 0; i < strlen(code); i++)
-				code[i] = toupper(code[i]);
-
-			snprintf(msgtemp, sizeof(msgtemp), "Set icon \"%.4s\" to %.64s", code, account_get_name(user_account));
-			message_send_text(c, message_type_error, c, msgtemp);
 
 			// unset value
 			if (strcasecmp(code, "null") == 0)
+			{
+				snprintf(msgtemp, sizeof(msgtemp), "Set default icon to %.64s of %.128s", account_get_name(user_account), clienttag_get_title(clienttag));
 				usericon = NULL;
+			}
 			else
-				usericon = strreverse(code);
+			{
+				snprintf(msgtemp, sizeof(msgtemp), "Set icon \"%.4s\" to %.64s of %.128s", code, account_get_name(user_account), clienttag_get_title(clienttag));
+				usericon = strreverse((char*)code);
+			}
+
+			message_send_text(c, message_type_error, c, msgtemp);
+
 
 			// set reversed
-			account_set_user_icon(user_account, user_clienttag, usericon);
+			account_set_user_icon(user_account, clienttag, usericon);
 
 			// if user online then force him to rejoin channel
 			if (user_c)

@@ -635,4 +635,22 @@ namespace pvpgn
 		}
 	}
 
+	/* Convert clienttag to uppercase and check it in valid client list
+	*   Return NULL of tag not found
+	*/
+	extern t_clienttag tag_validate_client(char const * client)
+	{
+		t_clienttag clienttag;
+		if (!client || strlen(client) != 4)
+			return NULL;
+
+		// toupper
+		clienttag = tag_case_str_to_uint(client);
+		
+		if (!tag_check_client(clienttag))
+			return NULL;
+
+		return clienttag;
+	}
+
 }
