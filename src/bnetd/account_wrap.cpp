@@ -361,28 +361,94 @@ namespace pvpgn
 
 		extern int account_get_auth_lock(t_account * account)
 		{
-			return account_get_boolattr(account, "BNET\\auth\\lockk");
+			// check for unlock
+			if (unsigned int locktime = account_get_auth_locktime(account))
+			{
+				if ((locktime - std::time(NULL)) < 0)
+				{
+					account_set_auth_lock(account, 0);
+					account_set_auth_locktime(account, 0);
+					account_set_auth_lockreason(account, "");
+					account_set_auth_lockby(account, "");
+				}
+			}
+			return account_get_boolattr(account, "BNET\\auth\\lock");
 		}
-
+		extern unsigned int account_get_auth_locktime(t_account * account)
+		{
+			return account_get_numattr(account, "BNET\\auth\\locktime");
+		}
+		extern char const * account_get_auth_lockreason(t_account * account)
+		{
+			return account_get_strattr(account, "BNET\\auth\\lockreason");
+		}
+		extern char const * account_get_auth_lockby(t_account * account)
+		{
+			return account_get_strattr(account, "BNET\\auth\\lockby");
+		}
 
 		extern int account_set_auth_lock(t_account * account, int val)
 		{
-			return account_set_boolattr(account, "BNET\\auth\\lockk", val);
+			return account_set_boolattr(account, "BNET\\auth\\lock", val);
 		}
-
-
-		extern int account_set_auth_mute(t_account * account, int val)
+		extern int account_set_auth_locktime(t_account * account, unsigned int val)
 		{
-			return account_set_boolattr(account, "BNET\\auth\\mute", val);
+			return account_set_numattr(account, "BNET\\auth\\locktime", val);
+		}
+		extern int account_set_auth_lockreason(t_account * account, char const * val)
+		{
+			return account_set_strattr(account, "BNET\\auth\\lockreason", val);
+		}
+		extern int account_set_auth_lockby(t_account * account, char const * val)
+		{
+			return account_set_strattr(account, "BNET\\auth\\lockby", val);
 		}
 
 
 		extern int account_get_auth_mute(t_account * account)
 		{
+			// check for unmute
+			if (unsigned int locktime = account_get_auth_mutetime(account))
+			{
+				if ((locktime - std::time(NULL)) < 0)
+				{
+					account_set_auth_mute(account, 0);
+					account_set_auth_mutetime(account, 0);
+					account_set_auth_mutereason(account, "");
+					account_set_auth_muteby(account, "");
+				}
+			}
 			return account_get_boolattr(account, "BNET\\auth\\mute");
 		}
+		extern unsigned int account_get_auth_mutetime(t_account * account)
+		{
+			return account_get_numattr(account, "BNET\\auth\\mutetime");
+		}
+		extern char const * account_get_auth_mutereason(t_account * account)
+		{
+			return account_get_strattr(account, "BNET\\auth\\mutereason");
+		}
+		extern char const * account_get_auth_muteby(t_account * account)
+		{
+			return account_get_strattr(account, "BNET\\auth\\muteby");
+		}
 
-
+		extern int account_set_auth_mute(t_account * account, int val)
+		{
+			return account_set_boolattr(account, "BNET\\auth\\mute", val);
+		}
+		extern int account_set_auth_mutetime(t_account * account, unsigned int val)
+		{
+			return account_set_numattr(account, "BNET\\auth\\mutetime", val);
+		}
+		extern int account_set_auth_mutereason(t_account * account, char const * val)
+		{
+			return account_set_strattr(account, "BNET\\auth\\mutereason", val);
+		}
+		extern int account_set_auth_muteby(t_account * account, char const * val)
+		{
+			return account_set_strattr(account, "BNET\\auth\\muteby", val);
+		}
 
 		/****************************************************************/
 

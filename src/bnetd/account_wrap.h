@@ -78,9 +78,21 @@ namespace pvpgn
 		extern int account_get_auth_createladdergame(t_account * account);
 		extern int account_get_auth_joinladdergame(t_account * account);
 		extern int account_get_auth_lock(t_account * account);
+		extern unsigned int account_get_auth_locktime(t_account * account);
+		extern char const * account_get_auth_lockreason(t_account * account);
+		extern char const * account_get_auth_lockby(t_account * account);
 		extern int account_set_auth_lock(t_account * account, int val);
-		extern int account_set_auth_mute(t_account * account, int val);
+		extern int account_set_auth_locktime(t_account * account, unsigned int val);
+		extern int account_set_auth_lockreason(t_account * account, char const * val);
+		extern int account_set_auth_lockby(t_account * account, char const * val);
 		extern int account_get_auth_mute(t_account * account);
+		extern unsigned int account_get_auth_mutetime(t_account * account);
+		extern char const * account_get_auth_mutereason(t_account * account);
+		extern char const * account_get_auth_muteby(t_account * account);
+		extern int account_set_auth_mute(t_account * account, int val);
+		extern int account_set_auth_mutetime(t_account * account, unsigned int val);
+		extern int account_set_auth_mutereason(t_account * account, char const * val);
+		extern int account_set_auth_muteby(t_account * account, char const * val);
 
 		/* profile */
 		extern char const * account_get_sex(t_account * account); /* the profile attributes are updated directly in bnetd.c */

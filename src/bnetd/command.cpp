@@ -4204,25 +4204,59 @@ namespace pvpgn
 		{
 			t_connection * user;
 			t_account *    account;
+			char const * username, *reason = "", *hours = "24"; // default time 24 hours
+			unsigned int sectime;
+			char msgtemp3[MAX_MESSAGE_LEN];
 
-			std::vector<std::string> args = split_command(text, 1);
+			std::vector<std::string> args = split_command(text, 3);
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
 				return -1;
 			}
-			text = args[1].c_str(); // username
+			username = args[1].c_str(); // username
+			if (!args[2].empty())
+				hours = args[2].c_str(); // hours
+			if (!args[3].empty())
+				reason = args[3].c_str(); // reason
 
-			if (!(account = accountlist_find_account(text)))
+			if (!(account = accountlist_find_account(username)))
 			{
 				message_send_text(c, message_type_error, c, "Invalid user.");
 				return 0;
 			}
-			if ((user = connlist_find_connection_by_accountname(text)))
-				message_send_text(user, message_type_info, user, "Your account has just been locked by an admin.");
 
 			account_set_auth_lock(account, 1);
-			message_send_text(c, message_type_error, c, "That user's account is now locked.");
+			sectime = (atoi(hours) == 0) ? 0 : (atoi(hours) * 60 * 60) + now; // get unlock time in the future
+			account_set_auth_locktime(account, sectime);
+			account_set_auth_lockreason(account, reason);
+			account_set_auth_lockby(account, conn_get_username(c));
+
+
+			// append remaining time
+			if (sectime == 0)
+				snprintf(msgtemp3, sizeof(msgtemp3), " permanently");
+			else
+				snprintf(msgtemp3, sizeof(msgtemp3), " for %.48s", seconds_to_timestr(sectime - now));
+
+			// append reason
+			if (reason[0] != '\0')
+			{
+				snprintf(msgtemp2, sizeof(msgtemp2), " with a reason \"%s\"", reason);
+				std::strcat(msgtemp3, msgtemp2);
+			}
+
+			// send message to author
+			snprintf(msgtemp, sizeof(msgtemp), "Account %s is now locked%s", account_get_name(account), msgtemp3);
+			message_send_text(c, message_type_error, c, msgtemp);
+
+			// send message to locked user
+			if ((user = connlist_find_connection_by_accountname(username)))
+			{
+				snprintf(msgtemp, sizeof(msgtemp), "Your account has just been locked by %s%s", conn_get_username(c), msgtemp3);
+				message_send_text(user, message_type_info, user, msgtemp);
+			}
+
 			return 0;
 		}
 
@@ -4258,25 +4292,59 @@ namespace pvpgn
 		{
 			t_connection * user;
 			t_account *    account;
+			char const * username, *reason = "", *hours = "1"; // default time 1 hour
+			unsigned int sectime;
+			char msgtemp3[MAX_MESSAGE_LEN];
 
-			std::vector<std::string> args = split_command(text, 1);
+			std::vector<std::string> args = split_command(text, 3);
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
 				return -1;
 			}
-			text = args[1].c_str(); // username
+			username = args[1].c_str(); // username
+			if (!args[2].empty())
+				hours = args[2].c_str(); // hours
+			if (!args[3].empty())
+				reason = args[3].c_str(); // reason
 
-			if (!(account = accountlist_find_account(text)))
+			if (!(account = accountlist_find_account(username)))
 			{
 				message_send_text(c, message_type_error, c, "Invalid user.");
 				return 0;
 			}
-			if ((user = connlist_find_connection_by_accountname(text)))
-				message_send_text(user, message_type_info, user, "Your account has just been muted by an admin.");
 
 			account_set_auth_mute(account, 1);
-			message_send_text(c, message_type_error, c, "That user's account is now muted.");
+			// get unlock time in the future
+			sectime = (atoi(hours) == 0) ? 0 : (atoi(hours) * 60 * 60) + now;
+			account_set_auth_mutetime(account, sectime);
+			account_set_auth_mutereason(account, reason);
+			account_set_auth_muteby(account, conn_get_username(c));
+
+			// append remaining time
+			if (sectime == 0)
+				snprintf(msgtemp3, sizeof(msgtemp3), " permanently");
+			else
+				snprintf(msgtemp3, sizeof(msgtemp3), " for %.48s", seconds_to_timestr(sectime - now));
+
+			// append reason
+			if (reason[0] != '\0')
+			{
+				snprintf(msgtemp2, sizeof(msgtemp2), " with a reason \"%s\"", reason);
+				std::strcat(msgtemp3, msgtemp2);
+			}
+
+			// send message to author
+			snprintf(msgtemp, sizeof(msgtemp), "Account %s is now muted%s", account_get_name(account), msgtemp3);
+			message_send_text(c, message_type_error, c, msgtemp);
+
+			// send message to muted user
+			if ((user = connlist_find_connection_by_accountname(username)))
+			{
+				snprintf(msgtemp, sizeof(msgtemp), "Your account has just been muted by %s%s", conn_get_username(c), msgtemp3);
+				message_send_text(user, message_type_info, user, msgtemp);
+			}
+
 			return 0;
 		}
 

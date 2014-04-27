@@ -27,6 +27,7 @@
 
 #include "compat/strdup.h"
 #include "compat/strcasecmp.h"
+#include "compat/snprintf.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/util.h"
@@ -669,9 +670,37 @@ namespace pvpgn
 			if (type != message_type_join && type != message_type_part)
 				return;
 
+			// if user muted
 			if (account_get_auth_mute(acc) == 1)
 			{
-				message_send_text(me, message_type_error, me, "Your account has been muted, you can't talk on the channel.");
+				char msgtemp[MAX_MESSAGE_LEN], msgtemp2[MAX_MESSAGE_LEN];
+
+				snprintf(msgtemp, sizeof(msgtemp), "You can't talk on the channel. Your account has been muted");
+
+				// append author of ban
+				char const * author = account_get_auth_muteby(acc);
+				if (author && author[0] != '\0')
+				{
+					snprintf(msgtemp2, sizeof(msgtemp2), " by %s", author);
+					std::strcat(msgtemp, msgtemp2);
+				}
+
+				// append remaining time
+				if (unsigned int locktime = account_get_auth_mutetime(acc))
+					snprintf(msgtemp2, sizeof(msgtemp2), " for %.48s", seconds_to_timestr(locktime - std::time(NULL)));
+				else
+					snprintf(msgtemp2, sizeof(msgtemp2), " permanently");
+				std::strcat(msgtemp, msgtemp2);
+
+				// append reason
+				char const * reason = account_get_auth_mutereason(acc);
+				if (reason && reason[0] != '\0')
+				{
+					snprintf(msgtemp2, sizeof(msgtemp2), " with a reason \"%s\"", reason);
+					std::strcat(msgtemp, msgtemp2);
+				}
+
+				message_send_text(me, message_type_error, me, msgtemp);
 				return;
 			}
 
