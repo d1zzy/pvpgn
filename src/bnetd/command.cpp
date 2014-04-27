@@ -33,7 +33,6 @@
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #include "compat/strcasecmp.h"
@@ -361,7 +360,6 @@ namespace pvpgn
 		static int _handle_moderate_command(t_connection * c, char const * text);
 		static int _handle_clearstats_command(t_connection * c, char const * text);
 		static int _handle_tos_command(t_connection * c, char const * text);
-		static int _handle_icon_command(t_connection * c, char const * text);
 
 		static const t_command_table_row standard_command_table[] =
 		{
@@ -482,59 +480,12 @@ namespace pvpgn
 			{ "/topic", _handle_topic_command },
 			{ "/moderate", _handle_moderate_command },
 			{ "/clearstats", _handle_clearstats_command },
-			{ "/icon", _handle_icon_command },
+			{ "/icon", handle_icon_command },
 
 			{ NULL, NULL }
 
 		};
 
-		/* 
-		* Split text by spaces and return array of arguments.
-		*   First text argument is a command name (index = 0)
-		*   Last text argument always reads to end
-		*/
-		std::vector<std::string> split_command(char const * text, int args_count)
-		{
-			int count = 1 + args_count;
-			std::vector<std::string> result(count);
-
-			std::string s(text);
-			std::istringstream iss(s);
-
-			int i = 0;
-			std::string tmp = std::string(); // to end
-			do
-			{
-				std::string sub;
-				iss >> sub;
-				
-				if (sub.empty())
-					continue;
-
-				// remove slash from the command
-				if (i == 0)
-					sub.erase(0,1);
-
-				if (i < args_count)
-				{
-					result[i] = sub;
-					i++;
-				}
-				else
-				{
-					if (!tmp.empty())
-						tmp += " ";
-					tmp += sub;
-				}
-
-			} while (iss);
-
-			// push remaining text at the end
-			if (tmp.length() > 0)
-				result[count-1] = tmp;
-
-			return result;
-		}
 
 		extern int handle_command(t_connection * c, char const * text)
 		{
@@ -2554,7 +2505,10 @@ namespace pvpgn
 				t_account * account;
 
 				if (!(account = accountlist_find_account(username)))
-					message_send_text(c, message_type_info, c, "That account doesn't currently exist, banning anyway.");
+				{
+					message_send_text(c, message_type_info, c, "That account doesn't currently exist.");
+					return -1;
+				}
 				else if (account_get_auth_admin(account, NULL) == 1 || account_get_auth_admin(account, channel_get_name(channel)) == 1)
 				{
 					message_send_text(c, message_type_error, c, "You cannot ban administrators.");
@@ -5000,92 +4954,6 @@ namespace pvpgn
 			ladders.update();
 
 			return 0;
-		}
-
-		/* Set usericon */
-		static int _handle_icon_command(t_connection * c, char const *text)
-		{
-			t_account * user_account;
-			t_connection * user_c;
-			char const * username, *code, *usericon;
-			t_clienttag clienttag;
-
-			std::vector<std::string> args = split_command(text, 3);
-
-			if (args[1].empty())
-			{
-				describe_command(c, args[0].c_str());
-				return -1;
-			}
-			username = args[1].c_str(); // username
-
-			// find user account
-			if (!(user_account = accountlist_find_account(username)))
-			{
-				message_send_text(c, message_type_error, c, "Invalid user.");
-				return 0;
-			}
-			user_c = account_get_conn(user_account);
-
-			// if clienttag is in parameters
-			if (clienttag = tag_validate_client(args[3].c_str()))
-			{
-				// if user offline then replace last clienttag with given
-				if (!user_c)
-					account_set_ll_clienttag(user_account, clienttag);
-			}
-			else
-			{
-				if (user_c)
-					clienttag = conn_get_clienttag(user_c);
-				else // if user offline then retrieve last clienttag
-					clienttag = account_get_ll_clienttag(user_account); 
-			}
-
-			// icon code
-			std::transform(args[2].begin(), args[2].end(), args[2].begin(), std::toupper); // to upper
-			code = args[2].c_str();
-
-			// output current usericon code
-			if (strlen(code) != 4)
-			{
-				if (usericon = account_get_user_icon(user_account, clienttag))
-				{
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s has custom icon \"%.4s\" of %.128s", account_get_name(user_account), strreverse(xstrdup(usericon)), clienttag_get_title(clienttag));
-					message_send_text(c, message_type_error, c, msgtemp);
-				}
-				else
-				{
-					snprintf(msgtemp, sizeof(msgtemp), "Custom icon for %.64s currently not set of %.128s", account_get_name(user_account), clienttag_get_title(clienttag));
-					message_send_text(c, message_type_error, c, msgtemp);
-				}
-				return 0;
-			}
-
-			// unset value
-			if (strcasecmp(code, "null") == 0)
-			{
-				snprintf(msgtemp, sizeof(msgtemp), "Set default icon to %.64s of %.128s", account_get_name(user_account), clienttag_get_title(clienttag));
-				usericon = NULL;
-			}
-			else
-			{
-				snprintf(msgtemp, sizeof(msgtemp), "Set icon \"%.4s\" to %.64s of %.128s", code, account_get_name(user_account), clienttag_get_title(clienttag));
-				usericon = strreverse((char*)code);
-			}
-
-			message_send_text(c, message_type_error, c, msgtemp);
-
-
-			// set reversed
-			account_set_user_icon(user_account, clienttag, usericon);
-
-			// if user online then force him to rejoin channel
-			if (user_c)
-			{
-				conn_update_w3_playerinfo(user_c);
-				channel_rejoin(user_c);
-			}
 		}
 
 	}

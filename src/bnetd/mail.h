@@ -28,8 +28,7 @@
 #define MAIL_FUNC_SEND 1
 #define MAIL_FUNC_READ 2
 #define MAIL_FUNC_DELETE 3
-#define MAIL_FUNC_HELP 4
-#define MAIL_FUNC_UNKNOWN 5
+#define MAIL_FUNC_UNKNOWN 4
 
 
 #include <string>

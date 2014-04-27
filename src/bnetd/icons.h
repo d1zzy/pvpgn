@@ -63,6 +63,8 @@ namespace pvpgn
 
 	namespace bnetd
 	{
+		extern int handle_icon_command(t_connection * c, char const *text);
+
 		extern int prefs_get_custom_icons();
 		extern t_icon_info * get_custom_icon(t_account * account, t_clienttag clienttag);
 		extern const char * get_custom_stats_text(t_account * account, t_clienttag clienttag);

@@ -25,6 +25,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cctype>
+#include <vector>
 
 #include "compat/strsep.h"
 #include "compat/strcasecmp.h"
@@ -34,12 +35,14 @@
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/field_sizes.h"
+#include "common/xstring.h"
 
 #include "message.h"
 #include "server.h"
 #include "prefs.h"
 #include "connection.h"
 #include "common/setup_after.h"
+#include "helpfile.h"
 
 namespace pvpgn
 {
@@ -498,27 +501,22 @@ namespace pvpgn
 
 		extern int handle_ipban_command(t_connection * c, char const * text)
 		{
-			char		subcommand[MAX_FUNC_LEN];
-			char		ipstr[MAX_IP_STR];
-			unsigned int 	i, j;
+			char const *subcommand, *ipstr, *time;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get subcommand */
-			if (j < sizeof(subcommand)-1) subcommand[j++] = text[i];
-			subcommand[j] = '\0';
-			for (; text[i] == ' '; i++);
-
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get ip address */
-			if (j < sizeof(ipstr)-1) ipstr[j++] = text[i];
-			ipstr[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 3);
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			subcommand = args[1].c_str(); // subcommand
+			ipstr = args[2].c_str(); // ip address
+			time = args[3].c_str(); // username
 
 			switch (identify_ipban_function(subcommand))
 			{
 			case IPBAN_FUNC_ADD:
-				ipbanlist_add(c, ipstr, ipbanlist_str_to_time_t(c, &text[i]));
+				ipbanlist_add(c, ipstr, ipbanlist_str_to_time_t(c, time));
 				ipbanlist_save(prefs_get_ipbanfile());
 				break;
 			case IPBAN_FUNC_DEL:
@@ -530,14 +528,9 @@ namespace pvpgn
 				break;
 			case IPBAN_FUNC_CHECK:
 				ipban_func_check(c, ipstr);
-				break;
-			case IPBAN_FUNC_HELP:
-				message_send_text(c, message_type_info, c, "The ipban command supports the following patterns.");
-				ipban_usage(c);
-				break;
+				break; 
 			default:
-				message_send_text(c, message_type_info, c, "The command is incorect. Use one of the following patterns.");
-				ipban_usage(c);
+				describe_command(c, args[0].c_str());
 			}
 
 			return 0;
@@ -554,8 +547,6 @@ namespace pvpgn
 				return IPBAN_FUNC_LIST;
 			if (strcasecmp(funcstr, "check") == 0 || strcasecmp(funcstr, "c") == 0)
 				return IPBAN_FUNC_CHECK;
-			if (strcasecmp(funcstr, "help") == 0 || strcasecmp(funcstr, "h") == 0)
-				return IPBAN_FUNC_HELP;
 
 			return IPBAN_FUNC_UNKNOWN;
 		}
@@ -1035,22 +1026,6 @@ namespace pvpgn
 			return 1;
 		}
 
-
-		static void ipban_usage(t_connection * c)
-		{
-			message_send_text(c, message_type_info, c, "to print this information:");
-			message_send_text(c, message_type_info, c, "    /ipban h[elp]");
-			message_send_text(c, message_type_info, c, "to print all baned IPs");
-			message_send_text(c, message_type_info, c, "    /ipban [l[ist]]");
-			message_send_text(c, message_type_info, c, "to erase ban:");
-			message_send_text(c, message_type_info, c, "    /ipban d[el] <IP|index num>");
-			message_send_text(c, message_type_info, c, "    (IP have to be entry accepted in bnban)");
-			message_send_text(c, message_type_info, c, "to add ban:");
-			message_send_text(c, message_type_info, c, "    /ipban a[dd] IP");
-			message_send_text(c, message_type_info, c, "    (IP have to be entry accepted in bnban)");
-			message_send_text(c, message_type_info, c, "to check is specified IP banned:");
-			message_send_text(c, message_type_info, c, "    /ipban c[heck] IP");
-		}
 
 	}
 

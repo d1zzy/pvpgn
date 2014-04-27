@@ -18,6 +18,10 @@
 #ifndef INCLUDED_XSTRING_H
 #define INCLUDED_XSTRING_H
 
+
+#include <string>
+#include <vector>
+
 namespace pvpgn
 {
 
@@ -29,7 +33,7 @@ namespace pvpgn
 	extern char *		arraytostr(char * * array, char const * delim, int count);
 	extern char *		str_strip_affix(char * str, char const * affix);
 	extern const char *str_replace(char *orig, char *rep, char *with);
-
+	extern std::vector<std::string> split_command(char const * text, int args_count);
 
 }
 

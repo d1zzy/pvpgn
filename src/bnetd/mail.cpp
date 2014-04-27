@@ -27,17 +27,20 @@
 #include <cstdlib>
 #include <cerrno>
 #include <algorithm>
+#include <vector>
 
 #include "compat/strcasecmp.h"
 #include "compat/mkdir.h"
 #include "compat/statmacros.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+#include "common/xstring.h"
 #include "account.h"
 #include "message.h"
 #include "prefs.h"
 #include "connection.h"
 #include "common/setup_after.h"
+#include "helpfile.h"
 
 
 namespace pvpgn
@@ -48,9 +51,9 @@ namespace pvpgn
 
 		static int identify_mail_function(const std::string&);
 		static void mail_usage(t_connection*);
-		static void mail_func_send(t_connection*, std::istream&);
-		static void mail_func_read(t_connection*, std::istream&);
-		static void mail_func_delete(t_connection*, std::istream&);
+		static void mail_func_send(t_connection*, char const *, char const *);
+		static void mail_func_read(t_connection*, std::string);
+		static void mail_func_delete(t_connection*, std::string);
 		static unsigned get_mail_quota(t_account *);
 
 		/* Mail API */
@@ -254,30 +257,38 @@ namespace pvpgn
 			std::istringstream istr(text);
 			std::string token;
 
-			/* stkip "/mail" */
-			istr >> token;
+			char const *subcommand;
 
-			/* get the mail function */
-			token.clear();
-			istr >> token;
+			std::vector<std::string> args = split_command(text, 3);
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			subcommand = args[1].c_str(); // subcommand
 
-			switch (identify_mail_function(token.c_str())) {
+			switch (identify_mail_function(subcommand)) {
 			case MAIL_FUNC_SEND:
-				mail_func_send(c, istr);
+				if (args[3].empty())
+				{
+					describe_command(c, args[0].c_str());
+					return -1;
+				}
+				mail_func_send(c, args[2].c_str(), args[3].c_str());
 				break;
 			case MAIL_FUNC_READ:
-				mail_func_read(c, istr);
+				mail_func_read(c, args[2]);
 				break;
 			case MAIL_FUNC_DELETE:
-				mail_func_delete(c, istr);
-				break;
-			case MAIL_FUNC_HELP:
-				message_send_text(c, message_type_info, c, "The mail command supports the following patterns.");
-				mail_usage(c);
+				if (args[2].empty())
+				{
+					describe_command(c, args[0].c_str());
+					return -1;
+				}
+				mail_func_delete(c, args[2]);
 				break;
 			default:
-				message_send_text(c, message_type_error, c, "The command its incorrect. Use one of the following patterns.");
-				mail_usage(c);
+				describe_command(c, args[0].c_str());
 			}
 
 			return 0;
@@ -291,8 +302,6 @@ namespace pvpgn
 				return MAIL_FUNC_SEND;
 			if (!strcasecmp(funcstr.c_str(), "delete") || !strcasecmp(funcstr.c_str(), "del"))
 				return MAIL_FUNC_DELETE;
-			if (!strcasecmp(funcstr.c_str(), "help") || !strcasecmp(funcstr.c_str(), "h"))
-				return MAIL_FUNC_HELP;
 
 			return MAIL_FUNC_UNKNOWN;
 		}
@@ -312,31 +321,14 @@ namespace pvpgn
 			return quota;
 		}
 
-		static void mail_func_send(t_connection * c, std::istream& istr)
+		static void mail_func_send(t_connection * c, char const * receiver, char const * message)
 		{
 			if (!c) {
 				ERROR0("got NULL connection");
 				return;
 			}
 
-			std::string dest;
-			istr >> dest;
-			if (dest.empty()) {
-				message_send_text(c, message_type_error, c, "You must specify the receiver");
-				message_send_text(c, message_type_error, c, "Syntax: /mail send <receiver> <message>");
-				return;
-			}
-
-			std::string message;
-			std::getline(istr, message);
-			std::string::size_type pos(message.find_first_not_of(" \t"));
-			if (pos == std::string::npos) {
-				message_send_text(c, message_type_error, c, "Your message is empty!");
-				message_send_text(c, message_type_error, c, "Syntax: /mail send <receiver> <message>");
-				return;
-			}
-
-			t_account * recv = accountlist_find_account(dest.c_str());
+			t_account * recv = accountlist_find_account(receiver);
 			if (!recv) {
 				message_send_text(c, message_type_error, c, "Receiver UNKNOWN!");
 				return;
@@ -349,7 +341,7 @@ namespace pvpgn
 			}
 
 			try {
-				mbox.deliver(conn_get_username(c), message.substr(pos));
+				mbox.deliver(conn_get_username(c), message);
 				message_send_text(c, message_type_info, c, "Your mail has been sent successfully.");
 			}
 			catch (const Mailbox::DeliverError&) {
@@ -363,15 +355,12 @@ namespace pvpgn
 			return false;
 		}
 
-		static void mail_func_read(t_connection * c, std::istream& istr)
+		static void mail_func_read(t_connection * c, std::string token)
 		{
 			if (!c) {
 				ERROR0("got NULL connection");
 				return;
 			}
-
-			std::string token;
-			istr >> token;
 
 			t_account * user = conn_get_account(c);
 			Mailbox mbox(account_get_uid(user));
@@ -427,15 +416,12 @@ namespace pvpgn
 			}
 		}
 
-		static void mail_func_delete(t_connection * c, std::istream& istr)
+		static void mail_func_delete(t_connection * c, std::string token)
 		{
 			if (!c) {
 				ERROR0("got NULL connection");
 				return;
 			}
-
-			std::string token;
-			istr >> token;
 
 			if (token.empty()) {
 				message_send_text(c, message_type_error, c, "Please specify which message to delete. Use the following syntax: /mail delete {<index>|all} .");
@@ -460,24 +446,6 @@ namespace pvpgn
 			}
 		}
 
-		static void mail_usage(t_connection * c)
-		{
-			message_send_text(c, message_type_info, c, "to print this information:");
-			message_send_text(c, message_type_info, c, "    /mail help");
-			message_send_text(c, message_type_info, c, "to print an index of you messages:");
-			message_send_text(c, message_type_info, c, "    /mail [read]");
-			message_send_text(c, message_type_info, c, "to send a message:");
-			message_send_text(c, message_type_info, c, "    /mail send <receiver> <message>");
-			message_send_text(c, message_type_info, c, "to read a message:");
-			message_send_text(c, message_type_info, c, "    /mail read <index num>");
-			message_send_text(c, message_type_info, c, "to delete a message:");
-			message_send_text(c, message_type_info, c, "    /mail delete {<index>|all}");
-			message_send_text(c, message_type_info, c, "Commands may be abbreviated as follows:");
-			message_send_text(c, message_type_info, c, "    help: h");
-			message_send_text(c, message_type_info, c, "    read: r");
-			message_send_text(c, message_type_info, c, "    send: s");
-			message_send_text(c, message_type_info, c, "    delete: del");
-		}
 
 		extern unsigned check_mail(t_connection const * c)
 		{

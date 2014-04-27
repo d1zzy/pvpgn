@@ -15,11 +15,14 @@
 */
 #include "common/setup_before.h"
 
+#include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <cerrno>
 #include <cstring>
 #include <ctime>
 #include <cstdlib>
+#include <vector>
 
 #include "compat/strcasecmp.h"
 #include "compat/snprintf.h"
@@ -38,6 +41,9 @@
 #include "icons.h"
 #include "account_wrap.h"
 #include "common/setup_after.h"
+#include "message.h"
+#include "helpfile.h"
+#include "channel.h"
 
 namespace pvpgn
 {
@@ -54,6 +60,97 @@ namespace pvpgn
 		static t_icon_var_info * _read_option(char *str, unsigned lineno);
 		static t_icon_info * _find_custom_icon(int rating, char * clienttag);
 		static char * _find_attr_key(char * clienttag);
+
+
+
+		/* Set usericon (command) */
+		extern int handle_icon_command(t_connection * c, char const *text)
+		{
+			t_account * user_account;
+			t_connection * user_c;
+			char const * username, *code, *usericon;
+			t_clienttag clienttag;
+			char		msgtemp[MAX_MESSAGE_LEN];
+
+			std::vector<std::string> args = split_command(text, 3);
+
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			username = args[1].c_str(); // username
+
+			// find user account
+			if (!(user_account = accountlist_find_account(username)))
+			{
+				message_send_text(c, message_type_error, c, "Invalid user.");
+				return 0;
+			}
+			user_c = account_get_conn(user_account);
+
+			// if clienttag is in parameters
+			if (clienttag = tag_validate_client(args[3].c_str()))
+			{
+				// if user offline then replace last clienttag with given
+				if (!user_c)
+					account_set_ll_clienttag(user_account, clienttag);
+			}
+			else
+			{
+				if (user_c)
+					clienttag = conn_get_clienttag(user_c);
+				else // if user offline then retrieve last clienttag
+					clienttag = account_get_ll_clienttag(user_account);
+			}
+
+			// icon code
+			std::transform(args[2].begin(), args[2].end(), args[2].begin(), std::toupper); // to upper
+			code = args[2].c_str();
+
+			// output current usericon code
+			if (strlen(code) != 4)
+			{
+				if (usericon = account_get_user_icon(user_account, clienttag))
+				{
+					snprintf(msgtemp, sizeof(msgtemp), "%.64s has custom icon \"%.4s\" of %.128s", account_get_name(user_account), strreverse(xstrdup(usericon)), clienttag_get_title(clienttag));
+					message_send_text(c, message_type_error, c, msgtemp);
+				}
+				else
+				{
+					snprintf(msgtemp, sizeof(msgtemp), "Custom icon for %.64s currently not set of %.128s", account_get_name(user_account), clienttag_get_title(clienttag));
+					message_send_text(c, message_type_error, c, msgtemp);
+				}
+				return 0;
+			}
+
+			// unset value
+			if (strcasecmp(code, "null") == 0)
+			{
+				snprintf(msgtemp, sizeof(msgtemp), "Set default icon to %.64s of %.128s", account_get_name(user_account), clienttag_get_title(clienttag));
+				usericon = NULL;
+			}
+			else
+			{
+				snprintf(msgtemp, sizeof(msgtemp), "Set icon \"%.4s\" to %.64s of %.128s", code, account_get_name(user_account), clienttag_get_title(clienttag));
+				usericon = strreverse((char*)code);
+			}
+
+			message_send_text(c, message_type_error, c, msgtemp);
+
+
+			// set reversed
+			account_set_user_icon(user_account, clienttag, usericon);
+
+			// if user online then force him to rejoin channel
+			if (user_c)
+			{
+				conn_update_w3_playerinfo(user_c);
+				channel_rejoin(user_c);
+			}
+		}
+
+
 
 
 		extern int prefs_get_custom_icons()

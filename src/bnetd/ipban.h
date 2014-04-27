@@ -31,8 +31,7 @@
 #define IPBAN_FUNC_DEL     2
 #define IPBAN_FUNC_LIST    3
 #define IPBAN_FUNC_CHECK   4
-#define IPBAN_FUNC_HELP    5
-#define IPBAN_FUNC_UNKNOWN 6
+#define IPBAN_FUNC_UNKNOWN 5
 
 
 namespace pvpgn
