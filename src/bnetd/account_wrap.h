@@ -236,6 +236,8 @@ namespace pvpgn
 		extern int account_get_profile_calcs(t_account * account, int xp, unsigned int level);
 		extern unsigned int account_get_icon_profile(t_account * account, t_clienttag clienttag);
 
+		extern int account_set_user_iconstash(t_account * account, t_clienttag clienttag, char const * value);
+		extern char const * account_get_user_iconstash(t_account * account, t_clienttag clienttag);
 		extern int account_set_user_icon(t_account * account, t_clienttag clienttag, char const * usericon);
 		extern char const * account_get_user_icon(t_account * account, t_clienttag clienttag);
 		extern unsigned int account_icon_to_profile_icon(char const * icon, t_account * account, t_clienttag ctag);

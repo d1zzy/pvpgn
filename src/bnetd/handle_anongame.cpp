@@ -498,7 +498,7 @@ namespace pvpgn
 				{
 					// get current custom icon
 					t_icon_info * icon;
-					if (icon = get_custom_icon(acc, clienttag))
+					if (icon = customicons_get_icon_by_account(acc, clienttag))
 						std::memcpy(&rpacket->u.server_findanongame_iconreply.curricon, icon->icon_code, 4);
 				}
 				else if ((uicon = account_get_user_icon(acc, clienttag)))

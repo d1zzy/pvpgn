@@ -8,7 +8,7 @@
 # You can enter comments by starting a line with #.  Comments extend to the  #
 # end of the line.                                                           #
 # Tabs replaces with 3 spaces.                                               #
-# Empty lines are ignored.                                                     #
+# Empty lines are ignored.                                                   #
 #                                                                            #
 ##############################################################################
 
@@ -223,7 +223,7 @@
 
 %kill
 --------------------------------------------------------
-/kill {<username>|#<socket>} [<min>]
+/kill {<username>|#<socket>} [min]
 	Disconnects <player> from the server and bans the player's IP address for [min] minutes.
 	
 	Example: /kill nomad 5
@@ -325,10 +325,11 @@
 
 %lock lockacct
 --------------------------------------------------------
-/lock <player> (alias: /lockacct)
+/lock <player> [hours] [reason] (alias: /lockacct)
 	Locks <player>'s account to prevent him/her from logging in with it.
+	Set [hours] = 0 to ban permanently.
 	
-	Example: /lock nomad
+	Example: /lock nomad 0 bye noob!
 
 %unlock unlockacct
 --------------------------------------------------------
@@ -339,10 +340,11 @@
 
 %mute muteacct
 --------------------------------------------------------
-/mute <player> (alias: /muteacct)
+/mute <player> [hours] [reason] (alias: /muteacct)
 	Mutes <player>'s account to prevent him/her from talking on channels.
+	Set [hours] = 0 to mute permanently.
 	
-	Example: /mute nomad
+	Example: /mute nomad 6 stop spam!
 
 %unmute unmuteacct
 --------------------------------------------------------
@@ -374,11 +376,11 @@
 --------------------------------------------------------
 /mail <command> [options]
 --------------------------------------------------------
-    /mail send <receiver> <message>
+    /mail [s]end <receiver> <message>
 		Sends mail to <receiver> with <message>.
-    /mail read [index]
+    /mail [r]ead [index]
 		Reads mail [index]
-    /mail delete {all|<index>}
+    /mail [del]ete {all|<index>}
 		Deletes mail <index> or [all] mail.
 
 %flag
@@ -410,8 +412,6 @@
 		Deletes IP address <IP> or <index>
     /ipban a[dd] <IP> [time]
 		Bans IP address <IP> for [time] minutes. [time] = 0 - permanent ban
-    /ipban h[elp]
-		Displays help for this command.
 
 %set
 --------------------------------------------------------
@@ -576,15 +576,18 @@ Commands for clan chieftain:
 
 %icon
 --------------------------------------------------------
-/icon <username> [code] [gametag]
-	Set custom usericon. If [gametag] is empty then last user clienttag is used.
-	Set [code] = null to enable default icon.
-	
-	Example: /icon nomad W3D6
-	Example: /icon nomad EYES SEXP
-
-
-
-
-
-
+/icon [name]
+	Set custom icon for normal user.
+	Use /icon without [name] to display list of available icons in your stash.
+--------------------------------------------------------
+Syntax for operator/admin:
+	/icon [a]dd <username> <icon>
+		Add icon into user stash
+	/icon [d]el <username> <icon>
+		Remove icon from user stash
+	/icon [s]et <username> <icon>
+		Set custom icon to user without adding it in user stash
+	/icon [l]ist <username>
+		Display icons in user's stash
+	/icon [l]ist
+		Display availaible icons in server stash that can be assigned to users

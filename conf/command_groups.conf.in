@@ -72,6 +72,7 @@
 1	/bitsinfo
 1	/latency /ping /p
 1	/topic
+1	/icon
 
 #	/////////////////////////////
 #	///// Operator commands /////
@@ -168,7 +169,6 @@
 7	/set
 7	/commandgroups /cg
 7	/clearstats
-7	/icon
 
 8	/shutdown /rehash /find /save
 

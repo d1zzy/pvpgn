@@ -2557,7 +2557,7 @@ namespace pvpgn
 				t_icon_info * icon;
 
 				// do not override userselectedicon if it's not null
-				if (!usericon && (icon = get_custom_icon(account, clienttag)))
+				if (!usericon && (icon = customicons_get_icon_by_account(account, clienttag)))
 					strcpy(revtag, icon->icon_code);
 
 				// FIXME: it replaces tag with icon on a client side for all clients (HarpyWar)
@@ -3751,7 +3751,7 @@ namespace pvpgn
 				t_icon_info * icon;
 
 				// do not override userselectedicon if it's not null
-				if (!usericon && (icon = get_custom_icon(account, clienttag)))
+				if (!usericon && (icon = customicons_get_icon_by_account(account, clienttag)))
 					usericon = xstrdup(icon->icon_code);
 
 				acctlevel = 0;

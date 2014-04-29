@@ -2008,7 +2008,7 @@ namespace pvpgn
 				const char *text;
 
 				// if text is not empty
-				if (text = get_custom_stats_text(account, clienttag_uint))
+				if (text = customicons_get_stats_text(account, clienttag_uint))
 				{
 					// split by lines
 					char* output_array = strtok((char*)text, "\n");

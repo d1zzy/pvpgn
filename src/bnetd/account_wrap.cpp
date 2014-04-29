@@ -2369,6 +2369,35 @@ namespace pvpgn
 			return -1;
 		}
 
+
+		/* value = icons delimeted by space */
+		extern int account_set_user_iconstash(t_account * account, t_clienttag clienttag, char const * value)
+		{
+			char key[256];
+			char clienttag_str[5];
+
+			std::sprintf(key, "Record\\%s\\iconstash", tag_uint_to_str(clienttag_str, clienttag));
+			if (value)
+				return account_set_strattr(account, key, value);
+			else
+				return account_set_strattr(account, key, "NULL");
+		}
+
+		extern char const * account_get_user_iconstash(t_account * account, t_clienttag clienttag)
+		{
+			char key[256];
+			char const * retval;
+			char clienttag_str[5];
+
+			std::sprintf(key, "Record\\%s\\iconstash", tag_uint_to_str(clienttag_str, clienttag));
+			retval = account_get_strattr(account, key);
+
+			if ((retval) && ((std::strcmp(retval, "NULL") != 0)))
+				return retval;
+			else
+				return NULL;
+		}
+
 		//BlacKDicK 04/20/2003
 		extern int account_set_user_icon(t_account * account, t_clienttag clienttag, char const * usericon)
 		{
