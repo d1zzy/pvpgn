@@ -16,6 +16,8 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #define GAME_INTERNAL_ACCESS
+#define CHANNEL_INTERNAL_ACCESS
+#define CLAN_INTERNAL_ACCESS
 
 #include "common/setup_before.h"
 #include "command.h"
@@ -29,6 +31,7 @@
 
 #include "compat/strcasecmp.h"
 #include "compat/snprintf.h"
+#include "compat/pdir.h"
 #include "common/tag.h"
 #include "common/util.h"
 #include "common/version.h"
@@ -71,7 +74,6 @@
 #include "clan.h"
 #include "common/setup_after.h"
 #include "common/flags.h"
-#include "common/util.h"
 
 #include "attrlayer.h"
 
@@ -90,6 +92,9 @@ namespace pvpgn
 		std::map<std::string, std::string> get_account_object(t_account *account);
 		std::map<std::string, std::string> get_account_object(const char *username);
 		std::map<std::string, std::string> get_game_object(t_game * game);
+		// TODO:
+		//std::map<std::string, std::string> get_channel_object(t_channel * channel);
+		//std::map<std::string, std::string> get_clan_object(t_clan * clan);
 
 
 		template <class T, class A>
@@ -129,7 +134,7 @@ namespace pvpgn
 			{
 				vm.initialize();
 
-				std::vector<std::string> files = dir_getfiles(std::string(scriptdir), ".lua", true);
+				std::vector<std::string> files = dir_getfiles(scriptdir, ".lua", true);
 
 				// load all files from the script directory
 				for (int i = 0; i < files.size(); ++i)
@@ -137,7 +142,7 @@ namespace pvpgn
 					vm.load_file(files[i].c_str());
 
 					snprintf(_msgtemp, sizeof(_msgtemp), "%s", files[i].c_str());
-					eventlog(eventlog_level_info, __FUNCTION__, _msgtemp);
+					eventlog(eventlog_level_trace, __FUNCTION__, _msgtemp);
 				}
 
 				_register_functions();

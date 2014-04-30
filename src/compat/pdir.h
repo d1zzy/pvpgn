@@ -39,6 +39,8 @@
 # include <io.h> /* for _findfirst(), _findnext(), etc */
 #endif
 
+#include <vector>
+
 namespace pvpgn
 {
 
@@ -75,7 +77,10 @@ namespace pvpgn
 		Directory(const Directory&);
 		Directory& operator=(const Directory&);
 		void close();
+
 	};
+
+	extern std::vector<std::string> dir_getfiles(const char * directory, const char* ext, bool recursive);
 
 }
 
