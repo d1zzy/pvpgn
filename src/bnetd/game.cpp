@@ -476,7 +476,7 @@ namespace pvpgn
 			}
 			
 #ifdef WITH_LUA
-			lua_handle_game(game, luaevent_game_destroy);
+			lua_handle_game(game, NULL, luaevent_game_destroy);
 #endif
 
 			elist_del(&game->glist_link);
@@ -744,7 +744,7 @@ namespace pvpgn
 			}
 
 #ifdef WITH_LUA
-			lua_handle_game(game, luaevent_game_end);
+			lua_handle_game(game, NULL, luaevent_game_end);
 #endif
 
 			if (game->clienttag == CLIENTTAG_WARCRAFT3_UINT || game->clienttag == CLIENTTAG_WAR3XP_UINT)
@@ -1111,7 +1111,7 @@ namespace pvpgn
 			std::fprintf(fp, "\nThis game lasted %lu minutes (elapsed).\n", ((unsigned long int)std::difftime(now, game->start_time)) / 60);
 			
 #ifdef WITH_LUA
-			lua_handle_game(game, luaevent_game_report);
+			lua_handle_game(game, NULL, luaevent_game_report);
 #endif
 
 			if (std::fclose(fp) < 0)
@@ -1454,7 +1454,7 @@ namespace pvpgn
 			game->status = status;
 
 #ifdef WITH_LUA
-			lua_handle_game(game, luaevent_game_changestatus);
+			lua_handle_game(game, NULL, luaevent_game_changestatus);
 #endif
 		}
 
@@ -1750,7 +1750,7 @@ namespace pvpgn
 				game_choose_host(game);
 
 #ifdef WITH_LUA
-				lua_handle_user(c, game, luaevent_user_leftgame);
+				lua_handle_game(game, c, luaevent_game_userleft);
 #endif
 				return 0;
 			}

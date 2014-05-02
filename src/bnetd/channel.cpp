@@ -42,6 +42,8 @@
 #include "irc.h"
 #include "common/setup_after.h"
 
+#include "luainterface.h"
+
 
 namespace pvpgn
 {
@@ -488,11 +490,15 @@ namespace pvpgn
 			if (channel->log)
 				message_send_text(connection, message_type_info, connection, prefs_get_log_notice());
 
+#ifdef WITH_LUA
+			lua_handle_channel(channel, connection, NULL, message_type_null, luaevent_channel_userjoin);
+#endif
+
 			return 0;
 		}
 
 
-		extern int channel_del_connection(t_channel * channel, t_connection * connection, t_message_type mess, char const * text)
+		extern int channel_del_connection(t_channel * channel, t_connection * connection, t_message_type type, char const * text)
 		{
 			t_channelmember * curr;
 			t_channelmember * temp;
@@ -509,7 +515,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			channel_message_send(channel, mess, connection, text);
+			channel_message_send(channel, type, connection, text);
 			channel_message_log(channel, connection, 0, "PARTED");
 
 			curr = channel->memberlist;
@@ -547,6 +553,10 @@ namespace pvpgn
 			{
 				channel_destroy(channel, &curr2);
 			}
+
+#ifdef WITH_LUA
+			lua_handle_channel(channel, connection, text, type, luaevent_channel_userleft);
+#endif
 
 			return 0;
 		}
@@ -747,6 +757,10 @@ namespace pvpgn
 				if (!heard && (type == message_type_talk || type == message_type_emote))
 					message_send_text(me, message_type_info, me, "No one hears you.");
 			}
+
+#ifdef WITH_LUA
+			lua_handle_channel((t_channel*)channel, me, text, type, luaevent_channel_message);
+#endif
 		}
 
 		extern int channel_ban_user(t_channel * channel, char const * user)
@@ -839,7 +853,7 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL user");
 				return -1;
 			}
-
+			
 			if (!(channel->flags & channel_flags_allowbots) && conn_get_class(user) == conn_class_bot)
 				return 1;
 

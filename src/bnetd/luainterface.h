@@ -45,22 +45,16 @@ namespace pvpgn
 			luaevent_game_end,
 			luaevent_game_destroy,
 			luaevent_game_changestatus,
+			luaevent_game_userjoin,
+			luaevent_game_userleft,
 
-			luaevent_channel_create,
-			luaevent_channel_destroy,
+			luaevent_channel_message, // user-to-channel
+			luaevent_channel_userjoin,
+			luaevent_channel_userleft,
 
-			luaevent_user_joingame,
-			luaevent_user_leftgame,
-			luaevent_user_joinchannel,
-			luaevent_user_leftchannel,
-			luaevent_user_joinclan,
-			luaevent_user_leftclan,
+			luaevent_clan_userjoin,
+			luaevent_clan_userleft,
 
-			luaevent_clan_create,
-			luaevent_clan_changestatus,
-			luaevent_clan_destroy,
-
-			luaevent_user_message, // user-to-channel
 			luaevent_user_whisper, // user-to-user
 			luaevent_user_login,
 			luaevent_user_disconnect
@@ -72,9 +66,11 @@ namespace pvpgn
 		extern void lua_unload();
 
 		extern int lua_handle_command(t_connection * c, char const * text);
-		extern void lua_handle_game(t_game * game, t_luaevent_type luaevent); // game events
-		extern void lua_handle_user(t_connection * c, t_game * game, t_luaevent_type luaevent); // 
-		// TODO:
+		extern void lua_handle_game(t_game * game, t_connection * c, t_luaevent_type luaevent);
+		extern void lua_handle_channel(t_channel * channel, t_connection * c, char const * message_text, t_message_type message_type, t_luaevent_type luaevent);
+		extern int lua_handle_user(t_connection * c, t_connection * c_dst, char const * message_text, t_luaevent_type luaevent);
+
+			// TODO:
 		//extern void lua_handle_user(t_connection * c, t_connection * c_dst, const char * text, t_luaevent_type luaevent);
 		//extern void lua_handle_user(t_connection * c, t_channel * channel, const char * text, t_luaevent_type luaevent);
 		//extern void lua_handle_user(t_connection * c, t_channel * channel, t_luaevent_type luaevent);

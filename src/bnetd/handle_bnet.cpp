@@ -1738,6 +1738,12 @@ namespace pvpgn
 					}
 				}
 				if (success && account) {
+
+#ifdef WITH_LUA
+					if (lua_handle_user(c, NULL, NULL, luaevent_user_login) == 1)
+						return 0;
+#endif
+
 #ifdef WIN32_GUI
 					guiOnUpdateUserList();
 #endif
@@ -3796,7 +3802,7 @@ namespace pvpgn
 				eventlog(eventlog_level_info, __FUNCTION__, "[%d] \"%s\" joined game \"%s\"", conn_get_socket(c), conn_get_username(c), gamename);
 
 #ifdef WITH_LUA
-			lua_handle_user(c, game, luaevent_user_joingame);
+			lua_handle_game(game, c, luaevent_game_userjoin);
 #endif
 
 			return 0;

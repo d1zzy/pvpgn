@@ -15,12 +15,15 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#include "common/setup_before.h"
+#define ACCOUNT_INTERNAL_ACCESS
 #define GAME_INTERNAL_ACCESS
 #define CHANNEL_INTERNAL_ACCESS
 #define CLAN_INTERNAL_ACCESS
+#define TEAM_INTERNAL_ACCESS
 
-#include "common/setup_before.h"
 #include "command.h"
+#include "team.h"
 
 #include <cctype>
 #include <cerrno>
@@ -54,7 +57,6 @@
 #include "message.h"
 #include "channel.h"
 #include "game.h"
-#include "team.h"
 #include "account.h"
 #include "account_wrap.h"
 #include "server.h"
@@ -72,13 +74,16 @@
 #include "topic.h"
 #include "friends.h"
 #include "clan.h"
-#include "common/setup_after.h"
 #include "common/flags.h"
 
 #include "attrlayer.h"
 
 #include "luawrapper.h"
 #include "luainterface.h"
+
+
+#include "common/setup_after.h"
+
 
 namespace pvpgn
 {
@@ -92,9 +97,11 @@ namespace pvpgn
 		std::map<std::string, std::string> get_account_object(t_account *account);
 		std::map<std::string, std::string> get_account_object(const char *username);
 		std::map<std::string, std::string> get_game_object(t_game * game);
-		// TODO:
-		//std::map<std::string, std::string> get_channel_object(t_channel * channel);
-		//std::map<std::string, std::string> get_clan_object(t_clan * clan);
+		std::map<std::string, std::string> get_channel_object(t_channel * channel);
+		std::map<std::string, std::string> get_clan_object(t_clan * clan);
+		std::map<std::string, std::string> get_clanmember_object(t_clanmember * member);
+		std::map<std::string, std::string> get_team_object(t_team * team);
+		std::map<std::string, std::string> get_friend_object(t_friend * f);
 
 
 		template <class T, class A>
@@ -106,6 +113,9 @@ namespace pvpgn
 		int __account_get(lua_State* L);
 		int __account_get_attr(lua_State* L);
 		int __account_set_attr(lua_State* L);
+		int __account_get_friends(lua_State* L);
+		int __account_get_teams(lua_State* L);
+		int __clan_get_members(lua_State* L);
 
 		char _msgtemp[MAX_MESSAGE_LEN];
 		char _msgtemp2[MAX_MESSAGE_LEN];
@@ -176,6 +186,9 @@ namespace pvpgn
 			vm.reg("account_get", __account_get);
 			vm.reg("account_get_attr", __account_get_attr);
 			vm.reg("account_set_attr", __account_set_attr);
+			vm.reg("account_get_friends", __account_get_friends);
+			vm.reg("account_get_teams", __account_get_teams);
+			vm.reg("clan_get_members", __clan_get_members);
 
 		}
 
@@ -193,9 +206,8 @@ namespace pvpgn
 					return 0;
 
 				std::map<std::string, std::string> o_account = get_account_object(account);
-				// invoke lua method
-				lua::transaction(vm) << lua::lookup("handle_command") << o_account << text << lua::invoke >> result << lua::end;
-			
+				lua::transaction(vm) << lua::lookup("handle_command") << o_account << text << lua::invoke >> result << lua::end; // invoke lua function
+
 			}
 			catch (const std::exception& e)
 			{
@@ -208,8 +220,11 @@ namespace pvpgn
 			return result;
 		}
 
-		extern void lua_handle_game(t_game * game, t_luaevent_type luaevent)
+
+
+		extern void lua_handle_game(t_game * game, t_connection * c, t_luaevent_type luaevent)
 		{
+			t_account * account;
 			const char * func_name;
 			switch (luaevent)
 			{
@@ -228,13 +243,34 @@ namespace pvpgn
 			case luaevent_game_changestatus:
 				func_name = "handle_game_changestatus";
 				break;
+			case luaevent_game_userjoin:
+				func_name = "handle_game_userjoin";
+				break;
+			case luaevent_game_userleft:
+				func_name = "handle_game_userleft";
+				break;
+			default:
+				return;
 			}
-
 			try
 			{
 				std::map<std::string, std::string> o_game = get_game_object(game);
-				// invoke lua method
-				lua::transaction(vm) << lua::lookup(func_name) << o_game << lua::invoke << lua::end;
+
+				// handle_game_userjoin & handle_game_userleft
+				if (c)
+				{
+					if (!(account = conn_get_account(c)))
+						return;
+
+					std::map<std::string, std::string> o_account = get_account_object(account);
+					lua::transaction(vm) << lua::lookup(func_name) << o_game << o_account << lua::invoke << lua::end; // invoke lua function
+				}
+				// other functions
+				else
+				{
+					lua::transaction(vm) << lua::lookup(func_name) << o_game << lua::invoke << lua::end; // invoke lua function
+				}
+
 			}
 			catch (const std::exception& e)
 			{
@@ -246,19 +282,24 @@ namespace pvpgn
 			}
 		}
 
-		extern void lua_handle_user(t_connection * c, t_game * game, t_luaevent_type luaevent)
+
+		extern void lua_handle_channel(t_channel * channel, t_connection * c, char const * message_text, t_message_type message_type, t_luaevent_type luaevent)
 		{
 			t_account * account;
 			const char * func_name;
 			switch (luaevent)
 			{
-			case luaevent_user_joingame:
-				func_name = "handle_user_joingame";
+			case luaevent_channel_message:
+				func_name = "handle_channel_message";
 				break;
-
-			case luaevent_user_leftgame:
-				func_name = "handle_user_leftgame";
+			case luaevent_channel_userjoin:
+				func_name = "handle_channel_userjoin";
 				break;
+			case luaevent_channel_userleft:
+				func_name = "handle_channel_userleft";
+				break;
+			default:
+				return;
 			}
 			try
 			{
@@ -266,9 +307,14 @@ namespace pvpgn
 					return;
 
 				std::map<std::string, std::string> o_account = get_account_object(account);
-				std::map<std::string, std::string> o_game = get_game_object(game);
+				std::map<std::string, std::string> o_channel = get_channel_object(channel);
 
-				lua::transaction(vm) << lua::lookup("handle_user_leftgame") << o_account << o_game << lua::invoke << lua::end;
+				// handle_channel_userleft & handle_channel_message
+				if (message_text)
+					lua::transaction(vm) << lua::lookup(func_name) << o_channel << o_account << message_text << message_type << lua::invoke << lua::end; // invoke lua function
+				// other functions
+				else
+					lua::transaction(vm) << lua::lookup(func_name) << o_channel << o_account << lua::invoke << lua::end; // invoke lua function
 			}
 			catch (const std::exception& e)
 			{
@@ -278,6 +324,57 @@ namespace pvpgn
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
 			}
+		}
+
+
+		extern int lua_handle_user(t_connection * c, t_connection * c_dst, char const * message_text, t_luaevent_type luaevent)
+		{
+			t_account * account, *account_dst;
+			const char * func_name;
+			int result = 0;
+			switch (luaevent)
+			{
+			case luaevent_user_whisper:
+				func_name = "handle_user_whisper";
+				break;
+			case luaevent_user_login:
+				func_name = "handle_user_login";
+				break;
+			case luaevent_user_disconnect:
+				func_name = "handle_user_disconnect";
+				break;
+			default:
+				return 0;
+			}
+			try
+			{
+				if (!(account = conn_get_account(c)))
+					return 0;
+
+				std::map<std::string, std::string> o_account = get_account_object(account);
+
+				// handle_server_whisper
+				if (c_dst && message_text)
+				{
+					if (!(account_dst = conn_get_account(c_dst)))
+						return 0;
+					std::map<std::string, std::string> o_account_dst = get_account_object(account_dst);
+
+					lua::transaction(vm) << lua::lookup(func_name) << o_account << o_account_dst << message_text << lua::invoke >> result << lua::end; // invoke lua function
+				}
+				// other functions
+				else
+					lua::transaction(vm) << lua::lookup(func_name) << o_account << lua::invoke << lua::end; // invoke lua function
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return result;
 		}
 
 #endif
@@ -484,7 +581,6 @@ namespace pvpgn
 						break;
 					}
 				}
-
 				st.push(result);
 			}
 			catch (const std::exception& e)
@@ -495,9 +591,132 @@ namespace pvpgn
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
 			}
-
 			return 1;
 		}
+
+
+
+		/* Get account friend list */
+		int __account_get_friends(lua_State* L)
+		{
+			const char *username;
+			std::vector<std::map<std::string, std::string>> friends;
+
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, username);
+
+				if (t_account * account = accountlist_find_account(username))
+				if (account->friends)
+				{
+					t_elem const * curr;
+					t_friend * f;
+					LIST_TRAVERSE_CONST(account->friends, curr)
+					{
+						if (!(f = (t_friend*)elem_get_data(curr)))
+						{
+							eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
+							continue;
+						}
+						friends.push_back(get_friend_object(f));
+					}
+				}
+				st.push(friends);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 1;
+		}
+
+
+		/* Get account team list */
+		int __account_get_teams(lua_State* L)
+		{
+			const char *username;
+			std::vector<std::map<std::string, std::string>> teams;
+
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, username);
+
+				if (t_account * account = accountlist_find_account(username))
+				if (account->teams)
+				{
+					t_elem const * curr;
+					t_team * t;
+					LIST_TRAVERSE_CONST(account->teams, curr)
+					{
+						if (!(t = (t_team*)elem_get_data(curr)))
+						{
+							eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
+							continue;
+						}
+						teams.push_back(get_team_object(t));
+					}
+				}
+				st.push(teams);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 1;
+		}
+
+		/* Get clan member list */
+		int __clan_get_members(lua_State* L)
+		{
+			int clan_id;
+			std::vector<std::map<std::string, std::string>> members;
+
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, clan_id);
+
+				if (t_clan * clan = clanlist_find_clan_by_clanid(clan_id))
+				if (clan->members)
+				{
+					t_elem const * curr;
+					LIST_TRAVERSE_CONST(clan->members, curr)
+					{
+						t_clanmember *	m;
+						if (!(m = (t_clanmember*)elem_get_data(curr)))
+						{
+							eventlog(eventlog_level_error, __FUNCTION__, "got NULL elem in list");
+							continue;
+						}
+						members.push_back(get_clanmember_object(m));
+					}
+				}
+				st.push(members);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 1;
+		}
+
 
 		// TODO: remove it
 		/* Just a test function */
@@ -520,7 +739,7 @@ namespace pvpgn
 		std::map<std::string, std::string> get_account_object(const char * username)
 		{
 			std::map<std::string, std::string> o_account;
-			
+
 			if (t_account * account = accountlist_find_account(username))
 				return get_account_object(account);
 			else
@@ -553,6 +772,12 @@ namespace pvpgn
 				if (t_channel *channel = conn_get_channel(c))
 					o_account["channel_id"] = std::to_string(channel_get_channelid(channel));
 			}
+
+			if (account->clanmember)
+				o_account["clan_id"] = account->clanmember->clan->clanid;
+
+			// - friends can be get from lua_account_get_friends
+			// - teams can be get from lua_account_get_teams
 
 			return o_account;
 		}
@@ -631,7 +856,149 @@ namespace pvpgn
 			return o_game;
 		}
 
+		std::map<std::string, std::string> get_channel_object(t_channel * channel)
+		{
+			std::map<std::string, std::string> o_channel;
 
+			if (!channel)
+				return o_channel;
+
+			o_channel["id"] = std::to_string(channel->id);
+			o_channel["name"] = channel->name;
+			if (channel->shortname)
+				o_channel["shortname"] = channel->shortname;
+			if (channel->country)
+				o_channel["country"] = channel->country;
+			o_channel["flags"] = std::to_string(channel->flags);
+			o_channel["maxmembers"] = std::to_string(channel->maxmembers);
+			o_channel["currmembers"] = std::to_string(channel->currmembers);
+
+			o_channel["clienttag"] = clienttag_uint_to_str(channel->clienttag);
+			if (channel->realmname)
+				o_channel["realmname"] = channel->realmname;
+			if (channel->logname)
+				o_channel["logname"] = channel->logname;
+
+
+			// Westwood Online Extensions
+			o_channel["minmembers"] = std::to_string(channel->minmembers);
+			o_channel["gameType"] = std::to_string(channel->gameType);
+			if (channel->gameExtension)
+				o_channel["gameExtension"] = channel->gameExtension;
+
+
+			std::vector<std::string> members;
+			if (channel->memberlist)
+			{
+				t_channelmember *m = channel->memberlist;
+				while (m)
+				{
+					if (t_account *account = conn_get_account(m->connection))
+						members.push_back(account_get_name(account));
+					m = m->next;
+				}
+			}
+			o_channel["memberlist"] = join(members.begin(), members.end(), std::string(","));
+
+			std::vector<std::string> bans;
+			if (channel->banlist)
+			{
+				t_elem const * curr;
+				LIST_TRAVERSE_CONST(channel->banlist, curr)
+				{
+					char * b;
+					if (!(b = (char*)elem_get_data(curr)))
+					{
+						eventlog(eventlog_level_error, __FUNCTION__, "found NULL name in banlist");
+						continue;
+					}
+					members.push_back(b);
+				}
+			}
+			o_channel["banlist"] = join(bans.begin(), bans.end(), std::string(","));
+
+			return o_channel;
+		}
+
+
+		std::map<std::string, std::string> get_clan_object(t_clan * clan)
+		{
+			std::map<std::string, std::string> o_clan;
+
+			if (!clan)
+				return o_clan;
+
+			o_clan["id"] = std::to_string(clan->clanid);
+			o_clan["tag"] = clantag_to_str(clan->tag);
+			o_clan["clanname"] = clan->clanname;
+			o_clan["created"] = std::to_string(clan->created);
+			o_clan["creation_time"] = std::to_string(clan->creation_time);
+			o_clan["clan_motd"] = clan->clan_motd;
+			o_clan["channel_type"] = std::to_string(clan->channel_type); // 0--public 1--private
+
+			// - clanmembers can be get from lua_clan_get_members
+
+			return o_clan;
+		}
+
+		std::map<std::string, std::string> get_clanmember_object(t_clanmember * member)
+		{
+			std::map<std::string, std::string> o_member;
+
+			if (!member)
+				return o_member;
+
+			o_member["username"] = account_get_name(member->memberacc);
+			o_member["status"] = member->status;
+			o_member["clan_id"] = std::to_string(member->clan->clanid);
+			o_member["join_time"] = std::to_string(member->join_time);
+			o_member["fullmember"] = std::to_string(member->fullmember);// 0 -- clanmember is only invited, 1 -- clanmember is fullmember
+
+			return o_member;
+		}
+
+		std::map<std::string, std::string> get_team_object(t_team * team)
+		{
+			std::map<std::string, std::string> o_team;
+
+			if (!team)
+				return o_team;
+
+			o_team["id"] = std::to_string(team->teamid);
+			o_team["size"] = std::to_string(team->size);
+
+			o_team["clienttag"] = clienttag_uint_to_str(team->clienttag);
+			o_team["lastgame"] = std::to_string(team->lastgame);
+			o_team["wins"] = std::to_string(team->wins);
+			o_team["losses"] = std::to_string(team->losses);
+			o_team["xp"] = std::to_string(team->xp);
+			o_team["level"] = std::to_string(team->level);
+			o_team["rank"] = std::to_string(team->rank);
+
+			// usernames
+			std::vector<std::string> members;
+			if (team->members)
+			{
+				for (int i = 0; i < MAX_TEAMSIZE; i++)
+					members.push_back(account_get_name(team->members[i]));
+			}
+			o_team["members"] = join(members.begin(), members.end(), std::string(","));
+
+			return o_team;
+		}
+
+		std::map<std::string, std::string> get_friend_object(t_friend * f)
+		{
+			std::map<std::string, std::string> o_friend;
+
+			if (!f)
+				return o_friend;
+
+			o_friend["username"] = account_get_name(f->friendacc);
+			o_friend["mutual"] = std::to_string(f->mutual); // -1 - unloaded(used to remove deleted elems when reload); 0 - not mutual ; 1 - is mutual
+
+			return o_friend;
+		}
 
 
 		/* Join two vector objects to string by delimeter */

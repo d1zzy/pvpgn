@@ -740,6 +740,10 @@ namespace pvpgn
 						eventlog(eventlog_level_error, __FUNCTION__, "cannot sync account (sync_on_logoff)");
 				}
 
+#ifdef WITH_LUA
+				lua_handle_user(c, NULL, NULL, luaevent_user_disconnect);
+#endif
+
 				if (account_get_conn(c->protocol.account) == c)  /* make sure you don't set this when allready on new conn (relogin with same account) */
 					account_set_conn(c->protocol.account, NULL);
 				c->protocol.account = NULL; /* the account code will free the memory later */
@@ -2209,7 +2213,7 @@ namespace pvpgn
 #ifdef WITH_LUA
 					// handle game create when it's owner joins the game
 					if (c == game_get_owner(c->protocol.game))
-						lua_handle_game(c->protocol.game, luaevent_game_create);
+						lua_handle_game(c->protocol.game, NULL, luaevent_game_create);
 #endif
 
 					if (game_is_ladder(c->protocol.game)) {

@@ -132,6 +132,12 @@ namespace pvpgn
 				return;
 			}
 
+
+#ifdef WITH_LUA
+			if (lua_handle_user(user_c, dest_c, text, luaevent_user_whisper) == 1)
+				return;
+#endif
+
 			if (conn_get_dndstr(dest_c))
 			{
 				snprintf(msgtemp, sizeof(msgtemp), "%.64s is unavailable (%.128s)", conn_get_username(dest_c), conn_get_dndstr(dest_c));

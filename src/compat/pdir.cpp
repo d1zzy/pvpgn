@@ -163,6 +163,9 @@ namespace pvpgn
 		class dirent *ent;
 
 		dir = opendir(directory);
+		if (!dir)
+			return files;
+
 		while ((ent = readdir(dir)) != NULL) {
 			const std::string file_name = ent->d_name;
 			const std::string full_file_name = std::string(directory) + "/" + file_name;
