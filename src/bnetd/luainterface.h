@@ -17,21 +17,17 @@
 */
 /*****/
 #ifndef JUST_NEED_TYPES
-#ifndef INCLUDED_LUA_PROTOS
-#define INCLUDED_LUA_PROTOS
-
-
-// FIXME: include one time on pvpgn load
-#include "luawrapper.h"
-#include <stdio.h>
+#ifndef INCLUDED_LUAINTERFACE_PROTOS
+#define INCLUDED_LUAINTERFACE_PROTOS
 
 #ifdef WIN32
 #pragma comment(lib, "lua5.1.lib")
 #endif
 
-
 #define JUST_NEED_TYPES
 #include "connection.h"
+#include "luawrapper.h"
+#include <stdio.h>
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
