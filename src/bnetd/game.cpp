@@ -2124,6 +2124,10 @@ namespace pvpgn
 			return 0;
 		}
 
+		extern t_elist * gamelist(void)
+		{
+			return &gamelist_head;
+		}
 
 		extern int gamelist_get_length(void)
 		{

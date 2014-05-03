@@ -94,9 +94,11 @@ namespace pvpgn
 
 		void _register_functions();
 
-		std::map<std::string, std::string> get_account_object(t_account *account);
 		std::map<std::string, std::string> get_account_object(const char *username);
+		std::map<std::string, std::string> get_account_object(t_account *account);
+		std::map<std::string, std::string> get_game_object(unsigned int gameid);
 		std::map<std::string, std::string> get_game_object(t_game * game);
+		std::map<std::string, std::string> get_channel_object(unsigned int channelid);
 		std::map<std::string, std::string> get_channel_object(t_channel * channel);
 		std::map<std::string, std::string> get_clan_object(t_clan * clan);
 		std::map<std::string, std::string> get_clanmember_object(t_clanmember * member);
@@ -110,12 +112,18 @@ namespace pvpgn
 		int _sum(lua_State* L);
 		int __message_send_text(lua_State* L);
 		int __eventlog(lua_State* L);
-		int __account_get(lua_State* L);
+		int __account_get_by_name(lua_State* L);
 		int __account_get_attr(lua_State* L);
 		int __account_set_attr(lua_State* L);
 		int __account_get_friends(lua_State* L);
 		int __account_get_teams(lua_State* L);
 		int __clan_get_members(lua_State* L);
+		int __game_get_by_id(lua_State* L);
+		int __channel_get_by_id(lua_State* L);
+
+		int __server_get_users(lua_State* L);
+		int __server_get_games(lua_State* L);
+		int __server_get_channels(lua_State* L);
 
 		char _msgtemp[MAX_MESSAGE_LEN];
 		char _msgtemp2[MAX_MESSAGE_LEN];
@@ -183,12 +191,18 @@ namespace pvpgn
 			vm.reg("sum", _sum);
 			vm.reg("message_send_text", __message_send_text);
 			vm.reg("eventlog", __eventlog);
-			vm.reg("account_get", __account_get);
+			vm.reg("account_get_by_name", __account_get_by_name);
 			vm.reg("account_get_attr", __account_get_attr);
 			vm.reg("account_set_attr", __account_set_attr);
 			vm.reg("account_get_friends", __account_get_friends);
 			vm.reg("account_get_teams", __account_get_teams);
 			vm.reg("clan_get_members", __clan_get_members);
+			vm.reg("game_get_by_id", __game_get_by_id);
+			vm.reg("channel_get_by_id", __channel_get_by_id);
+
+			vm.reg("server_get_users", __server_get_users);
+			vm.reg("server_get_games", __server_get_games);
+			vm.reg("server_get_channels", __server_get_channels);
 
 		}
 
@@ -451,8 +465,8 @@ namespace pvpgn
 			return 0;
 		}
 
-		/* Get account table object */
-		int __account_get(lua_State* L)
+		/* Get one account table object */
+		int __account_get_by_name(lua_State* L)
 		{
 			const char *username;
 			std::map<std::string, std::string> o_account;
@@ -596,7 +610,7 @@ namespace pvpgn
 
 
 
-		/* Get account friend list */
+		/* Get friend list of account */
 		int __account_get_friends(lua_State* L)
 		{
 			const char *username;
@@ -637,7 +651,7 @@ namespace pvpgn
 		}
 
 
-		/* Get account team list */
+		/* Get team list of account */
 		int __account_get_teams(lua_State* L)
 		{
 			const char *username;
@@ -680,16 +694,16 @@ namespace pvpgn
 		/* Get clan member list */
 		int __clan_get_members(lua_State* L)
 		{
-			int clan_id;
+			unsigned int clanid;
 			std::vector<std::map<std::string, std::string>> members;
 
 			try
 			{
 				lua::stack st(L);
 				// get args
-				st.at(1, clan_id);
+				st.at(1, clanid);
 
-				if (t_clan * clan = clanlist_find_clan_by_clanid(clan_id))
+				if (t_clan * clan = clanlist_find_clan_by_clanid(clanid))
 				if (clan->members)
 				{
 					t_elem const * curr;
@@ -717,6 +731,163 @@ namespace pvpgn
 			return 1;
 		}
 
+		/* Get one game table object */
+		int __game_get_by_id(lua_State* L)
+		{
+			unsigned int gameid;
+			std::map<std::string, std::string> o_game;
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, gameid);
+				o_game = get_game_object(gameid);
+
+				st.push(o_game);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+
+			return 1;
+		}
+
+		/* Get one channel table object */
+		int __channel_get_by_id(lua_State* L)
+		{
+			unsigned int channelid;
+			std::map<std::string, std::string> o_channel;
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, channelid);
+				o_channel = get_channel_object(channelid);
+
+				st.push(o_channel);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+
+			return 1;
+		}
+
+
+		/* Get usernames online. If allusers = true then return all server users  */
+		int __server_get_users(lua_State* L)
+		{
+			bool all = false;
+			const char *username;
+			std::map<unsigned int, std::string> users;
+			t_connection * conn;
+			t_account * account;
+
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, all);
+
+				if (all)
+				{
+					t_entry *   curr;
+					HASHTABLE_TRAVERSE(accountlist(), curr)
+					{
+						if (account = (t_account*)entry_get_data(curr))
+							users[account_get_uid(account)] = account_get_name(account);
+					}
+				}
+				else
+				{
+					t_elem const * curr;
+					LIST_TRAVERSE_CONST(connlist(), curr)
+					{
+						if (conn = (t_connection*)elem_get_data(curr))
+							users[conn_get_userid(conn)] = conn_get_username(conn);
+					}
+				}
+				st.push(users);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 1;
+		}
+		/* Get game list table (id => name)  */
+		int __server_get_games(lua_State* L)
+		{
+			std::map<unsigned int, std::string> games;
+			t_game * game;
+
+			try
+			{
+				lua::stack st(L);
+
+				t_elist *   curr;
+				elist_for_each(curr, gamelist())
+				{
+					if (game = elist_entry(curr, t_game, glist_link))
+						games[game_get_id(game)] = game_get_name(game);
+				}
+				st.push(games);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 1;
+		}
+
+		/* Get channel list (id => name)  */
+		int __server_get_channels(lua_State* L)
+		{
+			std::map<unsigned int, std::string> channels;
+			t_channel * channel;
+
+			try
+			{
+				lua::stack st(L);
+
+				t_elem *   curr;
+				LIST_TRAVERSE(channellist(), curr)
+				{
+					if (channel = (t_channel*)elem_get_data(curr))
+						channels[channel_get_channelid(channel)] = channel_get_name(channel);
+				}
+				st.push(channels);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 1;
+		}
+
+
 
 		// TODO: remove it
 		/* Just a test function */
@@ -741,9 +912,8 @@ namespace pvpgn
 			std::map<std::string, std::string> o_account;
 
 			if (t_account * account = accountlist_find_account(username))
-				return get_account_object(account);
-			else
-				return o_account;
+				o_account = get_account_object(account);
+			return o_account;
 		}
 		std::map<std::string, std::string> get_account_object(t_account * account)
 		{
@@ -782,7 +952,14 @@ namespace pvpgn
 			return o_account;
 		}
 
+		std::map<std::string, std::string> get_game_object(unsigned int gameid)
+		{
+			std::map<std::string, std::string> o_game;
 
+			if (t_game * game = gamelist_find_game_byid(gameid))
+				o_game = get_game_object(game);
+			return o_game;
+		}
 		std::map<std::string, std::string> get_game_object(t_game * game)
 		{
 			std::map<std::string, std::string> o_game;
@@ -856,6 +1033,14 @@ namespace pvpgn
 			return o_game;
 		}
 
+		std::map<std::string, std::string> get_channel_object(unsigned int channelid)
+		{
+			std::map<std::string, std::string> o_channel;
+
+			if (t_channel * channel = channellist_find_channel_bychannelid(channelid))
+				o_channel = get_channel_object(channel);
+			return o_channel;
+		}
 		std::map<std::string, std::string> get_channel_object(t_channel * channel)
 		{
 			std::map<std::string, std::string> o_channel;

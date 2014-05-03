@@ -47,13 +47,10 @@ namespace pvpgn
 			luaevent_game_changestatus,
 			luaevent_game_userjoin,
 			luaevent_game_userleft,
-
+			
 			luaevent_channel_message, // user-to-channel
 			luaevent_channel_userjoin,
 			luaevent_channel_userleft,
-
-			luaevent_clan_userjoin,
-			luaevent_clan_userleft,
 
 			luaevent_user_whisper, // user-to-user
 			luaevent_user_login,
@@ -69,12 +66,6 @@ namespace pvpgn
 		extern void lua_handle_game(t_game * game, t_connection * c, t_luaevent_type luaevent);
 		extern void lua_handle_channel(t_channel * channel, t_connection * c, char const * message_text, t_message_type message_type, t_luaevent_type luaevent);
 		extern int lua_handle_user(t_connection * c, t_connection * c_dst, char const * message_text, t_luaevent_type luaevent);
-
-			// TODO:
-		//extern void lua_handle_user(t_connection * c, t_connection * c_dst, const char * text, t_luaevent_type luaevent);
-		//extern void lua_handle_user(t_connection * c, t_channel * channel, const char * text, t_luaevent_type luaevent);
-		//extern void lua_handle_user(t_connection * c, t_channel * channel, t_luaevent_type luaevent);
-		//extern void lua_handle_user(t_connection * c, t_luaevent_type luaevent);
 
 	}
 
