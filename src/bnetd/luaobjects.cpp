@@ -87,9 +87,13 @@ namespace pvpgn
 			o_account["locked"] = account_get_auth_lock(account) ? "true" : "false";
 			o_account["muted"] = account_get_auth_mute(account) ? "true" : "false";
 
+			o_account["online"] = "false";
+
 			// if user online
 			if (t_connection * c = account_get_conn(account))
 			{
+				o_account["online"] = "true";
+
 				o_account["country"] = conn_get_country(c);
 				o_account["clientver"] = conn_get_clientver(c);
 				o_account["latency"] = std::to_string(conn_get_latency(c));
@@ -100,6 +104,7 @@ namespace pvpgn
 				if (t_channel *channel = conn_get_channel(c))
 					o_account["channel_id"] = std::to_string(channel_get_channelid(channel));
 			}
+
 
 			if (account->clanmember)
 				o_account["clan_id"] = account->clanmember->clan->clanid;

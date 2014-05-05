@@ -1238,15 +1238,13 @@ namespace pvpgn
 			std::time_t          next_savetime, track_time;
 			std::time_t          war3_ladder_updatetime;
 			std::time_t          output_updatetime;
-			unsigned int    count;
+			unsigned int    prev_time = 0;
 
 			starttime = std::time(NULL);
 			track_time = starttime - prefs_get_track();
 			next_savetime = starttime + prefs_get_user_sync_timer();
 			war3_ladder_updatetime = starttime - prefs_get_war3_ladder_update_secs();
 			output_updatetime = starttime - prefs_get_output_update_secs();
-
-			count = 0;
 
 			for (;;)
 			{
@@ -1489,11 +1487,14 @@ namespace pvpgn
 					do_restart = 0;
 				}
 
-				count += BNETD_POLL_INTERVAL;
-				if (count >= 1000) /* only check timers once a second */
+				/* only check timers once a second */
+				if (now > prev_time) 
 				{
+					prev_time = now;
 					timerlist_check_timers(now);
-					count = 0;
+#ifdef WITH_LUA
+					lua_handle_server(now, luaevent_server_mainloop);
+#endif
 				}
 
 				/* no need to populate the fdwatch structures as they are populated on the fly
@@ -1518,6 +1519,7 @@ namespace pvpgn
 
 				/* reap dead connections */
 				connlist_reap();
+
 			}
 		}
 

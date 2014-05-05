@@ -126,6 +126,7 @@ namespace pvpgn
 				{ "account_get_teams", __account_get_teams },
 				{ "clan_get_members", __clan_get_members },
 				{ "game_get_by_id", __game_get_by_id },
+
 				{ "channel_get_by_id", __channel_get_by_id },
 
 				{ "server_get_users", __server_get_users },
@@ -144,6 +145,7 @@ namespace pvpgn
 			lua::table g(vm);
 			g.update("PVPGN_SOFTWARE", PVPGN_SOFTWARE);
 			g.update("PVPGN_VERSION", PVPGN_VERSION);
+
 
 			// config variables from bnetd.conf
 			lua::transaction bind(vm);
@@ -467,6 +469,31 @@ namespace pvpgn
 			return result;
 		}
 
+
+		extern void lua_handle_server(unsigned int time, t_luaevent_type luaevent)
+		{
+			const char * func_name;
+			switch (luaevent)
+			{
+			case luaevent_server_mainloop:
+				func_name = "handle_server_mainloop"; // one time per second
+				break;
+			default:
+				return;
+			}
+			try
+			{
+				lua::transaction(vm) << lua::lookup(func_name) << time << lua::invoke << lua::end; // invoke lua function
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+		}
 #endif
 
 

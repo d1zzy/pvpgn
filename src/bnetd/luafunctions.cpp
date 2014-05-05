@@ -426,6 +426,10 @@ namespace pvpgn
 			return 1;
 		}
 
+
+
+
+
 		/* Get one channel table object */
 		extern int __channel_get_by_id(lua_State* L)
 		{
@@ -451,7 +455,6 @@ namespace pvpgn
 
 			return 1;
 		}
-
 
 		/* Get usernames online. If allusers = true then return all server users  */
 		extern int __server_get_users(lua_State* L)

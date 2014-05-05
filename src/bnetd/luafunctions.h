@@ -32,13 +32,17 @@ namespace pvpgn
 
 		extern int __message_send_text(lua_State* L);
 		extern int __eventlog(lua_State* L);
+
 		extern int __account_get_by_name(lua_State* L);
 		extern int __account_get_attr(lua_State* L);
 		extern int __account_set_attr(lua_State* L);
 		extern int __account_get_friends(lua_State* L);
 		extern int __account_get_teams(lua_State* L);
+
 		extern int __clan_get_members(lua_State* L);
+
 		extern int __game_get_by_id(lua_State* L);
+
 		extern int __channel_get_by_id(lua_State* L);
 
 		extern int __server_get_users(lua_State* L);
