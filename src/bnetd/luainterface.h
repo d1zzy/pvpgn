@@ -52,6 +52,7 @@ namespace pvpgn
 			luaevent_user_login,
 			luaevent_user_disconnect,
 
+			luaevent_server_start,
 			luaevent_server_mainloop
 
 		} t_luaevent_type;

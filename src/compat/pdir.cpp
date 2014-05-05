@@ -156,7 +156,7 @@ namespace pvpgn
 	/* Returns a list of files in a directory (except the ones that begin with a dot) */
 	extern std::vector<std::string> dir_getfiles(const char * directory, const char* ext, bool recursive)
 	{
-		std::vector<std::string> files;
+		std::vector<std::string> files, dfiles;
 		const char* _ext;
 
 		DIR *dir;
@@ -166,7 +166,8 @@ namespace pvpgn
 		if (!dir)
 			return files;
 
-		while ((ent = readdir(dir)) != NULL) {
+		while ((ent = readdir(dir)) != NULL)
+		{
 			const std::string file_name = ent->d_name;
 			const std::string full_file_name = std::string(directory) + "/" + file_name;
 
@@ -181,7 +182,7 @@ namespace pvpgn
 					std::vector<std::string> subfiles = dir_getfiles(full_file_name.c_str(), ext, recursive);
 
 					for (int i = 0; i < subfiles.size(); ++i)
-						files.push_back(subfiles[i]);
+						dfiles.push_back(subfiles[i]);
 				}
 				continue;
 			}
@@ -195,6 +196,10 @@ namespace pvpgn
 			files.push_back(full_file_name);
 		}
 		closedir(dir);
+
+		// merge files and files from directories, so we will receive directories at begin, files at the end
+		//  (otherwise files and directories are read alphabetically - as is)
+		files.insert(files.begin(), dfiles.begin(), dfiles.end());
 
 		return files;
 	}
