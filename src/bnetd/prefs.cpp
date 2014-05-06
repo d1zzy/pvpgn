@@ -77,7 +77,6 @@ namespace pvpgn
 			unsigned int hide_temp_channels;
 			unsigned int hide_addr;
 			unsigned int enable_conn_all;
-			unsigned int extra_commands;
 			char const * reportdir;
 			unsigned int report_all_games;
 			unsigned int report_diablo_games;
@@ -329,10 +328,6 @@ namespace pvpgn
 		static int conf_set_enable_conn_all(const char *valstr);
 		static const char *conf_get_enable_conn_all(void);
 		static int conf_setdef_enable_conn_all(void);
-
-		static int conf_set_extra_commands(const char *valstr);
-		static const char *conf_get_extra_commands(void);
-		static int conf_setdef_extra_commands(void);
 
 		static int conf_set_reportdir(const char *valstr);
 		static const char *conf_get_reportdir(void);
@@ -762,7 +757,6 @@ namespace pvpgn
 			{ "hide_temp_channels", conf_set_hide_temp_channels, conf_get_hide_temp_channels, conf_setdef_hide_temp_channels },
 			{ "hide_addr", conf_set_hide_addr, conf_get_hide_addr, conf_setdef_hide_addr },
 			{ "enable_conn_all", conf_set_enable_conn_all, conf_get_enable_conn_all, conf_setdef_enable_conn_all },
-			{ "extra_commands", conf_set_extra_commands, conf_get_extra_commands, conf_setdef_extra_commands },
 			{ "reportdir", conf_set_reportdir, conf_get_reportdir, conf_setdef_reportdir },
 			{ "report_all_games", conf_set_report_all_games, conf_get_report_all_games, conf_setdef_report_all_games },
 			{ "report_diablo_games", conf_set_report_diablo_games, conf_get_report_diablo_games, conf_setdef_report_diablo_games },
@@ -1636,27 +1630,6 @@ namespace pvpgn
 		static const char* conf_get_enable_conn_all(void)
 		{
 			return conf_get_bool(prefs_runtime_config.enable_conn_all);
-		}
-
-
-		extern unsigned int prefs_get_extra_commands(void)
-		{
-			return prefs_runtime_config.extra_commands;
-		}
-
-		static int conf_set_extra_commands(const char *valstr)
-		{
-			return conf_set_bool(&prefs_runtime_config.extra_commands, valstr, 0);
-		}
-
-		static int conf_setdef_extra_commands(void)
-		{
-			return conf_set_bool(&prefs_runtime_config.extra_commands, NULL, 0);
-		}
-
-		static const char* conf_get_extra_commands(void)
-		{
-			return conf_get_bool(prefs_runtime_config.extra_commands);
 		}
 
 

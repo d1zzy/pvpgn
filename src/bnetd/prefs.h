@@ -70,7 +70,6 @@ namespace pvpgn
 		extern unsigned int prefs_get_hide_temp_channels(void);
 		extern unsigned int prefs_get_hide_addr(void);
 		extern unsigned int prefs_get_enable_conn_all(void);
-		extern unsigned int prefs_get_extra_commands(void);
 		extern unsigned int prefs_get_udptest_port(void);
 		extern char const * prefs_get_reportdir(void);
 		extern unsigned int prefs_get_report_all_games(void);

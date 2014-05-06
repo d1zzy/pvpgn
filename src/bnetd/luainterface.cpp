@@ -216,7 +216,6 @@ namespace pvpgn
 				config.update("hide_pass_games", prefs_get_hide_pass_games());
 				config.update("hide_started_games", prefs_get_hide_started_games());
 				config.update("hide_temp_channels", prefs_get_hide_temp_channels());
-				config.update("extra_commands", prefs_get_extra_commands());
 				config.update("disc_is_loss", prefs_get_discisloss());
 				config.update("ladder_games", prefs_get_ladder_games());
 				config.update("ladder_prefix", prefs_get_ladder_prefix());

@@ -419,12 +419,7 @@ namespace pvpgn
 			{ "/ban", _handle_ban_command },
 			{ "/unban", _handle_unban_command },
 			{ "/tos", _handle_tos_command },
-			{ NULL, NULL }
 
-		};
-
-		static const t_command_table_row extended_command_table[] =
-		{
 			{ "/ann", _handle_announce_command },
 			{ "/r", _handle_reply_command },
 			{ "/reply", _handle_reply_command },
@@ -519,33 +514,8 @@ namespace pvpgn
 			if (lua_handle_command(c, text) > 0)
 				return 0;
 #endif
+
 			for (p = standard_command_table; p->command_string != NULL; p++)
-			{
-				if (strstart(text, p->command_string) == 0)
-				{
-					if (!(command_get_group(p->command_string)))
-					{
-						message_send_text(c, message_type_error, c, "This command has been deactivated");
-						return 0;
-					}
-					if (!((command_get_group(p->command_string) & account_get_command_groups(conn_get_account(c)))))
-					{
-						message_send_text(c, message_type_error, c, "This command is reserved for admins.");
-						return 0;
-					}
-					if (p->command_handler != NULL) return ((p->command_handler)(c, text));
-				}
-			}
-
-
-			if (prefs_get_extra_commands() == 0)
-			{
-				message_send_text(c, message_type_error, c, "Unknown command.");
-				eventlog(eventlog_level_debug, __FUNCTION__, "got unknown standard command \"%s\"", text);
-				return 0;
-			}
-
-			for (p = extended_command_table; p->command_string != NULL; p++)
 			{
 				if (strstart(text, p->command_string) == 0)
 				{
