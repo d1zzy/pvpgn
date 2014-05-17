@@ -44,6 +44,7 @@
 #include "friends.h"
 #include "clan.h"
 #include "attrlayer.h"
+#include "icons.h"
 
 #include "luawrapper.h"
 #include "luaobjects.h"
@@ -456,10 +457,10 @@ namespace pvpgn
 			return 1;
 		}
 
-		/* Get usernames online. If allusers = true then return all server users  */
+		/* Get usernames online. If allaccounts = true then return all server users  */
 		extern int __server_get_users(lua_State* L)
 		{
-			bool all = false;
+			bool allaccounts = false;
 			const char *username;
 			std::map<unsigned int, std::string> users;
 			t_connection * conn;
@@ -469,9 +470,9 @@ namespace pvpgn
 			{
 				lua::stack st(L);
 				// get args
-				st.at(1, all);
+				st.at(1, allaccounts);
 
-				if (all)
+				if (allaccounts)
 				{
 					t_entry *   curr;
 					HASHTABLE_TRAVERSE(accountlist(), curr)
@@ -559,6 +560,57 @@ namespace pvpgn
 			return 1;
 		}
 
+
+
+
+		/* Get command groups for a command string */
+		extern int __command_get_group(lua_State* L)
+		{
+			char const * command;
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, command);
+				int group = command_get_group(command);
+
+				st.push(group);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 1;
+		}
+
+		/* Get customicon rank by rating */
+		extern int __icon_get_rank(lua_State* L)
+		{
+			int rating;
+			char * clienttag;
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, rating);
+				st.at(2, clienttag);
+				if (t_icon_info * icon = customicons_get_icon_by_rating(rating, clienttag))
+					st.push(icon->rank);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 1;
+		}
 
 	}
 }

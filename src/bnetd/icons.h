@@ -68,6 +68,7 @@ namespace pvpgn
 		extern int prefs_get_custom_icons();
 		extern t_icon_info * get_custom_icon(t_account * account, t_clienttag clienttag);
 		extern const char * get_custom_stats_text(t_account * account, t_clienttag clienttag);
+		extern t_icon_info * customicons_get_icon_by_rating(int rating, char * clienttag);
 
 
 		extern int customicons_load(char const * filename);

@@ -48,6 +48,10 @@ namespace pvpgn
 		extern int __server_get_users(lua_State* L);
 		extern int __server_get_games(lua_State* L);
 		extern int __server_get_channels(lua_State* L);
+
+		extern int __command_get_group(lua_State* L);
+		extern int __icon_get_rank(lua_State* L);
+
 	}
 
 }

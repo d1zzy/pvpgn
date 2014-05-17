@@ -54,7 +54,6 @@ namespace pvpgn
 
 		static int skip_comments(char *buff);
 		static t_icon_var_info * _read_option(char *str, unsigned lineno);
-		static t_icon_info * _find_custom_icon(int rating, char * clienttag);
 		static char * _find_attr_key(char * clienttag);
 
 
@@ -115,7 +114,7 @@ namespace pvpgn
 						text = str_replace((char*)text, tmp, (char*)value);
 
 						// also replace {var}->rank
-						if (icon = _find_custom_icon(atoi(value), clienttag_str))
+						if (icon = customicons_get_icon_by_rating(atoi(value), clienttag_str))
 						{
 							snprintf(tmp, sizeof(tmp), "{{%s->rank}}", var->key);
 							text = str_replace((char*)text, tmp, icon->rank);
@@ -149,7 +148,7 @@ namespace pvpgn
 
 			rating = account_get_numattr(account, attr_key);
 
-			icon = _find_custom_icon(rating, clienttag_str);
+			icon = customicons_get_icon_by_rating(rating, clienttag_str);
 			return icon;
 		}
 
@@ -444,7 +443,7 @@ namespace pvpgn
 
 
 		/* Get custom icon by rating for clienttag */
-		static t_icon_info * _find_custom_icon(int rating, char * clienttag)
+		extern t_icon_info * customicons_get_icon_by_rating(int rating, char * clienttag)
 		{
 			t_elem *		curr;
 			t_elem *		curr_icon;

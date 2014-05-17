@@ -136,6 +136,10 @@ namespace pvpgn
 				{ "server_get_users", __server_get_users },
 				{ "server_get_games", __server_get_games },
 				{ "server_get_channels", __server_get_channels },
+
+				{ "command_get_group", __command_get_group },
+				{ "icon_get_rank", __icon_get_rank },
+
 				{ 0, 0 }
 			};
 			vm.reg("api", api);
