@@ -444,7 +444,7 @@ track = 60
 # Use a comma delimited list of hostnames with optional UDP port numbers
 # after colons. (port 6114 is the default for the newer tracking protocol)
 #trackaddrs = "track.pvpgn.org,localhost:9999"
-#trackaddrs = "track.pvpgn.org,track.dreaming-bg.com,bntrack.darkwings.org,track.muleslow.net"
+trackaddrs = "track.pvpgn.org,track.dreaming-bg.com,bntrack.darkwings.org,track.muleslow.net"
 
 # Change these to match your system, for example:
 location = "unknown"
