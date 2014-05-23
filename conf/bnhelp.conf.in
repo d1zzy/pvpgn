@@ -441,8 +441,9 @@
 
 %rehash
 --------------------------------------------------------
-/rehash
-	Forces the server to reload bnetd.conf
+/rehash <mode>
+	Forces the server to reload specified config. Set "all" to reload all configs.
+	<mode> = all | channels | realms | autoupdate | news | versioncheck | ipbans | helpfile | banners | tracker | commandgroups | aliasfile | transfile | tournament | icons | anongame | topiclist | lua
 
 %clan
 --------------------------------------------------------

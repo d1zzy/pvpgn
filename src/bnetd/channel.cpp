@@ -43,9 +43,9 @@
 #include "irc.h"
 #include "common/setup_after.h"
 
-+#ifdef WITH_LUA
-+#include "luainterface.h"
-+#endif
+#ifdef WITH_LUA
+#include "luainterface.h"
+#endif
 
 namespace pvpgn
 {

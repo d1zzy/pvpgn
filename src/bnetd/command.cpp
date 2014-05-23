@@ -569,7 +569,7 @@ namespace pvpgn
 					{
 						if (args[2].empty()) {
 							describe_command(c, args[0].c_str());
-							return -1;
+							return 0;
 						}
 						char const *msg = args[2].c_str(); // message
 
@@ -608,7 +608,7 @@ namespace pvpgn
 							if (args[2].empty())
 							{
 								describe_command(c, args[0].c_str());
-								return -1;
+								return 0;
 							}
 							const char * msg = args[2].c_str(); // message
 
@@ -623,7 +623,7 @@ namespace pvpgn
 							if (args[2].empty())
 							{
 								describe_command(c, args[0].c_str());
-								return -1;
+								return 0;
 							}
 							const char * username = args[2].c_str();
 
@@ -669,7 +669,7 @@ namespace pvpgn
 					if (args[1] != "invite" && args[1] != "inv")
 					{
 						describe_command(c, args[0].c_str());
-						return -1;
+						return 0;
 					}
 
 					if (args[2] == "get") {
@@ -721,7 +721,7 @@ namespace pvpgn
 					if (args[3].empty())
 					{
 						describe_command(c, args[0].c_str());
-						return -1;
+						return 0;
 					}
 					clantag = args[2].c_str(); // clan tag
 					clanname = args[3].c_str(); // clan name
@@ -756,7 +756,7 @@ namespace pvpgn
 			}
 
 			describe_command(c, args[0].c_str());
-			return -1;
+			return 0;
 		}
 
 		static int command_set_flags(t_connection * c)
@@ -776,7 +776,7 @@ namespace pvpgn
 
 			if (args[1].empty() || (args[1][0] != '+' && args[1][0] != '-')) {
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 
 			text = args[1].c_str();
@@ -835,7 +835,7 @@ namespace pvpgn
 
 			if (args[1].empty() || (args[1][0] != '+' && args[1][0] != '-')) {
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 
 			text = args[1].c_str();
@@ -903,7 +903,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 
@@ -952,7 +952,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 
@@ -1001,7 +1001,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 
@@ -1066,7 +1066,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 
@@ -1151,7 +1151,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 
@@ -1219,7 +1219,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 
@@ -1289,7 +1289,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 
@@ -1487,7 +1487,7 @@ namespace pvpgn
 
 				if (args[2].empty()) {
 					describe_command(c, args[0].c_str());
-					return -1;
+					return 0;
 				}
 				msg = args[2].c_str(); // message
 
@@ -1520,7 +1520,7 @@ namespace pvpgn
 
 				if (args[2].empty()) {
 					describe_command(c, args[0].c_str());
-					return -1;
+					return 0;
 				}
 				text = args[2].c_str(); // username
 
@@ -1560,7 +1560,7 @@ namespace pvpgn
 
 				if (args[2].empty()) {
 					describe_command(c, args[0].c_str());
-					return -1;
+					return 0;
 				}
 				text = args[2].c_str(); // username
 
@@ -1603,7 +1603,7 @@ namespace pvpgn
 
 				if (args[2].empty()) {
 					describe_command(c, args[0].c_str());
-					return -1;
+					return 0;
 				}
 				text = args[2].c_str(); // username
 
@@ -1737,7 +1737,7 @@ namespace pvpgn
 			
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // message
 
@@ -1755,7 +1755,7 @@ namespace pvpgn
 			if (args[2].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 			text = args[2].c_str(); // message
@@ -1807,7 +1807,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			char const * cname = args[1].c_str(); // channel name
 
@@ -1849,7 +1849,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // username
 
@@ -1882,7 +1882,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // message
 
@@ -2193,7 +2193,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // channelname
 
@@ -2301,7 +2301,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // username
 
@@ -2342,7 +2342,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // username
 
@@ -2389,7 +2389,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 			text = args[2].c_str(); // reason
@@ -2468,7 +2468,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 			text = args[2].c_str(); // reason
@@ -2539,7 +2539,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // username
 
@@ -2583,7 +2583,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // message
 
@@ -2609,7 +2609,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // message
 
@@ -2643,7 +2643,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // username
 
@@ -2673,7 +2673,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // username
 			if (!(account = accountlist_find_account(text)))
@@ -2706,7 +2706,7 @@ namespace pvpgn
 				if ( !(clienttag = tag_validate_client(args[1].c_str())) )
 				{
 					describe_command(c, args[0].c_str());
-					return -1;
+					return 0;
 				}
 			}
 
@@ -2737,7 +2737,7 @@ namespace pvpgn
 				if (!(clienttag = tag_validate_client(args[1].c_str())))
 				{
 					describe_command(c, args[0].c_str());
-					return -1;
+					return 0;
 				}
 			}
 
@@ -2869,7 +2869,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			dest = args[1].c_str(); // clienttag
 			difficulty = args[1].c_str(); // difficulty (only for diablo)
@@ -2907,7 +2907,7 @@ namespace pvpgn
 				if (!(cbdata.tag = tag_validate_client(dest)))
 				{
 					describe_command(c, args[0].c_str());
-					return -1;
+					return 0;
 				}
 
 				if (cbdata.diff == game_difficulty_none)
@@ -2944,7 +2944,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // clienttag
 
@@ -2963,7 +2963,7 @@ namespace pvpgn
 				if (!(clienttag = tag_validate_client(text)))
 				{
 					describe_command(c, args[0].c_str());
-					return -1;
+					return 0;
 				}
 				snprintf(msgtemp, sizeof(msgtemp), "Current channels of type %.64s", text);
 				message_send_text(c, message_type_info, c, msgtemp);
@@ -3026,7 +3026,7 @@ namespace pvpgn
 			if (args[2].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 
@@ -3082,7 +3082,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 
 			if (args[2].empty())
@@ -3266,7 +3266,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			dest = args[1].c_str(); // username;
 
@@ -3481,7 +3481,7 @@ namespace pvpgn
 			if (username[0] == '\0' || (username[0] == '#' && (username[1] < '0' || username[1] > '9')))
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 
 			if (username[0] == '#') {
@@ -3522,7 +3522,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			session = args[1].c_str(); // session id
 			min = args[1].c_str(); // minutes of ban
@@ -3701,51 +3701,50 @@ namespace pvpgn
 		{
 			int mode = restart_mode_all; // all by default
 
-			text = skip_command(text);
+			std::vector<std::string> args = split_command(text, 1);
 
-			if (text[0] == '\0')
+			if (args[1].empty())
 			{
-				message_send_text(c, message_type_info, c, "Usage:");
-				message_send_text(c, message_type_info, c, "/rehash <mode>");
-				message_send_text(c, message_type_info, c, " <mode> = all | channels | realms | autoupdate | news | versioncheck | ipbans | helpfile | banners | tracker | commandgroups | aliasfile | transfile | tournament | icons | anongame | topiclist | lua");
+				describe_command(c, args[0].c_str());
 				return 0;
 			}
+			std::string mode_str = args[1];
 
-			if (!strcasecmp(text, "all"))
+			if (mode_str == "all")
 				mode = restart_mode_channels;
-			else if (!strcasecmp(text, "channels"))
+			else if (mode_str == "channels")
 				mode = restart_mode_channels;
-			else if (!strcasecmp(text, "realms"))
+			else if (mode_str == "realms")
 				mode = restart_mode_realms;
-			else if (!strcasecmp(text, "autoupdate"))
+			else if (mode_str == "autoupdate")
 				mode = restart_mode_autoupdate;
-			else if (!strcasecmp(text, "news"))
+			else if (mode_str == "news")
 				mode = restart_mode_news;
-			else if (!strcasecmp(text, "versioncheck"))
+			else if (mode_str == "versioncheck")
 				mode = restart_mode_versioncheck;
-			else if (!strcasecmp(text, "ipbans"))
+			else if (mode_str == "ipbans")
 				mode = restart_mode_ipbans;
-			else if (!strcasecmp(text, "helpfile"))
+			else if (mode_str == "helpfile")
 				mode = restart_mode_helpfile;
-			else if (!strcasecmp(text, "banners"))
+			else if (mode_str == "banners")
 				mode = restart_mode_banners;
-			else if (!strcasecmp(text, "tracker"))
+			else if (mode_str == "tracker")
 				mode = restart_mode_tracker;
-			else if (!strcasecmp(text, "commandgroups"))
+			else if (mode_str == "commandgroups")
 				mode = restart_mode_commandgroups;
-			else if (!strcasecmp(text, "aliasfile"))
+			else if (mode_str == "aliasfile")
 				mode = restart_mode_aliasfile;
-			else if (!strcasecmp(text, "transfile"))
+			else if (mode_str == "transfile")
 				mode = restart_mode_transfile;
-			else if (!strcasecmp(text, "tournament"))
+			else if (mode_str == "tournament")
 				mode = restart_mode_tournament;
-			else if (!strcasecmp(text, "icons"))
+			else if (mode_str == "icons")
 				mode = restart_mode_icons;
-			else if (!strcasecmp(text, "anongame"))
+			else if (mode_str == "anongame")
 				mode = restart_mode_anongame;
-			else if (!strcasecmp(text, "topiclist"))
+			else if (mode_str == "topiclist")
 				mode = restart_mode_topiclist;
-			else if (!strcasecmp(text, "lua"))
+			else if (mode_str == "lua")
 				mode = restart_mode_lua;
 			else
 			{
@@ -3772,7 +3771,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str();
 
@@ -3854,7 +3853,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			rank_s = args[1].c_str(); // rank
 			tag_s = args[2].c_str(); // clienttag
@@ -4094,7 +4093,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			delta_s = args[1].c_str(); // timer delta
 			msgtext_s = args[2].c_str(); // message text display when timer elapsed
@@ -4134,7 +4133,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 
@@ -4251,7 +4250,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 			if (!args[2].empty())
@@ -4308,7 +4307,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // username
 
@@ -4339,7 +4338,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 			if (!args[2].empty())
@@ -4396,7 +4395,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // username
 
@@ -4424,7 +4423,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			flag_s = args[1].c_str(); // flag
 
@@ -4445,7 +4444,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			tag_s = args[1].c_str(); // flag
 
@@ -4482,7 +4481,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			text = args[1].c_str(); // ip or username
 
@@ -4540,7 +4539,7 @@ namespace pvpgn
 			if (args[2].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str(); // username
 			key = args[2].c_str(); // key
@@ -4723,7 +4722,7 @@ namespace pvpgn
 			if (((args[1] == "list" || args[1] == "l") && args[2].empty()) || !(args[1] == "list" || args[1] == "l") && args[3].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			command = args[1].c_str(); // command
 			username = args[2].c_str(); // username
@@ -5016,7 +5015,7 @@ namespace pvpgn
 			if (args[2].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return -1;
+				return 0;
 			}
 			username = args[1].c_str();
 			tag = args[2].c_str(); // clienttag
