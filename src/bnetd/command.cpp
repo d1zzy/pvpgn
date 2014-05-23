@@ -9,6 +9,7 @@
  * Copyright (C) 2003,2004  Aaron
  * Copyright (C) 2004  Donny Redmond (dredmond@linuxmail.org)
  * Copyright (C) 2008  Pelish (pelish@gmail.com)
+ * Copyright (C) 2014  HarpyWar (harpywar@gmail.com)
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -84,6 +85,10 @@
 
 #include "attrlayer.h"
 
+#ifdef WITH_LUA
+#include "luainterface.h"
+#endif
+
 namespace pvpgn
 {
 
@@ -129,6 +134,12 @@ namespace pvpgn
 				message_send_text(user_c, message_type_error, user_c, "That user is not logged on.");
 				return;
 			}
+
+
+#ifdef WITH_LUA
+			if (lua_handle_user(user_c, dest_c, text, luaevent_user_whisper) == 1)
+				return;
+#endif
 
 			if (conn_get_dndstr(dest_c))
 			{
@@ -406,12 +417,7 @@ namespace pvpgn
 			{ "/ban", _handle_ban_command },
 			{ "/unban", _handle_unban_command },
 			{ "/tos", _handle_tos_command },
-			{ NULL, NULL }
 
-		};
-
-		static const t_command_table_row extended_command_table[] =
-		{
 			{ "/ann", _handle_announce_command },
 			{ "/r", _handle_reply_command },
 			{ "/reply", _handle_reply_command },
@@ -498,33 +504,12 @@ namespace pvpgn
 				return 0;
 			}
 
-			for (p = standard_command_table; p->command_string != NULL; p++)
-			{
-				if (strstart(text, p->command_string) == 0)
-				{
-					if (!(command_get_group(p->command_string)))
-					{
-						message_send_text(c, message_type_error, c, "This command has been deactivated");
-						return 0;
-					}
-					if (!((command_get_group(p->command_string) & account_get_command_groups(conn_get_account(c)))))
-					{
-						message_send_text(c, message_type_error, c, "This command is reserved for admins.");
-						return 0;
-					}
-					if (p->command_handler != NULL) return ((p->command_handler)(c, text));
-				}
-			}
-
-
-			if (prefs_get_extra_commands() == 0)
-			{
-				message_send_text(c, message_type_error, c, "Unknown command.");
-				eventlog(eventlog_level_debug, __FUNCTION__, "got unknown standard command \"%s\"", text);
+#ifdef WITH_LUA
+			if (lua_handle_command(c, text) > 0)
 				return 0;
-			}
+#endif
 
-			for (p = extended_command_table; p->command_string != NULL; p++)
+			for (p = standard_command_table; p->command_string != NULL; p++)
 			{
 				if (strstart(text, p->command_string) == 0)
 				{
@@ -3714,7 +3699,61 @@ namespace pvpgn
 
 		static int _handle_rehash_command(t_connection * c, char const *text)
 		{
-			server_restart_wraper();
+			int mode = restart_mode_all; // all by default
+
+			text = skip_command(text);
+
+			if (text[0] == '\0')
+			{
+				message_send_text(c, message_type_info, c, "Usage:");
+				message_send_text(c, message_type_info, c, "/rehash <mode>");
+				message_send_text(c, message_type_info, c, " <mode> = all | channels | realms | autoupdate | news | versioncheck | ipbans | helpfile | banners | tracker | commandgroups | aliasfile | transfile | tournament | icons | anongame | topiclist | lua");
+				return 0;
+			}
+
+			if (!strcasecmp(text, "all"))
+				mode = restart_mode_channels;
+			else if (!strcasecmp(text, "channels"))
+				mode = restart_mode_channels;
+			else if (!strcasecmp(text, "realms"))
+				mode = restart_mode_realms;
+			else if (!strcasecmp(text, "autoupdate"))
+				mode = restart_mode_autoupdate;
+			else if (!strcasecmp(text, "news"))
+				mode = restart_mode_news;
+			else if (!strcasecmp(text, "versioncheck"))
+				mode = restart_mode_versioncheck;
+			else if (!strcasecmp(text, "ipbans"))
+				mode = restart_mode_ipbans;
+			else if (!strcasecmp(text, "helpfile"))
+				mode = restart_mode_helpfile;
+			else if (!strcasecmp(text, "banners"))
+				mode = restart_mode_banners;
+			else if (!strcasecmp(text, "tracker"))
+				mode = restart_mode_tracker;
+			else if (!strcasecmp(text, "commandgroups"))
+				mode = restart_mode_commandgroups;
+			else if (!strcasecmp(text, "aliasfile"))
+				mode = restart_mode_aliasfile;
+			else if (!strcasecmp(text, "transfile"))
+				mode = restart_mode_transfile;
+			else if (!strcasecmp(text, "tournament"))
+				mode = restart_mode_tournament;
+			else if (!strcasecmp(text, "icons"))
+				mode = restart_mode_icons;
+			else if (!strcasecmp(text, "anongame"))
+				mode = restart_mode_anongame;
+			else if (!strcasecmp(text, "topiclist"))
+				mode = restart_mode_topiclist;
+			else if (!strcasecmp(text, "lua"))
+				mode = restart_mode_lua;
+			else
+			{
+				message_send_text(c, message_type_info, c, "Invalid mode.");
+				return 0;
+			}
+
+			server_restart_wraper(mode);
 			return 0;
 		}
 

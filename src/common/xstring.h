@@ -35,6 +35,16 @@ namespace pvpgn
 	extern const char *str_replace(char *orig, char *rep, char *with);
 	extern std::vector<std::string> split_command(char const * text, int args_count);
 
+	/*
+	Fix for std::string for some unix compilers
+	http://stackoverflow.com/a/20861692/701779
+	*/
+	template < typename T > std::string std_to_string(const T& n)
+	{
+		std::ostringstream stm;
+		stm << n;
+		return stm.str();
+	}
 }
 
 #endif

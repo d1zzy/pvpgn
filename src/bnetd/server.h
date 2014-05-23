@@ -71,6 +71,29 @@ namespace pvpgn
 
 	namespace bnetd
 	{
+		enum restart_mode
+		{
+			restart_mode_none, // always first (0)
+
+			restart_mode_all,
+			restart_mode_channels,
+			restart_mode_realms,
+			restart_mode_autoupdate,
+			restart_mode_news,
+			restart_mode_versioncheck,
+			restart_mode_ipbans,
+			restart_mode_helpfile,
+			restart_mode_banners,
+			restart_mode_tracker,
+			restart_mode_commandgroups,
+			restart_mode_aliasfile,
+			restart_mode_transfile,
+			restart_mode_tournament,
+			restart_mode_icons,
+			restart_mode_anongame,
+			restart_mode_topiclist,
+			restart_mode_lua
+		};
 
 		extern unsigned int server_get_uptime(void);
 		extern unsigned int server_get_starttime(void);
@@ -81,7 +104,7 @@ namespace pvpgn
 		extern int server_process(void);
 
 		extern void server_quit_wraper(void);
-		extern void server_restart_wraper(void);
+		extern void server_restart_wraper(int mode);
 		extern void server_save_wraper(void);
 
 	}

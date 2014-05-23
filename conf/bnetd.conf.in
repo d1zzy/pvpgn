@@ -79,6 +79,7 @@ storage_path = "file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}
 #----------------------------------------------------------------------------#
 
 filedir     = "${LOCALSTATEDIR}/files"
+scriptdir   = "${LOCALSTATEDIR}/lua"
 reportdir   = "${LOCALSTATEDIR}/reports"
 chanlogdir  = "${LOCALSTATEDIR}/chanlogs"
 motdfile    = "${SYSCONFDIR}/bnmotd.txt"
@@ -317,9 +318,6 @@ hide_started_games = true
 
 # Should non-permanent channels hidden on the channel list?
 hide_temp_channels = true
-
-# Should the extended /-commands be avaliable? (of course!)
-extra_commands = true
 
 # Should any and all disconnects to be counted as losses?
 # (Turning this on will override the user's choice in ladder games!)

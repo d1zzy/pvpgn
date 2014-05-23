@@ -76,6 +76,10 @@
 #include "common/setup_after.h"
 #include "icons.h"
 
+#ifdef WITH_LUA
+#include "luainterface.h"
+#endif
+
 namespace pvpgn
 {
 
@@ -735,6 +739,10 @@ namespace pvpgn
 					if (account_save(conn_get_account(c), FS_FORCE) < 0)
 						eventlog(eventlog_level_error, __FUNCTION__, "cannot sync account (sync_on_logoff)");
 				}
+
+#ifdef WITH_LUA
+				lua_handle_user(c, NULL, NULL, luaevent_user_disconnect);
+#endif
 
 				if (account_get_conn(c->protocol.account) == c)  /* make sure you don't set this when allready on new conn (relogin with same account) */
 					account_set_conn(c->protocol.account, NULL);
@@ -2183,6 +2191,7 @@ namespace pvpgn
 				if (!(c->protocol.game = gamelist_find_game_available(gamename, c->protocol.client.clienttag, type))
 					&& !gamelist_find_game_available(gamename, c->protocol.client.clienttag, game_type_all)) {
 					/* do not allow creation of games with same name of same clienttag when game is not started or done */
+					// create game with initial values
 					c->protocol.game = game_create(gamename, gamepass, gameinfo, type, version, c->protocol.client.clienttag, conn_get_gameversion(c));
 
 					if (c->protocol.game && conn_get_realm(c) && conn_get_charname(c)) {
@@ -2193,10 +2202,17 @@ namespace pvpgn
 				}
 
 				if (c->protocol.game) {
+					// add new player to the game
 					if (game_add_player(conn_get_game(c), gamepass, version, c) < 0) {
 						c->protocol.game = NULL; // bad password or version #
 						return -1;
 					}
+
+#ifdef WITH_LUA
+					// handle game create when it's owner joins the game
+					if (c == game_get_owner(c->protocol.game))
+						lua_handle_game(c->protocol.game, NULL, luaevent_game_create);
+#endif
 
 					if (game_is_ladder(c->protocol.game)) {
 						if (c == game_get_owner(c->protocol.game))

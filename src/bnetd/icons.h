@@ -1,4 +1,6 @@
 /*
+* Copyright (C) 2014  HarpyWar (harpywar@gmail.com)
+*
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
 * as published by the Free Software Foundation; either version 2
@@ -71,6 +73,7 @@ namespace pvpgn
 		extern int prefs_get_custom_icons();
 		extern t_icon_info * customicons_get_icon_by_account(t_account * account, t_clienttag clienttag);
 		extern const char * customicons_get_stats_text(t_account * account, t_clienttag clienttag);
+		extern t_icon_info * customicons_get_icon_by_rating(int rating, char * clienttag);
 
 
 		extern int customicons_load(char const * filename);
