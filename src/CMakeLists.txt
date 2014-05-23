@@ -19,6 +19,10 @@ if(WITH_FLAG_ANSIPEDANTIC)
     add_definitions("-pedantic -ansi")
 endif(WITH_FLAG_ANSIPEDANTIC)
 
+if(LUA_FOUND)
+    add_definitions("-DWITH_LUA")
+endif(LUA_FOUND)
+
 if(MYSQL_FOUND)
     add_definitions("-DWITH_SQL_MYSQL")
 endif(MYSQL_FOUND)

@@ -16,6 +16,7 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 /*****/
+#ifdef WITH_LUA
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_LUAOBJECTS_PROTOS
 #define INCLUDED_LUAOBJECTS_PROTOS
@@ -50,5 +51,6 @@ namespace pvpgn
 
 }
 
+#endif
 #endif
 #endif

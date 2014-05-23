@@ -59,7 +59,7 @@ storage_path = file:mode=plain;dir=var\users;clan=var\clans;team=var\teams;defau
 #----------------------------------------------------------------------------#
 
 filedir     = files
-scriptdir   = script
+scriptdir   = lua
 reportdir   = var\reports
 chanlogdir  = var\chanlogs
 motdfile    = conf\bnmotd.txt

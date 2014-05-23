@@ -15,6 +15,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#ifdef WITH_LUA
 #include "common/setup_before.h"
 
 #include "team.h"
@@ -111,7 +112,7 @@ namespace pvpgn
 			}
 
 			// handle start event
-			lua_handle_server(0, luaevent_server_start);
+			lua_handle_server(luaevent_server_start);
 		}
 
 
@@ -381,8 +382,9 @@ namespace pvpgn
 		}
 
 
-		extern void lua_handle_channel(t_channel * channel, t_connection * c, char const * message_text, t_message_type message_type, t_luaevent_type luaevent)
+		extern int lua_handle_channel(t_channel * channel, t_connection * c, char const * message_text, t_message_type message_type, t_luaevent_type luaevent)
 		{
+			int result = 0;
 			t_account * account;
 			const char * func_name;
 			switch (luaevent)
@@ -397,19 +399,19 @@ namespace pvpgn
 				func_name = "handle_channel_userleft";
 				break;
 			default:
-				return;
+				return 0;
 			}
 			try
 			{
 				if (!(account = conn_get_account(c)))
-					return;
+					return 0;
 
 				std::map<std::string, std::string> o_account = get_account_object(account);
 				std::map<std::string, std::string> o_channel = get_channel_object(channel);
 
 				// handle_channel_userleft & handle_channel_message
 				if (message_text)
-					lua::transaction(vm) << lua::lookup(func_name) << o_channel << o_account << message_text << message_type << lua::invoke << lua::end; // invoke lua function
+					lua::transaction(vm) << lua::lookup(func_name) << o_channel << o_account << message_text << message_type << lua::invoke >> result << lua::end; // invoke lua function
 				// other functions
 				else
 					lua::transaction(vm) << lua::lookup(func_name) << o_channel << o_account << lua::invoke << lua::end; // invoke lua function
@@ -422,6 +424,7 @@ namespace pvpgn
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
 			}
+			return result;
 		}
 
 
@@ -476,13 +479,13 @@ namespace pvpgn
 		}
 
 
-		extern void lua_handle_server(unsigned int time, t_luaevent_type luaevent)
+		extern void lua_handle_server(t_luaevent_type luaevent)
 		{
 			const char * func_name;
 			switch (luaevent)
 			{
 			case luaevent_server_start:
-				func_name = "main";
+				func_name = "main"; // when all lua scripts are loaded
 				break;
 			case luaevent_server_mainloop:
 				func_name = "handle_server_mainloop"; // one time per second
@@ -492,7 +495,7 @@ namespace pvpgn
 			}
 			try
 			{
-				lua::transaction(vm) << lua::lookup(func_name) << time << lua::invoke << lua::end; // invoke lua function
+				lua::transaction(vm) << lua::lookup(func_name) << lua::invoke << lua::end; // invoke lua function
 			}
 			catch (const std::exception& e)
 			{
@@ -508,3 +511,4 @@ namespace pvpgn
 
 	}
 }
+#endif

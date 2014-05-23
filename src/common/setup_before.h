@@ -389,13 +389,12 @@ const int BNETD_MAX_SOCKVAL = 8192;
 # define HAVE_EPOLL	1
 #endif
 
+#if defined(WITH_LUA)
+#define WITH_LUA	1
+#endif
+
 #if defined(WITH_SQL_MYSQL) || defined(WITH_SQL_PGSQL) || defined(WITH_SQL_SQLITE3) || defined(WITH_SQL_ODBC)
 #define WITH_SQL	1
 #endif
-
-// FIXME: change it
-//#if defined(WITH_LUA)
-#define WITH_LUA 1
-//#endif
 
 #endif

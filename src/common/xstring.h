@@ -18,9 +18,11 @@
 #ifndef INCLUDED_XSTRING_H
 #define INCLUDED_XSTRING_H
 
+#include <string>
+#include <sstream>
+
 namespace pvpgn
 {
-
 	extern char *		strtolower(char * str);
 	extern char *		hexstrdup(unsigned char const * src);
 	extern unsigned int	hexstrtoraw(unsigned char const * src, char * data, unsigned int datalen);
@@ -30,7 +32,15 @@ namespace pvpgn
 	extern char *		str_strip_affix(char * str, char const * affix);
 	extern const char *str_replace(char *orig, char *rep, char *with);
 
-
+	/*
+	Fix for std::string for some unix compilers
+	http://stackoverflow.com/a/20861692/701779
+	*/
+	template < typename T > std::string std_to_string(const T& n)
+	{
+		std::ostringstream stm;
+		stm << n;
+		return stm.str();
+	}
 }
-
 #endif

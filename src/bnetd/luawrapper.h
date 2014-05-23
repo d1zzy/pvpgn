@@ -3,7 +3,7 @@
  * https://code.google.com/p/luasp/
  */
 
-
+#ifdef WITH_LUA
 #ifndef __LUAWRAPPER_H
 #define __LUAWRAPPER_H
 
@@ -15,6 +15,7 @@ extern "C"
 }
 
 #include <string>
+#include <cstring>
 #include <stdexcept>
 #include <map>
 #include <vector>
@@ -105,7 +106,7 @@ namespace lua
 		void push_boolean(int v) throw() { lua_pushboolean(st, v); }
 		void push(double v) throw() { lua_pushnumber(st, v); }
 		void push(const std::string& v) throw() { lua_pushlstring(st, v.c_str(), v.length()); }
-		void push(const char* v) throw() { lua_pushlstring(st, v, strlen(v)); }
+		void push(const char* v) throw() { lua_pushlstring(st, v, std::strlen(v) ); }
 
 		// push to stack std::map
 		template<typename _key, typename _val, typename _comp, typename _alloc>
@@ -350,4 +351,5 @@ namespace lua
 }
 
 
+#endif
 #endif

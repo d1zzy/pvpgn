@@ -15,6 +15,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#ifdef WITH_LUA
 #include "common/setup_before.h"
 #define GAME_INTERNAL_ACCESS
 
@@ -22,7 +23,7 @@
 #include <cerrno>
 #include <cstring>
 #include <cstdlib>
-
+#include <sstream>
 
 #include "compat/strcasecmp.h"
 #include "compat/snprintf.h"
@@ -31,6 +32,7 @@
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/hashtable.h"
+#include "common/xstring.h"
 
 #include "connection.h"
 #include "message.h"
@@ -186,7 +188,7 @@ namespace pvpgn
 						attrvalue = account_get_strattr(account, attrkey);
 						break;
 					case attr_type_num:
-						attrvalue = std::to_string(account_get_numattr(account, attrkey));
+						attrvalue = std_to_string(account_get_numattr(account, attrkey));
 						break;
 					case attr_type_bool:
 						attrvalue = account_get_boolattr(account, attrkey) == 0 ? "false" : "true";
@@ -284,7 +286,7 @@ namespace pvpgn
 		extern int __account_get_friends(lua_State* L)
 		{
 			const char *username;
-			std::vector<std::map<std::string, std::string>> friends;
+			std::vector<std::map<std::string, std::string> > friends;
 
 			try
 			{
@@ -325,7 +327,7 @@ namespace pvpgn
 		extern int __account_get_teams(lua_State* L)
 		{
 			const char *username;
-			std::vector<std::map<std::string, std::string>> teams;
+			std::vector<std::map<std::string, std::string> > teams;
 
 			try
 			{
@@ -365,7 +367,7 @@ namespace pvpgn
 		extern int __clan_get_members(lua_State* L)
 		{
 			unsigned int clanid;
-			std::vector<std::map<std::string, std::string>> members;
+			std::vector<std::map<std::string, std::string> > members;
 
 			try
 			{
@@ -591,14 +593,14 @@ namespace pvpgn
 		extern int __icon_get_rank(lua_State* L)
 		{
 			int rating;
-			char * clienttag;
+			char const * clienttag;
 			try
 			{
 				lua::stack st(L);
 				// get args
 				st.at(1, rating);
 				st.at(2, clienttag);
-				if (t_icon_info * icon = customicons_get_icon_by_rating(rating, clienttag))
+				if (t_icon_info * icon = customicons_get_icon_by_rating(rating, (char*)clienttag))
 					st.push(icon->rank);
 			}
 			catch (const std::exception& e)
@@ -614,3 +616,4 @@ namespace pvpgn
 
 	}
 }
+#endif

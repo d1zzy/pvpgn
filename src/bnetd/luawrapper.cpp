@@ -3,7 +3,7 @@
  * Copyright (C) Anton Burdinuk
  */
 
-
+#ifdef WITH_LUA
 #include "luawrapper.h"
 
 namespace lua
@@ -136,3 +136,4 @@ void lua::bind::m_invoke(void) throw(std::exception)
 		}
 	}
 }
+#endif

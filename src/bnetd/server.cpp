@@ -1493,7 +1493,7 @@ namespace pvpgn
 					prev_time = now;
 					timerlist_check_timers(now);
 #ifdef WITH_LUA
-					lua_handle_server(now, luaevent_server_mainloop);
+					lua_handle_server(luaevent_server_mainloop);
 #endif
 				}
 

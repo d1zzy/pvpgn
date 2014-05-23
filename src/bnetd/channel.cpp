@@ -549,14 +549,14 @@ namespace pvpgn
 				conn_set_tmpOP_channel(connection, NULL);
 			}
 
+#ifdef WITH_LUA
+			lua_handle_channel(channel, connection, text, type, luaevent_channel_userleft);
+#endif
+
 			if (!channel->memberlist && !(channel->flags & channel_flags_permanent)) /* if channel is empty, delete it unless it's a permanent channel */
 			{
 				channel_destroy(channel, &curr2);
 			}
-
-#ifdef WITH_LUA
-			lua_handle_channel(channel, connection, text, type, luaevent_channel_userleft);
-#endif
 
 			return 0;
 		}
@@ -759,7 +759,8 @@ namespace pvpgn
 			}
 
 #ifdef WITH_LUA
-			lua_handle_channel((t_channel*)channel, me, text, type, luaevent_channel_message);
+			if (type != message_type_part)
+				lua_handle_channel((t_channel*)channel, me, text, type, luaevent_channel_message);
 #endif
 		}
 

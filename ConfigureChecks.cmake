@@ -36,6 +36,10 @@ check_library_exists(socket socket "" HAVE_LIBSOCKET)
 check_library_exists(resolv inet_aton "" HAVE_LIBRESOLV)
 check_library_exists(bind __inet_aton "" HAVE_LIBBIND)
 
+if(WITH_LUA)
+    find_package(Lua REQUIRED)
+endif(WITH_LUA)
+
 # storage module checks
 if(WITH_ODBC)
     find_package(ODBC REQUIRED)

@@ -450,6 +450,9 @@ namespace pvpgn
 			t_iconset_info *		iconset;
 			t_icon_info *		icon;
 
+			if (!clienttag)
+				return NULL;
+
 			if (icon_head) {
 				LIST_TRAVERSE(icon_head, curr)
 				{
