@@ -39,8 +39,19 @@ namespace pvpgn
 
 	namespace d2cs
 	{
+		typedef enum
+		{
+			character_class_amazon,
+			character_class_sorceress,
+			character_class_necromancer,
+			character_class_paladin,
+			character_class_barbarian,
+			character_class_druid,
+			character_class_assassin
+		} t_character_class;
 
 		static int d2charsave_init(void * buffer, char const * charname, unsigned char chclass, unsigned short status);
+		static int d2charsave_init_from_d2s(unsigned char * buffer, char const * charname, unsigned char chclass, unsigned short status, unsigned int size);
 		static int d2charinfo_init(t_d2charinfo_file * chardata, char const * account, char const * charname,
 			unsigned char chclass, unsigned short status);
 
@@ -51,6 +62,32 @@ namespace pvpgn
 			bn_byte_set((bn_byte *)((char *)buffer + D2CHARSAVE_CLASS_OFFSET), chclass);
 			bn_short_set((bn_short *)((char *)buffer + D2CHARSAVE_STATUS_OFFSET), status);
 			std::strncpy((char *)buffer + D2CHARSAVE_CHARNAME_OFFSET, charname, MAX_CHARNAME_LEN);
+			return 0;
+		}
+
+		/* create new character from newbie.save that is normal d2s character file */
+		static int d2charsave_init_from_d2s(unsigned char * buffer, char const * charname, unsigned char chclass, unsigned short status, unsigned int size)
+		{
+			unsigned int checksum;
+
+			ASSERT(buffer, -1);
+			ASSERT(charname, -1);
+
+			// class
+			bn_byte_set((bn_byte *)((char *)buffer + D2CHARSAVE_CLASS_OFFSET_109), chclass);
+
+			// status (ladder, hardcore, expansion, etc)
+			bn_short_set((bn_short *)((char *)buffer + D2CHARSAVE_STATUS_OFFSET_109), status);
+
+			// charname
+			std::strncpy((char *)buffer + D2CHARSAVE_CHARNAME_OFFSET_109, new char[MAX_CHARNAME_LEN], MAX_CHARNAME_LEN); // clear first
+			std::strncpy((char *)buffer + D2CHARSAVE_CHARNAME_OFFSET_109, charname, MAX_CHARNAME_LEN); 
+
+			// checksum
+			checksum = d2charsave_checksum((unsigned char *)buffer, size, D2CHARSAVE_CHECKSUM_OFFSET);
+			bn_int_set((bn_int *)(buffer + D2CHARSAVE_CHECKSUM_OFFSET), 0); // clear first
+			bn_int_set((bn_int *)(buffer + D2CHARSAVE_CHECKSUM_OFFSET), checksum);
+
 			return 0;
 		}
 
@@ -109,11 +146,15 @@ namespace pvpgn
 		{
 			t_d2charinfo_file	chardata;
 			char			* savefile, *infofile;
-			char			buffer[1024];
+			const char *			newbiefile;
+			unsigned char			buffer[MAX_SAVEFILE_SIZE];
 			unsigned int		size;
+			unsigned int	version;
 			int			ladder_time, now;
 			std::FILE			* fp;
 
+
+			int status_init = status;
 
 			ASSERT(account, -1);
 			ASSERT(charname, -1);
@@ -151,13 +192,40 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got bad account name \"%s\"", account);
 				return -1;
 			}
+
+			/* get character template file depending of it's class */
+			switch ((t_character_class)chclass)
+			{
+				case character_class_amazon:
+						newbiefile = prefs_get_charsave_newbie_amazon();
+						break;
+				case character_class_sorceress:
+						newbiefile = prefs_get_charsave_newbie_sorceress();
+						break;
+				case character_class_necromancer:
+						newbiefile = prefs_get_charsave_newbie_necromancer();
+						break;
+				case character_class_paladin:
+						newbiefile = prefs_get_charsave_newbie_paladin();
+						break;
+				case character_class_barbarian:
+						newbiefile = prefs_get_charsave_newbie_barbarian();
+						break;
+				case character_class_druid:
+						newbiefile = prefs_get_charsave_newbie_druid();
+						break;
+				case character_class_assassin:
+						newbiefile = prefs_get_charsave_newbie_assasin();
+						break;
+			}
+
 			size = sizeof(buffer);
-			if (file_read(prefs_get_charsave_newbie(), buffer, &size) < 0) {
+			if (file_read(newbiefile, buffer, &size) < 0) {
 				eventlog(eventlog_level_error, __FUNCTION__, "error loading newbie save file");
 				return -1;
 			}
 			if (size >= sizeof(buffer)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "newbie save file \"%s\" is corrupt (length %lu, expected <%lu)", prefs_get_charsave_newbie(), (unsigned long)size, (unsigned long)sizeof(buffer));
+				eventlog(eventlog_level_error, __FUNCTION__, "newbie save file \"%s\" is corrupt (length %lu, expected <%lu)", newbiefile, (unsigned long)size, (unsigned long)sizeof(buffer));
 				return -1;
 			}
 
@@ -178,7 +246,13 @@ namespace pvpgn
 			if ((ladder_time > 0) && (now < ladder_time))
 				charstatus_set_ladder(status, 0);
 
-			d2charsave_init(buffer, charname, chclass, status);
+			/* create from newbie.save or normal d2s template? */
+			version = bn_int_get(buffer + D2CHARSAVE_VERSION_OFFSET);
+			if (version >= 0x0000005C)
+				d2charsave_init_from_d2s(buffer, charname, chclass, status_init, size);
+			else
+				d2charsave_init(buffer, charname, chclass, status);
+
 			d2charinfo_init(&chardata, account, charname, chclass, status);
 
 			if (file_write(infofile, &chardata, sizeof(chardata)) < 0) {

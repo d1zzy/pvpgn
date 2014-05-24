@@ -108,10 +108,18 @@ charinfodir		=	"${LOCALSTATEDIR}/charinfo"
 bak_charsavedir		=	"${LOCALSTATEDIR}/bak/charsave"
 bak_charinfodir		=	"${LOCALSTATEDIR}/bak/charinfo"
 ladderdir		=	"${LOCALSTATEDIR}/ladders"
-newbiefile		=	"${LOCALSTATEDIR}/files/newbie.save"
 transfile		=	"${SYSCONFDIR}/address_translation.conf"
 d2gsconffile		=	"${SYSCONFDIR}/d2server.ini"
 #pidfile		=	"${LOCALSTATEDIR}/d2cs.pid"
+
+# d2s template for a new created characters
+newbiefile_amazon		=	"${LOCALSTATEDIR}/files/newbie.save"
+newbiefile_sorceress		=	"${LOCALSTATEDIR}/files/newbie.save"
+newbiefile_necromancer		=	"${LOCALSTATEDIR}/files/newbie.save"
+newbiefile_paladin		=	"${LOCALSTATEDIR}/files/newbie.save"
+newbiefile_barbarian		=	"${LOCALSTATEDIR}/files/newbie.save"
+newbiefile_druid		=	"${LOCALSTATEDIR}/files/newbie.save"
+newbiefile_assasin		=	"${LOCALSTATEDIR}/files/newbie.save"
 
 #										#
 #################################################################################

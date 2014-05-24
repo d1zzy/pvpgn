@@ -22,13 +22,16 @@
 #define D2CHARSAVE_VERSION_OFFSET			0x04
 #define D2CHARSAVE_CHECKSUM_OFFSET			0x0C
 
-/* used in both save init and convert */
-#define D2CHARSAVE_STATUS_OFFSET			0x18	/* newbie.save offset or old version */
-#define D2CHARSAVE_STATUS_OFFSET_109			0x24	/* 1.09 or later version (1.10) */
-
-/* only used for save init to newbie.save file */
+/* newbie.save offset or old version */
+#define D2CHARSAVE_STATUS_OFFSET			0x18	
 #define D2CHARSAVE_CLASS_OFFSET				0x22
 #define D2CHARSAVE_CHARNAME_OFFSET			0x08
+
+/* 1.09 or later version (1.10) */
+#define D2CHARSAVE_CLASS_OFFSET_109			0x28
+#define D2CHARSAVE_STATUS_OFFSET_109			0x24
+#define D2CHARSAVE_CHARNAME_OFFSET_109			0x14
+
 
 /* unused */
 #define D2CHARSAVE_LEVEL_OFFSET				0x24
