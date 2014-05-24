@@ -371,6 +371,7 @@ namespace pvpgn
 		static int _handle_moderate_command(t_connection * c, char const * text);
 		static int _handle_clearstats_command(t_connection * c, char const * text);
 		static int _handle_tos_command(t_connection * c, char const * text);
+		static int _handle_alert_command(t_connection * c, char const * text);
 
 		static const t_command_table_row standard_command_table[] =
 		{
@@ -487,6 +488,7 @@ namespace pvpgn
 			{ "/moderate", _handle_moderate_command },
 			{ "/clearstats", _handle_clearstats_command },
 			{ "/icon", handle_icon_command },
+			{ "/alert", _handle_alert_command },
 
 			{ NULL, NULL }
 
@@ -5058,6 +5060,58 @@ namespace pvpgn
 				_reset_w3_stats(account, CLIENTTAG_WAR3XP_UINT, c);
 
 			ladders.update();
+
+			return 0;
+		}
+
+		/* Send message to all clients (similar to announce, but in messagebox) */
+		static int _handle_alert_command(t_connection * c, char const * text)
+		{
+			char const * channel_name;
+			const char * topic;
+			t_clienttag  clienttag;
+			t_clienttag  clienttag_dest;
+
+			clienttag = conn_get_clienttag(c);
+			// disallow clients that doesn't support SID_MESSAGEBOX
+			if (clienttag != CLIENTTAG_STARCRAFT_UINT && clienttag != CLIENTTAG_BROODWARS_UINT && clienttag != CLIENTTAG_STARJAPAN_UINT && clienttag != CLIENTTAG_SHAREWARE_UINT &&
+				clienttag != CLIENTTAG_DIABLORTL_UINT && clienttag != CLIENTTAG_DIABLOSHR_UINT &&
+				clienttag != CLIENTTAG_WARCIIBNE_UINT && clienttag != CLIENTTAG_BNCHATBOT_UINT)
+			{
+				message_send_text(c, message_type_error, c, "Your game client doesn't support MessageBox.");
+				return -1;
+			}
+
+			std::vector<std::string> args = split_command(text, 1);
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return 0;
+			}
+
+			// reduntant line - it adds a caption to message box
+			std::string goodtext = args[1] + "\n\n***************************\nBy " + conn_get_username(c);
+
+			// caption
+			snprintf(msgtemp, sizeof(msgtemp), "Information from %.64s", prefs_get_servername());
+
+			t_connection * conn;
+			t_elem const * curr;
+			// send to online users
+			LIST_TRAVERSE_CONST(connlist(), curr)
+			{
+				if (conn = (t_connection*)elem_get_data(curr))
+				{
+					clienttag_dest = conn_get_clienttag(conn);
+
+					if (clienttag_dest != CLIENTTAG_STARCRAFT_UINT && clienttag_dest != CLIENTTAG_BROODWARS_UINT && clienttag_dest != CLIENTTAG_STARJAPAN_UINT && clienttag_dest != CLIENTTAG_SHAREWARE_UINT &&
+						clienttag_dest != CLIENTTAG_DIABLORTL_UINT && clienttag_dest != CLIENTTAG_DIABLOSHR_UINT &&
+						clienttag_dest != CLIENTTAG_WARCIIBNE_UINT && clienttag_dest != CLIENTTAG_BNCHATBOT_UINT) {
+						continue;
+					}
+					messagebox_show(conn, goodtext.c_str(), msgtemp);
+				}
+			}
 
 			return 0;
 		}

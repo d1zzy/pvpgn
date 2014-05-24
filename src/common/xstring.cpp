@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <iomanip>
 
 #include "compat/strdup.h"
 #include "common/xalloc.h"
@@ -365,4 +366,17 @@ namespace pvpgn
 
 		return result;
 	}
+
+	/* Replace "\n" in string to a new line character '\n' */
+	extern std::string str_replace_nl(char const * text)
+	{
+		std::string s(text);
+		size_t pos = 0;
+		while ((pos = s.find("\\n", pos)) != std::string::npos) {
+			s.replace(pos, 2, "\n");
+		}
+		return s;
+	}
+
+
 }

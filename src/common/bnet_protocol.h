@@ -4052,7 +4052,21 @@ namespace pvpgn
 		 */
 	} PACKED_ATTR() t_server_clanmemberupdate;
 
+
+
+#define SERVER_MESSAGEBOX 0x19ff
+	typedef struct
+	{
+		t_bnet_header h;
+		bn_int        style;
+		/* Text */
+		/* Caption */
+	} PACKED_ATTR() t_server_messagebox;
+#define SERVER_MESSAGEBOX_OK    0x00000000
+#define SERVER_MESSAGEBOX_OKCANCEL 0x00000001
+#define SERVER_MESSAGEBOX_YESNO 0x00000004
+
+
 }
 
 #endif
-

@@ -746,6 +746,8 @@ namespace pvpgn
 					return "SERVER_CLANMEMBER_REMOVED_NOTIFY";
 				case SERVER_CLANMEMBERUPDATE:
 					return "SERVER_CLANMEMBERUPDATE";
+				case SERVER_MESSAGEBOX:
+					return "SERVER_MESSAGEBOX";
 				}
 				return "unknown";
 

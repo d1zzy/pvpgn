@@ -22,6 +22,7 @@
 
 #include <cstring>
 #include <cerrno>
+#include <string>
 
 #include "compat/gethostname.h"
 #include "common/xalloc.h"
@@ -33,6 +34,7 @@
 #include "common/bn_type.h"
 #include "common/list.h"
 #include "common/util.h"
+#include "common/xstring.h"
 
 #include "account.h"
 #include "account_wrap.h"
@@ -1709,6 +1711,26 @@ namespace pvpgn
 			}
 			file_get_line(NULL); // clear file_get_line buffer
 
+			return 0;
+		}
+
+		/* Show message box on a client side (https://github.com/HarpyWar/pvpgn/issues/15) */
+		extern int messagebox_show(t_connection * dst, char const * text, char const * caption, int type)
+		{
+			t_packet *rpacket;
+
+			std::string newtext = str_replace_nl(text);
+
+			if ((rpacket = packet_create(packet_class_bnet)))
+			{
+				packet_set_size(rpacket, sizeof(t_server_messagebox));
+				packet_set_type(rpacket, SERVER_MESSAGEBOX);
+				bn_int_set(&rpacket->u.server_messagebox.style, type); 
+				packet_append_string(rpacket, newtext.c_str());
+				packet_append_string(rpacket, caption);
+				conn_push_outqueue(dst, rpacket);
+				packet_del_ref(rpacket);
+			}
 			return 0;
 		}
 

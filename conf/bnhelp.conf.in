@@ -211,6 +211,13 @@
 	
 	Example: /realmann Hello everyone!
 
+%alert
+--------------------------------------------------------
+/alert <message>
+	Show MessageBox with <message> to everyone. Use \n as a new line symbol.
+	
+	Example: /alert Hello\neveryone!
+
 %news
 --------------------------------------------------------
 /news
