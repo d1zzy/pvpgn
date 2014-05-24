@@ -52,7 +52,8 @@ namespace pvpgn
 
 		extern int __command_get_group(lua_State* L);
 		extern int __icon_get_rank(lua_State* L);
-
+		extern int __describe_command(lua_State* L);
+		extern int __messagebox_show(lua_State* L);
 	}
 
 }

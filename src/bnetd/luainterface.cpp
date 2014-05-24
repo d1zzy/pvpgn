@@ -140,6 +140,8 @@ namespace pvpgn
 
 				{ "command_get_group", __command_get_group },
 				{ "icon_get_rank", __icon_get_rank },
+				{ "describe_command", __describe_command },
+				{ "messagebox_show", __messagebox_show },
 
 				{ 0, 0 }
 			};

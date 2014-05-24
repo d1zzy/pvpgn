@@ -47,6 +47,7 @@
 #include "clan.h"
 #include "attrlayer.h"
 #include "icons.h"
+#include "helpfile.h"
 
 #include "luawrapper.h"
 #include "luaobjects.h"
@@ -614,6 +615,64 @@ namespace pvpgn
 			return 1;
 		}
 
+		/* Display help for a command */
+		extern int __describe_command(lua_State* L)
+		{
+			char const *username, *cmdname;
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, username);
+				st.at(2, cmdname);
+
+				if (t_account * account = accountlist_find_account(username))
+				{
+					if (t_connection * c = account_get_conn(account))
+						describe_command(c, cmdname);
+				}
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 0;
+		}
+
+		/* Show messagebox */
+		extern int __messagebox_show(lua_State* L)
+		{
+			char const *username, *text, *caption;
+			int messagebox_type;
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, username);
+				st.at(2, text);
+				st.at(3, caption);
+				st.at(4, messagebox_type);
+
+				if (t_account * account = accountlist_find_account(username))
+				{
+					if (t_connection * c = account_get_conn(account))
+						messagebox_show(c, text, caption, messagebox_type);
+				}
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 0;
+		}
 	}
 }
 #endif
