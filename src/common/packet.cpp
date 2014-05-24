@@ -1389,9 +1389,9 @@ namespace pvpgn
 		}
 
 		for (pos = offset; packet->u.data[pos] != '\0'; pos++)
-		if (pos >= size || pos - offset >= maxlen)
+		if (pos >= size || pos - offset > maxlen)
 			return NULL;
-		if (pos >= size || pos - offset >= maxlen) /* NUL must be inside too */
+		if (pos >= size || pos - offset > maxlen) /* NUL must be inside too */
 			return NULL;
 		return packet->u.data + offset;
 	}
