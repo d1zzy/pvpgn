@@ -162,7 +162,7 @@
 --------------------------------------------------------
 	/games all
 		Displays a list of all games.
-	/games [l]obby
+	/games l[obby]
 		Displays a list of games in lobby.
 
 %channels chs
@@ -383,11 +383,11 @@
 --------------------------------------------------------
 /mail <command> [options]
 --------------------------------------------------------
-    /mail [s]end <receiver> <message>
+    /mail s[end] <receiver> <message>
 		Sends mail to <receiver> with <message>.
-    /mail [r]ead [index]
+    /mail r[ead] [index]
 		Reads mail [index]
-    /mail [del]ete {all|<index>}
+    /mail del[ete] {all|<index>}
 		Deletes mail <index> or [all] mail.
 
 %flag
@@ -411,7 +411,7 @@
 --------------------------------------------------------
 /ipban <command> [option] [time]
 --------------------------------------------------------
-    /ipban [l[ist]]
+    /ipban l[ist]
 		Displays a list of banned IP addresses
     /ipban c[heck] <IP>
 		Checks if IP address <IP> is banned or not.
@@ -460,25 +460,25 @@
 		Create a new clan (max <clantag> length = 4; spaces are allowed in <clanname>)
 		
 Commands for clan members:
-	/clan [m]sg <message> (alias [w]hisper)
+	/clan m[sg] <message> (alias [w]hisper)
 		Whispers a message to all your fellow clan members
-	/clan [inv]ite <username>
+	/clan inv[ite] <username>
 		Invite <username> to your clan.
-	/clan [inv]ite get
+	/clan inv[ite] get
 		Show clanname which you have been invited
-	/clan [inv]ite accept
+	/clan inv[ite] accept
 		Accept invitation to clan
-	/clan [inv]ite decline 
+	/clan inv[ite] decline 
 		Decline invitation to clan
 		
 Commands for clan chieftain:
 	/clan motd <message>
 		Update the clan's Message of the Day to <message>.
-	/clan [pub]lic (alias: pub)
+	/clan pub[lic] (alias: pub)
 		Opens the clan channel up to the public so that anyone may enter.
-	/clan [priv]ate  (alias: priv)
+	/clan priv[ate]  (alias: priv)
 		Closes the clan channel such that only members of the clan may enter.
-	/clan [dis]band
+	/clan dis[band]
 		Disband your clan.
 
 %ping p latency
@@ -589,13 +589,27 @@ Commands for clan chieftain:
 	Use /icon without [name] to display list of available icons in your stash.
 --------------------------------------------------------
 Syntax for operator/admin:
-	/icon [a]dd <username> <icon>
+	/icon a[dd] <username> <icon>
 		Add icon into user stash
-	/icon [d]el <username> <icon>
+	/icon d[el] <username> <icon>
 		Remove icon from user stash
-	/icon [s]et <username> <icon>
+	/icon s[et] <username> <icon>
 		Set custom icon to user without adding it in user stash
-	/icon [l]ist <username>
+	/icon l[ist] <username>
 		Display icons in user's stash
-	/icon [l]ist
+	/icon l[ist]
 		Display availaible icons in server stash that can be assigned to users
+
+%quiz
+--------------------------------------------------------
+/quiz <command> [option]
+	Trivia Quiz Game
+--------------------------------------------------------
+	/quiz start <name>
+		Start game with given dictionary name in current channel
+	/quiz stop
+		Finish game by force
+	/quiz stats [username]
+		Display record statistics for user
+	/quiz stats
+		Display Top records

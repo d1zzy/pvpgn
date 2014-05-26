@@ -30,5 +30,9 @@ option(WITH_PGSQL "include PostgreSQL user accounts support" OFF)
 option(WITH_ODBC "include ODBC user accounts support" OFF)
 include(ConfigureChecks.cmake)
 
-subdirs(src conf man files lua)
+subdirs(src conf man files)
+if(WITH_LUA)
+    add_subdirectory(lua)
+endif(WITH_LUA)
+
 ENABLE_TESTING()
