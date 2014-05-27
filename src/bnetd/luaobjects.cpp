@@ -66,6 +66,17 @@ namespace pvpgn
 		template <class T, class A>
 		T join(const A &begin, const A &end, const T &t);
 
+		extern std::map<std::string, std::string> get_account_object(unsigned int userid)
+		{
+			std::map<std::string, std::string> o_account;
+
+			if (userid == 0)
+				return o_account;
+
+			if (t_account * account = accountlist_find_account_by_uid(userid))
+				o_account = get_account_object(account);
+			return o_account;
+		}
 		extern std::map<std::string, std::string> get_account_object(const char * username)
 		{
 			std::map<std::string, std::string> o_account;
@@ -265,7 +276,7 @@ namespace pvpgn
 						eventlog(eventlog_level_error, __FUNCTION__, "found NULL name in banlist");
 						continue;
 					}
-					members.push_back(b);
+					bans.push_back(b);
 				}
 			}
 			o_channel["banlist"] = join(bans.begin(), bans.end(), std::string(","));
@@ -289,7 +300,7 @@ namespace pvpgn
 			o_clan["clan_motd"] = clan->clan_motd;
 			o_clan["channel_type"] = std_to_string(clan->channel_type); // 0--public 1--private
 
-			// - clanmembers can be get from lua_clan_get_members
+			// clanmembers can be get from api.clan_get_members
 
 			return o_clan;
 		}
@@ -347,9 +358,7 @@ namespace pvpgn
 			if (!f)
 				return o_friend;
 
-			o_friend["username"] = account_get_name(f->friendacc);
-			o_friend["mutual"] = std_to_string(f->mutual); // -1 - unloaded(used to remove deleted elems when reload); 0 - not mutual ; 1 - is mutual
-
+			o_friend = get_account_object(f->friendacc);
 			return o_friend;
 		}
 

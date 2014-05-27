@@ -37,6 +37,7 @@ namespace pvpgn
 	namespace bnetd
 	{
 
+		extern std::map<std::string, std::string> get_account_object(unsigned int userid);
 		extern std::map<std::string, std::string> get_account_object(const char *username);
 		extern std::map<std::string, std::string> get_account_object(t_account *account);
 		extern std::map<std::string, std::string> get_game_object(unsigned int gameid);

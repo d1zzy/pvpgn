@@ -124,6 +124,7 @@ namespace pvpgn
 			{
 				{ "message_send_text", __message_send_text },
 				{ "eventlog", __eventlog },
+				{ "account_get_by_id", __account_get_by_id },
 				{ "account_get_by_name", __account_get_by_name },
 				{ "account_get_attr", __account_get_attr },
 				{ "account_set_attr", __account_set_attr },

@@ -104,9 +104,14 @@ namespace pvpgn
 				c_src = account_get_conn(account);
 
 			// send message
-			// (source can be NULL, but destination cant)
 			if (c_dst)
+			{
+				// assign the same src connection, if it null
+				if (!c_src)
+					c_src = c_dst;
+
 				message_send_text(c_dst, (t_message_type)message_type, c_src, text);
+			}
 
 			return 0;
 		}
@@ -150,6 +155,34 @@ namespace pvpgn
 				// get args
 				st.at(1, username);
 				o_account = get_account_object(username);
+
+				st.push(o_account);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+
+			return 1;
+		}
+
+
+		/* Get one account table object */
+		extern int __account_get_by_id(lua_State* L)
+		{
+			unsigned int userid;
+			std::map<std::string, std::string> o_account;
+
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, userid);
+				o_account = get_account_object(userid);
 
 				st.push(o_account);
 			}
@@ -465,7 +498,7 @@ namespace pvpgn
 		{
 			bool allaccounts = false;
 			const char *username;
-			std::map<unsigned int, std::string> users;
+			std::vector<std::map<std::string, std::string> > users;
 			t_connection * conn;
 			t_account * account;
 
@@ -481,7 +514,7 @@ namespace pvpgn
 					HASHTABLE_TRAVERSE(accountlist(), curr)
 					{
 						if (account = (t_account*)entry_get_data(curr))
-							users[account_get_uid(account)] = account_get_name(account);
+							users.push_back(get_account_object(account));
 					}
 				}
 				else
@@ -490,7 +523,8 @@ namespace pvpgn
 					LIST_TRAVERSE_CONST(connlist(), curr)
 					{
 						if (conn = (t_connection*)elem_get_data(curr))
-							users[conn_get_userid(conn)] = conn_get_username(conn);
+						if (account = conn_get_account(conn))
+							users.push_back(get_account_object(account));
 					}
 				}
 				st.push(users);
@@ -508,7 +542,7 @@ namespace pvpgn
 		/* Get game list table (id => name)  */
 		extern int __server_get_games(lua_State* L)
 		{
-			std::map<unsigned int, std::string> games;
+			std::vector<std::map<std::string, std::string> > games;
 			t_game * game;
 
 			try
@@ -519,7 +553,7 @@ namespace pvpgn
 				elist_for_each(curr, gamelist())
 				{
 					if (game = elist_entry(curr, t_game, glist_link))
-						games[game_get_id(game)] = game_get_name(game);
+						games.push_back(get_game_object(game));
 				}
 				st.push(games);
 			}
@@ -537,7 +571,7 @@ namespace pvpgn
 		/* Get channel list (id => name)  */
 		extern int __server_get_channels(lua_State* L)
 		{
-			std::map<unsigned int, std::string> channels;
+			std::vector<std::map<std::string, std::string> > channels;
 			t_channel * channel;
 
 			try
@@ -548,7 +582,7 @@ namespace pvpgn
 				LIST_TRAVERSE(channellist(), curr)
 				{
 					if (channel = (t_channel*)elem_get_data(curr))
-						channels[channel_get_channelid(channel)] = channel_get_name(channel);
+						channels.push_back(get_channel_object(channel));
 				}
 				st.push(channels);
 			}

@@ -9,7 +9,7 @@
 -- Get count of all online users 
 function users_get_count()
 	local count = 0
-	for id,username in pairs(api.server_get_users()) do
+	for i,account in pairs(api.server_get_users()) do
 		count = count + 1
 	end
 	return count
@@ -18,7 +18,7 @@ end
 -- Get count of all server account 
 function accounts_get_count()
 	local count = 0
-	for id,username in pairs(api.server_get_users(true)) do
+	for i,account in pairs(api.server_get_users(true)) do
 		count = count + 1
 	end
 	return count

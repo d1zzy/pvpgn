@@ -35,6 +35,7 @@ namespace pvpgn
 		extern int __eventlog(lua_State* L);
 
 		extern int __account_get_by_name(lua_State* L);
+		extern int __account_get_by_id(lua_State* L);
 		extern int __account_get_attr(lua_State* L);
 		extern int __account_set_attr(lua_State* L);
 		extern int __account_get_friends(lua_State* L);

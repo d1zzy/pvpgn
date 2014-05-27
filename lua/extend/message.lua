@@ -8,8 +8,8 @@
 
 -- Send announce to all connected users
 function message_send_all(text)
-	for id,username in pairs(api.server_get_users()) do
-		api.message_send_text(username, message_type_broadcast, nil, text)
+	for i,account in pairs(api.server_get_users()) do
+		api.message_send_text(account.name, message_type_broadcast, nil, text)
 	end
 end
 

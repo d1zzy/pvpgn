@@ -8,9 +8,9 @@
 
 -- Return channel id by name (if channel not found then return -1)
 function channel_get_id_by_name(channel_name)
-	for id,name in pairs(api.server_get_channels()) do
-		if name == channel_name then
-			return id
+	for i,channel in pairs(api.server_get_channels()) do
+		if channel.name == channel_name then
+			return channel.id
 		end
 	end
 	return -1
@@ -36,7 +36,7 @@ end
 -- Get count of all channels
 function channels_get_count()
 	local count = 0
-	for id,channelname in pairs(api.server_get_channels()) do
+	for i,channel in pairs(api.server_get_channels()) do
 		count = count + 1
 	end
 	return count
