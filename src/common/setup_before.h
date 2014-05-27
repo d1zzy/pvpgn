@@ -126,7 +126,7 @@ const bool BNETD_CHANLOG = false;
 # define BNETD_DEFAULT_CONF_FILE "conf/bnetd.conf"
 #endif
 const char * const BNETD_FILE_DIR = "files";
-const char * const BNETD_SCRIPT_DIR = "script";
+const char * const BNETD_SCRIPT_DIR = "lua";
 const char * const BNETD_STORAGE_PATH = "";
 const char * const BNETD_REPORT_DIR = "reports";
 const char * const BNETD_LOG_FILE = "logs/bnetd.log";
