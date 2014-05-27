@@ -81,12 +81,20 @@ SET(LOCALE_INSTALL_DIR
   FORCE
 )
 
+if(WIN32)
+  SET(SYSCONF_INSTALL_DIR 
+    "${EXEC_INSTALL_PREFIX}conf"
+    CACHE PATH "The ${APPLICATION_NAME} sysconfig install dir (default conf)"
+    FORCE
+  )
+else(WIN32)
+  SET(SYSCONF_INSTALL_DIR
+    "${EXEC_INSTALL_PREFIX}/etc"
+    CACHE PATH "The ${APPLICATION_NAME} sysconfig install dir (default prefix/etc)"
+    FORCE
+  )
+endif(WIN32)
 
-SET(SYSCONF_INSTALL_DIR
-  "${EXEC_INSTALL_PREFIX}/etc"
-  CACHE PATH "The ${APPLICATION_NAME} sysconfig install dir (default prefix/etc)"
-  FORCE
-)
 SET(MAN_INSTALL_DIR
   "${SHARE_INSTALL_PREFIX}/man"
   CACHE PATH "The ${APPLICATION_NAME} man install dir (default prefix/man)"
