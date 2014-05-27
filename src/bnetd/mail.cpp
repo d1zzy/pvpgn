@@ -41,6 +41,7 @@
 #include "connection.h"
 #include "common/setup_after.h"
 #include "helpfile.h"
+#include "command.h"
 
 
 namespace pvpgn

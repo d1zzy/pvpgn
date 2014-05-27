@@ -199,7 +199,7 @@ namespace pvpgn
 									if (line[i] == '#') line[i] = '\0';
 
 									// replace tabs with 3 spaces
-									line = (char*)str_replace(line, "\t", "   ");
+									line = str_replace(line, "\t", "   ");
 									// if text starts with slash then make it colored
 									int j = 0; for (; line[j] == ' ' || line[j] == '\t'; j++);
 									if (line[j] == '/')

@@ -20,6 +20,7 @@
 
 
 #include <string>
+#include <sstream>
 #include <vector>
 
 namespace pvpgn
@@ -32,9 +33,10 @@ namespace pvpgn
 	extern char * *		strtoargv(char const * str, unsigned int * count);
 	extern char *		arraytostr(char * * array, char const * delim, int count);
 	extern char *		str_strip_affix(char * str, char const * affix);
-	extern const char *str_replace(char *orig, char *rep, char *with);
-	extern std::vector<std::string> split_command(char const * text, int args_count);
+	extern char *str_replace(char *orig, char *rep, char *with);
 	extern std::string str_replace_nl(char const * text);
+
+	#define safe_toupper(X) (std::islower((int)X)?std::toupper((int)X):(X))
 
 	/*
 	Fix for std::string for some unix compilers

@@ -117,6 +117,52 @@ namespace pvpgn
 			}
 		}
 
+		/*
+		* Split text by spaces and return array of arguments.
+		*   First text argument is a command name (index = 0)
+		*   Last text argument always reads to end
+		*/
+		extern std::vector<std::string> split_command(char const * text, int args_count)
+		{
+			std::vector<std::string> result(args_count + 1);
+
+			std::string s(text);
+			// remove slash from the command
+			if (!s.empty())
+				s.erase(0, 1);
+
+			std::istringstream iss(s);
+
+			int i = 0;
+			std::string tmp = std::string(); // to end
+			do
+			{
+				std::string sub;
+				iss >> sub;
+
+				if (sub.empty())
+					continue;
+
+				if (i < args_count)
+				{
+					result[i] = sub;
+					i++;
+				}
+				else
+				{
+					if (!tmp.empty())
+						tmp += " ";
+					tmp += sub;
+				}
+
+			} while (iss);
+
+			// push remaining text at the end
+			if (tmp.length() > 0)
+				result[args_count] = tmp;
+
+			return result;
+		}
 
 		static void do_whisper(t_connection * user_c, char const * dest, char const * text)
 		{
@@ -539,6 +585,10 @@ namespace pvpgn
 			eventlog(eventlog_level_debug, __FUNCTION__, "got unknown command \"%s\"", text);
 			return 0;
 		}
+
+
+
+
 
 		// +++++++++++++++++++++++++++++++++ command implementations +++++++++++++++++++++++++++++++++++++++
 
@@ -3755,6 +3805,8 @@ namespace pvpgn
 			}
 
 			server_restart_wraper(mode);
+			std::sprintf(msgtemp, "Rehash [%s] is complete!", mode_str.c_str());
+			message_send_text(c, message_type_info, c, msgtemp);
 			return 0;
 		}
 
@@ -4753,17 +4805,18 @@ namespace pvpgn
 				return 0;
 			}
 
-			for (char& g : args[3]) {
-				if (g == '1') groups |= 1;
-				else if (g == '2') groups |= 2;
-				else if (g == '3') groups |= 4;
-				else if (g == '4') groups |= 8;
-				else if (g == '5') groups |= 16;
-				else if (g == '6') groups |= 32;
-				else if (g == '7') groups |= 64;
-				else if (g == '8') groups |= 128;
+			// iterate chars in string
+			for (std::string::iterator g = args[3].begin(); g != args[3].end(); ++g) {
+				if (*g == '1') groups |= 1;
+				else if (*g == '2') groups |= 2;
+				else if (*g == '3') groups |= 4;
+				else if (*g == '4') groups |= 8;
+				else if (*g == '5') groups |= 16;
+				else if (*g == '6') groups |= 32;
+				else if (*g == '7') groups |= 64;
+				else if (*g == '8') groups |= 128;
 				else {
-					snprintf(msgtemp, sizeof(msgtemp), "Got bad group: %c", g);
+					snprintf(msgtemp, sizeof(msgtemp), "Got bad group: %c", *g);
 					message_send_text(c, message_type_info, c, msgtemp);
 					return 0;
 				}

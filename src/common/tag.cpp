@@ -27,6 +27,7 @@
 
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+#include "common/xstring.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -122,10 +123,7 @@ namespace pvpgn
 			eventlog(eventlog_level_warn, __FUNCTION__, "got unusual sized clienttag '%s'", tag_str);
 
 		for (i = 0; i < len && i < 4; i++)
-		if (std::islower((int)tag_str[i]))
-			temp_str[i] = std::toupper((int)tag_str[i]);
-		else
-			temp_str[i] = tag_str[i];
+			temp_str[i] = safe_toupper(tag_str[i]);
 
 		temp_str[4] = '\0';
 

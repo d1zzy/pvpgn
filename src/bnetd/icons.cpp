@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <vector>
+#include <string.h>
 
 #include "compat/strcasecmp.h"
 #include "compat/snprintf.h"
@@ -47,6 +48,7 @@
 #include "message.h"
 #include "helpfile.h"
 #include "channel.h"
+#include "command.h"
 
 namespace pvpgn
 {
@@ -111,7 +113,7 @@ namespace pvpgn
 
 				// get current user icon
 				if (usericon = account_get_user_icon(account, clienttag))
-					usericon = strrev(xstrdup(usericon));
+					usericon = strreverse(xstrdup(usericon));
 
 				bool is_found = false;
 				// get user stash
@@ -170,7 +172,7 @@ namespace pvpgn
 						if (!(iconcode = customicons_stash_find(clienttag, iconname)))
 						{
 							// set icon code from args
-							std::transform(args[1].begin(), args[1].end(), args[1].begin(), std::toupper); // to upper
+							std::transform(args[1].begin(), args[1].end(), args[1].begin(), ::toupper); // to upper
 							iconcode = args[1].c_str();
 						}
 						if (!is_found || strlen(iconcode) != 4)
@@ -282,7 +284,7 @@ namespace pvpgn
 				case 'l':
 					// get current user icon
 					if (usericon = account_get_user_icon(account, clienttag))
-						usericon = strrev(xstrdup(usericon));
+						usericon = strreverse(xstrdup(usericon));
 
 					// get user stash
 					if (char const * iconstash = account_get_user_iconstash(account, clienttag))
@@ -393,7 +395,7 @@ namespace pvpgn
 					{
 						// get current user icon
 						if (usericon = account_get_user_icon(account, clienttag))
-							usericon = strrev(xstrdup(usericon));
+							usericon = strreverse(xstrdup(usericon));
 
 						std::string s(iconstash);
 						std::istringstream iss(s);

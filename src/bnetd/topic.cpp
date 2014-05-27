@@ -216,7 +216,7 @@ namespace pvpgn
 		{
 			char msgtemp[MAX_MESSAGE_LEN];
 			char *topic, *tmp, *token;
-			char * delim = "\\";
+			const char * delim = "\\";
 			if (!(topic = channel_get_topic(channel_name)))
 				return -1;
 
@@ -246,7 +246,7 @@ namespace pvpgn
 
 				message_send_text(c, message_type_info, c, msgtemp);
 
-				token = strtok(NULL, delim);
+				token = strtok(NULL, (const char*)delim);
 				first = false;
 			}
 			xfree((void *)tmp);

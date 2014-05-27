@@ -273,7 +273,7 @@ namespace pvpgn
 
 
 	// You must free the result if result is non-NULL.
-	extern const char *str_replace(char *orig, char *rep, char *with)
+	extern char *str_replace(char *orig, char *rep, char *with)
 	{
 		char *result; // the return string
 		char *ins;    // the next insert point
@@ -318,54 +318,6 @@ namespace pvpgn
 		return result;
 	}
 
-
-	/*
-	* Split text by spaces and return array of arguments.
-	*   First text argument is a command name (index = 0)
-	*   Last text argument always reads to end
-	*/
-	extern std::vector<std::string> split_command(char const * text, int args_count)
-	{
-		int count = 1 + args_count;
-		std::vector<std::string> result(count);
-
-		std::string s(text);
-		std::istringstream iss(s);
-
-		int i = 0;
-		std::string tmp = std::string(); // to end
-		do
-		{
-			std::string sub;
-			iss >> sub;
-
-			if (sub.empty())
-				continue;
-
-			// remove slash from the command
-			if (i == 0)
-				sub.erase(0, 1);
-
-			if (i < args_count)
-			{
-				result[i] = sub;
-				i++;
-			}
-			else
-			{
-				if (!tmp.empty())
-					tmp += " ";
-				tmp += sub;
-			}
-
-		} while (iss);
-
-		// push remaining text at the end
-		if (tmp.length() > 0)
-			result[count - 1] = tmp;
-
-		return result;
-	}
 
 	/* Replace "\n" in string to a new line character '\n' */
 	extern std::string str_replace_nl(char const * text)
