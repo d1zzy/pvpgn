@@ -23,7 +23,7 @@ Source Code changes
 New commands
 --
 * `/save` immediately save changes of accounts and clans from the cache to a storage (useful for testing) <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/be8d65d16f910b2090b0db9e7eb2c043b816dae7)</sup>
-* `/icon <add|del|list>` icon stash implementation - each user has it's own stash with icons, admin/operator can add icon to user's stash, you can set aliases for icons in config; works with Warcraft and Starcraft <sup>commits [1](https://github.com/HarpyWar/pvpgn/commit/1ade081c6b10a3e710130b88613b71b880ba0cd7)</sup>, [2](https://github.com/HarpyWar/pvpgn/commit/36deb1179bca931bd6585c2b6dbf7d8ade08bc8e)</sup>
+* `/icon <add|del|list>` icon stash implementation - each user has it's own stash with icons, admin/operator can add icon to user's stash, you can set aliases for icons in config; works with Warcraft and Starcraft <sup>commits [1](https://github.com/HarpyWar/pvpgn/commit/1ade081c6b10a3e710130b88613b71b880ba0cd7), [2](https://github.com/HarpyWar/pvpgn/commit/36deb1179bca931bd6585c2b6dbf7d8ade08bc8e)</sup>
 * `/find <substr of username>` search account by part of the name - [patch #1526](http://developer.berlios.de/patch/?func=detailpatch&patch_id=1526&group_id=2291) from berlios <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/c229c6693b3dd55f02fe3a81403870044c0786b2)</sup>
 * `/quiz` Trivia Quiz Game (implemented in Lua) <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/ee04fdd23dfef90f0b852a6e90df23c7f5edc08e)</sup>
 
@@ -52,16 +52,14 @@ Minor changes
 * add option ignore-version for programs **bnchat** and **bnstat** - [patch #3184](http://developer.berlios.de/patch/?func=detailpatch&patch_id=3184&group_id=2291) from berlios <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/a1fb914c30d9d69d062e8f698f7d0e9bacf41367)
 * help for all commands is displayed from bnhelp.conf and format changed for better reading, updated more help messages <sup>[issue](https://github.com/HarpyWar/pvpgn/issues/5)</sup>
 * fix error in log when user sends a message with text length of 255 symbols <sup>[commit](https://github.com/HarpyWar/pvpgn/commit/af2baccdb8a2b624627caa94eac5595ac8f76e07)</sup>
-* update tracker servers in config, track is enabled by default
+* update default tracker servers in config, track is enabled by default <sup>issues [1](https://github.com/HarpyWar/pvpgn/issues/7), [2](https://github.com/HarpyWar/pvpgn/issues/18)</sup>
 
 
 Build source code
 --
 
 #### Windows
-Use [Magic Builder](http://code.google.com/p/pvpgn-magic-builder/). 
-
-Download code manually and put into `source` directory (button [Download ZIP](https://github.com/HarpyWar/pvpgn/archive/master.zip) on the right side of this repository page)
+Use [Magic Builder](https://github.com/HarpyWar/pvpgn-magic-builder). 
 
 #### Linux
 [Русский](http://harpywar.com/?a=articles&b=2&c=1&d=74) | [English](http://harpywar.com/?a=articles&b=2&c=1&d=74&lang=en)
