@@ -39,6 +39,8 @@
 #include "clan.h"
 #include "anongame_infos.h"
 #include "team.h"
+#include "server.h"
+#include "compat/snprintf.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -449,6 +451,42 @@ namespace pvpgn
 		{
 			return account_set_strattr(account, "BNET\\auth\\muteby", val);
 		}
+
+
+		/* Return text with account lock */
+		extern char * account_get_locktext(t_account * account, bool with_author)
+		{
+			char msgtemp[MAX_MESSAGE_LEN], msgtemp2[MAX_MESSAGE_LEN];
+			snprintf(msgtemp, sizeof(msgtemp), "");
+
+			// append author of ban
+			if (with_author)
+			{
+				if (char const * author = account_get_auth_lockby(account))
+				if (author && author[0] != '\0')
+				{
+					snprintf(msgtemp2, sizeof(msgtemp2), " by %s", author);
+					std::strcat(msgtemp, msgtemp2);
+				}
+			}
+
+			// append remaining time
+			if (unsigned int locktime = account_get_auth_locktime(account))
+				snprintf(msgtemp2, sizeof(msgtemp2), " for %.48s", seconds_to_timestr(locktime - now));
+			else
+				snprintf(msgtemp2, sizeof(msgtemp2), " permanently");
+			std::strcat(msgtemp, msgtemp2);
+
+			// append reason
+			char const * reason = account_get_auth_lockreason(account);
+			if (reason && reason[0] != '\0')
+			{
+				snprintf(msgtemp2, sizeof(msgtemp2), " with a reason \"%s\"", reason);
+				std::strcat(msgtemp, msgtemp2);
+			}
+			return msgtemp;
+		}
+
 
 		/****************************************************************/
 

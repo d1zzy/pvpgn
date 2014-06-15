@@ -1687,34 +1687,9 @@ namespace pvpgn
 					eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
 					if (supports_locked_reply)
 					{
-						char msgtemp[MAX_MESSAGE_LEN], msgtemp2[MAX_MESSAGE_LEN];
-						snprintf(msgtemp, sizeof(msgtemp), "This account has been locked");
-
-						// append author of ban
-						if (char const * author = account_get_auth_lockby(account))
-						if (author && author[0] != '\0')
-						{
-							snprintf(msgtemp2, sizeof(msgtemp2), " by %s", author);
-							std::strcat(msgtemp, msgtemp2);
-						}
-
-						// append remaining time
-						if (unsigned int locktime = account_get_auth_locktime(account))
-							snprintf(msgtemp2, sizeof(msgtemp2), " for %.48s", seconds_to_timestr(locktime - now));
-						else
-							snprintf(msgtemp2, sizeof(msgtemp2), " permanently");
-						std::strcat(msgtemp, msgtemp2);
-
-						// append reason
-						char const * reason = account_get_auth_lockreason(account);
-						if (reason && reason[0] != '\0')
-						{
-							snprintf(msgtemp2, sizeof(msgtemp2), " with a reason \"%s\"", reason);
-							std::strcat(msgtemp, msgtemp2);
-						}
-
-
 						bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
+						char msgtemp[MAX_MESSAGE_LEN];
+						snprintf(msgtemp, sizeof(msgtemp), "This account has been locked%s", account_get_locktext(account, true));
 						packet_append_string(rpacket, msgtemp);
 					}
 					else {
@@ -2137,7 +2112,9 @@ namespace pvpgn
 				else if (account_get_auth_lock(account) == 1) {	/* default to false */
 					eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
 					bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_CUSTOM);
-					packet_append_string(rpacket, "This account has been locked.");
+					char msgtemp[MAX_MESSAGE_LEN];
+					snprintf(msgtemp, sizeof(msgtemp), "This account has been locked%s", account_get_locktext(account, true));
+					packet_append_string(rpacket, msgtemp);
 				}
 				else {
 					t_hash serverhash;
@@ -5329,7 +5306,6 @@ namespace pvpgn
 			eventlog(eventlog_level_info, __FUNCTION__, "[%d] get password for account \"%s\" to email \"%s\"", conn_get_socket(c), account_get_name(account), email);
 			return 0;
 		}
-
 	}
 
 }
