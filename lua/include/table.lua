@@ -47,21 +47,46 @@ end
 
 -- (Debug) Print contents of `tbl`, with indentation.
 -- `indent` sets the initial level of indentation.
-function table.print (tbl, indent)
-  if not indent then indent = 0 end
-  for k, v in pairs(tbl) do
-    formatting = string.rep("  ", indent) .. k .. ": "
-    if type(v) == "table" then
-      DEBUG(formatting)
-      table.print(v, indent+1)
-    elseif type(v) == 'boolean' then
-      DEBUG(formatting .. tostring(v))      
-    else
-      DEBUG(formatting .. v)
-    end
-  end
+function table.dump(t, ident)
+	local output = ""
+	if not indent then indent = 0 end
+	
+	-- if table has 0 index then display this key at start
+	if not (t[0] == nil) then
+		for k=0, #t do
+			local formatting = "\n" .. string.rep("  ", indent) .. k .. ": "
+			local v = t[k]
+			if type(v) == "table" then
+				v = "[" .. table.print(v, indent+1) .. "]"
+			elseif type(v) == 'boolean' then
+				v = tostring(v)
+			end
+			
+			output = output .. formatting .. v
+		end
+	else
+		for k,v in pairs(t) do
+			local formatting = "\n" .. k .. ": "
+			local v = t[k]
+			if type(v) == "table" then
+				v = "[" .. table.print(v, indent+1) .. "]"
+			elseif type(v) == 'boolean' then
+				v = tostring(v)
+			end
+			
+			output = output .. formatting .. v
+		end
+	end
+	return output
 end
 
+-- Find table key by value
+function get_key_for_value( t, value )
+	for k,v in pairs(t) do
+		if v==value then return k end
+	end
+	return nil
+end
 
 --[[
    Save Table to File

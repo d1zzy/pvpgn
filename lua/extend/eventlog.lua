@@ -25,8 +25,7 @@ end
 
 function DEBUG(text)
 	if (type(text) == "table") then 
-		table.print(text)
-		return
+		text = table.dump(text)
 	end
 	api.eventlog(eventlog_level_debug, __function__, text)
 end

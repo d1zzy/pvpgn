@@ -34,6 +34,7 @@ custom_icons = true
 
 ##############################################################################
 # Warcraft 3 icon set                                                        #
+# Use MPQ editor to edit icons-WAR3.bni (just change extension bni->mpq)     #
 #----------------------------------------------------------------------------#
 
 [W3XP]
@@ -78,6 +79,8 @@ diablo		DRTL
 
 ##############################################################################
 # Starcraft icon set                                                         #
+# Use Bni Icon Builder to edit icons.bni (icons_STAR.bni is not used)        #
+#  https://github.com/HarpyWar/bni-icon-builder                              #
 #----------------------------------------------------------------------------#
 
 [SEXP]

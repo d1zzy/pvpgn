@@ -17,7 +17,7 @@ setmetatable(_G, {__index =
 		local w = debug.getinfo(2, "S")
 		return w.short_src..":"..w.linedefined
       elseif k == '__function__' then
-		local w = debug.getinfo(2, "S")
+		local w = debug.getinfo(3, "S")
 		return w.short_src..":"..w.linedefined
       end
    end
