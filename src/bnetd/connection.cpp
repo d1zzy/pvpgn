@@ -4193,6 +4193,43 @@ namespace pvpgn
 			return c->protocol.wol.anongame_player;
 		}
 
+
+
+		extern int conn_client_readmemory(t_connection * c, unsigned int request_id, unsigned int offset, unsigned int length)
+		{
+			t_packet    * rpacket;
+			t_clienttag clienttag;
+
+			if (!c)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL conn");
+				return -1;
+			}
+			clienttag = conn_get_clienttag(c);
+
+			// disallow clients that doesn't support SID_READMEMORY
+			if (clienttag != CLIENTTAG_STARCRAFT_UINT && clienttag != CLIENTTAG_BROODWARS_UINT && clienttag != CLIENTTAG_STARJAPAN_UINT && clienttag != CLIENTTAG_SHAREWARE_UINT &&
+				clienttag != CLIENTTAG_DIABLORTL_UINT && clienttag != CLIENTTAG_DIABLOSHR_UINT && clienttag != CLIENTTAG_WARCIIBNE_UINT)
+			{
+				return -1;
+			}
+
+			if (!(rpacket = packet_create(packet_class_bnet)))
+				return -1;
+
+			packet_set_size(rpacket, sizeof(t_server_readmemory));
+			packet_set_type(rpacket, SERVER_READMEMORY);
+
+			bn_int_set(&rpacket->u.server_readmemory.request_id, request_id);
+			bn_int_set(&rpacket->u.server_readmemory.address, offset);
+			bn_int_set(&rpacket->u.server_readmemory.length, length);
+
+			conn_push_outqueue(c, rpacket);
+			packet_del_ref(rpacket);
+
+			return 0;
+		}
+
 	}
 
 }

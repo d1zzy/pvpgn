@@ -465,6 +465,7 @@ namespace pvpgn
 		extern void conn_wol_set_anongame_player(t_connection * c, t_anongame_wol_player * anongame_player);
 		extern t_anongame_wol_player * conn_wol_get_anongame_player(t_connection * c);
 
+		extern int conn_client_readmemory(t_connection * c, unsigned int request_id, unsigned int offset, unsigned int length);
 	}
 
 }

@@ -54,7 +54,9 @@ namespace pvpgn
 			luaevent_user_disconnect,
 
 			luaevent_server_start,
-			luaevent_server_mainloop
+			luaevent_server_mainloop,
+
+			luaevent_client_readmemory
 
 		} t_luaevent_type;
 
@@ -67,6 +69,7 @@ namespace pvpgn
 		extern int lua_handle_channel(t_channel * channel, t_connection * c, char const * message_text, t_message_type message_type, t_luaevent_type luaevent);
 		extern int lua_handle_user(t_connection * c, t_connection * c_dst, char const * message_text, t_luaevent_type luaevent);
 		extern void lua_handle_server(t_luaevent_type luaevent);
+		extern void lua_handle_client(t_connection * c, int request_id, std::vector<int> data, t_luaevent_type luaevent);
 
 	}
 
