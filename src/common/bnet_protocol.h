@@ -3275,7 +3275,7 @@ namespace pvpgn
 	{
 		t_bnet_header h;
 		bn_int        request_id;
-		bn_byte		  memory;
+		/* Memory */
 	} PACKED_ATTR() t_client_readmemory;
 
 #define SERVER_READMEMORY 0x17ff

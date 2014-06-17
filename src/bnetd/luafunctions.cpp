@@ -707,6 +707,39 @@ namespace pvpgn
 			}
 			return 0;
 		}
+
+		/* Read memory of game client */
+		extern int __client_readmemory(lua_State* L)
+		{
+			const char * username;
+			unsigned int request_id, offset, length;
+			int messagebox_type;
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, username);
+				st.at(2, request_id);
+				st.at(3, offset);
+				st.at(4, length);
+
+				if (t_account * account = accountlist_find_account(username))
+				{
+					if (t_connection * c = account_get_conn(account))
+						conn_client_readmemory(c, request_id, offset, length);
+				}
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 0;
+		}
+
 	}
 }
 #endif

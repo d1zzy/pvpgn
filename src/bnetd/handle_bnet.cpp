@@ -45,6 +45,7 @@
 #include "common/proginfo.h"
 #include "common/util.h"
 #include "common/bnetsrp3.h"
+#include "common/xstring.h"
 
 #include "handlers.h"
 #include "connection.h"
@@ -3275,13 +3276,30 @@ namespace pvpgn
 		
 		static int _client_readmemory(t_connection * c, t_packet const *const packet)
 		{
+			char * memory;
+			unsigned int size, offset, request_id;
+
 			if (packet_get_size(packet) < sizeof(t_client_readmemory)) {
 				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad READMEMORY packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_readmemory), packet_get_size(packet));
 				return -1;
 			}
-			
-			eventlog(eventlog_level_debug, __FUNCTION__, "[%d] Received READMEMORY packet with Request ID: %d and Memory: %d", conn_get_socket(c), bn_int_get(packet->u.client_readmemory.request_id),  bn_int_get(packet->u.client_readmemory.memory));
-			
+ 
+			request_id = bn_int_get(packet->u.client_readmemory.request_id);
+
+			size = (unsigned int)packet_get_size(packet);
+			offset = sizeof(t_client_readmemory);
+
+			eventlog(eventlog_level_debug, __FUNCTION__, "[%d] Received READMEMORY packet with Request ID: %d and Memory size: %d", conn_get_socket(c), request_id, size - offset);
+
+#ifdef WITH_LUA
+			std::vector<int> _data;
+			for (int i = offset; i < size; i++)
+			{
+				_data.push_back(packet->u.data[i]);
+			}
+			lua_handle_client(c, request_id, _data, luaevent_client_readmemory);
+#endif
+
 			return 0;
 		}
 
