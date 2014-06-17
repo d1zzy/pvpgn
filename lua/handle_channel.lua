@@ -11,12 +11,12 @@ function handle_channel_message(channel, account, text, message_type)
 		quiz_handle_message(account.name, text)
 	end
 
-	--api.eventlog(eventlog_level_gui, __FUNCTION__, text)
+	--DEBUG(text)
 	--return 1
 end
 function handle_channel_userjoin(channel, account)
-	--api.eventlog(eventlog_level_gui, __FUNCTION__, account.name.." joined "..channel.name)
+	--DEBUG(account.name.." joined "..channel.name)
 end
 function handle_channel_userleft(channel, account)
-	--api.eventlog(eventlog_level_gui, __FUNCTION__, account.name.." left "..channel.name)
+	--DEBUG(account.name.." left "..channel.name)
 end

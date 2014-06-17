@@ -34,7 +34,7 @@ end
 
 
 -- Get count of all channels
-function channels_get_count()
+function channels_count()
 	local count = 0
 	for i,channel in pairs(api.server_get_channels()) do
 		count = count + 1

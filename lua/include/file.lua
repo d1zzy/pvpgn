@@ -20,9 +20,9 @@ function file_load(filename, callback1, callback2)
 			end
 		end
 		file.close(file)
-		api.eventlog(eventlog_level_trace, __FUNCTION__, "File readed " .. filename)
+		TRACE("File read " .. filename)
 	else
-		api.eventlog(eventlog_level_error, __FUNCTION__, "Could not open file " .. filename)
+		ERROR("Could not open file " .. filename)
 		return false
 	end
 	return true

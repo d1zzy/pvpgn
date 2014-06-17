@@ -13,5 +13,5 @@ function handle_server_mainloop()
 		__timers[t]:tick()
 	end
 	
-	-- api.eventlog(eventlog_level_gui, __FUNCTION__, os.time())
+	-- DEBUG(os.time())
 end

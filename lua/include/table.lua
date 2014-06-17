@@ -22,6 +22,46 @@ function table.count(T)
 	return count
 end
 
+-- Get table slice from offset to length
+function table.slice(values, offset, length)
+	local res = {}
+	local n = #values
+	-- default values for range
+	offset = offset or 0
+	if offset < 0 or offset > n then
+		return {}
+	end
+	length = length or n-offset
+	if length < 1 then
+		length = 1
+	elseif length > n-offset then
+		length = n-offset
+	end
+
+	for i = offset,offset+length-1 do
+		res[i-offset] = values[i]
+	end
+	return res
+end
+
+
+-- (Debug) Print contents of `tbl`, with indentation.
+-- `indent` sets the initial level of indentation.
+function table.print (tbl, indent)
+  if not indent then indent = 0 end
+  for k, v in pairs(tbl) do
+    formatting = string.rep("  ", indent) .. k .. ": "
+    if type(v) == "table" then
+      DEBUG(formatting)
+      table.print(v, indent+1)
+    elseif type(v) == 'boolean' then
+      DEBUG(formatting .. tostring(v))      
+    else
+      DEBUG(formatting .. v)
+    end
+  end
+end
+
 
 --[[
    Save Table to File

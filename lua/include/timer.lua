@@ -56,7 +56,7 @@ function timer:tick()
 	self.prev_time = os.time()
 	
 	-- Debug: display time when the timer ticks
-	-- api.eventlog(eventlog_level_gui, __FUNCTION__, self.interval .. ": " .. os.time())
+	-- TRACE(self.interval .. ": " .. os.time())
 	
 	-- execute callback function
 	return self.callback(self)

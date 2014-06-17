@@ -6,11 +6,17 @@
 ]]--
 
 
--- Return the script path and line of the function where it is executed
+-- Return the script path and line of the CURRENT function where it is executed
 __FUNCTION__ = nil
+-- Return the script path and line of the PARENT function where it is executed
+__function__ = nil
+
 setmetatable(_G, {__index =
    function(t, k)
       if k == '__FUNCTION__' then
+		local w = debug.getinfo(2, "S")
+		return w.short_src..":"..w.linedefined
+      elseif k == '__function__' then
 		local w = debug.getinfo(2, "S")
 		return w.short_src..":"..w.linedefined
       end

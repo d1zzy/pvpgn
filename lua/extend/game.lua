@@ -7,7 +7,7 @@
 
 
 -- Get count of all games 
-function games_get_count()
+function games_count()
 	local count = 0
 	for i,game in pairs(api.server_get_games()) do
 		count = count + 1
