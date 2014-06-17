@@ -11,10 +11,11 @@
 local lua_command_table = {
 	[1] = {
 		["/w3motd"] = command_w3motd,
-
+	},
+	[2] = {
 		-- Quiz
 		["/quiz"] = command_quiz,
-	},
+	}
 	[8] = {
 		["/redirect"] = command_redirect,
 	},
@@ -30,7 +31,7 @@ function handle_command(account, text)
 			if string.starts(text, cmd) then
 				
 				-- check if command group is in account.commandgroups
-				if not math_and(account.commandgroups, cg) then
+				if math_and(account.commandgroups, cg) == 0 then
 					api.message_send_text(account.name, message_type_error, account.name, "This command is reserved for admins.")
 					return 1
 				end
