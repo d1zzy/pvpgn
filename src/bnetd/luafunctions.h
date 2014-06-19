@@ -51,6 +51,7 @@ namespace pvpgn
 		extern int __server_get_games(lua_State* L);
 		extern int __server_get_channels(lua_State* L);
 
+		extern int __client_kill(lua_State* L);
 		extern int __client_readmemory(lua_State* L);
 
 		extern int __command_get_group(lua_State* L);

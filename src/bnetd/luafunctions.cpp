@@ -713,7 +713,6 @@ namespace pvpgn
 		{
 			const char * username;
 			unsigned int request_id, offset, length;
-			int messagebox_type;
 			try
 			{
 				lua::stack st(L);
@@ -739,6 +738,34 @@ namespace pvpgn
 			}
 			return 0;
 		}
+
+		/* Destroy client connection  */
+		extern int __client_kill(lua_State* L)
+		{
+			const char * username;
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, username);
+
+				if (t_account * account = accountlist_find_account(username))
+				{
+					if (t_connection * c = account_get_conn(account))
+						conn_set_state(c, conn_state_destroy);
+				}
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 0;
+		}
+
 
 	}
 }

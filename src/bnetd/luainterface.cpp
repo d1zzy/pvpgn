@@ -139,6 +139,7 @@ namespace pvpgn
 				{ "server_get_games", __server_get_games },
 				{ "server_get_channels", __server_get_channels },
 
+				{ "client_kill", __client_kill },
 				{ "client_readmemory", __client_readmemory },
 
 				{ "command_get_group", __command_get_group },
