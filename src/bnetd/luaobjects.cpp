@@ -110,9 +110,12 @@ namespace pvpgn
 			{
 				o_account["online"] = "true";
 
-				o_account["country"] = conn_get_country(c);
 				o_account["clientver"] = conn_get_clientver(c);
 				o_account["latency"] = std_to_string(conn_get_latency(c));
+
+				// non-game clients doesn't provide a country
+				if (const char * country = conn_get_country(c))
+					o_account["country"] = country;
 				if (t_clienttag clienttag = conn_get_clienttag(c))
 					o_account["clienttag"] = clienttag_uint_to_str(clienttag);
 				if (t_game *game = conn_get_game(c))

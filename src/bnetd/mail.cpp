@@ -455,7 +455,10 @@ namespace pvpgn
 				return 0;
 			}
 
-			return Mailbox(account_get_uid(conn_get_account(c))).size();
+			if (t_account * account = conn_get_account(c))
+				return Mailbox(account_get_uid(account)).size();
+
+			return 0;
 		}
 
 	}
