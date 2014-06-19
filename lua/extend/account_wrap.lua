@@ -84,10 +84,10 @@ function account_set_auth_botlogin(username, value)
 end
 
 function account_get_auth_lock(username)
-	return api.account_get_attr(username, "BNET\\auth\\lockk", attr_type_bool)
+	return api.account_get_attr(username, "BNET\\auth\\lock", attr_type_bool)
 end
 function account_set_auth_lock(username, value)
-	return api.account_set_attr(username, "BNET\\auth\\lockk", attr_type_bool, value)
+	return api.account_set_attr(username, "BNET\\auth\\lock", attr_type_bool, value)
 end
 
 function account_get_auth_locktime(username)

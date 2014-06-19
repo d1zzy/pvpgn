@@ -8,6 +8,10 @@
 
 -- this function executes after preload all the lua scripts
 function main()
-
+	
+	-- start antihack
+	if (config.ah) then
+		ah_init()
+	end
 
 end

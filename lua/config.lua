@@ -19,5 +19,9 @@ config = {
 	quiz_users_in_top = 15, -- how many users display in TOP list
 	quiz_channel = nil, -- (do not modify!) channel when quiz has started (it assigned with start)
 	
+	-- AntiHack (Starcraft)
+	ah = true,
+	ah_interval = 60, -- interval for send memory request to all players in games
+	
 }
 

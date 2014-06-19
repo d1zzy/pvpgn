@@ -46,7 +46,7 @@ function handle_game_report(game)
 	--	api.message_send_text(game.owner, message_type_info, game.owner, i.." = "..j)
 	--end
 	
-	--api.eventlog(eventlog_level_gui, __FUNCTION__, game.last_access)
+	--DEBUG(game.last_access)
 end
 
 

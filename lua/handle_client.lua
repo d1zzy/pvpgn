@@ -8,10 +8,13 @@
 
 function handle_client_readmemory(account, request_id, data)
 	
-	TRACE("Read memory request Id: " .. request_id)
-	
+	--TRACE("Read memory request Id: " .. request_id)
+		
 	-- display memory bytes
 	DEBUG(data)
+	
+	if (config.ah) then
+		ah_handle_client(account, request_id, data)
+	end
 
 end
-

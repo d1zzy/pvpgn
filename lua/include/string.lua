@@ -56,4 +56,8 @@ function replace_char(pos, str, replacement)
     return str:sub(1, pos-1) .. replacement .. str:sub(pos+1)
 end
 
-
+-- return count of substr in str
+function substr_count(str, substr)
+	local _, count = string.gsub(str, substr, "")
+	return count
+end
