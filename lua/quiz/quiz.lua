@@ -27,6 +27,8 @@ local _q_streak = { username = nil, count = 0 }
 
 -- delay flag for next_question timer
 local _q_next_question_skip_first = false
+-- is question unswered?
+local q_unswered = true
 
 function quiz:start(channelname, quizname)
 	local filename = q_directory() .. "/questions/" .. string.lower(quizname) .. ".txt"
@@ -141,6 +143,7 @@ end
 
 -- handle channel message
 function quiz_handle_message(username, text)
+	if q_unswered then return end
 
 	local q = q_dictionary[_q_current_index]
 	
@@ -195,6 +198,8 @@ end
 
 -- go to next question
 function q_next_question()
+	q_unswered = true
+
 	_q_question_counter = _q_question_counter + 1
 	if (_q_question_counter > config.quiz_max_questions) then
 		quiz:stop()
@@ -208,7 +213,7 @@ function q_next_question()
 end
 
 -- write random question
-function q_tick_next_question(options)
+function q_tick_next_question(options)	
 	-- skip first tick
 	if not _q_next_question_skip_first then
 		_q_next_question_skip_first = true
@@ -231,6 +236,8 @@ function q_tick_next_question(options)
 	_q_hint_counter = 0
 	-- start timer to hint unswer
 	timer_add("q_hint", config.quiz_hint_delay, q_tick_hint_unswer)
+	
+	q_unswered = false
 end
 
 -- write hint for unswer
