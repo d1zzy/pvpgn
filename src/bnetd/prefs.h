@@ -37,6 +37,7 @@ namespace pvpgn
 		extern void prefs_unload(void);
 		extern char const * prefs_get_storage_path(void);
 		extern char const * prefs_get_filedir(void);
+		extern char const * prefs_get_i18ndir(void);
 		extern char const * prefs_get_logfile(void);
 		extern char const * prefs_get_loglevels(void);
 		extern char const * prefs_get_motdfile(void);

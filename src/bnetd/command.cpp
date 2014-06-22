@@ -3763,7 +3763,9 @@ namespace pvpgn
 			std::string mode_str = args[1];
 
 			if (mode_str == "all")
-				mode = restart_mode_channels;
+				mode = restart_mode_all;
+			else if (mode_str == "i18n")
+				mode = restart_mode_i18n;
 			else if (mode_str == "channels")
 				mode = restart_mode_channels;
 			else if (mode_str == "realms")

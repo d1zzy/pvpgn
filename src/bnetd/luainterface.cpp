@@ -167,6 +167,7 @@ namespace pvpgn
 			{
 				lua::table config = bind.table();
 				config.update("filedir", prefs_get_filedir());
+				config.update("i18ndir", prefs_get_i18ndir());
 				config.update("scriptdir", prefs_get_scriptdir());
 				config.update("reportdir", prefs_get_reportdir());
 				config.update("chanlogdir", prefs_get_chanlogdir());

@@ -86,6 +86,7 @@
 #include "icons.h"
 #include "anongame_infos.h"
 #include "topic.h"
+#include "i18n.h"
 #include "common/setup_after.h"
 
 #ifdef WITH_LUA
@@ -1371,6 +1372,11 @@ namespace pvpgn
 						server_set_hostname();
 
 						attrlayer_load_default();
+					}
+
+					if (do_restart == restart_mode_all || do_restart == restart_mode_i18n)
+					{
+						i18n_reload();
 					}
 
 					if (do_restart == restart_mode_all || do_restart == restart_mode_channels)

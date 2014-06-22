@@ -76,6 +76,7 @@ namespace pvpgn
 			restart_mode_none, // always first (0)
 
 			restart_mode_all,
+			restart_mode_i18n,
 			restart_mode_channels,
 			restart_mode_realms,
 			restart_mode_autoupdate,

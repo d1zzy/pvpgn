@@ -39,6 +39,7 @@ namespace pvpgn
 		static struct {
 			/* files and paths */
 			char const * filedir;
+			char const * i18ndir;
 			char const * storage_path;
 			char const * logfile;
 			char const * loglevels;
@@ -178,6 +179,10 @@ namespace pvpgn
 		static int conf_set_filedir(const char *valstr);
 		static const char *conf_get_filedir(void);
 		static int conf_setdef_filedir(void);
+
+		static int conf_set_i18ndir(const char *valstr);
+		static const char *conf_get_i18ndir(void);
+		static int conf_setdef_i18ndir(void);
 
 		static int conf_set_storage_path(const char *valstr);
 		static const char *conf_get_storage_path(void);
@@ -703,6 +708,7 @@ namespace pvpgn
 		static t_conf_entry conf_table[] =
 		{
 			{ "filedir", conf_set_filedir, conf_get_filedir, conf_setdef_filedir },
+			{ "i18ndir", conf_set_i18ndir, conf_get_i18ndir, conf_setdef_i18ndir },
 			{ "storage_path", conf_set_storage_path, conf_get_storage_path, conf_setdef_storage_path },
 			{ "logfile", conf_set_logfile, conf_get_logfile, conf_setdef_logfile },
 			{ "loglevels", conf_set_loglevels, conf_get_loglevels, conf_setdef_loglevels },
@@ -909,6 +915,27 @@ namespace pvpgn
 		static const char* conf_get_filedir(void)
 		{
 			return prefs_runtime_config.filedir;
+		}
+
+
+		extern char const * prefs_get_i18ndir(void)
+		{
+			return prefs_runtime_config.i18ndir;
+		}
+
+		static int conf_set_i18ndir(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.i18ndir, valstr, NULL);
+		}
+
+		static int conf_setdef_i18ndir(void)
+		{
+			return conf_set_str(&prefs_runtime_config.i18ndir, NULL, BNETD_I18N_DIR);
+		}
+
+		static const char* conf_get_i18ndir(void)
+		{
+			return prefs_runtime_config.i18ndir;
 		}
 
 
