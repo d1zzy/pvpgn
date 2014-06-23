@@ -35,13 +35,18 @@ end
 
 -- Start quiz in current channel
 function q_command_start(account, filename)
-
+	
+	if not account_is_operator_or_admin(account.name) then
+		api.message_send_text(account.name, message_type_error, account.name, "You must be at least a Channel Operator to use this command.")
+		return 1
+	end
+	
 	local channel = api.channel_get_by_id(account.channel_id)
 	if not channel then
 		api.message_send_text(account.name, message_type_error, account.name, "This command can only be used inside a channel.")
 		return 1
 	end
-
+ 
 	if config.quiz_channel then
 		api.message_send_text(account.name, message_type_error, account.name, 'Quiz has already ran in channel "'..config.quiz_channel..'". Use /qstop to force finish.')
 		return 1
@@ -61,6 +66,11 @@ end
 -- Stop quiz
 function q_command_stop(account)
 
+	if not account_is_operator_or_admin(account.name) then
+		api.message_send_text(account.name, message_type_error, account.name, "You must be at least a Channel Operator to use this command.")
+		return 1
+	end
+	
 	if not config.quiz_channel then
 		api.message_send_text(account.name, message_type_error, account.name, 'Quiz is not running.')
 		return 1

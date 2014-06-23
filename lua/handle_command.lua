@@ -11,11 +11,10 @@
 local lua_command_table = {
 	[1] = {
 		["/w3motd"] = command_w3motd,
-	},
-	[2] = {
+		
 		-- Quiz
 		["/quiz"] = command_quiz,
-	}
+	},
 	[8] = {
 		["/redirect"] = command_redirect,
 	},
