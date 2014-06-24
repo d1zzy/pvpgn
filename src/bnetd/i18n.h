@@ -23,7 +23,6 @@ namespace pvpgn
 	namespace bnetd
 	{
 
-
 	}
 }
 

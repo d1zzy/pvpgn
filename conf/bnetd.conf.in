@@ -79,6 +79,7 @@ storage_path = "file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}
 #----------------------------------------------------------------------------#
 
 filedir     = "${LOCALSTATEDIR}/files"
+i18ndir     = "${SYSCONFDIR}/i18n"
 scriptdir   = "${LOCALSTATEDIR}/lua"
 reportdir   = "${LOCALSTATEDIR}/reports"
 chanlogdir  = "${LOCALSTATEDIR}/chanlogs"

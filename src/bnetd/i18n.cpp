@@ -51,8 +51,8 @@
 #include "message.h"
 #include "helpfile.h"
 #include "channel.h"
-#include "i18n.h"
 #include "prefs.h"
+#include "i18n.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -72,8 +72,10 @@ namespace pvpgn
 			} 
 		*/
 		std::map<std::string, std::map<t_gamelang, std::string> > translations = std::map<std::string, std::map<t_gamelang, std::string> >();
-		
-		std::vector<t_gamelang> languages{
+
+		const char * _find_string(char const * text, t_gamelang gamelang);
+
+		const t_gamelang languages[12] = {
 			GAMELANG_ENGLISH_UINT,	/* enUS */
 			GAMELANG_GERMAN_UINT,	/* deDE */
 			GAMELANG_CZECH_UINT,	/* csCZ */
@@ -87,8 +89,6 @@ namespace pvpgn
 			GAMELANG_CHINESE_S_UINT,	/* zhCN */
 			GAMELANG_CHINESE_T_UINT	/* zhTW */
 		};
-
-		const char * _find_string(char const * text, t_gamelang gamelang);
 
 
 		extern int i18n_reload(void)
@@ -108,9 +108,9 @@ namespace pvpgn
 			std::string original, translate;
 
 			// iterate language list
-			for (std::vector<t_gamelang>::iterator lang = languages.begin(); lang != languages.end(); ++lang)
+			for (int i = 0; i < (sizeof(languages) / sizeof(*languages)); i++)
 			{
-				lang_filename = i18n_filename(filename, *lang);
+				lang_filename = i18n_filename(filename, languages[i]);
 				if (FILE *f = fopen(lang_filename.c_str(), "r")) {
 					fclose(f);
 
@@ -158,10 +158,10 @@ namespace pvpgn
 						if (translate[0] == '\0')
 						{
 							translate = original;
-							WARN2("empty localization for \"%s\", use original string (%s)", original, lang_filename.c_str());
+							WARN2("empty localization for \"%s\", use original string (%s)", original.c_str(), lang_filename.c_str());
 						}
 					}
-					translations[original][*lang] = translate;
+					translations[original][languages[i]] = translate;
 				}
 
 				INFO1("localization file loaded \"%s\"", lang_filename.c_str());

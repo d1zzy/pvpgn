@@ -59,6 +59,7 @@ storage_path = file:mode=plain;dir=var\users;clan=var\clans;team=var\teams;defau
 #----------------------------------------------------------------------------#
 
 filedir     = files
+i18ndir     = conf\i18n
 scriptdir   = lua
 reportdir   = var\reports
 chanlogdir  = var\chanlogs
