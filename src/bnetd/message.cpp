@@ -990,12 +990,13 @@ namespace pvpgn
 			if (text && text[0] == '\0')
 				text = " "; /* empty messages crash some clients, just send whitespace */
 
+			std::string temp;
 			if (text && (std::strlen(text) > MAX_MESSAGE_LEN)) {
 				/* PELISH: We are trying to support MAX_IRC_MESSAGE_LEN for IRC and also
 						   MAX_MESSAGE_LEN for bnet */
-				char * temp = (char *)text;
 				eventlog(eventlog_level_warn, __FUNCTION__, "line too long, truncation...");
-				temp[MAX_MESSAGE_LEN] = '\0';
+				temp = std::string(text, text + MAX_MESSAGE_LEN);
+				text = temp.c_str();
 			}
 
 			packet_set_size(packet, sizeof(t_server_message));
