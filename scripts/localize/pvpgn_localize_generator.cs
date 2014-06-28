@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Xml.Serialization;
 
 namespace pvpgn_localize_generator
@@ -34,38 +35,60 @@ namespace pvpgn_localize_generator
         /// <summary>
         /// C++ localization function name
         /// </summary>
-        private const string func_name = "localize";
-        private const string outfile = "output.xml";
+        const string func_name = "localize";
+        static string outfile = "output.xml";
+        static string dirpath;
 
         static Root _data = new Root();
 
         static void Main(string[] args)
         {
-            if (args.Length != 1)
+            if (args.Length == 0 || args.Length > 2)
             {
-                Console.WriteLine("This utility generates XML file for next translation from hardcoded text arguments in function {0}(...) that in *.cpp files\n(c) 2014 HarpyWar (harpywar@gmail.com)", func_name);
-                Console.WriteLine("\nUsage: {0} [path to 'src/bnetd']\n", AppDomain.CurrentDomain.FriendlyName);
+                Console.WriteLine("This utility generates XML file for next translation from hardcoded text arguments in function {0}(...) that in *.cpp, *.h, *.lua files\n(c) 2014 HarpyWar (harpywar@gmail.com)", func_name);
+                Console.WriteLine("\nUsage: {0} [path to 'pvpgn' repository directory] {{output.xml}}", AppDomain.CurrentDomain.FriendlyName);
+                Console.WriteLine(" (to make update of existing xml file, pass it in a second parameter)\n", AppDomain.CurrentDomain.FriendlyName);
 
                 Environment.Exit(0);
             }
-            var dirpath = args[0];
+            dirpath = args[0];
+            if (args.Length == 2)
+                outfile = args[1];
 
-            // process all files in directory
-            foreach(var f in Directory.GetFiles(dirpath))
+
+            if (File.Exists(outfile))
+            {
+                // deserialize xml to data
+                var xsr = new XmlSerializer(typeof(Root));
+                var reader = new StreamReader(outfile);
+                _data = (Root)xsr.Deserialize(reader);
+                reader.Close();
+            }
+
+            string[] cppfiles = Directory.GetFiles(dirpath, "*.cpp", SearchOption.AllDirectories);
+            string[] hfiles = Directory.GetFiles(dirpath, "*.h", SearchOption.AllDirectories);
+            string[] luafiles = Directory.GetFiles(dirpath, "*.lua", SearchOption.AllDirectories);
+            string[] allfiles = cppfiles.Concat(hfiles).Concat(luafiles).ToArray();
+
+            // process each file
+            foreach (var f in allfiles)
             {
                 parse_file(f);
             }
 
+            // sort items by file -> function
+            _data.Items = _data.Items.OrderBy(x => x.Function).OrderBy(x => x.File).OrderBy(x => Path.GetExtension(x.File)).ToList();
+
             // serialize data to xml
-            var ser = new XmlSerializer(typeof(Root));
+            var xsw = new XmlSerializer(typeof(Root));
             using (var fs = new FileStream(outfile, FileMode.Create))
             {
-                ser.Serialize(fs, _data);
+                xsw.Serialize(fs, _data);
             }
 
             Console.WriteLine("\n{0} items saved in {1}: ", _data.Items.Count, outfile);
-            Console.WriteLine("\nPress any key to exit...");
-            Console.ReadKey();
+            //Console.WriteLine("\nPress any key to exit...");
+            //Console.ReadKey();
         }
 
         /// <summary>
@@ -78,31 +101,54 @@ namespace pvpgn_localize_generator
             string filename = Path.GetFileName(filepath);
 
             string text, f, function = string.Empty;
-            int i = 0;
-            foreach (string s in lines)
+            int ln = 0; // line number
+            int uid = 1;
+            foreach (string l in lines)
             {
-                i++;
+                ln++;
                 try
                 {
-                    if ((f = is_function(s)) != null)
+                    if ((f = is_function(l)) != null)
                         function = f; // remember last function
 
-                    if ((text = find_localize_text(s)) == null)
+                    if ((text = find_localize_text(l)) == null)
                         continue;
 
+                    // ignore duplicate strings in the same file and function
+                    if (_data.Items.Find(x => x.Original == text && x.File == filename && x.Function == function) != null)
+                        continue;
+
+                    // find the original text in list for reference
+                    var reference = _data.Items.Find(x => x.Original == text && x.Translate.RefId == null);
+
+                    // set unique Id
+                    while (_data.Items.Find(x => x.Id == uid.ToString()) != null)
+                    {
+                        uid++;
+                    }
+                    
                     _data.Items.Add(new Root.StringItem()
                     {
+                        Id = uid.ToString(),
                         File = filename,
                         Function = function,
                         Original = text,
-                        Translate = " "
+                        Translate = new Root.StringItem.TranslateItem()
+                        {
+                            // reference to exist translation
+                            RefId = (reference != null) ? reference.Id : null,
+                            InnerText = (reference != null) ? null : " ",
+                        }
                     });
+                    // insert example author
+                    if (_data.meta.Authors.Count == 0)
+                        _data.meta.Authors.Add(new Root.Meta.AuthorItem() { Name = "nomad" , Email = "nomad@example.com"});
 
                     Console.WriteLine("{0}, {1}(): {2}", filename, function, text);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    Console.WriteLine("Error on parse file \"{0}\" on line #{1}: {2}", filename, i, s);
+                    Console.WriteLine("Error on parse file \"{0}\" on line #{1}: {2}", filename, ln, l);
                     Console.WriteLine(e.Message);
                 }
             }
@@ -134,7 +180,7 @@ namespace pvpgn_localize_generator
                                 break;
                             }
                             // 3) find last quote
-                            if (line.Substring(i, 1) == "\"" && line.Substring(i-1, 1) != "\\")
+                            if (line.Substring(i, 1) == "\"" && line.Substring(i - 1, 1) != "\\")
                                 quote2_pos = i;
                             continue;
                         }
@@ -149,14 +195,14 @@ namespace pvpgn_localize_generator
                     continue;
                 }
                 // 1) find function name
-                if (line.Substring(i, (i+func_name.Length > line.Length) ? line.Length-i : func_name.Length) == func_name)
+                if (line.Substring(i, (i + func_name.Length > line.Length) ? line.Length - i : func_name.Length) == func_name)
                     func_pos = i;
             }
             return escape_text(text);
         }
 
         /// <summary>
-        /// Filter text corresponding XML rules
+        /// Filter text corresponding to XML rules
         /// </summary>
         /// <param name="text"></param>
         /// <returns>text or null (if null passed)</returns>
@@ -185,7 +231,7 @@ namespace pvpgn_localize_generator
                 return null;
 
             // last line must have ) or {
-            if (line[line.Length - 1] == ')' || line[line.Length - 1] == '{')
+            if (!line.Contains(";") && line[line.Length - 1] == ')' || line[line.Length - 1] == '{')
             {
                 string[] words = line.Split();
                 if (words.Length > 0)
@@ -218,8 +264,14 @@ namespace pvpgn_localize_generator
             return null;
         }
 
-        static string[] reserved_words = new string[] { 
-
+        /// <summary>
+        /// Ignore these words when find a function name 
+        /// </summary>
+        static string[] reserved_words = new string[]
+        {
+            func_name, // function definition
+            "LIST_TRAVERSE",
+            "type",
             "while",
             "switch",
             "class",
@@ -244,7 +296,7 @@ namespace pvpgn_localize_generator
         };
     }
 
-#region Serializer Class
+    #region Serializer Class
 
     [XmlRoot("root")]
     public class Root
@@ -265,9 +317,7 @@ namespace pvpgn_localize_generator
             public Meta()
             {
                 language = new LanguageItem();
-                Authors = new List<AuthorItem>() {
-                    new AuthorItem()
-                };
+                Authors = new List<AuthorItem>();
             }
 
             [XmlElement("language"), DefaultValue("change_me")]
@@ -281,20 +331,22 @@ namespace pvpgn_localize_generator
                 [XmlAttribute("tag")]
                 public string Tag = "enUS";
                 [XmlText]
-                public string Default = "English";
+                public string InnerText = "English";
             }
             public class AuthorItem
             {
                 [XmlAttribute("name")]
-                public string Name = "nomad";
+                public string Name;
                 [XmlAttribute("email")]
-                public string Email="nomad@example.com";
+                public string Email;
             }
         }
 
 
         public class StringItem
         {
+            [XmlAttribute("id")]
+            public string Id;
             [XmlAttribute("file")]
             public string File;
             [XmlAttribute("function")]
@@ -302,10 +354,18 @@ namespace pvpgn_localize_generator
             [XmlElement("original")]
             public string Original;
             [XmlElement("translate")]
-            public string Translate;
+            public TranslateItem Translate;
+
+            public class TranslateItem
+            {
+                [XmlAttribute("refid")]
+                public string RefId;
+                [XmlText]
+                public string InnerText = " "; // default value is " " to save empty values when updating xml file
+            }
         }
 
-#endregion
+    #endregion
 
     }
 }

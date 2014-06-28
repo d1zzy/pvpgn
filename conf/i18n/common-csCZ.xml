@@ -109,7 +109,7 @@
     </item>
     <item id="419" file="command.cpp" function="_handle_alert_command">
       <original> for {}</original>
-      <translate refid="2"> </translate>
+      <translate refid="2" />
     </item>
     <item id="158" file="command.cpp" function="_handle_announce_command">
       <original>Announcement from {}: {}</original>
@@ -129,7 +129,7 @@
     </item>
     <item id="68" file="command.cpp" function="_handle_aop_command">
       <original>There's no account with username {}.</original>
-      <translate refid="52"> </translate>
+      <translate refid="52" />
     </item>
     <item id="69" file="command.cpp" function="_handle_aop_command">
       <original>{} is already a Channel Admin</original>
@@ -153,7 +153,7 @@
     </item>
     <item id="218" file="command.cpp" function="_handle_ban_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="219" file="command.cpp" function="_handle_ban_command">
       <original>You have to be at least a Channel Operator to use this command.</original>
@@ -209,7 +209,7 @@
     </item>
     <item id="268" file="command.cpp" function="_handle_chpass_command">
       <original>Maximum password length allowed is {}</original>
-      <translate refid="261"> </translate>
+      <translate refid="261" />
     </item>
     <item id="269" file="command.cpp" function="_handle_chpass_command">
       <original>Trying to change password for account "{}" to "{}"</original>
@@ -317,11 +317,11 @@
     </item>
     <item id="415" file="command.cpp" function="_handle_clearstats_command">
       <original>Invalid user.</original>
-      <translate refid="163"> </translate>
+      <translate refid="163" />
     </item>
     <item id="397" file="command.cpp" function="_handle_commandgroups_command">
       <original>Invalid user.</original>
-      <translate refid="163"> </translate>
+      <translate refid="163" />
     </item>
     <item id="398" file="command.cpp" function="_handle_commandgroups_command">
       <original>{}'s command group(s): {}</original>
@@ -377,15 +377,15 @@
     </item>
     <item id="114" file="command.cpp" function="_handle_deop_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="115" file="command.cpp" function="_handle_deop_command">
       <original>You must be at least a Channel Operator or tempOP to use this command.</original>
-      <translate refid="97"> </translate>
+      <translate refid="97" />
     </item>
     <item id="116" file="command.cpp" function="_handle_deop_command">
       <original>There's no account with username {}.</original>
-      <translate refid="52"> </translate>
+      <translate refid="52" />
     </item>
     <item id="117" file="command.cpp" function="_handle_deop_command">
       <original>You must be at least a Channel Admin to demote another Channel Admin</original>
@@ -429,15 +429,15 @@
     </item>
     <item id="87" file="command.cpp" function="_handle_devoice_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="88" file="command.cpp" function="_handle_devoice_command">
       <original>You must be at least a Channel Operator to use this command.</original>
-      <translate refid="79"> </translate>
+      <translate refid="79" />
     </item>
     <item id="89" file="command.cpp" function="_handle_devoice_command">
       <original>There's no account with username {}.</original>
-      <translate refid="52"> </translate>
+      <translate refid="52" />
     </item>
     <item id="90" file="command.cpp" function="_handle_devoice_command">
       <original>{} has been removed from VOP list.</original>
@@ -481,7 +481,7 @@
     </item>
     <item id="281" file="command.cpp" function="_handle_finger_command">
       <original>Invalid user.</original>
-      <translate refid="163"> </translate>
+      <translate refid="163" />
     </item>
     <item id="282" file="command.cpp" function="_handle_finger_command">
       <original>Login: {} {} Sex: {}</original>
@@ -661,11 +661,11 @@
     </item>
     <item id="313" file="command.cpp" function="_handle_gameinfo_command">
       <original>none</original>
-      <translate refid="280"> </translate>
+      <translate refid="280" />
     </item>
     <item id="314" file="command.cpp" function="_handle_gameinfo_command">
       <original>unknown</original>
-      <translate refid="291"> </translate>
+      <translate refid="291" />
     </item>
     <item id="315" file="command.cpp" function="_handle_gameinfo_command">
       <original>Owner: {}</original>
@@ -685,7 +685,7 @@
     </item>
     <item id="319" file="command.cpp" function="_handle_gameinfo_command">
       <original>Created: {}</original>
-      <translate refid="283"> </translate>
+      <translate refid="283" />
     </item>
     <item id="320" file="command.cpp" function="_handle_gameinfo_command">
       <original>Started: {}</original>
@@ -785,7 +785,7 @@
     </item>
     <item id="210" file="command.cpp" function="_handle_kick_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="211" file="command.cpp" function="_handle_kick_command">
       <original>You have to be at least a Channel Operator or tempOP to use this command.</original>
@@ -833,7 +833,7 @@
     </item>
     <item id="309" file="command.cpp" function="_handle_killsession_command">
       <original>Connection closed by admin.</original>
-      <translate refid="304"> </translate>
+      <translate refid="304" />
     </item>
     <item id="332" file="command.cpp" function="_handle_ladderactivate_command">
       <original>Copied current scores to active scores on all ladders.</original>
@@ -841,7 +841,7 @@
     </item>
     <item id="340" file="command.cpp" function="_handle_ladderinfo_command">
       <original>This game does not support win/loss records.</original>
-      <translate refid="165"> </translate>
+      <translate refid="165" />
     </item>
     <item id="341" file="command.cpp" function="_handle_ladderinfo_command">
       <original>You must supply a rank and a valid program ID.</original>
@@ -853,7 +853,7 @@
     </item>
     <item id="365" file="command.cpp" function="_handle_lockacct_command">
       <original>Invalid user.</original>
-      <translate refid="163"> </translate>
+      <translate refid="163" />
     </item>
     <item id="366" file="command.cpp" function="_handle_lockacct_command">
       <original>Account {} is now locked</original>
@@ -865,7 +865,7 @@
     </item>
     <item id="245" file="command.cpp" function="_handle_lusers_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="246" file="command.cpp" function="_handle_lusers_command">
       <original>Banned users:</original>
@@ -877,11 +877,11 @@
     </item>
     <item id="407" file="command.cpp" function="_handle_moderate_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="408" file="command.cpp" function="_handle_moderate_command">
       <original>You must be at least a Channel Operator to use this command.</original>
-      <translate refid="79"> </translate>
+      <translate refid="79" />
     </item>
     <item id="409" file="command.cpp" function="_handle_moderate_command">
       <original>Unable to change channel flags.</original>
@@ -905,7 +905,7 @@
     </item>
     <item id="371" file="command.cpp" function="_handle_muteacct_command">
       <original>Invalid user.</original>
-      <translate refid="163"> </translate>
+      <translate refid="163" />
     </item>
     <item id="372" file="command.cpp" function="_handle_muteacct_command">
       <original>Account {} is now muted</original>
@@ -917,7 +917,7 @@
     </item>
     <item id="353" file="command.cpp" function="_handle_netinfo_command">
       <original>That user is not logged on.</original>
-      <translate refid="9"> </translate>
+      <translate refid="9" />
     </item>
     <item id="354" file="command.cpp" function="_handle_netinfo_command">
       <original>Address information for other users is only available to admins.</original>
@@ -957,7 +957,7 @@
     </item>
     <item id="96" file="command.cpp" function="_handle_op_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="97" file="command.cpp" function="_handle_op_command">
       <original>You must be at least a Channel Operator or tempOP to use this command.</original>
@@ -965,7 +965,7 @@
     </item>
     <item id="98" file="command.cpp" function="_handle_op_command">
       <original>There's no account with username {}.</original>
-      <translate refid="52"> </translate>
+      <translate refid="52" />
     </item>
     <item id="99" file="command.cpp" function="_handle_op_command">
       <original>{} is already a Channel Operator</original>
@@ -997,11 +997,11 @@
     </item>
     <item id="59" file="command.cpp" function="_handle_operator_command">
       <original>You must supply a username.</original>
-      <translate refid="51"> </translate>
+      <translate refid="51" />
     </item>
     <item id="60" file="command.cpp" function="_handle_operator_command">
       <original>There's no account with username {}.</original>
-      <translate refid="52"> </translate>
+      <translate refid="52" />
     </item>
     <item id="61" file="command.cpp" function="_handle_operator_command">
       <original>{} is already a Server Operator</original>
@@ -1037,7 +1037,7 @@
     </item>
     <item id="396" file="command.cpp" function="_handle_ping_command">
       <original>Invalid user.</original>
-      <translate refid="163"> </translate>
+      <translate refid="163" />
     </item>
     <item id="300" file="command.cpp" function="_handle_quit_command">
       <original>Connection closed.</original>
@@ -1073,7 +1073,7 @@
     </item>
     <item id="197" file="command.cpp" function="_handle_rejoin_command">
       <original>You are not in a channel.</original>
-      <translate refid="150"> </translate>
+      <translate refid="150" />
     </item>
     <item id="230" file="command.cpp" function="_handle_reply_command">
       <original>No one messaged you, use /m instead</original>
@@ -1085,7 +1085,7 @@
     </item>
     <item id="347" file="command.cpp" function="_handle_serverban_command">
       <original>That user is not logged on.</original>
-      <translate refid="9"> </translate>
+      <translate refid="9" />
     </item>
     <item id="348" file="command.cpp" function="_handle_serverban_command">
       <original>Banning {} who is using IP address {}</original>
@@ -1113,7 +1113,7 @@
     </item>
     <item id="385" file="command.cpp" function="_handle_set_command">
       <original>Invalid user.</original>
-      <translate refid="163"> </translate>
+      <translate refid="163" />
     </item>
     <item id="386" file="command.cpp" function="_handle_set_command">
       <original>Current value of {} is "{}"</original>
@@ -1317,7 +1317,7 @@
     </item>
     <item id="106" file="command.cpp" function="_handle_tmpop_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="107" file="command.cpp" function="_handle_tmpop_command">
       <original>You must be at least a Channel Operator or tmpOP to use this command.</original>
@@ -1325,7 +1325,7 @@
     </item>
     <item id="108" file="command.cpp" function="_handle_tmpop_command">
       <original>There's no account with username {}.</original>
-      <translate refid="52"> </translate>
+      <translate refid="52" />
     </item>
     <item id="109" file="command.cpp" function="_handle_tmpop_command">
       <original>{} has already tmpOP in this channel</original>
@@ -1333,11 +1333,11 @@
     </item>
     <item id="110" file="command.cpp" function="_handle_tmpop_command">
       <original>{} must be on the same channel to tempOP him</original>
-      <translate refid="102"> </translate>
+      <translate refid="102" />
     </item>
     <item id="111" file="command.cpp" function="_handle_tmpop_command">
       <original>{} already is operator or admin, no need to tempOP him</original>
-      <translate refid="103"> </translate>
+      <translate refid="103" />
     </item>
     <item id="112" file="command.cpp" function="_handle_tmpop_command">
       <original>{} has been promoted to tmpOP in this channel</original>
@@ -1345,11 +1345,11 @@
     </item>
     <item id="113" file="command.cpp" function="_handle_tmpop_command">
       <original>{} has promoted you to a tempOP in this channel</original>
-      <translate refid="105"> </translate>
+      <translate refid="105" />
     </item>
     <item id="403" file="command.cpp" function="_handle_topic_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="404" file="command.cpp" function="_handle_topic_command">
       <original>Max topic length exceeded (max {} symbols)</original>
@@ -1369,7 +1369,7 @@
     </item>
     <item id="226" file="command.cpp" function="_handle_unban_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="227" file="command.cpp" function="_handle_unban_command">
       <original>You are not a channel operator.</original>
@@ -1385,7 +1385,7 @@
     </item>
     <item id="368" file="command.cpp" function="_handle_unlockacct_command">
       <original>Invalid user.</original>
-      <translate refid="163"> </translate>
+      <translate refid="163" />
     </item>
     <item id="369" file="command.cpp" function="_handle_unlockacct_command">
       <original>Your account has just been unlocked by {}</original>
@@ -1397,7 +1397,7 @@
     </item>
     <item id="374" file="command.cpp" function="_handle_unmuteacct_command">
       <original>Invalid user.</original>
-      <translate refid="163"> </translate>
+      <translate refid="163" />
     </item>
     <item id="375" file="command.cpp" function="_handle_unmuteacct_command">
       <original>Your account has just been unmuted by {}</original>
@@ -1409,7 +1409,7 @@
     </item>
     <item id="207" file="command.cpp" function="_handle_unsquelch_command">
       <original>No such user.</original>
-      <translate refid="203"> </translate>
+      <translate refid="203" />
     </item>
     <item id="208" file="command.cpp" function="_handle_unsquelch_command">
       <original>User was not being ignored.</original>
@@ -1421,7 +1421,7 @@
     </item>
     <item id="236" file="command.cpp" function="_handle_unwatch_command">
       <original>That user does not exist.</original>
-      <translate refid="127"> </translate>
+      <translate refid="127" />
     </item>
     <item id="237" file="command.cpp" function="_handle_unwatch_command">
       <original>Removal from watch list failed.</original>
@@ -1433,7 +1433,7 @@
     </item>
     <item id="242" file="command.cpp" function="_handle_unwatchall_command">
       <original>Removal from watch list failed.</original>
-      <translate refid="237"> </translate>
+      <translate refid="237" />
     </item>
     <item id="243" file="command.cpp" function="_handle_unwatchall_command">
       <original>All {} users removed from your watch list.</original>
@@ -1449,7 +1449,7 @@
     </item>
     <item id="78" file="command.cpp" function="_handle_voice_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="79" file="command.cpp" function="_handle_voice_command">
       <original>You must be at least a Channel Operator to use this command.</original>
@@ -1457,7 +1457,7 @@
     </item>
     <item id="80" file="command.cpp" function="_handle_voice_command">
       <original>There's no account with username {}.</original>
-      <translate refid="52"> </translate>
+      <translate refid="52" />
     </item>
     <item id="81" file="command.cpp" function="_handle_voice_command">
       <original>{} is already on VOP list, no need to Voice him</original>
@@ -1485,15 +1485,15 @@
     </item>
     <item id="72" file="command.cpp" function="_handle_vop_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="73" file="command.cpp" function="_handle_vop_command">
       <original>You must be at least a Channel Admin to use this command.</original>
-      <translate refid="67"> </translate>
+      <translate refid="67" />
     </item>
     <item id="74" file="command.cpp" function="_handle_vop_command">
       <original>There's no account with username {}.</original>
-      <translate refid="52"> </translate>
+      <translate refid="52" />
     </item>
     <item id="75" file="command.cpp" function="_handle_vop_command">
       <original>{} is already on VOP list</original>
@@ -1509,7 +1509,7 @@
     </item>
     <item id="233" file="command.cpp" function="_handle_watch_command">
       <original>That user does not exist.</original>
-      <translate refid="127"> </translate>
+      <translate refid="127" />
     </item>
     <item id="234" file="command.cpp" function="_handle_watch_command">
       <original>Add to watch list failed.</original>
@@ -1521,7 +1521,7 @@
     </item>
     <item id="239" file="command.cpp" function="_handle_watchall_command">
       <original>Add to watch list failed.</original>
-      <translate refid="234"> </translate>
+      <translate refid="234" />
     </item>
     <item id="240" file="command.cpp" function="_handle_watchall_command">
       <original>All {} users added to your watch list.</original>
@@ -1561,11 +1561,11 @@
     </item>
     <item id="413" file="command.cpp" function="_reset_scw2_stats">
       <original>Reset {}'s {} stats</original>
-      <translate refid="412"> </translate>
+      <translate refid="412" />
     </item>
     <item id="414" file="command.cpp" function="_reset_w3_stats">
       <original>Reset {}'s {} stats</original>
-      <translate refid="412"> </translate>
+      <translate refid="412" />
     </item>
     <item id="214" file="command.cpp" function="account_get_auth_admin">
       <original>You cannot kick administrators.</original>
@@ -1605,7 +1605,7 @@
     </item>
     <item id="272" file="command.cpp" function="account_get_auth_operator">
       <original>Hash is: {}</original>
-      <translate refid="263"> </translate>
+      <translate refid="263" />
     </item>
     <item id="8" file="command.cpp" function="do_whisper">
       <original>Your account has been muted, you can't whisper to other users.</original>
@@ -1683,53 +1683,13 @@
       <original>Unknown command.</original>
       <translate> </translate>
     </item>
-    <item id="444" file="command.lua" function="api.message_send_text">
-      <original>You must be at least a Channel Operator to use this command.</original>
-      <translate refid="79"> </translate>
-    </item>
-    <item id="445" file="command.lua" function="api.message_send_text">
-      <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
-    </item>
-    <item id="446" file="command.lua" function="api.message_send_text">
-      <original>Quiz has already ran in channel "{}". Use /quiz stop to force finish.</original>
-      <translate> </translate>
-    </item>
-    <item id="447" file="command.lua" function="api.message_send_text">
-      <original>Available Quiz dictionaries: </original>
-      <translate> </translate>
-    </item>
-    <item id="448" file="command.lua" function="api.message_send_text">
-      <original>Quiz is not running.</original>
-      <translate> </translate>
-    </item>
-    <item id="451" file="command.lua" function="api.message_send_text">
-      <original>{}'s Quiz record:</original>
-      <translate> </translate>
-    </item>
-    <item id="452" file="command.lua" function="api.message_send_text">
-      <original>{} has never played Quiz.</original>
-      <translate> </translate>
-    </item>
-    <item id="449" file="command.lua" function="localize">
-      <original>Top {} Quiz records:</original>
-      <translate> </translate>
-    </item>
-    <item id="450" file="command.lua" function="string.format">
-      <original>points</original>
-      <translate> </translate>
-    </item>
     <item id="420" file="handle_bnet.cpp" function="_client_loginreq2">
       <original>This account has been locked</original>
       <translate> </translate>
     </item>
     <item id="421" file="handle_bnet.cpp" function="_client_logonproofreq">
       <original>This account has been locked</original>
-      <translate refid="420"> </translate>
-    </item>
-    <item id="442" file="handle_command.lua" function="api.message_send_text">
-      <original>This command is reserved for admins.</original>
-      <translate refid="25"> </translate>
+      <translate refid="420" />
     </item>
     <item id="422" file="helpfile.cpp" function="handle_help_command">
       <original>Oops ! There is a problem with the help file. Please contact the administrator of the server.</original>
@@ -1737,7 +1697,7 @@
     </item>
     <item id="423" file="icons.cpp" function="handle_icon_command">
       <original>This command can only be used inside a channel.</original>
-      <translate refid="66"> </translate>
+      <translate refid="66" />
     </item>
     <item id="424" file="icons.cpp" function="handle_icon_command">
       <original>This command can only be used from the game.</original>
@@ -1810,6 +1770,46 @@
     <item id="435" file="mail.cpp" function="mail_func_send">
       <original>There was an error completing your request!</original>
       <translate> </translate>
+    </item>
+    <item id="444" file="command.lua" function="api.message_send_text">
+      <original>You must be at least a Channel Operator to use this command.</original>
+      <translate refid="79" />
+    </item>
+    <item id="445" file="command.lua" function="api.message_send_text">
+      <original>This command can only be used inside a channel.</original>
+      <translate refid="66" />
+    </item>
+    <item id="446" file="command.lua" function="api.message_send_text">
+      <original>Quiz has already ran in channel "{}". Use /quiz stop to force finish.</original>
+      <translate> </translate>
+    </item>
+    <item id="447" file="command.lua" function="api.message_send_text">
+      <original>Available Quiz dictionaries: </original>
+      <translate> </translate>
+    </item>
+    <item id="448" file="command.lua" function="api.message_send_text">
+      <original>Quiz is not running.</original>
+      <translate> </translate>
+    </item>
+    <item id="451" file="command.lua" function="api.message_send_text">
+      <original>{}'s Quiz record:</original>
+      <translate> </translate>
+    </item>
+    <item id="452" file="command.lua" function="api.message_send_text">
+      <original>{} has never played Quiz.</original>
+      <translate> </translate>
+    </item>
+    <item id="449" file="command.lua" function="localize">
+      <original>Top {} Quiz records:</original>
+      <translate> </translate>
+    </item>
+    <item id="450" file="command.lua" function="string.format">
+      <original>points</original>
+      <translate> </translate>
+    </item>
+    <item id="442" file="handle_command.lua" function="api.message_send_text">
+      <original>This command is reserved for admins.</original>
+      <translate refid="25" />
     </item>
     <item id="443" file="redirect.lua" function="api.message_send_text">
       <original>User "{}" is offline</original>

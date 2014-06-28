@@ -1683,42 +1683,6 @@
       <original>Unknown command.</original>
       <translate> </translate>
     </item>
-    <item id="444" file="command.lua" function="api.message_send_text">
-      <original>You must be at least a Channel Operator to use this command.</original>
-      <translate refid="79" />
-    </item>
-    <item id="445" file="command.lua" function="api.message_send_text">
-      <original>This command can only be used inside a channel.</original>
-      <translate refid="66" />
-    </item>
-    <item id="446" file="command.lua" function="api.message_send_text">
-      <original>Quiz has already ran in channel "{}". Use /quiz stop to force finish.</original>
-      <translate> </translate>
-    </item>
-    <item id="447" file="command.lua" function="api.message_send_text">
-      <original>Available Quiz dictionaries: </original>
-      <translate> </translate>
-    </item>
-    <item id="448" file="command.lua" function="api.message_send_text">
-      <original>Quiz is not running.</original>
-      <translate> </translate>
-    </item>
-    <item id="451" file="command.lua" function="api.message_send_text">
-      <original>{}'s Quiz record:</original>
-      <translate> </translate>
-    </item>
-    <item id="452" file="command.lua" function="api.message_send_text">
-      <original>{} has never played Quiz.</original>
-      <translate> </translate>
-    </item>
-    <item id="449" file="command.lua" function="localize">
-      <original>Top {} Quiz records:</original>
-      <translate> </translate>
-    </item>
-    <item id="450" file="command.lua" function="string.format">
-      <original>points</original>
-      <translate> </translate>
-    </item>
     <item id="420" file="handle_bnet.cpp" function="_client_loginreq2">
       <original>This account has been locked</original>
       <translate> </translate>
@@ -1726,10 +1690,6 @@
     <item id="421" file="handle_bnet.cpp" function="_client_logonproofreq">
       <original>This account has been locked</original>
       <translate refid="420" />
-    </item>
-    <item id="442" file="handle_command.lua" function="api.message_send_text">
-      <original>This command is reserved for admins.</original>
-      <translate refid="25" />
     </item>
     <item id="422" file="helpfile.cpp" function="handle_help_command">
       <original>Oops ! There is a problem with the help file. Please contact the administrator of the server.</original>
@@ -1810,6 +1770,46 @@
     <item id="435" file="mail.cpp" function="mail_func_send">
       <original>There was an error completing your request!</original>
       <translate> </translate>
+    </item>
+    <item id="444" file="command.lua" function="api.message_send_text">
+      <original>You must be at least a Channel Operator to use this command.</original>
+      <translate refid="79" />
+    </item>
+    <item id="445" file="command.lua" function="api.message_send_text">
+      <original>This command can only be used inside a channel.</original>
+      <translate refid="66" />
+    </item>
+    <item id="446" file="command.lua" function="api.message_send_text">
+      <original>Quiz has already ran in channel "{}". Use /quiz stop to force finish.</original>
+      <translate> </translate>
+    </item>
+    <item id="447" file="command.lua" function="api.message_send_text">
+      <original>Available Quiz dictionaries: </original>
+      <translate> </translate>
+    </item>
+    <item id="448" file="command.lua" function="api.message_send_text">
+      <original>Quiz is not running.</original>
+      <translate> </translate>
+    </item>
+    <item id="451" file="command.lua" function="api.message_send_text">
+      <original>{}'s Quiz record:</original>
+      <translate> </translate>
+    </item>
+    <item id="452" file="command.lua" function="api.message_send_text">
+      <original>{} has never played Quiz.</original>
+      <translate> </translate>
+    </item>
+    <item id="449" file="command.lua" function="localize">
+      <original>Top {} Quiz records:</original>
+      <translate> </translate>
+    </item>
+    <item id="450" file="command.lua" function="string.format">
+      <original>points</original>
+      <translate> </translate>
+    </item>
+    <item id="442" file="handle_command.lua" function="api.message_send_text">
+      <original>This command is reserved for admins.</original>
+      <translate refid="25" />
     </item>
     <item id="443" file="redirect.lua" function="api.message_send_text">
       <original>User "{}" is offline</original>
