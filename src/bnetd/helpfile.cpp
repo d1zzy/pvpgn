@@ -32,6 +32,7 @@
 #include "command_groups.h"
 #include "account_wrap.h"
 #include "connection.h"
+#include "i18n.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -80,7 +81,7 @@ namespace pvpgn
 
 			if (hfd == NULL)
 			{ /* an error ocured opening readonly the help file, helpfile_unload was called, or helpfile_init hasn't been called */
-				message_send_text(c, message_type_error, c, "Oops ! There is a problem with the help file. Please contact the administrator of the server.");
+				message_send_text(c, message_type_error, c, localize(c, "Oops ! There is a problem with the help file. Please contact the administrator of the server."));
 				return 0;
 			}
 

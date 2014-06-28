@@ -44,11 +44,13 @@
 #include "connection.h"
 #include "icons.h"
 #include "account_wrap.h"
-#include "common/setup_after.h"
+
 #include "message.h"
 #include "helpfile.h"
 #include "channel.h"
 #include "command.h"
+#include "i18n.h"
+#include "common/setup_after.h"
 
 namespace pvpgn
 {
@@ -84,7 +86,7 @@ namespace pvpgn
 			char		msgtemp[MAX_MESSAGE_LEN];
 
 			if (!(conn_get_channel(c))) {
-				message_send_text(c, message_type_error, c, "This command can only be used inside a channel.");
+				message_send_text(c, message_type_error, c, localize(c, "This command can only be used inside a channel."));
 				return -1;
 			}
 			else {
@@ -95,7 +97,7 @@ namespace pvpgn
 			clienttag = conn_get_clienttag(c);
 			if (!clienttag || clienttag == CLIENTTAG_BNCHATBOT_UINT)
 			{
-				message_send_text(c, message_type_error, c, "This command can only be used from the game.");
+				message_send_text(c, message_type_error, c, localize(c, "This command can only be used from the game."));
 				return -1;
 			}
 
@@ -177,7 +179,7 @@ namespace pvpgn
 						}
 						if (!is_found || strlen(iconcode) != 4)
 						{
-							message_send_text(c, message_type_error, c, "Bad icon.");
+							message_send_text(c, message_type_error, c, localize(c, "Bad icon."));
 							return -1;
 						}
 						snprintf(msgtemp, sizeof(msgtemp), "Set new icon is succeed.", account_get_name(account));

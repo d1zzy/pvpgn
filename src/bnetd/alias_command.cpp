@@ -32,6 +32,7 @@
 #include "common/xalloc.h"
 #include "message.h"
 #include "connection.h"
+#include "i18n.h"
 #include "common/setup_after.h"
 
 
@@ -59,7 +60,7 @@ namespace pvpgn
 			t_output *      output;
 			char            temp[MAX_MESSAGE_LEN];
 
-			message_send_text(c, message_type_info, c, "Alias list:");
+			message_send_text(c, message_type_info, c, localize(c, "Alias list:"));
 			LIST_TRAVERSE_CONST(aliaslist_head, elem1)
 			{
 				if (!(alias = (t_alias*)elem_get_data(elem1)))
@@ -580,7 +581,7 @@ namespace pvpgn
 
 			if (do_alias(c, cmd, text) < 0)
 			{
-				message_send_text(c, message_type_info, c, "No such alias.  Use // to show the list.");
+				message_send_text(c, message_type_info, c, localize(c, "No such alias.  Use // to show the list."));
 				return -1;
 			}
 			return 0;

@@ -41,9 +41,11 @@
 #include "server.h"
 #include "prefs.h"
 #include "connection.h"
-#include "common/setup_after.h"
+
 #include "helpfile.h"
 #include "command.h"
+#include "i18n.h"
+#include "common/setup_after.h"
 
 namespace pvpgn
 {
@@ -393,7 +395,7 @@ namespace pvpgn
 		extern int ipbanlist_add(t_connection * c, char const * cp, std::time_t endtime)
 		{
 			t_ipban_entry *	entry;
-			char		tstr[MAX_MESSAGE_LEN];
+			std::string msgtemp;
 
 			if (!(entry = ipban_str_to_ipban_entry(cp)))
 			{
@@ -411,19 +413,19 @@ namespace pvpgn
 
 				if (endtime == 0)
 				{
-					std::sprintf(tstr, "%s banned permamently by %s.", cp, conn_get_username(c));
-					eventlog(eventlog_level_info, __FUNCTION__, "%s", tstr);
-					message_send_admins(c, message_type_info, tstr);
-					std::sprintf(tstr, "%s banned permamently.", cp);
-					message_send_text(c, message_type_info, c, tstr);
+					msgtemp = localize(c, "{} banned permamently by {}.", cp, conn_get_username(c));
+					eventlog(eventlog_level_info, __FUNCTION__, msgtemp.c_str());
+					message_send_admins(c, message_type_info, msgtemp.c_str());
+					msgtemp = localize(c, "{} banned permamently.", cp);
+					message_send_text(c, message_type_info, c, msgtemp);
 				}
 				else
 				{
-					std::sprintf(tstr, "%s banned for %.48s by %s.", cp, seconds_to_timestr(entry->endtime - now), conn_get_username(c));
-					eventlog(eventlog_level_info, __FUNCTION__, "%s", tstr);
-					message_send_admins(c, message_type_info, tstr);
-					std::sprintf(tstr, "%s banned for %.48s.", cp, seconds_to_timestr(entry->endtime - now));
-					message_send_text(c, message_type_info, c, tstr);
+					msgtemp = localize(c, "{} banned for {} by {}.", cp, seconds_to_timestr(entry->endtime - now), conn_get_username(c));
+					eventlog(eventlog_level_info, __FUNCTION__, msgtemp.c_str());
+					message_send_admins(c, message_type_info, msgtemp.c_str());
+					msgtemp = localize(c, "{} banned for {}.", cp, seconds_to_timestr(entry->endtime - now));
+					message_send_text(c, message_type_info, c, msgtemp);
 				}
 			}
 
@@ -466,7 +468,7 @@ namespace pvpgn
 			unsigned int	bmin;
 			char		minstr[MAX_TIME_STR];
 			unsigned int	i;
-			char		tstr[MAX_MESSAGE_LEN];
+			std::string msgtemp;
 
 			for (i = 0; std::isdigit((int)timestr[i]) && i < sizeof(minstr)-1; i++)
 				minstr[i] = timestr[i];
@@ -476,12 +478,14 @@ namespace pvpgn
 			{
 				if (c)
 				{
-					if (std::strlen(minstr) < 1)
-						message_send_text(c, message_type_info, c, "There was an error in std::time.");
-					else
+					msgtemp = "There was an error in std::time.";
+					//if (std::strlen(minstr) < 1)
+					//	message_send_text(c, message_type_info, c, localize(c, msgtemp));
+					//else
 					{
-						std::sprintf(tstr, "There was an error in std::time. Banning only for: %s minutes.", minstr);
-						message_send_text(c, message_type_info, c, tstr);
+						msgtemp += " ";
+						msgtemp += localize(c, "Banning only for: {} minutes.", minstr);
+						message_send_text(c, message_type_info, c, msgtemp);
 					}
 				}
 			}

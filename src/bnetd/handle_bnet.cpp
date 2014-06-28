@@ -73,6 +73,7 @@
 #include "friends.h"
 #include "autoupdate.h"
 #include "anongame.h"
+#include "i18n.h"
 #ifdef WIN32_GUI
 #include <win32/winmain.h>
 #endif
@@ -1691,9 +1692,9 @@ namespace pvpgn
 					if (supports_locked_reply)
 					{
 						bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
-						char msgtemp[MAX_MESSAGE_LEN];
-						snprintf(msgtemp, sizeof(msgtemp), "This account has been locked%s", account_get_locktext(account, true));
-						packet_append_string(rpacket, msgtemp);
+						std::string msgtemp = localize(c, "This account has been locked");
+						msgtemp += account_get_locktext(account, true);
+						packet_append_string(rpacket, msgtemp.c_str());
 					}
 					else {
 						bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_BADPASS);
@@ -2115,9 +2116,9 @@ namespace pvpgn
 				else if (account_get_auth_lock(account) == 1) {	/* default to false */
 					eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
 					bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_CUSTOM);
-					char msgtemp[MAX_MESSAGE_LEN];
-					snprintf(msgtemp, sizeof(msgtemp), "This account has been locked%s", account_get_locktext(account, true));
-					packet_append_string(rpacket, msgtemp);
+					std::string msgtemp = localize(c, "This account has been locked");
+					msgtemp += account_get_locktext(account, true);
+					packet_append_string(rpacket, msgtemp.c_str());
 				}
 				else {
 					t_hash serverhash;

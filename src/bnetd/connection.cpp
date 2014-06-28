@@ -73,8 +73,9 @@
 #include "command_groups.h"
 #include "attrlayer.h"
 #include "anongame_wol.h"
-#include "common/setup_after.h"
 #include "icons.h"
+#include "i18n.h"
+#include "common/setup_after.h"
 
 #ifdef WITH_LUA
 #include "luainterface.h"
@@ -128,43 +129,9 @@ namespace pvpgn
 			}
 			if (filename = prefs_get_motdfile()) {
 				t_tag gamelang = conn_get_gamelang(c);
-				char lang_str[sizeof(t_tag)+1];
-				char * lang_filename;
-				char * tempmotdfile;
-				char * def_langtag;
-				char * extention;
+				std::string lang_filename = i18n_filename(filename, gamelang);
 
-				std::memset(lang_str, 0, sizeof(lang_str));
-				tag_uint_to_str(lang_str, gamelang);
-
-				tempmotdfile = xstrdup(filename);
-				def_langtag = std::strrchr(tempmotdfile, '-');
-				if (!def_langtag) {
-					extention = std::strrchr(tempmotdfile, '.');
-				}
-				else {
-					*def_langtag = '\0';
-					def_langtag++;
-					extention = std::strrchr(def_langtag, '.');
-				}
-				lang_filename = (char*)xmalloc(std::strlen(tempmotdfile) + 1 + std::strlen(lang_str) + 1 + std::strlen(extention) + 1);
-
-				if (extention) {
-					*extention = '\0';
-					extention++;
-				}
-
-				if ((gamelang) && (lang_str))
-				if (extention)
-					std::sprintf(lang_filename, "%s-%s.%s", tempmotdfile, lang_str, extention);
-				else
-					std::sprintf(lang_filename, "%s-%s", tempmotdfile, lang_str);
-				else {
-					INFO0("client does not specifed proper gamelang, sending default motd");
-					std::sprintf(lang_filename, "%s", filename);
-				}
-
-				if (fp = std::fopen(lang_filename, "r")) {
+				if (fp = std::fopen(lang_filename.c_str(), "r")) {
 					message_send_file(c, fp);
 					if (std::fclose(fp) < 0) {
 						eventlog(eventlog_level_error, __FUNCTION__, "could not close MOTD file \"%s\" after reading (std::fopen: %s)", lang_filename, std::strerror(errno));
@@ -182,10 +149,6 @@ namespace pvpgn
 						eventlog(eventlog_level_error, __FUNCTION__, "could not open MOTD file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
 					}
 				}
-				if (tempmotdfile)
-					xfree((void *)tempmotdfile);
-				if (lang_filename)
-					xfree((void *)lang_filename);
 			}
 			c->protocol.cflags |= conn_flags_welcomed;
 		}

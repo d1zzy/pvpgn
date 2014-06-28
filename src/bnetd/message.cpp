@@ -987,6 +987,7 @@ namespace pvpgn
 				return -1;
 			}
 
+			// empty messages are needed to separate text (or example, in bnhelp output)
 			if (text && text[0] == '\0')
 				text = " "; /* empty messages crash some clients, just send whitespace */
 
@@ -994,7 +995,6 @@ namespace pvpgn
 			if (text && (std::strlen(text) > MAX_MESSAGE_LEN)) {
 				/* PELISH: We are trying to support MAX_IRC_MESSAGE_LEN for IRC and also
 						   MAX_MESSAGE_LEN for bnet */
-				eventlog(eventlog_level_warn, __FUNCTION__, "line too long, truncation...");
 				temp = std::string(text, text + MAX_MESSAGE_LEN);
 				text = temp.c_str();
 			}
@@ -1595,6 +1595,10 @@ namespace pvpgn
 			return rez;
 		}
 
+		extern int message_send_text(t_connection * dst, t_message_type type, t_connection * src, std::string text)
+		{
+			return message_send_text(dst, type, src, text.c_str());
+		}
 
 		extern int message_send_text(t_connection * dst, t_message_type type, t_connection * src, char const * text)
 		{

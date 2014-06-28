@@ -39,9 +39,10 @@
 #include "message.h"
 #include "prefs.h"
 #include "connection.h"
-#include "common/setup_after.h"
 #include "helpfile.h"
 #include "command.h"
+#include "i18n.h"
+#include "common/setup_after.h"
 
 
 namespace pvpgn
@@ -251,7 +252,7 @@ namespace pvpgn
 		extern int handle_mail_command(t_connection * c, char const * text)
 		{
 			if (!prefs_get_mail_support()) {
-				message_send_text(c, message_type_error, c, "This server has NO mail support.");
+				message_send_text(c, message_type_error, c, localize(c, "This server has NO mail support."));
 				return -1;
 			}
 
@@ -331,22 +332,22 @@ namespace pvpgn
 
 			t_account * recv = accountlist_find_account(receiver);
 			if (!recv) {
-				message_send_text(c, message_type_error, c, "Receiver UNKNOWN!");
+				message_send_text(c, message_type_error, c, localize(c, "Receiver UNKNOWN!"));
 				return;
 			}
 
 			Mailbox mbox(account_get_uid(recv));
 			if (get_mail_quota(recv) <= mbox.size()) {
-				message_send_text(c, message_type_error, c, "Receiver has reached his mail quota. Your message will NOT be sent.");
+				message_send_text(c, message_type_error, c, localize(c, "Receiver has reached his mail quota. Your message will NOT be sent."));
 				return;
 			}
 
 			try {
 				mbox.deliver(conn_get_username(c), message);
-				message_send_text(c, message_type_info, c, "Your mail has been sent successfully.");
+				message_send_text(c, message_type_info, c, localize(c, "Your mail has been sent successfully."));
 			}
 			catch (const Mailbox::DeliverError&) {
-				message_send_text(c, message_type_error, c, "There was an error completing your request!");
+				message_send_text(c, message_type_error, c, localize(c, "There was an error completing your request!"));
 			}
 		}
 
@@ -368,7 +369,7 @@ namespace pvpgn
 
 			if (token.empty()) { /* user wants to see the mail summary */
 				if (mbox.empty()) {
-					message_send_text(c, message_type_info, c, "You have no mail.");
+					message_send_text(c, message_type_info, c, localize(c, "You have no mail."));
 					return;
 				}
 
@@ -412,7 +413,7 @@ namespace pvpgn
 					message_send_text(c, message_type_info, c, mail.message().c_str());
 				}
 				catch (const Mailbox::ReadError&) {
-					message_send_text(c, message_type_error, c, "There was an error completing your request.");
+					message_send_text(c, message_type_error, c, localize(c, "There was an error completing your request."));
 				}
 			}
 		}
@@ -425,7 +426,7 @@ namespace pvpgn
 			}
 
 			if (token.empty()) {
-				message_send_text(c, message_type_error, c, "Please specify which message to delete. Use the following syntax: /mail delete {<index>|all} .");
+				message_send_text(c, message_type_error, c, localize(c, "Please specify which message to delete. Use the following syntax: /mail delete {<index>|all} ."));
 				return;
 			}
 
@@ -434,16 +435,16 @@ namespace pvpgn
 
 			if (token == "all") {
 				mbox.clear();
-				message_send_text(c, message_type_info, c, "Successfully deleted messages.");
+				message_send_text(c, message_type_info, c, localize(c, "Successfully deleted messages."));
 			}
 			else {
 				if (std::find_if(token.begin(), token.end(), NonNumericChar) != token.end()) {
-					message_send_text(c, message_type_error, c, "Invalid index. Please use /mail delete {<index>|all} where <index> is a number.");
+					message_send_text(c, message_type_error, c, localize(c, "Invalid index. Please use /mail delete {<index>|all} where <index> is a number."));
 					return;
 				}
 
 				mbox.erase(std::atoi(token.c_str()));
-				message_send_text(c, message_type_info, c, "Succesfully deleted message.");
+				message_send_text(c, message_type_info, c, localize(c, "Succesfully deleted message."));
 			}
 		}
 
