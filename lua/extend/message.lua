@@ -13,3 +13,6 @@ function message_send_all(text)
 	end
 end
 
+function localize(username, arg1, arg2, arg3, arg4, arg5)
+	return api.localize(username, arg1, arg2, arg3, arg4, arg5)
+end

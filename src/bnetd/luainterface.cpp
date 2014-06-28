@@ -147,6 +147,8 @@ namespace pvpgn
 				{ "describe_command", __describe_command },
 				{ "messagebox_show", __messagebox_show },
 
+				{ "localize", __localize },
+
 				{ 0, 0 }
 			};
 			vm.reg("api", api);

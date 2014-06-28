@@ -37,24 +37,24 @@ end
 function q_command_start(account, filename)
 	
 	if not account_is_operator_or_admin(account.name) then
-		api.message_send_text(account.name, message_type_error, account.name, "You must be at least a Channel Operator to use this command.")
+		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "You must be at least a Channel Operator to use this command."))
 		return 1
 	end
 	
 	local channel = api.channel_get_by_id(account.channel_id)
 	if not channel then
-		api.message_send_text(account.name, message_type_error, account.name, "This command can only be used inside a channel.")
+		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "This command can only be used inside a channel."))
 		return 1
 	end
  
 	if config.quiz_channel then
-		api.message_send_text(account.name, message_type_error, account.name, 'Quiz has already ran in channel "'..config.quiz_channel..'". Use /qstop to force finish.')
+		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "Quiz has already ran in channel \"{}\". Use /quiz stop to force finish.", config.quiz_channel))
 		return 1
 	end
 	
 	-- check if file exists
 	if not filename or not file_exists(q_directory() .. "/questions/" .. filename .. ".txt") then
-		api.message_send_text(account.name, message_type_error, account.name, "Available Quiz dictionaries: ")
+		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "Available Quiz dictionaries: "))
 		api.message_send_text(account.name, message_type_error, account.name, "   " .. config.quiz_filelist)
 		return 1
 	end
@@ -67,12 +67,12 @@ end
 function q_command_stop(account)
 
 	if not account_is_operator_or_admin(account.name) then
-		api.message_send_text(account.name, message_type_error, account.name, "You must be at least a Channel Operator to use this command.")
+		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "You must be at least a Channel Operator to use this command."))
 		return 1
 	end
 	
 	if not config.quiz_channel then
-		api.message_send_text(account.name, message_type_error, account.name, 'Quiz is not running.')
+		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "Quiz is not running."))
 		return 1
 	end
 
@@ -89,14 +89,14 @@ function q_command_toplist(account)
 		return 0
 	end
 
-	local output = "Top " .. config.quiz_users_in_top .. " Quiz records:"
+	local output = localize(account.name, "Top {} Quiz records:", config.quiz_users_in_top)
 	api.message_send_text(account.name, message_type_info, account.name, output)
 
 	-- display TOP of total records
 	for i,t in pairs(q_records_total) do
 		if (i > config.quiz_users_in_top) then break end
 
-		local output = string.format("  %d. %s [%d points]", i, t.username, t.points)
+		local output = string.format("  %d. %s [%d %s]", i, t.username, t.points, localize(account.name, "points"))
 		api.message_send_text(account.name, message_type_info, account.name, output)
 	end
 
@@ -116,9 +116,9 @@ function q_command_stats(account, username)
 	-- find user in records
 	for i,t in pairs(q_records_total) do
 		if string.upper(t.username) == string.upper(username) then
-			api.message_send_text(account.name, message_type_info, account.name, t.username.. "'s Quiz record:")
+			api.message_send_text(account.name, message_type_info, account.name, localize(account.name, "{}'s Quiz record:", t.username))
 			
-			local output = string.format("  %d. %s [%d points]", i, t.username, t.points)
+			local output = string.format("  %d. %s [%d %s]", i, t.username, t.points, localize(account.name, "points"))
 			api.message_send_text(account.name, message_type_info, account.name, output)
 			
 			found = true
@@ -126,7 +126,7 @@ function q_command_stats(account, username)
 	end
 	
 	if not found then
-		api.message_send_text(account.name, message_type_info, account.name, username .. " has never played Quiz.")
+		api.message_send_text(account.name, message_type_info, account.name, localize(account.name, "{} has never played Quiz.", username))
 	end
 
 	return 1

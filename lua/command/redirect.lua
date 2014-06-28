@@ -22,7 +22,7 @@ function command_redirect(account, text)
 	local dest = api.account_get_by_name(args[1])
 
 	if next(dest) == nil or dest.online == "false" then
-		api.message_send_text(account.name, message_type_error, account.name, "User '" ..args[1].. "' is offline")
+		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "User \"{}\" is offline", args[1]))
 		return 1
 	end
 	

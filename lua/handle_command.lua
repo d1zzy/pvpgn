@@ -31,7 +31,7 @@ function handle_command(account, text)
 				
 				-- check if command group is in account.commandgroups
 				if math_and(account.commandgroups, cg) == 0 then
-					api.message_send_text(account.name, message_type_error, account.name, "This command is reserved for admins.")
+					api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "This command is reserved for admins."))
 					return 1
 				end
 				

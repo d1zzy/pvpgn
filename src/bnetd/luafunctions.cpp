@@ -48,6 +48,7 @@
 #include "attrlayer.h"
 #include "icons.h"
 #include "helpfile.h"
+#include "i18n.h"
 
 #include "luawrapper.h"
 #include "luaobjects.h"
@@ -129,6 +130,7 @@ namespace pvpgn
 				st.at(1, loglevel);
 				st.at(2, function);
 				st.at(3, text);
+				eventlog(t_eventlog_level(loglevel), function, text);
 			}
 			catch (const std::exception& e)
 			{
@@ -138,7 +140,6 @@ namespace pvpgn
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
 			}
-			eventlog(t_eventlog_level(loglevel), function, text);
 
 			return 0;
 		}
@@ -766,7 +767,41 @@ namespace pvpgn
 			return 0;
 		}
 
+		/* Localize text  */
+		extern int __localize(lua_State* L)
+		{
+			const char *username, *text;
+			const char *arg1, *arg2, *arg3, *arg4, *arg5;
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, username);
+				st.at(2, text);
+				st.at(3, arg1);
+				st.at(4, arg2);
+				st.at(5, arg3);
+				st.at(6, arg4);
+				st.at(7, arg5);
 
+				if (t_account * account = accountlist_find_account(username))
+				{
+					if (t_connection * c = account_get_conn(account))
+					{
+						st.push(localize(c, text, arg1, arg2, arg3, arg4, arg5));
+					}
+				}
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 1;
+		}
 	}
 }
 #endif
