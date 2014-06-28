@@ -1,4 +1,4 @@
-%ICześć %l, witaj w %s!
+%ECześć %l, witaj w %s!
 %IWersja serwera %v uruchomiona na %h.
 %ISerwer obsługuje %H
 %I
@@ -8,4 +8,6 @@
 %IJeśli masz jakieś problemy z poleceniami, to napiszsz /help aby
 %Idowiedzieć się wiecej.
 %I
-%I%m
+%I(edit this text in conf/bnmotd-plPL.txt)
+%I
+%M%m
