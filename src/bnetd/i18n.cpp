@@ -126,10 +126,10 @@ namespace pvpgn
 				}
 
 				// root node
-				pugi::xml_node nodes = doc.child("strings");
+				pugi::xml_node nodes = doc.child("root").child("items");
 
 				// load xml strings to map
-				for (pugi::xml_node node = nodes.child("string"); node; node = node.next_sibling("string"))
+				for (pugi::xml_node node = nodes.child("item"); node; node = node.next_sibling("item"))
 				{
 					original = node.child_value("original");
 					if (original[0] == '\0')
@@ -142,14 +142,14 @@ namespace pvpgn
 					
 
 					// check if translate string has a reference to another translation
-					if (pugi::xml_attribute attr = node.child("translate").attribute("id"))
+					if (pugi::xml_attribute attr = node.child("translate").attribute("refid"))
 					{
 						if (pugi::xml_node n = nodes.find_child_by_attribute("id", attr.value()))
 							translate = n.child_value("translate");
 						else
 						{
 							translate = original;
-							WARN2("could not find localization reference id=\"%s\", use original string (%s)", attr.value(), lang_filename.c_str());
+							WARN2("could not find translate reference refid=\"%s\", use original string (%s)", attr.value(), lang_filename.c_str());
 						}
 					}
 					else
@@ -158,7 +158,7 @@ namespace pvpgn
 						if (translate[0] == '\0')
 						{
 							translate = original;
-							WARN2("empty localization for \"%s\", use original string (%s)", original.c_str(), lang_filename.c_str());
+							//WARN2("empty translate for \"%s\", use original string (%s)", original.c_str(), lang_filename.c_str());
 						}
 					}
 					translations[original][languages[i]] = translate;
@@ -170,6 +170,30 @@ namespace pvpgn
 			return 0;
 		}
 
+		extern std::string _localize(t_connection * c, const char * func, const char * fmt, const fmt::ArgList &args)
+		{
+			const char *format;
+			std::string output;
+			try
+			{
+				format = fmt;
+
+				if (t_gamelang lang = conn_get_gamelang(c))
+				if (!(format = _find_string(fmt, lang)))
+					format = fmt;
+			
+				fmt::Writer w;
+				w.format(format, args);
+				output = w.str();
+			}
+			catch (const std::exception& e)
+			{
+				ERROR1("Can't format translation string \"%s\" (%s)", fmt, e.what());
+			}
+			return output;
+		}
+
+
 		/* Find localized text for the given language */
 		const char * _find_string(char const * text, t_gamelang gamelang)
 		{
@@ -180,26 +204,11 @@ namespace pvpgn
 					return it->second[gamelang].c_str();
 			}
 			return NULL;
-
-		}
-
-		/* Return text translation */
-		extern const char * localize(t_connection * c, char const * text)
-		{
-			t_gamelang gamelang = conn_get_gamelang(c);
-			
-			if (!gamelang || !tag_check_gamelang(gamelang))
-				return text;
-
-			if (const char * translate = _find_string(text, gamelang))
-				return translate;
-
-			return text;
 		}
 
 
 		/* Add a locale tag into filename
-		    example: motd.txt -> motd-ruRU.txt */
+		example: motd.txt -> motd-ruRU.txt */
 		extern std::string i18n_filename(const char * filename, t_tag gamelang)
 		{
 			// get language string
