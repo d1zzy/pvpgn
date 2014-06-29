@@ -86,6 +86,11 @@ namespace pvpgn_localize_generator
                 xsw.Serialize(fs, _data);
             }
 
+            // replace empty "<translate />" strings (for comfort further translation)
+            var data = File.ReadAllText(outfile);
+            data = data.Replace("<translate />", "<translate></translate>");
+            File.WriteAllText(outfile, data);
+
             Console.WriteLine("\n{0} items saved in {1}: ", _data.Items.Count, outfile);
             //Console.WriteLine("\nPress any key to exit...");
             //Console.ReadKey();
@@ -361,7 +366,7 @@ namespace pvpgn_localize_generator
                 [XmlAttribute("refid")]
                 public string RefId;
                 [XmlText]
-                public string InnerText = " "; // default value is " " to save empty values when updating xml file
+                public string InnerText; // default value is " " to save empty values when updating xml file
             }
         }
 
