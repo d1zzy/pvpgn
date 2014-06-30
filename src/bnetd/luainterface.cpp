@@ -173,6 +173,7 @@ namespace pvpgn
 				config.update("scriptdir", prefs_get_scriptdir());
 				config.update("reportdir", prefs_get_reportdir());
 				config.update("chanlogdir", prefs_get_chanlogdir());
+				config.update("localizefile", prefs_get_localizefile());
 				config.update("motdfile", prefs_get_motdfile());
 				config.update("motdw3file", prefs_get_motdw3file());
 				config.update("issuefile", prefs_get_issuefile());

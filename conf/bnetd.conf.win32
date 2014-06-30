@@ -59,19 +59,15 @@ storage_path = file:mode=plain;dir=var\users;clan=var\clans;team=var\teams;defau
 #----------------------------------------------------------------------------#
 
 filedir     = files
-i18ndir     = conf\i18n
 scriptdir   = lua
 reportdir   = var\reports
 chanlogdir  = var\chanlogs
-motdfile    = conf\bnmotd.txt
-motdw3file  = conf\bnmotd_w3.txt
+i18ndir     = conf\i18n
 issuefile   = conf\bnissue.txt
 channelfile = conf\channel.conf
-newsfile    = conf\news.txt
 adfile      = conf\ad.conf
 topicfile   = conf\topics.conf
 ipbanfile   = conf\bnban.conf
-helpfile    = conf\bnhelp.conf
 transfile   = conf\address_translation.conf
 mpqfile     = conf\autoupdate.conf
 logfile     = var\bnetd.log
@@ -91,6 +87,24 @@ supportfile = conf\supportfile.conf
 customicons_file = conf\icons.conf
 
 fortunecmd  = bin\fortune.exe
+
+#                                                                            #
+##############################################################################
+
+
+##############################################################################
+# Localized files realm server settings                                      #
+#----------------------------------------------------------------------------#
+
+# These filenames can have translated versions in
+# the "i18ndir" directory specified above.
+# (there are also two downloadable files: chathelp-war3.txt, newaccount.txt)
+localizefile = common.xml
+motdfile    = bnmotd.txt
+motdw3file  = w3motd.txt
+newsfile    = news.txt
+helpfile    = bnhelp.conf
+tosfile 	= termsofservice.txt
 
 #                                                                            #
 ##############################################################################
@@ -139,8 +153,6 @@ allow_d2cs_setname = true
 iconfile = "icons.bni"
 war3_iconfile = "icons-WAR3.bni"
 star_iconfile = "icons_STAR.bni"
-
-tosfile = "tos.txt"
 
 #                                                                            #
 ##############################################################################

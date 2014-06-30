@@ -79,19 +79,15 @@ storage_path = "file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}
 #----------------------------------------------------------------------------#
 
 filedir     = "${LOCALSTATEDIR}/files"
-i18ndir     = "${SYSCONFDIR}/i18n"
 scriptdir   = "${LOCALSTATEDIR}/lua"
 reportdir   = "${LOCALSTATEDIR}/reports"
 chanlogdir  = "${LOCALSTATEDIR}/chanlogs"
-motdfile    = "${SYSCONFDIR}/bnmotd.txt"
-motdw3file  = "${SYSCONFDIR}/bnmotd_w3.txt"
+i18ndir     = "${SYSCONFDIR}/i18n"
 issuefile   = "${SYSCONFDIR}/bnissue.txt"
 channelfile = "${SYSCONFDIR}/channel.conf"
-newsfile    = "${SYSCONFDIR}/news.txt"
 adfile      = "${SYSCONFDIR}/ad.conf"
 topicfile   = "${SYSCONFDIR}/topics.conf"
 ipbanfile   = "${SYSCONFDIR}/bnban.conf"
-helpfile    = "${SYSCONFDIR}/bnhelp.conf"
 mpqfile     = "${SYSCONFDIR}/autoupdate.conf"
 logfile     = "${LOCALSTATEDIR}/bnetd.log"
 realmfile   = "${SYSCONFDIR}/realm.conf"
@@ -113,6 +109,24 @@ transfile   = "${SYSCONFDIR}/address_translation.conf"
 customicons_file = "${SYSCONFDIR}/icons.conf"
 
 fortunecmd  = /usr/games/fortune
+
+#                                                                            #
+##############################################################################
+
+
+##############################################################################
+# Localized files realm server settings                                      #
+#----------------------------------------------------------------------------#
+
+# These filenames can have translated versions in
+# the "i18ndir" directory specified above.
+# (there are also two downloadable files: chathelp-war3.txt, newaccount.txt)
+localizefile = common.xml
+motdfile    = bnmotd.txt
+motdw3file  = w3motd.txt
+newsfile    = news.txt
+helpfile    = bnhelp.conf
+tosfile 	= termsofservice.txt
 
 #                                                                            #
 ##############################################################################
@@ -161,8 +175,6 @@ allow_d2cs_setname = true
 iconfile = "icons.bni"
 war3_iconfile = "icons-WAR3.bni"
 star_iconfile = "icons_STAR.bni"
-
-tosfile = "tos.txt"
 
 #                                                                            #
 ##############################################################################

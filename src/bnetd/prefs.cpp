@@ -43,6 +43,7 @@ namespace pvpgn
 			char const * storage_path;
 			char const * logfile;
 			char const * loglevels;
+			char const * localizefile;
 			char const * motdfile;
 			char const * motdw3file;
 			char const * newsfile;
@@ -195,6 +196,10 @@ namespace pvpgn
 		static int conf_set_loglevels(const char *valstr);
 		static const char *conf_get_loglevels(void);
 		static int conf_setdef_loglevels(void);
+
+		static int conf_set_localizefile(const char *valstr);
+		static const char *conf_get_localizefile(void);
+		static int conf_setdef_localizefile(void);
 
 		static int conf_set_motdfile(const char *valstr);
 		static const char *conf_get_motdfile(void);
@@ -712,6 +717,7 @@ namespace pvpgn
 			{ "storage_path", conf_set_storage_path, conf_get_storage_path, conf_setdef_storage_path },
 			{ "logfile", conf_set_logfile, conf_get_logfile, conf_setdef_logfile },
 			{ "loglevels", conf_set_loglevels, conf_get_loglevels, conf_setdef_loglevels },
+			{ "localizefile", conf_set_localizefile, conf_get_localizefile, conf_setdef_localizefile },
 			{ "motdfile", conf_set_motdfile, conf_get_motdfile, conf_setdef_motdfile },
 			{ "motdw3file", conf_set_motdw3file, conf_get_motdw3file, conf_setdef_motdw3file },
 			{ "newsfile", conf_set_newsfile, conf_get_newsfile, conf_setdef_newsfile },
@@ -981,6 +987,27 @@ namespace pvpgn
 		}
 
 
+		extern char const * prefs_get_localizefile(void)
+		{
+			return prefs_runtime_config.localizefile;
+		}
+
+		static int conf_set_localizefile(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.localizefile, valstr, NULL);
+		}
+
+		static int conf_setdef_localizefile(void)
+		{
+			return conf_set_str(&prefs_runtime_config.localizefile, NULL, BNETD_LOCALIZE_FILE);
+		}
+
+		static const char* conf_get_localizefile(void)
+		{
+			return prefs_runtime_config.localizefile;
+		}
+
+
 		extern char const * prefs_get_motdfile(void)
 		{
 			return prefs_runtime_config.motdfile;
@@ -1035,7 +1062,7 @@ namespace pvpgn
 
 		static int conf_setdef_newsfile(void)
 		{
-			return conf_set_str(&prefs_runtime_config.newsfile, NULL, BNETD_NEWS_DIR);
+			return conf_set_str(&prefs_runtime_config.newsfile, NULL, BNETD_NEWS_FILE);
 		}
 
 		static const char* conf_get_newsfile(void)
