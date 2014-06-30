@@ -57,7 +57,7 @@ namespace pvpgn_localize_validator
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine("[ERROR] " + e.Message);
             }
         }
 
