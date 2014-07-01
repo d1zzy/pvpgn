@@ -4618,34 +4618,30 @@ namespace pvpgn
 			char const * filename;
 			std::FILE *       fp;
 
-			if ((filename = prefs_get_motdfile())) {
-				if ((fp = std::fopen(filename, "r")))
-				{
-					message_send_file(c, fp);
-					if (std::fclose(fp) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not close motd file \"%s\" after reading (std::fopen: %s)", filename, std::strerror(errno));
-				}
-				else
-				{
-					eventlog(eventlog_level_error, __FUNCTION__, "could not open motd file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
-					message_send_text(c, message_type_error, c, localize(c, "Unable to open motd."));
-				}
-				return 0;
+			filename = i18n_filename(prefs_get_motdfile(), conn_get_gamelang(c));
+
+			if (fp = std::fopen(filename, "r"))
+			{
+				message_send_file(c, fp);
+				if (std::fclose(fp) < 0)
+					eventlog(eventlog_level_error, __FUNCTION__, "could not close motd file \"%s\" after reading (std::fopen: %s)", filename, std::strerror(errno));
 			}
-			else {
-				message_send_text(c, message_type_error, c, localize(c, "No motd."));
-				return 0;
+			else
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open motd file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				message_send_text(c, message_type_error, c, localize(c, "Unable to open motd."));
 			}
+			return 0;
 		}
 
 		static int _handle_tos_command(t_connection * c, char const * text)
 		{
 			/* handle /tos - shows terms of service by user request -raistlinthewiz */
 
-			char * filename = NULL;
+			const char * filename = NULL;
 			std::FILE * fp;
 
-			filename = buildpath(prefs_get_filedir(), prefs_get_tosfile());
+			filename = i18n_filename(prefs_get_tosfile(), conn_get_gamelang(c));
 
 			/* FIXME: if user enters relative path to tos file in config,
 			   above routine will fail */
@@ -4669,7 +4665,7 @@ namespace pvpgn
 						while (len  > MAX_MESSAGE_LEN - 1)
 						{
 							std::strncpy(msgtemp0, buff, MAX_MESSAGE_LEN - 1);
-							msgtemp0[MAX_MESSAGE_LEN] = '\0';
+							msgtemp0[MAX_MESSAGE_LEN-1] = '\0';
 							buff += MAX_MESSAGE_LEN - 1;
 							len -= MAX_MESSAGE_LEN - 1;
 							message_send_text(c, message_type_info, c, msgtemp0);
@@ -4690,7 +4686,6 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "could not open tos file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
 				message_send_text(c, message_type_error, c, localize(c, "Unable to send TOS (Terms of Service)."));
 			}
-			xfree((void *)filename);
 			return 0;
 
 		}

@@ -22,7 +22,7 @@ namespace pvpgn
 {
 	namespace bnetd
 	{
-
+		extern const t_gamelang languages[12];
 	}
 }
 
@@ -44,16 +44,13 @@ namespace pvpgn
 	{
 		extern int i18n_load(void);
 		extern int i18n_reload(void);
-		//extern const char * localize(t_connection * c, char const * text);
 
-
-		extern std::string i18n_filename(const char * filename, t_tag gamelang);
+		extern const char * i18n_filename(const char * filename, t_tag gamelang);
 
 #define _VARIADIC_MAX 10
 		extern std::string _localize(t_connection * c, const char * func, const char *fmt, const fmt::ArgList &args);
 		FMT_VARIADIC(std::string, _localize, t_connection *, const char *, const char *)
 		#define localize(c, fmt, ...) _localize(c, __FUNCTION__, fmt, __VA_ARGS__)
-		//#define localize(c, fmt) _localize(c, __FUNCTION__, fmt)
 
 	}
 

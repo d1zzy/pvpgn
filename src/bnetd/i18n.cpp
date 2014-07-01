@@ -32,6 +32,10 @@
 #include <map>
 #include <string.h>
 
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
 #include "compat/strcasecmp.h"
 #include "compat/snprintf.h"
 
@@ -75,7 +79,7 @@ namespace pvpgn
 
 		const char * _find_string(char const * text, t_gamelang gamelang);
 
-		const t_gamelang languages[12] = {
+		extern const t_gamelang languages[12] = {
 			GAMELANG_ENGLISH_UINT,	/* enUS */
 			GAMELANG_GERMAN_UINT,	/* deDE */
 			GAMELANG_CZECH_UINT,	/* csCZ */
@@ -101,8 +105,6 @@ namespace pvpgn
 
 		extern int i18n_load(void)
 		{
-			const char * filename = buildpath(prefs_get_i18ndir(), commonfile);
-
 			std::string lang_filename;
 			pugi::xml_document doc;
 			std::string original, translate;
@@ -110,7 +112,7 @@ namespace pvpgn
 			// iterate language list
 			for (int i = 0; i < (sizeof(languages) / sizeof(*languages)); i++)
 			{
-				lang_filename = i18n_filename(filename, languages[i]);
+				lang_filename = i18n_filename(prefs_get_localizefile(), languages[i]);
 				if (FILE *f = fopen(lang_filename.c_str(), "r")) {
 					fclose(f);
 
@@ -149,7 +151,7 @@ namespace pvpgn
 						else
 						{
 							translate = original;
-							WARN2("could not find translate reference refid=\"%s\", use original string (%s)", attr.value(), lang_filename.c_str());
+							//WARN2("could not find translate reference refid=\"%s\", use original string (%s)", attr.value(), lang_filename.c_str());
 						}
 					}
 					else
@@ -209,35 +211,25 @@ namespace pvpgn
 
 		/* Add a locale tag into filename
 		example: motd.txt -> motd-ruRU.txt */
-		extern std::string i18n_filename(const char * filename, t_tag gamelang)
+		extern const char * i18n_filename(const char * filename, t_tag gamelang)
 		{
 			// get language string
 			char lang_str[sizeof(t_tag)+1];
 			std::memset(lang_str, 0, sizeof(lang_str));
 			tag_uint_to_str(lang_str, gamelang);
 
-			if (!tag_check_gamelang(gamelang))
+			struct stat sfile;
+			const char * _filename;
+			
+			_filename = buildpath(buildpath(prefs_get_i18ndir(), lang_str), filename);
+			// if localized file not found
+			if (stat(_filename, &sfile) < 0)
 			{
-				ERROR1("got unknown language tag \"%s\"", lang_str);
-				return filename;
+				// use default file
+				_filename = buildpath(prefs_get_i18ndir(), filename);
 			}
 
-			std::string _filename(filename);
-
-			// get extension
-			std::string::size_type idx(_filename.rfind('.'));
-			if (idx == std::string::npos || idx + 4 != _filename.size())
-			{
-				ERROR1("Invalid extension for '%s'", _filename.c_str());
-				return filename;
-			}
-			std::string ext(_filename.substr(idx + 1));
-
-			// get filename without extension
-			std::string fname(_filename.substr(0, idx));
-
-			std::string lang_filename(fname + "-" + lang_str + "." + ext);
-			return lang_filename;
+			return _filename;
 		}
 
 

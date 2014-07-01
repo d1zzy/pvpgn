@@ -21,6 +21,7 @@
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
+#include <map>
 
 #include "compat/strcasecmp.h"
 #include "common/eventlog.h"
@@ -40,11 +41,25 @@ namespace pvpgn
 
 	namespace bnetd
 	{
-
+		static std::map<t_gamelang, std::FILE*> hfd_list;
 		static std::FILE* hfd = NULL; /* helpfile descriptor */
 
 		static int list_commands(t_connection *);
+		static std::FILE* get_hfd(t_connection * c);
 
+		static std::FILE* get_hfd(t_connection * c)
+		{
+			if (t_gamelang lang = conn_get_gamelang(c))
+			{
+				std::map<t_gamelang, std::FILE*>::iterator it = hfd_list.find(lang);
+				if (it != hfd_list.end())
+				{
+					return it->second;
+				}
+				// return enUS if language is not specified in language list
+				return hfd_list[languages[0]];
+			}
+		}
 
 		extern int helpfile_init(char const *filename)
 		{
@@ -53,10 +68,18 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL filename");
 				return -1;
 			}
-			if (!(hfd = std::fopen(filename, "r")))
+			const char * _filename;
+
+			// iterate language list
+			for (int i = 0; i < (sizeof(languages) / sizeof(*languages)); i++)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open help file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
-				return -1;
+				// get hfd of all localized help files
+				_filename = i18n_filename(filename, languages[i]);
+				if (!(hfd_list[languages[i]] = std::fopen(_filename, "r")))
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "could not open help file \"%s\" for reading (std::fopen: %s)", _filename, std::strerror(errno));
+					return -1;
+				}
 			}
 			return 0;
 		}
@@ -64,18 +87,26 @@ namespace pvpgn
 
 		extern int helpfile_unload(void)
 		{
-			if (hfd != NULL)
+			// destroy file handles
+			for (std::map<t_gamelang, std::FILE*>::iterator it = hfd_list.begin(); it != hfd_list.end(); ++it)
 			{
-				if (std::fclose(hfd) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not close help file after reading (std::fclose: %s)", std::strerror(errno));
-				hfd = NULL;
+				if (it->second != NULL)
+				{
+					if (std::fclose(it->second) < 0)
+						eventlog(eventlog_level_error, __FUNCTION__, "could not close help file after reading (std::fclose: %s)", std::strerror(errno));
+					it->second = NULL;
+				}
 			}
+			// clear list
+			hfd_list.clear();
+
 			return 0;
 		}
 
 
 		extern int handle_help_command(t_connection * c, char const * text)
 		{
+			std::FILE* hfd = get_hfd(c);
 			unsigned int i, j;
 			char         cmd[MAX_COMMAND_LEN];
 
@@ -108,6 +139,7 @@ namespace pvpgn
 
 		static int list_commands(t_connection * c)
 		{
+			std::FILE* hfd = get_hfd(c);
 			char * line;
 			int    i;
 
@@ -164,8 +196,10 @@ namespace pvpgn
 
 		extern int describe_command(t_connection * c, char const * cmd)
 		{
+			std::FILE* hfd = get_hfd(c);
 			char * line;
 			int    i;
+
 
 			/* ok. the client requested help for a specific command */
 			std::rewind(hfd);

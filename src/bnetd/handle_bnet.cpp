@@ -2770,12 +2770,14 @@ namespace pvpgn
 			char * buff;
 			std::FILE *       fp;
 
-			std::ifstream in(filename = prefs_get_motdw3file());
+			filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang(c));
+
+			std::ifstream in(filename);
 			if (in) {
 				std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
 				strcpy(serverinfo, contents.substr(0,511).c_str());
 			} else
-				eventlog(eventlog_level_error, __FUNCTION__, "Could not open file motdw3 \"%s\" (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "Could not open file w3motd \"%s\" (std::fopen: %s)", filename, std::strerror(errno));
 			
 
 			packet_append_string(rpacket, serverinfo);

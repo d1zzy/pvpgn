@@ -38,9 +38,11 @@
 #include "common/packet.h"
 #include "common/util.h"
 #include "common/bn_type.h"
+#include "common/tag.h"
 
 #include "prefs.h"
 #include "connection.h"
+#include "i18n.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -51,38 +53,49 @@ namespace pvpgn
 
 		static char const * file_get_info(char const * rawname, unsigned int * len, bn_long * modtime);
 
-		static char * file_find_default(const char *rawname)
+		/* Requested files aliases */
+		const char * requestfiles[] = {
+			"termsofservice-", "termsofservice.txt",
+			"newaccount-", "newaccount.txt", // used in warcraft 3 after agree with TOS
+			"chathelp-war3-", "chathelp-war3.txt",
+			"matchmaking-war3-", "matchmaking-war3.dat", // FIXME: (HarpyWar) this file should be in files, not in i18n
+			"tos_", "termsofservice.txt",
+			"tos-unicode_", "termsofservice.txt",
+			NULL, NULL };
+
+
+		static const char * file_find_localized(const char *rawname)
 		{
-			/* Add new default files here */
-			const char * defaultfiles[] = { "termsofservice-", ".txt",
-				"newaccount-", ".txt",
-				"chathelp-war3-", ".txt",
-				"matchmaking-war3-", ".dat",
-				"tos_", ".txt",
-				"tos-unicode_", ".txt",
-				NULL, NULL };
-			const char ** pattern, **extension;
-			char *filename = NULL;
+			const char ** pattern, **alias;
 
-			for (pattern = defaultfiles, extension = defaultfiles + 1; *pattern; pattern += 2, extension += 2)
-			if (!std::strncmp(rawname, *pattern, std::strlen(*pattern))) {	/* Check if there is a default file available for this kind of file */
-				filename = (char*)xmalloc(std::strlen(prefs_get_filedir()) + 1 + std::strlen(*pattern) + 7 + std::strlen(*extension) + 1);
+			for (pattern = requestfiles, alias = requestfiles + 1; *pattern; pattern += 2, alias += 2)
+			{
+				// Check if there is an alias file available for this kind of file
+				if (!std::strncmp(rawname, *pattern, std::strlen(*pattern)))
+				{
+					t_gamelang lang;
+					// when file transferring by bnftp protofol client doesn't provide a language
 
-				std::strcpy(filename, prefs_get_filedir());
-				std::strcat(filename, "/");
-				std::strcat(filename, *pattern);
-				std::strcat(filename, "default");
-				std::strcat(filename, *extension);
+					// if there is no country tag in the file (just in case)
+					if ((strlen(*pattern) + 4) > strlen(rawname))
+						return NULL;
 
-				break;
+					// get language tag from the file name
+					char langstr[5];
+					strncpy(langstr, rawname + std::strlen(*pattern), 4);
+					langstr[4] = 0;
+					lang = tag_str_to_uint(langstr);
+
+					return i18n_filename(*alias, lang);
+				}
 			}
-
-			return filename;
+			// if not found return source file
+			return NULL;
 		}
 
 		static char const * file_get_info(char const * rawname, unsigned int * len, bn_long * modtime)
 		{
-			char *filename;
+			const char *filename;
 			t_bnettime   bt;
 			struct stat sfile;
 
@@ -106,16 +119,15 @@ namespace pvpgn
 				return NULL;
 			}
 
-			filename = buildpath(prefs_get_filedir(), rawname);
 
-			if (stat(filename, &sfile) < 0) { /* if it doesn't exist, try to replace with default file */
-				xfree((void*)filename);
-				filename = file_find_default(rawname);
-				if (!filename) return NULL; /* no default version */
-
+			filename = file_find_localized(rawname);
+			// if localized file not found in "i18n"
+			if (!filename || stat(filename, &sfile) < 0)
+			{
+				// try find it in "files"
+				filename = buildpath(prefs_get_filedir(), rawname);
 				if (stat(filename, &sfile) < 0) { /* try again */
 					/* FIXME: check for lower-case version of filename */
-					xfree(filename);
 					return NULL;
 				}
 			}
@@ -192,7 +204,6 @@ namespace pvpgn
 					eventlog(eventlog_level_error, __FUNCTION__, "stat() succeeded yet could not open file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
 					filelen = 0;
 				}
-				xfree((void *)filename); /* avoid warning */
 			}
 			else
 			{
@@ -231,18 +242,18 @@ namespace pvpgn
 			 */
 			if (!fp)
 			{
-				eventlog(eventlog_level_warn, __FUNCTION__, "[%d] sending no data for file \"%s\"", conn_get_socket(c), rawname);
+				eventlog(eventlog_level_warn, __FUNCTION__, "[%d] sending no data for file \"%s\" (\"%s\")", conn_get_socket(c), rawname, filename);
 				return -1;
 			}
 
-			eventlog(eventlog_level_info, __FUNCTION__, "[%d] sending file \"%s\" of length %d", conn_get_socket(c), rawname, filelen);
+			eventlog(eventlog_level_info, __FUNCTION__, "[%d] sending file \"%s\" (\"%s\") of length %d", conn_get_socket(c), rawname, filename, filelen);
 			for (;;)
 			{
 				if (!(rpacket = packet_create(packet_class_raw)))
 				{
 					eventlog(eventlog_level_error, __FUNCTION__, "could not create raw packet");
 					if (std::fclose(fp) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"%s\" after reading (std::fclose: %s)", rawname, std::strerror(errno));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"%s\" after reading (std::fclose: %s)", filename, std::strerror(errno));
 					return -1;
 				}
 				if ((nbytes = std::fread(packet_get_raw_data_build(rpacket, 0), 1, MAX_PACKET_SIZE, fp))<(int)MAX_PACKET_SIZE)
