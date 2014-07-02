@@ -2767,19 +2767,23 @@ namespace pvpgn
 
 			// read text from bnmotd_w3.txt
 			char const * filename;
-			char * buff;
+			char * buff, *line;
 			std::FILE *       fp;
 
 			filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang(c));
 
-			std::ifstream in(filename);
-			if (in) {
-				std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-				strcpy(serverinfo, contents.substr(0,511).c_str());
-			} else
-				eventlog(eventlog_level_error, __FUNCTION__, "Could not open file w3motd \"%s\" (std::fopen: %s)", filename, std::strerror(errno));
-			
-
+			if (fp = std::fopen(filename, "r"))
+			{
+				strcpy(serverinfo, ""); // init
+				while ((buff = file_get_line(fp)))
+				{
+					line = message_format_line(c, buff);
+					strcat(serverinfo, &line[1]);
+					strcat(serverinfo, "\n");
+				}
+				if (std::fclose(fp) < 0)
+					eventlog(eventlog_level_error, __FUNCTION__, "could not close motdw3 file \"%s\" after reading (std::fopen: %s)", filename, std::strerror(errno));
+			}
 			packet_append_string(rpacket, serverinfo);
 
 			conn_push_outqueue(c, rpacket);
