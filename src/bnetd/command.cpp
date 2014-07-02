@@ -1767,8 +1767,8 @@ namespace pvpgn
 						}
 
 						frienduid = account_get_name(friend_acc);
-						if (!software.empty()) snprintf(msgtemp0, sizeof(msgtemp0), "%d: %s%.16s%.128s, %.64s", i + 1, friend_get_mutual(fr) ? "*" : " ", frienduid, status, software);
-						else snprintf(msgtemp0, sizeof(msgtemp0), "%d: %.16s%.128s", i + 1, frienduid, status);
+						if (!software.empty()) snprintf(msgtemp0, sizeof(msgtemp0), "%d: %s%.16s%.128s, %.64s", i + 1, friend_get_mutual(fr) ? "*" : " ", frienduid, status.c_str(), software.c_str());
+						else snprintf(msgtemp0, sizeof(msgtemp0), "%d: %.16s%.128s", i + 1, frienduid, status.c_str());
 						message_send_text(c, message_type_info, c, msgtemp0);
 					}
 				}
@@ -3416,14 +3416,16 @@ namespace pvpgn
 			/* check /admin-addr for admin privileges */
 			if ((account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr")))
 			{
+				const char * yes = localize(c, "Yes").c_str();
+				const char * no = localize(c, "No").c_str();
 				/* the player who requested /finger has admin privileges
 				give him more info about the one he queries;
 				is_admin, is_operator, is_locked, email */
 				msgtemp = localize(c, "Operator: {}, Admin: {}, Locked: {}, Muted: {}",
-					account_get_auth_operator(account, NULL) == 1 ? localize(c, "Yes") : localize(c, "No"),
-					account_get_auth_admin(account, NULL) == 1 ? localize(c, "Yes") : localize(c, "No"),
-					account_get_auth_lock(account) == 1 ? localize(c, "Yes") : localize(c, "No"),
-					account_get_auth_mute(account) == 1 ? localize(c, "Yes") : localize(c, "No"));
+					account_get_auth_operator(account, NULL) == 1 ? yes : no,
+					account_get_auth_admin(account, NULL) == 1 ? yes : no,
+					account_get_auth_lock(account) == 1 ? yes : no,
+					account_get_auth_mute(account) == 1 ? yes : no);
 				message_send_text(c, message_type_info, c, msgtemp);
 				
 				msgtemp = localize(c, "Email: {}", account_get_email(account));
@@ -3602,8 +3604,9 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, localize(c, "That game does not exist."));
 				return 0;
 			}
-
-			msgtemp = localize(c, "Name: {}    ID: {} ({})", game_get_name(game), game_get_id(game), game_get_flag(game) != game_flag_private ? localize(c, "public") : localize(c, "private"));
+			const char * pub = localize(c, "public").c_str();
+			const char * prv = localize(c, "private").c_str();
+			msgtemp = localize(c, "Name: {}    ID: {} ({})", game_get_name(game), game_get_id(game), game_get_flag(game) != game_flag_private ? pub : prv);
 			message_send_text(c, message_type_info, c, msgtemp);
 
 			{

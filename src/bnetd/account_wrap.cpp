@@ -474,7 +474,7 @@ namespace pvpgn
 			if (unsigned int locktime = account_get_auth_locktime(account))
 				msgtemp += localize(c, " for {}", seconds_to_timestr(locktime - now));
 			else
-				msgtemp += localize(c, " permanently");
+				msgtemp += localize(c, " permanently", /**/);
 
 			// append reason
 			char const * reason = account_get_auth_lockreason(account);

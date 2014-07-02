@@ -134,11 +134,11 @@ namespace pvpgn
 				if (fp = std::fopen(lang_filename.c_str(), "r")) {
 					message_send_file(c, fp);
 					if (std::fclose(fp) < 0) {
-						eventlog(eventlog_level_error, __FUNCTION__, "could not close MOTD file \"%s\" after reading (std::fopen: %s)", lang_filename, std::strerror(errno));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not close MOTD file \"%s\" after reading (std::fopen: %s)", lang_filename.c_str(), std::strerror(errno));
 					}
 				}
 				else {
-					INFO1("motd file %s not found, sending default motd file", lang_filename);
+					INFO1("motd file %s not found, sending default motd file", lang_filename.c_str());
 					if (fp = std::fopen(filename, "r"))  {
 						message_send_file(c, fp);
 						if (std::fclose(fp) < 0) {
