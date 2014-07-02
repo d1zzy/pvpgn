@@ -3416,8 +3416,8 @@ namespace pvpgn
 			/* check /admin-addr for admin privileges */
 			if ((account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr")))
 			{
-				const char * yes = localize(c, "Yes").c_str();
-				const char * no = localize(c, "No").c_str();
+				std::string yes = localize(c, "Yes");
+				std::string no = localize(c, "No");
 				/* the player who requested /finger has admin privileges
 				give him more info about the one he queries;
 				is_admin, is_operator, is_locked, email */
@@ -3604,8 +3604,8 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, localize(c, "That game does not exist."));
 				return 0;
 			}
-			const char * pub = localize(c, "public").c_str();
-			const char * prv = localize(c, "private").c_str();
+			std::string pub = localize(c, "public");
+			std::string prv = localize(c, "private");
 			msgtemp = localize(c, "Name: {}    ID: {} ({})", game_get_name(game), game_get_id(game), game_get_flag(game) != game_flag_private ? pub : prv);
 			message_send_text(c, message_type_info, c, msgtemp);
 
