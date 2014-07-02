@@ -50,7 +50,7 @@ namespace pvpgn
 #define _VARIADIC_MAX 10
 		extern std::string _localize(t_connection * c, const char * func, const char *fmt, const fmt::ArgList &args);
 		FMT_VARIADIC(std::string, _localize, t_connection *, const char *, const char *)
-		#define localize(c, fmt, ...) _localize(c, __FUNCTION__, fmt, __VA_ARGS__)
+		#define localize(c, fmt, ...) _localize(c, __FUNCTION__, fmt, ##__VA_ARGS__)
 
 	}
 
