@@ -129,7 +129,6 @@ namespace pvpgn
 			char const * version_exeinfo_match;
 			unsigned int version_exeinfo_maxdiff;
 			unsigned int max_concurrent_logins;
-			char const * server_info;
 			char const * mapsfile;
 			char const * xplevelfile;
 			char const * xpcalcfile;
@@ -533,10 +532,6 @@ namespace pvpgn
 		static const char *conf_get_max_concurrent_logins(void);
 		static int conf_setdef_max_concurrent_logins(void);
 
-		static int conf_set_server_info(const char *valstr);
-		static const char *conf_get_server_info(void);
-		static int conf_setdef_server_info(void);
-
 		static int conf_set_mapsfile(const char *valstr);
 		static const char *conf_get_mapsfile(void);
 		static int conf_setdef_mapsfile(void);
@@ -801,7 +796,6 @@ namespace pvpgn
 			{ "version_exeinfo_match", conf_set_version_exeinfo_match, conf_get_version_exeinfo_match, conf_setdef_version_exeinfo_match },
 			{ "version_exeinfo_maxdiff", conf_set_version_exeinfo_maxdiff, conf_get_version_exeinfo_maxdiff, conf_setdef_version_exeinfo_maxdiff },
 			{ "max_concurrent_logins", conf_set_max_concurrent_logins, conf_get_max_concurrent_logins, conf_setdef_max_concurrent_logins },
-			{ "server_info", conf_set_server_info, conf_get_server_info, conf_setdef_server_info },
 			{ "mapsfile", conf_set_mapsfile, conf_get_mapsfile, conf_setdef_mapsfile },
 			{ "xplevelfile", conf_set_xplevelfile, conf_get_xplevelfile, conf_setdef_xplevelfile },
 			{ "xpcalcfile", conf_set_xpcalcfile, conf_get_xpcalcfile, conf_setdef_xpcalcfile },
@@ -2761,27 +2755,6 @@ namespace pvpgn
 		static const char* conf_get_max_concurrent_logins(void)
 		{
 			return conf_get_int(prefs_runtime_config.max_concurrent_logins);
-		}
-
-
-		extern char const * prefs_get_server_info(void)
-		{
-			return prefs_runtime_config.server_info;
-		}
-
-		static int conf_set_server_info(const char *valstr)
-		{
-			return conf_set_str(&prefs_runtime_config.server_info, valstr, NULL);
-		}
-
-		static int conf_setdef_server_info(void)
-		{
-			return conf_set_str(&prefs_runtime_config.server_info, NULL, "");
-		}
-
-		static const char* conf_get_server_info(void)
-		{
-			return prefs_runtime_config.server_info;
 		}
 
 

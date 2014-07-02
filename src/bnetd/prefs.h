@@ -126,10 +126,6 @@ namespace pvpgn
 
 		extern unsigned int prefs_get_max_concurrent_logins(void);
 
-		/* ADDED BY UNDYING SOULZZ 4/9/02 */
-		extern unsigned int prefs_get_identify_timeout_secs(void);
-		extern char const * prefs_get_server_info(void);
-
 		/* [zap-zero] 20020616 */
 		extern char const * prefs_get_mysql_host(void);
 		extern char const * prefs_get_mysql_account(void);
