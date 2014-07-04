@@ -26,4 +26,4 @@ build_script:
 
 test:
   assemblies:
-    - *\src\bnetd\Release\bnetd.exe
+    - '**\src\bnetd\Release\bnetd.exe'
