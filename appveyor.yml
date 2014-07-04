@@ -19,5 +19,5 @@ before_build:
   - cmd: build_pvpgn.bat cmake_only 6 2 1 y
   - cmd: call "%VS120COMNTOOLS%vsvars32.bat"
   - cmd: set INCLUDE=c:\builder\module\include\vsexpress_include\;%INCLUDE%
-  - cmd: cd c:\build\
+  - cmd: cd c:\builder\build\
   - cmd: call "%FrameworkDir%%FrameworkVersion%\MSBuild.exe" pvpgn.sln /t:Rebuild /p:Configuration=Release;UseEnv=true /consoleloggerparameters:Summary;PerformanceSummary;Verbosity=minimal /maxcpucount
