@@ -15,7 +15,8 @@ install:
   - cmd: xcopy /E /R /K /Y /Q "c:\pvpgn" "c:\builder\source\"
 
 build:
-  project: MyTestAzureCS.sln
+  project: c:\builder\build\pvpgn.sln
+
 build_script:
   - cmd: cd c:\builder\
   - cmd: build_pvpgn.bat cmake_only 6 2 1 y
@@ -25,4 +26,4 @@ build_script:
 
 test:
   assemblies:
-    - C:\builder\build\src\bnetd\Release\bnetd.exe
+    - *\src\bnetd\Release\bnetd.exe
