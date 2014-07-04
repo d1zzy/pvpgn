@@ -14,6 +14,8 @@ install:
   - cmd: mkdir c:\builder\source\
   - cmd: xcopy /E /R /K /Y /Q "c:\pvpgn" "c:\builder\source\"
 
+build:
+  project: MyTestAzureCS.sln
 build_script:
   - cmd: cd c:\builder\
   - cmd: build_pvpgn.bat cmake_only 6 2 1 y
