@@ -3,8 +3,10 @@ PvPGN TODO LIST AND WHATS BEING WORKED ON:
 
 Release v2.0-PRO ROADMAP:
 1. DOCUMENTATION (client and server documentation; a FAQ, HOWTO and a file 
-describing all configuration options)
+describing all configuration options). Site http://pvpgn.pro
 2. i18n or some sort to support different language messages to users
+3. Connectivity with Ghost++ to support DotA
+
 
 Stuff not programmed for any specific version release:			      
 
