@@ -28,9 +28,6 @@ endif(WITH_BNETD)
 
 if(WITH_D2CS)
   set(D2CS_CONFS d2cs.conf anongame_infos.conf)
-
-  # special treatment for non .in files
-  install(FILES d2server.ini DESTINATION ${SYSCONFDIR})
 endif(WITH_D2CS)
 
 if(WITH_D2DBS)
