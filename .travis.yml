@@ -11,4 +11,4 @@ before_install:
 script:
   - cmake -D CMAKE_INSTALL_PREFIX=/usr/local/pvpgn -D WITH_MYSQL=true -D WITH_LUA=true ../
   - make
-  - make install
+  - sudo make install
