@@ -69,7 +69,6 @@
 1	/mail
 1	/motd
 1	/tos
-1	/bitsinfo
 1	/latency /ping /p
 1	/topic
 1	/icon
@@ -155,8 +154,7 @@
 3	/serverban /ipban
 3	/ipscan
 
-4	/kill /killsession
-4	/addacct
+4	/kill
 4	/lock /lockacct /unlock /unlockacct
 4	/mute /muteacct /unmute /unmuteacct
 
@@ -172,6 +170,14 @@
 7	/clearstats
 
 8	/shutdown /rehash /find /save
+
+
+#	//////////////////////////////////////
+#	/////   Commands for Debugging   /////
+#	//////////////////////////////////////
+#8  /killsession
+#8	/addacct
+
 
 #	//////////////////////////////////////
 #	///// End of Command Groups File /////
