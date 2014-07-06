@@ -184,9 +184,9 @@ namespace pvpgn
 				if (!(format = _find_string(fmt, lang)))
 					format = fmt;
 			
-				fmt::Writer w;
-				w.format(format, args);
-				output = w.str();
+				fmt::Writer out;
+				out.write(format, args);
+				output = out.str();
 			}
 			catch (const std::exception& e)
 			{

@@ -50,15 +50,7 @@ namespace pvpgn
 		extern std::string _localize(t_connection * c, const char * func, const char *fmt, const fmt::ArgList &args);
 		FMT_VARIADIC(std::string, _localize, t_connection *, const char *, const char *)
 
-#if defined (_SOLARIS)
-#define localize(c, fmt, ...) _localize(c, __FUNCTION__, fmt, # __VA_ARGS__)
-		/* optional: disables "warning: argument mismatch" */
-		#pragma error_messages (off, E_ARGUEMENT_MISMATCH)
-#elif defined (__GNUC__) 
-		#define localize(c, fmt, s...) _localize(c, __FUNCTION__, fmt, ## s)
-#else
-		#define localize(c, fmt, ...) _localize(c, __FUNCTION__, fmt, __VA_ARGS__)
-#endif
+		#define localize(c, ...) _localize(c, __FUNCTION__, __VA_ARGS__)
 
 	}
 
