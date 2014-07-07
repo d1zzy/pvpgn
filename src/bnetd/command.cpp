@@ -3336,7 +3336,13 @@ namespace pvpgn
 			then = account_get_ll_ctime(account);
 			tmthen = std::localtime(&then); /* FIXME: determine user's timezone */
 
-			msgtemp = localize(c, "Login: {} {} Sex: {}",
+			// do not display sex if empty
+			std::string pattern = "Login: {} {} Sex: {}";
+			pattern = (account_get_sex(account) && strcmp(account_get_sex(account), "") == -1)
+				? pattern
+				: pattern.substr(0, pattern.find("Sex: ", 0));
+
+			msgtemp = localize(c, pattern.c_str(),
 				account_get_name(account),
 				account_get_uid(account),
 				account_get_sex(account));
@@ -3378,8 +3384,14 @@ namespace pvpgn
 				}
 			}
 
-			msgtemp = localize(c, "Location: {} Age: {}",
-				account_get_loc(account),
+			// do not display age if empty
+			pattern = "Location: {} Age: {}";
+			pattern = (account_get_age(account) && strcmp(account_get_age(account), "") == -1)
+						? pattern 
+						: pattern.substr(0, pattern.find("Age: ", 0));
+			const char * loc = account_get_loc(account);
+			msgtemp = localize(c, pattern.c_str(),
+				(loc && strcmp(loc, "") == -1) ? loc : "unknown",
 				account_get_age(account));
 			message_send_text(c, message_type_info, c, msgtemp);
 
