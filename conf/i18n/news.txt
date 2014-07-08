@@ -1,9 +1,8 @@
-{03/28/2014}
-(edit this text in conf/news.txt)
- 
- 
-Note that Warcraft 3 client caches news in bncache.dat
-(remove the file on the client side before login to see the changes immediately)
+{03/29/2014}
+
+Note that text of news is cached in Warcraft 3 client. Be careful when deleting existing news - 
+ it remain on a client side until bncache.dat won't be removed or outdated!
+A file news.txt is loaded once when the server starts. Use command "/rehash news" to reload the file.
 
  
 New support channel at:

@@ -34,6 +34,7 @@ namespace pvpgn
 
 #define JUST_NEED_TYPES
 # include <string>
+# include "connection.h"
 # include "common/format.h"
 #undef JUST_NEED_TYPES
 
