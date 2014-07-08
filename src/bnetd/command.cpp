@@ -3237,7 +3237,7 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 			else
-			if (std::strcmp(&text[i], "all") == 0) /* print extended info */
+			if (std::strcmp(text, "all") == 0) /* print extended info */
 			{
 				if (prefs_get_hide_addr() && !(account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr")))
 					msgtemp = localize(c, " -#- -class ----state--- -tag -----name------ -session-- -flag- -lat(ms)- ----channel---- --game--");
