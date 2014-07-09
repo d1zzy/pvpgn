@@ -582,7 +582,7 @@ namespace pvpgn
 
 					bn_int_set(&rpacket->u.server_authreq_109.sessionkey, conn_get_sessionkey(c));
 					bn_int_set(&rpacket->u.server_authreq_109.sessionnum, conn_get_sessionnum(c));
-					file_to_mod_time(versioncheck_get_mpqfile(vc), &rpacket->u.server_authreq_109.timestamp);
+					file_to_mod_time(c, versioncheck_get_mpqfile(vc), &rpacket->u.server_authreq_109.timestamp);
 					packet_append_string(rpacket, versioncheck_get_mpqfile(vc));
 					packet_append_string(rpacket, versioncheck_get_eqn(vc));
 					eventlog(eventlog_level_debug, __FUNCTION__, "[%d] selected \"%s\" \"%s\"", conn_get_socket(c), versioncheck_get_mpqfile(vc), versioncheck_get_eqn(vc));
@@ -649,7 +649,7 @@ namespace pvpgn
 				if ((rpacket = packet_create(packet_class_bnet))) {
 					packet_set_size(rpacket, sizeof(t_server_authreq1));
 					packet_set_type(rpacket, SERVER_AUTHREQ1);
-					file_to_mod_time(versioncheck_get_mpqfile(vc), &rpacket->u.server_authreq1.timestamp);
+					file_to_mod_time(c, versioncheck_get_mpqfile(vc), &rpacket->u.server_authreq1.timestamp);
 					packet_append_string(rpacket, versioncheck_get_mpqfile(vc));
 					packet_append_string(rpacket, versioncheck_get_eqn(vc));
 					eventlog(eventlog_level_debug, __FUNCTION__, "[%d] selected \"%s\" \"%s\"", conn_get_socket(c), versioncheck_get_mpqfile(vc), versioncheck_get_eqn(vc));
@@ -1219,7 +1219,7 @@ namespace pvpgn
 			if ((rpacket = packet_create(packet_class_bnet))) {
 				packet_set_size(rpacket, sizeof(t_server_iconreply));
 				packet_set_type(rpacket, SERVER_ICONREPLY);
-				file_to_mod_time(prefs_get_iconfile(), &rpacket->u.server_iconreply.timestamp);
+				file_to_mod_time(c, prefs_get_iconfile(), &rpacket->u.server_iconreply.timestamp);
 
 				/* battle.net sends different file on iconreq for WAR3 and W3XP [Omega] */
 				if ((conn_get_clienttag(c) == CLIENTTAG_WARCRAFT3_UINT) || (conn_get_clienttag(c) == CLIENTTAG_WAR3XP_UINT))
@@ -1397,7 +1397,7 @@ namespace pvpgn
 					 * timestamp doesn't work correctly and starcraft
 					 * needs name in client locale or displays hostname
 					 */
-					file_to_mod_time(tosfile, &rpacket->u.server_fileinforeply.timestamp);
+					file_to_mod_time(c, tosfile, &rpacket->u.server_fileinforeply.timestamp);
 					packet_append_string(rpacket, tosfile);
 					conn_push_outqueue(c, rpacket);
 					packet_del_ref(rpacket);
@@ -2770,7 +2770,7 @@ namespace pvpgn
 			char * buff, *line;
 			std::FILE *       fp;
 
-			filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang(c));
+			filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang_localized(c));
 
 			if (fp = std::fopen(filename, "r"))
 			{
@@ -3211,7 +3211,7 @@ namespace pvpgn
 					packet_set_type(rpacket, SERVER_ADREPLY);
 					bn_int_set(&rpacket->u.server_adreply.adid, ad->getId());
 					bn_int_set(&rpacket->u.server_adreply.extensiontag, ad->getExtensionTag());
-					file_to_mod_time(ad->getFilename(), &rpacket->u.server_adreply.timestamp);
+					file_to_mod_time(c, ad->getFilename(), &rpacket->u.server_adreply.timestamp);
 					packet_append_string(rpacket, ad->getFilename());
 					packet_append_string(rpacket, ad->getLink());
 					conn_push_outqueue(c, rpacket);

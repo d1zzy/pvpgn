@@ -49,16 +49,15 @@ namespace pvpgn
 
 		static std::FILE* get_hfd(t_connection * c)
 		{
-			if (t_gamelang lang = conn_get_gamelang(c))
+			t_gamelang lang = conn_get_gamelang_localized(c);
+
+			std::map<t_gamelang, std::FILE*>::iterator it = hfd_list.find(lang);
+			if (it != hfd_list.end())
 			{
-				std::map<t_gamelang, std::FILE*>::iterator it = hfd_list.find(lang);
-				if (it != hfd_list.end())
-				{
-					return it->second;
-				}
-				// return enUS if language is not specified in language list
-				return hfd_list[languages[0]];
+				return it->second;
 			}
+			// return enUS if language is not specified in language list
+			return hfd_list[languages[0]];
 		}
 
 		extern int helpfile_init(char const *filename)

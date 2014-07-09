@@ -128,8 +128,7 @@ namespace pvpgn
 				return;
 			}
 			if (filename = prefs_get_motdfile()) {
-				t_tag gamelang = conn_get_gamelang(c);
-				std::string lang_filename = i18n_filename(filename, gamelang);
+				std::string lang_filename = i18n_filename(filename, conn_get_gamelang_localized(c));
 
 				if (fp = std::fopen(lang_filename.c_str(), "r")) {
 					message_send_file(c, fp);

@@ -106,6 +106,9 @@ newsfile    = news.txt
 helpfile    = bnhelp.conf
 tosfile 	= termsofservice.txt
 
+# Do localization by a game language or by user country?
+localize_by_country = true
+
 #                                                                            #
 ##############################################################################
 

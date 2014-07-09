@@ -51,7 +51,7 @@ namespace pvpgn
 	namespace bnetd
 	{
 
-		static char const * file_get_info(char const * rawname, unsigned int * len, bn_long * modtime);
+		static char const * file_get_info(t_connection * c, char const * rawname, unsigned int * len, bn_long * modtime);
 
 		/* Requested files aliases */
 		const char * requestfiles[] = {
@@ -64,7 +64,7 @@ namespace pvpgn
 			NULL, NULL };
 
 
-		static const char * file_find_localized(const char *rawname)
+		static const char * file_find_localized(t_connection * c, const char *rawname)
 		{
 			const char ** pattern, **alias;
 
@@ -74,20 +74,25 @@ namespace pvpgn
 				if (!std::strncmp(rawname, *pattern, std::strlen(*pattern)))
 				{
 					t_gamelang lang;
-					// when file transferring by bnftp protofol client doesn't provide a language
-					// but we can extract it from the filename
+					if (lang = conn_get_gamelang_localized(c))
+						return i18n_filename(*alias, lang);
+
+					// FIXME: when file is transferring by bnftp protofol client doesn't provide a language
+					// but we can extract it from the filename, so do it in next code
 
 					// if there is no country tag in the file (just in case to prevent crash from invalid filename)
 					if ((strlen(*pattern) + 4) > strlen(rawname))
 						return NULL;
 
-					// get language tag from the file name
+					// get language tag from the file name (like "termsofservice-ruRU.txt")
+					// (it used in War3)
 					char langstr[5];
 					strncpy(langstr, rawname + std::strlen(*pattern), 4);
 					langstr[4] = 0;
 					lang = tag_str_to_uint(langstr);
 
-					// if language is invalid then try find it by code
+					// if language is invalid then try find it by country (like "tos_USA.txt")
+					// (it used in D1, SC, War2)
 					if (!tag_check_gamelang(lang))
 					{
 						strncpy(langstr, rawname + std::strlen(*pattern), 3);
@@ -101,7 +106,7 @@ namespace pvpgn
 			return NULL;
 		}
 
-		static char const * file_get_info(char const * rawname, unsigned int * len, bn_long * modtime)
+		static char const * file_get_info(t_connection * c, char const * rawname, unsigned int * len, bn_long * modtime)
 		{
 			const char *filename;
 			t_bnettime   bt;
@@ -128,7 +133,7 @@ namespace pvpgn
 			}
 
 
-			filename = file_find_localized(rawname);
+			filename = file_find_localized(c, rawname);
 			// if localized file not found in "i18n"
 			if (!filename || stat(filename, &sfile) < 0)
 			{
@@ -148,7 +153,7 @@ namespace pvpgn
 		}
 
 
-		extern int file_to_mod_time(char const * rawname, bn_long * modtime)
+		extern int file_to_mod_time(t_connection * c, char const * rawname, bn_long * modtime)
 		{
 			char const * filename;
 			unsigned int len;
@@ -164,7 +169,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			if (!(filename = file_get_info(rawname, &len, modtime)))
+			if (!(filename = file_get_info(c, rawname, &len, modtime)))
 				return -1;
 
 			xfree((void *)filename); /* avoid warning */
@@ -204,7 +209,7 @@ namespace pvpgn
 			packet_set_size(rpacket, sizeof(t_server_file_reply));
 			packet_set_type(rpacket, SERVER_FILE_REPLY);
 
-			if ((filename = file_get_info(rawname, &filelen, &rpacket->u.server_file_reply.timestamp)))
+			if ((filename = file_get_info(c, rawname, &filelen, &rpacket->u.server_file_reply.timestamp)))
 			{
 				if (!(fp = std::fopen(filename, "rb")))
 				{

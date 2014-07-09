@@ -4633,7 +4633,7 @@ namespace pvpgn
 			char const * filename;
 			std::FILE *       fp;
 
-			filename = i18n_filename(prefs_get_motdfile(), conn_get_gamelang(c));
+			filename = i18n_filename(prefs_get_motdfile(), conn_get_gamelang_localized(c));
 
 			if (fp = std::fopen(filename, "r"))
 			{
@@ -4656,7 +4656,7 @@ namespace pvpgn
 			const char * filename = NULL;
 			std::FILE * fp;
 
-			filename = i18n_filename(prefs_get_tosfile(), conn_get_gamelang(c));
+			filename = i18n_filename(prefs_get_tosfile(), conn_get_gamelang_localized(c));
 
 			/* FIXME: if user enters relative path to tos file in config,
 			   above routine will fail */

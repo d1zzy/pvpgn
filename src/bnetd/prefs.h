@@ -179,6 +179,7 @@ namespace pvpgn
 		extern unsigned int prefs_get_max_connections(void);
 		extern unsigned int prefs_get_sync_on_logoff(void);
 		extern char const * prefs_get_irc_network_name(void);
+		extern unsigned int prefs_get_localize_by_country(void);
 
 		/**
 		*  Westwood Online Extensions

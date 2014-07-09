@@ -163,6 +163,7 @@ namespace pvpgn
 			unsigned int max_connections;
 			unsigned int sync_on_logoff;
 			char const * irc_network_name;
+			unsigned int localize_by_country;
 
 			char const * apiregaddrs;
 			char const * wolv1addrs;
@@ -664,6 +665,11 @@ namespace pvpgn
 		static int conf_set_irc_network_name(const char *valstr);
 		static const char *conf_get_irc_network_name(void);
 
+		static int conf_set_localize_by_country(const char *valstr);
+		static const char *conf_get_localize_by_country(void);
+		static int conf_setdef_localize_by_country(void);
+
+
 		static int conf_setdef_apireg_addrs(void);
 		static int conf_set_apireg_addrs(const char *valstr);
 		static const char *conf_get_apireg_addrs(void);
@@ -829,6 +835,7 @@ namespace pvpgn
 			{ "sync_on_logoff", conf_set_sync_on_logoff, conf_get_sync_on_logoff, conf_setdef_sync_on_logoff },
 			{ "ladder_prefix", conf_set_ladder_prefix, conf_get_ladder_prefix, conf_setdef_ladder_prefix },
 			{ "irc_network_name", conf_set_irc_network_name, conf_get_irc_network_name, conf_setdef_irc_network_name },
+			{ "localize_by_country", conf_set_localize_by_country, conf_get_localize_by_country, conf_setdef_localize_by_country },
 
 			{ "apiregaddrs", conf_set_apireg_addrs, conf_get_apireg_addrs, conf_setdef_apireg_addrs },
 			{ "wgameresaddrs", conf_set_wgameres_addrs, conf_get_wgameres_addrs, conf_setdef_wgameres_addrs },
@@ -3477,6 +3484,28 @@ namespace pvpgn
 		{
 			return prefs_runtime_config.irc_network_name;
 		}
+
+
+		extern unsigned int prefs_get_localize_by_country(void)
+		{
+			return prefs_runtime_config.localize_by_country;
+		}
+
+		static int conf_set_localize_by_country(const char *valstr)
+		{
+			return conf_set_bool(&prefs_runtime_config.localize_by_country, valstr, 0);
+		}
+
+		static int conf_setdef_localize_by_country(void)
+		{
+			return conf_set_bool(&prefs_runtime_config.localize_by_country, NULL, 0);
+		}
+
+		static const char* conf_get_localize_by_country(void)
+		{
+			return conf_get_bool(prefs_runtime_config.localize_by_country);
+		}
+
 
 		/**
 		*  Westwood Online Extensions

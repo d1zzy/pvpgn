@@ -48,6 +48,7 @@ namespace pvpgn
 
 		extern const char * i18n_filename(const char * filename, t_tag gamelang);
 		extern t_gamelang lang_find_by_country(const char * code);
+		extern t_gamelang conn_get_gamelang_localized(t_connection * c);
 
 		extern std::string _localize(t_connection * c, const char * func, const char *fmt, const fmt::ArgList &args);
 		FMT_VARIADIC(std::string, _localize, t_connection *, const char *, const char *)

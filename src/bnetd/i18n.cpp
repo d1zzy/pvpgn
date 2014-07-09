@@ -269,7 +269,7 @@ namespace pvpgn
 			{
 				format = fmt;
 
-				if (t_gamelang lang = conn_get_gamelang(c))
+				if (t_gamelang lang = conn_get_gamelang_localized(c))
 				if (!(format = _find_string(fmt, lang)))
 					format = fmt;
 			
@@ -326,11 +326,21 @@ namespace pvpgn
 
 			for (int i = 0; i < (sizeof(countries) / sizeof(*countries)); i++)
 			if (strcasecmp(code, countries[i][0]) == 0)
-				return tag_str_to_uint(countries[i][0]);
+				return tag_str_to_uint(countries[i][1]);
 
-			return tag_str_to_uint(countries[0][0]); // default
+			return tag_str_to_uint(countries[0][1]); // default
 		}
 
+		extern t_gamelang conn_get_gamelang_localized(t_connection * c)
+		{
+			t_gamelang lang = conn_get_gamelang(c);
+
+			if (prefs_get_localize_by_country())
+			if (const char * country = conn_get_country(c))
+				lang = lang_find_by_country(country);
+
+			return lang;
+		}
 
 	}
 }
