@@ -75,8 +75,9 @@ namespace pvpgn
 				{
 					t_gamelang lang;
 					// when file transferring by bnftp protofol client doesn't provide a language
+					// but we can extract it from the filename
 
-					// if there is no country tag in the file (just in case)
+					// if there is no country tag in the file (just in case to prevent crash from invalid filename)
 					if ((strlen(*pattern) + 4) > strlen(rawname))
 						return NULL;
 
@@ -86,6 +87,13 @@ namespace pvpgn
 					langstr[4] = 0;
 					lang = tag_str_to_uint(langstr);
 
+					// if language is invalid then try find it by code
+					if (!tag_check_gamelang(lang))
+					{
+						strncpy(langstr, rawname + std::strlen(*pattern), 3);
+						langstr[3] = 0;
+						lang = lang_find_by_country(langstr);
+					}
 					return i18n_filename(*alias, lang);
 				}
 			}

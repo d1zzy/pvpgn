@@ -95,6 +95,95 @@ namespace pvpgn
 		};
 
 
+		// http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx
+		extern const char * countries[][2] =
+		{
+			/* English (uses if other not found) */
+			{ "USA", "enUS" },
+
+			/* Polish */
+			{ "POL", "plPL" },
+
+			/* Korean */
+			{ "KOR", "koKR" },
+
+			/* French */
+			{ "FRA", "frFR" },
+
+			/* Bulgarian */
+			{ "BGR", "bgBG" },
+
+			/* Italian */
+			{ "ITA", "itIT" },
+
+			/* Japanese */
+			{ "JPN", "jpJA" },
+
+			/* Czech */
+			{ "CZE", "csCZ" },
+
+			/* Dutch */
+			{ "NLD", "nlNL" },
+
+			/* Portuguese */
+			{ "BRA", "ptBR" },
+			{ "PRT", "ptBR" },
+
+			/* Swedish */
+			{ "SWE", "svSE" },
+			{ "FIN", "svSE" },
+
+			/* German */
+			{ "DEU", "deDE" },
+			{ "AUT", "deDE" },
+			{ "LIE", "deDE" },
+			{ "LUX", "deDE" },
+
+			/* German */
+			{ "DEU", "deDE" },
+			{ "AUT", "deDE" },
+			{ "LIE", "deDE" },
+			{ "LUX", "deDE" },
+
+			/* Russian */
+			{ "RUS", "ruRU" },
+			{ "UZB", "ruRU" },
+			{ "TTT", "ruRU" },
+			{ "UKR", "ruRU" },
+			{ "AZE", "ruRU" },
+			{ "ARM", "ruRU" },
+
+			/* Chinese */
+			{ "CHN", "chCN" },
+			{ "SGP", "chCN" },
+			{ "HKG", "chTW" },
+			{ "MCO", "chTW" },
+			{ "TWN", "chTW" },
+
+			/* Spanish */
+			{ "ESP", "esES" },
+			{ "ARG", "esES" },
+			{ "BOL", "esES" },
+			{ "CHL", "esES" },
+			{ "COL", "esES" },
+			{ "CRI", "esES" },
+			{ "DOM", "esES" },
+			{ "ECU", "esES" },
+			{ "SLV", "esES" },
+			{ "GTM", "esES" },
+			{ "HND", "esES" },
+			{ "MEX", "esES" },
+			{ "NIC", "esES" },
+			{ "PAN", "esES" },
+			{ "PRY", "esES" },
+			{ "PER", "esES" },
+			{ "PRI", "esES" },
+			{ "URY", "esES" },
+			{ "VEN", "esES" },
+		};
+
+
+
 		extern int i18n_reload(void)
 		{
 			translations.clear();
@@ -206,7 +295,6 @@ namespace pvpgn
 			return NULL;
 		}
 
-
 		/* Add a locale tag into filename
 		example: motd.txt -> motd-ruRU.txt */
 		extern const char * i18n_filename(const char * filename, t_tag gamelang)
@@ -228,6 +316,19 @@ namespace pvpgn
 			}
 
 			return _filename;
+		}
+
+		/* Return language tag by code */
+		extern t_gamelang lang_find_by_country(const char * code)
+		{
+			if (!code || code[0] == '\0')
+				return tag_str_to_uint(countries[0][0]);
+
+			for (int i = 0; i < (sizeof(countries) / sizeof(*countries)); i++)
+			if (strcasecmp(code, countries[i][0]) == 0)
+				return tag_str_to_uint(countries[i][0]);
+
+			return tag_str_to_uint(countries[0][0]); // default
 		}
 
 
