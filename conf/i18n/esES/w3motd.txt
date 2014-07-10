@@ -1,6 +1,6 @@
 |c00FF0000Bienvenido |c00FF9933to |c0000CCFFthe |c00FF66FF%s |c0000CC00Versión |c009999FF%v |c00FFFFFF
 
-Actualmente hay %U usuario(s) en %G partidas de %N, and %u user(s) playing %g games and chatting in %c channels.
+Actualmente hay %U usuario(s) en %G partidas de %N, y %u usuario(s) jugando %g partidas y chateando en %c canales.
 
 
 
@@ -8,4 +8,4 @@ Actualmente hay %U usuario(s) en %G partidas de %N, and %u user(s) playing %g ga
 
 
 
-This text invisible, because of limitation of 11 lines
+Este texto es invisible, debido a limitación de 11 lineas.
