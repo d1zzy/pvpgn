@@ -325,7 +325,7 @@
     </item>
     <item id="398" file="command.cpp" function="_handle_commandgroups_command">
       <original>{}'s command group(s): {}</original>
-      <translate>Comando de grupo(s) de {}: {}</translate>
+      <translate> Grupo(s) de comandos de {}: {}</translate>
     </item>
     <item id="399" file="command.cpp" function="_handle_commandgroups_command">
       <original>Got bad group: {}</original>
@@ -333,7 +333,7 @@
     </item>
     <item id="400" file="command.cpp" function="_handle_commandgroups_command">
       <original>Groups {} has been added to {}</original>
-      <translate>Se ha añadio los grupos {} a {}</translate>
+      <translate>Se ha añadido los grupos {} a {}</translate>
     </item>
     <item id="401" file="command.cpp" function="_handle_commandgroups_command">
       <original>Groups {} has been deleted from {}</original>
@@ -1069,7 +1069,7 @@
     </item>
     <item id="334" file="command.cpp" function="_handle_rehash_command">
       <original>Rehash of "{}" is complete!</original>
-      <translate> </translate>
+      <translate>¡Restablecimiento de etiqueta hash de "{}" completado! </translate>
     </item>
     <item id="197" file="command.cpp" function="_handle_rejoin_command">
       <original>You are not in a channel.</original>
@@ -1329,7 +1329,7 @@
     </item>
     <item id="109" file="command.cpp" function="_handle_tmpop_command">
       <original>{} has already tmpOP in this channel</original>
-      <translate> </translate>
+      <translate>{} ya es OPtmp en este canal </translate>
     </item>
     <item id="110" file="command.cpp" function="_handle_tmpop_command">
       <original>{} must be on the same channel to tempOP him</original>
@@ -1681,7 +1681,7 @@
     </item>
     <item id="26" file="command.cpp" function="handle_command">
       <original>Unknown command.</original>
-      <translate> </translate>
+      <translate>Comando desconocido. </translate>
     </item>
     <item id="420" file="handle_bnet.cpp" function="_client_loginreq2">
       <original>This account has been locked</original>
@@ -1781,11 +1781,11 @@
     </item>
     <item id="446" file="command.lua" function="api.message_send_text">
       <original>Quiz has already ran in channel "{}". Use /quiz stop to force finish.</original>
-      <translate> </translate>
+      <translate>El Quiz ya está en marcha en el canal "{}". Usar /quiz stop para forzar el apagado. </translate>
     </item>
     <item id="447" file="command.lua" function="api.message_send_text">
       <original>Available Quiz dictionaries: </original>
-      <translate>Diccionarios para Quiz dispnobiles: </translate>
+      <translate>Diccionarios para Quiz disponibles: </translate>
     </item>
     <item id="448" file="command.lua" function="api.message_send_text">
       <original>Quiz is not running.</original>
@@ -1813,7 +1813,7 @@
     </item>
     <item id="443" file="redirect.lua" function="api.message_send_text">
       <original>User "{}" is offline</original>
-      <translate>Usuario "{}" está offline</translate>
+      <translate>El usuario "{}" está offline</translate>
     </item>
   </items>
 </root>
