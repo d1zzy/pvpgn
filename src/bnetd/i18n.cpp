@@ -141,12 +141,6 @@ namespace pvpgn
 			{ "LIE", "deDE" },
 			{ "LUX", "deDE" },
 
-			/* German */
-			{ "DEU", "deDE" },
-			{ "AUT", "deDE" },
-			{ "LIE", "deDE" },
-			{ "LUX", "deDE" },
-
 			/* Russian */
 			{ "RUS", "ruRU" },
 			{ "UZB", "ruRU" },
