@@ -325,7 +325,7 @@
     </item>
     <item id="398" file="command.cpp" function="_handle_commandgroups_command">
       <original>{}'s command group(s): {}</original>
-      <translate>Comando de grupo(s) de {}</translate>
+      <translate>Comando de grupo(s) de {}: {}</translate>
     </item>
     <item id="399" file="command.cpp" function="_handle_commandgroups_command">
       <original>Got bad group: {}</original>
@@ -353,11 +353,11 @@
     </item>
     <item id="275" file="command.cpp" function="_handle_connections_command">
       <original> -class -tag -----name------ -lat(ms)- ----channel---- --game--</original>
-      <translate>-clase -etiqueta -----nombre------ -lat(ms)- ----canal---- --juego-- </translate>
+      <translate> -clase -etiqueta -----nombre------ -lat(ms)- ----canal---- --juego--</translate>
     </item>
     <item id="276" file="command.cpp" function="_handle_connections_command">
       <original> -#- -class ----state--- -tag -----name------ -session-- -flag- -lat(ms)- ----channel---- --game--</original>
-      <translate>-#- -clase ----estado--- -etiqueta-----nombre------ -sesión-- -condición- -lat(ms)- ----canal---- --juego-- </translate>
+      <translate> -#- -clase ----estado--- -etiqueta-----nombre------ -sesión-- -condición- -lat(ms)- ----canal---- --juego--</translate>
     </item>
     <item id="277" file="command.cpp" function="_handle_connections_command">
       <original> -#- -class ----state--- -tag -----name------ -session-- -flag- -lat(ms)- ----channel---- --game-- ---------addr--------</original>
@@ -401,7 +401,7 @@
     </item>
     <item id="120" file="command.cpp" function="_handle_deop_command">
       <original>{} has been demoted from a Channel Operator</original>
-      <translate>[] ha sido degrado a no ser Operador del Canal</translate>
+      <translate>{} ha sido degrado a no ser Operador del Canal</translate>
     </item>
     <item id="121" file="command.cpp" function="_handle_deop_command">
       <original>{} has demoted you from a Channel Operator of channel "{}"</original>
@@ -445,7 +445,7 @@
     </item>
     <item id="91" file="command.cpp" function="_handle_devoice_command">
       <original>{} has removed you from VOP list of channel "{}"</original>
-      <translate>[] le ha eliminado de la lista VOP del canal "{}"</translate>
+      <translate>{} le ha eliminado de la lista VOP del canal "{}"</translate>
     </item>
     <item id="92" file="command.cpp" function="_handle_devoice_command">
       <original>You must be at least Channel Admin to remove {} from the VOP list</original>
@@ -477,7 +477,7 @@
     </item>
     <item id="335" file="command.cpp" function="_handle_find_command">
       <original> -- name -- similar to {}</original>
-      <translate>-- nombre -- similar a {}</translate>
+      <translate> -- nombre -- similar a {}</translate>
     </item>
     <item id="281" file="command.cpp" function="_handle_finger_command">
       <original>Invalid user.</original>
@@ -505,7 +505,7 @@
     </item>
     <item id="287" file="command.cpp" function="_handle_finger_command">
       <original>  Rank: Grunt</original>
-      <translate> Rango: Bruto</translate>
+      <translate>  Rango: Bruto</translate>
     </item>
     <item id="288" file="command.cpp" function="_handle_finger_command">
       <original>  Rank: Peon</original>
@@ -757,7 +757,7 @@
     </item>
     <item id="253" file="command.cpp" function="_handle_games_command">
       <original> ------name------ p -status- --------type--------- count </original>
-      <translate>------nombre------ p -estado- --------tipo--------- cuenta </translate>
+      <translate> ------nombre------ p -estado- --------tipo--------- cuenta </translate>
     </item>
     <item id="254" file="command.cpp" function="_handle_games_command">
       <original>ctag </original>
@@ -765,7 +765,7 @@
     </item>
     <item id="255" file="command.cpp" function="_handle_games_command">
       <original>--------addr--------</original>
-      <translate>--------direc-------- </translate>
+      <translate>--------direc--------</translate>
     </item>
     <item id="380" file="command.cpp" function="_handle_ipscan_command">
       <original>Warning: That user is not online, using last known address.</original>
@@ -809,7 +809,7 @@
     </item>
     <item id="303" file="command.cpp" function="_handle_kill_command">
       <original>An admin has closed your connection and banned your IP address.</original>
-      <translate>Un Admmin ha cerrado su conexión y baneado su dirección IP. </translate>
+      <translate>Un Admmin ha cerrado su conexión y baneado su dirección IP.</translate>
     </item>
     <item id="304" file="command.cpp" function="_handle_kill_command">
       <original>Connection closed by admin.</original>
@@ -901,7 +901,7 @@
     </item>
     <item id="391" file="command.cpp" function="_handle_motd_command">
       <original>No motd.</original>
-      <translate>No hay motd (mapa del dia) </translate>
+      <translate>No hay motd.</translate>
     </item>
     <item id="371" file="command.cpp" function="_handle_muteacct_command">
       <original>Invalid user.</original>
@@ -1005,7 +1005,7 @@
     </item>
     <item id="61" file="command.cpp" function="_handle_operator_command">
       <original>{} is already a Server Operator</original>
-      <translate>{} ya es un Operador del Servidor </translate>
+      <translate>{} ya es un Operador del Servidor</translate>
     </item>
     <item id="62" file="command.cpp" function="_handle_operator_command">
       <original>{} has been promoted to a Server Operator</original>
@@ -1129,7 +1129,7 @@
     </item>
     <item id="389" file="command.cpp" function="_handle_set_command">
       <original>Key set successfully for</original>
-      <translate>Tecla establecida con éxito para </translate>
+      <translate>Tecla establecida con éxito para</translate>
     </item>
     <item id="337" file="command.cpp" function="_handle_shutdown_command">
       <original>Invalid delay.</original>
@@ -1165,7 +1165,7 @@
     </item>
     <item id="164" file="command.cpp" function="_handle_stats_command">
       <original>Unable to determine client game.</original>
-      <translate>No es posible determinar el cliente del juego </translate>
+      <translate>No es posible determinar el cliente del juego.</translate>
     </item>
     <item id="165" file="command.cpp" function="_handle_stats_command">
       <original>This game does not support win/loss records.</original>
@@ -1213,7 +1213,7 @@
     </item>
     <item id="176" file="command.cpp" function="_handle_stats_command">
       <original>IronMan games: {}-{}-{} (rating {})</original>
-      <translate>Juegos IronMan: {}-{}-{}</translate>
+      <translate>Juegos IronMan: {}-{}-{} (puntuación {})</translate>
     </item>
     <item id="177" file="command.cpp" function="_handle_stats_command">
       <original>IronMan games: 0-0-0</original>
@@ -1557,7 +1557,7 @@
     </item>
     <item id="412" file="command.cpp" function="_reset_d1_stats">
       <original>Reset {}'s {} stats</original>
-      <translate>Reiniciar los stats de {} en {} </translate>
+      <translate>Reiniciar los stats de {} en {}</translate>
     </item>
     <item id="413" file="command.cpp" function="_reset_scw2_stats">
       <original>Reset {}'s {} stats</original>
@@ -1665,11 +1665,11 @@
     </item>
     <item id="22" file="command.cpp" function="do_whois">
       <original>{} away ({})</original>
-      <translate>{} ausente ({}) </translate>
+      <translate>{} ausente ({})</translate>
     </item>
     <item id="23" file="command.cpp" function="handle_command">
       <original>You are sending commands to {} too quickly and risk being disconnected for flooding. Please slow down.</original>
-      <translate>Se están mandando comandos a {} demasiado rápido con el riesgo a ser desconectado por sobrecarga. Por favor introducir comandos más depspacio. </translate>
+      <translate>Se están mandando comandos a {} demasiado rápido con el riesgo a ser desconectado por sobrecarga. Por favor introducir comandos más depspacio.</translate>
     </item>
     <item id="24" file="command.cpp" function="handle_command">
       <original>This command has been deactivated</original>
@@ -1741,7 +1741,7 @@
     </item>
     <item id="440" file="mail.cpp" function="mail_func_delete">
       <original>Invalid index. Please use /mail delete {&amp;lt;index&amp;gt;|all} where &amp;lt;index&amp;gt; is a number.</original>
-      <translate>Índice no válido. Por favor usar /mail delete {&amp;lt;index&amp;gt;|all} donde &amp;lt;index&amp;gt; is un número. </translate>
+      <translate>Índice no válido. Por favor usar /mail delete {&amp;lt;index&amp;gt;|all} donde &amp;lt;index&amp;gt; es un número.</translate>
     </item>
     <item id="441" file="mail.cpp" function="mail_func_delete">
       <original>Succesfully deleted message.</original>
@@ -1761,11 +1761,11 @@
     </item>
     <item id="433" file="mail.cpp" function="mail_func_send">
       <original>Receiver has reached his mail quota. Your message will NOT be sent.</original>
-      <translate>El destinatario ha alcanzado su cuota de correos. El mensaje NO será enviado. </translate>
+      <translate>El destinatario ha alcanzado su cuota de correos. El mensaje NO será enviado.</translate>
     </item>
     <item id="434" file="mail.cpp" function="mail_func_send">
       <original>Your mail has been sent successfully.</original>
-      <translate>El correo ha sido enviado satisfactoriamente </translate>
+      <translate>El correo ha sido enviado satisfactoriamente.</translate>
     </item>
     <item id="435" file="mail.cpp" function="mail_func_send">
       <original>There was an error completing your request!</original>
