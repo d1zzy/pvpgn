@@ -185,7 +185,7 @@
     </item>
     <item id="256" file="command.cpp" function="_handle_channels_command">
       <original>Currently accessible channels:</original>
-      <translate>Canales actualmente accesibles: </translate>
+      <translate>Canales actualmente accesibles:</translate>
     </item>
     <item id="257" file="command.cpp" function="_handle_channels_command">
       <original>All current channels:</original>
@@ -197,7 +197,7 @@
     </item>
     <item id="259" file="command.cpp" function="_handle_channels_command">
       <original> -----------name----------- users ----admin/operator----</original>
-      <translate>  -----------nombre----------- usuarios ----admin/operador----</translate>
+      <translate> -----------nombre----------- usuarios ----admin/operador----</translate>
     </item>
     <item id="266" file="command.cpp" function="_handle_chpass_command">
       <original>Only admins may change passwords for other accounts.</original>
@@ -313,7 +313,7 @@
     </item>
     <item id="50" file="command.cpp" function="_handle_clan_command">
       <original>/clan invite &amp;lt;username&amp;gt; command.</original>
-      <translate> el comando /clan invite &amp;lt;username&amp;gt;</translate>
+      <translate>el comando /clan invite &amp;lt;username&amp;gt;</translate>
     </item>
     <item id="415" file="command.cpp" function="_handle_clearstats_command">
       <original>Invalid user.</original>
