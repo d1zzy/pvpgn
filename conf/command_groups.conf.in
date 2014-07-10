@@ -72,6 +72,7 @@
 1	/latency /ping /p
 1	/topic
 1	/icon
+1	/language /lang
 
 #	/////////////////////////////
 #	///// Operator commands /////

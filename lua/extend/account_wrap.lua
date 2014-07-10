@@ -202,6 +202,13 @@ function account_set_acct_salt(username, value)
 	return api.account_set_attr(username, "BNET\\acct\\salt", attr_type_raw, value)
 end
 
+function account_get_userlang(username)
+	return api.account_get_attr(username, "BNET\\acct\\userlang", attr_type_str)
+end
+function account_set_userlang(username, value)
+	return api.account_set_attr(username, "BNET\\acct\\userlang", attr_type_str, value)
+end
+
 --
 -- Profile
 --

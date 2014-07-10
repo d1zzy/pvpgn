@@ -538,6 +538,8 @@ namespace pvpgn
 			{ "/clearstats", _handle_clearstats_command },
 			{ "/icon", handle_icon_command },
 			{ "/alert", _handle_alert_command },
+			{ "/language", handle_language_command },
+			{ "/lang", handle_language_command },
 
 			{ NULL, NULL }
 

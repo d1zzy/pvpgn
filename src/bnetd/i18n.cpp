@@ -56,6 +56,8 @@
 #include "helpfile.h"
 #include "channel.h"
 #include "prefs.h"
+#include "account_wrap.h"
+#include "command.h"
 #include "i18n.h"
 #include "common/setup_after.h"
 
@@ -335,12 +337,67 @@ namespace pvpgn
 		{
 			t_gamelang lang = conn_get_gamelang(c);
 
+			// force localize by user country
 			if (prefs_get_localize_by_country())
 			if (const char * country = conn_get_country(c))
 				lang = lang_find_by_country(country);
 
+			// if user set own language
+			if (t_account * a = conn_get_account(c))
+			if (const char * l = account_get_userlang(a))
+				lang = tag_str_to_uint(l);
+
 			return lang;
 		}
 
+
+		/* Set custom user language (command) */
+		extern int handle_language_command(t_connection * c, char const *text)
+		{
+
+			// split command args
+			std::vector<std::string> args = split_command(text, 3);
+			if (args[1].empty())
+			{
+				// display command help
+				describe_command(c, args[0].c_str());
+
+
+				std::string out = "     ";
+				char lang_str[5];
+				// display available language list
+				for (int i = 0; i < (sizeof(languages) / sizeof(*languages)); i++)
+				{
+					tag_uint_to_str(lang_str, languages[i]);
+
+					// select with brackets current user language
+					if (languages[i] == conn_get_gamelang_localized(c))
+						out += "[" + std::string(lang_str) + "]";
+					else
+						out += lang_str;
+					if (i < (sizeof(languages) / sizeof(*languages)) - 1)
+						out += ", ";
+				}
+				message_send_text(c, message_type_info, c, out.c_str());
+
+				return -1;
+			}
+
+			const char * userlang = args[1].c_str();
+
+			// validate given language
+			if (!tag_check_gamelang(tag_str_to_uint(userlang)))
+			{
+				message_send_text(c, message_type_error, c, localize(c, "Bad language code."));
+				return -1;
+			}
+
+			if (t_account * account = conn_get_account(c))
+			{
+				account_set_userlang(account, userlang);
+				message_send_text(c, message_type_error, c, localize(c, "Set your language to {}", userlang));
+			}
+			return 0;
+		}
 	}
 }

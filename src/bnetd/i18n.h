@@ -23,6 +23,7 @@ namespace pvpgn
 	namespace bnetd
 	{
 		extern const t_gamelang languages[12];
+
 	}
 }
 
@@ -50,11 +51,12 @@ namespace pvpgn
 		extern t_gamelang lang_find_by_country(const char * code);
 		extern t_gamelang conn_get_gamelang_localized(t_connection * c);
 
+		extern int handle_language_command(t_connection * c, char const *text);
+
 		extern std::string _localize(t_connection * c, const char * func, const char *fmt, const fmt::ArgList &args);
 		FMT_VARIADIC(std::string, _localize, t_connection *, const char *, const char *)
 
 		#define localize(c, ...) _localize(c, __FUNCTION__, __VA_ARGS__)
-
 	}
 
 }
