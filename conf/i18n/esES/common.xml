@@ -1656,7 +1656,7 @@
       <translate>{} {} está usando {} y {} actualmente dentro del canal "{}".</translate>
     </item>
     <item id="20" file="command.cpp" function="do_whois">
-      <original>{} {} using {}./original>
+      <original>{} {} using {}.</original>
       <translate>{} {} está usando {}.</translate>
     </item>
     <item id="21" file="command.cpp" function="do_whois">
