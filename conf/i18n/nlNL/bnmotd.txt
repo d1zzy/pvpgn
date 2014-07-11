@@ -7,5 +7,6 @@
 %Ien %u gebruikers spelen %g spellen en chatten in %c channels.
 %IProblemen met een commando? Type /help om
 %Ier meer te weten over te komen.
+%IType /language to switch translation.
 %I
 %M%m

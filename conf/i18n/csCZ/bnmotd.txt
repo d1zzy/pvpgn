@@ -8,5 +8,6 @@
 %INevis si rady ? Napis /help pro napovedu.
 %I
 %ITvoje IP adresa: %r, tvoje ID %i a tvuj klient %t.
+%IType /language to switch translation.
 %I
 %M%m

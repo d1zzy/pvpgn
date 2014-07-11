@@ -7,5 +7,6 @@
 %IE %u usuários jogando %g jogos e conversando em %c canais.
 %ITendo algum problema com comando? Digite /help ra
 %Aprender mais sobre.
+%IType /language to switch translation.
 %I
 %M%m

@@ -7,5 +7,6 @@
 %Ioch %u användare som spelar %g spel och chattar i %c kanaler.
 %IHar du problem med ett kommando? Skriv /help för
 %Iatt lära dig mer om det.
+%IType /language to switch translation.
 %I
 %M%m

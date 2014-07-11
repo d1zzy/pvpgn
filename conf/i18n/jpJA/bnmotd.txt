@@ -7,5 +7,6 @@
 %Iすべては %u 名のユーザさんが %g 個のゲームをプレーします。
 %I%c 個のチャンネが生成しました。
 %Iコマンド・リストは「/help」をタイプして下さい。
+%IType /language to switch translation.
 %I
 %M%m

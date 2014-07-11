@@ -7,5 +7,6 @@
 %I%u użytkowników gra w %g gier, i rozmawia na %c kanałach.
 %IJeśli masz jakieś problemy z poleceniami, to napiszsz /help aby
 %Idowiedzieć się wiecej.
+%IType /language to switch translation.
 %I
 %M%m

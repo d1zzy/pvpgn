@@ -7,5 +7,6 @@
 %Iy %u usuarios jugando %g partidas y conversando en %c salas.
 %ITiene problemas con algun comando? Teclee "/help" para
 %Iaprender más sobre los comandos.
+%IType /language to switch translation.
 %I
 %M%m

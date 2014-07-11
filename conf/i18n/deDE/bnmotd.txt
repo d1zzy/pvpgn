@@ -7,5 +7,6 @@
 %Iund %u Spieler spielen %g Spiele und chatten in %c Channels.
 %IEin Problem mit den Kommandos? Schreibe /help und
 %Ilerne mehr über die Kommandos.
+%IType /language to switch translation.
 %I
 %M%m

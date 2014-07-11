@@ -6,5 +6,6 @@
 %I共有 %U 個玩家在玩 %N 的 %G 個遊戲,
 %I其中有 %u 個玩家一邊在玩 %g 個遊戲一邊在 %c 個聊天頻道.
 %I不懂使用指令? 請輸入 /help 來了解更多...
+%IType /language to switch translation.
 %I
 %M%m
