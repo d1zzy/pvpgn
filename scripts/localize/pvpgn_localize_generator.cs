@@ -142,7 +142,6 @@ namespace pvpgn_localize_generator
                         {
                             // reference to exist translation
                             RefId = (reference != null) ? reference.Id : null,
-                            InnerText = (reference != null) ? null : " ",
                         }
                     });
                     // insert example author
@@ -366,7 +365,7 @@ namespace pvpgn_localize_generator
                 [XmlAttribute("refid")]
                 public string RefId;
                 [XmlText]
-                public string InnerText; // default value is " " to save empty values when updating xml file
+                public string InnerText;
             }
         }
 
