@@ -1969,7 +1969,7 @@ namespace pvpgn
 			{
 				if (channel_check_banning(channel, c))
 				{
-					message_send_text(c, message_type_error, c, "You are banned from that channel.");
+					message_send_text(c, message_type_error, c, localize(c, "You are banned from that channel."));
 					return -1;
 				}
 
@@ -1977,7 +1977,7 @@ namespace pvpgn
 					(account_get_auth_operator(acc, NULL) != 1) && (account_get_auth_operator(acc, channelname) != 1) &&
 					(channel_get_max(channel) == 0))
 				{
-					message_send_text(c, message_type_error, c, "That channel is for Admins/Operators only.");
+					message_send_text(c, message_type_error, c, localize(c, "That channel is for Admins/Operators only."));
 					return -1;
 				}
 
@@ -1985,7 +1985,7 @@ namespace pvpgn
 					(account_get_auth_operator(acc, NULL) != 1) && (account_get_auth_operator(acc, channelname) != 1) &&
 					(channel_get_max(channel) != -1) && (channel_get_curr(channel) >= channel_get_max(channel)))
 				{
-					message_send_text(c, message_type_error, c, "The channel is currently full.");
+					message_send_text(c, message_type_error, c, localize(c, "The channel is currently full."));
 					return -1;
 				}
 			}
@@ -2033,7 +2033,7 @@ namespace pvpgn
 			conn_send_welcome(c);
 
 			if (c->protocol.chat.channel && (channel_get_flags(c->protocol.chat.channel) & channel_flags_thevoid))
-				message_send_text(c, message_type_info, c, "This channel does not have chat privileges.");
+				message_send_text(c, message_type_info, c, localize(c, "This channel does not have chat privileges."));
 			if (clantag && clan && (clan_get_clantag(clan) == clantag))
 			{
 				char msgtemp[MAX_MESSAGE_LEN];
@@ -2048,7 +2048,7 @@ namespace pvpgn
 			}
 
 			if (c->protocol.chat.channel && (channel_get_flags(c->protocol.chat.channel) & channel_flags_moderated))
-				message_send_text(c, message_type_error, c, "This channel is moderated.");
+				message_send_text(c, message_type_error, c, localize(c, "This channel is moderated."));
 
 			if (c->protocol.chat.channel != oldchannel)
 				clanmember_on_change_status_by_connection(c);
@@ -2178,9 +2178,9 @@ namespace pvpgn
 
 					if (game_is_ladder(c->protocol.game)) {
 						if (c == game_get_owner(c->protocol.game))
-							message_send_text(c, message_type_info, c, "Created ladder game");
+							message_send_text(c, message_type_info, c, localize(c, "Created ladder game"));
 						else
-							message_send_text(c, message_type_info, c, "Joined ladder game");
+							message_send_text(c, message_type_info, c, localize(c, "Joined ladder game"));
 					}
 				}
 			}
@@ -3106,7 +3106,7 @@ namespace pvpgn
 
 			if (std::strlen(text) > prefs_get_quota_maxline())
 			{
-				message_send_text(con, message_type_error, con, "Your line length quota has been exceeded!");
+				message_send_text(con, message_type_error, con, localize(c, "Your line length quota has been exceeded!"));
 				return 1;
 			}
 
@@ -3139,7 +3139,7 @@ namespace pvpgn
 
 			if (con->protocol.chat.quota.totcount >= prefs_get_quota_lines())
 			{
-				message_send_text(con, message_type_error, con, "Your message quota has been exceeded!");
+				message_send_text(con, message_type_error, con, localize(c, "Your message quota has been exceeded!"));
 				if (con->protocol.chat.quota.totcount >= prefs_get_quota_dobae())
 				{
 					/* kick out the dobae user for violation of the quota rule */
