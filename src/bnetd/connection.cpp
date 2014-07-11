@@ -3106,7 +3106,7 @@ namespace pvpgn
 
 			if (std::strlen(text) > prefs_get_quota_maxline())
 			{
-				message_send_text(con, message_type_error, con, localize(c, "Your line length quota has been exceeded!"));
+				message_send_text(con, message_type_error, con, localize(con, "Your line length quota has been exceeded!"));
 				return 1;
 			}
 
@@ -3139,7 +3139,7 @@ namespace pvpgn
 
 			if (con->protocol.chat.quota.totcount >= prefs_get_quota_lines())
 			{
-				message_send_text(con, message_type_error, con, localize(c, "Your message quota has been exceeded!"));
+				message_send_text(con, message_type_error, con, localize(con, "Your message quota has been exceeded!"));
 				if (con->protocol.chat.quota.totcount >= prefs_get_quota_dobae())
 				{
 					/* kick out the dobae user for violation of the quota rule */
