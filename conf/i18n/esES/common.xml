@@ -33,7 +33,7 @@
     </item>
     <item id="7" file="channel.cpp" function="channel_add_connection">
       <original>you are now tempOP for this channel</original>
-      <translate>ahora eres OPtempo para este canal</translate>
+      <translate>ahora eres OPtemp para este canal</translate>
     </item>
     <item id="260" file="command.cpp" function="_handle_addacct_command">
       <original>Account name contains some invalid symbol!</original>
