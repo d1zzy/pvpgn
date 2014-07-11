@@ -3,7 +3,7 @@
   <meta>
     <language tag="esES">Spanish</language>
     <authors>
-      <author name="plisskenwat" email="nomad@example.com" />
+      <author name="plissken" email="formato_ahorro@hotmail.com" />
     </authors>
   </meta>
   <items>
@@ -101,7 +101,7 @@
     </item>
     <item id="417" file="command.cpp" function="_handle_alert_command">
       <original>\n\n***************************\nBy {}</original>
-      <translate> </translate>
+      <translate>\n\n***************************\nBy {}</translate>
     </item>
     <item id="418" file="command.cpp" function="_handle_alert_command">
       <original>Information from {}</original>
@@ -1261,19 +1261,19 @@
     </item>
     <item id="188" file="command.cpp" function="_handle_stats_command">
       <original>Users AT Team No. {}</original>
-      <translate> </translate>
+      <translate>Usuarios en Equipo AT No. {} </translate>
     </item>
     <item id="189" file="command.cpp" function="_handle_stats_command">
       <original>Users AT TEAM Level: {}, Experience: {}</original>
-      <translate> </translate>
+      <translate>Usuarios Equipo AT Nivel: {}, Experiencia: {} </translate>
     </item>
     <item id="190" file="command.cpp" function="_handle_stats_command">
       <original>AT TEAM Ladder Record: {}-{}-0</original>
-      <translate> </translate>
+      <translate>Record en Ladder Equipo AT: {}-{}-0 </translate>
     </item>
     <item id="191" file="command.cpp" function="_handle_stats_command">
       <original>AT TEAM Rank: {}</original>
-      <translate> </translate>
+      <translate>Equipo AT Rango: {} </translate>
     </item>
     <item id="151" file="command.cpp" function="_handle_status_command">
       <original>There are currently {} user(s) in {} games of {}</original>
@@ -1637,27 +1637,27 @@
     </item>
     <item id="15" file="command.cpp" function="do_whois">
       <original>You</original>
-      <translate> </translate>
+      <translate>Usted</translate>
     </item>
     <item id="16" file="command.cpp" function="do_whois">
       <original>are</original>
-      <translate> </translate>
+      <translate>está</translate>
     </item>
     <item id="17" file="command.cpp" function="do_whois">
       <original>is</original>
-      <translate> </translate>
+      <translate>está</translate>
     </item>
     <item id="18" file="command.cpp" function="do_whois">
       <original>{} {} using {} and {} currently in {} game "{}".</original>
-      <translate>{} {} está usando {} y {} actualmente dentro de {} juego "{}".</translate>
+      <translate>{} {} usando {} y {} actualmente dentro de {} juego "{}".</translate>
     </item>
     <item id="19" file="command.cpp" function="do_whois">
       <original>{} {} using {} and {} currently in channel "{}".</original>
-      <translate>{} {} está usando {} y {} actualmente dentro del canal "{}".</translate>
+      <translate>{} {} usando {} y {} actualmente dentro del canal "{}".</translate>
     </item>
     <item id="20" file="command.cpp" function="do_whois">
       <original>{} {} using {}.</original>
-      <translate>{} {} está usando {}.</translate>
+      <translate>{} {} usando {}.</translate>
     </item>
     <item id="21" file="command.cpp" function="do_whois">
       <original>{} {} refusing messages ({})</original>
