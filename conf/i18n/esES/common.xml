@@ -325,7 +325,7 @@
     </item>
     <item id="398" file="command.cpp" function="_handle_commandgroups_command">
       <original>{}'s command group(s): {}</original>
-      <translate> Grupo(s) de comandos de {}: {}</translate>
+      <translate>Grupo(s) de comandos de {}: {}</translate>
     </item>
     <item id="399" file="command.cpp" function="_handle_commandgroups_command">
       <original>Got bad group: {}</original>
@@ -1069,7 +1069,7 @@
     </item>
     <item id="334" file="command.cpp" function="_handle_rehash_command">
       <original>Rehash of "{}" is complete!</original>
-      <translate>¡Restablecimiento de etiqueta hash de "{}" completado! </translate>
+      <translate>¡Restablecimiento de etiqueta hash de "{}" completado!</translate>
     </item>
     <item id="197" file="command.cpp" function="_handle_rejoin_command">
       <original>You are not in a channel.</original>
@@ -1261,19 +1261,19 @@
     </item>
     <item id="188" file="command.cpp" function="_handle_stats_command">
       <original>Users AT Team No. {}</original>
-      <translate>Usuarios en Equipo AT No. {} </translate>
+      <translate>Usuarios en Equipo AT No. {}</translate>
     </item>
     <item id="189" file="command.cpp" function="_handle_stats_command">
       <original>Users AT TEAM Level: {}, Experience: {}</original>
-      <translate>Usuarios Equipo AT Nivel: {}, Experiencia: {} </translate>
+      <translate>Usuarios Equipo AT Nivel: {}, Experiencia: {}</translate>
     </item>
     <item id="190" file="command.cpp" function="_handle_stats_command">
       <original>AT TEAM Ladder Record: {}-{}-0</original>
-      <translate>Record en Ladder Equipo AT: {}-{}-0 </translate>
+      <translate>Record en Ladder Equipo AT: {}-{}-0</translate>
     </item>
     <item id="191" file="command.cpp" function="_handle_stats_command">
       <original>AT TEAM Rank: {}</original>
-      <translate>Equipo AT Rango: {} </translate>
+      <translate>Equipo AT Rango: {}</translate>
     </item>
     <item id="151" file="command.cpp" function="_handle_status_command">
       <original>There are currently {} user(s) in {} games of {}</original>
@@ -1329,7 +1329,7 @@
     </item>
     <item id="109" file="command.cpp" function="_handle_tmpop_command">
       <original>{} has already tmpOP in this channel</original>
-      <translate>{} ya es OPtmp en este canal </translate>
+      <translate>{} ya es OPtmp en este canal</translate>
     </item>
     <item id="110" file="command.cpp" function="_handle_tmpop_command">
       <original>{} must be on the same channel to tempOP him</original>
@@ -1681,7 +1681,7 @@
     </item>
     <item id="26" file="command.cpp" function="handle_command">
       <original>Unknown command.</original>
-      <translate>Comando desconocido. </translate>
+      <translate>Comando desconocido.</translate>
     </item>
     <item id="420" file="handle_bnet.cpp" function="_client_loginreq2">
       <original>This account has been locked</original>
@@ -1693,7 +1693,7 @@
     </item>
     <item id="422" file="helpfile.cpp" function="handle_help_command">
       <original>Oops ! There is a problem with the help file. Please contact the administrator of the server.</original>
-      <translate>¡Ups!  Hay un problema con el archivo de ayuda. Por favor contactar con el administrador del servidor.</translate>
+      <translate>¡Ups! Hay un problema con el archivo de ayuda. Por favor contactar con el administrador del servidor.</translate>
     </item>
     <item id="423" file="icons.cpp" function="handle_icon_command">
       <original>This command can only be used inside a channel.</original>
@@ -1781,7 +1781,7 @@
     </item>
     <item id="446" file="command.lua" function="api.message_send_text">
       <original>Quiz has already ran in channel "{}". Use /quiz stop to force finish.</original>
-      <translate>El Quiz ya está en marcha en el canal "{}". Usar /quiz stop para forzar el apagado. </translate>
+      <translate>El Quiz ya está en marcha en el canal "{}". Usar /quiz stop para forzar el apagado.</translate>
     </item>
     <item id="447" file="command.lua" function="api.message_send_text">
       <original>Available Quiz dictionaries: </original>
