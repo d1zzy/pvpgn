@@ -97,7 +97,7 @@
     </item>
     <item id="416" file="command.cpp" function="_handle_alert_command">
       <original>Your game client doesn't support MessageBox.</original>
-      <translate>El cliente no es compatible con MessageBox.</translate>
+      <translate>El cliente no es compatible con cuadros de mensaje.</translate>
     </item>
     <item id="417" file="command.cpp" function="_handle_alert_command">
       <original>\n\n***************************\nBy {}</original>
