@@ -83,7 +83,7 @@ namespace pvpgn
 			int count = 1; // 1 icon in stash ("default" icon)
 			bool is_selected = false;
 
-			char		msgtemp[MAX_MESSAGE_LEN];
+			std::string	msgtemp;
 
 			if (!(conn_get_channel(c))) {
 				message_send_text(c, message_type_error, c, localize(c, "This command can only be used inside a channel."));
@@ -164,7 +164,7 @@ namespace pvpgn
 					// unset value
 					if (strcasecmp(iconname, "default") == 0)
 					{
-						snprintf(msgtemp, sizeof(msgtemp), "Set default icon.", clienttag_get_title(clienttag));
+						msgtemp = localize(c, "Set default icon.");
 						usericon = NULL;
 					}
 					// set usericon (reversed)
@@ -182,7 +182,7 @@ namespace pvpgn
 							message_send_text(c, message_type_error, c, localize(c, "Bad icon."));
 							return -1;
 						}
-						snprintf(msgtemp, sizeof(msgtemp), "Set new icon is succeed.", account_get_name(account));
+						msgtemp = localize(c, "Set new icon is succeed.");
 						usericon = strreverse((char*)iconcode);
 					}
 					account_set_user_icon(account, clienttag, usericon);
@@ -198,12 +198,12 @@ namespace pvpgn
 				}
 
 				// display icon list in user stash
-				snprintf(msgtemp, sizeof(msgtemp), "You have %u icons in stash:", count);
+				msgtemp = localize(c, "You have {} icons in stash:", count);
 				message_send_text(c, message_type_info, c, msgtemp);
 
 				output_icons = ((is_selected || usericon) ? "default" : "[default]") + std::string((count > 1) ? ", " : "") + output_icons;
 
-				snprintf(msgtemp, sizeof(msgtemp), "   %s", output_icons.c_str());
+				msgtemp = "   " + output_icons;
 				message_send_text(c, message_type_info, c, msgtemp);
 
 				return 0;
@@ -224,9 +224,9 @@ namespace pvpgn
 			// subcommand = list
 			if (subcommand[0] == 'l' && username[0] == '\0')
 			{
-				message_send_text(c, message_type_info, c, "Available icons in server stash:");
+				message_send_text(c, message_type_info, c, localize(c, "Available icons in server stash:"));
 				std::string output_icons = customicons_stash_get_list(clienttag, true);
-				snprintf(msgtemp, sizeof(msgtemp), "   %s", output_icons.c_str());
+				msgtemp = "   " + output_icons;
 				message_send_text(c, message_type_info, c, msgtemp);
 				return 0;
 			}
@@ -235,7 +235,7 @@ namespace pvpgn
 			// find user account
 			if (!(account = accountlist_find_account(username)))
 			{
-				message_send_text(c, message_type_error, c, "Invalid user.");
+				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
 				return 0;
 			}
 			user_c = account_get_conn(account);
@@ -254,7 +254,7 @@ namespace pvpgn
 					// unset value
 					if (strcasecmp(iconname, "default") == 0)
 					{
-						snprintf(msgtemp, sizeof(msgtemp), "Set default icon for %.64s", account_get_name(account));
+						msgtemp = localize(c, "Set default icon for {}", account_get_name(account));
 						usericon = NULL;
 					}
 					// set usericon (reversed)
@@ -263,10 +263,10 @@ namespace pvpgn
 						// find icon in server stash
 						if (!(iconcode = customicons_stash_find(clienttag, iconname)))
 						{
-							message_send_text(c, message_type_error, c, "That icon doesn't exist in server stash.");
+							message_send_text(c, message_type_error, c, localize(c, "That icon doesn't exist in server stash."));
 							return -1;
 						}
-						snprintf(msgtemp, sizeof(msgtemp), "Set new icon is succeed for %.64s", account_get_name(account));
+						msgtemp = localize(c, "Set new icon is succeed for {}", account_get_name(account));
 						usericon = strreverse((char*)iconcode);
 					}
 					account_set_user_icon(account, clienttag, usericon);
@@ -323,12 +323,12 @@ namespace pvpgn
 					}
 
 					// display icon list in user stash
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s has %u icons in stash:", account_get_name(account), count);
+					msgtemp = localize(c, "{} has {} icons in stash : ", account_get_name(account), count);
 					message_send_text(c, message_type_info, c, msgtemp);
 
 					output_icons = ((is_selected || usericon) ? "default" : "[default]") + std::string((count > 1) ? ", " : "") + output_icons;
 
-					snprintf(msgtemp, sizeof(msgtemp), "   %s", output_icons.c_str());
+					msgtemp = "   " + output_icons;
 					message_send_text(c, message_type_info, c, msgtemp);
 
 
@@ -345,7 +345,7 @@ namespace pvpgn
 					// find icon in server stash
 					if (!(iconcode = customicons_stash_find(clienttag, iconname)))
 					{
-						message_send_text(c, message_type_error, c, "That icon doesn't exist in server stash.");
+						message_send_text(c, message_type_error, c, localize(c, "That icon doesn't exist in server stash."));
 						return -1;
 					}
 
@@ -366,7 +366,7 @@ namespace pvpgn
 
 							if (strcasecmp(_icon.c_str(), iconcode) == 0)
 							{
-								message_send_text(c, message_type_error, c, "User already has that icon in stash.");
+								message_send_text(c, message_type_error, c, localize(c, "User already has that icon in stash."));
 								return 0;
 							}
 						} while (iss);
@@ -379,7 +379,7 @@ namespace pvpgn
 					// save stash
 					account_set_user_iconstash(account, clienttag, output_icons.c_str());
 
-					snprintf(msgtemp, sizeof(msgtemp), "Add new icon to %.64s's stash.", account_get_name(account));
+					msgtemp = localize(c, "Add new icon to {}'s stash.", account_get_name(account));
 					message_send_text(c, message_type_info, c, msgtemp);
 
 					return 0;
@@ -429,13 +429,13 @@ namespace pvpgn
 					}
 					if (!is_found)
 					{
-						message_send_text(c, message_type_error, c, "That icon doesn't exist in user stash.");
+						message_send_text(c, message_type_error, c, localize(c, "That icon doesn't exist in user stash."));
 						return -1;
 					}
 					// save stash
 					account_set_user_iconstash(account, clienttag, output_icons.c_str());
 
-					snprintf(msgtemp, sizeof(msgtemp), "Delete icon from %.64s's stash.", account_get_name(account));
+					msgtemp = localize(c, "Delete icon from {}'s stash.", account_get_name(account));
 					message_send_text(c, message_type_info, c, msgtemp);
 
 					return 0;

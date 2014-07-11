@@ -1948,7 +1948,7 @@ namespace pvpgn
 						t_clan * ch_clan;
 						if ((ch_clan = clanlist_find_clan_by_clantag(clantag)) && (clan_get_channel_type(ch_clan) == 1))
 						{
-							message_send_text(c, message_type_error, c, "This is a private clan channel, unable to join!");
+							message_send_text(c, message_type_error, c, localize(c, "This is a private clan channel, unable to join!"));
 							return 0;
 						}
 					}

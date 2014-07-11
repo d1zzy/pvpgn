@@ -142,7 +142,7 @@ namespace pvpgn
 			char * line;
 			int    i;
 
-			message_send_text(c, message_type_info, c, "Chat commands:");
+			message_send_text(c, message_type_info, c, localize(c, "Chat commands : "));
 			std::rewind(hfd);
 			while ((line = file_get_line(hfd)) != NULL)
 			{
@@ -259,7 +259,7 @@ namespace pvpgn
 			file_get_line(NULL); // clear file_get_line buffer
 
 			/* no description was found for this command. inform the user */
-			message_send_text(c, message_type_error, c, "No help available for that command");
+			message_send_text(c, message_type_error, c, localize(c, "No help available for that command"));
 			return -1;
 		}
 

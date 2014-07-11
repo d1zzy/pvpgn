@@ -3921,7 +3921,7 @@ namespace pvpgn
 			{
 				if (!(clienttag = conn_get_clienttag(c)))
 				{
-					message_send_text(c, message_type_error, c, "Unable to determine client game.");
+					message_send_text(c, message_type_error, c, localize(c, "Unable to determine client game."));
 					return 0;
 				}
 			}

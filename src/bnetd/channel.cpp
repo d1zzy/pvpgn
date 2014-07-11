@@ -762,7 +762,7 @@ namespace pvpgn
 			if ((conn_get_wol(me) == 0))
 			{
 				if (!heard && (type == message_type_talk || type == message_type_emote))
-					message_send_text(me, message_type_info, me, localize(c, "No one hears you."));
+					message_send_text(me, message_type_info, me, localize(me, "No one hears you."));
 			}
 
 #ifdef WITH_LUA
