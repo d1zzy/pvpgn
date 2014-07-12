@@ -1683,6 +1683,46 @@
       <original>Unknown command.</original>
       <translate>Comando desconocido.</translate>
     </item>
+    <item id="483" file="connection.cpp" function="conn_quota_exceeded">
+      <original>Your line length quota has been exceeded!</original>
+      <translate>¡Su cuota de longitud de línea ha sido sobrepasada!</translate>
+    </item>
+    <item id="484" file="connection.cpp" function="conn_quota_exceeded">
+      <original>Your message quota has been exceeded!</original>
+      <translate>Su cuota de mensajes ha sido sobrepasada!</translate>
+    </item>
+    <item id="475" file="connection.cpp" function="conn_set_channel">
+      <original>This is a private clan channel, unable to join!</original>
+      <translate>¡No es posible unirse, este es un canal de clan privado! </translate>
+    </item>
+    <item id="476" file="connection.cpp" function="conn_set_channel">
+      <original>You are banned from that channel.</original>
+      <translate refid="155" />
+    </item>
+    <item id="477" file="connection.cpp" function="conn_set_channel">
+      <original>That channel is for Admins/Operators only.</original>
+      <translate>Este canal solamente está para Administradores/Operadores.</translate>
+    </item>
+    <item id="478" file="connection.cpp" function="conn_set_channel">
+      <original>The channel is currently full.</original>
+      <translate>Este canal está actualmente lleno.</translate>
+    </item>
+    <item id="479" file="connection.cpp" function="conn_set_channel">
+      <original>This channel does not have chat privileges.</original>
+      <translate>Este canal no tiene privilegios de chat.</translate>
+    </item>
+    <item id="480" file="connection.cpp" function="conn_set_channel">
+      <original>This channel is moderated.</original>
+      <translate>Este canal está moderado.</translate>
+    </item>
+    <item id="481" file="connection.cpp" function="conn_set_game">
+      <original>Created ladder game</original>
+      <translate>Ha creado un juego en ladder</translate>
+    </item>
+    <item id="482" file="connection.cpp" function="conn_set_game">
+      <original>Joined ladder game</original>
+      <translate>Se ha unido a un juego en ladder</translate>
+    </item>
     <item id="420" file="handle_bnet.cpp" function="_client_loginreq2">
       <original>This account has been locked</original>
       <translate>Esta cuenta ha sido bloqueada</translate>
@@ -1691,9 +1731,25 @@
       <original>This account has been locked</original>
       <translate refid="420" />
     </item>
+    <item id="486" file="helpfile.cpp" function="describe_command">
+      <original>No help available for that command</original>
+      <translate>No hay ayuda disponible para ese comando</translate>
+    </item>
     <item id="422" file="helpfile.cpp" function="handle_help_command">
       <original>Oops ! There is a problem with the help file. Please contact the administrator of the server.</original>
       <translate>¡Ups! Hay un problema con el archivo de ayuda. Por favor contactar con el administrador del servidor.</translate>
+    </item>
+    <item id="485" file="helpfile.cpp" function="list_commands">
+      <original>Chat commands : </original>
+      <translate>Comandos de chat : </translate>
+    </item>
+    <item id="487" file="i18n.cpp" function="handle_language_command">
+      <original>Bad language code.</original>
+      <translate>Código de idioma incorrecto</translate>
+    </item>
+    <item id="488" file="i18n.cpp" function="handle_language_command">
+      <original>Set your language to {}</original>
+      <translate>Estabelcer su idioma en {}</translate>
     </item>
     <item id="423" file="icons.cpp" function="handle_icon_command">
       <original>This command can only be used inside a channel.</original>
@@ -1706,6 +1762,98 @@
     <item id="425" file="icons.cpp" function="handle_icon_command">
       <original>Bad icon.</original>
       <translate>Icono incorrecto.</translate>
+    </item>
+      <item id="489" file="icons.cpp" function="handle_icon_command">
+      <original>Set default icon.</original>
+      <translate>Establecer icono por defecto.</translate>
+    </item>
+    <item id="490" file="icons.cpp" function="handle_icon_command">
+      <original>Set new icon is succeed.</original>
+      <translate>Nuevo icono establecido con éxito.</translate>
+    </item>
+    <item id="491" file="icons.cpp" function="handle_icon_command">
+      <original>You have {} icons in stash:</original>
+      <translate>Tiene {} iconos en su reserva:</translate>
+    </item>
+    <item id="492" file="icons.cpp" function="handle_icon_command">
+      <original>Available icons in server stash:</original>
+      <translate>Iconos disponibles en la reserva del servidor:</translate>
+    </item>
+    <item id="493" file="icons.cpp" function="handle_icon_command">
+      <original>Invalid user.</original>
+      <translate refid="163" />
+    </item>
+    <item id="494" file="icons.cpp" function="handle_icon_command">
+      <original>Set default icon for {}</original>
+      <translate>Establecer icono por defecto para {}</translate>
+    </item>
+    <item id="495" file="icons.cpp" function="handle_icon_command">
+      <original>That icon doesn't exist in server stash.</original>
+      <translate>Ese icono no existe en la reserva del servidor.</translate>
+    </item>
+    <item id="496" file="icons.cpp" function="handle_icon_command">
+      <original>Set new icon is succeed for {}</original>
+      <translate>Nuevo icono establecido con éxito para {}</translate>
+    </item>
+    <item id="497" file="icons.cpp" function="handle_icon_command">
+      <original>{} has {} icons in stash : </original>
+      <translate>{} tiene {} iconos en su reserva : </translate>
+    </item>
+    <item id="498" file="icons.cpp" function="handle_icon_command">
+      <original>User already has that icon in stash.</original>
+      <translate>El usuario tiene ese icono en su reserva.</translate>
+    </item>
+    <item id="499" file="icons.cpp" function="handle_icon_command">
+      <original>Add new icon to {}'s stash.</original>
+      <translate>Añadir nuevo icono a la reserva de {}.</translate>
+    </item>
+    <item id="500" file="icons.cpp" function="handle_icon_command">
+      <original>That icon doesn't exist in user stash.</original>
+      <translate>Ese icono no existe en la reserva del usuario.</translate>
+    </item>
+    <item id="501" file="icons.cpp" function="handle_icon_command">
+      <original>Delete icon from {}'s stash.</original>
+      <translate>Eliminar icono de la reserva de {}</translate>
+    </item>
+    <item id="510" file="ipban.cpp" function="ipban_func_check">
+      <original>IP not banned.</original>
+      <translate>La IP no está baneada.</translate>
+    </item>
+    <item id="511" file="ipban.cpp" function="ipban_func_check">
+      <original>Error occured.</original>
+      <translate>Ha ocurrido un error.</translate>
+    </item>
+    <item id="512" file="ipban.cpp" function="ipban_func_check">
+      <original>IP banned by rule #{}.</original>
+      <translate>IP baneado debido a la regla #{}.</translate>
+    </item>
+    <item id="503" file="ipban.cpp" function="ipban_func_del">
+      <original>Illegal IP entry.</original>
+      <translate>IP introducide ilegal.</translate>
+    </item>
+    <item id="504" file="ipban.cpp" function="ipban_func_del">
+      <original>No matching entry.</original>
+      <translate>No se encuentran entradas que coincidan.</translate>
+    </item>
+    <item id="505" file="ipban.cpp" function="ipban_func_del">
+      <original>Wrong entry number.</original>
+      <translate>Número de entrada incorrecto.</translate>
+    </item>
+    <item id="506" file="ipban.cpp" function="ipban_func_del">
+      <original>Entry deleted.</original>
+      <translate>Entrada eliminada.</translate>
+    </item>
+    <item id="507" file="ipban.cpp" function="ipban_func_list">
+      <original>Banned IPs:</original>
+      <translate>IPs baneadas:</translate>
+    </item>
+    <item id="508" file="ipban.cpp" function="ipban_func_list">
+      <original>(perm)</original>
+      <translate>(perm)</translate>
+    </item>
+    <item id="509" file="ipban.cpp" function="ipban_func_list">
+      <original>none</original>
+      <translate refid="280" />
     </item>
     <item id="426" file="ipban.cpp" function="ipbanlist_add">
       <original>{} banned permamently by {}.</original>
@@ -1754,6 +1902,18 @@
     <item id="437" file="mail.cpp" function="mail_func_read">
       <original>There was an error completing your request.</original>
       <translate>Ha ocurrido un error mientras se completaba su petición.</translate>
+    </item>
+    <item id="513" file="mail.cpp" function="mail_func_read">
+      <original>ID Sender Date</original>
+      <translate>ID Remitente Fecha</translate>
+    </item>
+    <item id="514" file="mail.cpp" function="mail_func_read">
+      <original>Use /mail read &amp;lt;ID&amp;gt; to read the content of any message</original>
+      <translate>Usar /mail read &amp;lt;ID&amp;gt; para leer el contenido de cualquier mensaje</translate>
+    </item>
+    <item id="515" file="mail.cpp" function="mail_func_read">
+      <original>Invalid index. Please use /mail read &amp;lt;index&amp;gt; where &amp;lt;index&amp;gt; is a number.</original>
+      <translate>Índice no válido. Por favor usar /mail delete {&amp;lt;index&amp;gt;|all} donde &amp;lt;index&amp;gt; es un número.</translate>
     </item>
     <item id="432" file="mail.cpp" function="mail_func_send">
       <original>Receiver UNKNOWN!</original>
