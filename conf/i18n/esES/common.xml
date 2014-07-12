@@ -1721,7 +1721,7 @@
     </item>
     <item id="13" file="command.cpp" function="do_whois">
       <original>User was last seen on: {}</original>
-      <translate>Usuario última vez vistp el: {}</translate>
+      <translate>Usuario última vez visto el: {}</translate>
     </item>
     <item id="14" file="command.cpp" function="do_whois">
       <original>User is offline</original>
