@@ -1917,7 +1917,7 @@
     </item>
     <item id="503" file="ipban.cpp" function="ipban_func_del">
       <original>Illegal IP entry.</original>
-      <translate>IP introducide ilegal.</translate>
+      <translate>IP introducida ilegal.</translate>
     </item>
     <item id="504" file="ipban.cpp" function="ipban_func_del">
       <original>No matching entry.</original>
