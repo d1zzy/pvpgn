@@ -2049,7 +2049,7 @@
     </item>
     <item id="451" file="command.lua" function="api.message_send_text">
       <original>{}'s Quiz record:</original>
-      <translate>Quiz record de {}</translate>
+      <translate>Récord en Quiz de {}</translate>
     </item>
     <item id="452" file="command.lua" function="api.message_send_text">
       <original>{} has never played Quiz.</original>
@@ -2057,7 +2057,7 @@
     </item>
     <item id="449" file="command.lua" function="localize">
       <original>Top {} Quiz records:</original>
-      <translate>Top {} Quiz records:</translate>
+      <translate>Top {} Quiz récords:</translate>
     </item>
     <item id="450" file="command.lua" function="string.format">
       <original>points</original>
