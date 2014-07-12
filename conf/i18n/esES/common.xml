@@ -1285,7 +1285,7 @@
     </item>
     <item id="378" file="command.cpp" function="_handle_tag_command">
       <original>Client tag set to {}.</original>
-      <translate>Etiqueta del cliente fijada en {}</translate>
+      <translate>Etiqueta del cliente establecida en {}</translate>
     </item>
     <item id="379" file="command.cpp" function="_handle_tag_command">
       <original>Invalid clienttag {} specified</original>
@@ -1381,7 +1381,7 @@
     </item>
     <item id="229" file="command.cpp" function="_handle_unban_command">
       <original>{} is no longer banned from this channel.</original>
-      <translate>{} ya no esta baneado en este canal.</translate>
+      <translate>{} ya no está baneado en este canal.</translate>
     </item>
     <item id="368" file="command.cpp" function="_handle_unlockacct_command">
       <original>Invalid user.</original>
@@ -1401,7 +1401,7 @@
     </item>
     <item id="375" file="command.cpp" function="_handle_unmuteacct_command">
       <original>Your account has just been unmuted by {}</original>
-      <translate>Su cuenta acaban de devolverle la voz por {}</translate>
+      <translate>Acaban de devolverle la voz a su cuenta por {}</translate>
     </item>
     <item id="376" file="command.cpp" function="_handle_unmuteacct_command">
       <original>That user's account is now unmuted.</original>
@@ -1497,7 +1497,7 @@
     </item>
     <item id="75" file="command.cpp" function="_handle_vop_command">
       <original>{} is already on VOP list</original>
-      <translate>{} ya se encuentra en al lista VOP</translate>
+      <translate>{} ya se encuentra en la lista VOP</translate>
     </item>
     <item id="76" file="command.cpp" function="_handle_vop_command">
       <original>{} has been added to the VOP list</original>
@@ -1525,7 +1525,7 @@
     </item>
     <item id="240" file="command.cpp" function="_handle_watchall_command">
       <original>All {} users added to your watch list.</original>
-      <translate>Todos los {} usuarios han sido incluidos a la lisa de vigilancia.</translate>
+      <translate>Todos los {} usuarios han sido incluidos a la lista de vigilancia.</translate>
     </item>
     <item id="241" file="command.cpp" function="_handle_watchall_command">
       <original>All users added to your watch list.</original>
@@ -1613,11 +1613,11 @@
     </item>
     <item id="9" file="command.cpp" function="do_whisper">
       <original>That user is not logged on.</original>
-      <translate>Ese usuario no esta conectado.</translate>
+      <translate>Ese usuario no está conectado.</translate>
     </item>
     <item id="10" file="command.cpp" function="do_whisper">
       <original>{} is unavailable ({})</original>
-      <translate>{} no esta disponible ({})</translate>
+      <translate>{} no está disponible ({})</translate>
     </item>
     <item id="11" file="command.cpp" function="do_whisper">
       <original>{} is away ({})</original>
@@ -1629,7 +1629,7 @@
     </item>
     <item id="13" file="command.cpp" function="do_whois">
       <original>User was last seen on: {}</original>
-      <translate>Usuario última vez viste el: {}</translate>
+      <translate>Usuario última vez vistp el: {}</translate>
     </item>
     <item id="14" file="command.cpp" function="do_whois">
       <original>User is offline</original>
@@ -1677,7 +1677,7 @@
     </item>
     <item id="25" file="command.cpp" function="handle_command">
       <original>This command is reserved for admins.</original>
-      <translate>Este comando esta reservado para admins.</translate>
+      <translate>Este comando está reservado para admins.</translate>
     </item>
     <item id="26" file="command.cpp" function="handle_command">
       <original>Unknown command.</original>
