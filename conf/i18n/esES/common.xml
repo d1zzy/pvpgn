@@ -61,7 +61,7 @@
     </item>
     <item id="51" file="command.cpp" function="_handle_admin_command">
       <original>You must supply a username.</original>
-      <translate>Se debe proporcionar una nombre de usuario.</translate>
+      <translate>Se debe proporcionar un nombre de usuario.</translate>
     </item>
     <item id="52" file="command.cpp" function="_handle_admin_command">
       <original>There's no account with username {}.</original>
@@ -201,7 +201,7 @@
     </item>
     <item id="266" file="command.cpp" function="_handle_chpass_command">
       <original>Only admins may change passwords for other accounts.</original>
-      <translate>Solo los administradores pueden cambiar la contraseña para otras cuentas.</translate>
+      <translate>Sólo los administradores pueden cambiar la contraseña para otras cuentas.</translate>
     </item>
     <item id="267" file="command.cpp" function="_handle_chpass_command">
       <original>Account does not exist.</original>
@@ -241,7 +241,7 @@
     </item>
     <item id="32" file="command.cpp" function="_handle_clan_command">
       <original>Clan channel has already been closed!</original>
-      <translate>El canal del clan ya está cerrado!</translate>
+      <translate>¡El canal del clan ya está cerrado!</translate>
     </item>
     <item id="33" file="command.cpp" function="_handle_clan_command">
       <original>Clan message of day is updated!</original>
@@ -249,7 +249,7 @@
     </item>
     <item id="34" file="command.cpp" function="_handle_clan_command">
       <original>User {} was invited to your clan!</original>
-      <translate>El usuario {} ha sido invitado al clan!</translate>
+      <translate>¡El usuario {} ha sido invitado al clan!</translate>
     </item>
     <item id="35" file="command.cpp" function="_handle_clan_command">
       <original>You are invited to {} by {}!</original>
