@@ -35,6 +35,18 @@
       <original>you are now tempOP for this channel</original>
       <translate>ahora eres OPtemp para este canal</translate>
     </item>
+    <item id="453" file="channel.cpp" function="channel_message_send">
+      <original>You can't talk on the channel. Your account has been muted</original>
+      <translate>No puede hablar en el canal. Su cuenta ha sido silenciada</translate>
+    </item>
+    <item id="454" file="channel.cpp" function="channel_message_send">
+      <original>This channel is moderated</original>
+      <translate>Este canal está moderado.</translate>
+    </item>
+    <item id="455" file="channel.cpp" function="conn_check_ignoring">
+      <original>No one hears you.</original>
+      <translate>Nadie le oye.</translate>
+    </item>
     <item id="260" file="command.cpp" function="_handle_addacct_command">
       <original>Account name contains some invalid symbol!</original>
       <translate>¡El nombre de cuenta contiene algun carácter inválido!</translate>
@@ -850,6 +862,10 @@
     <item id="342" file="command.cpp" function="_handle_ladderinfo_command">
       <original>Example: /ladderinfo 1 STAR</original>
       <translate>Ejemplo: /ladderinfo 1 STAR</translate>
+    </item>
+      <item id="474" file="command.cpp" function="_handle_ladderinfo_command">
+      <original>Unable to determine client game.</original>
+      <translate refid="164" />
     </item>
     <item id="365" file="command.cpp" function="_handle_lockacct_command">
       <original>Invalid user.</original>
