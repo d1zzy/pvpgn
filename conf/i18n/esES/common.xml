@@ -747,6 +747,14 @@
       <original>Description: {}</original>
       <translate>Descripción: {}</translate>
     </item>
+    <item id="472" file="command.cpp" function="_handle_gameinfo_command">
+      <original>public</original>
+      <translate>público</translate>
+    </item>
+    <item id="473" file="command.cpp" function="_handle_gameinfo_command">
+      <original>private</original>
+      <translate>privado</translate>
+    </item>
     <item id="248" file="command.cpp" function="_handle_games_command">
       <original>Currently accessible games:</original>
       <translate>Juegos actualmente accesibles:</translate>
@@ -1583,6 +1591,70 @@
       <original>Reset {}'s {} stats</original>
       <translate refid="412" />
     </item>
+    <item id="456" file="command.cpp" function="=">
+      <original>Created: {}</original>
+      <translate refid="283" />
+    </item>
+    <item id="457" file="command.cpp" function="=">
+      <original>Clan: {}</original>
+      <translate refid="284" />
+    </item>
+    <item id="458" file="command.cpp" function="=">
+      <original> Rank: Chieftain</original>
+      <translate refid="285" />
+    </item>
+    <item id="459" file="command.cpp" function="=">
+      <original> Rank: Shaman</original>
+      <translate refid="286" />
+    </item>
+    <item id="460" file="command.cpp" function="=">
+      <original> Rank: Grunt</original>
+      <translate refid="287" />
+    </item>
+    <item id="461" file="command.cpp" function="=">
+      <original> Rank: Peon</original>
+      <translate refid="288" />
+    </item>
+    <item id="462" file="command.cpp" function="=">
+      <original>Client: {} Ver: {} Country: {}</original>
+      <translate refid="290" />
+    </item>
+    <item id="463" file="command.cpp" function="=">
+      <original>unknown</original>
+      <translate refid="291" />
+    </item>
+    <item id="464" file="command.cpp" function="=">
+      <original>Last login {} from </original>
+      <translate refid="292" />
+    </item>
+    <item id="465" file="command.cpp" function="=">
+      <original>On since {} from </original>
+      <translate refid="293" />
+    </item>
+    <item id="466" file="command.cpp" function="=">
+      <original>Yes</original>
+      <translate refid="295" />
+    </item>
+    <item id="467" file="command.cpp" function="=">
+      <original>No</original>
+      <translate>No</translate>
+    </item>
+    <item id="468" file="command.cpp" function="=">
+      <original>Operator: {}, Admin: {}, Locked: {}, Muted: {}</original>
+      <translate refid="294" />
+    </item>
+    <item id="469" file="command.cpp" function="=">
+      <original>Email: {}</original>
+      <translate refid="296" />
+    </item>
+    <item id="470" file="command.cpp" function="=">
+      <original>Last login Owner: {}</original>
+      <translate refid="297" />
+    </item>
+    <item id="471" file="command.cpp" function="=">
+      <original>Idle {}</original>
+      <translate refid="298" />
+    </item>
     <item id="214" file="command.cpp" function="account_get_auth_admin">
       <original>You cannot kick administrators.</original>
       <translate>No se puede echar a administradores.</translate>
@@ -1886,6 +1958,10 @@
     <item id="429" file="ipban.cpp" function="ipbanlist_add">
       <original>{} banned for {}.</original>
       <translate>{} baneado por {}.</translate>
+    </item>
+    <item id="502" file="ipban.cpp" function="ipbanlist_add">
+      <original>Bad IP.</original>
+      <translate>IP errónea.</translate>
     </item>
     <item id="430" file="ipban.cpp" function="ipbanlist_str_to_time_t">
       <original>Banning only for: {} minutes.</original>
