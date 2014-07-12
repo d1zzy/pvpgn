@@ -1785,7 +1785,7 @@
     </item>
     <item id="475" file="connection.cpp" function="conn_set_channel">
       <original>This is a private clan channel, unable to join!</original>
-      <translate>¡No es posible unirse, este es un canal de clan privado! </translate>
+      <translate>¡No es posible unirse, este es un canal de clan privado!</translate>
     </item>
     <item id="476" file="connection.cpp" function="conn_set_channel">
       <original>You are banned from that channel.</original>
@@ -2009,7 +2009,7 @@
     </item>
     <item id="515" file="mail.cpp" function="mail_func_read">
       <original>Invalid index. Please use /mail read &amp;lt;index&amp;gt; where &amp;lt;index&amp;gt; is a number.</original>
-      <translate>Índice no válido. Por favor usar /mail delete {&amp;lt;index&amp;gt;|all} donde &amp;lt;index&amp;gt; es un número.</translate>
+      <translate>Índice no válido. Por favor usar /mail read &amp;lt;index&amp;gt; donde &amp;lt;index&amp;gt; es un número.</translate>
     </item>
     <item id="432" file="mail.cpp" function="mail_func_send">
       <original>Receiver UNKNOWN!</original>
