@@ -537,7 +537,7 @@
     </item>
     <item id="295" file="command.cpp" function="_handle_finger_command">
       <original>Yes</original>
-      <translate>Si</translate>
+      <translate>Sí</translate>
     </item>
     <item id="296" file="command.cpp" function="_handle_finger_command">
       <original>Email: {}</original>
@@ -573,7 +573,7 @@
     </item>
     <item id="131" file="command.cpp" function="_handle_friends_command">
       <original>{} is already on your friends list!</original>
-      <translate>¡{} ya está en tu lista de amigos!</translate>
+      <translate>¡{} ya está en su lista de amigos!</translate>
     </item>
     <item id="132" file="command.cpp" function="_handle_friends_command">
       <original>Added {} to your friends list.</original>
@@ -617,7 +617,7 @@
     </item>
     <item id="142" file="command.cpp" function="_handle_friends_command">
       <original> using {}</original>
-      <translate> está usando {}</translate>
+      <translate> usando {}</translate>
     </item>
     <item id="143" file="command.cpp" function="_handle_friends_command">
       <original>, in game "{}"</original>
@@ -717,7 +717,7 @@
     </item>
     <item id="327" file="command.cpp" function="_handle_gameinfo_command">
       <original>Map Size: {}x{}</original>
-      <translate>Tamaño del MApa {}x{}</translate>
+      <translate>Tamaño del Mapa {}x{}</translate>
     </item>
     <item id="328" file="command.cpp" function="_handle_gameinfo_command">
       <original>Map Tileset: {}</original>
@@ -797,7 +797,7 @@
     </item>
     <item id="213" file="command.cpp" function="_handle_kick_command">
       <original>That user is not in this channel.</original>
-      <translate>Ese usuario no esta en este canal.</translate>
+      <translate>Ese usuario no está en este canal.</translate>
     </item>
     <item id="301" file="command.cpp" function="_handle_kill_command">
       <original>That connection doesn't exist.</original>
@@ -805,7 +805,7 @@
     </item>
     <item id="302" file="command.cpp" function="_handle_kill_command">
       <original>That user is not logged in?</original>
-      <translate>Ese usuario no esta conectado.</translate>
+      <translate>Ese usuario no está conectado.</translate>
     </item>
     <item id="303" file="command.cpp" function="_handle_kill_command">
       <original>An admin has closed your connection and banned your IP address.</original>
@@ -885,7 +885,7 @@
     </item>
     <item id="409" file="command.cpp" function="_handle_moderate_command">
       <original>Unable to change channel flags.</original>
-      <translate>No ha sido posible cambiar las del canal</translate>
+      <translate>No ha sido posible cambiar las etiquetas del canal</translate>
     </item>
     <item id="410" file="command.cpp" function="_handle_moderate_command">
       <original>Channel is now unmoderated.</original>
@@ -897,7 +897,7 @@
     </item>
     <item id="390" file="command.cpp" function="_handle_motd_command">
       <original>Unable to open motd.</original>
-      <translate>No es posible abrir motd (mapa del dia)</translate>
+      <translate>No es posible abrir motd (mensaje del dia)</translate>
     </item>
     <item id="391" file="command.cpp" function="_handle_motd_command">
       <original>No motd.</original>
@@ -921,7 +921,7 @@
     </item>
     <item id="354" file="command.cpp" function="_handle_netinfo_command">
       <original>Address information for other users is only available to admins.</original>
-      <translate>La información sobre las direcciones de otros usuarios solo esta avalible para los administradores.</translate>
+      <translate>La información sobre las direcciones de otros usuarios solo esta disponible para los administradores.</translate>
     </item>
     <item id="355" file="command.cpp" function="_handle_netinfo_command">
       <original>Server TCP: {} (bind {})</original>
@@ -961,7 +961,7 @@
     </item>
     <item id="97" file="command.cpp" function="_handle_op_command">
       <original>You must be at least a Channel Operator or tempOP to use this command.</original>
-      <translate>Se debe ser como mínimo Operador del Canal o tempoOP para usar este comando.</translate>
+      <translate>Se debe ser como mínimo Operador del Canal o OPtemp para usar este comando.</translate>
     </item>
     <item id="98" file="command.cpp" function="_handle_op_command">
       <original>There's no account with username {}.</original>
@@ -1321,7 +1321,7 @@
     </item>
     <item id="107" file="command.cpp" function="_handle_tmpop_command">
       <original>You must be at least a Channel Operator or tmpOP to use this command.</original>
-      <translate>Se debe ser como mínimo Operador de Canal o tempOP para usar este comando.</translate>
+      <translate>Se debe ser como mínimo Operador de Canal o OPtemp para usar este comando.</translate>
     </item>
     <item id="108" file="command.cpp" function="_handle_tmpop_command">
       <original>There's no account with username {}.</original>
@@ -1329,7 +1329,7 @@
     </item>
     <item id="109" file="command.cpp" function="_handle_tmpop_command">
       <original>{} has already tmpOP in this channel</original>
-      <translate>{} ya es OPtmp en este canal</translate>
+      <translate>{} ya es OPtemp en este canal</translate>
     </item>
     <item id="110" file="command.cpp" function="_handle_tmpop_command">
       <original>{} must be on the same channel to tempOP him</original>
