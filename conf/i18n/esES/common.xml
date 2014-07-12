@@ -525,7 +525,7 @@
     </item>
     <item id="292" file="command.cpp" function="_handle_finger_command">
       <original>Last login {} from </original>
-      <translate>Última conexion {} de </translate>
+      <translate>Última conexión {} de </translate>
     </item>
     <item id="293" file="command.cpp" function="_handle_finger_command">
       <original>On since {} from </original>
