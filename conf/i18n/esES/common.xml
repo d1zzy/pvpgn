@@ -1193,7 +1193,7 @@
     </item>
     <item id="165" file="command.cpp" function="_handle_stats_command">
       <original>This game does not support win/loss records.</original>
-      <translate>Este juego no soporta records de victoria/derrota.</translate>
+      <translate>Este juego no soporta récords de victoria/derrota.</translate>
     </item>
     <item id="166" file="command.cpp" function="_handle_stats_command">
       <original>You must supply a user name and a valid program ID.</original>
@@ -1205,7 +1205,7 @@
     </item>
     <item id="168" file="command.cpp" function="_handle_stats_command">
       <original>{}'s record:</original>
-      <translate>record de {}</translate>
+      <translate>Récord de {}</translate>
     </item>
     <item id="169" file="command.cpp" function="_handle_stats_command">
       <original>level: {}</original>
@@ -1245,7 +1245,7 @@
     </item>
     <item id="178" file="command.cpp" function="_handle_stats_command">
       <original>{}'s Ladder Record's:</original>
-      <translate>Record en ladder de {}</translate>
+      <translate>Récord en ladder de {}</translate>
     </item>
     <item id="179" file="command.cpp" function="_handle_stats_command">
       <original>Users Solo Level: {}, Experience: {}</original>
@@ -1253,7 +1253,7 @@
     </item>
     <item id="180" file="command.cpp" function="_handle_stats_command">
       <original>SOLO Ladder Record: {}-{}-0</original>
-      <translate>Record en Ladder en Solitario: {}-{}-0</translate>
+      <translate>Récord en Ladder en Solitario: {}-{}-0</translate>
     </item>
     <item id="181" file="command.cpp" function="_handle_stats_command">
       <original>SOLO Rank: {}</original>
@@ -1265,7 +1265,7 @@
     </item>
     <item id="183" file="command.cpp" function="_handle_stats_command">
       <original>TEAM Ladder Record: {}-{}-0</original>
-      <translate>Record en Ladder en Equipos: {}-{}-0</translate>
+      <translate>Récord en Ladder en Equipos: {}-{}-0</translate>
     </item>
     <item id="184" file="command.cpp" function="_handle_stats_command">
       <original>TEAM Rank: {}</original>
@@ -1277,7 +1277,7 @@
     </item>
     <item id="186" file="command.cpp" function="_handle_stats_command">
       <original>FFA Ladder Record: {}-{}-0</original>
-      <translate>Records en Ladder para TCT (Todos Contra Todos): {}-{}-0</translate>
+      <translate>Récord en Ladder para TCT (Todos Contra Todos): {}-{}-0</translate>
     </item>
     <item id="187" file="command.cpp" function="_handle_stats_command">
       <original>FFA Rank: {}</original>
@@ -1293,7 +1293,7 @@
     </item>
     <item id="190" file="command.cpp" function="_handle_stats_command">
       <original>AT TEAM Ladder Record: {}-{}-0</original>
-      <translate>Record en Ladder Equipo AT: {}-{}-0</translate>
+      <translate>Récord en Ladder Equipo AT: {}-{}-0</translate>
     </item>
     <item id="191" file="command.cpp" function="_handle_stats_command">
       <original>AT TEAM Rank: {}</original>
