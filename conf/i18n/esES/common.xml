@@ -1777,7 +1777,7 @@
     </item>
     <item id="484" file="connection.cpp" function="conn_quota_exceeded">
       <original>Your message quota has been exceeded!</original>
-      <translate>Su cuota de mensajes ha sido sobrepasada!</translate>
+      <translate>¡Su cuota de mensajes ha sido sobrepasada!</translate>
     </item>
     <item id="475" file="connection.cpp" function="conn_set_channel">
       <original>This is a private clan channel, unable to join!</original>
@@ -1789,7 +1789,7 @@
     </item>
     <item id="477" file="connection.cpp" function="conn_set_channel">
       <original>That channel is for Admins/Operators only.</original>
-      <translate>Este canal solamente está para Administradores/Operadores.</translate>
+      <translate>Este canal es solamente para Administradores/Operadores.</translate>
     </item>
     <item id="478" file="connection.cpp" function="conn_set_channel">
       <original>The channel is currently full.</original>
