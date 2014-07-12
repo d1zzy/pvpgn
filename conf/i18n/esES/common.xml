@@ -1299,6 +1299,10 @@
       <original>AT TEAM Rank: {}</original>
       <translate>Equipo AT Rango: {}</translate>
     </item>
+    <item id="456" file="command.cpp" function="_handle_stats_command">
+      <original>Ladder games: {}-{}-{} (rating {})</original>
+      <translate>Juegos en ladder: {}-{}-{} (puntuación {})</translate>
+    </item>
     <item id="151" file="command.cpp" function="_handle_status_command">
       <original>There are currently {} user(s) in {} games of {}</original>
       <translate>Actualmente hay {} usuario(s) en {} juegos de {}</translate>
