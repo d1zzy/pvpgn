@@ -27,6 +27,9 @@
 
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+#include "common/tag.h"
+#include "i18n.h"
+
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -142,7 +145,8 @@ namespace pvpgn
 				return -1;
 			}
 
-			if ((fp = std::fopen(filename, "rt")) == NULL) {
+			// FIXME: (HarpyWar) change news loading when user log on to send a localized version
+			if ((fp = std::fopen(i18n_filename(filename, GAMELANG_ENGLISH_UINT), "rt")) == NULL) {
 				eventlog(eventlog_level_warn, __FUNCTION__, "can't open news file");
 				_news_insert_default();
 				return 0;

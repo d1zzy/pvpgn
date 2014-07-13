@@ -126,20 +126,24 @@ const bool BNETD_CHANLOG = false;
 # define BNETD_DEFAULT_CONF_FILE "conf/bnetd.conf"
 #endif
 const char * const BNETD_FILE_DIR = "files";
-const char * const BNETD_I18N_DIR = "conf/i18n";
 const char * const BNETD_SCRIPT_DIR = "lua";
 const char * const BNETD_STORAGE_PATH = "";
 const char * const BNETD_REPORT_DIR = "reports";
+const char * const BNETD_I18N_DIR = "conf/i18n";
+// ------ i18n files --------
+const char * const BNETD_LOCALIZE_FILE = "common.xml";
+const char * const BNETD_MOTD_FILE = "bnmotd.txt";
+const char * const BNETD_MOTDW3_FILE = "w3motd.txt";
+const char * const BNETD_NEWS_FILE = "news.txt";
+const char * const BNETD_HELP_FILE = "bnhelp.conf";
+const char * const BNETD_TOS_FILE = "newaccount.txt";
+// --------------------------
 const char * const BNETD_LOG_FILE = "logs/bnetd.log";
-const char * const BNETD_MOTD_FILE = "conf/bnmotd.txt";
-const char * const BNETD_MOTDW3_FILE = "conf/bnmotd_w3.txt";
-const char * const BNETD_NEWS_DIR = "news";
 const char * const BNETD_AD_FILE = "conf/ad.conf";
 const char * const BNETD_CHANNEL_FILE = "conf/channel.conf";
 const char * const BNETD_PID_FILE = "";  /* this means "none" */
 const char * const BNETD_ACCOUNT_TMP = ".bnetd_acct_temp";
 const char * const BNETD_IPBAN_FILE = "conf/bnban.conf";
-const char * const BNETD_HELP_FILE = "conf/bnhelp.conf";
 const char * const BNETD_FORTUNECMD = "/usr/games/fortune";
 const char * const BNETD_TRANS_FILE = "conf/address_translation.conf";
 const char * const BNETD_CHANLOG_DIR = "chanlogs";
@@ -171,7 +175,6 @@ const unsigned MAX_FRIENDS = 20;
 const unsigned BNETD_MAX_OUTBURST = 16384;
 
 /* default files relative to FILE_DIR */
-const char * const BNETD_TOS_FILE = "tos.txt";
 const char * const BNETD_ICON_FILE = "icons.bni";
 const char * const BNETD_WAR3_ICON_FILE = "icons-WAR3.bni";
 const char * const BNETD_STAR_ICON_FILE = "icons_STAR.bni";

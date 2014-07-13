@@ -40,6 +40,7 @@ namespace pvpgn
 		extern char const * prefs_get_i18ndir(void);
 		extern char const * prefs_get_logfile(void);
 		extern char const * prefs_get_loglevels(void);
+		extern char const * prefs_get_localizefile(void);
 		extern char const * prefs_get_motdfile(void);
 		extern char const * prefs_get_motdw3file(void);
 		extern char const * prefs_get_newsfile(void);
@@ -125,10 +126,6 @@ namespace pvpgn
 
 		extern unsigned int prefs_get_max_concurrent_logins(void);
 
-		/* ADDED BY UNDYING SOULZZ 4/9/02 */
-		extern unsigned int prefs_get_identify_timeout_secs(void);
-		extern char const * prefs_get_server_info(void);
-
 		/* [zap-zero] 20020616 */
 		extern char const * prefs_get_mysql_host(void);
 		extern char const * prefs_get_mysql_account(void);
@@ -182,6 +179,7 @@ namespace pvpgn
 		extern unsigned int prefs_get_max_connections(void);
 		extern unsigned int prefs_get_sync_on_logoff(void);
 		extern char const * prefs_get_irc_network_name(void);
+		extern unsigned int prefs_get_localize_by_country(void);
 
 		/**
 		*  Westwood Online Extensions

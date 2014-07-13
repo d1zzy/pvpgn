@@ -685,9 +685,9 @@ namespace pvpgn
 			// if user is muted
 			if (account_get_auth_mute(acc) == 1)
 			{
-				char msgtemp[MAX_MESSAGE_LEN], msgtemp2[MAX_MESSAGE_LEN];
-
-				snprintf(msgtemp, sizeof(msgtemp), "You can't talk on the channel. Your account has been muted%s", account_get_locktext(acc, true));
+				std::string msgtemp;
+				msgtemp = localize(me, "You can't talk on the channel. Your account has been muted");
+				msgtemp += account_get_locktext(acc, false);
 				message_send_text(me, message_type_error, me, msgtemp);
 				return;
 			}
@@ -699,7 +699,7 @@ namespace pvpgn
 					if (!((account_is_operator_or_admin(acc, channel_get_name(channel))) ||
 						(channel_conn_has_tmpVOICE(channel, me)) || (account_get_auth_voice(acc, channel_get_name(channel)) == 1)))
 					{
-						message_send_text(me, message_type_error, me, "This channel is moderated");
+						message_send_text(me, message_type_error, me, localize(c, "This channel is moderated"));
 						return;
 					}
 				}
@@ -762,7 +762,7 @@ namespace pvpgn
 			if ((conn_get_wol(me) == 0))
 			{
 				if (!heard && (type == message_type_talk || type == message_type_emote))
-					message_send_text(me, message_type_info, me, "No one hears you.");
+					message_send_text(me, message_type_info, me, localize(me, "No one hears you."));
 			}
 
 #ifdef WITH_LUA

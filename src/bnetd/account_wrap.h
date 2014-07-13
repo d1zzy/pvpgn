@@ -249,6 +249,9 @@ namespace pvpgn
 		extern int account_set_email(t_account * account, char const * email);
 		extern char const * account_get_email(t_account * account);
 
+		extern int account_set_userlang(t_account * account, const char * lang);
+		extern char const * account_get_userlang(t_account * account);
+
 		/*  Westwood Online Extensions */
 		extern char const * account_get_wol_apgar(t_account * account);
 		extern int account_set_wol_apgar(t_account * account, char const * apgar);

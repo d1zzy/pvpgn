@@ -32,6 +32,10 @@
 #include <map>
 #include <string.h>
 
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#endif
+
 #include "compat/strcasecmp.h"
 #include "compat/snprintf.h"
 
@@ -52,6 +56,8 @@
 #include "helpfile.h"
 #include "channel.h"
 #include "prefs.h"
+#include "account_wrap.h"
+#include "command.h"
 #include "i18n.h"
 #include "common/setup_after.h"
 
@@ -75,7 +81,7 @@ namespace pvpgn
 
 		const char * _find_string(char const * text, t_gamelang gamelang);
 
-		const t_gamelang languages[12] = {
+		extern const t_gamelang languages[12] = {
 			GAMELANG_ENGLISH_UINT,	/* enUS */
 			GAMELANG_GERMAN_UINT,	/* deDE */
 			GAMELANG_CZECH_UINT,	/* csCZ */
@@ -91,6 +97,89 @@ namespace pvpgn
 		};
 
 
+		// http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx
+		extern const char * countries[][2] =
+		{
+			/* English (uses if other not found) */
+			{ "USA", "enUS" },
+
+			/* Polish */
+			{ "POL", "plPL" },
+
+			/* Korean */
+			{ "KOR", "koKR" },
+
+			/* French */
+			{ "FRA", "frFR" },
+
+			/* Bulgarian */
+			{ "BGR", "bgBG" },
+
+			/* Italian */
+			{ "ITA", "itIT" },
+
+			/* Japanese */
+			{ "JPN", "jpJA" },
+
+			/* Czech */
+			{ "CZE", "csCZ" },
+
+			/* Dutch */
+			{ "NLD", "nlNL" },
+
+			/* Portuguese */
+			{ "BRA", "ptBR" },
+			{ "PRT", "ptBR" },
+
+			/* Swedish */
+			{ "SWE", "svSE" },
+			{ "FIN", "svSE" },
+
+			/* German */
+			{ "DEU", "deDE" },
+			{ "AUT", "deDE" },
+			{ "LIE", "deDE" },
+			{ "LUX", "deDE" },
+
+			/* Russian */
+			{ "RUS", "ruRU" },
+			{ "UZB", "ruRU" },
+			{ "TTT", "ruRU" },
+			{ "UKR", "ruRU" },
+			{ "AZE", "ruRU" },
+			{ "ARM", "ruRU" },
+
+			/* Chinese */
+			{ "CHN", "chCN" },
+			{ "SGP", "chCN" },
+			{ "HKG", "chTW" },
+			{ "MCO", "chTW" },
+			{ "TWN", "chTW" },
+
+			/* Spanish */
+			{ "ESP", "esES" },
+			{ "ARG", "esES" },
+			{ "BOL", "esES" },
+			{ "CHL", "esES" },
+			{ "COL", "esES" },
+			{ "CRI", "esES" },
+			{ "DOM", "esES" },
+			{ "ECU", "esES" },
+			{ "SLV", "esES" },
+			{ "GTM", "esES" },
+			{ "HND", "esES" },
+			{ "MEX", "esES" },
+			{ "NIC", "esES" },
+			{ "PAN", "esES" },
+			{ "PRY", "esES" },
+			{ "PER", "esES" },
+			{ "PRI", "esES" },
+			{ "URY", "esES" },
+			{ "VEN", "esES" },
+		};
+
+
+
 		extern int i18n_reload(void)
 		{
 			translations.clear();
@@ -101,8 +190,6 @@ namespace pvpgn
 
 		extern int i18n_load(void)
 		{
-			const char * filename = buildpath(prefs_get_i18ndir(), commonfile);
-
 			std::string lang_filename;
 			pugi::xml_document doc;
 			std::string original, translate;
@@ -110,7 +197,7 @@ namespace pvpgn
 			// iterate language list
 			for (int i = 0; i < (sizeof(languages) / sizeof(*languages)); i++)
 			{
-				lang_filename = i18n_filename(filename, languages[i]);
+				lang_filename = i18n_filename(prefs_get_localizefile(), languages[i]);
 				if (FILE *f = fopen(lang_filename.c_str(), "r")) {
 					fclose(f);
 
@@ -149,7 +236,7 @@ namespace pvpgn
 						else
 						{
 							translate = original;
-							WARN2("could not find translate reference refid=\"%s\", use original string (%s)", attr.value(), lang_filename.c_str());
+							//WARN2("could not find translate reference refid=\"%s\", use original string (%s)", attr.value(), lang_filename.c_str());
 						}
 					}
 					else
@@ -178,17 +265,15 @@ namespace pvpgn
 			{
 				format = fmt;
 
-				if (t_gamelang lang = conn_get_gamelang(c))
+				if (t_gamelang lang = conn_get_gamelang_localized(c))
 				if (!(format = _find_string(fmt, lang)))
 					format = fmt;
 			
-				fmt::Writer w;
-				w.format(format, args);
-				output = w.str();
+				output = fmt::format(format, args);
 			}
 			catch (const std::exception& e)
 			{
-				ERROR1("Can't format translation string \"%s\" (%s)", fmt, e.what());
+				ERROR2("Can't format translation string \"%s\" (%s)", fmt, e.what());
 			}
 			return output;
 		}
@@ -206,40 +291,107 @@ namespace pvpgn
 			return NULL;
 		}
 
-
 		/* Add a locale tag into filename
 		example: motd.txt -> motd-ruRU.txt */
-		extern std::string i18n_filename(const char * filename, t_tag gamelang)
+		extern const char * i18n_filename(const char * filename, t_tag gamelang)
 		{
 			// get language string
 			char lang_str[sizeof(t_tag)+1];
 			std::memset(lang_str, 0, sizeof(lang_str));
 			tag_uint_to_str(lang_str, gamelang);
 
-			if (!tag_check_gamelang(gamelang))
+			struct stat sfile;
+			const char * _filename;
+			
+			_filename = buildpath(buildpath(prefs_get_i18ndir(), lang_str), filename);
+			// if localized file not found
+			if (stat(_filename, &sfile) < 0)
 			{
-				ERROR1("got unknown language tag \"%s\"", lang_str);
-				return filename;
+				// use default file
+				_filename = buildpath(prefs_get_i18ndir(), filename);
 			}
 
-			std::string _filename(filename);
+			return _filename;
+		}
 
-			// get extension
-			std::string::size_type idx(_filename.rfind('.'));
-			if (idx == std::string::npos || idx + 4 != _filename.size())
-			{
-				ERROR1("Invalid extension for '%s'", _filename.c_str());
-				return filename;
-			}
-			std::string ext(_filename.substr(idx + 1));
+		/* Return language tag by code */
+		extern t_gamelang lang_find_by_country(const char * code)
+		{
+			if (!code || code[0] == '\0')
+				return tag_str_to_uint(countries[0][0]);
 
-			// get filename without extension
-			std::string fname(_filename.substr(0, idx));
+			for (int i = 0; i < (sizeof(countries) / sizeof(*countries)); i++)
+			if (strcasecmp(code, countries[i][0]) == 0)
+				return tag_str_to_uint(countries[i][1]);
 
-			std::string lang_filename(fname + "-" + lang_str + "." + ext);
-			return lang_filename;
+			return tag_str_to_uint(countries[0][1]); // default
+		}
+
+		extern t_gamelang conn_get_gamelang_localized(t_connection * c)
+		{
+			t_gamelang lang = conn_get_gamelang(c);
+
+			// force localize by user country
+			if (prefs_get_localize_by_country())
+			if (const char * country = conn_get_country(c))
+				lang = lang_find_by_country(country);
+
+			// if user set own language
+			if (t_account * a = conn_get_account(c))
+			if (const char * l = account_get_userlang(a))
+				lang = tag_str_to_uint(l);
+
+			return lang;
 		}
 
 
+		/* Set custom user language (command) */
+		extern int handle_language_command(t_connection * c, char const *text)
+		{
+
+			// split command args
+			std::vector<std::string> args = split_command(text, 3);
+			if (args[1].empty())
+			{
+				// display command help
+				describe_command(c, args[0].c_str());
+
+
+				std::string out = "     ";
+				char lang_str[5];
+				// display available language list
+				for (int i = 0; i < (sizeof(languages) / sizeof(*languages)); i++)
+				{
+					tag_uint_to_str(lang_str, languages[i]);
+
+					// select with brackets current user language
+					if (languages[i] == conn_get_gamelang_localized(c))
+						out += "[" + std::string(lang_str) + "]";
+					else
+						out += lang_str;
+					if (i < (sizeof(languages) / sizeof(*languages)) - 1)
+						out += ", ";
+				}
+				message_send_text(c, message_type_info, c, out.c_str());
+
+				return -1;
+			}
+
+			const char * userlang = args[1].c_str();
+
+			// validate given language
+			if (!tag_check_gamelang(tag_str_to_uint(userlang)))
+			{
+				message_send_text(c, message_type_error, c, localize(c, "Bad language code."));
+				return -1;
+			}
+
+			if (t_account * account = conn_get_account(c))
+			{
+				account_set_userlang(account, userlang);
+				message_send_text(c, message_type_error, c, localize(c, "Set your language to {}", userlang));
+			}
+			return 0;
+		}
 	}
 }

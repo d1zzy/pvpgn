@@ -1,16 +1,16 @@
 if COND_BNETD
 bnetd_confs = bnetd.conf ad.conf anongame_infos.conf address_translation.conf \
 	autoupdate.conf bnalias.conf bnban.conf bnetd_default_user.cdb \
-	bnetd_default_user.plain bnhelp.conf bnissue.txt bnmaps.conf \
+	bnetd_default_user.plain bnissue.txt bnmaps.conf \
 	bnmotd.txt bnxpcalc.conf bnxplevel.conf channel.conf \
-	command_groups.conf news.txt realm.conf sql_DB_layout.conf \
+	command_groups.conf realm.conf sql_DB_layout.conf \
 	supportfile.conf topics.conf tournament.conf versioncheck.conf \
 	sql_DB_layout2.conf
 bnetd_extras = bnetd.conf.in bnetd.conf.win32 ad.conf.in anongame_infos.conf.in \
 	address_translation.conf.in autoupdate.conf.in bnalias.conf.in \
-	bnban.conf.in bnetd_default_user.plain.in bnhelp.conf.in bnissue.txt.in \
-	bnmaps.conf.in bnmotd.txt.in bnxpcalc.conf.in bnxplevel.conf.in \
-	channel.conf.in command_groups.conf.in news.txt.in realm.conf.in \
+	bnban.conf.in bnetd_default_user.plain.in bnissue.txt.in \
+	bnmaps.conf.in bnxpcalc.conf.in bnxplevel.conf.in \
+	channel.conf.in command_groups.conf.in realm.conf.in \
 	sql_DB_layout.conf.in supportfile.conf.in topics.conf.in \
 	tournament.conf.in versioncheck.conf.in sql_DB_layout2.conf.in
 else
@@ -58,8 +58,8 @@ d2dbs.conf:d2dbs.conf.in $(top_builddir)/config.status
 
 CONFIG_CLEAN_FILES = bnetd.conf d2cs.conf d2dbs.conf ad.conf \
 	anongame_infos.conf address_translation.conf autoupdate.conf \
-	bnalias.conf bnban.conf bnetd_default_user.plain bnhelp.conf \
-	bnissue.txt bnmaps.conf bnmotd.txt bnxpcalc.conf bnxplevel.conf \
-	channel.conf command_groups.conf news.txt realm.conf \
+	bnalias.conf bnban.conf bnetd_default_user.plain \
+	bnissue.txt bnmaps.conf bnxpcalc.conf bnxplevel.conf \
+	channel.conf command_groups.conf realm.conf \
 	sql_DB_layout.conf supportfile.conf topics.conf tournament.conf \
 	versioncheck.conf sql_DB_layout2.conf 

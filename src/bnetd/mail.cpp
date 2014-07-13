@@ -379,7 +379,7 @@ namespace pvpgn
 				std::ostringstream ostr;
 				ostr << "You have " << mbox.size() << " messages. Your mail quote is set to " << get_mail_quota(user) << '.';
 				message_send_text(c, message_type_info, c, ostr.str().c_str());
-				message_send_text(c, message_type_info, c, "ID    Sender          Date");
+				message_send_text(c, message_type_info, c, localize(c, "ID    Sender          Date"));
 				message_send_text(c, message_type_info, c, "-------------------------------------");
 
 				for (MailList::const_iterator it(mlist.begin()); it != mlist.end(); ++it) {
@@ -392,11 +392,11 @@ namespace pvpgn
 					message_send_text(c, message_type_info, c, ostr.str().c_str());
 				}
 
-				message_send_text(c, message_type_info, c, "Use /mail read <ID> to read the content of any message");
+				message_send_text(c, message_type_info, c, localize(c, "Use /mail read <ID> to read the content of any message"));
 			}
 			else { /* user wants to read a message */
 				if (std::find_if(token.begin(), token.end(), NonNumericChar) != token.end()) {
-					message_send_text(c, message_type_error, c, "Invalid index. Please use /mail read <index> where <index> is a number.");
+					message_send_text(c, message_type_error, c, localize(c, "Invalid index. Please use /mail read <index> where <index> is a number."));
 					return;
 				}
 

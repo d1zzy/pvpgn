@@ -538,6 +538,8 @@ namespace pvpgn
 			{ "/clearstats", _handle_clearstats_command },
 			{ "/icon", handle_icon_command },
 			{ "/alert", _handle_alert_command },
+			{ "/language", handle_language_command },
+			{ "/lang", handle_language_command },
 
 			{ NULL, NULL }
 
@@ -1767,8 +1769,8 @@ namespace pvpgn
 						}
 
 						frienduid = account_get_name(friend_acc);
-						if (!software.empty()) snprintf(msgtemp0, sizeof(msgtemp0), "%d: %s%.16s%.128s, %.64s", i + 1, friend_get_mutual(fr) ? "*" : " ", frienduid, status, software);
-						else snprintf(msgtemp0, sizeof(msgtemp0), "%d: %.16s%.128s", i + 1, frienduid, status);
+						if (!software.empty()) snprintf(msgtemp0, sizeof(msgtemp0), "%d: %s%.16s%.128s, %.64s", i + 1, friend_get_mutual(fr) ? "*" : " ", frienduid, status.c_str(), software.c_str());
+						else snprintf(msgtemp0, sizeof(msgtemp0), "%d: %.16s%.128s", i + 1, frienduid, status.c_str());
 						message_send_text(c, message_type_info, c, msgtemp0);
 					}
 				}
@@ -3237,7 +3239,7 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 			else
-			if (std::strcmp(&text[i], "all") == 0) /* print extended info */
+			if (std::strcmp(text, "all") == 0) /* print extended info */
 			{
 				if (prefs_get_hide_addr() && !(account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr")))
 					msgtemp = localize(c, " -#- -class ----state--- -tag -----name------ -session-- -flag- -lat(ms)- ----channel---- --game--");
@@ -3336,7 +3338,13 @@ namespace pvpgn
 			then = account_get_ll_ctime(account);
 			tmthen = std::localtime(&then); /* FIXME: determine user's timezone */
 
-			msgtemp = localize(c, "Login: {} {} Sex: {}",
+			// do not display sex if empty
+			std::string pattern = "Login: {} {} Sex: {}";
+			pattern = (account_get_sex(account) && strcmp(account_get_sex(account), "") == -1)
+				? pattern
+				: pattern.substr(0, pattern.find("Sex: ", 0));
+
+			msgtemp = localize(c, pattern.c_str(),
 				account_get_name(account),
 				account_get_uid(account),
 				account_get_sex(account));
@@ -3378,8 +3386,14 @@ namespace pvpgn
 				}
 			}
 
-			msgtemp = localize(c, "Location: {} Age: {}",
-				account_get_loc(account),
+			// do not display age if empty
+			pattern = "Location: {} Age: {}";
+			pattern = (account_get_age(account) && strcmp(account_get_age(account), "") == -1)
+						? pattern 
+						: pattern.substr(0, pattern.find("Age: ", 0));
+			const char * loc = account_get_loc(account);
+			msgtemp = localize(c, pattern.c_str(),
+				(loc && strcmp(loc, "") == -1) ? loc : "unknown",
 				account_get_age(account));
 			message_send_text(c, message_type_info, c, msgtemp);
 
@@ -3416,14 +3430,16 @@ namespace pvpgn
 			/* check /admin-addr for admin privileges */
 			if ((account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr")))
 			{
+				std::string yes = localize(c, "Yes");
+				std::string no = localize(c, "No");
 				/* the player who requested /finger has admin privileges
 				give him more info about the one he queries;
 				is_admin, is_operator, is_locked, email */
 				msgtemp = localize(c, "Operator: {}, Admin: {}, Locked: {}, Muted: {}",
-					account_get_auth_operator(account, NULL) == 1 ? localize(c, "Yes") : localize(c, "No"),
-					account_get_auth_admin(account, NULL) == 1 ? localize(c, "Yes") : localize(c, "No"),
-					account_get_auth_lock(account) == 1 ? localize(c, "Yes") : localize(c, "No"),
-					account_get_auth_mute(account) == 1 ? localize(c, "Yes") : localize(c, "No"));
+					account_get_auth_operator(account, NULL) == 1 ? yes : no,
+					account_get_auth_admin(account, NULL) == 1 ? yes : no,
+					account_get_auth_lock(account) == 1 ? yes : no,
+					account_get_auth_mute(account) == 1 ? yes : no);
 				message_send_text(c, message_type_info, c, msgtemp);
 				
 				msgtemp = localize(c, "Email: {}", account_get_email(account));
@@ -3602,8 +3618,9 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, localize(c, "That game does not exist."));
 				return 0;
 			}
-
-			msgtemp = localize(c, "Name: {}    ID: {} ({})", game_get_name(game), game_get_id(game), game_get_flag(game) != game_flag_private ? localize(c, "public") : localize(c, "private"));
+			std::string pub = localize(c, "public");
+			std::string prv = localize(c, "private");
+			msgtemp = localize(c, "Name: {}    ID: {} ({})", game_get_name(game), game_get_id(game), game_get_flag(game) != game_flag_private ? pub : prv);
 			message_send_text(c, message_type_info, c, msgtemp);
 
 			{
@@ -3904,7 +3921,7 @@ namespace pvpgn
 			{
 				if (!(clienttag = conn_get_clienttag(c)))
 				{
-					message_send_text(c, message_type_error, c, "Unable to determine client game.");
+					message_send_text(c, message_type_error, c, localize(c, "Unable to determine client game."));
 					return 0;
 				}
 			}
@@ -4618,34 +4635,30 @@ namespace pvpgn
 			char const * filename;
 			std::FILE *       fp;
 
-			if ((filename = prefs_get_motdfile())) {
-				if ((fp = std::fopen(filename, "r")))
-				{
-					message_send_file(c, fp);
-					if (std::fclose(fp) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not close motd file \"%s\" after reading (std::fopen: %s)", filename, std::strerror(errno));
-				}
-				else
-				{
-					eventlog(eventlog_level_error, __FUNCTION__, "could not open motd file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
-					message_send_text(c, message_type_error, c, localize(c, "Unable to open motd."));
-				}
-				return 0;
+			filename = i18n_filename(prefs_get_motdfile(), conn_get_gamelang_localized(c));
+
+			if (fp = std::fopen(filename, "r"))
+			{
+				message_send_file(c, fp);
+				if (std::fclose(fp) < 0)
+					eventlog(eventlog_level_error, __FUNCTION__, "could not close motd file \"%s\" after reading (std::fopen: %s)", filename, std::strerror(errno));
 			}
-			else {
-				message_send_text(c, message_type_error, c, localize(c, "No motd."));
-				return 0;
+			else
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open motd file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				message_send_text(c, message_type_error, c, localize(c, "Unable to open motd."));
 			}
+			return 0;
 		}
 
 		static int _handle_tos_command(t_connection * c, char const * text)
 		{
 			/* handle /tos - shows terms of service by user request -raistlinthewiz */
 
-			char * filename = NULL;
+			const char * filename = NULL;
 			std::FILE * fp;
 
-			filename = buildpath(prefs_get_filedir(), prefs_get_tosfile());
+			filename = i18n_filename(prefs_get_tosfile(), conn_get_gamelang_localized(c));
 
 			/* FIXME: if user enters relative path to tos file in config,
 			   above routine will fail */
@@ -4669,7 +4682,7 @@ namespace pvpgn
 						while (len  > MAX_MESSAGE_LEN - 1)
 						{
 							std::strncpy(msgtemp0, buff, MAX_MESSAGE_LEN - 1);
-							msgtemp0[MAX_MESSAGE_LEN] = '\0';
+							msgtemp0[MAX_MESSAGE_LEN-1] = '\0';
 							buff += MAX_MESSAGE_LEN - 1;
 							len -= MAX_MESSAGE_LEN - 1;
 							message_send_text(c, message_type_info, c, msgtemp0);
@@ -4690,7 +4703,6 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "could not open tos file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
 				message_send_text(c, message_type_error, c, localize(c, "Unable to send TOS (Terms of Service)."));
 			}
-			xfree((void *)filename);
 			return 0;
 
 		}

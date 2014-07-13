@@ -30,6 +30,32 @@ option(WITH_PGSQL "include PostgreSQL user accounts support" OFF)
 option(WITH_ODBC "include ODBC user accounts support" OFF)
 include(ConfigureChecks.cmake)
 
+
+if (CMAKE_COMPILER_IS_GNUCXX)
+  # Determine GCC version.
+  message("Determining GCC version.")
+  EXEC_PROGRAM(${CMAKE_CXX_COMPILER}
+               ARGS --version
+               OUTPUT_VARIABLE _GCC_VERSION)
+  STRING(REGEX REPLACE ".* ([0-9])\\.([0-9])\\.([0-9]) .*" "\\1\\2\\3"
+         _GCC_VERSION ${_GCC_VERSION})
+  message("  GCC version is ${_GCC_VERSION}")
+  
+  # Add -Wno-longlong if the GCC version is < 4.0.0.  Add -pedantic flag
+  # but disable warnings for variadic macros with GCC >= 4.0.0.  Earlier
+  # versions warn because of anonymous variadic macros in pedantic mode
+  # but do not have a flag to disable these warnings.
+  if (400 GREATER _GCC_VERSION)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-long-long")
+  else (400 GREATER _GCC_VERSION)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pedantic -Wno-variadic-macros")
+  endif (400 GREATER _GCC_VERSION)
+  
+  # Pass CXX flags to flags.
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSEQAN_CXX_FLAGS_=\"${CMAKE_CXX_FLAGS}\"")
+endif (CMAKE_COMPILER_IS_GNUCXX)
+
+
 subdirs(src conf man files)
 if(WITH_LUA)
     add_subdirectory(lua)

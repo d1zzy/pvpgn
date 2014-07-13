@@ -1,10 +1,12 @@
 PvPGN TODO LIST AND WHATS BEING WORKED ON:
 =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-Release v1.7 ROADMAP:
+Release v2.0-PRO ROADMAP:
 1. DOCUMENTATION (client and server documentation; a FAQ, HOWTO and a file 
-describing all configuration options)
+describing all configuration options). Site http://pvpgn.pro
 2. i18n or some sort to support different language messages to users
+3. Connectivity with Ghost++ to support DotA
+
 
 Stuff not programmed for any specific version release:			      
 
@@ -31,10 +33,6 @@ a client lib)
 
 * design a plugins support and move in time all the code in plugins (except
 the core code of course)
-
-* add gamespy protocol support (gamespy master server does what we do in bnetd
-keeping user accounts, records, stats, channels, publishing games to requestors)
-very nice ideea from Mivabe
 
 * add some way to be able to read/write specific "runtime changable" bnetd.conf
 entries (like while server is online doing /config "allow_unknown_version" "false")

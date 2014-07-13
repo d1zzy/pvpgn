@@ -2609,7 +2609,6 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "Unable to set account flag to TRUE");
 				return NULL;
 			}
-
 			return account_get_strattr(account, "BNET\\acct\\email");
 		}
 
@@ -2620,8 +2619,26 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "Unable to set account flag to TRUE");
 				return -1;
 			}
-
 			return account_set_strattr(account, "BNET\\acct\\email", email);
+		}
+
+		extern int account_set_userlang(t_account * account, const char * lang)
+		{
+			if (lang)
+				return account_set_strattr(account, "BNET\\acct\\userlang", lang);
+			else
+				return account_set_strattr(account, "BNET\\acct\\userlang", "NULL");
+		}
+
+		extern char const * account_get_userlang(t_account * account)
+		{
+			char const * retval;
+			retval = account_get_strattr(account, "BNET\\acct\\userlang");
+
+			if ((retval) && ((std::strcmp(retval, "NULL") != 0)))
+				return retval;
+			else
+				return NULL;
 		}
 
 		/**

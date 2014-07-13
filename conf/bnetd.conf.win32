@@ -59,19 +59,15 @@ storage_path = file:mode=plain;dir=var\users;clan=var\clans;team=var\teams;defau
 #----------------------------------------------------------------------------#
 
 filedir     = files
-i18ndir     = conf\i18n
 scriptdir   = lua
 reportdir   = var\reports
 chanlogdir  = var\chanlogs
-motdfile    = conf\bnmotd.txt
-motdw3file  = conf\bnmotd_w3.txt
+i18ndir     = conf\i18n
 issuefile   = conf\bnissue.txt
 channelfile = conf\channel.conf
-newsfile    = conf\news.txt
 adfile      = conf\ad.conf
 topicfile   = conf\topics.conf
 ipbanfile   = conf\bnban.conf
-helpfile    = conf\bnhelp.conf
 transfile   = conf\address_translation.conf
 mpqfile     = conf\autoupdate.conf
 logfile     = var\bnetd.log
@@ -97,6 +93,27 @@ fortunecmd  = bin\fortune.exe
 
 
 ##############################################################################
+# Localized files realm server settings                                      #
+#----------------------------------------------------------------------------#
+
+# These filenames can have translated versions in
+# the "i18ndir" directory specified above.
+# (there are also two downloadable files: chathelp-war3.txt, newaccount.txt)
+localizefile = common.xml
+motdfile    = bnmotd.txt
+motdw3file  = w3motd.txt
+newsfile    = news.txt
+helpfile    = bnhelp.conf
+tosfile 	= termsofservice.txt
+
+# Do localization by a game language or by user country?
+localize_by_country = true
+
+#                                                                            #
+##############################################################################
+
+
+##############################################################################
 # Message logs                                                               #
 #----------------------------------------------------------------------------#
 
@@ -110,7 +127,7 @@ fortunecmd  = bin\fortune.exe
 #   error
 #   fatal
 #loglevels = fatal,error,warn,info,debug,trace
-loglevels = fatal,error
+loglevels = fatal,error,warn,info
 
 #                                                                            #
 ##############################################################################
@@ -139,8 +156,6 @@ allow_d2cs_setname = true
 iconfile = "icons.bni"
 war3_iconfile = "icons-WAR3.bni"
 star_iconfile = "icons_STAR.bni"
-
-tosfile = "tos.txt"
 
 #                                                                            #
 ##############################################################################
@@ -190,11 +205,11 @@ allowed_clients = all
 # than 109.  Starting with version 109 the clients will always do version
 # checking since they do not function properly if the server does not
 # request it.
-skip_versioncheck = false
+skip_versioncheck = true
 
 # If you enable the version checks but want to allow clients that don't pass
 # the checksum test then enable this.
-allow_bad_version = false
+allow_bad_version = true
 
 # If you enable the version checks but want to allow clients that aren't
 # listed in the versioncheck configuration file then enable this.  Unless
