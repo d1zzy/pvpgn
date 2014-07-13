@@ -45,6 +45,7 @@
 #include "common/proginfo.h"
 #include "common/util.h"
 #include "common/bnetsrp3.h"
+#include "common/xstring.h"
 
 #include "handlers.h"
 #include "connection.h"
@@ -72,11 +73,14 @@
 #include "friends.h"
 #include "autoupdate.h"
 #include "anongame.h"
+#include "i18n.h"
 #ifdef WIN32_GUI
 #include <win32/winmain.h>
 #endif
 #include "common/setup_after.h"
-
+#ifdef WITH_LUA
+#include "luainterface.h"
+#endif
 namespace pvpgn
 {
 
@@ -134,6 +138,7 @@ namespace pvpgn
 		static int _client_adack(t_connection * c, t_packet const *const packet);
 		static int _client_adclick(t_connection * c, t_packet const *const packet);
 		static int _client_adclick2(t_connection * c, t_packet const *const packet);
+		static int _client_readmemory(t_connection * c, t_packet const *const packet);
 		static int _client_statsupdate(t_connection * c, t_packet const *const packet);
 		static int _client_playerinforeq(t_connection * c, t_packet const *const packet);
 		static int _client_progident2(t_connection * c, t_packet const *const packet);
@@ -234,6 +239,7 @@ namespace pvpgn
 			{ CLIENT_ADACK, _client_adack },
 			{ CLIENT_ADCLICK, _client_adclick },
 			{ CLIENT_ADCLICK2, _client_adclick2 },
+			{ CLIENT_READMEMORY, _client_readmemory },
 			{ CLIENT_STATSREQ, _client_statsreq },
 			{ CLIENT_STATSUPDATE, _client_statsupdate },
 			{ CLIENT_PLAYERINFOREQ, _client_playerinforeq },
@@ -576,7 +582,7 @@ namespace pvpgn
 
 					bn_int_set(&rpacket->u.server_authreq_109.sessionkey, conn_get_sessionkey(c));
 					bn_int_set(&rpacket->u.server_authreq_109.sessionnum, conn_get_sessionnum(c));
-					file_to_mod_time(versioncheck_get_mpqfile(vc), &rpacket->u.server_authreq_109.timestamp);
+					file_to_mod_time(c, versioncheck_get_mpqfile(vc), &rpacket->u.server_authreq_109.timestamp);
 					packet_append_string(rpacket, versioncheck_get_mpqfile(vc));
 					packet_append_string(rpacket, versioncheck_get_eqn(vc));
 					eventlog(eventlog_level_debug, __FUNCTION__, "[%d] selected \"%s\" \"%s\"", conn_get_socket(c), versioncheck_get_mpqfile(vc), versioncheck_get_eqn(vc));
@@ -643,7 +649,7 @@ namespace pvpgn
 				if ((rpacket = packet_create(packet_class_bnet))) {
 					packet_set_size(rpacket, sizeof(t_server_authreq1));
 					packet_set_type(rpacket, SERVER_AUTHREQ1);
-					file_to_mod_time(versioncheck_get_mpqfile(vc), &rpacket->u.server_authreq1.timestamp);
+					file_to_mod_time(c, versioncheck_get_mpqfile(vc), &rpacket->u.server_authreq1.timestamp);
 					packet_append_string(rpacket, versioncheck_get_mpqfile(vc));
 					packet_append_string(rpacket, versioncheck_get_eqn(vc));
 					eventlog(eventlog_level_debug, __FUNCTION__, "[%d] selected \"%s\" \"%s\"", conn_get_socket(c), versioncheck_get_mpqfile(vc), versioncheck_get_eqn(vc));
@@ -1213,7 +1219,7 @@ namespace pvpgn
 			if ((rpacket = packet_create(packet_class_bnet))) {
 				packet_set_size(rpacket, sizeof(t_server_iconreply));
 				packet_set_type(rpacket, SERVER_ICONREPLY);
-				file_to_mod_time(prefs_get_iconfile(), &rpacket->u.server_iconreply.timestamp);
+				file_to_mod_time(c, prefs_get_iconfile(), &rpacket->u.server_iconreply.timestamp);
 
 				/* battle.net sends different file on iconreq for WAR3 and W3XP [Omega] */
 				if ((conn_get_clienttag(c) == CLIENTTAG_WARCRAFT3_UINT) || (conn_get_clienttag(c) == CLIENTTAG_WAR3XP_UINT))
@@ -1391,7 +1397,7 @@ namespace pvpgn
 					 * timestamp doesn't work correctly and starcraft
 					 * needs name in client locale or displays hostname
 					 */
-					file_to_mod_time(tosfile, &rpacket->u.server_fileinforeply.timestamp);
+					file_to_mod_time(c, tosfile, &rpacket->u.server_fileinforeply.timestamp);
 					packet_append_string(rpacket, tosfile);
 					conn_push_outqueue(c, rpacket);
 					packet_del_ref(rpacket);
@@ -1621,7 +1627,11 @@ namespace pvpgn
 				char supports_locked_reply = 0;
 				t_clienttag clienttag = conn_get_clienttag(c);
 
-				if (clienttag == CLIENTTAG_DIABLO2XP_UINT || clienttag == CLIENTTAG_DIABLO2DV_UINT){
+				if (clienttag == CLIENTTAG_STARCRAFT_UINT || clienttag == CLIENTTAG_BROODWARS_UINT || clienttag == CLIENTTAG_SHAREWARE_UINT || 
+					clienttag == CLIENTTAG_DIABLORTL_UINT || clienttag == CLIENTTAG_DIABLOSHR_UINT || clienttag == CLIENTTAG_WARCIIBNE_UINT || 
+					clienttag == CLIENTTAG_DIABLO2DV_UINT || clienttag == CLIENTTAG_STARJAPAN_UINT || clienttag == CLIENTTAG_DIABLO2ST_UINT ||
+					clienttag == CLIENTTAG_DIABLO2XP_UINT || clienttag == CLIENTTAG_WARCRAFT3_UINT || clienttag == CLIENTTAG_WAR3XP_UINT )
+				{
 					if (conn_get_versionid(c) >= 0x0000000b)
 						supports_locked_reply = 1;
 				}
@@ -1679,9 +1689,12 @@ namespace pvpgn
 				}
 				else if (account_get_auth_lock(account) == 1) {	/* default to false */
 					eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
-					if (supports_locked_reply) {
+					if (supports_locked_reply)
+					{
 						bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
-						packet_append_string(rpacket, "This account has been locked.");
+						std::string msgtemp = localize(c, "This account has been locked");
+						msgtemp += account_get_locktext(account, true);
+						packet_append_string(rpacket, msgtemp.c_str());
 					}
 					else {
 						bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_BADPASS);
@@ -1736,6 +1749,12 @@ namespace pvpgn
 					}
 				}
 				if (success && account) {
+
+#ifdef WITH_LUA
+					if (lua_handle_user(c, NULL, NULL, luaevent_user_login) == 1)
+						return 0;
+#endif
+
 #ifdef WIN32_GUI
 					guiOnUpdateUserList();
 #endif
@@ -2097,7 +2116,9 @@ namespace pvpgn
 				else if (account_get_auth_lock(account) == 1) {	/* default to false */
 					eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
 					bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_CUSTOM);
-					packet_append_string(rpacket, "This account has been locked.");
+					std::string msgtemp = localize(c, "This account has been locked");
+					msgtemp += account_get_locktext(account, true);
+					packet_append_string(rpacket, msgtemp.c_str());
 				}
 				else {
 					t_hash serverhash;
@@ -2746,17 +2767,23 @@ namespace pvpgn
 
 			// read text from bnmotd_w3.txt
 			char const * filename;
-			char * buff;
+			char * buff, *line;
 			std::FILE *       fp;
 
-			std::ifstream in(filename = prefs_get_motdw3file());
-			if (in) {
-				std::string contents((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-				strcpy(serverinfo, contents.substr(0,511).c_str());
-			} else
-				eventlog(eventlog_level_error, __FUNCTION__, "Could not open file motdw3 \"%s\" (std::fopen: %s)", filename, std::strerror(errno));
-			
+			filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang_localized(c));
 
+			if (fp = std::fopen(filename, "r"))
+			{
+				strcpy(serverinfo, ""); // init
+				while ((buff = file_get_line(fp)))
+				{
+					line = message_format_line(c, buff);
+					strcat(serverinfo, &line[1]);
+					strcat(serverinfo, "\n");
+				}
+				if (std::fclose(fp) < 0)
+					eventlog(eventlog_level_error, __FUNCTION__, "could not close motdw3 file \"%s\" after reading (std::fopen: %s)", filename, std::strerror(errno));
+			}
 			packet_append_string(rpacket, serverinfo);
 
 			conn_push_outqueue(c, rpacket);
@@ -3184,7 +3211,7 @@ namespace pvpgn
 					packet_set_type(rpacket, SERVER_ADREPLY);
 					bn_int_set(&rpacket->u.server_adreply.adid, ad->getId());
 					bn_int_set(&rpacket->u.server_adreply.extensiontag, ad->getExtensionTag());
-					file_to_mod_time(ad->getFilename(), &rpacket->u.server_adreply.timestamp);
+					file_to_mod_time(c, ad->getFilename(), &rpacket->u.server_adreply.timestamp);
 					packet_append_string(rpacket, ad->getFilename());
 					packet_append_string(rpacket, ad->getLink());
 					conn_push_outqueue(c, rpacket);
@@ -3250,6 +3277,35 @@ namespace pvpgn
 					packet_del_ref(rpacket);
 				}
 			}
+
+			return 0;
+		}
+		
+		static int _client_readmemory(t_connection * c, t_packet const *const packet)
+		{
+			char * memory;
+			unsigned int size, offset, request_id;
+
+			if (packet_get_size(packet) < sizeof(t_client_readmemory)) {
+				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad READMEMORY packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_readmemory), packet_get_size(packet));
+				return -1;
+			}
+ 
+			request_id = bn_int_get(packet->u.client_readmemory.request_id);
+
+			size = (unsigned int)packet_get_size(packet);
+			offset = sizeof(t_client_readmemory);
+
+			eventlog(eventlog_level_debug, __FUNCTION__, "[%d] Received READMEMORY packet with Request ID: %d and Memory size: %d", conn_get_socket(c), request_id, size - offset);
+
+#ifdef WITH_LUA
+			std::vector<int> _data;
+			for (int i = offset; i < size; i++)
+			{
+				_data.push_back(packet->u.data[i]);
+			}
+			lua_handle_client(c, request_id, _data, luaevent_client_readmemory);
+#endif
 
 			return 0;
 		}
@@ -3793,6 +3849,10 @@ namespace pvpgn
 			else
 				eventlog(eventlog_level_info, __FUNCTION__, "[%d] \"%s\" joined game \"%s\"", conn_get_socket(c), conn_get_username(c), gamename);
 
+#ifdef WITH_LUA
+			lua_handle_game(game, c, luaevent_game_userjoin);
+#endif
+
 			return 0;
 		}
 
@@ -4029,6 +4089,7 @@ namespace pvpgn
 					else {
 						eventlog(eventlog_level_error, __FUNCTION__, "[%d] unknown startgame4 status %d (clienttag: %s)", conn_get_socket(c), status, clienttag_uint_to_str(conn_get_clienttag(c)));
 					}
+
 				}
 				else if ((status & CLIENT_STARTGAME4_STATUSMASK_INIT_VALID) == status) {
 					/*valid creation status would be:
@@ -4041,11 +4102,13 @@ namespace pvpgn
 					gtype = bngtype_to_gtype(conn_get_clienttag(c), bngtype);
 					if ((gtype == game_type_ladder && account_get_auth_createladdergame(conn_get_account(c)) == 0) || (gtype != game_type_ladder && account_get_auth_createnormalgame(conn_get_account(c)) == 0))
 						eventlog(eventlog_level_info, __FUNCTION__, "[%d] game start for \"%s\" refused (no authority)", conn_get_socket(c), conn_get_username(c));
-					else {
+					else 
+					{
 						//find is there any existing game with same name and allow the host to create game
 						// with same name only when another game is already started or already done
 						if ((!(game = gamelist_find_game_available(gamename, conn_get_clienttag(c), game_type_all))) &&
-							(conn_set_game(c, gamename, gamepass, gameinfo, gtype, STARTVER_GW4) == 0)) {
+							(conn_set_game(c, gamename, gamepass, gameinfo, gtype, STARTVER_GW4) == 0)) 
+						{
 							game_set_option(conn_get_game(c), bngoption_to_goption(conn_get_clienttag(c), gtype, option));
 							if (status & CLIENT_STARTGAME4_STATUS_PRIVATE)
 								game_set_flag(conn_get_game(c), game_flag_private);
@@ -4054,6 +4117,7 @@ namespace pvpgn
 							if (bngtype == CLIENT_GAMELISTREQ_LOADED) /* PELISH: seems strange but it is really needed for loaded games */
 								game_set_status(conn_get_game(c), game_status_loaded);
 							//FIXME: still need special handling for status disc-is-loss and replay
+
 						}
 					}
 				}
@@ -5281,7 +5345,6 @@ namespace pvpgn
 			eventlog(eventlog_level_info, __FUNCTION__, "[%d] get password for account \"%s\" to email \"%s\"", conn_get_socket(c), account_get_name(account), email);
 			return 0;
 		}
-
 	}
 
 }

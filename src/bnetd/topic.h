@@ -17,6 +17,8 @@
 #ifndef INCLUDED_TOPIC_TYPES
 #define INCLUDED_TOPIC_TYPES
 
+#include "connection.h"
+
 namespace pvpgn
 {
 
@@ -56,6 +58,7 @@ namespace pvpgn
 		int    topiclist_unload(void);
 		int    channel_set_topic(char const * channel_name, char const * topic_text, int do_save);
 		char * channel_get_topic(char const * channel_name);
+		int   channel_display_topic(t_connection * c, const char * channel_name);
 
 	}
 

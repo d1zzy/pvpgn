@@ -27,6 +27,7 @@
 
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+#include "common/xstring.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -122,10 +123,7 @@ namespace pvpgn
 			eventlog(eventlog_level_warn, __FUNCTION__, "got unusual sized clienttag '%s'", tag_str);
 
 		for (i = 0; i < len && i < 4; i++)
-		if (std::islower((int)tag_str[i]))
-			temp_str[i] = std::toupper((int)tag_str[i]);
-		else
-			temp_str[i] = tag_str[i];
+			temp_str[i] = safe_toupper(tag_str[i]);
 
 		temp_str[4] = '\0';
 
@@ -633,6 +631,24 @@ namespace pvpgn
 			WARN1("%d is not defined", locale);
 			return GAMELANG_ENGLISH_UINT;
 		}
+	}
+
+	/* Convert clienttag to uppercase and check it in valid client list
+	*   Return NULL of tag not found
+	*/
+	extern t_clienttag tag_validate_client(char const * client)
+	{
+		t_clienttag clienttag;
+		if (!client || strlen(client) != 4)
+			return NULL;
+
+		// toupper
+		clienttag = tag_case_str_to_uint(client);
+		
+		if (!tag_check_client(clienttag))
+			return NULL;
+
+		return clienttag;
 	}
 
 }

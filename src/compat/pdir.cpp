@@ -23,7 +23,13 @@
 
 #include "common/eventlog.h"
 #include "common/setup_after.h"
+#include "compat/strcasecmp.h"
 
+#ifdef WIN32
+#include "win32/dirent.h"
+#else
+#include <dirent.h>
+#endif
 
 namespace pvpgn
 {
@@ -143,4 +149,76 @@ namespace pvpgn
 #endif
 	}
 
+	bool is_directory(const char* pzPath);
+
+
+
+	/* Returns a list of files in a directory (except the ones that begin with a dot) */
+	extern std::vector<std::string> dir_getfiles(const char * directory, const char* ext, bool recursive)
+	{
+		std::vector<std::string> files, dfiles;
+		const char* _ext;
+
+		DIR *dir;
+		class dirent *ent;
+
+		dir = opendir(directory);
+		if (!dir)
+			return files;
+
+		while ((ent = readdir(dir)) != NULL)
+		{
+			const std::string file_name = ent->d_name;
+			const std::string full_file_name = std::string(directory) + "/" + file_name;
+
+			if (file_name[0] == '.')
+				continue;
+
+			if (is_directory(full_file_name.c_str()))
+			{
+				// iterate subdirectories
+				if (recursive)
+				{
+					std::vector<std::string> subfiles = dir_getfiles(full_file_name.c_str(), ext, recursive);
+
+					for (int i = 0; i < subfiles.size(); ++i)
+						dfiles.push_back(subfiles[i]);
+				}
+				continue;
+			}
+
+			// filter by extension
+			_ext = strrchr(file_name.c_str(), '.');
+			if (strcmp(ext, "*") != 0)
+			if (!_ext || strcasecmp(_ext, ext) != 0)
+				continue;
+
+			files.push_back(full_file_name);
+		}
+		closedir(dir);
+
+		// merge files and files from directories, so we will receive directories at begin, files at the end
+		//  (otherwise files and directories are read alphabetically - as is)
+		files.insert(files.begin(), dfiles.begin(), dfiles.end());
+
+		return files;
+	}
+
+	bool is_directory(const char* pzPath)
+	{
+		if (pzPath == NULL) return false;
+
+		DIR *pDir;
+		bool bExists = false;
+
+		pDir = opendir(pzPath);
+
+		if (pDir != NULL)
+		{
+			bExists = true;
+			(void)closedir(pDir);
+		}
+
+		return bExists;
+	}
 }

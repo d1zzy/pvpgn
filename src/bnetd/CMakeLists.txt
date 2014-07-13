@@ -1,5 +1,5 @@
 # add aditional includes corresponding to the additional libraries bellow
-include_directories(${ZLIB_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} 
+include_directories(${ZLIB_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${LUA_INCLUDE_DIR}
   ${SQLITE3_INCLUDE_DIR} ${PGSQL_INCLUDE_DIR} ${ODBC_INCLUDE_DIR}
 )
 
@@ -34,6 +34,9 @@ set(BNETD_SOURCES
 	tournament.cpp tournament.h icons.cpp icons.h tracker.cpp tracker.h udptest_send.cpp 
 	udptest_send.h versioncheck.cpp versioncheck.h watch.cpp watch.h
 	anongame_wol.cpp anongame_wol.h handle_wserv.cpp handle_wserv.h
+	luafunctions.cpp luafunctions.h luainterface.cpp luainterface.h 
+	luaobjects.cpp luaobjects.h luawrapper.cpp luawrapper.h
+	i18n.cpp i18n.h
 	../win32/winmain.cpp ../win32/winmain.h
 	)
 	
@@ -50,5 +53,5 @@ else(WITH_WIN32_GUI)
 endif(WITH_WIN32_GUI)
 
   target_link_libraries(bnetd common compat win32 tinycdb ${NETWORK_LIBRARIES}
-    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES})
+    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES} ${LUA_LIBRARIES})
   install(TARGETS bnetd DESTINATION ${SBINDIR})

@@ -21,16 +21,19 @@
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
+#include <map>
 
 #include "compat/strcasecmp.h"
 #include "common/eventlog.h"
 #include "common/util.h"
 #include "common/xalloc.h"
+#include "common/xstring.h"
 
 #include "message.h"
 #include "command_groups.h"
 #include "account_wrap.h"
 #include "connection.h"
+#include "i18n.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -38,12 +41,24 @@ namespace pvpgn
 
 	namespace bnetd
 	{
-
+		static std::map<t_gamelang, std::FILE*> hfd_list;
 		static std::FILE* hfd = NULL; /* helpfile descriptor */
 
 		static int list_commands(t_connection *);
-		static int describe_command(t_connection *, char const *);
+		static std::FILE* get_hfd(t_connection * c);
 
+		static std::FILE* get_hfd(t_connection * c)
+		{
+			t_gamelang lang = conn_get_gamelang_localized(c);
+
+			std::map<t_gamelang, std::FILE*>::iterator it = hfd_list.find(lang);
+			if (it != hfd_list.end())
+			{
+				return it->second;
+			}
+			// return enUS if language is not specified in language list
+			return hfd_list[languages[0]];
+		}
 
 		extern int helpfile_init(char const *filename)
 		{
@@ -52,10 +67,18 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL filename");
 				return -1;
 			}
-			if (!(hfd = std::fopen(filename, "r")))
+			const char * _filename;
+
+			// iterate language list
+			for (int i = 0; i < (sizeof(languages) / sizeof(*languages)); i++)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open help file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
-				return -1;
+				// get hfd of all localized help files
+				_filename = i18n_filename(filename, languages[i]);
+				if (!(hfd_list[languages[i]] = std::fopen(_filename, "r")))
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "could not open help file \"%s\" for reading (std::fopen: %s)", _filename, std::strerror(errno));
+					return -1;
+				}
 			}
 			return 0;
 		}
@@ -63,56 +86,64 @@ namespace pvpgn
 
 		extern int helpfile_unload(void)
 		{
-			if (hfd != NULL)
+			// destroy file handles
+			for (std::map<t_gamelang, std::FILE*>::iterator it = hfd_list.begin(); it != hfd_list.end(); ++it)
 			{
-				if (std::fclose(hfd) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not close help file after reading (std::fclose: %s)", std::strerror(errno));
-				hfd = NULL;
+				if (it->second != NULL)
+				{
+					if (std::fclose(it->second) < 0)
+						eventlog(eventlog_level_error, __FUNCTION__, "could not close help file after reading (std::fclose: %s)", std::strerror(errno));
+					it->second = NULL;
+				}
 			}
+			// clear list
+			hfd_list.clear();
+
 			return 0;
 		}
 
 
 		extern int handle_help_command(t_connection * c, char const * text)
 		{
+			std::FILE* hfd = get_hfd(c);
 			unsigned int i, j;
-			char         comm[MAX_COMMAND_LEN];
+			char         cmd[MAX_COMMAND_LEN];
 
 			if (hfd == NULL)
 			{ /* an error ocured opening readonly the help file, helpfile_unload was called, or helpfile_init hasn't been called */
-				message_send_text(c, message_type_error, c, "Oops ! There is a problem with the help file. Please contact the administrator of the server.");
+				message_send_text(c, message_type_error, c, localize(c, "Oops ! There is a problem with the help file. Please contact the administrator of the server."));
 				return 0;
 			}
 
-			std::rewind(hfd);
 			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
 			for (; text[i] == ' '; i++);
 			if (text[i] == '/') /* skip / in front of command (if present) */
 				i++;
 			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get comm */
-			if (j < sizeof(comm)-1) comm[j++] = text[i];
-			comm[j] = '\0';
+			if (j < sizeof(cmd)-1) cmd[j++] = text[i];
+			cmd[j] = '\0';
 
 			/* just read the whole file and dump only the commands */
-			if (comm[0] == '\0')
+			if (cmd[0] == '\0')
 			{
 				list_commands(c);
 				return 0;
 			}
 
-			if (describe_command(c, comm) == 0) return 0;
-			/* no description was found for this command. inform the user */
-			message_send_text(c, message_type_error, c, " no help available for that command");
+			describe_command(c, cmd);
+
 			return 0;
 		}
 
 
 		static int list_commands(t_connection * c)
 		{
+			std::FILE* hfd = get_hfd(c);
 			char * line;
 			int    i;
 
-			message_send_text(c, message_type_info, c, "Chat commands:");
+			message_send_text(c, message_type_info, c, localize(c, "Chat commands : "));
+			std::rewind(hfd);
 			while ((line = file_get_line(hfd)) != NULL)
 			{
 				for (i = 0; line[i] == ' ' && line[i] != '\0'; i++); /* skip spaces in front of %command */
@@ -162,12 +193,15 @@ namespace pvpgn
 		}
 
 
-		static int describe_command(t_connection * c, char const * comm)
+		extern int describe_command(t_connection * c, char const * cmd)
 		{
+			std::FILE* hfd = get_hfd(c);
 			char * line;
 			int    i;
 
+
 			/* ok. the client requested help for a specific command */
+			std::rewind(hfd);
 			while ((line = file_get_line(hfd)) != NULL)
 			{
 				for (i = 0; line[i] == ' ' && line[i] != '\0'; i++); /* skip spaces in front of %command */
@@ -183,7 +217,7 @@ namespace pvpgn
 						for (i = 1; p[i] != ' ' && p[i] != '\0' && p[i] != '#'; i++); /* skip command */
 						if (p[i] == ' ') al = 1; /* we have something after the command.. must remember that */
 						p[i] = '\0'; /* end the string at the end of the command */
-						if (strcasecmp(comm, p + 1) == 0) /* is this the command the user asked for help ? */
+						if (strcasecmp(cmd, p + 1) == 0) /* is this the command the user asked for help ? */
 						{
 							while ((line = file_get_line(hfd)) != NULL)
 							{ /* write everything until we get another % or EOF */
@@ -192,12 +226,20 @@ namespace pvpgn
 								{
 									break; /* we reached another command */
 								}
-								if (line[0] != '#')
+								if (line[0] != '#' && line[i] != '\0')
 								{ /* is this a whole line comment ? */
 									/* truncate the line when a comment starts */
 									for (; line[i] != '\0' && line[i] != '#'; i++);
 									if (line[i] == '#') line[i] = '\0';
-									message_send_text(c, message_type_info, c, line);
+
+									// replace tabs with 3 spaces
+									line = str_replace(line, "\t", "   ");
+									// if text starts with slash then make it colored
+									int j = 0; for (; line[j] == ' ' || line[j] == '\t'; j++);
+									if (line[j] == '/')
+										message_send_text(c, message_type_error, c, line);
+									else
+										message_send_text(c, message_type_info, c, line);
 								}
 							}
 							return 0;
@@ -216,6 +258,8 @@ namespace pvpgn
 			}
 			file_get_line(NULL); // clear file_get_line buffer
 
+			/* no description was found for this command. inform the user */
+			message_send_text(c, message_type_error, c, localize(c, "No help available for that command"));
 			return -1;
 		}
 

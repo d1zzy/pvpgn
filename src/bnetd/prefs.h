@@ -37,8 +37,10 @@ namespace pvpgn
 		extern void prefs_unload(void);
 		extern char const * prefs_get_storage_path(void);
 		extern char const * prefs_get_filedir(void);
+		extern char const * prefs_get_i18ndir(void);
 		extern char const * prefs_get_logfile(void);
 		extern char const * prefs_get_loglevels(void);
+		extern char const * prefs_get_localizefile(void);
 		extern char const * prefs_get_motdfile(void);
 		extern char const * prefs_get_motdw3file(void);
 		extern char const * prefs_get_newsfile(void);
@@ -70,7 +72,6 @@ namespace pvpgn
 		extern unsigned int prefs_get_hide_temp_channels(void);
 		extern unsigned int prefs_get_hide_addr(void);
 		extern unsigned int prefs_get_enable_conn_all(void);
-		extern unsigned int prefs_get_extra_commands(void);
 		extern unsigned int prefs_get_udptest_port(void);
 		extern char const * prefs_get_reportdir(void);
 		extern unsigned int prefs_get_report_all_games(void);
@@ -125,10 +126,6 @@ namespace pvpgn
 
 		extern unsigned int prefs_get_max_concurrent_logins(void);
 
-		/* ADDED BY UNDYING SOULZZ 4/9/02 */
-		extern unsigned int prefs_get_identify_timeout_secs(void);
-		extern char const * prefs_get_server_info(void);
-
 		/* [zap-zero] 20020616 */
 		extern char const * prefs_get_mysql_host(void);
 		extern char const * prefs_get_mysql_account(void);
@@ -158,6 +155,7 @@ namespace pvpgn
 		extern char const * prefs_get_command_groups_file(void);
 		extern char const * prefs_get_tournament_file(void);
 		extern char const * prefs_get_customicons_file(void);
+		extern char const * prefs_get_scriptdir(void);
 		extern char const * prefs_get_aliasfile(void);
 
 		extern char const * prefs_get_anongame_infos_file(void);
@@ -181,6 +179,7 @@ namespace pvpgn
 		extern unsigned int prefs_get_max_connections(void);
 		extern unsigned int prefs_get_sync_on_logoff(void);
 		extern char const * prefs_get_irc_network_name(void);
+		extern unsigned int prefs_get_localize_by_country(void);
 
 		/**
 		*  Westwood Online Extensions

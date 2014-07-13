@@ -431,8 +431,8 @@ namespace pvpgn
 					return "CLIENT_ADCLICK";
 				case CLIENT_ADCLICK2:
 					return "CLIENT_ADCLICK2";
-				case CLIENT_UNKNOWN_17:
-					return "CLIENT_UNKNOWN_17";
+				case CLIENT_READMEMORY:
+					return "CLIENT_READMEMORY";
 				case CLIENT_UNKNOWN_24:
 					return "CLIENT_UNKNOWN_24";
 				case CLIENT_LADDERREQ:
@@ -684,6 +684,8 @@ namespace pvpgn
 					return "SERVER_ADREPLY";
 				case SERVER_ADCLICKREPLY2:
 					return "SERVER_ADCLICKREPLY2";
+				case SERVER_READMEMORY:
+					return "SERVER_READMEMORY";
 				case SERVER_LADDERREPLY:
 					return "SERVER_LADDERREPLY";
 				case SERVER_ECHOREQ:
@@ -746,6 +748,8 @@ namespace pvpgn
 					return "SERVER_CLANMEMBER_REMOVED_NOTIFY";
 				case SERVER_CLANMEMBERUPDATE:
 					return "SERVER_CLANMEMBERUPDATE";
+				case SERVER_MESSAGEBOX:
+					return "SERVER_MESSAGEBOX";
 				}
 				return "unknown";
 
@@ -1389,9 +1393,9 @@ namespace pvpgn
 		}
 
 		for (pos = offset; packet->u.data[pos] != '\0'; pos++)
-		if (pos >= size || pos - offset >= maxlen)
+		if (pos >= size || pos - offset > maxlen)
 			return NULL;
-		if (pos >= size || pos - offset >= maxlen) /* NUL must be inside too */
+		if (pos >= size || pos - offset > maxlen) /* NUL must be inside too */
 			return NULL;
 		return packet->u.data + offset;
 	}

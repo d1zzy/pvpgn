@@ -24,9 +24,15 @@ set(LOCALSTATEDIR ${LOCALSTATE_INSTALL_DIR})
 set(MANDIR ${MAN_INSTALL_DIR})
 
 # set default hardcoded config paths
-set(BNETD_DEFAULT_CONF_FILE "${SYSCONFDIR}/bnetd.conf")
-set(D2CS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2cs.conf")
-set(D2DBS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2dbs.conf")
+if(WIN32)
+	set(BNETD_DEFAULT_CONF_FILE "conf/bnetd.conf")
+	set(D2CS_DEFAULT_CONF_FILE "conf/d2cs.conf")
+	set(D2DBS_DEFAULT_CONF_FILE "conf/d2dbs.conf")
+else(WIN32)
+	set(BNETD_DEFAULT_CONF_FILE "${SYSCONFDIR}/bnetd.conf")
+	set(D2CS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2cs.conf")
+	set(D2DBS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2dbs.conf")
+endif(WIN32)
 
 # library checks
 find_package(ZLIB REQUIRED)
@@ -35,6 +41,10 @@ check_library_exists(nsl gethostbyname "" HAVE_LIBNSL)
 check_library_exists(socket socket "" HAVE_LIBSOCKET)
 check_library_exists(resolv inet_aton "" HAVE_LIBRESOLV)
 check_library_exists(bind __inet_aton "" HAVE_LIBBIND)
+
+if(WITH_LUA)
+    find_package(Lua REQUIRED)
+endif(WITH_LUA)
 
 # storage module checks
 if(WITH_ODBC)

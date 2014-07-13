@@ -44,7 +44,13 @@ static struct
         char const      * bak_charsavedir;
         char const      * bak_charinfodir;
         char const      * ladderdir;
-        char const      * newbiefile;
+		char const      * newbiefile_amazon;
+		char const      * newbiefile_sorceress;
+		char const      * newbiefile_necromancer;
+		char const      * newbiefile_paladin;
+		char const      * newbiefile_barbarian;
+		char const      * newbiefile_druid;
+		char const      * newbiefile_assasin;
         char const      * motd;
         char const      * realmname;
         char const      * d2gs_password;
@@ -123,8 +129,20 @@ static int conf_setdef_ladder_start_time(void);
 static int conf_set_ladder_refresh_interval(const char* valstr);
 static int conf_setdef_ladder_refresh_interval(void);
 
-static int conf_set_newbiefile(const char* valstr);
-static int conf_setdef_newbiefile(void);
+static int conf_set_newbiefile_amazon(const char* valstr);
+static int conf_setdef_newbiefile_amazon(void);
+static int conf_set_newbiefile_sorceress(const char* valstr);
+static int conf_setdef_newbiefile_sorceress(void);
+static int conf_set_newbiefile_necromancer(const char* valstr);
+static int conf_setdef_newbiefile_necromancer(void);
+static int conf_set_newbiefile_paladin(const char* valstr);
+static int conf_setdef_newbiefile_paladin(void);
+static int conf_set_newbiefile_barbarian(const char* valstr);
+static int conf_setdef_newbiefile_barbarian(void);
+static int conf_set_newbiefile_druid(const char* valstr);
+static int conf_setdef_newbiefile_druid(void);
+static int conf_set_newbiefile_assasin(const char* valstr);
+static int conf_setdef_newbiefile_assasin(void);
 
 static int conf_set_transfile(const char* valstr);
 static int conf_setdef_transfile(void);
@@ -253,7 +271,13 @@ static t_conf_entry prefs_conf_table[]={
     { "ladderdir",              conf_set_ladderdir,              NULL,    conf_setdef_ladderdir},
     { "ladder_start_time",	conf_set_ladder_start_time,      NULL,    conf_setdef_ladder_start_time},
     { "ladder_refresh_interval",conf_set_ladder_refresh_interval,NULL,   conf_setdef_ladder_refresh_interval},
-    { "newbiefile",             conf_set_newbiefile,             NULL,   conf_setdef_newbiefile},
+	{ "newbiefile_amazon", conf_set_newbiefile_amazon, NULL, conf_setdef_newbiefile_amazon },
+	{ "newbiefile_sorceress", conf_set_newbiefile_sorceress, NULL, conf_setdef_newbiefile_sorceress },
+	{ "newbiefile_necromancer", conf_set_newbiefile_necromancer, NULL, conf_setdef_newbiefile_necromancer },
+	{ "newbiefile_paladin", conf_set_newbiefile_paladin, NULL, conf_setdef_newbiefile_paladin },
+	{ "newbiefile_barbarian", conf_set_newbiefile_barbarian, NULL, conf_setdef_newbiefile_barbarian },
+	{ "newbiefile_druid", conf_set_newbiefile_druid, NULL, conf_setdef_newbiefile_druid },
+	{ "newbiefile_assasin", conf_set_newbiefile_assasin, NULL, conf_setdef_newbiefile_assasin },
     { "transfile",		conf_set_transfile,	         NULL,    conf_setdef_transfile},
     { "pidfile",		conf_set_pidfile,	         NULL,    conf_setdef_pidfile},
     { "motd",                   conf_set_motd,                   NULL,    conf_setdef_motd},
@@ -414,20 +438,99 @@ static int conf_setdef_backcharinfodir(void)
 }
 
 
-extern char const * prefs_get_charsave_newbie(void)
+/* newbiefile */
+
+extern char const * prefs_get_charsave_newbie_amazon(void)
 {
-	return prefs_conf.newbiefile;
+	return prefs_conf.newbiefile_amazon;
+}
+static int conf_set_newbiefile_amazon(const char* valstr)
+{
+	return conf_set_str(&prefs_conf.newbiefile_amazon, valstr, NULL);
+}
+static int conf_setdef_newbiefile_amazon(void)
+{
+	return conf_set_str(&prefs_conf.newbiefile_amazon, NULL, D2CS_CHARSAVE_NEWBIE);
 }
 
-static int conf_set_newbiefile(const char* valstr)
+extern char const * prefs_get_charsave_newbie_sorceress(void)
 {
-    return conf_set_str(&prefs_conf.newbiefile,valstr,NULL);
+	return prefs_conf.newbiefile_sorceress;
+}
+static int conf_set_newbiefile_sorceress(const char* valstr)
+{
+	return conf_set_str(&prefs_conf.newbiefile_sorceress, valstr, NULL);
+}
+static int conf_setdef_newbiefile_sorceress(void)
+{
+	return conf_set_str(&prefs_conf.newbiefile_sorceress, NULL, D2CS_CHARSAVE_NEWBIE);
 }
 
-static int conf_setdef_newbiefile(void)
+extern char const * prefs_get_charsave_newbie_necromancer(void)
 {
-    return conf_set_str(&prefs_conf.newbiefile,NULL,D2CS_CHARSAVE_NEWBIE);
+	return prefs_conf.newbiefile_necromancer;
 }
+static int conf_set_newbiefile_necromancer(const char* valstr)
+{
+	return conf_set_str(&prefs_conf.newbiefile_necromancer, valstr, NULL);
+}
+static int conf_setdef_newbiefile_necromancer(void)
+{
+	return conf_set_str(&prefs_conf.newbiefile_necromancer, NULL, D2CS_CHARSAVE_NEWBIE);
+}
+
+extern char const * prefs_get_charsave_newbie_paladin(void)
+{
+	return prefs_conf.newbiefile_paladin;
+}
+static int conf_set_newbiefile_paladin(const char* valstr)
+{
+	return conf_set_str(&prefs_conf.newbiefile_paladin, valstr, NULL);
+}
+static int conf_setdef_newbiefile_paladin(void)
+{
+	return conf_set_str(&prefs_conf.newbiefile_paladin, NULL, D2CS_CHARSAVE_NEWBIE);
+}
+
+extern char const * prefs_get_charsave_newbie_barbarian(void)
+{
+	return prefs_conf.newbiefile_barbarian;
+}
+static int conf_set_newbiefile_barbarian(const char* valstr)
+{
+	return conf_set_str(&prefs_conf.newbiefile_barbarian, valstr, NULL);
+}
+static int conf_setdef_newbiefile_barbarian(void)
+{
+	return conf_set_str(&prefs_conf.newbiefile_barbarian, NULL, D2CS_CHARSAVE_NEWBIE);
+}
+
+extern char const * prefs_get_charsave_newbie_druid(void)
+{
+	return prefs_conf.newbiefile_druid;
+}
+static int conf_set_newbiefile_druid(const char* valstr)
+{
+	return conf_set_str(&prefs_conf.newbiefile_druid, valstr, NULL);
+}
+static int conf_setdef_newbiefile_druid(void)
+{
+	return conf_set_str(&prefs_conf.newbiefile_druid, NULL, D2CS_CHARSAVE_NEWBIE);
+}
+
+extern char const * prefs_get_charsave_newbie_assasin(void)
+{
+	return prefs_conf.newbiefile_assasin;
+}
+static int conf_set_newbiefile_assasin(const char* valstr)
+{
+	return conf_set_str(&prefs_conf.newbiefile_assasin, valstr, NULL);
+}
+static int conf_setdef_newbiefile_assasin(void)
+{
+	return conf_set_str(&prefs_conf.newbiefile_assasin, NULL, D2CS_CHARSAVE_NEWBIE);
+}
+
 
 
 extern char const * prefs_get_motd(void)

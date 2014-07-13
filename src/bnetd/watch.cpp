@@ -181,7 +181,7 @@ namespace pvpgn
 						else {
 							cnt++;	/* keep track of successful whispers */
 							if (friend_get_mutual(fr))
-								message_send_text(dest_c, message_type_whisper, NULL, msg);
+								message_send_text(dest_c, message_type_whisper, my_c, msg);
 						}
 					}
 				}
@@ -212,7 +212,7 @@ namespace pvpgn
 				{
 					if (it->getOwner() && (!it->getAccount() || it->getAccount() == account) && (!it->getClientTag() || (clienttag == it->getClientTag())) && (it->getEventMask() & event))
 					{
-						message_send_text(it->getOwner(), message_type_whisper, NULL, msg);
+						message_send_text(it->getOwner(), message_type_whisper, my_c, msg);
 					}
 				}
 

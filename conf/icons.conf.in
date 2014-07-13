@@ -15,6 +15,11 @@
 #    band variables with figure brackets {{var}}                             #
 #    use {{variable->rank}} to display an icon rank for a custom variable    #
 #                                                                            #
+# [iconstash] list of available icons that admins can set to user with /icon #
+#    icon_alias | icon_code                                                  #
+#    /icon can be set by alias or code, and it's not necessary to add alias  #
+#      in the table. icon_alias or icon_code can not equal "default"         #
+#                                                                            #
 ##############################################################################
 
 
@@ -23,7 +28,7 @@
 #----------------------------------------------------------------------------#
 
 # Enable icon sets below
-custom_icons = false
+custom_icons = true
 
 
 
@@ -64,6 +69,12 @@ Team games: [{{team_level->rank}}] {{team_xp}} xp ({{team_wins}} - {{team_losses
 FFA games: [{{ffa_level->rank}}] {{ffa_xp}} xp ({{ffa_wins}} - {{ffa_losses}})
 [/stats]
 
+[iconstash]
+smile		BOMB
+starcraft	SEXP
+warcraft	WAR3
+diablo		DRTL
+[/iconstash]
 
 
 ##############################################################################
@@ -104,3 +115,8 @@ Ladder games: [{{rating1->rank}}] {{rating1}} pts ({{wins1}}/{{losses1}}/{{disco
 Normal games: [{{rating0->rank}}] {{rating0}} pts ({{wins0}}/{{losses0}}/{{disconnects0}})
 [/stats]
 
+[iconstash]
+demon		EYES
+warcraft	WAR3
+diablo		DRTL
+[/iconstash]

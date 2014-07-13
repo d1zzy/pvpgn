@@ -89,7 +89,13 @@
 #include "realm.h"
 #include "topic.h"
 #include "handle_apireg.h"
+#include "i18n.h"
 #include "common/setup_after.h"
+
+#ifdef WITH_LUA
+#include "luainterface.h"
+#endif
+
 
 /* out of memory safety */
 #define OOM_SAFE_MEM	1000000		/* 1 Mbyte of safety memory */
@@ -295,6 +301,7 @@ char * write_to_pidfile(void)
 	return pidfile;
 }
 
+
 /* Initialize config files */
 int pre_server_startup(void)
 {
@@ -328,6 +335,9 @@ int pre_server_startup(void)
 		eventlog(eventlog_level_error, __FUNCTION__, "error initilizing fdwatch");
 		return STATUS_FDWATCH_FAILURE;
 	}
+
+	i18n_load();
+
 	connlist_create();
 	gamelist_create();
 	timerlist_create();
@@ -374,6 +384,12 @@ int pre_server_startup(void)
 	if (realmlist_create(prefs_get_realmfile()) < 0)
 		eventlog(eventlog_level_error, __FUNCTION__, "could not load realm list");
 	topiclist_load(prefs_get_topicfile());
+
+#ifdef WITH_LUA
+	lua_load(prefs_get_scriptdir());
+#endif
+
+
 	return 0;
 }
 

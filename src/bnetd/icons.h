@@ -1,4 +1,6 @@
 /*
+* Copyright (C) 2014  HarpyWar (harpywar@gmail.com)
+*
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
 * as published by the Free Software Foundation; either version 2
@@ -34,6 +36,7 @@ namespace pvpgn
 			char * clienttag;
 			char * attr_key;
 			t_list * icon_info;		// list of t_icon_info
+			t_list * iconstash;		// list of t_icon_var_info
 
 			t_list * vars;		// list of t_icon_var_info
 			const char * stats;
@@ -63,9 +66,14 @@ namespace pvpgn
 
 	namespace bnetd
 	{
+		extern int handle_icon_command(t_connection * c, char const *text);
+		extern char const * customicons_stash_find(t_clienttag clienttag, char const * code, bool return_alias = false);
+		extern std::string customicons_stash_get_list(t_clienttag clienttag, bool return_alias = false);
+
 		extern int prefs_get_custom_icons();
-		extern t_icon_info * get_custom_icon(t_account * account, t_clienttag clienttag);
-		extern const char * get_custom_stats_text(t_account * account, t_clienttag clienttag);
+		extern t_icon_info * customicons_get_icon_by_account(t_account * account, t_clienttag clienttag);
+		extern const char * customicons_get_stats_text(t_account * account, t_clienttag clienttag);
+		extern t_icon_info * customicons_get_icon_by_rating(int rating, char * clienttag);
 
 
 		extern int customicons_load(char const * filename);

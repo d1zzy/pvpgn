@@ -21,6 +21,8 @@
 #define INCLUDED_COMMAND_PROTOS
 
 #define JUST_NEED_TYPES
+#include <string>
+#include <vector>
 #include "connection.h"
 #undef JUST_NEED_TYPES
 
@@ -31,6 +33,7 @@ namespace pvpgn
 	{
 
 		extern int handle_command(t_connection * c, char const * text);
+		extern std::vector<std::string> split_command(char const * text, int args_count);
 
 	}
 

@@ -20,10 +20,14 @@
 #include <cstdio>
 
 #include "compat/strcasecmp.h"
+#include "compat/snprintf.h"
+
 #include "common/list.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/field_sizes.h"
+
+#include "message.h"
 
 #include "prefs.h"
 #include "common/setup_after.h"
@@ -206,6 +210,50 @@ namespace pvpgn
 			}
 			return 0;
 		}
+
+		/* Display topic with new lines formatting (\n) */
+		int channel_display_topic(t_connection * c, const char * channel_name)
+		{
+			char msgtemp[MAX_MESSAGE_LEN];
+			char *topic, *tmp, *token;
+			const char * delim = "\\";
+			if (!(topic = channel_get_topic(channel_name)))
+				return -1;
+
+			tmp = xstrdup(topic);
+
+			token = strtok(tmp, delim);
+			bool first = true;
+			bool start_with_bs = (topic[0] == '\\');
+
+			while (token)
+			{
+				if (token[0] == 'n')
+				{
+					*token++;
+					if (first && start_with_bs)
+					{
+						snprintf(msgtemp, sizeof(msgtemp), "%.64s topic:", channel_name);
+						message_send_text(c, message_type_info, c, msgtemp);
+						first = false;
+					}
+				}
+
+				if (first)
+					snprintf(msgtemp, sizeof(msgtemp), "%.64s topic: %.128s", channel_name, token);
+				else
+					snprintf(msgtemp, sizeof(msgtemp), token);
+
+				message_send_text(c, message_type_info, c, msgtemp);
+
+				token = strtok(NULL, (const char*)delim);
+				first = false;
+			}
+			xfree((void *)tmp);
+
+			return 0;
+		}
+
 
 	}
 

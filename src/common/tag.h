@@ -212,6 +212,7 @@ namespace pvpgn
 	extern t_clienttag tag_sku_to_uint(int sku);
 	extern t_clienttag tag_channeltype_to_uint(int channeltype);
 	extern t_tag tag_wol_locale_to_uint(int locale);
+	extern t_clienttag tag_validate_client(char const * client);
 }
 
 #endif

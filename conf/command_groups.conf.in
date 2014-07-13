@@ -69,9 +69,10 @@
 1	/mail
 1	/motd
 1	/tos
-1	/bitsinfo
 1	/latency /ping /p
 1	/topic
+1	/icon
+1	/language /lang
 
 #	/////////////////////////////
 #	///// Operator commands /////
@@ -149,17 +150,16 @@
 
 2	/realmann
 2	/ann /announce
+2	/alert
 
 3	/serverban /ipban
 3	/ipscan
 
-4	/kill /killsession
-4	/addacct
-4	/lockacct /unlockacct
-4	/muteacct /unmuteacct
+4	/kill
+4	/lock /lockacct /unlock /unlockacct
+4	/mute /muteacct /unmute /unmuteacct
 
 5	/ladderactivate
-# 5 	/rank_all_accounts 
 
 #	-- Access to group '6' allows users to not only make others Server Admins & Server Operators
 #		but will allow them to make themselves Server Admin & Server Operator.
@@ -169,9 +169,16 @@
 7	/set
 7	/commandgroups /cg
 7	/clearstats
-7	/icon
 
 8	/shutdown /rehash /find /save
+
+
+#	//////////////////////////////////////
+#	/////   Commands for Debugging   /////
+#	//////////////////////////////////////
+#8  /killsession
+#8	/addacct
+
 
 #	//////////////////////////////////////
 #	///// End of Command Groups File /////

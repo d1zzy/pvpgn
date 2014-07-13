@@ -120,7 +120,9 @@ namespace pvpgn
 
 #include <cstdio>
 #define JUST_NEED_TYPES
+#include <string>
 #include "connection.h"
+#include "common/bnet_protocol.h"
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
@@ -137,9 +139,11 @@ namespace pvpgn
 		extern int message_send_admins(t_connection * src, t_message_type type, char const * text);
 
 		/* the following are "shortcuts" to avoid calling message_create(), message_send(), message_destroy() */
+		extern int message_send_text(t_connection * dst, t_message_type type, t_connection * src, std::string text);
 		extern int message_send_text(t_connection * dst, t_message_type type, t_connection * src, char const * text);
 		extern int message_send_formatted(t_connection * dst, char const * text);
 		extern int message_send_file(t_connection * dst, std::FILE * fd);
+		extern int messagebox_show(t_connection * dst, char const * text, char const * caption = "", int type = SERVER_MESSAGEBOX_OK);
 
 	}
 

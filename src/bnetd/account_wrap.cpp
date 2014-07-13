@@ -39,6 +39,9 @@
 #include "clan.h"
 #include "anongame_infos.h"
 #include "team.h"
+#include "server.h"
+#include "i18n.h"
+#include "compat/snprintf.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -361,27 +364,126 @@ namespace pvpgn
 
 		extern int account_get_auth_lock(t_account * account)
 		{
-			return account_get_boolattr(account, "BNET\\auth\\lockk");
+			// check for unlock
+			if (unsigned int locktime = account_get_auth_locktime(account))
+			{
+				if ((locktime - std::time(NULL)) < 0)
+				{
+					account_set_auth_lock(account, 0);
+					account_set_auth_locktime(account, 0);
+					account_set_auth_lockreason(account, "");
+					account_set_auth_lockby(account, "");
+				}
+			}
+			return account_get_boolattr(account, "BNET\\auth\\lock");
 		}
-
+		extern unsigned int account_get_auth_locktime(t_account * account)
+		{
+			return account_get_numattr(account, "BNET\\auth\\locktime");
+		}
+		extern char const * account_get_auth_lockreason(t_account * account)
+		{
+			return account_get_strattr(account, "BNET\\auth\\lockreason");
+		}
+		extern char const * account_get_auth_lockby(t_account * account)
+		{
+			return account_get_strattr(account, "BNET\\auth\\lockby");
+		}
 
 		extern int account_set_auth_lock(t_account * account, int val)
 		{
-			return account_set_boolattr(account, "BNET\\auth\\lockk", val);
+			return account_set_boolattr(account, "BNET\\auth\\lock", val);
 		}
-
-
-		extern int account_set_auth_mute(t_account * account, int val)
+		extern int account_set_auth_locktime(t_account * account, unsigned int val)
 		{
-			return account_set_boolattr(account, "BNET\\auth\\mute", val);
+			return account_set_numattr(account, "BNET\\auth\\locktime", val);
+		}
+		extern int account_set_auth_lockreason(t_account * account, char const * val)
+		{
+			return account_set_strattr(account, "BNET\\auth\\lockreason", val);
+		}
+		extern int account_set_auth_lockby(t_account * account, char const * val)
+		{
+			return account_set_strattr(account, "BNET\\auth\\lockby", val);
 		}
 
 
 		extern int account_get_auth_mute(t_account * account)
 		{
+			// check for unmute
+			if (unsigned int locktime = account_get_auth_mutetime(account))
+			{
+				if ((locktime - std::time(NULL)) < 0)
+				{
+					account_set_auth_mute(account, 0);
+					account_set_auth_mutetime(account, 0);
+					account_set_auth_mutereason(account, "");
+					account_set_auth_muteby(account, "");
+				}
+			}
 			return account_get_boolattr(account, "BNET\\auth\\mute");
 		}
+		extern unsigned int account_get_auth_mutetime(t_account * account)
+		{
+			return account_get_numattr(account, "BNET\\auth\\mutetime");
+		}
+		extern char const * account_get_auth_mutereason(t_account * account)
+		{
+			return account_get_strattr(account, "BNET\\auth\\mutereason");
+		}
+		extern char const * account_get_auth_muteby(t_account * account)
+		{
+			return account_get_strattr(account, "BNET\\auth\\muteby");
+		}
 
+		extern int account_set_auth_mute(t_account * account, int val)
+		{
+			return account_set_boolattr(account, "BNET\\auth\\mute", val);
+		}
+		extern int account_set_auth_mutetime(t_account * account, unsigned int val)
+		{
+			return account_set_numattr(account, "BNET\\auth\\mutetime", val);
+		}
+		extern int account_set_auth_mutereason(t_account * account, char const * val)
+		{
+			return account_set_strattr(account, "BNET\\auth\\mutereason", val);
+		}
+		extern int account_set_auth_muteby(t_account * account, char const * val)
+		{
+			return account_set_strattr(account, "BNET\\auth\\muteby", val);
+		}
+
+
+		/* Return text with account lock */
+		extern std::string account_get_locktext(t_account * account, bool with_author)
+		{
+			std::string msgtemp;
+			t_connection * c = account_get_conn(account);
+
+			// append author of ban
+			if (with_author)
+			{
+				if (char const * author = account_get_auth_lockby(account))
+				if (author && author[0] != '\0')
+				{
+					msgtemp += localize(c, " by {}", author);
+				}
+			}
+
+			// append remaining time
+			if (unsigned int locktime = account_get_auth_locktime(account))
+				msgtemp += localize(c, " for {}", seconds_to_timestr(locktime - now));
+			else
+				msgtemp += localize(c, " permanently");
+
+			// append reason
+			char const * reason = account_get_auth_lockreason(account);
+			if (reason && reason[0] != '\0')
+			{
+				msgtemp += localize(c, " with a reason \"{}\"", reason);
+			}
+			return msgtemp;
+		}
 
 
 		/****************************************************************/
@@ -2303,6 +2405,35 @@ namespace pvpgn
 			return -1;
 		}
 
+
+		/* value = icons delimeted by space */
+		extern int account_set_user_iconstash(t_account * account, t_clienttag clienttag, char const * value)
+		{
+			char key[256];
+			char clienttag_str[5];
+
+			std::sprintf(key, "Record\\%s\\iconstash", tag_uint_to_str(clienttag_str, clienttag));
+			if (value)
+				return account_set_strattr(account, key, value);
+			else
+				return account_set_strattr(account, key, "NULL");
+		}
+
+		extern char const * account_get_user_iconstash(t_account * account, t_clienttag clienttag)
+		{
+			char key[256];
+			char const * retval;
+			char clienttag_str[5];
+
+			std::sprintf(key, "Record\\%s\\iconstash", tag_uint_to_str(clienttag_str, clienttag));
+			retval = account_get_strattr(account, key);
+
+			if ((retval) && ((std::strcmp(retval, "NULL") != 0)))
+				return retval;
+			else
+				return NULL;
+		}
+
 		//BlacKDicK 04/20/2003
 		extern int account_set_user_icon(t_account * account, t_clienttag clienttag, char const * usericon)
 		{
@@ -2478,7 +2609,6 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "Unable to set account flag to TRUE");
 				return NULL;
 			}
-
 			return account_get_strattr(account, "BNET\\acct\\email");
 		}
 
@@ -2489,8 +2619,26 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "Unable to set account flag to TRUE");
 				return -1;
 			}
-
 			return account_set_strattr(account, "BNET\\acct\\email", email);
+		}
+
+		extern int account_set_userlang(t_account * account, const char * lang)
+		{
+			if (lang)
+				return account_set_strattr(account, "BNET\\acct\\userlang", lang);
+			else
+				return account_set_strattr(account, "BNET\\acct\\userlang", "NULL");
+		}
+
+		extern char const * account_get_userlang(t_account * account)
+		{
+			char const * retval;
+			retval = account_get_strattr(account, "BNET\\acct\\userlang");
+
+			if ((retval) && ((std::strcmp(retval, "NULL") != 0)))
+				return retval;
+			else
+				return NULL;
 		}
 
 		/**

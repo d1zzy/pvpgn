@@ -108,10 +108,18 @@ charinfodir		=	var\charinfo
 bak_charsavedir		=	var\bak\charsave
 bak_charinfodir		=	var\bak\charinfo
 ladderdir		=	var\ladders
-newbiefile		=	files\newbie.save
 transfile		=	conf\address_translation.conf
 d2gsconffile		=	conf\d2server.ini
 #pidfile			=	var\d2cs.pid
+
+# d2s template for a new created characters
+newbiefile_amazon		=	files\newbie.save
+newbiefile_sorceress		=	files\newbie.save
+newbiefile_necromancer		=	files\newbie.save
+newbiefile_paladin		=	files\newbie.save
+newbiefile_barbarian		=	files\newbie.save
+newbiefile_druid		=	files\newbie.save
+newbiefile_assasin		=	files\newbie.save
 #										#
 #################################################################################
 

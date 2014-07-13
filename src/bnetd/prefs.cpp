@@ -39,9 +39,11 @@ namespace pvpgn
 		static struct {
 			/* files and paths */
 			char const * filedir;
+			char const * i18ndir;
 			char const * storage_path;
 			char const * logfile;
 			char const * loglevels;
+			char const * localizefile;
 			char const * motdfile;
 			char const * motdw3file;
 			char const * newsfile;
@@ -77,7 +79,6 @@ namespace pvpgn
 			unsigned int hide_temp_channels;
 			unsigned int hide_addr;
 			unsigned int enable_conn_all;
-			unsigned int extra_commands;
 			char const * reportdir;
 			unsigned int report_all_games;
 			unsigned int report_diablo_games;
@@ -128,7 +129,6 @@ namespace pvpgn
 			char const * version_exeinfo_match;
 			unsigned int version_exeinfo_maxdiff;
 			unsigned int max_concurrent_logins;
-			char const * server_info;
 			char const * mapsfile;
 			char const * xplevelfile;
 			char const * xpcalcfile;
@@ -144,6 +144,7 @@ namespace pvpgn
 			char const * command_groups_file;
 			char const * tournament_file;
 			char const * customicons_file;
+			char const * scriptdir;
 			char const * aliasfile;
 			char const * anongame_infos_file;
 			unsigned int max_conns_per_IP;
@@ -162,6 +163,7 @@ namespace pvpgn
 			unsigned int max_connections;
 			unsigned int sync_on_logoff;
 			char const * irc_network_name;
+			unsigned int localize_by_country;
 
 			char const * apiregaddrs;
 			char const * wolv1addrs;
@@ -179,6 +181,10 @@ namespace pvpgn
 		static const char *conf_get_filedir(void);
 		static int conf_setdef_filedir(void);
 
+		static int conf_set_i18ndir(const char *valstr);
+		static const char *conf_get_i18ndir(void);
+		static int conf_setdef_i18ndir(void);
+
 		static int conf_set_storage_path(const char *valstr);
 		static const char *conf_get_storage_path(void);
 		static int conf_setdef_storage_path(void);
@@ -190,6 +196,10 @@ namespace pvpgn
 		static int conf_set_loglevels(const char *valstr);
 		static const char *conf_get_loglevels(void);
 		static int conf_setdef_loglevels(void);
+
+		static int conf_set_localizefile(const char *valstr);
+		static const char *conf_get_localizefile(void);
+		static int conf_setdef_localizefile(void);
 
 		static int conf_set_motdfile(const char *valstr);
 		static const char *conf_get_motdfile(void);
@@ -322,10 +332,6 @@ namespace pvpgn
 		static int conf_set_enable_conn_all(const char *valstr);
 		static const char *conf_get_enable_conn_all(void);
 		static int conf_setdef_enable_conn_all(void);
-
-		static int conf_set_extra_commands(const char *valstr);
-		static const char *conf_get_extra_commands(void);
-		static int conf_setdef_extra_commands(void);
 
 		static int conf_set_reportdir(const char *valstr);
 		static const char *conf_get_reportdir(void);
@@ -527,10 +533,6 @@ namespace pvpgn
 		static const char *conf_get_max_concurrent_logins(void);
 		static int conf_setdef_max_concurrent_logins(void);
 
-		static int conf_set_server_info(const char *valstr);
-		static const char *conf_get_server_info(void);
-		static int conf_setdef_server_info(void);
-
 		static int conf_set_mapsfile(const char *valstr);
 		static const char *conf_get_mapsfile(void);
 		static int conf_setdef_mapsfile(void);
@@ -590,6 +592,10 @@ namespace pvpgn
 		static int conf_set_customicons_file(const char *valstr);
 		static const char *conf_get_customicons_file(void);
 		static int conf_setdef_customicons_file(void);
+
+		static int conf_set_scriptdir(const char *valstr);
+		static const char *conf_get_scriptdir(void);
+		static int conf_setdef_scriptdir(void);
 
 		static int conf_set_aliasfile(const char *valstr);
 		static const char *conf_get_aliasfile(void);
@@ -659,6 +665,11 @@ namespace pvpgn
 		static int conf_set_irc_network_name(const char *valstr);
 		static const char *conf_get_irc_network_name(void);
 
+		static int conf_set_localize_by_country(const char *valstr);
+		static const char *conf_get_localize_by_country(void);
+		static int conf_setdef_localize_by_country(void);
+
+
 		static int conf_setdef_apireg_addrs(void);
 		static int conf_set_apireg_addrs(const char *valstr);
 		static const char *conf_get_apireg_addrs(void);
@@ -703,9 +714,11 @@ namespace pvpgn
 		static t_conf_entry conf_table[] =
 		{
 			{ "filedir", conf_set_filedir, conf_get_filedir, conf_setdef_filedir },
+			{ "i18ndir", conf_set_i18ndir, conf_get_i18ndir, conf_setdef_i18ndir },
 			{ "storage_path", conf_set_storage_path, conf_get_storage_path, conf_setdef_storage_path },
 			{ "logfile", conf_set_logfile, conf_get_logfile, conf_setdef_logfile },
 			{ "loglevels", conf_set_loglevels, conf_get_loglevels, conf_setdef_loglevels },
+			{ "localizefile", conf_set_localizefile, conf_get_localizefile, conf_setdef_localizefile },
 			{ "motdfile", conf_set_motdfile, conf_get_motdfile, conf_setdef_motdfile },
 			{ "motdw3file", conf_set_motdw3file, conf_get_motdw3file, conf_setdef_motdw3file },
 			{ "newsfile", conf_set_newsfile, conf_get_newsfile, conf_setdef_newsfile },
@@ -739,7 +752,6 @@ namespace pvpgn
 			{ "hide_temp_channels", conf_set_hide_temp_channels, conf_get_hide_temp_channels, conf_setdef_hide_temp_channels },
 			{ "hide_addr", conf_set_hide_addr, conf_get_hide_addr, conf_setdef_hide_addr },
 			{ "enable_conn_all", conf_set_enable_conn_all, conf_get_enable_conn_all, conf_setdef_enable_conn_all },
-			{ "extra_commands", conf_set_extra_commands, conf_get_extra_commands, conf_setdef_extra_commands },
 			{ "reportdir", conf_set_reportdir, conf_get_reportdir, conf_setdef_reportdir },
 			{ "report_all_games", conf_set_report_all_games, conf_get_report_all_games, conf_setdef_report_all_games },
 			{ "report_diablo_games", conf_set_report_diablo_games, conf_get_report_diablo_games, conf_setdef_report_diablo_games },
@@ -790,7 +802,6 @@ namespace pvpgn
 			{ "version_exeinfo_match", conf_set_version_exeinfo_match, conf_get_version_exeinfo_match, conf_setdef_version_exeinfo_match },
 			{ "version_exeinfo_maxdiff", conf_set_version_exeinfo_maxdiff, conf_get_version_exeinfo_maxdiff, conf_setdef_version_exeinfo_maxdiff },
 			{ "max_concurrent_logins", conf_set_max_concurrent_logins, conf_get_max_concurrent_logins, conf_setdef_max_concurrent_logins },
-			{ "server_info", conf_set_server_info, conf_get_server_info, conf_setdef_server_info },
 			{ "mapsfile", conf_set_mapsfile, conf_get_mapsfile, conf_setdef_mapsfile },
 			{ "xplevelfile", conf_set_xplevelfile, conf_get_xplevelfile, conf_setdef_xplevelfile },
 			{ "xpcalcfile", conf_set_xpcalcfile, conf_get_xpcalcfile, conf_setdef_xpcalcfile },
@@ -806,6 +817,7 @@ namespace pvpgn
 			{ "command_groups_file", conf_set_command_groups_file, conf_get_command_groups_file, conf_setdef_command_groups_file },
 			{ "tournament_file", conf_set_tournament_file, conf_get_tournament_file, conf_setdef_tournament_file },
 			{ "customicons_file", conf_set_customicons_file, conf_get_customicons_file, conf_setdef_customicons_file },
+			{ "scriptdir", conf_set_scriptdir, conf_get_scriptdir, conf_setdef_scriptdir },
 			{ "aliasfile", conf_set_aliasfile, conf_get_aliasfile, conf_setdef_aliasfile },
 			{ "anongame_infos_file", conf_set_anongame_infos_file, conf_get_anongame_infos_file, conf_setdef_anongame_infos_file },
 			{ "max_conns_per_IP", conf_set_max_conns_per_IP, conf_get_max_conns_per_IP, conf_setdef_max_conns_per_IP },
@@ -823,6 +835,7 @@ namespace pvpgn
 			{ "sync_on_logoff", conf_set_sync_on_logoff, conf_get_sync_on_logoff, conf_setdef_sync_on_logoff },
 			{ "ladder_prefix", conf_set_ladder_prefix, conf_get_ladder_prefix, conf_setdef_ladder_prefix },
 			{ "irc_network_name", conf_set_irc_network_name, conf_get_irc_network_name, conf_setdef_irc_network_name },
+			{ "localize_by_country", conf_set_localize_by_country, conf_get_localize_by_country, conf_setdef_localize_by_country },
 
 			{ "apiregaddrs", conf_set_apireg_addrs, conf_get_apireg_addrs, conf_setdef_apireg_addrs },
 			{ "wgameresaddrs", conf_set_wgameres_addrs, conf_get_wgameres_addrs, conf_setdef_wgameres_addrs },
@@ -912,6 +925,27 @@ namespace pvpgn
 		}
 
 
+		extern char const * prefs_get_i18ndir(void)
+		{
+			return prefs_runtime_config.i18ndir;
+		}
+
+		static int conf_set_i18ndir(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.i18ndir, valstr, NULL);
+		}
+
+		static int conf_setdef_i18ndir(void)
+		{
+			return conf_set_str(&prefs_runtime_config.i18ndir, NULL, BNETD_I18N_DIR);
+		}
+
+		static const char* conf_get_i18ndir(void)
+		{
+			return prefs_runtime_config.i18ndir;
+		}
+
+
 		extern char const * prefs_get_logfile(void)
 		{
 			return prefs_runtime_config.logfile;
@@ -951,6 +985,27 @@ namespace pvpgn
 		static const char* conf_get_loglevels(void)
 		{
 			return prefs_runtime_config.loglevels;
+		}
+
+
+		extern char const * prefs_get_localizefile(void)
+		{
+			return prefs_runtime_config.localizefile;
+		}
+
+		static int conf_set_localizefile(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.localizefile, valstr, NULL);
+		}
+
+		static int conf_setdef_localizefile(void)
+		{
+			return conf_set_str(&prefs_runtime_config.localizefile, NULL, BNETD_LOCALIZE_FILE);
+		}
+
+		static const char* conf_get_localizefile(void)
+		{
+			return prefs_runtime_config.localizefile;
 		}
 
 
@@ -1008,7 +1063,7 @@ namespace pvpgn
 
 		static int conf_setdef_newsfile(void)
 		{
-			return conf_set_str(&prefs_runtime_config.newsfile, NULL, BNETD_NEWS_DIR);
+			return conf_set_str(&prefs_runtime_config.newsfile, NULL, BNETD_NEWS_FILE);
 		}
 
 		static const char* conf_get_newsfile(void)
@@ -1606,27 +1661,6 @@ namespace pvpgn
 		static const char* conf_get_enable_conn_all(void)
 		{
 			return conf_get_bool(prefs_runtime_config.enable_conn_all);
-		}
-
-
-		extern unsigned int prefs_get_extra_commands(void)
-		{
-			return prefs_runtime_config.extra_commands;
-		}
-
-		static int conf_set_extra_commands(const char *valstr)
-		{
-			return conf_set_bool(&prefs_runtime_config.extra_commands, valstr, 0);
-		}
-
-		static int conf_setdef_extra_commands(void)
-		{
-			return conf_set_bool(&prefs_runtime_config.extra_commands, NULL, 0);
-		}
-
-		static const char* conf_get_extra_commands(void)
-		{
-			return conf_get_bool(prefs_runtime_config.extra_commands);
 		}
 
 
@@ -2731,27 +2765,6 @@ namespace pvpgn
 		}
 
 
-		extern char const * prefs_get_server_info(void)
-		{
-			return prefs_runtime_config.server_info;
-		}
-
-		static int conf_set_server_info(const char *valstr)
-		{
-			return conf_set_str(&prefs_runtime_config.server_info, valstr, NULL);
-		}
-
-		static int conf_setdef_server_info(void)
-		{
-			return conf_set_str(&prefs_runtime_config.server_info, NULL, "");
-		}
-
-		static const char* conf_get_server_info(void)
-		{
-			return prefs_runtime_config.server_info;
-		}
-
-
 		extern char const * prefs_get_mapsfile(void)
 		{
 			return prefs_runtime_config.mapsfile;
@@ -3065,6 +3078,25 @@ namespace pvpgn
 			return prefs_runtime_config.customicons_file;
 		}
 
+		extern char const * prefs_get_scriptdir(void)
+		{
+			return prefs_runtime_config.scriptdir;
+		}
+
+		static int conf_set_scriptdir(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.scriptdir, valstr, NULL);
+		}
+
+		static int conf_setdef_scriptdir(void)
+		{
+			return conf_set_str(&prefs_runtime_config.scriptdir, NULL, BNETD_SCRIPT_DIR);
+		}
+
+		static const char* conf_get_scriptdir(void)
+		{
+			return prefs_runtime_config.scriptdir;
+		}
 
 		extern char const * prefs_get_aliasfile(void)
 		{
@@ -3452,6 +3484,28 @@ namespace pvpgn
 		{
 			return prefs_runtime_config.irc_network_name;
 		}
+
+
+		extern unsigned int prefs_get_localize_by_country(void)
+		{
+			return prefs_runtime_config.localize_by_country;
+		}
+
+		static int conf_set_localize_by_country(const char *valstr)
+		{
+			return conf_set_bool(&prefs_runtime_config.localize_by_country, valstr, 0);
+		}
+
+		static int conf_setdef_localize_by_country(void)
+		{
+			return conf_set_bool(&prefs_runtime_config.localize_by_country, NULL, 0);
+		}
+
+		static const char* conf_get_localize_by_country(void)
+		{
+			return conf_get_bool(prefs_runtime_config.localize_by_country);
+		}
+
 
 		/**
 		*  Westwood Online Extensions

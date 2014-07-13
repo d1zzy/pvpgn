@@ -147,6 +147,8 @@ namespace pvpgn
 			t_client_adclick            client_adclick;
 			t_client_adclick2           client_adclick2;
 			t_server_adclickreply2      server_adclickreply2;
+			t_client_readmemory	    client_readmemory;
+			t_server_readmemory	    server_readmemory;
 			t_client_game_report        client_gamerep;
 			t_server_sessionkey1        server_sessionkey1;
 			t_server_sessionkey2        server_sessionkey2;
@@ -365,6 +367,8 @@ namespace pvpgn
 			t_server_claninforeply			server_claninforeply;
 			t_client_findanongame_profile_clan	client_findanongame_profile_clan;
 			t_server_findanongame_profile_clan	server_findanongame_profile_clan;
+
+			t_server_messagebox         server_messagebox;
 		} u;
 	} t_packet;
 

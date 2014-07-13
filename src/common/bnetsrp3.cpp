@@ -35,6 +35,7 @@
 #include "common/util.h"
 #include "common/xalloc.h"
 #include "compat/uint.h"
+#include "common/xstring.h"
 
 #include "common/setup_after.h"
 
@@ -78,7 +79,7 @@ namespace pvpgn
 			symbol = username;
 			for (i = 0; i < username_length; i++)
 			{
-				*(symbol++) = std::toupper(*(source++));
+				*(symbol++) = safe_toupper(*(source++));
 			}
 
 			if (!((password_ == NULL) ^ (salt_ == NULL))) {
@@ -93,7 +94,7 @@ namespace pvpgn
 				symbol = password;
 				for (i = 0; i < password_length; i++)
 				{
-					*(symbol++) = std::toupper(*(source++));
+					*(symbol++) = safe_toupper(*(source++));
 				}
 				a = BigInt::random(32) % N;
 				s = BigInt::random(32);

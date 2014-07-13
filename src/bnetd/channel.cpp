@@ -27,6 +27,7 @@
 
 #include "compat/strdup.h"
 #include "compat/strcasecmp.h"
+#include "compat/snprintf.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/util.h"
@@ -40,8 +41,12 @@
 #include "account_wrap.h"
 #include "prefs.h"
 #include "irc.h"
+#include "i18n.h"
 #include "common/setup_after.h"
 
+#ifdef WITH_LUA
+#include "luainterface.h"
+#endif
 
 namespace pvpgn
 {
@@ -461,7 +466,7 @@ namespace pvpgn
 				&& (channel->currmembers == 1)
 				&& (account_is_operator_or_admin(conn_get_account(connection), channel_get_name(channel)) == 0))
 			{
-				message_send_text(connection, message_type_info, connection, "you are now tempOP for this channel");
+				message_send_text(connection, message_type_info, connection, localize(connection, "you are now tempOP for this channel"));
 				conn_set_tmpOP_channel(connection, (char *)channel_get_name(channel));
 				channel_update_userflags(connection);
 			}
@@ -488,11 +493,15 @@ namespace pvpgn
 			if (channel->log)
 				message_send_text(connection, message_type_info, connection, prefs_get_log_notice());
 
+#ifdef WITH_LUA
+			lua_handle_channel(channel, connection, NULL, message_type_null, luaevent_channel_userjoin);
+#endif
+
 			return 0;
 		}
 
 
-		extern int channel_del_connection(t_channel * channel, t_connection * connection, t_message_type mess, char const * text)
+		extern int channel_del_connection(t_channel * channel, t_connection * connection, t_message_type type, char const * text)
 		{
 			t_channelmember * curr;
 			t_channelmember * temp;
@@ -509,7 +518,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			channel_message_send(channel, mess, connection, text);
+			channel_message_send(channel, type, connection, text);
 			channel_message_log(channel, connection, 0, "PARTED");
 
 			curr = channel->memberlist;
@@ -542,6 +551,10 @@ namespace pvpgn
 			{
 				conn_set_tmpOP_channel(connection, NULL);
 			}
+
+#ifdef WITH_LUA
+			lua_handle_channel(channel, connection, text, type, luaevent_channel_userleft);
+#endif
 
 			if (!channel->memberlist && !(channel->flags & channel_flags_permanent)) /* if channel is empty, delete it unless it's a permanent channel */
 			{
@@ -669,9 +682,13 @@ namespace pvpgn
 			if (type != message_type_join && type != message_type_part)
 				return;
 
+			// if user is muted
 			if (account_get_auth_mute(acc) == 1)
 			{
-				message_send_text(me, message_type_error, me, "Your account has been muted, you can't talk on the channel.");
+				std::string msgtemp;
+				msgtemp = localize(me, "You can't talk on the channel. Your account has been muted");
+				msgtemp += account_get_locktext(acc, false);
+				message_send_text(me, message_type_error, me, msgtemp);
 				return;
 			}
 
@@ -682,7 +699,7 @@ namespace pvpgn
 					if (!((account_is_operator_or_admin(acc, channel_get_name(channel))) ||
 						(channel_conn_has_tmpVOICE(channel, me)) || (account_get_auth_voice(acc, channel_get_name(channel)) == 1)))
 					{
-						message_send_text(me, message_type_error, me, "This channel is moderated");
+						message_send_text(me, message_type_error, me, localize(c, "This channel is moderated"));
 						return;
 					}
 				}
@@ -745,8 +762,13 @@ namespace pvpgn
 			if ((conn_get_wol(me) == 0))
 			{
 				if (!heard && (type == message_type_talk || type == message_type_emote))
-					message_send_text(me, message_type_info, me, "No one hears you.");
+					message_send_text(me, message_type_info, me, localize(me, "No one hears you."));
 			}
+
+#ifdef WITH_LUA
+			if (type != message_type_part)
+				lua_handle_channel((t_channel*)channel, me, text, type, luaevent_channel_message);
+#endif
 		}
 
 		extern int channel_ban_user(t_channel * channel, char const * user)

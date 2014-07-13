@@ -59,17 +59,15 @@ storage_path = file:mode=plain;dir=var\users;clan=var\clans;team=var\teams;defau
 #----------------------------------------------------------------------------#
 
 filedir     = files
+scriptdir   = lua
 reportdir   = var\reports
 chanlogdir  = var\chanlogs
-motdfile    = conf\bnmotd.txt
-motdw3file  = conf\bnmotd_w3.txt
+i18ndir     = conf\i18n
 issuefile   = conf\bnissue.txt
 channelfile = conf\channel.conf
-newsfile    = conf\news.txt
 adfile      = conf\ad.conf
 topicfile   = conf\topics.conf
 ipbanfile   = conf\bnban.conf
-helpfile    = conf\bnhelp.conf
 transfile   = conf\address_translation.conf
 mpqfile     = conf\autoupdate.conf
 logfile     = var\bnetd.log
@@ -95,6 +93,27 @@ fortunecmd  = bin\fortune.exe
 
 
 ##############################################################################
+# Localized files realm server settings                                      #
+#----------------------------------------------------------------------------#
+
+# These filenames can have translated versions in
+# the "i18ndir" directory specified above.
+# (there are also two downloadable files: chathelp-war3.txt, newaccount.txt)
+localizefile = common.xml
+motdfile    = bnmotd.txt
+motdw3file  = w3motd.txt
+newsfile    = news.txt
+helpfile    = bnhelp.conf
+tosfile 	= termsofservice.txt
+
+# Do localization by a game language or by user country?
+localize_by_country = true
+
+#                                                                            #
+##############################################################################
+
+
+##############################################################################
 # Message logs                                                               #
 #----------------------------------------------------------------------------#
 
@@ -108,7 +127,7 @@ fortunecmd  = bin\fortune.exe
 #   error
 #   fatal
 #loglevels = fatal,error,warn,info,debug,trace
-loglevels = fatal,error
+loglevels = fatal,error,warn,info
 
 #                                                                            #
 ##############################################################################
@@ -137,8 +156,6 @@ allow_d2cs_setname = true
 iconfile = "icons.bni"
 war3_iconfile = "icons-WAR3.bni"
 star_iconfile = "icons_STAR.bni"
-
-tosfile = "tos.txt"
 
 #                                                                            #
 ##############################################################################
@@ -188,11 +205,11 @@ allowed_clients = all
 # than 109.  Starting with version 109 the clients will always do version
 # checking since they do not function properly if the server does not
 # request it.
-skip_versioncheck = false
+skip_versioncheck = true
 
 # If you enable the version checks but want to allow clients that don't pass
 # the checksum test then enable this.
-allow_bad_version = false
+allow_bad_version = true
 
 # If you enable the version checks but want to allow clients that aren't
 # listed in the versioncheck configuration file then enable this.  Unless
@@ -294,9 +311,6 @@ hide_started_games = true
 
 # Should non-permanent channels hidden on the channel list?
 hide_temp_channels = true
-
-# Should the extended /-commands be avaliable? (of course!)
-extra_commands = true
 
 # Should any and all disconnects to be counted as losses?
 # (Turning this on will override the user's choice in ladder games!)
@@ -418,13 +432,12 @@ max_friends = 20
 # of seconds between sending tracking packets. This is OFF by default.
 #track = 0
 track = 60
-# 10 minutes
 
 # Tracking server(s)
 # Use a comma delimited list of hostnames with optional UDP port numbers
 # after colons. (port 6114 is the default for the newer tracking protocol)
-#trackaddrs = "track.bnetd.org,localhost:9999"
-#trackaddrs = "track.pvpgn.org"
+#trackaddrs = "track.pvpgn.org,localhost:9999"
+trackaddrs = "track.pvpgn.org,track.dreaming-bg.com,bntrack.darkwings.org,track.muleslow.net,bnet.mivabe.nl"
 
 # Change these to match your system, for example:
 location = "unknown"

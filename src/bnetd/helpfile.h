@@ -36,7 +36,7 @@ namespace pvpgn
 		extern int helpfile_init(char const * filename);
 		extern int helpfile_unload(void);
 		extern int handle_help_command(t_connection *, char const *);
-
+		extern int describe_command(t_connection * c, char const * cmd);
 	}
 
 }

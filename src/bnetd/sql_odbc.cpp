@@ -24,6 +24,7 @@
 #include <cctype>
 #include "common/eventlog.h"
 #include "common/xalloc.h"
+#include "common/xstring.h"
 #include "storage_sql.h"
 #include "sql_odbc.h"
 #include "common/setup_after.h"
@@ -397,7 +398,7 @@ namespace pvpgn
 				}
 				p_SQLColAttribute(res->stmt, i + 1, SQL_DESC_NAME, fName, fNameSz, &fNameSz, NULL);
 				tmp = fName;
-				for (; *tmp; ++tmp) *tmp = std::toupper(*tmp);
+				for (; *tmp; ++tmp) *tmp = safe_toupper(*tmp);
 				fields[i] = fName;
 			}
 			return fields;

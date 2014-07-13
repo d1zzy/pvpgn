@@ -73,8 +73,13 @@
 #include "command_groups.h"
 #include "attrlayer.h"
 #include "anongame_wol.h"
-#include "common/setup_after.h"
 #include "icons.h"
+#include "i18n.h"
+#include "common/setup_after.h"
+
+#ifdef WITH_LUA
+#include "luainterface.h"
+#endif
 
 namespace pvpgn
 {
@@ -123,51 +128,16 @@ namespace pvpgn
 				return;
 			}
 			if (filename = prefs_get_motdfile()) {
-				t_tag gamelang = conn_get_gamelang(c);
-				char lang_str[sizeof(t_tag)+1];
-				char * lang_filename;
-				char * tempmotdfile;
-				char * def_langtag;
-				char * extention;
+				std::string lang_filename = i18n_filename(filename, conn_get_gamelang_localized(c));
 
-				std::memset(lang_str, 0, sizeof(lang_str));
-				tag_uint_to_str(lang_str, gamelang);
-
-				tempmotdfile = xstrdup(filename);
-				def_langtag = std::strrchr(tempmotdfile, '-');
-				if (!def_langtag) {
-					extention = std::strrchr(tempmotdfile, '.');
-				}
-				else {
-					*def_langtag = '\0';
-					def_langtag++;
-					extention = std::strrchr(def_langtag, '.');
-				}
-				lang_filename = (char*)xmalloc(std::strlen(tempmotdfile) + 1 + std::strlen(lang_str) + 1 + std::strlen(extention) + 1);
-
-				if (extention) {
-					*extention = '\0';
-					extention++;
-				}
-
-				if ((gamelang) && (lang_str))
-				if (extention)
-					std::sprintf(lang_filename, "%s-%s.%s", tempmotdfile, lang_str, extention);
-				else
-					std::sprintf(lang_filename, "%s-%s", tempmotdfile, lang_str);
-				else {
-					INFO0("client does not specifed proper gamelang, sending default motd");
-					std::sprintf(lang_filename, "%s", filename);
-				}
-
-				if (fp = std::fopen(lang_filename, "r")) {
+				if (fp = std::fopen(lang_filename.c_str(), "r")) {
 					message_send_file(c, fp);
 					if (std::fclose(fp) < 0) {
-						eventlog(eventlog_level_error, __FUNCTION__, "could not close MOTD file \"%s\" after reading (std::fopen: %s)", lang_filename, std::strerror(errno));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not close MOTD file \"%s\" after reading (std::fopen: %s)", lang_filename.c_str(), std::strerror(errno));
 					}
 				}
 				else {
-					INFO1("motd file %s not found, sending default motd file", lang_filename);
+					INFO1("motd file %s not found, sending default motd file", lang_filename.c_str());
 					if (fp = std::fopen(filename, "r"))  {
 						message_send_file(c, fp);
 						if (std::fclose(fp) < 0) {
@@ -178,10 +148,6 @@ namespace pvpgn
 						eventlog(eventlog_level_error, __FUNCTION__, "could not open MOTD file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
 					}
 				}
-				if (tempmotdfile)
-					xfree((void *)tempmotdfile);
-				if (lang_filename)
-					xfree((void *)lang_filename);
 			}
 			c->protocol.cflags |= conn_flags_welcomed;
 		}
@@ -735,6 +701,10 @@ namespace pvpgn
 					if (account_save(conn_get_account(c), FS_FORCE) < 0)
 						eventlog(eventlog_level_error, __FUNCTION__, "cannot sync account (sync_on_logoff)");
 				}
+
+#ifdef WITH_LUA
+				lua_handle_user(c, NULL, NULL, luaevent_user_disconnect);
+#endif
 
 				if (account_get_conn(c->protocol.account) == c)  /* make sure you don't set this when allready on new conn (relogin with same account) */
 					account_set_conn(c->protocol.account, NULL);
@@ -1978,7 +1948,7 @@ namespace pvpgn
 						t_clan * ch_clan;
 						if ((ch_clan = clanlist_find_clan_by_clantag(clantag)) && (clan_get_channel_type(ch_clan) == 1))
 						{
-							message_send_text(c, message_type_error, c, "This is a private clan channel, unable to join!");
+							message_send_text(c, message_type_error, c, localize(c, "This is a private clan channel, unable to join!"));
 							return 0;
 						}
 					}
@@ -1999,7 +1969,7 @@ namespace pvpgn
 			{
 				if (channel_check_banning(channel, c))
 				{
-					message_send_text(c, message_type_error, c, "You are banned from that channel.");
+					message_send_text(c, message_type_error, c, localize(c, "You are banned from that channel."));
 					return -1;
 				}
 
@@ -2007,7 +1977,7 @@ namespace pvpgn
 					(account_get_auth_operator(acc, NULL) != 1) && (account_get_auth_operator(acc, channelname) != 1) &&
 					(channel_get_max(channel) == 0))
 				{
-					message_send_text(c, message_type_error, c, "That channel is for Admins/Operators only.");
+					message_send_text(c, message_type_error, c, localize(c, "That channel is for Admins/Operators only."));
 					return -1;
 				}
 
@@ -2015,7 +1985,7 @@ namespace pvpgn
 					(account_get_auth_operator(acc, NULL) != 1) && (account_get_auth_operator(acc, channelname) != 1) &&
 					(channel_get_max(channel) != -1) && (channel_get_curr(channel) >= channel_get_max(channel)))
 				{
-					message_send_text(c, message_type_error, c, "The channel is currently full.");
+					message_send_text(c, message_type_error, c, localize(c, "The channel is currently full."));
 					return -1;
 				}
 			}
@@ -2063,7 +2033,7 @@ namespace pvpgn
 			conn_send_welcome(c);
 
 			if (c->protocol.chat.channel && (channel_get_flags(c->protocol.chat.channel) & channel_flags_thevoid))
-				message_send_text(c, message_type_info, c, "This channel does not have chat privileges.");
+				message_send_text(c, message_type_info, c, localize(c, "This channel does not have chat privileges."));
 			if (clantag && clan && (clan_get_clantag(clan) == clantag))
 			{
 				char msgtemp[MAX_MESSAGE_LEN];
@@ -2071,16 +2041,14 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
-			if (channel_get_topic(channel_get_name(c->protocol.chat.channel)) && ((conn_is_irc_variant(c)) == 0))
+			
+			if (conn_is_irc_variant(c) == 0)
 			{
-				char msgtemp[MAX_MESSAGE_LEN];
-
-				std::sprintf(msgtemp, "%s topic: %s", channel_get_name(c->protocol.chat.channel), channel_get_topic(channel_get_name(c->protocol.chat.channel)));
-				message_send_text(c, message_type_info, c, msgtemp);
+				channel_display_topic(c, channel_get_name(c->protocol.chat.channel));
 			}
 
 			if (c->protocol.chat.channel && (channel_get_flags(c->protocol.chat.channel) & channel_flags_moderated))
-				message_send_text(c, message_type_error, c, "This channel is moderated.");
+				message_send_text(c, message_type_error, c, localize(c, "This channel is moderated."));
 
 			if (c->protocol.chat.channel != oldchannel)
 				clanmember_on_change_status_by_connection(c);
@@ -2185,6 +2153,7 @@ namespace pvpgn
 				if (!(c->protocol.game = gamelist_find_game_available(gamename, c->protocol.client.clienttag, type))
 					&& !gamelist_find_game_available(gamename, c->protocol.client.clienttag, game_type_all)) {
 					/* do not allow creation of games with same name of same clienttag when game is not started or done */
+					// create game with initial values
 					c->protocol.game = game_create(gamename, gamepass, gameinfo, type, version, c->protocol.client.clienttag, conn_get_gameversion(c));
 
 					if (c->protocol.game && conn_get_realm(c) && conn_get_charname(c)) {
@@ -2195,16 +2164,23 @@ namespace pvpgn
 				}
 
 				if (c->protocol.game) {
+					// add new player to the game
 					if (game_add_player(conn_get_game(c), gamepass, version, c) < 0) {
 						c->protocol.game = NULL; // bad password or version #
 						return -1;
 					}
 
+#ifdef WITH_LUA
+					// handle game create when it's owner joins the game
+					if (c == game_get_owner(c->protocol.game))
+						lua_handle_game(c->protocol.game, NULL, luaevent_game_create);
+#endif
+
 					if (game_is_ladder(c->protocol.game)) {
 						if (c == game_get_owner(c->protocol.game))
-							message_send_text(c, message_type_info, c, "Created ladder game");
+							message_send_text(c, message_type_info, c, localize(c, "Created ladder game"));
 						else
-							message_send_text(c, message_type_info, c, "Joined ladder game");
+							message_send_text(c, message_type_info, c, localize(c, "Joined ladder game"));
 					}
 				}
 			}
@@ -2559,7 +2535,7 @@ namespace pvpgn
 				t_icon_info * icon;
 
 				// do not override userselectedicon if it's not null
-				if (!usericon && (icon = get_custom_icon(account, clienttag)))
+				if (!usericon && (icon = customicons_get_icon_by_account(account, clienttag)))
 					strcpy(revtag, icon->icon_code);
 
 				// FIXME: it replaces tag with icon on a client side for all clients (HarpyWar)
@@ -3130,7 +3106,7 @@ namespace pvpgn
 
 			if (std::strlen(text) > prefs_get_quota_maxline())
 			{
-				message_send_text(con, message_type_error, con, "Your line length quota has been exceeded!");
+				message_send_text(con, message_type_error, con, localize(con, "Your line length quota has been exceeded!"));
 				return 1;
 			}
 
@@ -3163,7 +3139,7 @@ namespace pvpgn
 
 			if (con->protocol.chat.quota.totcount >= prefs_get_quota_lines())
 			{
-				message_send_text(con, message_type_error, con, "Your message quota has been exceeded!");
+				message_send_text(con, message_type_error, con, localize(con, "Your message quota has been exceeded!"));
 				if (con->protocol.chat.quota.totcount >= prefs_get_quota_dobae())
 				{
 					/* kick out the dobae user for violation of the quota rule */
@@ -3753,7 +3729,7 @@ namespace pvpgn
 				t_icon_info * icon;
 
 				// do not override userselectedicon if it's not null
-				if (!usericon && (icon = get_custom_icon(account, clienttag)))
+				if (!usericon && (icon = customicons_get_icon_by_account(account, clienttag)))
 					usericon = xstrdup(icon->icon_code);
 
 				acctlevel = 0;
@@ -4177,6 +4153,43 @@ namespace pvpgn
 			}
 
 			return c->protocol.wol.anongame_player;
+		}
+
+
+
+		extern int conn_client_readmemory(t_connection * c, unsigned int request_id, unsigned int offset, unsigned int length)
+		{
+			t_packet    * rpacket;
+			t_clienttag clienttag;
+
+			if (!c)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL conn");
+				return -1;
+			}
+			clienttag = conn_get_clienttag(c);
+
+			// disallow clients that doesn't support SID_READMEMORY
+			if (clienttag != CLIENTTAG_STARCRAFT_UINT && clienttag != CLIENTTAG_BROODWARS_UINT && clienttag != CLIENTTAG_STARJAPAN_UINT && clienttag != CLIENTTAG_SHAREWARE_UINT &&
+				clienttag != CLIENTTAG_DIABLORTL_UINT && clienttag != CLIENTTAG_DIABLOSHR_UINT && clienttag != CLIENTTAG_WARCIIBNE_UINT)
+			{
+				return -1;
+			}
+
+			if (!(rpacket = packet_create(packet_class_bnet)))
+				return -1;
+
+			packet_set_size(rpacket, sizeof(t_server_readmemory));
+			packet_set_type(rpacket, SERVER_READMEMORY);
+
+			bn_int_set(&rpacket->u.server_readmemory.request_id, request_id);
+			bn_int_set(&rpacket->u.server_readmemory.address, offset);
+			bn_int_set(&rpacket->u.server_readmemory.length, length);
+
+			conn_push_outqueue(c, rpacket);
+			packet_del_ref(rpacket);
+
+			return 0;
 		}
 
 	}

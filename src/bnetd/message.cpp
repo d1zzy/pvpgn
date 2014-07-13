@@ -22,6 +22,7 @@
 
 #include <cstring>
 #include <cerrno>
+#include <string>
 
 #include "compat/gethostname.h"
 #include "common/xalloc.h"
@@ -33,6 +34,7 @@
 #include "common/bn_type.h"
 #include "common/list.h"
 #include "common/util.h"
+#include "common/xstring.h"
 
 #include "account.h"
 #include "account_wrap.h"
@@ -985,15 +987,16 @@ namespace pvpgn
 				return -1;
 			}
 
+			// empty messages are needed to separate text (or example, in bnhelp output)
 			if (text && text[0] == '\0')
 				text = " "; /* empty messages crash some clients, just send whitespace */
 
+			std::string temp;
 			if (text && (std::strlen(text) > MAX_MESSAGE_LEN)) {
 				/* PELISH: We are trying to support MAX_IRC_MESSAGE_LEN for IRC and also
 						   MAX_MESSAGE_LEN for bnet */
-				char * temp = (char *)text;
-				eventlog(eventlog_level_warn, __FUNCTION__, "line too long, truncation...");
-				temp[MAX_MESSAGE_LEN] = '\0';
+				temp = std::string(text, text + MAX_MESSAGE_LEN);
+				text = temp.c_str();
 			}
 
 			packet_set_size(packet, sizeof(t_server_message));
@@ -1592,6 +1595,10 @@ namespace pvpgn
 			return rez;
 		}
 
+		extern int message_send_text(t_connection * dst, t_message_type type, t_connection * src, std::string text)
+		{
+			return message_send_text(dst, type, src, text.c_str());
+		}
 
 		extern int message_send_text(t_connection * dst, t_message_type type, t_connection * src, char const * text)
 		{
@@ -1709,6 +1716,26 @@ namespace pvpgn
 			}
 			file_get_line(NULL); // clear file_get_line buffer
 
+			return 0;
+		}
+
+		/* Show message box on a client side (https://github.com/HarpyWar/pvpgn/issues/15) */
+		extern int messagebox_show(t_connection * dst, char const * text, char const * caption, int type)
+		{
+			t_packet *rpacket;
+
+			std::string newtext = str_replace_nl(text);
+
+			if ((rpacket = packet_create(packet_class_bnet)))
+			{
+				packet_set_size(rpacket, sizeof(t_server_messagebox));
+				packet_set_type(rpacket, SERVER_MESSAGEBOX);
+				bn_int_set(&rpacket->u.server_messagebox.style, type); 
+				packet_append_string(rpacket, newtext.c_str());
+				packet_append_string(rpacket, caption);
+				conn_push_outqueue(dst, rpacket);
+				packet_del_ref(rpacket);
+			}
 			return 0;
 		}
 

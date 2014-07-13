@@ -1,4 +1,6 @@
 /*
+* Copyright (C) 2014  HarpyWar (harpywar@gmail.com)
+*
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
 * as published by the Free Software Foundation; either version 2
@@ -15,11 +17,16 @@
 */
 #include "common/setup_before.h"
 
+#include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <cerrno>
 #include <cstring>
 #include <ctime>
 #include <cstdlib>
+#include <sstream>
+#include <vector>
+#include <string.h>
 
 #include "compat/strcasecmp.h"
 #include "compat/snprintf.h"
@@ -37,6 +44,12 @@
 #include "connection.h"
 #include "icons.h"
 #include "account_wrap.h"
+
+#include "message.h"
+#include "helpfile.h"
+#include "channel.h"
+#include "command.h"
+#include "i18n.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -52,8 +65,492 @@ namespace pvpgn
 
 		static int skip_comments(char *buff);
 		static t_icon_var_info * _read_option(char *str, unsigned lineno);
-		static t_icon_info * _find_custom_icon(int rating, char * clienttag);
 		static char * _find_attr_key(char * clienttag);
+
+
+
+		/* Set usericon (command) */
+		extern int handle_icon_command(t_connection * c, char const *text)
+		{
+			t_account * account;
+			t_connection * user_c;
+			char const * channel_name;
+			char const * subcommand, *username, *iconname;
+			char const *usericon, *iconalias, *iconcode;
+			t_clienttag clienttag;
+			char clienttag_str[5];
+			std::string output_icons = "";
+			int count = 1; // 1 icon in stash ("default" icon)
+			bool is_selected = false;
+
+			std::string	msgtemp;
+
+			if (!(conn_get_channel(c))) {
+				message_send_text(c, message_type_error, c, localize(c, "This command can only be used inside a channel."));
+				return -1;
+			}
+			else {
+				channel_name = channel_get_name(conn_get_channel(c));
+			}
+
+			// get current clienttag
+			clienttag = conn_get_clienttag(c);
+			if (!clienttag || clienttag == CLIENTTAG_BNCHATBOT_UINT)
+			{
+				message_send_text(c, message_type_error, c, localize(c, "This command can only be used from the game."));
+				return -1;
+			}
+
+
+			// split command args
+			std::vector<std::string> args = split_command(text, 3);
+
+			if (!(account_is_operator_or_admin(conn_get_account(c), channel_name)))
+			{
+				/* Simple command syntax for users */
+
+				iconname = args[1].c_str();  // icon code
+
+				account = conn_get_account(c);
+
+				// get current user icon
+				if (usericon = account_get_user_icon(account, clienttag))
+					usericon = strreverse(xstrdup(usericon));
+
+				bool is_found = false;
+				// get user stash
+				if (char const * iconstash = account_get_user_iconstash(account, clienttag))
+				{
+					std::string s(iconstash);
+					std::istringstream iss(s);
+					do
+					{
+						std::string _icon;
+						iss >> _icon;
+						if (_icon.empty()) continue;
+
+						// output icon_alias instead of icon_code
+						if (iconalias = customicons_stash_find(clienttag, _icon.c_str(), true))
+							_icon = std::string(iconalias);
+
+						if (!(iconcode = customicons_stash_find(clienttag, _icon.c_str())))
+							iconcode = iconalias = _icon.c_str(); // icon was added earlier to user and then removed from server stash
+
+
+						// set selected icon in brackets
+						if (usericon && strcasecmp(usericon, iconcode) == 0)
+						{
+							_icon = "[" + _icon + "]";
+							is_selected = true;
+						}
+
+						if (!output_icons.empty())
+							output_icons += ", ";
+						output_icons += _icon;
+
+						// if iconname parameter passed then find it in user stash
+						if (iconname[0] != '\0')
+						{
+							if (strcasecmp(iconname, iconalias) == 0 || strcasecmp(iconname, iconcode) == 0)
+								is_found = true;
+						}
+
+						count++;
+					} while (iss);
+				}
+
+				if (iconname[0] != '\0')
+				{
+					// unset value
+					if (strcasecmp(iconname, "default") == 0)
+					{
+						msgtemp = localize(c, "Set default icon.");
+						usericon = NULL;
+					}
+					// set usericon (reversed)
+					else
+					{
+						// if icon not found in server stash
+						if (!(iconcode = customicons_stash_find(clienttag, iconname)))
+						{
+							// set icon code from args
+							std::transform(args[1].begin(), args[1].end(), args[1].begin(), ::toupper); // to upper
+							iconcode = args[1].c_str();
+						}
+						if (!is_found || strlen(iconcode) != 4)
+						{
+							message_send_text(c, message_type_error, c, localize(c, "Bad icon."));
+							return -1;
+						}
+						msgtemp = localize(c, "Set new icon is succeed.");
+						usericon = strreverse((char*)iconcode);
+					}
+					account_set_user_icon(account, clienttag, usericon);
+					message_send_text(c, message_type_info, c, msgtemp);
+
+					// if user online then force him to rejoin channel
+					if (c)
+					{
+						conn_update_w3_playerinfo(c);
+						channel_rejoin(c);
+					}
+					return 0;
+				}
+
+				// display icon list in user stash
+				msgtemp = localize(c, "You have {} icons in stash:", count);
+				message_send_text(c, message_type_info, c, msgtemp);
+
+				output_icons = ((is_selected || usericon) ? "default" : "[default]") + std::string((count > 1) ? ", " : "") + output_icons;
+
+				msgtemp = "   " + output_icons;
+				message_send_text(c, message_type_info, c, msgtemp);
+
+				return 0;
+			}
+
+			/* Complex command syntax for operator and admins */
+
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			subcommand = args[1].c_str(); // sub command
+			username = args[2].c_str(); // username
+			iconname = args[3].c_str();  // icon alias or code
+
+			// display icons from the server stash
+			// subcommand = list
+			if (subcommand[0] == 'l' && username[0] == '\0')
+			{
+				message_send_text(c, message_type_info, c, localize(c, "Available icons in server stash:"));
+				std::string output_icons = customicons_stash_get_list(clienttag, true);
+				msgtemp = "   " + output_icons;
+				message_send_text(c, message_type_info, c, msgtemp);
+				return 0;
+			}
+
+
+			// find user account
+			if (!(account = accountlist_find_account(username)))
+			{
+				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
+				return 0;
+			}
+			user_c = account_get_conn(account);
+
+
+			switch (std::tolower(subcommand[0]))
+			{
+				// set
+				case 's':
+					if (iconname[0] == '\0')
+					{
+						describe_command(c, args[0].c_str());
+						return -1;
+					}
+
+					// unset value
+					if (strcasecmp(iconname, "default") == 0)
+					{
+						msgtemp = localize(c, "Set default icon for {}", account_get_name(account));
+						usericon = NULL;
+					}
+					// set usericon (reversed)
+					else
+					{
+						// find icon in server stash
+						if (!(iconcode = customicons_stash_find(clienttag, iconname)))
+						{
+							message_send_text(c, message_type_error, c, localize(c, "That icon doesn't exist in server stash."));
+							return -1;
+						}
+						msgtemp = localize(c, "Set new icon is succeed for {}", account_get_name(account));
+						usericon = strreverse((char*)iconcode);
+					}
+					account_set_user_icon(account, clienttag, usericon);
+					message_send_text(c, message_type_info, c, msgtemp);
+
+					// if user online then force him to rejoin channel
+					if (user_c)
+					{
+						conn_update_w3_playerinfo(user_c);
+						channel_rejoin(user_c);
+					}
+
+					return 0;
+					break;
+
+				// list
+				case 'l':
+					// get current user icon
+					if (usericon = account_get_user_icon(account, clienttag))
+						usericon = strreverse(xstrdup(usericon));
+
+					// get user stash
+					if (char const * iconstash = account_get_user_iconstash(account, clienttag))
+					{
+						std::string s(iconstash);
+						std::istringstream iss(s);
+						do
+						{
+							std::string _icon;
+							iss >> _icon;
+							if (_icon.empty()) continue;
+
+							if (!(iconcode = customicons_stash_find(clienttag, _icon.c_str())))
+								iconcode = _icon.c_str(); // icon was added earlier to user and then removed from server stash
+
+							// output icon_alias instead of icon_code
+							if (iconalias = customicons_stash_find(clienttag, _icon.c_str(), true))
+								_icon = std::string(iconalias); // output key instead of code
+
+							// set selected icon in brackets
+							if (usericon && strcasecmp(usericon, iconcode) == 0) 
+							{
+								_icon = "[" + _icon + "]";
+								is_selected = true;
+							}
+
+							if (!output_icons.empty())
+								output_icons += ", ";
+
+							output_icons += _icon;
+
+							count++;
+						} while (iss);
+					}
+
+					// display icon list in user stash
+					msgtemp = localize(c, "{} has {} icons in stash : ", account_get_name(account), count);
+					message_send_text(c, message_type_info, c, msgtemp);
+
+					output_icons = ((is_selected || usericon) ? "default" : "[default]") + std::string((count > 1) ? ", " : "") + output_icons;
+
+					msgtemp = "   " + output_icons;
+					message_send_text(c, message_type_info, c, msgtemp);
+
+
+					return 0;
+					break;
+
+				// add
+				case 'a':
+					if (iconname[0] == '\0')
+					{
+						describe_command(c, args[0].c_str());
+						return -1;
+					}
+					// find icon in server stash
+					if (!(iconcode = customicons_stash_find(clienttag, iconname)))
+					{
+						message_send_text(c, message_type_error, c, localize(c, "That icon doesn't exist in server stash."));
+						return -1;
+					}
+
+					// find icon in user stash
+					if (char const * iconstash = account_get_user_iconstash(account, clienttag))
+					{
+						std::string s(iconstash);
+						std::istringstream iss(s);
+						do
+						{
+							std::string _icon;
+							iss >> _icon;
+							if (_icon.empty()) continue;
+
+							if (!output_icons.empty())
+								output_icons += " ";
+							output_icons += _icon;
+
+							if (strcasecmp(_icon.c_str(), iconcode) == 0)
+							{
+								message_send_text(c, message_type_error, c, localize(c, "User already has that icon in stash."));
+								return 0;
+							}
+						} while (iss);
+					}
+					// append new icon
+					if (!output_icons.empty())
+						output_icons += " ";
+					output_icons += std::string(iconcode);
+
+					// save stash
+					account_set_user_iconstash(account, clienttag, output_icons.c_str());
+
+					msgtemp = localize(c, "Add new icon to {}'s stash.", account_get_name(account));
+					message_send_text(c, message_type_info, c, msgtemp);
+
+					return 0;
+					break;
+
+				// del
+				case 'd':
+					if (iconname[0] == '\0')
+					{
+						describe_command(c, args[0].c_str());
+						return -1;
+					}
+					bool is_found = false;
+					if (char const * iconstash = account_get_user_iconstash(account, clienttag))
+					{
+						// get current user icon
+						if (usericon = account_get_user_icon(account, clienttag))
+							usericon = strreverse(xstrdup(usericon));
+
+						std::string s(iconstash);
+						std::istringstream iss(s);
+						do
+						{
+							std::string _icon;
+							iss >> _icon;
+							if (_icon.empty()) continue;
+
+							iconalias = customicons_stash_find(clienttag, _icon.c_str(), true);
+							if (!(iconcode = customicons_stash_find(clienttag, _icon.c_str())))
+								iconcode = iconalias = _icon.c_str(); // icon was added earlier to user and then removed from server stash
+
+							// exclude deleted icon (allow to delete icon by code or alias)
+							if (strcasecmp(iconname, iconalias) == 0 || strcasecmp(iconname, iconcode) == 0)
+							{
+								// also unset current user icon if it equals with given
+								if (usericon && strcasecmp(usericon, iconcode) == 0)
+									account_set_user_icon(account, clienttag, NULL);
+
+								is_found = true;
+								continue;
+							}
+
+							if (!output_icons.empty())
+								output_icons += " ";
+							output_icons += _icon;
+						} while (iss);
+					}
+					if (!is_found)
+					{
+						message_send_text(c, message_type_error, c, localize(c, "That icon doesn't exist in user stash."));
+						return -1;
+					}
+					// save stash
+					account_set_user_iconstash(account, clienttag, output_icons.c_str());
+
+					msgtemp = localize(c, "Delete icon from {}'s stash.", account_get_name(account));
+					message_send_text(c, message_type_info, c, msgtemp);
+
+					return 0;
+					break;
+			}
+
+			return 0;
+		}
+
+
+
+		/* Search usericon in available list by icon code or alias, for given clienttag
+		*   return icon code if found, and NULL if not found
+		*   if (return_alias == true) then aias is returned
+		*/
+		extern char const * customicons_stash_find(t_clienttag clienttag, char const * code, bool return_alias)
+		{
+			t_elem *		curr;
+			t_elem *		curr_var;
+			t_icon_var_info *		var;
+			t_iconset_info * iconset;
+			t_icon_var_info *		item;
+
+			if (!code || !clienttag)
+				return NULL;
+
+			char clienttag_str[5];
+			tag_uint_to_str(clienttag_str, clienttag);
+
+			if (icon_head) {
+				LIST_TRAVERSE(icon_head, curr)
+				{
+					if (!(iconset = (t_iconset_info*)elem_get_data(curr))) {
+						eventlog(eventlog_level_error, __FUNCTION__, "icon list contains NULL item");
+						continue;
+					}
+
+					// find a needed tag
+					if (std::strcmp(iconset->clienttag, clienttag_str) != 0)
+						continue;
+
+					LIST_TRAVERSE(iconset->iconstash, curr_var)
+					{
+						if (!(var = (t_icon_var_info*)elem_get_data(curr_var)))
+						{
+							eventlog(eventlog_level_error, __FUNCTION__, "vars list contains NULL item");
+							continue;
+						}
+
+						if (strcasecmp(var->key, code) == 0 || strcasecmp(var->value, code) == 0)
+						{
+							char const * val = (return_alias)
+								? xstrdup(var->key)
+								: xstrdup(var->value);
+							return val;
+						}
+					}
+				}
+			}
+			return NULL;
+		}
+
+
+		/* Return comma delimeted icons from stash
+		*/
+		extern std::string customicons_stash_get_list(t_clienttag clienttag, bool return_alias)
+		{
+			t_elem *		curr;
+			t_elem *		curr_var;
+			t_icon_var_info *		var;
+			t_iconset_info * iconset;
+			t_icon_var_info *		item;
+
+			std::string output = "";
+
+			if (!clienttag)
+				return output;
+
+			char clienttag_str[5];
+			tag_uint_to_str(clienttag_str, clienttag);
+
+			if (icon_head) {
+				LIST_TRAVERSE(icon_head, curr)
+				{
+					if (!(iconset = (t_iconset_info*)elem_get_data(curr))) {
+						eventlog(eventlog_level_error, __FUNCTION__, "icon list contains NULL item");
+						continue;
+					}
+
+					// find a needed tag
+					if (std::strcmp(iconset->clienttag, clienttag_str) != 0)
+						continue;
+
+					LIST_TRAVERSE(iconset->iconstash, curr_var)
+					{
+						if (!(var = (t_icon_var_info*)elem_get_data(curr_var)))
+						{
+							eventlog(eventlog_level_error, __FUNCTION__, "vars list contains NULL item");
+							continue;
+						}
+
+
+						char const * val = (return_alias) 
+							? xstrdup(var->key)
+							: xstrdup(var->value);
+
+						if (!output.empty())
+							output += ", ";
+						output += std::string(val);
+					}
+					break;
+				}
+			}
+			return output;
+		}
 
 
 		extern int prefs_get_custom_icons()
@@ -63,7 +560,7 @@ namespace pvpgn
 
 
 		/* Format stats text, with attributes from a storage, and output text to a user */
-		extern const char * get_custom_stats_text(t_account * account, t_clienttag clienttag)
+		extern const char * customicons_get_stats_text(t_account * account, t_clienttag clienttag)
 		{
 			const char *value;
 			const char *text;
@@ -113,7 +610,7 @@ namespace pvpgn
 						text = str_replace((char*)text, tmp, (char*)value);
 
 						// also replace {var}->rank
-						if (icon = _find_custom_icon(atoi(value), clienttag_str))
+						if (icon = customicons_get_icon_by_rating(atoi(value), clienttag_str))
 						{
 							snprintf(tmp, sizeof(tmp), "{{%s->rank}}", var->key);
 							text = str_replace((char*)text, tmp, icon->rank);
@@ -127,7 +624,7 @@ namespace pvpgn
 
 
 		/* find icon code by rating for the clienttag */
-		extern t_icon_info * get_custom_icon(t_account * account, t_clienttag clienttag)
+		extern t_icon_info * customicons_get_icon_by_account(t_account * account, t_clienttag clienttag)
 		{
 			char * attr_key;
 			int rating;
@@ -147,7 +644,7 @@ namespace pvpgn
 
 			rating = account_get_numattr(account, attr_key);
 
-			icon = _find_custom_icon(rating, clienttag_str);
+			icon = customicons_get_icon_by_rating(rating, clienttag_str);
 			return icon;
 		}
 
@@ -190,7 +687,7 @@ namespace pvpgn
 			t_icon_var_info * option;
 
 			icon_head = list_create();
-
+			unsigned int fpos = 0;
 
 			if (!filename) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL filename");
@@ -219,28 +716,24 @@ namespace pvpgn
 							enable_custom_icons = 0;
 				}
 
+
 				/* 2) parse clienttags */
-				if (std::strcmp(buff, "[W3XP]") == 0 ||
-					std::strcmp(buff, "[WAR3]") == 0 ||
-					std::strcmp(buff, "[STAR]") == 0 ||
-					std::strcmp(buff, "[SEXP]") == 0 ||
-					std::strcmp(buff, "[JSTR]") == 0 || 
-					std::strcmp(buff, "[SSHR]") == 0 ||
-					std::strcmp(buff, "[W2BN]") == 0 ||
-					std::strcmp(buff, "[DRTL]") == 0 ||
-					std::strcmp(buff, "[DSHR]") == 0)
+				if (std::strcmp(buff, "[W3XP]") == 0 || std::strcmp(buff, "[WAR3]") == 0 || std::strcmp(buff, "[STAR]") == 0 || 
+					std::strcmp(buff, "[SEXP]") == 0 || std::strcmp(buff, "[JSTR]") == 0 || std::strcmp(buff, "[SSHR]") == 0 || 
+					std::strcmp(buff, "[W2BN]") == 0 || std::strcmp(buff, "[DRTL]") == 0 || std::strcmp(buff, "[DSHR]") == 0)
 				{
 					if (skip_comments(buff) > 0)
 					{
 						continue;
 					}
-					value = std::strtok(buff, " []");
+					value = std::strtok(buff, " []"); // extract clienttag
 
 					// new iconset for a clienttag
 					t_iconset_info * icon_set = (t_iconset_info*)xmalloc(sizeof(t_iconset_info));
 					icon_set->clienttag = xstrdup(value);
 					icon_set->attr_key = NULL;
 					icon_set->icon_info = list_create();
+					icon_set->iconstash = list_create();
 					icon_set->vars = list_create();
 					icon_set->stats = NULL;
 
@@ -248,9 +741,12 @@ namespace pvpgn
 					/* 3) parse inner options under a clienttag */
 					for (; (buff = file_get_line(fp)); line++)
 					{
-						if (end_of_iconset)
+						if (std::strcmp(buff, "[W3XP]") == 0 || std::strcmp(buff, "[WAR3]") == 0 || std::strcmp(buff, "[STAR]") == 0 ||
+							std::strcmp(buff, "[SEXP]") == 0 || std::strcmp(buff, "[JSTR]") == 0 || std::strcmp(buff, "[SSHR]") == 0 ||
+							std::strcmp(buff, "[W2BN]") == 0 || std::strcmp(buff, "[DRTL]") == 0 || std::strcmp(buff, "[DSHR]") == 0)
 						{
-							end_of_iconset = false;
+							// return position in stream
+							fseek(fp, fpos, SEEK_SET);
 							break;
 						}
 						if (skip_comments(buff) > 0)
@@ -266,6 +762,8 @@ namespace pvpgn
 
 							// add to variables
 							list_append_data(icon_set->vars, option);
+
+							continue;
 						}
 
 						/* 3) parse icons section */
@@ -319,13 +817,45 @@ namespace pvpgn
 								if (std::strcmp(buff, "[/stats]") == 0) {
 									// put whole text of stats after read
 									icon_set->stats = xstrdup(tmp.c_str());
-									end_of_iconset = true;
 									break;
 								}
-
 								tmp = tmp + buff + "\n";
 							}
 						}
+
+
+						/* 4) parse usericons section */
+						if (std::strcmp(buff, "[iconstash]") == 0)
+						{
+							char *key, *value;
+							counter = 0;
+							for (; (buff = file_get_line(fp)); line++)
+							{
+								if (skip_comments(buff) > 0)
+								{
+									continue;
+								}
+								// end if usericons
+								if (std::strcmp(buff, "[/iconstash]") == 0) {
+									break;
+								}
+
+								pos = 0;
+								if (!(key = next_token(buff, &pos)))
+									continue;
+								if (!(value = next_token(buff, &pos)))
+									value = key;
+								counter++;
+
+								t_icon_var_info * icon_item = (t_icon_var_info*)xmalloc(sizeof(t_icon_var_info));
+								icon_item->key = xstrdup(key);
+								icon_item->value = xstrdup(value); 
+								list_append_data(icon_set->iconstash, icon_item);
+							}
+						}
+
+						// remember file position
+						fpos = ftell(fp);
 					}
 
 					if (!icon_set->attr_key)
@@ -338,7 +868,6 @@ namespace pvpgn
 					eventlog(eventlog_level_trace, __FUNCTION__, "loaded %u custom icons for %s", counter, icon_set->clienttag);
 				}
 			}
-
 
 			return 0;
 		}
@@ -442,12 +971,15 @@ namespace pvpgn
 
 
 		/* Get custom icon by rating for clienttag */
-		static t_icon_info * _find_custom_icon(int rating, char * clienttag)
+		extern t_icon_info * customicons_get_icon_by_rating(int rating, char * clienttag)
 		{
 			t_elem *		curr;
 			t_elem *		curr_icon;
 			t_iconset_info *		iconset;
 			t_icon_info *		icon;
+
+			if (!clienttag)
+				return NULL;
 
 			if (icon_head) {
 				LIST_TRAVERSE(icon_head, curr)

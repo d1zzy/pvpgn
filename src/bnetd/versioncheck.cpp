@@ -38,6 +38,7 @@
 #include "common/field_sizes.h"
 #include "common/token.h"
 #include "common/proginfo.h"
+#include "common/xstring.h"
 
 #include "prefs.h"
 #include "common/setup_after.h"
@@ -272,7 +273,6 @@ namespace pvpgn
 			return parsed_exeinfo;
 		}
 
-#define safe_toupper(X) (std::islower((int)X)?std::toupper((int)X):(X))
 
 		/* This implements some dumb kind of pattern matching. Any '?'
 		 * signs in the pattern are treated as "don't care" signs. This

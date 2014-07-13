@@ -78,9 +78,22 @@ namespace pvpgn
 		extern int account_get_auth_createladdergame(t_account * account);
 		extern int account_get_auth_joinladdergame(t_account * account);
 		extern int account_get_auth_lock(t_account * account);
+		extern unsigned int account_get_auth_locktime(t_account * account);
+		extern char const * account_get_auth_lockreason(t_account * account);
+		extern char const * account_get_auth_lockby(t_account * account);
 		extern int account_set_auth_lock(t_account * account, int val);
-		extern int account_set_auth_mute(t_account * account, int val);
+		extern int account_set_auth_locktime(t_account * account, unsigned int val);
+		extern int account_set_auth_lockreason(t_account * account, char const * val);
+		extern int account_set_auth_lockby(t_account * account, char const * val);
 		extern int account_get_auth_mute(t_account * account);
+		extern unsigned int account_get_auth_mutetime(t_account * account);
+		extern char const * account_get_auth_mutereason(t_account * account);
+		extern char const * account_get_auth_muteby(t_account * account);
+		extern int account_set_auth_mute(t_account * account, int val);
+		extern int account_set_auth_mutetime(t_account * account, unsigned int val);
+		extern int account_set_auth_mutereason(t_account * account, char const * val);
+		extern int account_set_auth_muteby(t_account * account, char const * val);
+		extern std::string account_get_locktext(t_account * account, bool with_author = true);
 
 		/* profile */
 		extern char const * account_get_sex(t_account * account); /* the profile attributes are updated directly in bnetd.c */
@@ -224,6 +237,8 @@ namespace pvpgn
 		extern int account_get_profile_calcs(t_account * account, int xp, unsigned int level);
 		extern unsigned int account_get_icon_profile(t_account * account, t_clienttag clienttag);
 
+		extern int account_set_user_iconstash(t_account * account, t_clienttag clienttag, char const * value);
+		extern char const * account_get_user_iconstash(t_account * account, t_clienttag clienttag);
 		extern int account_set_user_icon(t_account * account, t_clienttag clienttag, char const * usericon);
 		extern char const * account_get_user_icon(t_account * account, t_clienttag clienttag);
 		extern unsigned int account_icon_to_profile_icon(char const * icon, t_account * account, t_clienttag ctag);
@@ -233,6 +248,9 @@ namespace pvpgn
 
 		extern int account_set_email(t_account * account, char const * email);
 		extern char const * account_get_email(t_account * account);
+
+		extern int account_set_userlang(t_account * account, const char * lang);
+		extern char const * account_get_userlang(t_account * account);
 
 		/*  Westwood Online Extensions */
 		extern char const * account_get_wol_apgar(t_account * account);

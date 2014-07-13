@@ -3270,13 +3270,22 @@ namespace pvpgn
 
 	/******************************************************/
 	/* seen in SC107a */
-#define CLIENT_UNKNOWN_17 0x17ff
+#define CLIENT_READMEMORY 0x17ff
 	typedef struct
 	{
 		t_bnet_header h;
-		/* FIXME: what is in here... is there a cooresponding
-		   server packet? */
-	} PACKED_ATTR() t_client_unknown_17;
+		bn_int        request_id;
+		/* Memory */
+	} PACKED_ATTR() t_client_readmemory;
+
+#define SERVER_READMEMORY 0x17ff
+	typedef struct
+	{
+		t_bnet_header h;
+		bn_int        request_id;
+		bn_int        address;
+		bn_int        length;
+	} PACKED_ATTR() t_server_readmemory;
 	/******************************************************/
 
 
@@ -4052,7 +4061,21 @@ namespace pvpgn
 		 */
 	} PACKED_ATTR() t_server_clanmemberupdate;
 
+
+
+#define SERVER_MESSAGEBOX 0x19ff
+	typedef struct
+	{
+		t_bnet_header h;
+		bn_int        style;
+		/* Text */
+		/* Caption */
+	} PACKED_ATTR() t_server_messagebox;
+#define SERVER_MESSAGEBOX_OK    0x00000000
+#define SERVER_MESSAGEBOX_OKCANCEL 0x00000001
+#define SERVER_MESSAGEBOX_YESNO 0x00000004
+
+
 }
 
 #endif
-

@@ -25,6 +25,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cctype>
+#include <vector>
 
 #include "compat/strsep.h"
 #include "compat/strcasecmp.h"
@@ -34,11 +35,16 @@
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/field_sizes.h"
+#include "common/xstring.h"
 
 #include "message.h"
 #include "server.h"
 #include "prefs.h"
 #include "connection.h"
+
+#include "helpfile.h"
+#include "command.h"
+#include "i18n.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -389,12 +395,12 @@ namespace pvpgn
 		extern int ipbanlist_add(t_connection * c, char const * cp, std::time_t endtime)
 		{
 			t_ipban_entry *	entry;
-			char		tstr[MAX_MESSAGE_LEN];
+			std::string msgtemp;
 
 			if (!(entry = ipban_str_to_ipban_entry(cp)))
 			{
 				if (c)
-					message_send_text(c, message_type_error, c, "Bad IP.");
+					message_send_text(c, message_type_error, c, localize(c, "Bad IP."));
 				eventlog(eventlog_level_error, __FUNCTION__, "could not convert to t_ipban_entry: \"%s\"", cp);
 				return -1;
 			}
@@ -407,19 +413,19 @@ namespace pvpgn
 
 				if (endtime == 0)
 				{
-					std::sprintf(tstr, "%s banned permamently by %s.", cp, conn_get_username(c));
-					eventlog(eventlog_level_info, __FUNCTION__, "%s", tstr);
-					message_send_admins(c, message_type_info, tstr);
-					std::sprintf(tstr, "%s banned permamently.", cp);
-					message_send_text(c, message_type_info, c, tstr);
+					msgtemp = localize(c, "{} banned permamently by {}.", cp, conn_get_username(c));
+					eventlog(eventlog_level_info, __FUNCTION__, msgtemp.c_str());
+					message_send_admins(c, message_type_info, msgtemp.c_str());
+					msgtemp = localize(c, "{} banned permamently.", cp);
+					message_send_text(c, message_type_info, c, msgtemp);
 				}
 				else
 				{
-					std::sprintf(tstr, "%s banned for %.48s by %s.", cp, seconds_to_timestr(entry->endtime - now), conn_get_username(c));
-					eventlog(eventlog_level_info, __FUNCTION__, "%s", tstr);
-					message_send_admins(c, message_type_info, tstr);
-					std::sprintf(tstr, "%s banned for %.48s.", cp, seconds_to_timestr(entry->endtime - now));
-					message_send_text(c, message_type_info, c, tstr);
+					msgtemp = localize(c, "{} banned for {} by {}.", cp, seconds_to_timestr(entry->endtime - now), conn_get_username(c));
+					eventlog(eventlog_level_info, __FUNCTION__, msgtemp.c_str());
+					message_send_admins(c, message_type_info, msgtemp.c_str());
+					msgtemp = localize(c, "{} banned for {}.", cp, seconds_to_timestr(entry->endtime - now));
+					message_send_text(c, message_type_info, c, msgtemp);
 				}
 			}
 
@@ -462,7 +468,7 @@ namespace pvpgn
 			unsigned int	bmin;
 			char		minstr[MAX_TIME_STR];
 			unsigned int	i;
-			char		tstr[MAX_MESSAGE_LEN];
+			std::string msgtemp;
 
 			for (i = 0; std::isdigit((int)timestr[i]) && i < sizeof(minstr)-1; i++)
 				minstr[i] = timestr[i];
@@ -472,12 +478,14 @@ namespace pvpgn
 			{
 				if (c)
 				{
-					if (std::strlen(minstr) < 1)
-						message_send_text(c, message_type_info, c, "There was an error in std::time.");
-					else
+					msgtemp = "There was an error in std::time.";
+					//if (std::strlen(minstr) < 1)
+					//	message_send_text(c, message_type_info, c, localize(c, msgtemp));
+					//else
 					{
-						std::sprintf(tstr, "There was an error in std::time. Banning only for: %s minutes.", minstr);
-						message_send_text(c, message_type_info, c, tstr);
+						msgtemp += " ";
+						msgtemp += localize(c, "Banning only for: {} minutes.", minstr);
+						message_send_text(c, message_type_info, c, msgtemp);
 					}
 				}
 			}
@@ -498,27 +506,22 @@ namespace pvpgn
 
 		extern int handle_ipban_command(t_connection * c, char const * text)
 		{
-			char		subcommand[MAX_FUNC_LEN];
-			char		ipstr[MAX_IP_STR];
-			unsigned int 	i, j;
+			char const *subcommand, *ipstr, *time;
 
-			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
-			for (; text[i] == ' '; i++);
-
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get subcommand */
-			if (j < sizeof(subcommand)-1) subcommand[j++] = text[i];
-			subcommand[j] = '\0';
-			for (; text[i] == ' '; i++);
-
-			for (j = 0; text[i] != ' ' && text[i] != '\0'; i++) /* get ip address */
-			if (j < sizeof(ipstr)-1) ipstr[j++] = text[i];
-			ipstr[j] = '\0';
-			for (; text[i] == ' '; i++);
+			std::vector<std::string> args = split_command(text, 3);
+			if (args[1].empty())
+			{
+				describe_command(c, args[0].c_str());
+				return -1;
+			}
+			subcommand = args[1].c_str(); // subcommand
+			ipstr = args[2].c_str(); // ip address
+			time = args[3].c_str(); // username
 
 			switch (identify_ipban_function(subcommand))
 			{
 			case IPBAN_FUNC_ADD:
-				ipbanlist_add(c, ipstr, ipbanlist_str_to_time_t(c, &text[i]));
+				ipbanlist_add(c, ipstr, ipbanlist_str_to_time_t(c, time));
 				ipbanlist_save(prefs_get_ipbanfile());
 				break;
 			case IPBAN_FUNC_DEL:
@@ -530,14 +533,9 @@ namespace pvpgn
 				break;
 			case IPBAN_FUNC_CHECK:
 				ipban_func_check(c, ipstr);
-				break;
-			case IPBAN_FUNC_HELP:
-				message_send_text(c, message_type_info, c, "The ipban command supports the following patterns.");
-				ipban_usage(c);
-				break;
+				break; 
 			default:
-				message_send_text(c, message_type_info, c, "The command is incorect. Use one of the following patterns.");
-				ipban_usage(c);
+				describe_command(c, args[0].c_str());
 			}
 
 			return 0;
@@ -554,8 +552,6 @@ namespace pvpgn
 				return IPBAN_FUNC_LIST;
 			if (strcasecmp(funcstr, "check") == 0 || strcasecmp(funcstr, "c") == 0)
 				return IPBAN_FUNC_CHECK;
-			if (strcasecmp(funcstr, "help") == 0 || strcasecmp(funcstr, "h") == 0)
-				return IPBAN_FUNC_HELP;
 
 			return IPBAN_FUNC_UNKNOWN;
 		}
@@ -575,7 +571,7 @@ namespace pvpgn
 			{
 				if (!(to_delete = ipban_str_to_ipban_entry(cp)))
 				{
-					message_send_text(c, message_type_error, c, "Illegal IP entry.");
+					message_send_text(c, message_type_error, c, localize(c, "Illegal IP entry."));
 					return -1;
 				}
 				LIST_TRAVERSE(ipbanlist_head, curr)
@@ -599,7 +595,7 @@ namespace pvpgn
 				ipban_unload_entry(to_delete);
 				if (counter == 0)
 				{
-					message_send_text(c, message_type_error, c, "No matching entry.");
+					message_send_text(c, message_type_error, c, localize(c, "No matching entry."));
 					return -1;
 				}
 				else
@@ -616,7 +612,7 @@ namespace pvpgn
 			to_delete_nmbr = std::atoi(cp);
 			if (to_delete_nmbr <= 0)
 			{
-				message_send_text(c, message_type_error, c, "Wrong entry number.");
+				message_send_text(c, message_type_error, c, localize(c, "Wrong entry number."));
 				return -1;
 			}
 			LIST_TRAVERSE(ipbanlist_head, curr)
@@ -634,7 +630,7 @@ namespace pvpgn
 					else
 					{
 						ipban_unload_entry(entry);
-						message_send_text(c, message_type_info, c, "Entry deleted.");
+						message_send_text(c, message_type_info, c, localize(c, "Entry deleted."));
 					}
 				}
 			}
@@ -660,7 +656,7 @@ namespace pvpgn
 			char *		ipstr;
 
 			counter = 0;
-			message_send_text(c, message_type_info, c, "Banned IPs:");
+			message_send_text(c, message_type_info, c, localize(c, "Banned IPs:"));
 			LIST_TRAVERSE_CONST(ipbanlist_head, curr)
 			{
 				entry = (t_ipban_entry*)elem_get_data(curr);
@@ -671,7 +667,7 @@ namespace pvpgn
 				}
 				counter++;
 				if (entry->endtime == 0)
-					std::sprintf(timestr, "(perm)");
+					std::sprintf(timestr, localize(c, "(perm)").c_str());
 				else
 					std::sprintf(timestr, "(%.48s)", seconds_to_timestr(entry->endtime - now));
 
@@ -686,7 +682,7 @@ namespace pvpgn
 			}
 
 			if (counter == 0)
-				message_send_text(c, message_type_info, c, "none");
+				message_send_text(c, message_type_info, c, localize(c, "none"));
 			return 0;
 		}
 
@@ -694,20 +690,20 @@ namespace pvpgn
 		static int ipban_func_check(t_connection * c, char const * cp)
 		{
 			int		res;
-			char	entry[MAX_MESSAGE_LEN];
+			std::string msgtemp;
 
 			res = ipbanlist_check(cp);
 			switch (res)
 			{
 			case 0:
-				message_send_text(c, message_type_info, c, "IP not banned.");
+				message_send_text(c, message_type_info, c, localize(c, "IP not banned."));
 				break;
 			case -1:
-				message_send_text(c, message_type_error, c, "Error occured.");
+				message_send_text(c, message_type_error, c, localize(c, "Error occured."));
 				break;
 			default:
-				std::sprintf(entry, "IP banned by rule #%i.", res);
-				message_send_text(c, message_type_info, c, entry);
+				msgtemp = localize(c, "IP banned by rule #{}.", res);
+				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
 			return 0;
@@ -1035,22 +1031,6 @@ namespace pvpgn
 			return 1;
 		}
 
-
-		static void ipban_usage(t_connection * c)
-		{
-			message_send_text(c, message_type_info, c, "to print this information:");
-			message_send_text(c, message_type_info, c, "    /ipban h[elp]");
-			message_send_text(c, message_type_info, c, "to print all baned IPs");
-			message_send_text(c, message_type_info, c, "    /ipban [l[ist]]");
-			message_send_text(c, message_type_info, c, "to erase ban:");
-			message_send_text(c, message_type_info, c, "    /ipban d[el] <IP|index num>");
-			message_send_text(c, message_type_info, c, "    (IP have to be entry accepted in bnban)");
-			message_send_text(c, message_type_info, c, "to add ban:");
-			message_send_text(c, message_type_info, c, "    /ipban a[dd] IP");
-			message_send_text(c, message_type_info, c, "    (IP have to be entry accepted in bnban)");
-			message_send_text(c, message_type_info, c, "to check is specified IP banned:");
-			message_send_text(c, message_type_info, c, "    /ipban c[heck] IP");
-		}
 
 	}
 
