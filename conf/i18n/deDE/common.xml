@@ -305,7 +305,7 @@
     </item>
     <item id="45" file="command.cpp" function="_handle_clan_command">
       <original>Clan with your specified &amp;lt;clantag&amp;gt; already exist!</original>
-      <translate>Clan mit den Spezifikationen &amp;lt;clantag&amp;gt; existiert bereits! </translate>
+      <translate>Clan mit den Spezifikationen &amp;lt;clantag&amp;gt; existiert bereits!</translate>
     </item>
     <item id="46" file="command.cpp" function="_handle_clan_command">
       <original>Please choice another one.</original>
@@ -641,7 +641,7 @@
     </item>
     <item id="145" file="command.cpp" function="_handle_friends_command">
       <original>, in channel "{}",</original>
-      <translate>, im Kanal "{}", </translate>
+      <translate>, im Kanal "{}",</translate>
     </item>
     <item id="146" file="command.cpp" function="_handle_friends_command">
       <original>, is in AT Preparation</original>
