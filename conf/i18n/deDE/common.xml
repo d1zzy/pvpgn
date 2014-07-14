@@ -9,31 +9,31 @@
   <items>
     <item id="1" file="account_wrap.cpp" function="account_get_locktext">
       <original> by {}</original>
-      <translate>von {} </translate>
+      <translate> von {}</translate>
     </item>
     <item id="2" file="account_wrap.cpp" function="account_get_locktext">
       <original> for {}</original>
-      <translate>wegen {} </translate>
+      <translate> wegen {}</translate>
     </item>
     <item id="3" file="account_wrap.cpp" function="account_get_locktext">
       <original> permanently</original>
-      <translate>dauerhaft </translate>
+      <translate> dauerhaft</translate>
     </item>
     <item id="4" file="account_wrap.cpp" function="account_get_locktext">
       <original> with a reason "{}"</original>
-      <translate>wegen dem grund {} </translate>
+      <translate> wegen dem grund "{}"</translate>
     </item>
     <item id="6" file="alias_command.cpp" function="handle_alias_command">
       <original>No such alias.  Use // to show the list.</original>
-      <translate>Kein solcher alias. Nutze // um die Liste zu zeigen </translate>
+      <translate>Kein solcher alias. Nutze // um die Liste zu zeigen.</translate>
     </item>
     <item id="5" file="alias_command.cpp" function="list_aliases">
       <original>Alias list:</original>
-      <translate> Alias Liste:</translate>
+      <translate>Alias Liste:</translate>
     </item>
     <item id="7" file="channel.cpp" function="channel_add_connection">
       <original>you are now tempOP for this channel</original>
-      <translate>Du bist jetzt tempOP in diesem Kanal </translate>
+      <translate>Du bist jetzt tempOP in diesem Kanal</translate>
     </item>
     <item id="453" file="channel.cpp" function="channel_message_send">
       <original>You can't talk on the channel. Your account has been muted</original>
@@ -49,51 +49,51 @@
     </item>
     <item id="260" file="command.cpp" function="_handle_addacct_command">
       <original>Account name contains some invalid symbol!</original>
-      <translate>Der Account Name beeinhalted unzulaessige Symbole! </translate>
+      <translate>Der Account Name beeinhalted unzulaessige Symbole!</translate>
     </item>
     <item id="261" file="command.cpp" function="_handle_addacct_command">
       <original>Maximum password length allowed is {}</original>
-      <translate>Die maximale Laenge für ein Passwort ist {} </translate>
+      <translate>Die maximale Laenge für ein Passwort ist {}</translate>
     </item>
     <item id="262" file="command.cpp" function="_handle_addacct_command">
       <original>Trying to add account "{}" with password "{}"</original>
-      <translate>Versuche Account {} mit Passwort {} hinzuzfuegen </translate>
+      <translate>Versuche Account "{}" mit Passwort "{}" hinzuzfuegen</translate>
     </item>
     <item id="263" file="command.cpp" function="_handle_addacct_command">
       <original>Hash is: {}</original>
-      <translate>Hash ist {} </translate>
+      <translate>Hash ist {}</translate>
     </item>
     <item id="264" file="command.cpp" function="_handle_addacct_command">
       <original>Failed to create account!</original>
-      <translate>Accounterstellung fehlgeschlagen! </translate>
+      <translate>Accounterstellung fehlgeschlagen!</translate>
     </item>
     <item id="265" file="command.cpp" function="_handle_addacct_command">
       <original>Account {} created.</original>
-      <translate>Account {} erstellt. </translate>
+      <translate>Account {} erstellt.</translate>
     </item>
     <item id="51" file="command.cpp" function="_handle_admin_command">
       <original>You must supply a username.</original>
-      <translate>Du musst einen Nutzernamen eintragen. </translate>
+      <translate>Du musst einen Nutzernamen eintragen.</translate>
     </item>
     <item id="52" file="command.cpp" function="_handle_admin_command">
       <original>There's no account with username {}.</original>
-      <translate>Es gibt keinen Account mit dem Nutzernamen {} </translate>
+      <translate>Es gibt keinen Account mit dem Nutzernamen {}.</translate>
     </item>
     <item id="53" file="command.cpp" function="_handle_admin_command">
       <original>{} is already a Server Admin</original>
-      <translate>{} ist schon Server Admin </translate>
+      <translate>{} ist schon Server Admin</translate>
     </item>
     <item id="54" file="command.cpp" function="_handle_admin_command">
       <original>{} has been promoted to a Server Admin</original>
-      <translate>{} wurde zu einem Server Admin befoerdert. </translate>
+      <translate>{} wurde zu einem Server Admin befoerdert</translate>
     </item>
     <item id="55" file="command.cpp" function="_handle_admin_command">
       <original>{} has promoted you to a Server Admin</original>
-      <translate>{} hat dich zu einem Server Admin befoerdert. </translate>
+      <translate>{} hat dich zu einem Server Admin befoerdert</translate>
     </item>
     <item id="56" file="command.cpp" function="_handle_admin_command">
       <original>{} is not a Server Admin.</original>
-      <translate>{} ist kein Server Admin </translate>
+      <translate>{} ist kein Server Admin.</translate>
     </item>
     <item id="57" file="command.cpp" function="_handle_admin_command">
       <original>{} has been demoted from a Server Admin</original>
@@ -101,15 +101,15 @@
     </item>
     <item id="58" file="command.cpp" function="_handle_admin_command">
       <original>{} has demoted you from a Server Admin</original>
-      <translate>{} hat dich vom Rang Server Admin degradiert </translate>
+      <translate>{} hat dich vom Rang Server Admin degradiert</translate>
     </item>
     <item id="299" file="command.cpp" function="_handle_admins_command">
       <original>Currently logged on Administrators:</original>
-      <translate>Momentan eingeloggte Administratoren: </translate>
+      <translate>Momentan eingeloggte Administratoren:</translate>
     </item>
     <item id="416" file="command.cpp" function="_handle_alert_command">
       <original>Your game client doesn't support MessageBox.</original>
-      <translate>Dein Game Client unterstuetzt keine MessageBox </translate>
+      <translate>Dein Game Client unterstuetzt keine MessageBox.</translate>
     </item>
     <item id="417" file="command.cpp" function="_handle_alert_command">
       <original>\n\n***************************\nBy {}</original>
@@ -117,7 +117,7 @@
     </item>
     <item id="418" file="command.cpp" function="_handle_alert_command">
       <original>Information from {}</original>
-      <translate>Information von {} </translate>
+      <translate>Information von {}</translate>
     </item>
     <item id="419" file="command.cpp" function="_handle_alert_command">
       <original> for {}</original>
@@ -125,19 +125,19 @@
     </item>
     <item id="158" file="command.cpp" function="_handle_announce_command">
       <original>Announcement from {}: {}</original>
-      <translate>Bekanntmachung durch {}: </translate>
+      <translate>Bekanntmachung durch {}: {}</translate>
     </item>
     <item id="159" file="command.cpp" function="_handle_announce_command">
       <original>Could not broadcast message.</original>
-      <translate>Konnte Nachricht nicht uebertragen. </translate>
+      <translate>Konnte Nachricht nicht uebertragen.</translate>
     </item>
     <item id="66" file="command.cpp" function="_handle_aop_command">
       <original>This command can only be used inside a channel.</original>
-      <translate>Dieser Befehl kann nur innerhalb eines Kanals genutzt werden. </translate>
+      <translate>Dieser Befehl kann nur innerhalb eines Kanals genutzt werden.</translate>
     </item>
     <item id="67" file="command.cpp" function="_handle_aop_command">
       <original>You must be at least a Channel Admin to use this command.</original>
-      <translate>Du musst mindestestens ein Kanal Admin sein um diesen Befehl zu nutzen. </translate>
+      <translate>Du musst mindestestens ein Kanal Admin sein um diesen Befehl zu nutzen.</translate>
     </item>
     <item id="68" file="command.cpp" function="_handle_aop_command">
       <original>There's no account with username {}.</original>
@@ -145,23 +145,23 @@
     </item>
     <item id="69" file="command.cpp" function="_handle_aop_command">
       <original>{} is already a Channel Admin</original>
-      <translate>{} ist bereits Kanal Admin </translate>
+      <translate>{} ist bereits Kanal Admin</translate>
     </item>
     <item id="70" file="command.cpp" function="_handle_aop_command">
       <original>{} has been promoted to a Channel Admin</original>
-      <translate>{} wurde zu einem Kanal Admin befoerdert </translate>
+      <translate>{} wurde zu einem Kanal Admin befoerdert</translate>
     </item>
     <item id="71" file="command.cpp" function="_handle_aop_command">
       <original>{} has promoted you to a Channel Admin for channel "{}"</original>
-      <translate>{} wurde zu einem Kanal Admin fuer den Kanal {} befoerdert </translate>
+      <translate>{} wurde zu einem Kanal Admin fuer den Kanal "{}" befoerdert</translate>
     </item>
     <item id="198" file="command.cpp" function="_handle_away_command">
       <original>You are now marked as being away.</original>
-      <translate>Du wirst nun als abwesend angezeigt. </translate>
+      <translate>Du wirst nun als abwesend angezeigt.</translate>
     </item>
     <item id="199" file="command.cpp" function="_handle_away_command">
       <original>You are no longer marked as away.</original>
-      <translate>Du wirst nicht mehr als abwesend angezeigt. </translate>
+      <translate>Du wirst nicht mehr als abwesend angezeigt.</translate>
     </item>
     <item id="218" file="command.cpp" function="_handle_ban_command">
       <original>This command can only be used inside a channel.</original>
@@ -169,55 +169,55 @@
     </item>
     <item id="219" file="command.cpp" function="_handle_ban_command">
       <original>You have to be at least a Channel Operator to use this command.</original>
-      <translate>Du musst mindestens ein Channel Operator sein um diesen Befehl zu nutzen. </translate>
+      <translate>Du musst mindestens ein Channel Operator sein um diesen Befehl zu nutzen.</translate>
     </item>
     <item id="220" file="command.cpp" function="_handle_ban_command">
       <original>That account doesn't currently exist.</original>
-      <translate>Dieser Account existiert momentan nicht. </translate>
+      <translate>Dieser Account existiert momentan nicht.</translate>
     </item>
     <item id="221" file="command.cpp" function="_handle_ban_command">
       <original>You cannot ban administrators.</original>
-      <translate>Du kannst Administratoren nicht bannen. </translate>
+      <translate>Du kannst Administratoren nicht bannen.</translate>
     </item>
     <item id="160" file="command.cpp" function="_handle_beep_command">
       <original>Audible notification on.</original>
-      <translate>Hoerbare Benachrictigungen an. </translate>
+      <translate>Hoerbare Benachrictigungen an.</translate>
     </item>
     <item id="194" file="command.cpp" function="_handle_channel_command">
       <original>Channel Arranged Teams is a RESTRICTED Channel!</original>
-      <translate>Der Kanal Arrenged Teams ist nur bestimmten Gruppen zugaenglich! </translate>
+      <translate>Der Kanal Arrenged Teams ist nur bestimmten Gruppen zugaenglich!</translate>
     </item>
     <item id="195" file="command.cpp" function="_handle_channel_command">
       <original>Max channel name length exceeded (max {} symbols)</original>
-      <translate>Maximale Laenge fuer Kanal Name ueberschritten (max. {} Symbole) </translate>
+      <translate>Maximale Laenge fuer Kanal Name ueberschritten (max. {} Symbole)</translate>
     </item>
     <item id="196" file="command.cpp" function="_handle_channel_command">
       <original>Command disabled while inside a game.</original>
-      <translate>Befehl im Spiel deaktiviert </translate>
+      <translate>Befehl im Spiel deaktiviert</translate>
     </item>
     <item id="256" file="command.cpp" function="_handle_channels_command">
       <original>Currently accessible channels:</original>
-      <translate>Momentan verfuegbare Kanaele: </translate>
+      <translate>Momentan verfuegbare Kanaele:</translate>
     </item>
     <item id="257" file="command.cpp" function="_handle_channels_command">
       <original>All current channels:</original>
-      <translate>Alle momentane Kanaele: </translate>
+      <translate>Alle momentane Kanaele:</translate>
     </item>
     <item id="258" file="command.cpp" function="_handle_channels_command">
       <original>Current channels of type {}</original>
-      <translate>Momentane Kanaele vom Typ {} </translate>
+      <translate>Momentane Kanaele vom Typ {}</translate>
     </item>
     <item id="259" file="command.cpp" function="_handle_channels_command">
       <original> -----------name----------- users ----admin/operator----</original>
-      <translate> -----------Name----------- Nutzer ----Admin/Operator---- </translate>
+      <translate> -----------Name----------- Nutzer ----Admin/Operator----</translate>
     </item>
     <item id="266" file="command.cpp" function="_handle_chpass_command">
       <original>Only admins may change passwords for other accounts.</original>
-      <translate>Nur Admins koennen Passwoerter anderer Accounts aendern. </translate>
+      <translate>Nur Admins koennen Passwoerter anderer Accounts aendern.</translate>
     </item>
     <item id="267" file="command.cpp" function="_handle_chpass_command">
       <original>Account does not exist.</original>
-      <translate>Account existiert nicht. </translate>
+      <translate>Account existiert nicht.</translate>
     </item>
     <item id="268" file="command.cpp" function="_handle_chpass_command">
       <original>Maximum password length allowed is {}</original>
@@ -229,79 +229,79 @@
     </item>
     <item id="270" file="command.cpp" function="_handle_chpass_command">
       <original>Unable to set password.</original>
-      <translate>Passowrt setzen nicht moeglich. </translate>
+      <translate>Passowrt setzen nicht moeglich.</translate>
     </item>
     <item id="27" file="command.cpp" function="_handle_clan_command">
       <original>Message was sent to all currently available clan members.</original>
-      <translate>Nachricht wurde an alle momentan verfuegbare Clan Mitglieder gesendet. </translate>
+      <translate>Nachricht wurde an alle momentan verfuegbare Clan Mitglieder gesendet.</translate>
     </item>
     <item id="28" file="command.cpp" function="_handle_clan_command">
       <original>All fellow members of your clan are currently offline.</original>
-      <translate>All deine Clan Mitglieder sind momentan offline. </translate>
+      <translate>All deine Clan Mitglieder sind momentan offline.</translate>
     </item>
     <item id="29" file="command.cpp" function="_handle_clan_command">
       <original>Clan channel is opened up!</original>
-      <translate>Clan Kanal wurde geoeffnet! </translate>
+      <translate>Clan Kanal wurde geoeffnet!</translate>
     </item>
     <item id="30" file="command.cpp" function="_handle_clan_command">
       <original>Clan channel has already been opened up!</original>
-      <translate>Clan Kanal wurde bereits geoffnet! </translate>
+      <translate>Clan Kanal wurde bereits geoffnet!</translate>
     </item>
     <item id="31" file="command.cpp" function="_handle_clan_command">
       <original>Clan channel is closed!</original>
-      <translate>Clan Kanal ist geschlossen! </translate>
+      <translate>Clan Kanal ist geschlossen!</translate>
     </item>
     <item id="32" file="command.cpp" function="_handle_clan_command">
       <original>Clan channel has already been closed!</original>
-      <translate>Clan Kanal wurde bereits geschlossen! </translate>
+      <translate>Clan Kanal wurde bereits geschlossen!</translate>
     </item>
     <item id="33" file="command.cpp" function="_handle_clan_command">
       <original>Clan message of day is updated!</original>
-      <translate>Clan Nachricht des Tages wurde aktualisiert! </translate>
+      <translate>Clan Nachricht des Tages wurde aktualisiert!</translate>
     </item>
     <item id="34" file="command.cpp" function="_handle_clan_command">
       <original>User {} was invited to your clan!</original>
-      <translate>Nutzer {} wurde in deinen Clan eingeladen! </translate>
+      <translate>Nutzer {} wurde in deinen Clan eingeladen!</translate>
     </item>
     <item id="35" file="command.cpp" function="_handle_clan_command">
       <original>You are invited to {} by {}!</original>
-      <translate>Du wurdest von {}  zu {} eingeladen! </translate>
+      <translate>Du wurdest von {}  zu {} eingeladen!</translate>
     </item>
     <item id="36" file="command.cpp" function="_handle_clan_command">
       <original>User {} is not online or is already member of clan!</original>
-      <translate>Nutzer {} ist nicht online oder bereits Mitglied eines Clans! </translate>
+      <translate>Nutzer {} ist nicht online oder bereits Mitglied eines Clans!</translate>
     </item>
     <item id="37" file="command.cpp" function="_handle_clan_command">
       <original>This is one-way action! If you really want</original>
-      <translate>Dies ist eine unumkehrbare Aktion! Wenn du wirklich </translate>
+      <translate>Dies ist eine unumkehrbare Aktion! Wenn du wirklich</translate>
     </item>
     <item id="38" file="command.cpp" function="_handle_clan_command">
       <original>to disband your clan, type /clan disband yes</original>
-      <translate>deinen Clan aufloesen moechtest, schreibe /clan disband yes </translate>
+      <translate>deinen Clan aufloesen moechtest, schreibe /clan disband yes</translate>
     </item>
     <item id="39" file="command.cpp" function="_handle_clan_command">
       <original>Your clan was disbanded.</original>
-      <translate>Dein clan wurde aufgeloest. </translate>
+      <translate>Dein clan wurde aufgeloest.</translate>
     </item>
     <item id="40" file="command.cpp" function="_handle_clan_command">
       <original>You have been invited to {}</original>
-      <translate>Du wurdest zu {} eingeladen </translate>
+      <translate>Du wurdest zu {} eingeladen</translate>
     </item>
     <item id="41" file="command.cpp" function="_handle_clan_command">
       <original>You are now a clan member of {}</original>
-      <translate>Du bist nun Mitglied des Clans {} </translate>
+      <translate>Du bist nun Mitglied des Clans {}</translate>
     </item>
     <item id="42" file="command.cpp" function="_handle_clan_command">
       <original>Clan {} was be created</original>
-      <translate>Clan {} wurde erstellt </translate>
+      <translate>Clan {} wurde erstellt</translate>
     </item>
     <item id="43" file="command.cpp" function="_handle_clan_command">
       <original>You are no longer ivited to {}</original>
-      <translate>Du bist nicht laenger zu {} eingeladen </translate>
+      <translate>Du bist nicht laenger zu {} eingeladen</translate>
     </item>
     <item id="44" file="command.cpp" function="_handle_clan_command">
       <original>You are already in clan "{}"</original>
-      <translate>Du bist bereits im Clan "{}" </translate>
+      <translate>Du bist bereits im Clan "{}"</translate>
     </item>
     <item id="45" file="command.cpp" function="_handle_clan_command">
       <original>Clan with your specified &amp;lt;clantag&amp;gt; already exist!</original>
@@ -309,11 +309,11 @@
     </item>
     <item id="46" file="command.cpp" function="_handle_clan_command">
       <original>Please choice another one.</original>
-      <translate>Bitte waehle etwas anderes. </translate>
+      <translate>Bitte waehle etwas anderes.</translate>
     </item>
     <item id="47" file="command.cpp" function="_handle_clan_command">
       <original>Clan {} is created!</original>
-      <translate>Clan {} wurde erstellt! </translate>
+      <translate>Clan {} wurde erstellt!</translate>
     </item>
     <item id="48" file="command.cpp" function="_handle_clan_command">
       <original>Clan {} is pre-created, please invite</original>
@@ -325,7 +325,7 @@
     </item>
     <item id="50" file="command.cpp" function="_handle_clan_command">
       <original>/clan invite &amp;lt;username&amp;gt; command.</original>
-      <translate>/clan invite &amp;lt;username&amp;gt; Befehl. </translate>
+      <translate>/clan invite &amp;lt;username&amp;gt; Befehl.</translate>
     </item>
     <item id="415" file="command.cpp" function="_handle_clearstats_command">
       <original>Invalid user.</original>
@@ -341,51 +341,51 @@
     </item>
     <item id="399" file="command.cpp" function="_handle_commandgroups_command">
       <original>Got bad group: {}</original>
-      <translate>Fehlerhafte Gruppe: {} </translate>
+      <translate>Fehlerhafte Gruppe: {}</translate>
     </item>
     <item id="400" file="command.cpp" function="_handle_commandgroups_command">
       <original>Groups {} has been added to {}</original>
-      <translate>Gruppe {} wurde zu {} hinzugefuegt. </translate>
+      <translate>Gruppe {} wurde zu {} hinzugefuegt.</translate>
     </item>
     <item id="401" file="command.cpp" function="_handle_commandgroups_command">
       <original>Groups {} has been deleted from {}</original>
-      <translate>Gruppe {} wurde von {} geloescht. </translate>
+      <translate>Gruppe {} wurde von {} geloescht.</translate>
     </item>
     <item id="402" file="command.cpp" function="_handle_commandgroups_command">
       <original>Got unknown command: {}</original>
-      <translate>Fehlerhafter Befehl: {} </translate>
+      <translate>Fehlerhafter Befehl: {}</translate>
     </item>
     <item id="273" file="command.cpp" function="_handle_connections_command">
       <original>This command is only enabled for admins.</original>
-      <translate>Dieser Befehl ist Admins vorbehalten. </translate>
+      <translate>Dieser Befehl ist Admins vorbehalten.</translate>
     </item>
     <item id="274" file="command.cpp" function="_handle_connections_command">
       <original>Current connections:</original>
-      <translate>Momentane Verbindungen: </translate>
+      <translate>Momentane Verbindungen:</translate>
     </item>
     <item id="275" file="command.cpp" function="_handle_connections_command">
       <original> -class -tag -----name------ -lat(ms)- ----channel---- --game--</original>
-      <translate>-Klasse -Tag -----Name------ -Verz(ms)- ----Kanal---- --Spiel-- </translate>
+      <translate> -Klasse -Tag -----Name------ -Verz(ms)- ----Kanal---- --Spiel--</translate>
     </item>
     <item id="276" file="command.cpp" function="_handle_connections_command">
       <original> -#- -class ----state--- -tag -----name------ -session-- -flag- -lat(ms)- ----channel---- --game--</original>
-      <translate> -#- -Klasse ----Status--- -Tag -----Name------ -Sitzung-- -Flagge- -Verz(ms)- ----Kanal---- --Spiel-- </translate>
+      <translate> -#- -Klasse ----Status--- -Tag -----Name------ -Sitzung-- -Flagge- -Verz(ms)- ----Kanal---- --Spiel--</translate>
     </item>
     <item id="277" file="command.cpp" function="_handle_connections_command">
       <original> -#- -class ----state--- -tag -----name------ -session-- -flag- -lat(ms)- ----channel---- --game-- ---------addr--------</original>
-      <translate> -#- -Klasse ----Status--- -Tag -----Name------ -Sitzung-- -Flagge- -Verz(ms)- ----Kanal---- --Spiel-- ---------Addr-------- </translate>
+      <translate> -#- -Klasse ----Status--- -Tag -----Name------ -Sitzung-- -Flagge- -Verz(ms)- ----Kanal---- --Spiel-- ---------Addr--------</translate>
     </item>
     <item id="278" file="command.cpp" function="_handle_connections_command">
       <original>Unknown option.</original>
-      <translate>Unbekannte Option. </translate>
+      <translate>Unbekannte Option.</translate>
     </item>
     <item id="279" file="command.cpp" function="_handle_connections_command">
       <original>(none)</original>
-      <translate>(keine) </translate>
+      <translate>(keine)</translate>
     </item>
     <item id="280" file="command.cpp" function="_handle_connections_command">
       <original>none</original>
-      <translate>keine </translate>
+      <translate>keine</translate>
     </item>
     <item id="114" file="command.cpp" function="_handle_deop_command">
       <original>This command can only be used inside a channel.</original>
@@ -401,43 +401,43 @@
     </item>
     <item id="117" file="command.cpp" function="_handle_deop_command">
       <original>You must be at least a Channel Admin to demote another Channel Admin</original>
-      <translate>Du musst mindestens ein Kanal Admin sein um einen anderen Kanal Admin zu degradieren. </translate>
+      <translate>Du musst mindestens ein Kanal Admin sein um einen anderen Kanal Admin zu degradieren</translate>
     </item>
     <item id="118" file="command.cpp" function="_handle_deop_command">
       <original>{} has been demoted from a Channel Admin.</original>
-      <translate>{} wurde von einem Kanal Admin herabgestuft. </translate>
+      <translate>{} wurde von einem Kanal Admin herabgestuft.</translate>
     </item>
     <item id="119" file="command.cpp" function="_handle_deop_command">
       <original>{} has demoted you from a Channel Admin of channel "{}"</original>
-      <translate>{} hat dir den Status Kanal Admin des Kanals "{}" aberkannt. </translate>
+      <translate>{} hat dir den Status Kanal Admin des Kanals "{}" aberkannt</translate>
     </item>
     <item id="120" file="command.cpp" function="_handle_deop_command">
       <original>{} has been demoted from a Channel Operator</original>
-      <translate>{} wurde von der Status Kanal Operator aberkannt. </translate>
+      <translate>{} wurde von der Status Kanal Operator aberkannt</translate>
     </item>
     <item id="121" file="command.cpp" function="_handle_deop_command">
       <original>{} has demoted you from a Channel Operator of channel "{}"</original>
-      <translate>{} hat dir den Status Kanal Operator des Kanals "{}" aberkannt. </translate>
+      <translate>{} hat dir den Status Kanal Operator des Kanals "{}" aberkannt</translate>
     </item>
     <item id="122" file="command.cpp" function="_handle_deop_command">
       <original>{} has been demoted from a tempOP of this channel</original>
-      <translate>{} wurde der Status tempOP dieses Kanals aberkannt </translate>
+      <translate>{} wurde der Status tempOP dieses Kanals aberkannt</translate>
     </item>
     <item id="123" file="command.cpp" function="_handle_deop_command">
       <original>{} has demoted you from a tmpOP  of channel "{}"</original>
-      <translate>{} hat dir den Status tempOP des Kanals "{}" aberkannt. </translate>
+      <translate>{} hat dir den Status tempOP des Kanals "{}" aberkannt</translate>
     </item>
     <item id="124" file="command.cpp" function="_handle_deop_command">
       <original>{} is no Channel Admin or Channel Operator or tempOP, so you can't demote him.</original>
-      <translate>{} ist kein Kanal Admin oder Kanal Operator oder tempOP, weswegen du ihn nicht degradieren kannst. </translate>
+      <translate>{} ist kein Kanal Admin oder Kanal Operator oder tempOP, weswegen du ihn nicht degradieren kannst</translate>
     </item>
     <item id="125" file="command.cpp" function="_handle_deop_command">
       <original>{} has demoted you from a tempOP of channel "{}"</original>
-      <translate>{} hat dir den Status tempOP des Kanals "{}" aberkannt. </translate>
+      <translate>{} hat dir den Status tempOP des Kanals "{}" aberkannt.</translate>
     </item>
     <item id="126" file="command.cpp" function="_handle_deop_command">
       <original>{} is no tempOP in this channel, so you can't demote him</original>
-      <translate>{} ist kein tempOP in diesem Kanal, weswegen du ihn nicht degradieren kannst. </translate>
+      <translate>{} ist kein tempOP in diesem Kanal, weswegen du ihn nicht degradieren kannst</translate>
     </item>
     <item id="87" file="command.cpp" function="_handle_devoice_command">
       <original>This command can only be used inside a channel.</original>
@@ -453,43 +453,43 @@
     </item>
     <item id="90" file="command.cpp" function="_handle_devoice_command">
       <original>{} has been removed from VOP list.</original>
-      <translate>{} wurde von der VOP Liste entfernt. </translate>
+      <translate>{} wurde von der VOP Liste entfernt.</translate>
     </item>
     <item id="91" file="command.cpp" function="_handle_devoice_command">
       <original>{} has removed you from VOP list of channel "{}"</original>
-      <translate>{} hat dich von der VOP Liste des Kanals "{}" entfernt. </translate>
+      <translate>{} hat dich von der VOP Liste des Kanals "{}" entfernt.</translate>
     </item>
     <item id="92" file="command.cpp" function="_handle_devoice_command">
       <original>You must be at least Channel Admin to remove {} from the VOP list</original>
-      <translate>Du musst mindestens Kanal Admin sein um {} von der VOP Liste zu entfernen. </translate>
+      <translate>Du musst mindestens Kanal Admin sein um {} von der VOP Liste zu entfernen</translate>
     </item>
     <item id="93" file="command.cpp" function="_handle_devoice_command">
       <original>Voice has been taken from {} in this channel</original>
-      <translate>Voice wurde von {} in diesem Kanal entfernt. </translate>
+      <translate>Voice wurde von {} in diesem Kanal entfernt</translate>
     </item>
     <item id="94" file="command.cpp" function="_handle_devoice_command">
       <original>{} has taken your Voice in channel "{}"</original>
-      <translate>{} hat dir Voice im Kanal "{}" genommen.</translate>
+      <translate>{} hat dir Voice im Kanal "{}" genommen</translate>
     </item>
     <item id="95" file="command.cpp" function="_handle_devoice_command">
       <original>{} has no Voice in this channel, so it can't be taken away</original>
-      <translate>{} hat kein Voice in diesem Kanal, weswegen es nicht agenommen werden kann. </translate>
+      <translate>{} hat kein Voice in diesem Kanal, weswegen es nicht agenommen werden kan</translate>
     </item>
     <item id="200" file="command.cpp" function="_handle_dnd_command">
       <original>Do Not Disturb mode engaged.</original>
-      <translate>Do Not Disturb Modus aktiviert. </translate>
+      <translate>Do Not Disturb Modus aktiviert.</translate>
     </item>
     <item id="201" file="command.cpp" function="_handle_dnd_command">
       <original>Not available</original>
-      <translate>Nicht verfuegbar. </translate>
+      <translate>Nicht verfuegbar.</translate>
     </item>
     <item id="202" file="command.cpp" function="_handle_dnd_command">
       <original>Do Not Disturb mode canceled.</original>
-      <translate>Do Not Disturb Modus abgebrochen. </translate>
+      <translate>Do Not Disturb Modus abgebrochen.</translate>
     </item>
     <item id="335" file="command.cpp" function="_handle_find_command">
       <original> -- name -- similar to {}</original>
-      <translate> -- Name -- aehnelt {} </translate>
+      <translate> -- Name -- aehnelt {}</translate>
     </item>
     <item id="281" file="command.cpp" function="_handle_finger_command">
       <original>Invalid user.</original>
@@ -497,43 +497,43 @@
     </item>
     <item id="282" file="command.cpp" function="_handle_finger_command">
       <original>Login: {} {} Sex: {}</original>
-      <translate>Login: {} {} Geschlecht: {} </translate>
+      <translate>Login: {} {} Geschlecht: {}</translate>
     </item>
     <item id="283" file="command.cpp" function="_handle_finger_command">
       <original>Created: {}</original>
-      <translate>Erstellt: </translate>
+      <translate>Erstellt: {}</translate>
     </item>
     <item id="284" file="command.cpp" function="_handle_finger_command">
       <original>Clan: {}</original>
-      <translate>Klan: {} </translate>
+      <translate>Klan: {}</translate>
     </item>
     <item id="285" file="command.cpp" function="_handle_finger_command">
       <original>  Rank: Chieftain</original>
-      <translate>Rang: Haeuptling </translate>
+      <translate>  Rang: Haeuptling</translate>
     </item>
     <item id="286" file="command.cpp" function="_handle_finger_command">
       <original>  Rank: Shaman</original>
-      <translate> Rang: Schamane  </translate>
+      <translate>  Rang: Schamane</translate>
     </item>
     <item id="287" file="command.cpp" function="_handle_finger_command">
       <original>  Rank: Grunt</original>
-      <translate> Rang: Kaempfer</translate>
+      <translate>  Rang: Kaempfer</translate>
     </item>
     <item id="288" file="command.cpp" function="_handle_finger_command">
       <original>  Rank: Peon</original>
-      <translate> Rang: Arbeiter</translate>
+      <translate>  Rang: Arbeiter</translate>
     </item>
     <item id="289" file="command.cpp" function="_handle_finger_command">
       <original>Location: {} Age: {}</original>
-      <translate>Ort: {} Alter: {} </translate>
+      <translate>Ort: {} Alter: {}</translate>
     </item>
     <item id="290" file="command.cpp" function="_handle_finger_command">
       <original>Client: {}    Ver: {}   Country: {}</original>
-      <translate>Client: {} Ver: {} Land: {} </translate>
+      <translate>Client: {}    Ver: {}   Land: {}</translate>
     </item>
     <item id="291" file="command.cpp" function="_handle_finger_command">
       <original>unknown</original>
-      <translate>unbekannt </translate>
+      <translate>unbekannt</translate>
     </item>
     <item id="292" file="command.cpp" function="_handle_finger_command">
       <original>Last login {} from </original>
@@ -545,127 +545,127 @@
     </item>
     <item id="294" file="command.cpp" function="_handle_finger_command">
       <original>Operator: {}, Admin: {}, Locked: {}, Muted: {}</original>
-      <translate>Operator: {}, Admin: {}, Geschlossene: {}, Sprachlose: {} </translate>
+      <translate>Operator: {}, Admin: {}, Geschlossene: {}, Sprachlose: {}</translate>
     </item>
     <item id="295" file="command.cpp" function="_handle_finger_command">
       <original>Yes</original>
-      <translate>ja </translate>
+      <translate>ja</translate>
     </item>
     <item id="296" file="command.cpp" function="_handle_finger_command">
       <original>Email: {}</original>
-      <translate>Email: {} </translate>
+      <translate>Email: {}</translate>
     </item>
     <item id="297" file="command.cpp" function="_handle_finger_command">
       <original>Last login Owner: {}</original>
-      <translate>Letzter Login Besitzer: {} </translate>
+      <translate>Letzter Login Besitzer: {}</translate>
     </item>
     <item id="298" file="command.cpp" function="_handle_finger_command">
       <original>Idle {}</original>
-      <translate>Untaetig {} </translate>
+      <translate>Untaetig {}</translate>
     </item>
     <item id="377" file="command.cpp" function="_handle_flag_command">
       <original>Flags set to {}.</original>
-      <translate>Flaggen als {} gesetzt </translate>
+      <translate>Flaggen als {} gesetzt.</translate>
     </item>
     <item id="127" file="command.cpp" function="_handle_friends_command">
       <original>That user does not exist.</original>
-      <translate>Dieser Nutzer existiert nicht. </translate>
+      <translate>Dieser Nutzer existiert nicht.</translate>
     </item>
     <item id="128" file="command.cpp" function="_handle_friends_command">
       <original>Server error.</original>
-      <translate>Serverfehler. </translate>
+      <translate>Serverfehler.</translate>
     </item>
     <item id="129" file="command.cpp" function="_handle_friends_command">
       <original>You can't add yourself to your friends list.</original>
-      <translate>Du kannst dich nicht in deine eigene Friends List einfuegen. </translate>
+      <translate>Du kannst dich nicht in deine eigene Friends List einfuegen.</translate>
     </item>
     <item id="130" file="command.cpp" function="_handle_friends_command">
       <original>You can only have a maximum of {} friends.</original>
-      <translate>Du kannst nur maximal {} Freunde haben. </translate>
+      <translate>Du kannst nur maximal {} Freunde haben.</translate>
     </item>
     <item id="131" file="command.cpp" function="_handle_friends_command">
       <original>{} is already on your friends list!</original>
-      <translate>{} ist bereits in deiner Friends List! </translate>
+      <translate>{} ist bereits in deiner Friends List!</translate>
     </item>
     <item id="132" file="command.cpp" function="_handle_friends_command">
       <original>Added {} to your friends list.</original>
-      <translate>{} zu deiner Friends List hinzugefuegt. </translate>
+      <translate>{} zu deiner Friends List hinzugefuegt.</translate>
     </item>
     <item id="133" file="command.cpp" function="_handle_friends_command">
       <original>{} added you to his/her friends list.</original>
-      <translate>{} hat dich zu seiner/ihrer Friends List hinzugefuegt. </translate>
+      <translate>{} hat dich zu seiner/ihrer Friends List hinzugefuegt.</translate>
     </item>
     <item id="134" file="command.cpp" function="_handle_friends_command">
       <original>All of your friends are offline.</original>
-      <translate>Alle deiner Freunde sind offline. </translate>
+      <translate>Alle deiner Freunde sind offline.</translate>
     </item>
     <item id="135" file="command.cpp" function="_handle_friends_command">
       <original>{} was not found on your friends list.</original>
-      <translate>{} wurde nicht in deiner Friends List gefunden. </translate>
+      <translate>{} wurde nicht in deiner Friends List gefunden.</translate>
     </item>
     <item id="136" file="command.cpp" function="_handle_friends_command">
       <original>Removed {} from your friends list.</original>
-      <translate>{} wurde von deiner Friends List entfernt. </translate>
+      <translate>{} wurde von deiner Friends List entfernt.</translate>
     </item>
     <item id="137" file="command.cpp" function="_handle_friends_command">
       <original>Promoted {} in your friends list.</original>
-      <translate>{} wurde in deiner Friends List befoerdert. </translate>
+      <translate>{} wurde in deiner Friends List befoerdert.</translate>
     </item>
     <item id="138" file="command.cpp" function="_handle_friends_command">
       <original>Demoted {} in your friends list.</original>
-      <translate>{} wurde in deiner Friends List herabgestuft. </translate>
+      <translate>{} wurde in deiner Friends List herabgestuft.</translate>
     </item>
     <item id="139" file="command.cpp" function="_handle_friends_command">
       <original>Your {} - Friends List</original>
-      <translate>Deine {} - Friends List </translate>
+      <translate>Deine {} - Friends List</translate>
     </item>
     <item id="140" file="command.cpp" function="_handle_friends_command">
       <original>Your {} - Online Friends List</original>
-      <translate>Deine {} - Online Friends List </translate>
+      <translate>Deine {} - Online Friends List</translate>
     </item>
     <item id="141" file="command.cpp" function="_handle_friends_command">
       <original>, offline</original>
-      <translate>, offline </translate>
+      <translate>, offline</translate>
     </item>
     <item id="142" file="command.cpp" function="_handle_friends_command">
       <original> using {}</original>
-      <translate> nutzt {} </translate>
+      <translate> nutzt {}</translate>
     </item>
     <item id="143" file="command.cpp" function="_handle_friends_command">
       <original>, in game "{}"</original>
-      <translate>, im Spiel "{}" </translate>
+      <translate>, im Spiel "{}"</translate>
     </item>
     <item id="144" file="command.cpp" function="_handle_friends_command">
       <original>, in game AT Preparation</original>
-      <translate>, in der AT Vorbereitung </translate>
+      <translate>, in der AT Vorbereitung</translate>
     </item>
     <item id="145" file="command.cpp" function="_handle_friends_command">
       <original>, in channel "{}",</original>
-      <translate>, im Kanal "{}",  </translate>
+      <translate>, im Kanal "{}", </translate>
     </item>
     <item id="146" file="command.cpp" function="_handle_friends_command">
       <original>, is in AT Preparation</original>
-      <translate>, ist in der AT Vorbereitung </translate>
+      <translate>, ist in der AT Vorbereitung</translate>
     </item>
     <item id="147" file="command.cpp" function="_handle_friends_command">
       <original>, is in a game</original>
-      <translate>, ist im Spiel </translate>
+      <translate>, ist im Spiel</translate>
     </item>
     <item id="148" file="command.cpp" function="_handle_friends_command">
       <original>, is in a chat channel</original>
-      <translate>, ist in einem Chat Kanal </translate>
+      <translate>, ist in einem Chat Kanal</translate>
     </item>
     <item id="149" file="command.cpp" function="_handle_friends_command">
       <original>End of Friends List</original>
-      <translate>Ende der Friends List </translate>
+      <translate>Ende der Friends List</translate>
     </item>
     <item id="310" file="command.cpp" function="_handle_gameinfo_command">
       <original>You are not in a game.</original>
-      <translate>Du bist nicht in einem Spiel. </translate>
+      <translate>Du bist nicht in einem Spiel.</translate>
     </item>
     <item id="311" file="command.cpp" function="_handle_gameinfo_command">
       <original>That game does not exist.</original>
-      <translate>Dieses Spiel existiert nicht. </translate>
+      <translate>Dieses Spiel existiert nicht.</translate>
     </item>
     <item id="312" file="command.cpp" function="_handle_gameinfo_command">
       <original>Name: {}    ID: {} ({})</original>
@@ -681,15 +681,15 @@
     </item>
     <item id="315" file="command.cpp" function="_handle_gameinfo_command">
       <original>Owner: {}</original>
-      <translate>Besitzer: {} </translate>
+      <translate>Besitzer: {}</translate>
     </item>
     <item id="316" file="command.cpp" function="_handle_gameinfo_command">
       <original>Address: {}</original>
-      <translate>Addresse: {} </translate>
+      <translate>Addresse: {}</translate>
     </item>
     <item id="317" file="command.cpp" function="_handle_gameinfo_command">
       <original>Address: {} (trans {})</original>
-      <translate>>Addresse: {} (trans {}) </translate>
+      <translate>Addresse: {} (trans {})</translate>
     </item>
     <item id="318" file="command.cpp" function="_handle_gameinfo_command">
       <original>Client: {} (version {}, startver {})</original>
@@ -705,15 +705,15 @@
     </item>
     <item id="321" file="command.cpp" function="_handle_gameinfo_command">
       <original>Status: {}</original>
-      <translate>Status: {} </translate>
+      <translate>Status: {}</translate>
     </item>
     <item id="322" file="command.cpp" function="_handle_gameinfo_command">
       <original>Type: {}</original>
-      <translate>Type: {} </translate>
+      <translate>Type: {}</translate>
     </item>
     <item id="323" file="command.cpp" function="_handle_gameinfo_command">
       <original>Speed: {}</original>
-      <translate>Geschwindigkeit: {} </translate>
+      <translate>Geschwindigkeit: {}</translate>
     </item>
     <item id="324" file="command.cpp" function="_handle_gameinfo_command">
       <original>Difficulty: {}</original>
@@ -721,27 +721,27 @@
     </item>
     <item id="325" file="command.cpp" function="_handle_gameinfo_command">
       <original>Option: {}</original>
-      <translate>Option: {} </translate>
+      <translate>Option: {}</translate>
     </item>
     <item id="326" file="command.cpp" function="_handle_gameinfo_command">
       <original>Map: {}</original>
-      <translate>Karte: {} </translate>
+      <translate>Karte: {}</translate>
     </item>
     <item id="327" file="command.cpp" function="_handle_gameinfo_command">
       <original>Map Size: {}x{}</original>
-      <translate>Kartengroesse: {}x{} </translate>
+      <translate>Kartengroesse: {}x{}</translate>
     </item>
     <item id="328" file="command.cpp" function="_handle_gameinfo_command">
       <original>Map Tileset: {}</original>
-      <translate>Kartentyp: {} </translate>
+      <translate>Kartentyp: {}</translate>
     </item>
     <item id="329" file="command.cpp" function="_handle_gameinfo_command">
       <original>Map Type: {}</original>
-      <translate>Maptyp: {} </translate>
+      <translate>Maptyp: {}</translate>
     </item>
     <item id="330" file="command.cpp" function="_handle_gameinfo_command">
       <original>Players: {} current, {} total, {} max</original>
-      <translate>Spieler: {} momentan, {} total, {} max </translate>
+      <translate>Spieler: {} momentan, {} total, {} max</translate>
     </item>
     <item id="331" file="command.cpp" function="_handle_gameinfo_command">
       <original>Description: {}</original>
@@ -757,27 +757,27 @@
     </item>
     <item id="248" file="command.cpp" function="_handle_games_command">
       <original>Currently accessible games:</original>
-      <translate>Momentan verfuegbare Spiele: </translate>
+      <translate>Momentan verfuegbare Spiele:</translate>
     </item>
     <item id="249" file="command.cpp" function="_handle_games_command">
       <original>All current games:</original>
-      <translate>Alle momentane Spiele: </translate>
+      <translate>Alle momentane Spiele:</translate>
     </item>
     <item id="250" file="command.cpp" function="_handle_games_command">
       <original>Games in lobby:</original>
-      <translate>Spiele in der Lobby: </translate>
+      <translate>Spiele in der Lobby:</translate>
     </item>
     <item id="251" file="command.cpp" function="_handle_games_command">
       <original>Current games of type {}</original>
-      <translate>Momentane Spiele des Typs {} </translate>
+      <translate>Momentane Spiele des Typs {}</translate>
     </item>
     <item id="252" file="command.cpp" function="_handle_games_command">
       <original>Current games of type {} {}</original>
-      <translate>Momentane Spiele des Typs {} {} </translate>
+      <translate>Momentane Spiele des Typs {} {}</translate>
     </item>
     <item id="253" file="command.cpp" function="_handle_games_command">
       <original> ------name------ p -status- --------type--------- count </original>
-      <translate>  ------Name------ p -Status- --------Typ--------- Zahl </translate>
+      <translate> ------Name------ p -Status- --------Typ--------- Zahl </translate>
     </item>
     <item id="254" file="command.cpp" function="_handle_games_command">
       <original>ctag </original>
@@ -789,7 +789,7 @@
     </item>
     <item id="380" file="command.cpp" function="_handle_ipscan_command">
       <original>Warning: That user is not online, using last known address.</original>
-      <translate>Warnung: Dieser Nutzer ist nicht online, nutze letzte bekannte Addresse. </translate>
+      <translate>Warnung: Dieser Nutzer ist nicht online, nutze letzte bekannte Addresse.</translate>
     </item>
     <item id="381" file="command.cpp" function="_handle_ipscan_command">
       <original>Sorry, no IP address could be retrieved.</original>
@@ -797,11 +797,11 @@
     </item>
     <item id="382" file="command.cpp" function="_handle_ipscan_command">
       <original>Scanning online users for IP {}...</original>
-      <translate>Scanne online Nutzer fuer IP {}... </translate>
+      <translate>Scanne online Nutzer fuer IP {}...</translate>
     </item>
     <item id="383" file="command.cpp" function="_handle_ipscan_command">
       <original>There are no online users with that IP address</original>
-      <translate>Es gibt keine online Nutzer mit dieser IP Adresse </translate>
+      <translate>Es gibt keine online Nutzer mit dieser IP Adresse</translate>
     </item>
     <item id="210" file="command.cpp" function="_handle_kick_command">
       <original>This command can only be used inside a channel.</original>
@@ -809,11 +809,11 @@
     </item>
     <item id="211" file="command.cpp" function="_handle_kick_command">
       <original>You have to be at least a Channel Operator or tempOP to use this command.</original>
-      <translate>Du musst mindestens Kanal Operator oder tempOP sein um diesen Befehl zu nutzen. </translate>
+      <translate>Du musst mindestens Kanal Operator oder tempOP sein um diesen Befehl zu nutzen.</translate>
     </item>
     <item id="212" file="command.cpp" function="_handle_kick_command">
       <original>That user is not logged in.</original>
-      <translate>Dieser Nutzer ist nicht eingeloggt. </translate>
+      <translate>Dieser Nutzer ist nicht eingeloggt.</translate>
     </item>
     <item id="213" file="command.cpp" function="_handle_kick_command">
       <original>That user is not in this channel.</original>
