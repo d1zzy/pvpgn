@@ -37,15 +37,15 @@
     </item>
     <item id="453" file="channel.cpp" function="channel_message_send">
       <original>You can't talk on the channel. Your account has been muted</original>
-      <translate></translate>
+      <translate>Du kannst in diesem Kanal nichts sagen. Dein Account wurde auf stumm gesetzt</translate>
     </item>
     <item id="454" file="channel.cpp" function="channel_message_send">
       <original>This channel is moderated</original>
-      <translate></translate>
+      <translate>Dieser Kanal ist moderiert</translate>
     </item>
     <item id="455" file="channel.cpp" function="conn_check_ignoring">
       <original>No one hears you.</original>
-      <translate></translate>
+      <translate>Niemand hört dich.</translate>
     </item>
     <item id="260" file="command.cpp" function="_handle_addacct_command">
       <original>Account name contains some invalid symbol!</original>
@@ -185,7 +185,7 @@
     </item>
     <item id="194" file="command.cpp" function="_handle_channel_command">
       <original>Channel Arranged Teams is a RESTRICTED Channel!</original>
-      <translate>Der Kanal Arrenged Teams ist nur bestimmten Gruppen zugaenglich!</translate>
+      <translate>Der Kanal Arranged Teams ist nur bestimmten Gruppen zugaenglich!</translate>
     </item>
     <item id="195" file="command.cpp" function="_handle_channel_command">
       <original>Max channel name length exceeded (max {} symbols)</original>
@@ -277,7 +277,7 @@
     </item>
     <item id="38" file="command.cpp" function="_handle_clan_command">
       <original>to disband your clan, type /clan disband yes</original>
-      <translate>deinen Clan aufloesen moechtest, schreibe /clan disband yes</translate>
+      <translate>um deinen Clan aufzuloesen, schreibe /clan disband yes</translate>
     </item>
     <item id="39" file="command.cpp" function="_handle_clan_command">
       <original>Your clan was disbanded.</original>
@@ -413,7 +413,7 @@
     </item>
     <item id="120" file="command.cpp" function="_handle_deop_command">
       <original>{} has been demoted from a Channel Operator</original>
-      <translate>{} wurde von der Status Kanal Operator aberkannt</translate>
+      <translate>{} wurde der Status von einem Kanal Operator aberkannt</translate>
     </item>
     <item id="121" file="command.cpp" function="_handle_deop_command">
       <original>{} has demoted you from a Channel Operator of channel "{}"</original>
@@ -749,11 +749,11 @@
     </item>
     <item id="472" file="command.cpp" function="_handle_gameinfo_command">
       <original>public</original>
-      <translate></translate>
+      <translate>oeffentlich</translate>
     </item>
     <item id="473" file="command.cpp" function="_handle_gameinfo_command">
       <original>private</original>
-      <translate></translate>
+      <translate>privat</translate>
     </item>
     <item id="248" file="command.cpp" function="_handle_games_command">
       <original>Currently accessible games:</original>
@@ -1105,7 +1105,7 @@
     </item>
     <item id="336" file="command.cpp" function="_handle_save_command">
       <original>Pending changes has been saved into the database.</original>
-      <translate>Schwebende Aenderungen wurden in die Datenbank gespeichert.</translate>
+      <translate>Ausstehende Aenderungen wurden in die Datenbank gespeichert.</translate>
     </item>
     <item id="347" file="command.cpp" function="_handle_serverban_command">
       <original>That user is not logged on.</original>
@@ -1129,7 +1129,7 @@
     </item>
     <item id="352" file="command.cpp" function="_handle_serverban_command">
       <original>Your account is also LOCKED! Only an admin can UNLOCK it!</original>
-      <translate>Dein Account ist auch GESPERRT! Nur ein Admin can ihn ENTSPERREN!</translate>
+      <translate>Dein Account ist auch GESPERRT! Nur ein Admin kann ihn ENTSPERREN!</translate>
     </item>
     <item id="384" file="command.cpp" function="_handle_set_command">
       <original>Access denied due to security reasons.</original>
@@ -1325,11 +1325,11 @@
     </item>
     <item id="343" file="command.cpp" function="_handle_timer_command">
       <original>Invalid duration.</original>
-      <translate>Unzulaessiger Dauer.</translate>
+      <translate>Unzulaessige Dauer.</translate>
     </item>
     <item id="344" file="command.cpp" function="_handle_timer_command">
       <original>Your timer has expired.</original>
-      <translate>Dein Timer ist ausgelaufen.</translate>
+      <translate>Dein Timer ist abgelaufen.</translate>
     </item>
     <item id="345" file="command.cpp" function="_handle_timer_command">
       <original>Could not set timer.</original>
@@ -1637,7 +1637,7 @@
     </item>
     <item id="467" file="command.cpp" function="=">
       <original>No</original>
-      <translate></translate>
+      <translate>Nein</translate>
     </item>
     <item id="468" file="command.cpp" function="=">
       <original>Operator: {}, Admin: {}, Locked: {}, Muted: {}</original>
@@ -1741,7 +1741,7 @@
     </item>
     <item id="19" file="command.cpp" function="do_whois">
       <original>{} {} using {} and {} currently in channel "{}".</original>
-      <translate>{} {} nutzt {} und {} ist momentan imKanal "{}"</translate>
+      <translate>{} {} nutzt {} und {} ist momentan im Kanal "{}"</translate>
     </item>
     <item id="20" file="command.cpp" function="do_whois">
       <original>{} {} using {}.</original>
@@ -1773,15 +1773,15 @@
     </item>
     <item id="483" file="connection.cpp" function="conn_quota_exceeded">
       <original>Your line length quota has been exceeded!</original>
-      <translate></translate>
+      <translate>Maximale Eingabelaenge ueberschritten! </translate>
     </item>
     <item id="484" file="connection.cpp" function="conn_quota_exceeded">
       <original>Your message quota has been exceeded!</original>
-      <translate></translate>
+      <translate>Maximale Nachrichtenanzahl ueberschritten! </translate>
     </item>
     <item id="475" file="connection.cpp" function="conn_set_channel">
       <original>This is a private clan channel, unable to join!</original>
-      <translate></translate>
+      <translate>Das ist ein privater Kanal, du kannst nicht beitreten</translate>
     </item>
     <item id="476" file="connection.cpp" function="conn_set_channel">
       <original>You are banned from that channel.</original>
@@ -1789,27 +1789,27 @@
     </item>
     <item id="477" file="connection.cpp" function="conn_set_channel">
       <original>That channel is for Admins/Operators only.</original>
-      <translate></translate>
+      <translate>Dieser Kanal ist nur Admins/Operatoren zugaenglich.</translate>
     </item>
     <item id="478" file="connection.cpp" function="conn_set_channel">
       <original>The channel is currently full.</original>
-      <translate></translate>
+      <translate>Dieser Kanal ist zur Zeit voll.</translate>
     </item>
     <item id="479" file="connection.cpp" function="conn_set_channel">
       <original>This channel does not have chat privileges.</original>
-      <translate></translate>
+      <translate>Dieser Kanal hat keine Chat Privilegien.</translate>
     </item>
     <item id="480" file="connection.cpp" function="conn_set_channel">
       <original>This channel is moderated.</original>
-      <translate></translate>
+      <translate>Dieser Kanal ist moderiert.</translate>
     </item>
     <item id="481" file="connection.cpp" function="conn_set_game">
       <original>Created ladder game</original>
-      <translate></translate>
+      <translate>Ladder Spiel erstellt</translate>
     </item>
     <item id="482" file="connection.cpp" function="conn_set_game">
       <original>Joined ladder game</original>
-      <translate></translate>
+      <translate>Ladder Spiel beigetreten</translate>
     </item>
     <item id="420" file="handle_bnet.cpp" function="_client_loginreq2">
       <original>This account has been locked</original>
@@ -1821,7 +1821,7 @@
     </item>
     <item id="486" file="helpfile.cpp" function="describe_command">
       <original>No help available for that command</original>
-      <translate></translate>
+      <translate>Keine Hilfe zu diesem Befehl verfuegbar.</translate>
     </item>
     <item id="422" file="helpfile.cpp" function="handle_help_command">
       <original>Oops ! Es gibt ein Problem mit der Hilfedatei. Bitte kontaktiere den Administrator des Servers.</original>
@@ -1829,15 +1829,15 @@
     </item>
     <item id="485" file="helpfile.cpp" function="list_commands">
       <original>Chat commands : </original>
-      <translate></translate>
+      <translate>Chat Befehle :</translate>
     </item>
     <item id="487" file="i18n.cpp" function="handle_language_command">
       <original>Bad language code.</original>
-      <translate></translate>
+      <translate>falscher Sprachcode.</translate>
     </item>
     <item id="488" file="i18n.cpp" function="handle_language_command">
       <original>Set your language to {}</original>
-      <translate></translate>
+      <translate>Setze deine Sprache auf {} </translate>
     </item>
     <item id="423" file="icons.cpp" function="handle_icon_command">
       <original>This command can only be used inside a channel.</original>
@@ -1849,23 +1849,23 @@
     </item>
     <item id="425" file="icons.cpp" function="handle_icon_command">
       <original>Bad icon.</original>
-      <translate>Schlechtes Icon.</translate>
+      <translate>falsches Icon.</translate>
     </item>
     <item id="489" file="icons.cpp" function="handle_icon_command">
       <original>Set default icon.</original>
-      <translate></translate>
+      <translate>Setze Standard Icon.</translate>
     </item>
     <item id="490" file="icons.cpp" function="handle_icon_command">
       <original>Set new icon is succeed.</original>
-      <translate></translate>
+      <translate>Neues Icon erfolgreich gesetzt.</translate>
     </item>
     <item id="491" file="icons.cpp" function="handle_icon_command">
       <original>You have {} icons in stash:</original>
-      <translate></translate>
+      <translate>Du hast {} Icons zur Verfuegung </translate>
     </item>
     <item id="492" file="icons.cpp" function="handle_icon_command">
       <original>Available icons in server stash:</original>
-      <translate></translate>
+      <translate>zur Verfuegung stehende Icons im Server Lager</translate>
     </item>
     <item id="493" file="icons.cpp" function="handle_icon_command">
       <original>Invalid user.</original>
@@ -1873,71 +1873,71 @@
     </item>
     <item id="494" file="icons.cpp" function="handle_icon_command">
       <original>Set default icon for {}</original>
-      <translate></translate>
+      <translate>Setze Standard Icon für {}</translate>
     </item>
     <item id="495" file="icons.cpp" function="handle_icon_command">
       <original>That icon doesn't exist in server stash.</original>
-      <translate></translate>
+      <translate>Dieses Icon existiert nicht im Server Lager.</translate>
     </item>
     <item id="496" file="icons.cpp" function="handle_icon_command">
       <original>Set new icon is succeed for {}</original>
-      <translate></translate>
+      <translate>Neues Icon erfolgreich gesetzt für {}</translate>
     </item>
     <item id="497" file="icons.cpp" function="handle_icon_command">
       <original>{} has {} icons in stash : </original>
-      <translate></translate>
+      <translate>{} hat {} Icons im Lager : </translate>
     </item>
     <item id="498" file="icons.cpp" function="handle_icon_command">
       <original>User already has that icon in stash.</original>
-      <translate></translate>
+      <translate>Nutzer hat dieses Icon schon im Lager.</translate>
     </item>
     <item id="499" file="icons.cpp" function="handle_icon_command">
       <original>Add new icon to {}'s stash.</original>
-      <translate></translate>
+      <translate>Fuege neues Icon zu {}'s Lager hinzu.</translate>
     </item>
     <item id="500" file="icons.cpp" function="handle_icon_command">
       <original>That icon doesn't exist in user stash.</original>
-      <translate></translate>
+      <translate>Dieses Icon existiert nicht im Lager des Nutzers.</translate>
     </item>
     <item id="501" file="icons.cpp" function="handle_icon_command">
       <original>Delete icon from {}'s stash.</original>
-      <translate></translate>
+      <translate>Lösche Icons aus {}'s Lager. </translate>
     </item>
     <item id="510" file="ipban.cpp" function="ipban_func_check">
       <original>IP not banned.</original>
-      <translate></translate>
+      <translate>IP nicht gebanned</translate>
     </item>
     <item id="511" file="ipban.cpp" function="ipban_func_check">
       <original>Error occured.</original>
-      <translate></translate>
+      <translate>Fehler aufgetreten.</translate>
     </item>
     <item id="512" file="ipban.cpp" function="ipban_func_check">
       <original>IP banned by rule #{}.</original>
-      <translate></translate>
+      <translate>IP gebanned durch Regel #{}.</translate>
     </item>
     <item id="503" file="ipban.cpp" function="ipban_func_del">
       <original>Illegal IP entry.</original>
-      <translate></translate>
+      <translate>ungueltiger IP Eintrag.</translate>
     </item>
     <item id="504" file="ipban.cpp" function="ipban_func_del">
       <original>No matching entry.</original>
-      <translate></translate>
+      <translate>Kein passender Eintrag.</translate>
     </item>
     <item id="505" file="ipban.cpp" function="ipban_func_del">
       <original>Wrong entry number.</original>
-      <translate></translate>
+      <translate>falsche Eingabenummer.</translate>
     </item>
     <item id="506" file="ipban.cpp" function="ipban_func_del">
       <original>Entry deleted.</original>
-      <translate></translate>
+      <translate>Eintrag geloescht.</translate>
     </item>
     <item id="507" file="ipban.cpp" function="ipban_func_list">
       <original>Banned IPs:</original>
-      <translate></translate>
+      <translate>gebannte IPs:</translate>
     </item>
     <item id="508" file="ipban.cpp" function="ipban_func_list">
       <original>(perm)</original>
-      <translate></translate>
+      <translate>(permanent)</translate>
     </item>
     <item id="509" file="ipban.cpp" function="ipban_func_list">
       <original>none</original>
@@ -1961,7 +1961,7 @@
     </item>
     <item id="502" file="ipban.cpp" function="ipbanlist_add">
       <original>Bad IP.</original>
-      <translate></translate>
+      <translate>falsche IP.</translate>
     </item>
     <item id="430" file="ipban.cpp" function="ipbanlist_str_to_time_t">
       <original>Banning only for: {} minutes.</original>
@@ -1981,7 +1981,7 @@
     </item>
     <item id="440" file="mail.cpp" function="mail_func_delete">
       <original>Invalid index. Please use /mail delete {&amp;lt;index&amp;gt;|all} where &amp;lt;index&amp;gt; is a number.</original>
-      <translate>Unzulaessiger Index. Bitte nutze /mail delete {&amp;lt;index&amp;gt|all} fuer &amp;lt;index&amp;gt; eine Nummer ist.</translate>
+      <translate>Unzulaessiger Index. Bitte nutze /mail delete {&amp;lt;index&amp;gt|all} fuer &amp;lt;index&amp;gt; ist eine Nummer.</translate>
     </item>
     <item id="441" file="mail.cpp" function="mail_func_delete">
       <original>Succesfully deleted message.</original>
@@ -1997,31 +1997,31 @@
     </item>
     <item id="513" file="mail.cpp" function="mail_func_read">
       <original>ID    Sender          Date</original>
-      <translate></translate>
+      <translate>ID    Absender          Datum</translate>
     </item>
     <item id="514" file="mail.cpp" function="mail_func_read">
       <original>Use /mail read &amp;lt;ID&amp;gt; to read the content of any message</original>
-      <translate></translate>
+      <translate>Nutze /mail read  &amp;lt;ID&amp;gt; um den Inhalt einer Nachricht zu lesen </translate>
     </item>
     <item id="515" file="mail.cpp" function="mail_func_read">
       <original>Invalid index. Please use /mail read &amp;lt;index&amp;gt; where &amp;lt;index&amp;gt; is a number.</original>
-      <translate></translate>
+      <translate>Unzulaessiger Index. Bitte nutze /mail read &amp;lt;index&amp;gt; where &amp;lt;index&amp;gt; ist eine Nummer. </translate>
     </item>
     <item id="432" file="mail.cpp" function="mail_func_send">
       <original>Receiver UNKNOWN!</original>
-      <translate></translate>
+      <translate>Empfänger UNBEKANNT</translate>
     </item>
     <item id="433" file="mail.cpp" function="mail_func_send">
       <original>Receiver has reached his mail quota. Your message will NOT be sent.</original>
-      <translate></translate>
+      <translate>Empfänger hat seine maximale Mail Quote erreicht. Deine Nachricht wird NICHT gesendet.</translate>
     </item>
     <item id="434" file="mail.cpp" function="mail_func_send">
       <original>Your mail has been sent successfully.</original>
-      <translate></translate>
+      <translate>Deine Nachricht wurde erfolgreich versendet.</translate>
     </item>
     <item id="435" file="mail.cpp" function="mail_func_send">
       <original>There was an error completing your request!</original>
-      <translate></translate>
+      <translate>Es gab einen Fehler bei der Vervollstaendigung deiner Anfrage!</translate>
     </item>
     <item id="444" file="command.lua" function="api.message_send_text">
       <original>You must be at least a Channel Operator to use this command.</original>
@@ -2033,31 +2033,31 @@
     </item>
     <item id="446" file="command.lua" function="api.message_send_text">
       <original>Quiz has already ran in channel "{}". Use /quiz stop to force finish.</original>
-      <translate></translate>
+      <translate>Quiz wurde bereits in Kanal "{}" ausgefuehrt. Nutze /quiz stop um das Beenden zu erzwingen.</translate>
     </item>
     <item id="447" file="command.lua" function="api.message_send_text">
       <original>Available Quiz dictionaries: </original>
-      <translate></translate>
+      <translate>vorliegende Quiz Datenbanken:</translate>
     </item>
     <item id="448" file="command.lua" function="api.message_send_text">
       <original>Quiz is not running.</original>
-      <translate></translate>
+      <translate>Quiz laueft nicht.</translate>
     </item>
     <item id="451" file="command.lua" function="api.message_send_text">
       <original>{}'s Quiz record:</original>
-      <translate></translate>
+      <translate>{}'s Quiz Statistik</translate>
     </item>
     <item id="452" file="command.lua" function="api.message_send_text">
       <original>{} has never played Quiz.</original>
-      <translate></translate>
+      <translate>{} hat nie Quiz gespielt.</translate>
     </item>
     <item id="449" file="command.lua" function="localize">
       <original>Top {} Quiz records:</original>
-      <translate></translate>
+      <translate>Top {} Quiz Statistik:</translate>
     </item>
     <item id="450" file="command.lua" function="string.format">
       <original>points</original>
-      <translate></translate>
+      <translate>Punkte</translate>
     </item>
     <item id="442" file="handle_command.lua" function="api.message_send_text">
       <original>This command is reserved for admins.</original>
@@ -2065,7 +2065,7 @@
     </item>
     <item id="443" file="redirect.lua" function="api.message_send_text">
       <original>User "{}" is offline</original>
-      <translate></translate>
+      <translate>Nutzer "{}" ist offline</translate>
     </item>
   </items>
 </root>
