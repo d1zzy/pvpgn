@@ -1773,11 +1773,11 @@
     </item>
     <item id="483" file="connection.cpp" function="conn_quota_exceeded">
       <original>Your line length quota has been exceeded!</original>
-      <translate>Maximale Eingabelaenge ueberschritten! </translate>
+      <translate>Maximale Eingabelaenge ueberschritten!</translate>
     </item>
     <item id="484" file="connection.cpp" function="conn_quota_exceeded">
       <original>Your message quota has been exceeded!</original>
-      <translate>Maximale Nachrichtenanzahl ueberschritten! </translate>
+      <translate>Maximale Nachrichtenanzahl ueberschritten!</translate>
     </item>
     <item id="475" file="connection.cpp" function="conn_set_channel">
       <original>This is a private clan channel, unable to join!</original>
@@ -1824,12 +1824,12 @@
       <translate>Keine Hilfe zu diesem Befehl verfuegbar.</translate>
     </item>
     <item id="422" file="helpfile.cpp" function="handle_help_command">
-      <original>Oops ! Es gibt ein Problem mit der Hilfedatei. Bitte kontaktiere den Administrator des Servers.</original>
-      <translate></translate>
+      <original>Oops ! There is a problem with the help file. Please contact the administrator of the server.</original>
+      <translate>Oops ! Es gibt ein Problem mit der Hilfedatei. Bitte kontaktiere den Administrator des Servers.</translate>
     </item>
     <item id="485" file="helpfile.cpp" function="list_commands">
       <original>Chat commands : </original>
-      <translate>Chat Befehle :</translate>
+      <translate>Chat Befehle : </translate>
     </item>
     <item id="487" file="i18n.cpp" function="handle_language_command">
       <original>Bad language code.</original>
@@ -1837,7 +1837,7 @@
     </item>
     <item id="488" file="i18n.cpp" function="handle_language_command">
       <original>Set your language to {}</original>
-      <translate>Setze deine Sprache auf {} </translate>
+      <translate>Setze deine Sprache auf {}</translate>
     </item>
     <item id="423" file="icons.cpp" function="handle_icon_command">
       <original>This command can only be used inside a channel.</original>
@@ -1861,7 +1861,7 @@
     </item>
     <item id="491" file="icons.cpp" function="handle_icon_command">
       <original>You have {} icons in stash:</original>
-      <translate>Du hast {} Icons zur Verfuegung </translate>
+      <translate>Du hast {} Icons zur Verfuegung:</translate>
     </item>
     <item id="492" file="icons.cpp" function="handle_icon_command">
       <original>Available icons in server stash:</original>
@@ -1901,7 +1901,7 @@
     </item>
     <item id="501" file="icons.cpp" function="handle_icon_command">
       <original>Delete icon from {}'s stash.</original>
-      <translate>Lösche Icons aus {}'s Lager. </translate>
+      <translate>Lösche Icons aus {}'s Lager.</translate>
     </item>
     <item id="510" file="ipban.cpp" function="ipban_func_check">
       <original>IP not banned.</original>
@@ -2001,11 +2001,11 @@
     </item>
     <item id="514" file="mail.cpp" function="mail_func_read">
       <original>Use /mail read &amp;lt;ID&amp;gt; to read the content of any message</original>
-      <translate>Nutze /mail read  &amp;lt;ID&amp;gt; um den Inhalt einer Nachricht zu lesen </translate>
+      <translate>Nutze /mail read &amp;lt;ID&amp;gt; um den Inhalt einer Nachricht zu lesen</translate>
     </item>
     <item id="515" file="mail.cpp" function="mail_func_read">
       <original>Invalid index. Please use /mail read &amp;lt;index&amp;gt; where &amp;lt;index&amp;gt; is a number.</original>
-      <translate>Unzulaessiger Index. Bitte nutze /mail read &amp;lt;index&amp;gt; where &amp;lt;index&amp;gt; ist eine Nummer. </translate>
+      <translate>Unzulaessiger Index. Bitte nutze /mail read &amp;lt;index&amp;gt; where &amp;lt;index&amp;gt; ist eine Nummer.</translate>
     </item>
     <item id="432" file="mail.cpp" function="mail_func_send">
       <original>Receiver UNKNOWN!</original>
