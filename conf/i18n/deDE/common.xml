@@ -620,7 +620,7 @@
       <translate>Deine {} - Friends List</translate>
     </item>
     <item id="140" file="command.cpp" function="_handle_friends_command">
-      <original>Your {} - Online item id=originalFriends List</original>
+      <original>Your {} - Online Friends List</original>
       <translate>Deine {} - Online Friends List</translate>
     </item>
     <item id="141" file="command.cpp" function="_handle_friends_command">
@@ -1960,7 +1960,7 @@
       <translate>{} wegen {} gebannt.</translate>
     </item>
     <item id="502" file="ipban.cpp" function="ipbanlist_add">
-{}original      <original>Bad IP.</original>
+      <original>Bad IP.</original>
       <translate>falsche IP.</translate>
     </item>
     <item id="430" file="ipban.cpp" function="ipbanlist_str_to_time_t">
