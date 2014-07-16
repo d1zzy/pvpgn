@@ -2912,7 +2912,7 @@ namespace pvpgn
 				if ((!prefs_get_hide_addr()) || (account_get_command_groups(conn_get_account(cbdata->c)) & command_get_group("/admin-addr"))) /* default to false */
 					std::strcat(msgtemp0, addr_num_to_addr_str(game_get_addr(game), game_get_port(game)));
 
-				message_send_text(cbdata->c, message_type_info, cbdata->c, msgtemp);
+				message_send_text(cbdata->c, message_type_info, cbdata->c, msgtemp0);
 			}
 
 			return 0;
@@ -2927,11 +2927,6 @@ namespace pvpgn
 
 			std::vector<std::string> args = split_command(text, 2);
 
-			if (args[1].empty())
-			{
-				describe_command(c, args[0].c_str());
-				return 0;
-			}
 			dest = args[1].c_str(); // clienttag
 			difficulty = args[1].c_str(); // difficulty (only for diablo)
 
