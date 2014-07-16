@@ -45,27 +45,45 @@ namespace pvpgn
 #ifdef WIN32
 		{
 			enum { WinNT, Win95, Win98, WinUnknown };
-			OSVERSIONINFO osver;
+			OSVERSIONINFOEX osver;
 			SYSTEM_INFO sysinfo;
 			DWORD sLength;
 			DWORD os = WinUnknown;
 
 
-			osver.dwOSVersionInfoSize = sizeof (osver);
-			GetVersionEx(&osver);
-			GetSystemInfo(&sysinfo);
+			osver.dwOSVersionInfoSize = sizeof (OSVERSIONINFOEX);
+			GetVersionEx((OSVERSIONINFO*)&osver);
+			GetSystemInfo(&sysinfo); 
 
+			// http://msdn.microsoft.com/en-us/library/windows/desktop/ms724833(v=vs.85).aspx
 			switch (osver.dwPlatformId)
 			{
-			case VER_PLATFORM_WIN32_NT: /* NT, Windows 2000 or Windows XP */
+			case VER_PLATFORM_WIN32_NT:
 				if (osver.dwMajorVersion == 4)
-					std::strcpy(buf->sysname, "Windows NT4x"); /* NT4x */
+					std::strcpy(buf->sysname, "Windows NT4x");
 				else if (osver.dwMajorVersion <= 3)
-					std::strcpy(buf->sysname, "Windows NT3x"); /* NT3x */
+					std::strcpy(buf->sysname, "Windows NT3x");
 				else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion < 1)
-					std::strcpy(buf->sysname, "Windows 2000"); /* 2k */
-				else if (osver.dwMajorVersion >= 5)
-					std::strcpy(buf->sysname, "Windows XP");   /* XP */
+					std::strcpy(buf->sysname, "Windows 2000");
+				else if (osver.dwMajorVersion == 5 && (osver.dwMinorVersion == 1 || (osver.dwMinorVersion == 2 && (osver.wProductType == VER_NT_WORKSTATION) && (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64))) )
+					std::strcpy(buf->sysname, "Windows XP");
+				else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion == 2)
+					std::strcpy(buf->sysname, "Windows Server 2003");
+				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 0 && (osver.wProductType == VER_NT_WORKSTATION))
+					std::strcpy(buf->sysname, "Windows Vista");
+				else if (osver.dwMajorVersion == 6 && (osver.dwMinorVersion == 0 || osver.dwMinorVersion == 1) && (osver.wProductType != VER_NT_WORKSTATION))
+					std::strcpy(buf->sysname, "Windows Server 2008");
+				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 1 && (osver.wProductType == VER_NT_WORKSTATION))
+					std::strcpy(buf->sysname, "Windows 7");
+				else if (osver.dwMajorVersion == 6 && (osver.dwMinorVersion == 2 || osver.dwMinorVersion == 3) && (osver.wProductType != VER_NT_WORKSTATION))
+					std::strcpy(buf->sysname, "Windows Server 2012");
+				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 2 && (osver.wProductType == VER_NT_WORKSTATION))
+					std::strcpy(buf->sysname, "Windows 8");
+				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 3 && (osver.wProductType == VER_NT_WORKSTATION))
+					std::strcpy(buf->sysname, "Windows 8.1");
+				else
+					std::strcpy(buf->sysname, "Windows");
+
 				os = WinNT;
 				break;
 
