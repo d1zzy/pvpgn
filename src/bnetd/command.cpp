@@ -4668,7 +4668,10 @@ namespace pvpgn
 				{
 
 					if ((len = std::strlen(buff)) < MAX_MESSAGE_LEN)
+					{
+						i18n_convert(c, buff);
 						message_send_text(c, message_type_info, c, buff);
+					}
 					else {
 						/*  lines in TOS file can be > MAX_MESSAGE_LEN, so split them
 						truncating is not an option for TOS -raistlinthewiz
@@ -4684,7 +4687,10 @@ namespace pvpgn
 						}
 
 						if (len > 0) /* does it exist a small last part ? */
+						{
+							i18n_convert(c, buff);
 							message_send_text(c, message_type_info, c, buff);
+						}
 
 					}
 				}
