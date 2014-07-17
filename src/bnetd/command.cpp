@@ -3493,7 +3493,7 @@ namespace pvpgn
 				}
 			}
 			if (i > 0)
-				message_send_text(c, message_type_info, c, msgtemp);
+				message_send_text(c, message_type_info, c, msgtemp0);
 
 			return 0;
 		}
