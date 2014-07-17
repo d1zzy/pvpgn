@@ -46,6 +46,7 @@
 #include "connection.h"
 #include "irc.h"
 #include "command.h"
+#include "i18n.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -1657,6 +1658,8 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "could not format input text \"%s\"", text);
 				return -1;
 			}
+
+			i18n_convert(dst, line);
 
 			/* caller beware: empty messages can crash Blizzard clients */
 			switch (line[0])

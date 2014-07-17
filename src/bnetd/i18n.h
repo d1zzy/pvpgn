@@ -52,6 +52,8 @@ namespace pvpgn
 		extern t_gamelang conn_get_gamelang_localized(t_connection * c);
 
 		extern int handle_language_command(t_connection * c, char const *text);
+		extern char * i18n_convert(t_connection * c, char * buf);
+
 
 		extern std::string _localize(t_connection * c, const char * func, const char *fmt, const fmt::ArgList &args);
 		FMT_VARIADIC(std::string, _localize, t_connection *, const char *, const char *)

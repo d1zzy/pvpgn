@@ -236,6 +236,9 @@ namespace pvpgn
 									line = str_replace(line, "\t", "   ");
 									// if text starts with slash then make it colored
 									int j = 0; for (; line[j] == ' ' || line[j] == '\t'; j++);
+
+									i18n_convert(c, line);
+
 									if (line[j] == '/')
 										message_send_text(c, message_type_error, c, line);
 									else
