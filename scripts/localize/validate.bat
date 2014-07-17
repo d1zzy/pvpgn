@@ -1,7 +1,5 @@
 @echo off
 
-pvpgn_localize_validator.exe ..\..\conf\i18n\common.xml
-
 if exist ..\..\conf\i18n\deDE\common.xml pvpgn_localize_validator.exe ..\..\conf\i18n\deDE\common.xml
 if exist ..\..\conf\i18n\csCZ\common.xml pvpgn_localize_validator.exe ..\..\conf\i18n\csCZ\common.xml
 if exist ..\..\conf\i18n\esES\common.xml pvpgn_localize_validator.exe ..\..\conf\i18n\esES\common.xml
