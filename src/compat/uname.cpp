@@ -26,6 +26,7 @@
 #ifdef WIN32
 # include <cstdio>
 # include <windows.h>
+# include <VersionHelpers.h>
 #endif
 #include "uname.h"
 #include "common/setup_after.h"
@@ -55,34 +56,53 @@ namespace pvpgn
 			GetVersionEx((OSVERSIONINFO*)&osver);
 			GetSystemInfo(&sysinfo); 
 
-			// http://msdn.microsoft.com/en-us/library/windows/desktop/ms724833(v=vs.85).aspx
 			switch (osver.dwPlatformId)
 			{
 			case VER_PLATFORM_WIN32_NT:
-				if (osver.dwMajorVersion == 4)
-					std::strcpy(buf->sysname, "Windows NT4x");
-				else if (osver.dwMajorVersion <= 3)
-					std::strcpy(buf->sysname, "Windows NT3x");
-				else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion < 1)
-					std::strcpy(buf->sysname, "Windows 2000");
-				else if (osver.dwMajorVersion == 5 && (osver.dwMinorVersion == 1 || (osver.dwMinorVersion == 2 && (osver.wProductType == VER_NT_WORKSTATION) && (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64))) )
-					std::strcpy(buf->sysname, "Windows XP");
-				else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion == 2)
-					std::strcpy(buf->sysname, "Windows Server 2003");
-				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 0 && (osver.wProductType == VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows Vista");
-				else if (osver.dwMajorVersion == 6 && (osver.dwMinorVersion == 0 || osver.dwMinorVersion == 1) && (osver.wProductType != VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows Server 2008");
-				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 1 && (osver.wProductType == VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows 7");
-				else if (osver.dwMajorVersion == 6 && (osver.dwMinorVersion == 2 || osver.dwMinorVersion == 3) && (osver.wProductType != VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows Server 2012");
-				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 2 && (osver.wProductType == VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows 8");
-				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 3 && (osver.wProductType == VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows 8.1");
+
+				// http://msdn.microsoft.com/en-us/library/windows/desktop/dn424972%28v=vs.85%29.aspx
+				if (IsWindowsServer())
+				{
+					if (IsWindows8OrGreater())
+						std::strcpy(buf->sysname, "Windows Server 2012");
+					else if (IsWindows7OrGreater())
+						std::strcpy(buf->sysname, "Windows Server 2008 R2");
+					else if (IsWindowsVistaOrGreater())
+						std::strcpy(buf->sysname, "Windows Server 2008");
+					else if (IsWindowsXPOrGreater())
+						std::strcpy(buf->sysname, "Windows Server 2003");
+				}
 				else
-					std::strcpy(buf->sysname, "Windows");
+				{
+					if (IsWindows8Point1OrGreater())
+						std::strcpy(buf->sysname, "Windows 8.1");
+					else if (IsWindows8OrGreater())
+						std::strcpy(buf->sysname, "Windows 8.0");
+					else if (IsWindows7SP1OrGreater())
+						std::strcpy(buf->sysname, "Windows 7 SP1");
+					else if (IsWindows7OrGreater())
+						std::strcpy(buf->sysname, "Windows 7");
+					else if (IsWindowsVistaSP2OrGreater())
+						std::strcpy(buf->sysname, "Windows Vista SP2");
+					else if (IsWindowsVistaSP1OrGreater())
+						std::strcpy(buf->sysname, "Windows Vista SP1");
+					else if (IsWindowsVistaOrGreater())
+						std::strcpy(buf->sysname, "Windows Vista");
+					else if (IsWindowsXPSP3OrGreater())
+						std::strcpy(buf->sysname, "Windows XP SP3");
+					else if (IsWindowsXPSP2OrGreater())
+						std::strcpy(buf->sysname, "Windows XP SP2");
+					else if (IsWindowsXPSP1OrGreater())
+						std::strcpy(buf->sysname, "Windows XP SP1");
+					else if (IsWindowsXPOrGreater())
+						std::strcpy(buf->sysname, "Windows XP");
+					else if (IsWindowsVersionOrGreater(5, 0, 0))
+						std::strcpy(buf->sysname, "Windows 2000");
+					else if (IsWindowsVersionOrGreater(4, 0, 0))
+						std::strcpy(buf->sysname, "Windows NT4x");
+					else if (IsWindowsVersionOrGreater(3, 0, 0))
+						std::strcpy(buf->sysname, "Windows NT3x");
+				}
 
 				os = WinNT;
 				break;

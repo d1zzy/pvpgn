@@ -465,7 +465,7 @@ void pvpgn_greeting(void)
 
 	if (!(uname(&utsbuf) < 0))
 	{
-		eventlog(eventlog_level_info, __FUNCTION__, "running on %s %s %s (%s)", utsbuf.sysname, utsbuf.version, utsbuf.release, utsbuf.machine);
+		eventlog(eventlog_level_info, __FUNCTION__, "running on %s (%s %s, %s)", utsbuf.sysname, utsbuf.version, utsbuf.release, utsbuf.machine);
 	}
 
 	printf("You are currently Running "PVPGN_SOFTWARE" "PVPGN_VERSION"\n");
