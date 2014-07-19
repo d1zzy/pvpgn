@@ -282,32 +282,46 @@ namespace pvpgn
 
 		static void guiOnCommand(HWND hwnd, int id, HWND hwndCtl, UINT codeNotify)
 		{
-			if (id == IDM_EXIT)
-				guiOnClose(hwnd);
-			else if (id == IDM_SAVE)
-				server_save_wraper();
-			else if (id == IDM_RESTART)
-				server_restart_wraper(restart_mode_all);
-			else if (id == IDM_SHUTDOWN)
-				server_quit_wraper();
-			else if (id == IDM_CLEAR)
-				guiClearLogWindow();
-			else if (id == IDM_RESTORE)
-				guiOnShellNotify(IDI_TRAY, WM_LBUTTONDBLCLK);
-			else if (id == IDM_USERLIST)
-				guiOnUpdateUserList();
-			else if (id == IDM_SERVERCONFIG)
-				guiOnServerConfig();
-			else if (id == IDM_ABOUT)
-				guiOnAbout(hwnd);
-			else if (id == ID_HELP_CHECKFORUPDATES)
-				guiOnUpdates();
-			else if (id == IDM_ANN)
-				guiOnAnnounce(hwnd);
-			else if (id == ID_USERACTIONS_KICKUSER)
-				guiOnUserStatusChange(hwnd);
-			else if (id == 881)
-				guiOnUserStatusChange(hwnd);
+			switch (id)
+			{
+				case IDM_EXIT:
+					guiOnClose(hwnd);
+					break;
+				case IDM_SAVE:
+					server_save_wraper();
+					break;
+				case IDM_RESTART:
+					server_restart_wraper(restart_mode_all);
+					break;
+				case IDM_SHUTDOWN:
+					server_quit_wraper();
+					break;
+				case IDM_CLEAR:
+					guiClearLogWindow();
+					break;
+				case IDM_RESTORE:
+					guiOnShellNotify(IDI_TRAY, WM_LBUTTONDBLCLK);
+					break;
+				case IDM_USERLIST:
+					guiOnUpdateUserList();
+					break;
+				case IDM_SERVERCONFIG:
+					guiOnServerConfig();
+					break;
+				case IDM_ABOUT:
+					guiOnAbout(hwnd);
+					break;
+				case ID_HELP_CHECKFORUPDATES:
+					guiOnUpdates();
+					break;
+				case IDM_ANN:
+					guiOnAnnounce(hwnd);
+					break;
+				case ID_USERACTIONS_KICKUSER:
+				case 881:
+					guiOnUserStatusChange(hwnd);
+					break;
+			}
 		}
 
 		static void guiOnMenuSelect(HWND hwnd, HMENU hmenu, int item, HMENU hmenuPopup, UINT flags)
@@ -498,7 +512,7 @@ namespace pvpgn
 
 		static void guiOnUpdates()
 		{
-			ShellExecute(NULL, "open", "www.pvpgn.org", NULL, NULL, SW_SHOW);
+			ShellExecute(NULL, "open", "http://pvpgn.pro/", NULL, NULL, SW_SHOW);
 		}
 
 		static void guiOnAnnounce(HWND hwnd)
@@ -522,7 +536,7 @@ namespace pvpgn
 
 		static void guiOnServerConfig()
 		{
-			ShellExecute(NULL, "open", "notepad.exe", "conf\\bnetd.conf", NULL, SW_SHOW);
+			ShellExecute(NULL, NULL, "conf\\bnetd.conf", NULL, NULL, SW_SHOW);
 		}
 
 		extern void guiOnUpdateUserList()
