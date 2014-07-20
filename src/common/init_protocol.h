@@ -56,14 +56,15 @@ namespace pvpgn
 #ifndef INCLUDED_INIT_PROTOCOL_PROTOS
 #define INCLUDED_INIT_PROTOCOL_PROTOS
 
-#define CLIENT_INITCONN_CLASS_BNET   0x01 /* standard bnet protocol */
-#define CLIENT_INITCONN_CLASS_FILE   0x02
-#define CLIENT_INITCONN_CLASS_BOT    0x03
-#define CLIENT_INITCONN_CLASS_ENC    0x04 /* encrypted connection */
-#define CLIENT_INITCONN_CLASS_TELNET 0x0d /* Hack alert: look for user to hit \r when they connect */
-#define CLIENT_INITCONN_CLASS_D2CS   0x01
-#define CLIENT_INITCONN_CLASS_D2GS   0x64
-#define CLIENT_INITCONN_CLASS_D2CS_BNETD   0x65
+#define CLIENT_INITCONN_CLASS_BNET		0x01 /* standard bnet protocol */
+#define CLIENT_INITCONN_CLASS_FILE		0x02 /* BNFTP */
+#define CLIENT_INITCONN_CLASS_BOT		0x03
+#define CLIENT_INITCONN_CLASS_ENC		0x04 /* encrypted connection */
+#define CLIENT_INITCONN_CLASS_TELNET		0x0d /* Hack alert: look for user to hit \r when they connect */
+#define CLIENT_INITCONN_CLASS_D2CS		0x01
+#define CLIENT_INITCONN_CLASS_D2GS		0x64
+#define CLIENT_INITCONN_CLASS_D2CS_BNETD	0x65
+#define CLIENT_INITCONN_CLASS_LOCALMACHINE	0x98 /* local computer connecting via 127.0.0.1 */
 
 #endif
 #endif
