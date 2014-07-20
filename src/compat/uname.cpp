@@ -83,7 +83,7 @@ namespace pvpgn
 				// FIXME: dwMinorVersion returns "2" instead of "3" on Windows 8.1
 				//else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 3 && (osver.wProductType == VER_NT_WORKSTATION))
 				//	std::strcpy(buf->sysname, "Windows 8.1");
-				else if (osver.wProductType == VER_NT_WORKSTATION)
+				else if (osver.wProductType != VER_NT_WORKSTATION)
 					std::strcpy(buf->sysname, "Windows Server >2012");
 				else
 					std::strcpy(buf->sysname, "Windows >8");
