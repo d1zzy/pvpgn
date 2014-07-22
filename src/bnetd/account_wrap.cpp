@@ -455,7 +455,7 @@ namespace pvpgn
 
 
 		/* Return text with account lock */
-		extern std::string account_get_locktext(t_account * account, bool with_author)
+		extern std::string account_get_locktext(t_account * account, bool with_author, bool for_mute)
 		{
 			std::string msgtemp;
 			t_connection * c = account_get_conn(account);
@@ -463,7 +463,7 @@ namespace pvpgn
 			// append author of ban
 			if (with_author)
 			{
-				if (char const * author = account_get_auth_lockby(account))
+				if (char const * author = (for_mute) ? account_get_auth_muteby(account) : account_get_auth_lockby(account))
 				if (author && author[0] != '\0')
 				{
 					msgtemp += localize(c, " by {}", author);
@@ -471,21 +471,23 @@ namespace pvpgn
 			}
 
 			// append remaining time
-			if (unsigned int locktime = account_get_auth_locktime(account))
+			if (unsigned int locktime = (for_mute) ? account_get_auth_mutetime(account) : account_get_auth_locktime(account))
 				msgtemp += localize(c, " for {}", seconds_to_timestr(locktime - now));
 			else
 				msgtemp += localize(c, " permanently");
 
 			// append reason
-			char const * reason = account_get_auth_lockreason(account);
+			char const * reason = (for_mute) ? account_get_auth_mutereason(account) : account_get_auth_lockreason(account);
 			if (reason && reason[0] != '\0')
 			{
 				msgtemp += localize(c, " with a reason \"{}\"", reason);
 			}
 			return msgtemp;
 		}
-
-
+		extern std::string account_get_mutetext(t_account * account, bool with_author)
+		{
+			return account_get_locktext(account, with_author, true);
+		}
 		/****************************************************************/
 
 
