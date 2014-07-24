@@ -261,14 +261,16 @@ namespace pvpgn
 
 		extern std::string _localize(t_connection * c, const char * func, const char * fmt, const fmt::ArgList &args)
 		{
-			const char *format;
+			const char *format = fmt;
 			std::string output(fmt);
 			t_gamelang lang;
 
+			if (!c) {
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad connection");
+				return format;
+			}
 			try
 			{
-				format = fmt;
-
 				if (lang = conn_get_gamelang_localized(c))
 				if (!(format = _find_string(fmt, lang)))
 					format = fmt; // if not found use original

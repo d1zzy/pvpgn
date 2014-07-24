@@ -162,7 +162,8 @@ namespace pvpgn
 			o_game["currentplayers"] = std_to_string(game->ref);
 			o_game["totalplayers"] = std_to_string(game->count);
 			o_game["maxplayers"] = std_to_string(game->maxplayers);
-			o_game["mapname"] = game->mapname;
+			if (game->mapname)
+				o_game["mapname"] = game->mapname;
 			o_game["option"] = std_to_string(game->option);
 			o_game["maptype"] = std_to_string(game->maptype);
 			o_game["tileset"] = std_to_string(game->tileset);

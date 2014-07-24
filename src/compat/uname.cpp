@@ -65,24 +65,28 @@ namespace pvpgn
 					std::strcpy(buf->sysname, "Windows NT3x");
 				else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion < 1)
 					std::strcpy(buf->sysname, "Windows 2000");
-				else if (osver.dwMajorVersion == 5 && (osver.dwMinorVersion == 1 || (osver.dwMinorVersion == 2 && (osver.wProductType == VER_NT_WORKSTATION) && (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64))) )
+				else if (osver.dwMajorVersion == 5 && (osver.dwMinorVersion == 1 // x86
+					|| (osver.dwMinorVersion == 2 && (osver.wProductType == VER_NT_WORKSTATION) && (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64))) ) // x64
 					std::strcpy(buf->sysname, "Windows XP");
 				else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion == 2)
 					std::strcpy(buf->sysname, "Windows Server 2003");
 				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 0 && (osver.wProductType == VER_NT_WORKSTATION))
 					std::strcpy(buf->sysname, "Windows Vista");
-				else if (osver.dwMajorVersion == 6 && (osver.dwMinorVersion == 0 || osver.dwMinorVersion == 1) && (osver.wProductType != VER_NT_WORKSTATION))
+				else if (osver.dwMajorVersion == 6 && (osver.dwMinorVersion <= 1) && (osver.wProductType != VER_NT_WORKSTATION))
 					std::strcpy(buf->sysname, "Windows Server 2008");
 				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 1 && (osver.wProductType == VER_NT_WORKSTATION))
 					std::strcpy(buf->sysname, "Windows 7");
-				else if (osver.dwMajorVersion == 6 && (osver.dwMinorVersion == 2 || osver.dwMinorVersion == 3) && (osver.wProductType != VER_NT_WORKSTATION))
+				else if (osver.dwMajorVersion == 6 && (osver.dwMinorVersion >= 2) && (osver.wProductType != VER_NT_WORKSTATION))
 					std::strcpy(buf->sysname, "Windows Server 2012");
-				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 2 && (osver.wProductType == VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows 8");
-				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 3 && (osver.wProductType == VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows 8.1");
+				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion >= 2 && (osver.wProductType == VER_NT_WORKSTATION))
+					std::strcpy(buf->sysname, "Windows 8.x");
+				// FIXME: dwMinorVersion returns "2" instead of "3" on Windows 8.1
+				//else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 3 && (osver.wProductType == VER_NT_WORKSTATION))
+				//	std::strcpy(buf->sysname, "Windows 8.1");
+				else if (osver.wProductType != VER_NT_WORKSTATION)
+					std::strcpy(buf->sysname, "Windows Server >2012");
 				else
-					std::strcpy(buf->sysname, "Windows");
+					std::strcpy(buf->sysname, "Windows >8");
 
 				os = WinNT;
 				break;
