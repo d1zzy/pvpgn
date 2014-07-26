@@ -22,7 +22,7 @@ local lua_command_table = {
 
 
 -- Global function to handle commands
---   ("return 1" from a command will break next C++ code execution)
+--   ("return 1" from a command will allow next C++ code execution)
 function handle_command(account, text)
 	-- find command in table
 	for cg,cmdlist in pairs(lua_command_table) do
@@ -32,7 +32,7 @@ function handle_command(account, text)
 				-- check if command group is in account.commandgroups
 				if math_and(account.commandgroups, cg) == 0 then
 					api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "This command is reserved for admins."))
-					return 1
+					return -1
 				end
 				
 				-- FIXME: we can use _G[func] if func is a text but not a function, 
@@ -42,7 +42,7 @@ function handle_command(account, text)
 			end
 		end
 	end
-	return 0
+	return 1
 end
 
 

@@ -9,7 +9,7 @@
 -- /quiz <start|stop|stats>
 function command_quiz(account, text)
 	if not config.quiz then
-		return 0
+		return 1
 	end
 	
 	local args = split_command(text, 2)
@@ -29,7 +29,7 @@ function command_quiz(account, text)
 	end
 	
 	api.describe_command(account.name, args[0])
-	return 1
+	return -1
 end
 
 
@@ -38,29 +38,29 @@ function q_command_start(account, filename)
 	
 	if not account_is_operator_or_admin(account.name) then
 		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "You must be at least a Channel Operator to use this command."))
-		return 1
+		return -1
 	end
 	
 	local channel = api.channel_get_by_id(account.channel_id)
 	if not channel then
 		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "This command can only be used inside a channel."))
-		return 1
+		return -1
 	end
  
 	if config.quiz_channel then
 		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "Quiz has already ran in channel \"{}\". Use /quiz stop to force finish.", config.quiz_channel))
-		return 1
+		return -1
 	end
 	
 	-- check if file exists
 	if not filename or not file_exists(q_directory() .. "/questions/" .. filename .. ".txt") then
 		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "Available Quiz dictionaries: "))
 		api.message_send_text(account.name, message_type_error, account.name, "   " .. config.quiz_filelist)
-		return 1
+		return -1
 	end
 
 	quiz:start(channel.name, filename)
-	return 1
+	return 0
 end
 
 -- Stop quiz
@@ -68,17 +68,17 @@ function q_command_stop(account)
 
 	if not account_is_operator_or_admin(account.name) then
 		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "You must be at least a Channel Operator to use this command."))
-		return 1
+		return -1
 	end
 	
 	if not config.quiz_channel then
 		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "Quiz is not running."))
-		return 1
+		return -1
 	end
 
 	quiz:stop(account.name)
 
-	return 1
+	return 0
 end
 
 -- Display Quiz Top players record
@@ -86,7 +86,7 @@ function q_command_toplist(account)
 	
 	-- load records (if it was not loaded yet)
 	if not q_load_records() then
-		return 0
+		return 1
 	end
 
 	local output = localize(account.name, "Top {} Quiz records:", config.quiz_users_in_top)
@@ -100,7 +100,7 @@ function q_command_toplist(account)
 		api.message_send_text(account.name, message_type_info, account.name, output)
 	end
 
-	return 1
+	return 0
 end
 
 
@@ -109,7 +109,7 @@ function q_command_stats(account, username)
 
 	-- load records (if it was not loaded yet)
 	if not q_load_records() then
-		return 0
+		return 1
 	end
 	
 	local found = false
@@ -129,5 +129,5 @@ function q_command_stats(account, username)
 		api.message_send_text(account.name, message_type_info, account.name, localize(account.name, "{} has never played Quiz.", username))
 	end
 
-	return 1
+	return 0
 end

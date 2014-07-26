@@ -551,6 +551,7 @@ namespace pvpgn
 
 		extern int handle_command(t_connection * c, char const * text)
 		{
+			int result = 0;
 			t_command_table_row const *p;
 
 			if ((text[0] != '\0') && (conn_quota_exceeded(c, text)))
@@ -561,8 +562,14 @@ namespace pvpgn
 			}
 
 #ifdef WITH_LUA
-			if (lua_handle_command(c, text) > 0)
-				return 0;
+			result = lua_handle_command(c, text);
+			// -1 = unsuccess, 0 = success, 1 = execute next c++ code
+			if (result == 0)
+			{
+				// TODO: log command
+			}
+			if (result < 1)
+				return result;
 #endif
 
 			for (p = standard_command_table; p->command_string != NULL; p++)
@@ -579,7 +586,17 @@ namespace pvpgn
 						message_send_text(c, message_type_error, c, localize(c, "This command is reserved for admins."));
 						return 0;
 					}
-					if (p->command_handler != NULL) return ((p->command_handler)(c, text));
+					if (p->command_handler != NULL)
+					{
+						result = ((p->command_handler)(c, text));
+						// -1 = unsuccess, 0 = success
+						if (result == 0)
+						{
+							// TODO: log command
+							// TODO: modify all commands to return "0" only if success, and "-1" if not
+						}
+						return result;
+					}
 				}
 			}
 
