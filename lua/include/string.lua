@@ -8,7 +8,7 @@
 
 -- Split text into table by delimeter
 --  Usage example: string.split("one,two",",")
-function string:split(str)	
+function string:split(str, sep)	
 	str = str or '%s+'
 	local st, g = 1, self:gmatch("()("..str..")")
 	local function getter(segs, seps, sep, cap1, ...)

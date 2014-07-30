@@ -18,9 +18,11 @@ end
 
 -- Global function to handle user join to game
 function handle_game_userjoin(game, account)
-	--for i,j in pairs(game) do
-	--	message_send_text(account.name, message_type_info, account.name, i.." = "..j)
-	--end
+	if config.ghost then
+		gh_handle_game_userjoin(game, account)
+	end
+	
+
 end
 
 

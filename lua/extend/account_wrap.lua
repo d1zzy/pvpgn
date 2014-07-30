@@ -521,3 +521,118 @@ end
 function account_set_locale(username, value)
 	return api.account_set_attr(username, "Record\\WOL\\auth\\locale", attr_type_str, value)
 end
+
+
+
+--
+-- Warcraft 3 (DotA)
+--
+
+function account_get_dotarating_3x3(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_3_rating", attr_type_num)
+end
+function account_set_dotarating_3x3(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_3_rating", attr_type_num, value)
+end
+
+function account_get_dotawins_3x3(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_3_wins", attr_type_num)
+end
+function account_set_dotawins_3x3(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_3_wins", attr_type_num, value)
+end
+
+function account_get_dotalosses_3x3(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_3_losses", attr_type_num)
+end
+function account_set_dotalosses_3x3(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_3_losses", attr_type_num, value)
+end
+
+function account_get_dotastreaks_3x3(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_3_streaks", attr_type_num)
+end
+function account_set_dotastreaks_3x3(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_3_streaks", attr_type_num, value)
+end
+
+function account_get_dotaleaves_3x3(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_3_leaves", attr_type_num)
+end
+function account_set_dotaleaves_3x3(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_3_leaves", attr_type_num, value)
+end
+
+
+function account_get_dotarating_5x5(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_5_rating", attr_type_num)
+end
+function account_set_dotarating_5x5(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_5_rating", attr_type_num, value)
+end
+
+function account_get_dotawins_5x5(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_5_wins", attr_type_num)
+end
+function account_set_dotawins_5x5(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_5_wins", attr_type_num, value)
+end
+
+function account_get_dotalosses_5x5(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_5_losses", attr_type_num)
+end
+function account_set_dotalosses_5x5(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_5_losses", attr_type_num, value)
+end
+
+function account_get_dotastreaks_5x5(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_5_streaks", attr_type_num)
+end
+function account_set_dotastreaks_5x5(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_5_streaks", attr_type_num, value)
+end
+
+function account_get_dotaleaves_5x5(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_5_leaves", attr_type_num)
+end
+function account_set_dotaleaves_5x5(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_5_leaves", attr_type_num, value)
+end
+
+function account_get_botping(username)
+	value = api.account_get_attr(username, "BNET\\acct\\botping", attr_type_str)
+	local pings = {}
+	
+	-- deserialize and return table
+	-- data format: "unixtime,botname,ping;..."
+	for chunk in string.split(value,";") do
+		local item = {}
+		i = 1
+		for v in string.split(chunk,",") do
+			if (i == 1) then 
+				item.date = v
+			elseif (i == 2) then 
+				item.bot = v
+			elseif (i == 3) then 
+				item.ping = v
+			end
+			i = i + 1
+		end
+		table.insert(pings, item)
+	end
+	-- sort by ping ascending
+	table.sort(pings, function(a,b) return tonumber(a.ping) < tonumber(b.ping) end)
+	return pings
+end
+-- pings is a table that received from account_get_botping()
+function account_set_botping(username, pings)
+	local value = ""
+	-- serialize table
+	for k,v in pairs(pings) do
+		-- ignore expired pings
+		if (os.time() - v.date) < 60*60*24*ghost_ping_expire then
+			value = value .. string.format("%s,%s,%s;", v.date, v.bot, v.ping);
+		end
+	end
+	return api.account_set_attr(username, "BNET\\acct\\botping", attr_type_str, value)
+end

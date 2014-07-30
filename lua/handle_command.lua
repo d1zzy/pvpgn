@@ -11,9 +11,24 @@
 local lua_command_table = {
 	[1] = {
 		["/w3motd"] = command_w3motd,
-		
+
 		-- Quiz
 		["/quiz"] = command_quiz,
+		
+		-- GHost
+		["/pvpgn"] = command_pvpgn,
+		
+		["/host"] = command_host,
+		["/unhost"] = command_unhost,
+		["/ping"] = command_ping, ["/p"] = command_ping,
+		["/swap"] = command_swap,
+		["/open"] = command_open_close,
+		["/close"] = command_open_close,
+		["/start"] = command_start_abort_pub_priv, 
+		["/abort"] = command_start_abort_pub_priv,
+		["/pub"] = command_start_abort_pub_priv,
+		["/priv"] = command_start_abort_pub_priv,
+		["/stats"] = command_stats,
 	},
 	[8] = {
 		["/redirect"] = command_redirect,

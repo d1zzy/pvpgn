@@ -10,7 +10,12 @@ function handle_user_whisper(account_src, account_dst, text)
 	--DEBUG(account_src.name.."->"..account_dst.name.. ": ".. text)
 	--return 1;
 end
+
 function handle_user_login(account)
+	if (config.ghost) then
+		gh_handle_user_login(account)
+	end
+	
 	--DEBUG(account.name.." logged in")
 	--return 1;
 end

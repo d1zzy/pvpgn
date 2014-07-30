@@ -14,7 +14,7 @@ local username = nil
 
 function command_w3motd(account, text)
 	-- allow warcraft 3 client only
-	if not (account.clienttag == "W3XP" or account.clienttag == "WAR3") then
+	if not (account.clienttag == CLIENTTAG_WAR3XP or account.clienttag == CLIENTTAG_WARCRAFT3) then
 		return 1
 	end
 

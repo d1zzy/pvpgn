@@ -5,13 +5,9 @@
 	Licensed under the same terms as Lua itself.
 ]]--
 
--- Entry point
--- Executes after preload all the lua files
-function main()
-	
-	-- start antihack
-	if (config.ah) then
-		ah_init()
-	end
 
+-- return rounded float value
+function math.round(num, idp)
+ local mult = 10^(idp or 0)
+ return math.floor(num * mult + 0.5) / mult
 end

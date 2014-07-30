@@ -22,6 +22,12 @@ config = {
 	-- AntiHack (Starcraft)
 	ah = true,
 	ah_interval = 60, -- interval for send memory request to all players in games
-	
+
+	-- GHost++ (https://github.com/OHSystem/ohsystem)
+	ghost = false, -- enable GHost commands
+	ghost_bots = { hostbot1, hostbot2 }, -- list of authorized bots
+	ghost_dota_server = true, -- replace normal Warcraft 3 stats with DotA
+	ghost_ping_expire = 90, -- interval when outdated botpings should be removed (bot ping updates for each user when he join a game hosted by ghost); game list shows to user depending on the best ping to host bot
+
 }
 
