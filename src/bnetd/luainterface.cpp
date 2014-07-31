@@ -328,7 +328,29 @@ namespace pvpgn
 			}
 			return result;
 		}
+		extern int lua_handle_command_before(t_connection * c, char const * text)
+		{
+			t_account * account;
+			int result = 0;
+			try
+			{
+				if (!(account = conn_get_account(c)))
+					return 0;
 
+				std::map<std::string, std::string> o_account = get_account_object(account);
+				lua::transaction(vm) << lua::lookup("handle_command_before") << o_account << text << lua::invoke >> result << lua::end; // invoke lua function
+
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return result;
+		}
 
 
 		extern void lua_handle_game(t_game * game, t_connection * c, t_luaevent_type luaevent)

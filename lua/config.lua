@@ -9,6 +9,8 @@
 -- Config table can be extended here with your own variables
 -- values are preloaded from bnetd.conf
 config = {
+	flood_immunity_users = { "admin", "" }, -- ignore flood protection for these users
+
 	-- Quiz settings
 	quiz = true,
 	quiz_filelist = "misc, dota, warcraft", -- display available files in "/quiz start"

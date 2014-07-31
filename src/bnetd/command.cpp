@@ -554,6 +554,14 @@ namespace pvpgn
 			int result = 0;
 			t_command_table_row const *p;
 
+#ifdef WITH_LUA
+			// feature to ignore flood protection
+			result = lua_handle_command_before(c, text);
+#endif
+			if (result < 0)
+				return result;
+
+			if (result == 0)
 			if ((text[0] != '\0') && (conn_quota_exceeded(c, text)))
 			{
 				msgtemp = localize(c, "You are sending commands to {} too quickly and risk being disconnected for flooding. Please slow down.", prefs_get_servername());
