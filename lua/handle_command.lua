@@ -61,6 +61,26 @@ function handle_command(account, text)
 end
 
 
+-- Executes before executing any command
+-- "return 1" allow ignore flood protection
+-- "return -1" will prevent next execution silently
+function handle_command_before(account, text)
+	-- special users
+	for k,username in pairs(config.flood_immunity_users) do
+		if (username == account.name) then return 1 end
+	end
+
+	if (config.ghost) then
+		-- ghost bots
+		for k,username in pairs(config.ghost_bots) do
+			if (username == account.name) then return 1 end
+		end
+	end
+	
+	return 0
+end
+
+
 -- Split command to arguments, 
 --  index 0 is always a command name without a slash 
 --  return table with arguments
