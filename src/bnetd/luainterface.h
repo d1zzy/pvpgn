@@ -57,6 +57,7 @@ namespace pvpgn
 			luaevent_user_disconnect,
 
 			luaevent_server_start,
+			luaevent_server_rehash,
 			luaevent_server_mainloop,
 
 			luaevent_client_readmemory

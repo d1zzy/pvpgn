@@ -9,9 +9,12 @@
 -- Executes after preload all the lua files
 function main()
 	
-	-- start antihack
 	if (config.ah) then
+		-- start antihack
 		ah_init()
 	end
-
+	
+	if (config.ghost) then
+		gh_load()
+	end
 end

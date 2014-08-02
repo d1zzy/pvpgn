@@ -316,7 +316,7 @@ namespace pvpgn
 			switch (luaevent)
 			{
 			case luaevent_command:
-				func_name = "handle_command_before";
+				func_name = "handle_command";
 				break;
 			case luaevent_command_before:
 				func_name = "handle_command_before";
@@ -583,6 +583,9 @@ namespace pvpgn
 				break;
 			case luaevent_server_mainloop:
 				func_name = "handle_server_mainloop"; // one time per second
+				break;
+			case luaevent_server_rehash:
+				func_name = "handle_server_rehash"; // when restart Lua VM
 				break;
 			default:
 				return;

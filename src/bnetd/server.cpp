@@ -1483,6 +1483,8 @@ namespace pvpgn
 #ifdef WITH_LUA
 					if (do_restart == restart_mode_all || do_restart == restart_mode_lua)
 					{
+						lua_handle_server(luaevent_server_rehash);
+
 						lua_unload();
 						lua_load(prefs_get_scriptdir());
 					}

@@ -29,6 +29,18 @@ end
 function gh_del_userbot(username)
 	user2bot[username] = nil
 end
+-- save table to file
+function gh_save_userbot(filename)
+	-- do not save empty table
+	if not next(gh_user2bot) then return end
+	
+	table.save(gh_user2bot, filename)
+end
+-- load table from file
+function gh_load_userbot(filename)
+	gh_user2bot = table.load(filename)
+end
+
 
 
 
@@ -47,6 +59,11 @@ function gh_read_silentping(username)
 	return false
 end
 
+
+-- Get path to GHost directory
+function gh_directory()
+	return config.scriptdir .. "/ghost"
+end
 
 
 
