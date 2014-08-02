@@ -19,6 +19,7 @@ local lua_command_table = {
 		["/ghost"] = command_ghost,
 		
 		["/host"] = command_host,
+		["/chost"] = command_chost,
 		["/unhost"] = command_unhost,
 		["/ping"] = command_ping, ["/p"] = command_ping,
 		["/swap"] = command_swap,
@@ -62,8 +63,9 @@ end
 
 
 -- Executes before executing any command
+-- "return 0" stay with flood protection
 -- "return 1" allow ignore flood protection
--- "return -1" will prevent next execution silently
+-- "return -1" will prevent next command execution silently
 function handle_command_before(account, text)
 	-- special users
 	for k,username in pairs(config.flood_immunity_users) do

@@ -39,7 +39,7 @@ function command_ghost(account, text)
 	elseif (cmd == "gameresult") then
 		gh_callback_gameresult(args[2], args[3], args[4])
 
-	elseif (cmd == "host") then
+	elseif (cmd == "host" or cmd == "chost") then
 		gh_callback_host(args[3], account.name, args[4])
 	elseif (cmd == "unhost") then
 		gh_callback_unhost(args[3], args[4])

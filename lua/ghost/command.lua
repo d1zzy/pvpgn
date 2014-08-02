@@ -15,7 +15,7 @@
 --- USER -> PVPGN -> GHOST ---
 ------------------------------
 
--- /host [mode] [type] [name]
+-- /host [mode] [type] [gamename]
 function command_host(account, text)
 	if not config.ghost or not account.clienttag == CLIENTTAG_WAR3XP then return 1 end
 
@@ -42,6 +42,66 @@ function command_host(account, text)
 
 	-- redirect message to bot
 	message_send_ghost(botname, string.format("/pvpgn host %s %s %s %s", account.name, args[1], args[2], args[3]) )
+	return 0
+end
+
+
+gh_maplist = {}
+
+-- /chost [code] [gamename]
+function command_chost(account, text)
+	if not config.ghost or not account.clienttag == CLIENTTAG_WAR3XP then return 1 end
+
+	local filename = gh_directory() .. "/maplist.txt"
+	-- load maps from the file
+	file_load(filename, file_load_dictionary_callback, 
+		function(a,b) 
+			-- split second value to get name and filename
+			local mapname,mapfile = string.split(b,"|")
+			table.insert(gh_maplist, { code = a, name = mapname, filename = mapfile })
+		end)
+	
+	local args = split_command(text, 2)
+	
+	if not args[1] or not args[2] then
+		api.describe_command(account.name, args[0])
+		
+		-- send user each map on a new line
+		for i,map in pairs(gh_maplist) do
+			api.message_send_text(account.name, message_type_info, string.format("%s = %s", map.code, map.name) )
+		end
+		return -1
+	end
+	
+	-- find map by code
+	local mapfile = nil
+	for i,map in pairs(gh_maplist) do
+		if (args[1] == map.code) then mapfile = map.filename end
+	end
+	
+	if not mapfile then
+		api.message_send_text(account.name, message_type_info, localize(account.name, "Invalid map code.") )
+		return -1
+	end
+	
+	
+	if gh_get_userbot(account.name) then
+		local gamename = gh_get_usergame(account.name)
+		local game = game_get_by_name(gamename, account.clienttag, game_type_all)
+		if next(game) then
+			api.message_send_text(account.name, message_type_info, localize("You already host a game \"{}\". Use /unhost to destroy it.", gamename))
+			return -1
+		else
+			-- if game doesn't exist then remove mapped bot for user 
+			gh_del_userbot(account.name)
+		end
+	end
+	
+	-- get bot by ping
+	local botname = gh_select_bot(account.name)
+
+	-- redirect message to bot
+	message_send_ghost(botname, string.format("/pvpgn chost %s %s %s", account.name, mapfile, args[2]) )
 	return 0
 end
 
