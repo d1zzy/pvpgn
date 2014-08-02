@@ -460,11 +460,37 @@ namespace pvpgn
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
 			}
-
 			return 1;
 		}
+		extern int __game_get_by_name(lua_State* L)
+		{
+			const char* gamename;
+			const char* clienttag_str;
+			int gametype;
+			std::map<std::string, std::string> o_game;
+			try
+			{
+				lua::stack st(L);
+				// get args
+				st.at(1, gamename);
+				st.at(2, clienttag_str);
+				st.at(3, gametype);
 
+				t_clienttag clienttag = tag_str_to_uint(clienttag_str);
+				o_game = get_game_object(gamename, clienttag, (t_game_type)gametype);
 
+				st.push(o_game);
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return 1;
+		}
 
 
 

@@ -556,7 +556,7 @@ namespace pvpgn
 
 #ifdef WITH_LUA
 			// feature to ignore flood protection
-			result = lua_handle_command_before(c, text);
+			result = lua_handle_command(c, text, luaevent_command_before);
 #endif
 			if (result < 0)
 				return result;
@@ -570,7 +570,7 @@ namespace pvpgn
 			}
 
 #ifdef WITH_LUA
-			result = lua_handle_command(c, text);
+			result = lua_handle_command(c, text, luaevent_command);
 			// -1 = unsuccess, 0 = success, 1 = execute next c++ code
 			if (result == 0)
 			{

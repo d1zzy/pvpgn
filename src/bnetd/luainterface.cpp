@@ -131,7 +131,9 @@ namespace pvpgn
 				{ "account_get_friends", __account_get_friends },
 				{ "account_get_teams", __account_get_teams },
 				{ "clan_get_members", __clan_get_members },
+
 				{ "game_get_by_id", __game_get_by_id },
+				{ "game_get_by_name", __game_get_by_name },
 
 				{ "channel_get_by_id", __channel_get_by_id },
 
@@ -305,17 +307,29 @@ namespace pvpgn
 		/* Lua Events (called from scripts) */
 #ifndef _LUA_EVENTS_
 
-		extern int lua_handle_command(t_connection * c, char const * text)
+		extern int lua_handle_command(t_connection * c, char const * text, t_luaevent_type luaevent)
 		{
 			t_account * account;
+			const char * func_name;
 			int result = 0;
+			switch (luaevent)
+			{
+			case luaevent_command:
+				func_name = "handle_command_before";
+				break;
+			case luaevent_command_before:
+				func_name = "handle_command_before";
+				break;
+			default:
+				return result;
+			}
 			try
 			{
 				if (!(account = conn_get_account(c)))
 					return 0;
 
 				std::map<std::string, std::string> o_account = get_account_object(account);
-				lua::transaction(vm) << lua::lookup("handle_command") << o_account << text << lua::invoke >> result << lua::end; // invoke lua function
+				lua::transaction(vm) << lua::lookup(func_name) << o_account << text << lua::invoke >> result << lua::end; // invoke lua function
 
 			}
 			catch (const std::exception& e)
@@ -328,30 +342,6 @@ namespace pvpgn
 			}
 			return result;
 		}
-		extern int lua_handle_command_before(t_connection * c, char const * text)
-		{
-			t_account * account;
-			int result = 0;
-			try
-			{
-				if (!(account = conn_get_account(c)))
-					return 0;
-
-				std::map<std::string, std::string> o_account = get_account_object(account);
-				lua::transaction(vm) << lua::lookup("handle_command_before") << o_account << text << lua::invoke >> result << lua::end; // invoke lua function
-
-			}
-			catch (const std::exception& e)
-			{
-				eventlog(eventlog_level_error, __FUNCTION__, e.what());
-			}
-			catch (...)
-			{
-				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
-			}
-			return result;
-		}
-
 
 		extern void lua_handle_game(t_game * game, t_connection * c, t_luaevent_type luaevent)
 		{
@@ -412,7 +402,6 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
 			}
 		}
-
 
 		extern int lua_handle_channel(t_channel * channel, t_connection * c, char const * message_text, t_message_type message_type, t_luaevent_type luaevent)
 		{

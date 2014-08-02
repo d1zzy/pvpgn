@@ -142,6 +142,14 @@ namespace pvpgn
 				o_game = get_game_object(game);
 			return o_game;
 		}
+		extern std::map<std::string, std::string> get_game_object(const char * gamename, t_clienttag clienttag, t_game_type gametype)
+		{
+			std::map<std::string, std::string> o_game;
+
+			if (t_game * game = gamelist_find_game(gamename, clienttag, gametype))
+				o_game = get_game_object(game);
+			return o_game;
+		}
 		extern std::map<std::string, std::string> get_game_object(t_game * game)
 		{
 			std::map<std::string, std::string> o_game;

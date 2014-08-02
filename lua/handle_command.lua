@@ -16,7 +16,7 @@ local lua_command_table = {
 		["/quiz"] = command_quiz,
 		
 		-- GHost
-		["/pvpgn"] = command_pvpgn,
+		["/ghost"] = command_ghost,
 		
 		["/host"] = command_host,
 		["/unhost"] = command_unhost,

@@ -44,6 +44,7 @@ namespace pvpgn
 		extern int __clan_get_members(lua_State* L);
 
 		extern int __game_get_by_id(lua_State* L);
+		extern int __game_get_by_name(lua_State* L);
 
 		extern int __channel_get_by_id(lua_State* L);
 
