@@ -63,3 +63,45 @@ end
 function handle_game_changestatus(game)
 	--api.message_send_text(game.owner, message_type_info, nil, "Change status of the game to ".. game.status)
 end
+
+
+function handle_game_list(account)
+	local gamelist = {}
+	
+	if (config.ghost and config.ghost_dota_server and account.clienttag == CLIENTTAG_WAR3XP) then
+		-- get gamelist
+		local glist = server_get_games()
+		-- and add ping field for each game
+		for i,game in pairs(glist) do
+			glist[i].ping = 1000 -- initial ping value for all games
+			-- if game owner is ghost bot
+			if gh_is_bot(game.owner) then
+				local pings = account_get_botping(account.name)
+				local is_found = false
+				for k,v in pairs(pings) do
+					-- fetch user ping for current bot
+					if (v.bot == game.owner) then
+						glist[i].ping = pings[k].ping
+						is_found = true
+					end
+				end
+				-- if ping not found for the bot then use ping "0" to move the game on top
+				-- (so, after join the game user will receive a ping from the bot)
+				if not is_found then
+					glist[i].ping = 0
+				end
+			end
+		end
+		
+		-- sort gamelist by ping ascending
+		table.sort(glist, function(a,b) return tonumber(a.ping) < tonumber(b.ping) end)
+		
+		-- iterate sorted gamelist and fill a final list with a new order
+		for i,game in pairs(glist) do
+			table.insert(gamelist, game.id)
+			table.insert(gamelist, game.name)
+		end
+		
+		return {"id", "name"}, gamelist
+	end
+end

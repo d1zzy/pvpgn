@@ -231,7 +231,6 @@ namespace pvpgn
 		typedef int(*t_glist_func)(t_game *, void *);
 
 	}
-
 }
 
 #endif
@@ -254,6 +253,7 @@ namespace pvpgn
 #include "channel.h"
 #include "common/list.h"
 #include "common/tag.h"
+#include "common/packet.h"
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
@@ -261,6 +261,14 @@ namespace pvpgn
 
 	namespace bnetd
 	{
+		// game list structure with custom data
+		struct glist_cbdata {
+			const char * identifier;
+			unsigned tcount, counter;
+			t_connection *c;
+			t_game_type gtype;
+			t_packet *rpacket;
+		};
 
 		extern char const * game_type_get_str(t_game_type type);
 		extern char const * game_status_get_str(t_game_status status);

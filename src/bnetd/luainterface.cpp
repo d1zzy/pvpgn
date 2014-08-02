@@ -15,6 +15,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#define GAME_INTERNAL_ACCESS
 #ifdef WITH_LUA
 #include "common/setup_before.h"
 
@@ -402,6 +403,54 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
 			}
 		}
+
+		std::vector<t_game*> lua_handle_game_list(t_connection * c)
+		{
+			t_account * account;
+			std::vector<std::string> columns, data;
+			std::vector<t_game*> result;
+			try
+			{
+				if (!(account = conn_get_account(c)))
+					return result;
+
+				std::map<std::string, std::string> o_account = get_account_object(account);
+				lua::transaction(vm) << lua::lookup("handle_game_list") << o_account << lua::invoke >> columns >> data << lua::end; // invoke lua function
+			
+				// check consistency of data and columns
+				if (columns.size() != data.size() || std::floor(data.size() / (columns.size()) != data.size() / columns.size()))
+					return result;
+
+				// fill map result
+				for (std::vector<std::string>::size_type i = 1; i < data.size(); i += columns.size())
+				{
+					// init empty game struct
+					t_game * game = (t_game*)xmalloc(sizeof(t_game));
+					game->id = 0;
+					game->name = NULL;
+
+					// next columns 
+					for (int j = 1; j < columns.size(); j++)
+					{
+						if (columns[j] == "id")
+							game->id = atoi(data[i+j-1].c_str());
+						else if (columns[j] == "name")
+							game->name = xstrdup(data[i + j - 1].c_str());
+					}
+					result.push_back(game);
+				}
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return result;
+		}
+
 
 		extern int lua_handle_channel(t_channel * channel, t_connection * c, char const * message_text, t_message_type message_type, t_luaevent_type luaevent)
 		{

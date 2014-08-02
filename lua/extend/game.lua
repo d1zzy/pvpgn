@@ -15,3 +15,17 @@ function games_count()
 	return count
 end
 
+function server_get_games(clienttag)
+	local gamelist = {}
+	
+	for i,game in pairs(api.server_get_games()) do
+		if clienttag then
+			if (game.tag == clienttag) then
+				table.insert(gamelist, game)
+			end
+		else
+			table.insert(gamelist, game)
+		end
+	end
+	return gamelist
+end

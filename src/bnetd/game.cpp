@@ -2188,10 +2188,36 @@ namespace pvpgn
 			return NULL;
 		}
 
+
 		extern void gamelist_traverse(t_glist_func cb, void *data)
 		{
 			t_elist *curr;
+			t_game *game;
 
+#ifdef WITH_LUA
+			struct glist_cbdata *cbdata = (struct glist_cbdata*)data;
+			// check that data is has needed struct
+			if (cbdata->identifier && strcmp(cbdata->identifier, "gamelist_join") == 0)
+			{
+				// get gamelist from Lua script: pair(gameid=gamename)
+				std::vector<t_game*> gamelist = lua_handle_game_list(cbdata->c);
+				if (gamelist.size() > 0)
+				{
+					// display games to a user according to the given order
+					for (std::vector<t_game*>::size_type i = 0; i != gamelist.size(); i++)
+					{
+						if (game = gamelist_find_game_byid(gamelist[i]->id))
+						{
+							if (gamelist[i]->name)
+								game->name = xstrdup(gamelist[i]->name); // override game name
+							cb(game, data); // display game item
+						}
+					}
+					// break next execution (override of display below gamelist)
+					return;
+				}
+			}
+#endif
 			elist_for_each(curr, &gamelist_head)
 			{
 				if (cb(elist_entry(curr, t_game, glist_link), data) < 0) return;

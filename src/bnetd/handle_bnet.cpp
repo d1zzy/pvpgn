@@ -3574,13 +3574,6 @@ namespace pvpgn
 			return 0;
 		}
 
-		struct glist_cbdata {
-			unsigned tcount, counter;
-			t_connection *c;
-			t_game_type gtype;
-			t_packet *rpacket;
-		};
-
 		static int _glist_cb(t_game * game, void *data)
 		{
 			struct glist_cbdata *cbdata = (struct glist_cbdata*)data;
@@ -3773,6 +3766,7 @@ namespace pvpgn
 				else
 					eventlog(eventlog_level_debug, __FUNCTION__, "GAMELISTREPLY looking for public games tag=\"%s\" bngtype=0x%08x gtype=%d", tag_uint_to_str(clienttag_str, clienttag), bngtype, (int)gtype);
 
+				cbdata.identifier = "gamelist_join"; // just an unique string that allow to identify the structure in gamelist_traverse()
 				cbdata.counter = 0;
 				cbdata.tcount = 0;
 				cbdata.c = c;

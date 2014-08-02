@@ -69,6 +69,7 @@ namespace pvpgn
 
 		extern int lua_handle_command(t_connection * c, char const * text, t_luaevent_type luaevent);
 		extern void lua_handle_game(t_game * game, t_connection * c, t_luaevent_type luaevent);
+		extern std::vector<t_game*> lua_handle_game_list(t_connection * c);
 
 		extern int lua_handle_channel(t_channel * channel, t_connection * c, char const * message_text, t_message_type message_type, t_luaevent_type luaevent);
 		extern int lua_handle_user(t_connection * c, t_connection * c_dst, char const * message_text, t_luaevent_type luaevent);
