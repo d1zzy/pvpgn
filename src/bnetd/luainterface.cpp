@@ -548,6 +548,30 @@ namespace pvpgn
 			return result;
 		}
 
+		extern const char * lua_handle_user_icon(t_connection * c, const char * iconinfo)
+		{
+			t_account * account;
+			const char * result;
+			try
+			{
+				if (!(account = conn_get_account(c)))
+					return 0;
+				std::map<std::string, std::string> o_account = get_account_object(account);
+
+				lua::transaction(vm) << lua::lookup("handle_user_icon") << o_account << iconinfo << lua::invoke >> result << lua::end; // invoke lua function
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return result;
+		}
+
+
 
 		extern void lua_handle_server(t_luaevent_type luaevent)
 		{

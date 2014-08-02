@@ -2639,6 +2639,12 @@ namespace pvpgn
 			else
 				std::strcpy(playerinfo, revtag); /* open char */
 
+#ifdef WITH_LUA
+			// change icon info from Lua
+			if (const char * iconinfo = lua_handle_user_icon((t_connection*)c, playerinfo))
+				return iconinfo;
+#endif
+
 			return playerinfo;
 		}
 
@@ -3764,9 +3770,15 @@ namespace pvpgn
 					eventlog(eventlog_level_info, __FUNCTION__, "[%d] %s using user-selected icon [%s]", conn_get_socket(c), revtag, usericon);
 				}
 			}
-
+#ifdef WITH_LUA
+			// change icon info from Lua
+			if (const char * iconinfo = lua_handle_user_icon(c, tempplayerinfo))
+			{
+				conn_set_w3_playerinfo(c, iconinfo);
+				return 0;
+			}
+#endif
 			conn_set_w3_playerinfo(c, tempplayerinfo);
-
 			return 0;
 		}
 

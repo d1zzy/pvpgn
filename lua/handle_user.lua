@@ -19,7 +19,13 @@ function handle_user_login(account)
 	--DEBUG(account.name.." logged in")
 	--return 1;
 end
+
 function handle_user_disconnect(account)
 	--DEBUG(account.name.." disconnected")
+end
+
+function handle_user_icon(account, iconinfo)
+	--TRACE("iconinfo"..iconinfo)
+	--return iconinfo
 end
 
