@@ -60,8 +60,6 @@ namespace pvpgn
 			luaevent_server_rehash,
 			luaevent_server_mainloop,
 
-			luaevent_client_readmemory
-
 		} t_luaevent_type;
 
 
@@ -76,7 +74,9 @@ namespace pvpgn
 		extern int lua_handle_user(t_connection * c, t_connection * c_dst, char const * message_text, t_luaevent_type luaevent);
 		extern const char * lua_handle_user_icon(t_connection * c, const char * iconinfo);
 		extern void lua_handle_server(t_luaevent_type luaevent);
-		extern void lua_handle_client(t_connection * c, int request_id, std::vector<int> data, t_luaevent_type luaevent);
+		
+		extern void lua_handle_client_readmemory(t_connection * c, int request_id, std::vector<int> data);
+		extern void lua_handle_client_extrawork(t_connection * c, int gametype, int length, const char * data);
 
 	}
 

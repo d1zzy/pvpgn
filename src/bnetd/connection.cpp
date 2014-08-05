@@ -4187,7 +4187,6 @@ namespace pvpgn
 			{
 				return -1;
 			}
-
 			if (!(rpacket = packet_create(packet_class_bnet)))
 				return -1;
 
@@ -4204,6 +4203,27 @@ namespace pvpgn
 			return 0;
 		}
 
+		extern int conn_client_requiredwork(t_connection * c, const char * filename)
+		{
+			t_packet    * rpacket;
+
+			if (!c)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL conn");
+				return -1;
+			}
+			if (!(rpacket = packet_create(packet_class_bnet)))
+				return -1;
+
+			packet_set_size(rpacket, sizeof(t_server_requiredwork));
+			packet_set_type(rpacket, SERVER_REQUIREDWORK);
+			packet_append_string(rpacket, filename); // filename should be "IX86ExtraWork.mpq"
+
+			conn_push_outqueue(c, rpacket);
+			packet_del_ref(rpacket);
+
+			return 0;
+		}
 	}
 
 }

@@ -144,6 +144,7 @@ namespace pvpgn
 
 				{ "client_kill", __client_kill },
 				{ "client_readmemory", __client_readmemory },
+				{ "client_requiredwork", __client_requiredwork },
 
 				{ "command_get_group", __command_get_group },
 				{ "icon_get_rank", __icon_get_rank },
@@ -418,7 +419,7 @@ namespace pvpgn
 				lua::transaction(vm) << lua::lookup("handle_game_list") << o_account << lua::invoke >> columns >> data << lua::end; // invoke lua function
 			
 				// check consistency of data and columns
-				if (columns.size() != data.size() || std::floor(data.size() / (columns.size()) != data.size() / columns.size()))
+				if (columns.size() != data.size() || std::floor((float)(data.size() / columns.size())) != (data.size() / columns.size()))
 					return result;
 
 				// fill map result
@@ -604,18 +605,10 @@ namespace pvpgn
 			}
 		}
 
-		extern void lua_handle_client(t_connection * c, int request_id, std::vector<int> data, t_luaevent_type luaevent)
+		extern void lua_handle_client_readmemory(t_connection * c, int request_id, std::vector<int> data)
 		{
 			t_account * account;
 			const char * func_name;
-			switch (luaevent)
-			{
-			case luaevent_client_readmemory:
-				func_name = "handle_client_readmemory";
-				break;
-			default:
-				return;
-			}
 			try
 			{
 				if (!(account = conn_get_account(c)))
@@ -624,6 +617,29 @@ namespace pvpgn
 				std::map<std::string, std::string> o_account = get_account_object(account);
 
 				lua::transaction(vm) << lua::lookup(func_name) << o_account << request_id << data << lua::invoke << lua::end; // invoke lua function
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+		}
+
+		extern void lua_handle_client_extrawork(t_connection * c, int gametype, int length, const char * data)
+		{
+			t_account * account;
+			const char * func_name;
+			try
+			{
+				if (!(account = conn_get_account(c)))
+					return;
+
+				std::map<std::string, std::string> o_account = get_account_object(account);
+
+				lua::transaction(vm) << lua::lookup(func_name) << o_account << gametype << length << data << lua::invoke << lua::end; // invoke lua function
 			}
 			catch (const std::exception& e)
 			{

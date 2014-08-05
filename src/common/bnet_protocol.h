@@ -1954,6 +1954,7 @@ namespace pvpgn
 #define SERVER_FILEINFOREPLY_TYPE_TOSFILE      0x0000001a /* tos_USA.txt */
 #define SERVER_FILEINFOREPLY_TYPE_GATEWAYS     0x0000001b /* STAR bnserver.ini */
 #define SERVER_FILEINFOREPLY_TYPE_GATEWAYS_D2  0x80000004 /* D2XP bnserver-D2DV.ini */
+#define SERVER_FILEINFOREPLY_TYPE_EXTRAWORK    0x80000005 /* IX86ExtraWork.mpq */
 #define SERVER_FILEINFOREPLY_TYPE_ICONS        0x0000001d /* STAR icons_STAR.bni */
 #define SERVER_FILEINFOREPLY_UNKNOWN2          0x00000000 /* always zero */
 	/******************************************************/
@@ -4075,6 +4076,21 @@ namespace pvpgn
 #define SERVER_MESSAGEBOX_OKCANCEL 0x00000001
 #define SERVER_MESSAGEBOX_YESNO 0x00000004
 
+#define SERVER_REQUIREDWORK 0x4Cff
+	typedef struct
+	{
+		t_bnet_header h;
+		/* FileName */
+	} PACKED_ATTR() t_server_requiredwork;
+
+#define CLIENT_EXTRAWORK 0x4bff
+	typedef struct
+	{
+		t_bnet_header h;
+		bn_short        gametype;
+		bn_short        length;
+		/* Data */
+	} PACKED_ATTR() t_client_extrawork;
 
 }
 

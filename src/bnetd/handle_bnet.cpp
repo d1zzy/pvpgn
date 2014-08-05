@@ -174,6 +174,7 @@ namespace pvpgn
 		static int _client_changeemailreq(t_connection * c, t_packet const *const packet);
 		static int _client_getpasswordreq(t_connection * c, t_packet const *const packet);
 		static int _client_claninforeq(t_connection * c, t_packet const *const packet);
+		static int _client_extrawork(t_connection * c, t_packet const *const packet);
 
 		/* connection state connected handler table */
 		static const t_htable_row bnet_htable_con[] = {
@@ -274,6 +275,7 @@ namespace pvpgn
 			{ CLIENT_CRASHDUMP, _client_crashdump },
 			{ CLIENT_SETEMAILREPLY, _client_setemailreply },
 			{ CLIENT_CLANINFOREQ, _client_claninforeq },
+			{ CLIENT_EXTRAWORK, _client_extrawork },
 			{ CLIENT_NULL, NULL },
 			{ -1, NULL }
 		};
@@ -1376,13 +1378,13 @@ namespace pvpgn
 			}
 
 			{
-				char const *tosfile;
+				char const *filename;
 
-				if (!(tosfile = packet_get_str_const(packet, sizeof(t_client_fileinforeq), MAX_FILENAME_STR))) {
+				if (!(filename = packet_get_str_const(packet, sizeof(t_client_fileinforeq), MAX_FILENAME_STR))) {
 					eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad FILEINFOREQ packet (missing or too long tosfile)", conn_get_socket(c));
 					return -1;
 				}
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] TOS requested: \"%s\" - type = 0x%02x", conn_get_socket(c), tosfile, bn_int_get(packet->u.client_fileinforeq.type));
+				eventlog(eventlog_level_info, __FUNCTION__, "[%d] file requested: \"%s\" - type = 0x%02x", conn_get_socket(c), filename, bn_int_get(packet->u.client_fileinforeq.type));
 
 				/* TODO: if type is TOSFILE make bnetd to send default tosfile if selected is not found */
 				if ((rpacket = packet_create(packet_class_bnet))) {
@@ -1397,8 +1399,8 @@ namespace pvpgn
 					 * timestamp doesn't work correctly and starcraft
 					 * needs name in client locale or displays hostname
 					 */
-					file_to_mod_time(c, tosfile, &rpacket->u.server_fileinforeply.timestamp);
-					packet_append_string(rpacket, tosfile);
+					file_to_mod_time(c, filename, &rpacket->u.server_fileinforeply.timestamp);
+					packet_append_string(rpacket, filename);
 					conn_push_outqueue(c, rpacket);
 					packet_del_ref(rpacket);
 				}
@@ -3304,7 +3306,7 @@ namespace pvpgn
 			{
 				_data.push_back(packet->u.data[i]);
 			}
-			lua_handle_client(c, request_id, _data, luaevent_client_readmemory);
+			lua_handle_client_readmemory(c, request_id, _data);
 #endif
 
 			return 0;
@@ -5339,6 +5341,38 @@ namespace pvpgn
 			eventlog(eventlog_level_info, __FUNCTION__, "[%d] get password for account \"%s\" to email \"%s\"", conn_get_socket(c), account_get_name(account), email);
 			return 0;
 		}
+
+
+
+		static int _client_extrawork(t_connection * c, t_packet const *const packet)
+		{
+			t_packet *rpacket;
+
+			if (packet_get_size(packet) < sizeof(t_client_extrawork)) {
+				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad EXTRAWORK packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_extrawork), packet_get_size(packet));
+				return -1;
+			}
+			{
+				short gametype;
+				short length;
+				char const *data;
+
+				gametype = bn_int_get(packet->u.client_extrawork.gametype);
+				length = bn_int_get(packet->u.client_extrawork.length);
+
+				if (!(data = packet_get_str_const(packet, sizeof(t_client_extrawork), 1024))) {
+					eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad EXTRAWORK packet (missing or too long data)", conn_get_socket(c));
+					return -1;
+				}
+				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] Received EXTRAWORK packet with GameType: %d and Length: %d (%s)", conn_get_socket(c), gametype, length, data);
+			
+	#ifdef WITH_LUA
+				lua_handle_client_extrawork(c, gametype, length, data);
+	#endif
+			}
+			return 0;
+		}
+
 	}
 
 }

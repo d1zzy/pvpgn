@@ -16,6 +16,10 @@ function handle_user_login(account)
 		gh_handle_user_login(account)
 	end
 	
+	-- send SID_REQUIREDWORK
+	--api.client_requiredwork(account.name, "IX86ExtraWork.mpq")
+	
+	
 	--DEBUG(account.name.." logged in")
 	--return 1;
 end
