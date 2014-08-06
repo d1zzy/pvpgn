@@ -608,7 +608,6 @@ namespace pvpgn
 		extern void lua_handle_client_readmemory(t_connection * c, int request_id, std::vector<int> data)
 		{
 			t_account * account;
-			const char * func_name;
 			try
 			{
 				if (!(account = conn_get_account(c)))
@@ -616,7 +615,7 @@ namespace pvpgn
 
 				std::map<std::string, std::string> o_account = get_account_object(account);
 
-				lua::transaction(vm) << lua::lookup(func_name) << o_account << request_id << data << lua::invoke << lua::end; // invoke lua function
+				lua::transaction(vm) << lua::lookup("handle_client_readmemory") << o_account << request_id << data << lua::invoke << lua::end; // invoke lua function
 			}
 			catch (const std::exception& e)
 			{
@@ -631,7 +630,6 @@ namespace pvpgn
 		extern void lua_handle_client_extrawork(t_connection * c, int gametype, int length, const char * data)
 		{
 			t_account * account;
-			const char * func_name;
 			try
 			{
 				if (!(account = conn_get_account(c)))
@@ -639,7 +637,7 @@ namespace pvpgn
 
 				std::map<std::string, std::string> o_account = get_account_object(account);
 
-				lua::transaction(vm) << lua::lookup(func_name) << o_account << gametype << length << data << lua::invoke << lua::end; // invoke lua function
+				lua::transaction(vm) << lua::lookup("handle_client_extrawork") << o_account << gametype << length << data << lua::invoke << lua::end; // invoke lua function
 			}
 			catch (const std::exception& e)
 			{
