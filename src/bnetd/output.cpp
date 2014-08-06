@@ -130,11 +130,17 @@ namespace pvpgn
 				{
 					conn = (t_connection*)elem_get_data(curr);
 					if (conn_get_account(conn))
+					{
 						std::fprintf(fp, "\t\t<user><name>%s</name><clienttag>%s</clienttag><version>%s</version>", conn_get_username(conn), tag_uint_to_str(clienttag_str, conn_get_clienttag(conn)), conn_get_clientver(conn));
+						
+						const char * country = conn_get_country(conn);
+						if (!country) country = "-";
+						std::fprintf(fp, "<country>%s</country>", country);
 
-					if ((game = conn_get_game(conn)))
-						std::fprintf(fp, "<gameid>%u</gameid>", game_get_id(game));
-					std::fprintf(fp, "</user>\n");
+						if ((game = conn_get_game(conn)))
+							std::fprintf(fp, "<gameid>%u</gameid>", game_get_id(game));
+						std::fprintf(fp, "</user>\n");
+					}
 				}
 
 				std::fprintf(fp, "\t\t</Users>\n");
@@ -183,6 +189,10 @@ namespace pvpgn
 					if (conn_get_account(conn))
 					{
 						std::fprintf(fp, "user%d=%s,%s,%s", number, tag_uint_to_str(clienttag_str, conn_get_clienttag(conn)), conn_get_username(conn), conn_get_clientver(conn));
+
+						const char * country = conn_get_country(conn);
+						if (!country) country = "-";
+						std::fprintf(fp, ",%s", country);
 
 						if ((game = conn_get_game(conn)))
 							std::fprintf(fp, ",%u", game_get_id(game));
