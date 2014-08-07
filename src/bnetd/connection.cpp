@@ -2284,6 +2284,7 @@ namespace pvpgn
 			{
 				queue_clear(q);
 				conn_set_state(c, conn_state_destroy);
+				eventlog(eventlog_level_error, __FUNCTION__, "outqueue reached limit of 1000 packets (hack attempt?)");
 				return 0;
 			}
 

@@ -290,6 +290,9 @@ namespace pvpgn
 				case IDM_SAVE:
 					server_save_wraper();
 					break;
+				case IDM_RESTART_LUA:
+					server_restart_wraper(restart_mode_lua);
+					break;
 				case IDM_RESTART:
 					server_restart_wraper(restart_mode_all);
 					break;

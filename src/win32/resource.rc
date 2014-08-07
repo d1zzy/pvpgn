@@ -34,6 +34,7 @@ BEGIN
     POPUP "&Server"
     BEGIN
         MENUITEM "&Save Accounts",              IDM_SAVE
+		MENUITEM "&Restart Lua VM", IDM_RESTART_LUA
         MENUITEM "&Restart",                    IDM_RESTART
         MENUITEM "Sh&utdown",                   IDM_SHUTDOWN
         MENUITEM SEPARATOR
@@ -146,7 +147,7 @@ FONT 8, "MS Sans Serif", 0, 0
 BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,174,18,50,14
     GROUPBOX        PVPGN_VERSION ,IDC_STATIC,7,4,225,93
-    CTEXT           "coded by the PvPGN Team\r\n\r\n- - - - - - - - - - - - - - -\r\n\r\nvisit us @ www.pvpgn.org or \r\n irc.pvpgn.org #pvpgn\r\n\r\n©2002 &2003 PvPGN Is a Open Source Project \r\n As specified by the GPL",
+    CTEXT           "coded by the PvPGN Team\r\n\r\n- - - - - - - - - - - - - - -\r\n\r\nvisit us @ www.pvpgn.pro or \r\n irc.pvpgn.org #pvpgn\r\n\r\n©2002-&2014 PvPGN Is an Open Source Project \r\n As specified by the GPL",
                     IDC_STATIC,16,18,154,75
 END
 
@@ -227,7 +228,8 @@ STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "bnet"
     IDM_SAVE                "Save Accounts"
-    IDM_RESTART             "Restart"
+	IDM_RESTART_LUA         "Restart Lua VM"
+	IDM_RESTART             "Restart"
     IDM_SHUTDOWN            "Shutdown"
     IDM_EXIT                "Exit"
     IDM_CLEAR               "Clear Window"
