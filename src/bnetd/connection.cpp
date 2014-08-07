@@ -2277,6 +2277,16 @@ namespace pvpgn
 				return -1;
 			}
 
+			// Protection from hack attempt
+			// Limit out queue packets due to it may cause memory leak with not enough memory program crash on a server machine
+			t_queue ** q = &c->protocol.queues.outqueue;
+			if (queue_get_length((t_queue const * const *)q) > 1000)
+			{
+				queue_clear(q);
+				conn_set_state(c, conn_state_destroy);
+				return 0;
+			}
+
 			queue_push_packet((t_queue * *)&c->protocol.queues.outqueue, packet);
 			if (!c->protocol.queues.outsizep++) fdwatch_update_fd(c->socket.fdw_idx, fdwatch_type_read | fdwatch_type_write);
 
