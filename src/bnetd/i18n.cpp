@@ -277,9 +277,6 @@ namespace pvpgn
 
 				output = fmt::format(format, args);
 
-				char* p = (char*)calloc(30, sizeof(char));
-				strcpy(p, "Hello world");
-
 				char tmp[MAX_MESSAGE_LEN];
 				strcpy(tmp, output.c_str());
 

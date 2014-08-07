@@ -95,7 +95,7 @@ namespace pvpgn
 					vm.load_file(files[i].c_str());
 
 					snprintf(_msgtemp, sizeof(_msgtemp), "%s", files[i].c_str());
-					eventlog(eventlog_level_trace, __FUNCTION__, _msgtemp);
+					eventlog(eventlog_level_info, __FUNCTION__, _msgtemp);
 				}
 
 				_register_functions();
@@ -419,7 +419,7 @@ namespace pvpgn
 				lua::transaction(vm) << lua::lookup("handle_game_list") << o_account << lua::invoke >> columns >> data << lua::end; // invoke lua function
 			
 				// check consistency of data and columns
-				if (columns.size() != data.size() || std::floor((float)(data.size() / columns.size())) != (data.size() / columns.size()))
+				if (columns.size() == 0 || columns.size() != data.size() || std::floor((float)(data.size() / columns.size())) != (data.size() / columns.size()))
 					return result;
 
 				// fill map result
