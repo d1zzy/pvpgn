@@ -558,7 +558,7 @@ namespace pvpgn
 			// feature to ignore flood protection
 			result = lua_handle_command(c, text, luaevent_command_before);
 #endif
-			if (result < 0)
+			if (result == -1)
 				return result;
 
 			if (result == 0)
@@ -576,7 +576,7 @@ namespace pvpgn
 			{
 				// TODO: log command
 			}
-			if (result < 1)
+			if (result == 0 || result == -1)
 				return result;
 #endif
 

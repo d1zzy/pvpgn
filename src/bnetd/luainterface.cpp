@@ -313,7 +313,7 @@ namespace pvpgn
 		{
 			t_account * account;
 			const char * func_name;
-			int result = 0;
+			int result = -2;
 			switch (luaevent)
 			{
 			case luaevent_command:
@@ -328,7 +328,7 @@ namespace pvpgn
 			try
 			{
 				if (!(account = conn_get_account(c)))
-					return 0;
+					return -2;
 
 				std::map<std::string, std::string> o_account = get_account_object(account);
 				lua::transaction(vm) << lua::lookup(func_name) << o_account << text << lua::invoke >> result << lua::end; // invoke lua function
