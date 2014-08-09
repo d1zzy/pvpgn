@@ -85,6 +85,10 @@ const int LISTEN_QUEUE = 10;
 /* the format for game ids */
 #define GAMEID_FORMAT "#%06u"
 
+/* the format of timestamps in the userlogfile */
+#define USEREVENT_TIME_FORMAT "%b %d %H:%M"
+const int USEREVENT_TIME_MAXLEN = 16;
+
 /* the format of timestamps in the logfile */
 #define EVENT_TIME_FORMAT "%b %d %H:%M:%S"
 const int EVENT_TIME_MAXLEN = 32;
@@ -146,7 +150,8 @@ const char * const BNETD_ACCOUNT_TMP = ".bnetd_acct_temp";
 const char * const BNETD_IPBAN_FILE = "conf/bnban.conf";
 const char * const BNETD_FORTUNECMD = "/usr/games/fortune";
 const char * const BNETD_TRANS_FILE = "conf/address_translation.conf";
-const char * const BNETD_CHANLOG_DIR = "chanlogs";
+const char * const BNETD_CHANLOG_DIR = "var/chanlogs";
+const char * const BNETD_USERLOG_DIR = "var/userlogs";
 const char * const BNETD_REALM_FILE = "conf/realm.conf";
 const char * const BNETD_ISSUE_FILE = "conf/bnissue.txt";
 const char * const BNETD_MAIL_DIR = "var/bnmail";
@@ -237,6 +242,10 @@ const char * const BNETD_EXEINFO_MATCH = "exact";
 const unsigned PVPGN_VERSION_TIMEDIV = 0; /* no timediff check by default */
 const int PVPGN_CACHE_MEMLIMIT = 5000000;  /* bytes */
 const char * const PVPGN_DEFAULT_SYMB = "-_[]";
+
+const char * const BNETD_LOG_COMMAND_GROUPS = "2345678";
+const char * const BNETD_LOG_COMMAND_LIST = "";
+
 
 /***************************************************************/
 /* default values for the tracking server */

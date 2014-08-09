@@ -100,6 +100,7 @@ namespace pvpgn
 			char const * transfile;
 			unsigned int chanlog;
 			char const * chanlogdir;
+			char const * userlogdir;
 			unsigned int quota;
 			unsigned int quota_lines;
 			unsigned int quota_time;
@@ -164,6 +165,9 @@ namespace pvpgn
 			unsigned int sync_on_logoff;
 			char const * irc_network_name;
 			unsigned int localize_by_country;
+			unsigned int log_commands;
+			char const * log_command_groups;
+			char const * log_command_list;
 
 			char const * apiregaddrs;
 			char const * wolv1addrs;
@@ -417,6 +421,10 @@ namespace pvpgn
 		static const char *conf_get_chanlogdir(void);
 		static int conf_setdef_chanlogdir(void);
 
+		static int conf_set_userlogdir(const char *valstr);
+		static const char *conf_get_userlogdir(void);
+		static int conf_setdef_userlogdir(void);
+
 		static int conf_set_quota(const char *valstr);
 		static const char *conf_get_quota(void);
 		static int conf_setdef_quota(void);
@@ -669,6 +677,18 @@ namespace pvpgn
 		static const char *conf_get_localize_by_country(void);
 		static int conf_setdef_localize_by_country(void);
 
+		static int conf_set_log_commands(const char *valstr);
+		static const char *conf_get_log_commands(void);
+		static int conf_setdef_log_commands(void);
+
+		static int conf_set_log_command_groups(const char *valstr);
+		static const char *conf_get_log_command_groups(void);
+		static int conf_setdef_log_command_groups(void);
+
+		static int conf_set_log_command_list(const char *valstr);
+		static const char *conf_get_log_command_list(void);
+		static int conf_setdef_log_command_list(void);
+
 
 		static int conf_setdef_apireg_addrs(void);
 		static int conf_set_apireg_addrs(const char *valstr);
@@ -773,6 +793,7 @@ namespace pvpgn
 			{ "transfile", conf_set_transfile, conf_get_transfile, conf_setdef_transfile },
 			{ "chanlog", conf_set_chanlog, conf_get_chanlog, conf_setdef_chanlog },
 			{ "chanlogdir", conf_set_chanlogdir, conf_get_chanlogdir, conf_setdef_chanlogdir },
+			{ "userlogdir", conf_set_userlogdir, conf_get_userlogdir, conf_setdef_userlogdir },
 			{ "quota", conf_set_quota, conf_get_quota, conf_setdef_quota },
 			{ "quota_lines", conf_set_quota_lines, conf_get_quota_lines, conf_setdef_quota_lines },
 			{ "quota_time", conf_set_quota_time, conf_get_quota_time, conf_setdef_quota_time },
@@ -836,6 +857,9 @@ namespace pvpgn
 			{ "ladder_prefix", conf_set_ladder_prefix, conf_get_ladder_prefix, conf_setdef_ladder_prefix },
 			{ "irc_network_name", conf_set_irc_network_name, conf_get_irc_network_name, conf_setdef_irc_network_name },
 			{ "localize_by_country", conf_set_localize_by_country, conf_get_localize_by_country, conf_setdef_localize_by_country },
+			{ "log_commands", conf_set_log_commands, conf_get_log_commands, conf_setdef_log_commands },
+			{ "log_command_groups", conf_set_log_command_groups, conf_get_log_command_groups, conf_setdef_log_command_groups },
+			{ "log_command_list", conf_set_log_command_list, conf_get_log_command_list, conf_setdef_log_command_list },
 
 			{ "apiregaddrs", conf_set_apireg_addrs, conf_get_apireg_addrs, conf_setdef_apireg_addrs },
 			{ "wgameresaddrs", conf_set_wgameres_addrs, conf_get_wgameres_addrs, conf_setdef_wgameres_addrs },
@@ -2123,6 +2147,27 @@ namespace pvpgn
 		static const char* conf_get_chanlogdir(void)
 		{
 			return prefs_runtime_config.chanlogdir;
+		}
+
+
+		extern char const * prefs_get_userlogdir(void)
+		{
+			return prefs_runtime_config.userlogdir;
+		}
+
+		static int conf_set_userlogdir(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.userlogdir, valstr, NULL);
+		}
+
+		static int conf_setdef_userlogdir(void)
+		{
+			return conf_set_str(&prefs_runtime_config.userlogdir, NULL, BNETD_USERLOG_DIR);
+		}
+
+		static const char* conf_get_userlogdir(void)
+		{
+			return prefs_runtime_config.userlogdir;
 		}
 
 
@@ -3505,6 +3550,70 @@ namespace pvpgn
 		{
 			return conf_get_bool(prefs_runtime_config.localize_by_country);
 		}
+
+
+		extern unsigned int prefs_get_log_commands(void)
+		{
+			return prefs_runtime_config.log_commands;
+		}
+
+		static int conf_set_log_commands(const char *valstr)
+		{
+			return conf_set_bool(&prefs_runtime_config.log_commands, valstr, 0);
+		}
+
+		static int conf_setdef_log_commands(void)
+		{
+			return conf_set_bool(&prefs_runtime_config.log_commands, NULL, 1);
+		}
+
+		static const char* conf_get_log_commands(void)
+		{
+			return conf_get_bool(prefs_runtime_config.log_commands);
+		}
+
+
+		extern char const * prefs_get_log_command_groups(void)
+		{
+			return prefs_runtime_config.log_command_groups;
+		}
+
+		static int conf_set_log_command_groups(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.log_command_groups, valstr, NULL);
+		}
+
+		static int conf_setdef_log_command_groups(void)
+		{
+			return conf_set_str(&prefs_runtime_config.log_command_groups, NULL, BNETD_LOG_COMMAND_GROUPS);
+		}
+
+		static const char* conf_get_log_command_groups(void)
+		{
+			return prefs_runtime_config.log_command_groups;
+		}
+
+
+		extern char const * prefs_get_log_command_list(void)
+		{
+			return prefs_runtime_config.log_command_list;
+		}
+
+		static int conf_set_log_command_list(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.log_command_list, valstr, NULL);
+		}
+
+		static int conf_setdef_log_command_list(void)
+		{
+			return conf_set_str(&prefs_runtime_config.log_command_list, NULL, BNETD_LOG_COMMAND_LIST);
+		}
+
+		static const char* conf_get_log_command_list(void)
+		{
+			return prefs_runtime_config.log_command_list;
+		}
+
 
 
 		/**

@@ -62,6 +62,7 @@ filedir     = files
 scriptdir   = lua
 reportdir   = var\reports
 chanlogdir  = var\chanlogs
+userlogdir  = var\userlogs
 i18ndir     = conf\i18n
 issuefile   = conf\bnissue.txt
 channelfile = conf\channel.conf
@@ -640,3 +641,20 @@ clan_channel_default_private = 0
 # without accepted invitations need. This does not affect WAR3/W3XP ingame
 # clan management.
 clan_min_invites = 2
+
+###############################################################################
+# user commands logging                                                       #
+#-----------------------------------------------------------------------------#
+
+# Should commands from users be logged to files in the userlogdir?
+log_commands = true
+
+# Commands will be logged for users with these command groups
+# (global operators and admins are included)
+log_command_groups = 2345678
+
+# List of commands that will be logged
+# can be defined by connecting them with a comma (,)
+# set empty to log all commands
+log_command_list = ""
+

@@ -177,6 +177,7 @@ namespace pvpgn
 				config.update("scriptdir", prefs_get_scriptdir());
 				config.update("reportdir", prefs_get_reportdir());
 				config.update("chanlogdir", prefs_get_chanlogdir());
+				config.update("userlogdir", prefs_get_userlogdir());
 				config.update("localizefile", prefs_get_localizefile());
 				config.update("motdfile", prefs_get_motdfile());
 				config.update("motdw3file", prefs_get_motdw3file());
@@ -298,6 +299,10 @@ namespace pvpgn
 				config.update("clan_max_members", prefs_get_clan_max_members());
 				config.update("clan_channel_default_private", prefs_get_clan_channel_default_private());
 				config.update("clan_min_invites", prefs_get_clan_min_invites());
+				config.update("log_commands", prefs_get_log_commands());
+				config.update("log_command_groups", prefs_get_log_command_groups());
+				config.update("log_command_list", prefs_get_log_command_list());
+
 			}
 
 		}

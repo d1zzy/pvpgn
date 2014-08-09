@@ -24,6 +24,9 @@ reports_DATA =
 chanlogsdir = $(localstatedir)/chanlogs
 chanlogs_DATA =
 
+userlogsdir = $(localstatedir)/userlogs
+chanlogs_DATA =
+
 charinfodir = $(localstatedir)/charinfo
 charinfo_DATA =
 

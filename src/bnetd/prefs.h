@@ -95,6 +95,7 @@ namespace pvpgn
 		extern char const * prefs_get_transfile(void);
 		extern unsigned int prefs_get_chanlog(void);
 		extern char const * prefs_get_chanlogdir(void);
+		extern char const * prefs_get_userlogdir(void);
 		extern unsigned int prefs_get_quota(void);
 		extern unsigned int prefs_get_quota_lines(void);
 		extern unsigned int prefs_get_quota_time(void);
@@ -180,6 +181,9 @@ namespace pvpgn
 		extern unsigned int prefs_get_sync_on_logoff(void);
 		extern char const * prefs_get_irc_network_name(void);
 		extern unsigned int prefs_get_localize_by_country(void);
+		extern unsigned int prefs_get_log_commands(void);
+		extern char const * prefs_get_log_command_groups(void);
+		extern char const * prefs_get_log_command_list(void);
 
 		/**
 		*  Westwood Online Extensions

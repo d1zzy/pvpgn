@@ -81,6 +81,7 @@
 #include "clan.h"
 #include "common/flags.h"
 #include "icons.h"
+#include "userlog.h"
 #include "i18n.h"
 
 #include "attrlayer.h"
@@ -543,6 +544,7 @@ namespace pvpgn
 			{ "/alert", _handle_alert_command },
 			{ "/language", handle_language_command },
 			{ "/lang", handle_language_command },
+			{ "/log", handle_log_command },
 
 			{ NULL, NULL }
 
@@ -574,7 +576,9 @@ namespace pvpgn
 			// -1 = unsuccess, 0 = success, 1 = execute next c++ code
 			if (result == 0)
 			{
-				// TODO: log command
+				// log command
+				if (t_account * account = conn_get_account(c))
+					userlog_append(account, text);
 			}
 			if (result == 0 || result == -1)
 				return result;
@@ -600,7 +604,10 @@ namespace pvpgn
 						// -1 = unsuccess, 0 = success
 						if (result == 0)
 						{
-							// TODO: log command
+							// log command
+							if (t_account * account = conn_get_account(c))
+								userlog_append(account, text);
+
 							// TODO: modify all commands to return "0" only if success, and "-1" if not
 						}
 						return result;
