@@ -27,6 +27,7 @@
 #include <iomanip>
 
 #include "compat/strdup.h"
+#include "compat/strcasecmp.h"
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
@@ -331,4 +332,30 @@ namespace pvpgn
 	}
 
 
+	// search substring in input string
+	// (case insensitive)
+	extern bool find_substr(char * input, const char * find)
+	{
+		char c1[2], c2[2];
+		bool is_found = false;
+		int pos = 0;
+		int b = true;
+		for (int i = 0; i < strlen(input); i++)
+		{
+			c1[0] = input[i]; c1[1] = '\0';
+			c2[0] = find[pos]; c2[1] = '\0';
+			if (strcasecmp(c1, c2) == 0)
+			{
+				if (pos == strlen(find) - 1)
+				{
+					is_found = true;
+					break;
+				}
+				pos++;
+			}
+			else
+				pos = 0;
+		}
+		return is_found;
+	}
 }
