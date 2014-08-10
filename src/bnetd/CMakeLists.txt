@@ -36,7 +36,7 @@ set(BNETD_SOURCES
 	anongame_wol.cpp anongame_wol.h handle_wserv.cpp handle_wserv.h
 	luafunctions.cpp luafunctions.h luainterface.cpp luainterface.h 
 	luaobjects.cpp luaobjects.h luawrapper.cpp luawrapper.h
-	i18n.cpp i18n.h cmdlog.cpp cmdlog.h
+	i18n.cpp i18n.h userlog.cpp userlog.h
 	../win32/winmain.cpp ../win32/winmain.h
 	)
 	

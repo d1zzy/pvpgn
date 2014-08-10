@@ -16,7 +16,7 @@ bnetd_SOURCES = account.cpp account_wrap.cpp adbanner.cpp alias_command.cpp anon
 	tournament.cpp tracker.cpp udptest_send.cpp versioncheck.cpp watch.cpp \
 	storage_sql2.cpp sql_common.cpp handle_wol.cpp handle_irc_common.cpp handle_apireg.cpp \
 	handle_wserv.cpp luafunctions.cpp luainterface.cpp luaobjects.cpp luawrapper.cpp \
-	i18n.cpp icons.cpp cmdlog.cpp
+	i18n.cpp icons.cpp userlog.cpp
 
 bnetd_LDADD = $(top_builddir)/src/common/libcommon.a \
 	$(top_builddir)/src/compat/libcompat.a \
@@ -37,4 +37,4 @@ noinst_HEADERS = account.h account_wrap.h adbanner.h alias_command.h \
 	timer.h topic.h tournament.h udptest_send.h versioncheck.h watch.h \
 	tracker.h storage_sql2.h sql_common.h handle_wol.h handle_irc_common.h handle_apireg.h \
 	handle_wserv.h luafunctions.h luainterface.h luaobjects.h luawrapper.h \
-	i18n.h icons.h cmdlog.h
+	i18n.h icons.h userlog.h
