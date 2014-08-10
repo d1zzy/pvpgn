@@ -3118,8 +3118,11 @@ namespace pvpgn
 			t_elem *  curr;
 
 			if (!prefs_get_quota() ||
-				!conn_get_account(con) ||
-				(account_get_command_groups(conn_get_account(con)) & command_get_group("/admin-con"))) return 0;
+				!conn_get_account(con)
+				// FIXME: (HarpyWar) do not allow flood for admins due to possible abuse with quick command sending that high load a server processor
+				//                   If we really need to ignore flood protection, it can be allowed in Lua config for special users
+				/* || (account_get_command_groups(conn_get_account(con)) & command_get_group("/admin-con"))*/ 
+				) return 0;
 
 			if (std::strlen(text) > prefs_get_quota_maxline())
 			{
