@@ -116,12 +116,36 @@ namespace pvpgn
 				// non-game clients doesn't provide a country
 				if (const char * country = conn_get_country(c))
 					o_account["country"] = country;
-				if (t_clienttag clienttag = conn_get_clienttag(c))
-					o_account["clienttag"] = clienttag_uint_to_str(clienttag);
+
 				if (t_game *game = conn_get_game(c))
 					o_account["game_id"] = std_to_string(game_get_id(game));
 				if (t_channel *channel = conn_get_channel(c))
 					o_account["channel_id"] = std_to_string(channel_get_channelid(channel));
+
+				if (t_clienttag clienttag = conn_get_clienttag(c))
+					o_account["clienttag"] = clienttag_uint_to_str(clienttag);
+				if (t_archtag archtag = conn_get_archtag(c))
+					o_account["archtag"] = clienttag_uint_to_str(archtag);
+				if (const char * clientexe = conn_get_clientexe(c))
+					o_account["clientexe"] = clientexe;
+				if (const char * clientver = conn_get_clientver(c))
+					o_account["clientver"] = clientver;
+				
+				o_account["gamelang"] = std_to_string(conn_get_gamelang(c));
+
+				if (int addr = conn_get_addr(c))
+					o_account["ip"] = addr_num_to_ip_str(addr);
+				if (const char * away = conn_get_awaystr(c))
+					o_account["away"] = away;
+				if (const char * dnd = conn_get_dndstr(c))
+					o_account["dnd"] = dnd;
+			
+				o_account["flags"] = std_to_string(conn_get_flags(c));
+
+				if (const char * charname = conn_get_charname(c))
+					o_account["charname"] = charname;
+
+				o_account["idletime"] = std_to_string(conn_get_idletime(c));
 			}
 
 
@@ -254,7 +278,6 @@ namespace pvpgn
 				o_channel["realmname"] = channel->realmname;
 			if (channel->logname)
 				o_channel["logname"] = channel->logname;
-
 
 			// Westwood Online Extensions
 			o_channel["minmembers"] = std_to_string(channel->minmembers);

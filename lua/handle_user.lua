@@ -17,8 +17,9 @@ function handle_user_login(account)
 	end
 	
 	-- send SID_REQUIREDWORK
-	--api.client_requiredwork(account.name, "IX86ExtraWork.mpq")
-	
+	--if account.archtag == ARCHTAG_WINX86 then
+	--	api.client_requiredwork(account.name, "IX86ExtraWork.mpq")
+	--end
 	
 	--DEBUG(account.name.." logged in")
 	--return 1;
