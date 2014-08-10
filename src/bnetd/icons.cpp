@@ -236,7 +236,7 @@ namespace pvpgn
 			if (!(account = accountlist_find_account(username)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
-				return 0;
+				return -1;
 			}
 			user_c = account_get_conn(account);
 
@@ -367,7 +367,7 @@ namespace pvpgn
 							if (strcasecmp(_icon.c_str(), iconcode) == 0)
 							{
 								message_send_text(c, message_type_error, c, localize(c, "User already has that icon in stash."));
-								return 0;
+								return -1;
 							}
 						} while (iss);
 					}
@@ -442,7 +442,7 @@ namespace pvpgn
 					break;
 			}
 
-			return 0;
+			return -1;
 		}
 
 

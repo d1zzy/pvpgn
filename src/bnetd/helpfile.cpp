@@ -112,7 +112,7 @@ namespace pvpgn
 			if (hfd == NULL)
 			{ /* an error ocured opening readonly the help file, helpfile_unload was called, or helpfile_init hasn't been called */
 				message_send_text(c, message_type_error, c, localize(c, "Oops ! There is a problem with the help file. Please contact the administrator of the server."));
-				return 0;
+				return -1;
 			}
 
 			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
@@ -131,7 +131,6 @@ namespace pvpgn
 			}
 
 			describe_command(c, cmd);
-
 			return 0;
 		}
 

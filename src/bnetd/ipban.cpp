@@ -507,6 +507,7 @@ namespace pvpgn
 		extern int handle_ipban_command(t_connection * c, char const * text)
 		{
 			char const *subcommand, *ipstr, *time;
+			int result = -1;
 
 			std::vector<std::string> args = split_command(text, 3);
 			if (args[1].empty())
@@ -521,24 +522,24 @@ namespace pvpgn
 			switch (identify_ipban_function(subcommand))
 			{
 			case IPBAN_FUNC_ADD:
-				ipbanlist_add(c, ipstr, ipbanlist_str_to_time_t(c, time));
-				ipbanlist_save(prefs_get_ipbanfile());
+				result = ipbanlist_add(c, ipstr, ipbanlist_str_to_time_t(c, time));
+				result = ipbanlist_save(prefs_get_ipbanfile());
 				break;
 			case IPBAN_FUNC_DEL:
-				ipban_func_del(c, ipstr);
-				ipbanlist_save(prefs_get_ipbanfile());
+				result = ipban_func_del(c, ipstr);
+				result = ipbanlist_save(prefs_get_ipbanfile());
 				break;
 			case IPBAN_FUNC_LIST:
-				ipban_func_list(c);
+				result = ipban_func_list(c);
 				break;
 			case IPBAN_FUNC_CHECK:
-				ipban_func_check(c, ipstr);
+				result = ipban_func_check(c, ipstr);
 				break; 
 			default:
 				describe_command(c, args[0].c_str());
 			}
 
-			return 0;
+			return result;
 		}
 
 
