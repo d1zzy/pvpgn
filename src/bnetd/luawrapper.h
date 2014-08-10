@@ -14,6 +14,7 @@ extern "C"
 #include <lualib.h>
 }
 
+#include <typeinfo>
 #include <string>
 #include <cstring>
 #include <stdexcept>
