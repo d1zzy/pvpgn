@@ -21,5 +21,5 @@ install(FILES ad000001.mng ad000001.smk ad000002.mng ad000003.mng
     ad000004.mng ad000075.mng newbie.save
 	bnserver.ini bnserver-D2DV.ini bnserver-D2XP.ini bnserver-WAR3.ini
 	ver-ix86-1.mpq IX86ver1.mpq PMACver1.mpq XMACver1.mpq IX86ExtraWork.mpq
-	icons.bni icons_STAR.bni icons-WAR3.bni
+	icons.bni icons-WAR3.bni
     DESTINATION ${LOCALSTATEDIR}/files) 
