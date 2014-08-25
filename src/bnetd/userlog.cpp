@@ -22,6 +22,7 @@
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
+#include <algorithm>
 
 #include "compat/strcasecmp.h"
 #include "compat/snprintf.h"
@@ -235,9 +236,12 @@ namespace pvpgn
 		{
 			char * filepath;
 
+			// lowercase username
+			std::string lusername = std::string(username); 
+			std::transform(lusername.begin(), lusername.end(), lusername.begin(), ::tolower);
 			// get first 3 symbols of account and use it in path
 			// it will improve performance with large count of files
-			std::string dir_prefix = std::string(username).substr(0, 3);
+			std::string dir_prefix = lusername.substr(0, 3);
 
 			filepath = buildpath(prefs_get_userlogdir(), dir_prefix.c_str());
 			// create directories in path
@@ -250,7 +254,7 @@ namespace pvpgn
 					eventlog(eventlog_level_info, __FUNCTION__, "created user directory: %s", filepath);
 				}
 			}
-			filepath = buildpath(filepath, username);
+			filepath = buildpath(filepath, lusername.c_str());
 			std::strcat(filepath, ".log");
 
 			return filepath;
