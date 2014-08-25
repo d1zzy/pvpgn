@@ -1,4 +1,4 @@
-﻿/*
+/*
 * Copyright (C) 2014  HarpyWar (harpywar@gmail.com)
 *
 * This program is free software; you can redistribute it and/or
