@@ -318,7 +318,7 @@ namespace pvpgn
 			// send each log line to user
 			for (std::map<long, char*>::reverse_iterator it = lines.rbegin(); it != lines.rend(); ++it)
 			{
-				int linelen = floor(log10(abs(it->first))) + 1; // length of integer
+				int linelen = floor(log10(static_cast<double>(abs(it->first)))) + 1; // get length of integer (line number)
 				if (linelen > paddedlen)
 					paddedlen = linelen;
 
