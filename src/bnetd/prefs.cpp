@@ -95,7 +95,6 @@ namespace pvpgn
 			char const * ipbanfile;
 			unsigned int disc_is_loss;
 			char const * helpfile;
-			char const * fortunecmd;
 			char const * transfile;
 			unsigned int chanlog;
 			char const * chanlogdir;
@@ -399,10 +398,6 @@ namespace pvpgn
 		static int conf_set_helpfile(const char *valstr);
 		static const char *conf_get_helpfile(void);
 		static int conf_setdef_helpfile(void);
-
-		static int conf_set_fortunecmd(const char *valstr);
-		static const char *conf_get_fortunecmd(void);
-		static int conf_setdef_fortunecmd(void);
 
 		static int conf_set_transfile(const char *valstr);
 		static const char *conf_get_transfile(void);
@@ -783,7 +778,6 @@ namespace pvpgn
 			{ "ipbanfile", conf_set_ipbanfile, conf_get_ipbanfile, conf_setdef_ipbanfile },
 			{ "disc_is_loss", conf_set_disc_is_loss, conf_get_disc_is_loss, conf_setdef_disc_is_loss },
 			{ "helpfile", conf_set_helpfile, conf_get_helpfile, conf_setdef_helpfile },
-			{ "fortunecmd", conf_set_fortunecmd, conf_get_fortunecmd, conf_setdef_fortunecmd },
 			{ "transfile", conf_set_transfile, conf_get_transfile, conf_setdef_transfile },
 			{ "chanlog", conf_set_chanlog, conf_get_chanlog, conf_setdef_chanlog },
 			{ "chanlogdir", conf_set_chanlogdir, conf_get_chanlogdir, conf_setdef_chanlogdir },
@@ -2036,27 +2030,6 @@ namespace pvpgn
 		static const char* conf_get_helpfile(void)
 		{
 			return prefs_runtime_config.helpfile;
-		}
-
-
-		extern char const * prefs_get_fortunecmd(void)
-		{
-			return prefs_runtime_config.fortunecmd;
-		}
-
-		static int conf_set_fortunecmd(const char *valstr)
-		{
-			return conf_set_str(&prefs_runtime_config.fortunecmd, valstr, NULL);
-		}
-
-		static int conf_setdef_fortunecmd(void)
-		{
-			return conf_set_str(&prefs_runtime_config.fortunecmd, NULL, BNETD_FORTUNECMD);
-		}
-
-		static const char* conf_get_fortunecmd(void)
-		{
-			return prefs_runtime_config.fortunecmd;
 		}
 
 

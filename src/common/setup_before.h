@@ -148,7 +148,6 @@ const char * const BNETD_CHANNEL_FILE = "conf/channel.conf";
 const char * const BNETD_PID_FILE = "";  /* this means "none" */
 const char * const BNETD_ACCOUNT_TMP = ".bnetd_acct_temp";
 const char * const BNETD_IPBAN_FILE = "conf/bnban.conf";
-const char * const BNETD_FORTUNECMD = "/usr/games/fortune";
 const char * const BNETD_TRANS_FILE = "conf/address_translation.conf";
 const char * const BNETD_CHANLOG_DIR = "var/chanlogs";
 const char * const BNETD_USERLOG_DIR = "var/userlogs";

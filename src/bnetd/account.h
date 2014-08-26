@@ -109,7 +109,7 @@ namespace pvpgn
 		extern char const *accountlist_find_vague_account(t_account * account, char const *vague_username);
 		extern int accountlist_allow_add(void);
 		extern t_account * accountlist_create_account(const char *username, const char *passhash1);
-		extern void accounts_get_attr(char const *);
+
 		/* names and passwords */
 		extern char const * account_get_name_real(t_account * account, char const * fn, unsigned int ln);
 # define account_get_name(A) account_get_name_real(A,__FILE__,__LINE__)

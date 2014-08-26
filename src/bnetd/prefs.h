@@ -90,7 +90,6 @@ namespace pvpgn
 		extern char const * prefs_get_ipbanfile(void);
 		extern unsigned int prefs_get_discisloss(void);
 		extern char const * prefs_get_helpfile(void);
-		extern char const * prefs_get_fortunecmd(void);
 		extern char const * prefs_get_transfile(void);
 		extern unsigned int prefs_get_chanlog(void);
 		extern char const * prefs_get_chanlogdir(void);

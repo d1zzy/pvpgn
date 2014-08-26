@@ -109,7 +109,6 @@ supportfile = "${SYSCONFDIR}/supportfile.conf"
 transfile   = "${SYSCONFDIR}/address_translation.conf"
 customicons_file = "${SYSCONFDIR}/icons.conf"
 
-fortunecmd  = /usr/games/fortune
 
 #                                                                            #
 ##############################################################################

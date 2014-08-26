@@ -87,7 +87,6 @@ DBlayoutfile = conf\sql_DB_layout.conf
 supportfile = conf\supportfile.conf
 customicons_file = conf\icons.conf
 
-fortunecmd  = bin\fortune.exe
 
 #                                                                            #
 ##############################################################################
