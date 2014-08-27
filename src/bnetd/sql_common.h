@@ -81,7 +81,7 @@ namespace pvpgn
 #define STORAGE_SQL_DEFAULT_UID	0
 #define SQL_DEFAULT_PREFIX	""
 
-#define SQL_ON_DEMAND	1
+//#define SQL_ON_DEMAND	1
 
 		extern t_sql_engine *sql;
 		extern unsigned int sql_defacct;

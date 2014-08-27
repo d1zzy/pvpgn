@@ -221,7 +221,7 @@ namespace pvpgn
 				result = sql->query_res(query);
 				if (!result) continue;
 
-				if (sql->num_fields != 2) {
+				if ((unsigned int)sql->num_fields != 2) {
 					sql->free_result(result);
 					continue;
 				}

@@ -69,6 +69,15 @@ namespace pvpgn
 
 			FLAG_CLEAR(&attrgroup->flags, ATTRGROUP_FLAG_DIRTY);
 			attrlayer_del_dirtylist(&attrgroup->dirtylist);
+
+			t_attr *attr;
+			t_hlist *curr;
+			// clear dirty flag on each attribute
+			hlist_for_each(curr, (t_hlist*)attrgroup)
+			{
+				attr = hlist_entry(curr, t_attr, link);
+				attr_clear_dirty(attr);
+			}
 		}
 
 		static inline void attrgroup_set_loaded(t_attrgroup *attrgroup)
@@ -328,7 +337,8 @@ namespace pvpgn
 			assert(*pkey);
 
 			/* trigger loading of attributes if not loaded already */
-			if (attrgroup_load(attrgroup)) return NULL;	/* eventlog happens earlier */
+			if (attrgroup_load(attrgroup)) 
+				return NULL;	/* eventlog happens earlier */
 
 			/* only if the callers tell us to */
 			if (escape) *pkey = attrgroup_escape_key(*pkey);
@@ -373,12 +383,16 @@ namespace pvpgn
 
 			attr = attrgroup_find_attr(attrgroup, &newkey, escape);
 
-			if (attr) val = attr_get_val(attr);
+			// if attribute found
+			if (attr) 
+				val = attr_get_val(attr);
 
-			if (!val && attrgroup != attrlayer_get_defattrgroup())
-				val = attrgroup_get_attrlow(attrlayer_get_defattrgroup(), newkey, 0);
+			// FIXME: (HarpyWar) why do we need select a default attribute (uid=0) if user attribute not exists? 
+			//                   (this is a reduntant query)
+			//if (!val && attrgroup != attrlayer_get_defattrgroup())
+			//	val = attrgroup_get_attrlow(attrlayer_get_defattrgroup(), newkey, 0);
 
-			if (newkey != key) xfree((void*)newkey);
+			if (newkey != key)xfree((void*)newkey);
 
 			return val;
 		}
@@ -429,8 +443,8 @@ namespace pvpgn
 			}
 
 			/* we have modified this attr and attrgroup */
-			attr_set_dirty(attr);
-			attrgroup_set_dirty(attrgroup);
+				attr_set_dirty(attr);
+				attrgroup_set_dirty(attrgroup);
 
 		out:
 			if (newkey != key) xfree((void*)newkey);
