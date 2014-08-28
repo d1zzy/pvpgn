@@ -25,9 +25,9 @@ set(MANDIR ${MAN_INSTALL_DIR})
 
 # set default hardcoded config paths
 if(WIN32)
-	set(BNETD_DEFAULT_CONF_FILE "../conf/bnetd.conf")
-	set(D2CS_DEFAULT_CONF_FILE "../conf/d2cs.conf")
-	set(D2DBS_DEFAULT_CONF_FILE "../conf/d2dbs.conf")
+	set(BNETD_DEFAULT_CONF_FILE "conf/bnetd.conf")
+	set(D2CS_DEFAULT_CONF_FILE "conf/d2cs.conf")
+	set(D2DBS_DEFAULT_CONF_FILE "conf/d2dbs.conf")
 else(WIN32)
 	set(BNETD_DEFAULT_CONF_FILE "${SYSCONFDIR}/bnetd.conf")
 	set(D2CS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2cs.conf")

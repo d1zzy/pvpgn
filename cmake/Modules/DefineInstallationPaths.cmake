@@ -28,11 +28,19 @@ SET(BIN_INSTALL_DIR
   CACHE PATH "The ${APPLICATION_NAME} binary install dir (default prefix/bin)"
   FORCE
 )
-SET(SBIN_INSTALL_DIR
-  "${EXEC_INSTALL_PREFIX}/sbin"
-  CACHE PATH "The ${APPLICATION_NAME} sbin install dir (default prefix/sbin)"
-  FORCE
-)
+if(WIN32)
+	SET(SBIN_INSTALL_DIR
+	  "${EXEC_INSTALL_PREFIX}"
+	  CACHE PATH "The ${APPLICATION_NAME} sbin install dir (default prefix/sbin)"
+	  FORCE
+	)
+else(WIN32)
+	SET(SBIN_INSTALL_DIR
+	  "${EXEC_INSTALL_PREFIX}/sbin"
+	  CACHE PATH "The ${APPLICATION_NAME} sbin install dir (default prefix/sbin)"
+	  FORCE
+	)
+endif(WIN32)
 SET(LIB_INSTALL_DIR
   "${EXEC_INSTALL_PREFIX}/lib${LIB_SUFFIX}"
   CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is prefix/lib)"
