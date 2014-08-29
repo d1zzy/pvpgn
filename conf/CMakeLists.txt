@@ -19,7 +19,7 @@ if(WITH_BNETD)
   autoupdate.conf bnalias.conf bnban.conf 
   bnetd_default_user.plain bnissue.txt bnmaps.conf  
   bnxpcalc.conf bnxplevel.conf channel.conf command_groups.conf  
-  realm.conf sql_DB_layout.conf sql_DB_layout2.conf supportfile.conf topics.conf 
+  realm.conf sql_DB_layout.conf supportfile.conf topics.conf 
   tournament.conf versioncheck.conf icons.conf)
 
   # special treatment for non .in files

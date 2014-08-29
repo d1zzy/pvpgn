@@ -28,8 +28,8 @@ set(BNETD_SOURCES
 	runprog.cpp runprog.h server.cpp server.h sql_common.cpp sql_common.h
 	sql_dbcreator.cpp sql_dbcreator.h sql_mysql.cpp sql_mysql.h sql_odbc.cpp
 	sql_odbc.h sql_pgsql.cpp sql_pgsql.h sql_sqlite3.cpp sql_sqlite3.h 
-	storage.cpp storage_file.cpp storage_file.h storage.h storage_sql2.cpp
-	storage_sql2.h storage_sql.cpp storage_sql.h support.cpp support.h
+	storage.cpp storage_file.cpp storage_file.h storage.h
+	storage_sql.cpp storage_sql.h support.cpp support.h
 	team.cpp team.h tick.cpp tick.h timer.cpp timer.h topic.cpp topic.h 
 	tournament.cpp tournament.h icons.cpp icons.h tracker.cpp tracker.h udptest_send.cpp 
 	udptest_send.h versioncheck.cpp versioncheck.h watch.cpp watch.h
