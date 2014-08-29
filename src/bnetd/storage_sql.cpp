@@ -47,7 +47,7 @@ namespace pvpgn
 	{
 
 		static t_storage_info *sql_create_account(char const *);
-		static int sql_read_attrs(t_storage_info *, t_read_attr_func, void *);
+		static int sql_read_attrs(t_storage_info *, t_read_attr_func, void *, const char *);
 		static t_attr *sql_read_attr(t_storage_info *, const char *);
 		static int sql_write_attrs(t_storage_info *, const t_hlist *);
 		static t_storage_info * sql_read_account(const char *, unsigned);
@@ -210,7 +210,7 @@ namespace pvpgn
 			return NULL;
 		}
 
-		static int sql_read_attrs(t_storage_info * info, t_read_attr_func cb, void *data)
+		static int sql_read_attrs(t_storage_info * info, t_read_attr_func cb, void *data, const char *ktab)
 		{
 #ifndef SQL_ON_DEMAND
 			t_sql_res *result = NULL;
@@ -240,6 +240,10 @@ namespace pvpgn
 
 			for (tab = sql_tables; *tab; tab++)
 			{
+				// process only a table where the attribute is in
+				if (strcmp(ktab, *tab) != 0)
+					continue;
+
 				snprintf(query, sizeof(query), "SELECT * FROM %s%s WHERE "SQL_UID_FIELD"='%u'", tab_prefix, *tab, uid);
 
 				//      eventlog(eventlog_level_trace, __FUNCTION__, "query: \"%s\"",query);

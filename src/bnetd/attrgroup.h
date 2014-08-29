@@ -25,6 +25,7 @@
 #ifndef JUST_NEED_TYPES
 #define JUST_NEED_TYPES
 #include "storage.h"
+#include <vector>
 #undef JUST_NEED_TYPES
 #else
 #include "storage.h"
@@ -53,6 +54,9 @@ namespace pvpgn
 			std::time_t		dirtytime;
 			t_elist		loadedlist;
 			t_elist		dirtylist;
+#ifdef WITH_SQL
+			std::vector<const char*> *loadedtabs; /* sql table names that were loaded */
+#endif
 		}
 #endif
 		t_attrgroup;
@@ -63,7 +67,7 @@ namespace pvpgn
 		extern t_attrgroup *attrgroup_create_newuser(const char *name);
 		extern t_attrgroup *attrgroup_create_nameuid(const char *name, unsigned uid);
 		extern int attrgroup_destroy(t_attrgroup *attrgroup);
-		extern int attrgroup_load(t_attrgroup *attrgroup);
+		extern int attrgroup_load(t_attrgroup *attrgroup, const char *tab);
 		extern int attrgroup_unload(t_attrgroup *attrgroup);
 		extern int attrgroup_read_accounts(int flag, t_attr_cb cb, void *data);
 		extern const char *attrgroup_get_attr(t_attrgroup *attrgroup, const char *key);

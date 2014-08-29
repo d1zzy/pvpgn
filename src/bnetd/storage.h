@@ -45,7 +45,7 @@ namespace pvpgn
 			t_storage_info * (*create_account)(char const *);
 			t_storage_info * (*get_defacct)(void);
 			int(*free_info)(t_storage_info *);
-			int(*read_attrs)(t_storage_info *, t_read_attr_func, void *);
+			int(*read_attrs)(t_storage_info *, t_read_attr_func, void *, const char *);
 			int(*write_attrs)(t_storage_info *, const t_hlist *);
 			t_attr * (*read_attr)(t_storage_info *, const char *);
 			int(*read_accounts)(int, t_read_accounts_func, void *);

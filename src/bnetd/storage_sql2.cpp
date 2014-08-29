@@ -42,7 +42,7 @@ namespace pvpgn
 	{
 
 		static t_storage_info *sql2_create_account(char const *);
-		static int sql2_read_attrs(t_storage_info *, t_read_attr_func, void *);
+		static int sql2_read_attrs(t_storage_info *, t_read_attr_func, void *, const char *);
 		static t_attr *sql2_read_attr(t_storage_info *, const char *);
 		static int sql2_write_attrs(t_storage_info *, const t_hlist *);
 		static t_storage_info * sql2_read_account(const char *, unsigned);
@@ -184,7 +184,7 @@ namespace pvpgn
 			return NULL;
 		}
 
-		static int sql2_read_attrs(t_storage_info * info, t_read_attr_func cb, void *data)
+		static int sql2_read_attrs(t_storage_info * info, t_read_attr_func cb, void *data, const char *ktab)
 		{
 #ifndef SQL_ON_DEMAND
 			t_sql_res *result = NULL;
@@ -221,7 +221,7 @@ namespace pvpgn
 				result = sql->query_res(query);
 				if (!result) continue;
 
-				if ((unsigned int)sql->num_fields != 2) {
+				if (reinterpret_cast<unsigned int>(sql->num_fields) != 2) {
 					sql->free_result(result);
 					continue;
 				}

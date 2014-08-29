@@ -41,6 +41,7 @@ namespace pvpgn
 
 	namespace bnetd
 	{
+		static const char * key_get_tab(const char *key);
 
 		static inline void attrgroup_set_accessed(t_attrgroup *attrgroup)
 		{
@@ -98,6 +99,11 @@ namespace pvpgn
 
 			FLAG_CLEAR(&attrgroup->flags, ATTRGROUP_FLAG_LOADED);
 			attrlayer_del_loadedlist(&attrgroup->loadedlist);
+
+#ifdef WITH_SQL
+			// clear loaded tabs
+			attrgroup->loadedtabs->clear();
+#endif
 		}
 
 		static t_attrgroup * attrgroup_create(void)
@@ -113,7 +119,9 @@ namespace pvpgn
 			attrgroup->dirtytime = 0;
 			elist_init(&attrgroup->loadedlist);
 			elist_init(&attrgroup->dirtylist);
-
+#ifdef WITH_SQL
+			attrgroup->loadedtabs = new std::vector<const char*>();
+#endif
 			return attrgroup;
 		}
 
@@ -233,23 +241,45 @@ namespace pvpgn
 		{
 			t_attrgroup *attrgroup = (t_attrgroup *)data;
 
+#ifdef WITH_SQL
+			const char *tab = key_get_tab(key);
+
+			bool is_found = false;
+			for (std::vector<const char *>::iterator it = attrgroup->loadedtabs->begin(); it != attrgroup->loadedtabs->end(); ++it)
+			{
+				if (strcmp(tab, *it) == 0)
+					is_found = true;
+			}
+			// add a tab if it's not found
+			if (!is_found)
+				attrgroup->loadedtabs->push_back(tab);
+#endif
 			return attrgroup_set_attr(attrgroup, key, val);
 		}
 
-		extern int attrgroup_load(t_attrgroup *attrgroup)
+		extern int attrgroup_load(t_attrgroup *attrgroup, const char *tab)
 		{
 			assert(attrgroup);
 			assert(attrgroup->storage);
 
-			if (FLAG_ISSET(attrgroup->flags, ATTRGROUP_FLAG_LOADED))	/* already done */
-				return 0;
-			if (FLAG_ISSET(attrgroup->flags, ATTRGROUP_FLAG_DIRTY)) { /* if not loaded, how dirty ? */
-				eventlog(eventlog_level_error, __FUNCTION__, "can't load modified account");
-				return -1;
+			if (FLAG_ISSET(attrgroup->flags, ATTRGROUP_FLAG_LOADED))
+			{
+#ifdef WITH_SQL
+				for (std::vector<const char *>::iterator it = attrgroup->loadedtabs->begin(); it != attrgroup->loadedtabs->end(); ++it)
+					if (strcmp(tab, *it) == 0)
+#endif
+						return 0; /* already done */
+			}
+			else
+			{
+				if (FLAG_ISSET(attrgroup->flags, ATTRGROUP_FLAG_DIRTY)) { /* if not loaded, how dirty ? */
+					eventlog(eventlog_level_error, __FUNCTION__, "can't load modified account");
+					return -1;
+				}
 			}
 
 			attrgroup_set_loaded(attrgroup);
-			if (storage->read_attrs(attrgroup->storage, _cb_load_attr, attrgroup)) {
+			if (storage->read_attrs(attrgroup->storage, _cb_load_attr, attrgroup, tab)) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got error loading attributes");
 				return -1;
 			}
@@ -336,12 +366,12 @@ namespace pvpgn
 			assert(pkey);
 			assert(*pkey);
 
-			/* trigger loading of attributes if not loaded already */
-			if (attrgroup_load(attrgroup)) 
-				return NULL;	/* eventlog happens earlier */
-
 			/* only if the callers tell us to */
 			if (escape) *pkey = attrgroup_escape_key(*pkey);
+
+			/* trigger loading of attributes if not loaded already */
+			if (attrgroup_load(attrgroup, key_get_tab(*pkey)))
+				return NULL;	/* eventlog happens earlier */
 
 			/* we are doing attribute lookup so we are accessing it */
 			attrgroup_set_accessed(attrgroup);
@@ -392,7 +422,7 @@ namespace pvpgn
 			//if (!val && attrgroup != attrlayer_get_defattrgroup())
 			//	val = attrgroup_get_attrlow(attrlayer_get_defattrgroup(), newkey, 0);
 
-			if (newkey != key)xfree((void*)newkey);
+			if (newkey != key) xfree((void*)newkey);
 
 			return val;
 		}
@@ -451,6 +481,16 @@ namespace pvpgn
 
 			return 0;
 		}
+
+		// extract tab name from key
+		static const char * key_get_tab(const char *key)
+		{
+			std::string str = std::string(key);
+			std::size_t pos = str.find("_");
+			std::string find = str.substr(0, pos);
+			return xstrdup(find.c_str());
+		}
+
 
 	}
 

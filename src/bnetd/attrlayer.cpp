@@ -37,6 +37,7 @@ namespace pvpgn
 
 		static DECLARE_ELIST_INIT(loadedlist);
 		static DECLARE_ELIST_INIT(dirtylist);
+		std::vector<const char*> loadedtabs;
 
 		static int attrlayer_unload_default(void);
 
@@ -44,7 +45,7 @@ namespace pvpgn
 		{
 			elist_init(&loadedlist);
 			elist_init(&dirtylist);
-			attrlayer_load_default();
+			//attrlayer_load_default();
 
 			return 0;
 		}
@@ -67,7 +68,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			return attrgroup_load(defattrs);
+			return attrgroup_load(defattrs, "BNET");
 		}
 
 		static int attrlayer_unload_default(void)
