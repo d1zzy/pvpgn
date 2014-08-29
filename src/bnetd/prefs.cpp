@@ -55,6 +55,7 @@ namespace pvpgn
 
 			unsigned int usersync;
 			unsigned int userflush;
+			unsigned int userflush_connected;
 			unsigned int userstep;
 
 			char const * servername;
@@ -246,6 +247,10 @@ namespace pvpgn
 		static int conf_set_userflush(const char *valstr);
 		static const char *conf_get_userflush(void);
 		static int conf_setdef_userflush(void);
+
+		static int conf_set_userflush_connected(const char *valstr);
+		static const char *conf_get_userflush_connected(void);
+		static int conf_setdef_userflush_connected(void);
 
 		static int conf_set_userstep(const char *valstr);
 		static const char *conf_get_userstep(void);
@@ -740,6 +745,7 @@ namespace pvpgn
 			{ "supportfile", conf_set_supportfile, conf_get_supportfile, conf_setdef_supportfile },
 			{ "usersync", conf_set_usersync, conf_get_usersync, conf_setdef_usersync },
 			{ "userflush", conf_set_userflush, conf_get_userflush, conf_setdef_userflush },
+			{ "userflush_connected", conf_set_userflush_connected, conf_get_userflush_connected, conf_setdef_userflush_connected },
 			{ "userstep", conf_set_userstep, conf_get_userstep, conf_setdef_userstep },
 			{ "servername", conf_set_servername, conf_get_servername, conf_setdef_servername },
 			{ "hostname", conf_set_hostname, conf_get_hostname, conf_setdef_hostname },
@@ -1186,6 +1192,27 @@ namespace pvpgn
 		static const char* conf_get_userflush(void)
 		{
 			return conf_get_int(prefs_runtime_config.userflush);
+		}
+
+
+		extern unsigned int prefs_get_user_flush_connected(void)
+		{
+			return prefs_runtime_config.userflush_connected;
+		}
+
+		static int conf_set_userflush_connected(const char *valstr)
+		{
+			return conf_set_bool(&prefs_runtime_config.userflush_connected, valstr, 0);
+		}
+
+		static int conf_setdef_userflush_connected(void)
+		{
+			return conf_set_bool(&prefs_runtime_config.userflush_connected, NULL, 0);
+		}
+
+		static const char* conf_get_userflush_connected(void)
+		{
+			return conf_get_bool(prefs_runtime_config.userflush_connected);
 		}
 
 

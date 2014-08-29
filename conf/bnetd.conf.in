@@ -264,13 +264,15 @@ version_exeinfo_maxdiff = 0
 usersync  = 300
 # Number of seconds of inactivity before file is unloaded from memory.
 # (only checked during account file updates)
-userflush = 1200
+userflush = 3600
 # Number of users checked for updates at once. Higher values make sense if you 
 # either have very fast hardware or you don't have many number of accounts.
 # Lower values make sense if you have very high CPU usage on the system you run
 # the server (dont make it too low or your system will save accounts continously).
 # Modify this value ONLY if you know what you are doing!!
 userstep = 100
+# Flush connected users? Set "false" and they will never flushed untill logout (it will consume more memory but less CPU usage, because of no queries to a file)
+userflush_connected = true
 
 # How often to send user latency tests in seconds.
 latency = 600

@@ -33,6 +33,7 @@
 #include "storage.h"
 #include "prefs.h"
 #include "server.h"
+#include "connection.h"
 #include "common/setup_after.h"
 
 
@@ -222,6 +223,14 @@ namespace pvpgn
 				FLAG_ISSET(attrgroup->flags, ATTRGROUP_FLAG_ACCESSED) &&
 				now - attrgroup->lastaccess < prefs_get_user_flush_timer())
 				return 0;
+
+			// do not flush online users
+			if (!prefs_get_user_flush_connected())
+			{
+				if (const char * username = attrgroup_get_attr(attrgroup, "BNET\\acct\\username"))
+				if (t_connection * c = connlist_find_connection_by_accountname(username))
+					return 0;
+			}
 
 			/* sync data to disk if dirty */
 			attrgroup_save(attrgroup, FS_FORCE);
