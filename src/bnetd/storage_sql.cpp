@@ -28,6 +28,7 @@
 #include <cstdlib>
 #include <vector>
 #include <map>
+#include <iterator>
 
 #include "compat/snprintf.h"
 #include "common/eventlog.h"
