@@ -29,6 +29,7 @@
 #include <vector>
 #include <map>
 #include <iterator>
+#include <algorithm>
 
 #include "compat/snprintf.h"
 #include "common/eventlog.h"
