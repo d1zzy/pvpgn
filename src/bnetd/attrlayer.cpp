@@ -45,7 +45,7 @@ namespace pvpgn
 		{
 			elist_init(&loadedlist);
 			elist_init(&dirtylist);
-			//attrlayer_load_default();
+			attrlayer_load_default();
 
 			return 0;
 		}
