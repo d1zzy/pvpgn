@@ -225,12 +225,19 @@ namespace pvpgn
 				now - attrgroup->lastaccess < prefs_get_user_flush_timer())
 				return 0;
 
+			assert(attrgroup->storage);
+			unsigned int uid = *((unsigned int *)attrgroup->storage);
+			unsigned int defuid = *((unsigned int *)storage->get_defacct());
+			// do not flush default account
+			if (uid == defuid)
+				return 2;
+
 			// do not flush online users
 			if (!prefs_get_user_flush_connected())
 			{
 				if (const char * username = attrgroup_get_attr(attrgroup, "BNET\\acct\\username"))
 				if (t_connection * c = connlist_find_connection_by_accountname(username))
-					return 0;
+					return 2;
 			}
 
 			/* sync data to disk if dirty */
@@ -252,17 +259,20 @@ namespace pvpgn
 			t_attrgroup *attrgroup = (t_attrgroup *)data;
 
 #ifdef WITH_SQL
-			const char *tab = key_get_tab(key);
-
-			bool is_found = false;
-			for (std::vector<const char *>::iterator it = attrgroup->loadedtabs->begin(); it != attrgroup->loadedtabs->end(); ++it)
+			if (strcmp(prefs_get_storage_path(), "sql") == 0)
 			{
-				if (strcmp(tab, *it) == 0)
-					is_found = true;
+				const char *tab = key_get_tab(key);
+
+				bool is_found = false;
+				for (std::vector<const char *>::iterator it = attrgroup->loadedtabs->begin(); it != attrgroup->loadedtabs->end(); ++it)
+				{
+					if (strcmp(tab, *it) == 0)
+						is_found = true;
+				}
+				// add a tab if it's not found
+				if (!is_found)
+					attrgroup->loadedtabs->push_back(tab);
 			}
-			// add a tab if it's not found
-			if (!is_found)
-				attrgroup->loadedtabs->push_back(tab);
 #endif
 			return attrgroup_set_attr(attrgroup, key, val);
 		}
@@ -275,8 +285,13 @@ namespace pvpgn
 			if (FLAG_ISSET(attrgroup->flags, ATTRGROUP_FLAG_LOADED))
 			{
 #ifdef WITH_SQL
-				for (std::vector<const char *>::iterator it = attrgroup->loadedtabs->begin(); it != attrgroup->loadedtabs->end(); ++it)
+				if (strcmp(prefs_get_storage_path(), "sql") == 0)
+				{
+					for (std::vector<const char *>::iterator it = attrgroup->loadedtabs->begin(); it != attrgroup->loadedtabs->end(); ++it)
 					if (strcmp(tab, *it) == 0)
+						return 0;
+				}
+				else
 #endif
 						return 0; /* already done */
 			}
@@ -427,10 +442,9 @@ namespace pvpgn
 			if (attr) 
 				val = attr_get_val(attr);
 
-			// FIXME: (HarpyWar) why do we need select a default attribute (uid=0) if user attribute not exists? 
-			//                   (this is a reduntant query)
-			//if (!val && attrgroup != attrlayer_get_defattrgroup())
-			//	val = attrgroup_get_attrlow(attrlayer_get_defattrgroup(), newkey, 0);
+			// if attribute is null then return default attribute value
+			if (!val && attrgroup != attrlayer_get_defattrgroup())
+				val = attrgroup_get_attrlow(attrlayer_get_defattrgroup(), newkey, 0);
 
 			if (newkey != key) xfree((void*)newkey);
 
