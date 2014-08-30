@@ -220,6 +220,7 @@ namespace pvpgn
 				config.update("version_exeinfo_maxdiff", prefs_get_version_exeinfo_maxdiff());
 				config.update("usersync", prefs_get_user_sync_timer());
 				config.update("userflush", prefs_get_user_flush_timer());
+				config.update("userflush_connected", prefs_get_user_flush_connected());
 				config.update("userstep", prefs_get_user_step());
 				config.update("latency", prefs_get_latency());
 				config.update("nullmsg", prefs_get_nullmsg());

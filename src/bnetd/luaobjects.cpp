@@ -95,13 +95,10 @@ namespace pvpgn
 			if (!account)
 				return o_account;
 
+			// DO NOT ADD FIELDS FROM A DATABASE HERE - IT WILL CAUSE WASTE SQL QUERIES WHEN ITERATE ALL CONNECTIONS
+
 			o_account["id"] = std_to_string(account_get_uid(account));
 			o_account["name"] = account_get_name(account);
-			if (const char * email = account_get_email(account)) // email can be empty
-				o_account["email"] = email;
-			o_account["commandgroups"] = std_to_string(account_get_command_groups(account));
-			o_account["locked"] = account_get_auth_lock(account) ? "true" : "false";
-			o_account["muted"] = account_get_auth_mute(account) ? "true" : "false";
 
 			o_account["online"] = "false"; // set init as offline
 

@@ -285,7 +285,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				ERROR2("Can't format translation string \"%s\" (%s)", fmt, e.what());
+				WARN2("Can't format translation string \"%s\" (%s)", fmt, e.what());
 			}
 
 			return output;

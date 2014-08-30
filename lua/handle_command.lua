@@ -45,8 +45,8 @@ function handle_command(account, text)
 		for cmd,func in pairs(cmdlist) do
 			if string.starts(text, cmd) then
 				
-				-- check if command group is in account.commandgroups
-				if math_and(account.commandgroups, cg) == 0 then
+				-- check if command group is in account commandgroups
+				if math_and(account_get_auth_command_groups(account.name), cg) == 0 then
 					api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "This command is reserved for admins."))
 					return -1
 				end

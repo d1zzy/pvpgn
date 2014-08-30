@@ -607,8 +607,6 @@ namespace pvpgn
 							// log command
 							if (t_account * account = conn_get_account(c))
 								userlog_append(account, text);
-
-							// TODO: modify all commands to return "0" only if success, and "-1" if not
 						}
 						return result;
 					}

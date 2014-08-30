@@ -220,7 +220,8 @@ namespace pvpgn
 					switch ((t_attr_type)attrtype)
 					{
 					case attr_type_str:
-						attrvalue = account_get_strattr(account, attrkey);
+						if (const char * val = account_get_strattr(account, attrkey))
+							attrvalue = val;
 						break;
 					case attr_type_num:
 						attrvalue = std_to_string(account_get_numattr(account, attrkey));
@@ -229,7 +230,8 @@ namespace pvpgn
 						attrvalue = account_get_boolattr(account, attrkey) == 0 ? "false" : "true";
 						break;
 					case attr_type_raw:
-						attrvalue = account_get_rawattr(account, attrkey);
+						if (const char * val = account_get_rawattr(account, attrkey))
+							attrvalue = val;
 						break;
 					}
 				}
@@ -520,7 +522,7 @@ namespace pvpgn
 			return 1;
 		}
 
-		/* Get usernames online. If allaccounts = true then return all server users  */
+		/* Get usernames online. If allaccounts = true then return all accounts that were used by the server since start  */
 		extern int __server_get_users(lua_State* L)
 		{
 			bool allaccounts = false;
