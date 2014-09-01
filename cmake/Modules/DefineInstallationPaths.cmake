@@ -28,11 +28,19 @@ SET(BIN_INSTALL_DIR
   CACHE PATH "The ${APPLICATION_NAME} binary install dir (default prefix/bin)"
   FORCE
 )
-SET(SBIN_INSTALL_DIR
-  "${EXEC_INSTALL_PREFIX}/sbin"
-  CACHE PATH "The ${APPLICATION_NAME} sbin install dir (default prefix/sbin)"
-  FORCE
-)
+if(WIN32)
+	SET(SBIN_INSTALL_DIR
+	  "${EXEC_INSTALL_PREFIX}"
+	  CACHE PATH "The ${APPLICATION_NAME} sbin install dir (default prefix/sbin)"
+	  FORCE
+	)
+else(WIN32)
+	SET(SBIN_INSTALL_DIR
+	  "${EXEC_INSTALL_PREFIX}/sbin"
+	  CACHE PATH "The ${APPLICATION_NAME} sbin install dir (default prefix/sbin)"
+	  FORCE
+	)
+endif(WIN32)
 SET(LIB_INSTALL_DIR
   "${EXEC_INSTALL_PREFIX}/lib${LIB_SUFFIX}"
   CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is prefix/lib)"
@@ -83,13 +91,13 @@ SET(LOCALE_INSTALL_DIR
 
 if(WIN32)
   SET(SYSCONF_INSTALL_DIR 
-    "${EXEC_INSTALL_PREFIX}conf"
+    "${EXEC_INSTALL_PREFIX}/conf"
     CACHE PATH "The ${APPLICATION_NAME} sysconfig install dir (default conf)"
     FORCE
   )
 else(WIN32)
   SET(SYSCONF_INSTALL_DIR
-    "${EXEC_INSTALL_PREFIX}/etc"
+    "${EXEC_INSTALL_PREFIX}/etc/${APPLICATION_NAME}"
     CACHE PATH "The ${APPLICATION_NAME} sysconfig install dir (default prefix/etc)"
     FORCE
   )
@@ -106,8 +114,17 @@ SET(INFO_INSTALL_DIR
   FORCE
 )
 
-SET(LOCALSTATE_INSTALL_DIR
-  "${CMAKE_INSTALL_PREFIX}/var"
-  CACHE PATH "The ${APPLICATION_NAME} local state install dir (default prefix/var)"
-  FORCE
-)
+if(WIN32)
+  SET(LOCALSTATE_INSTALL_DIR
+    "${EXEC_INSTALL_PREFIX}/var"
+    CACHE PATH "The ${APPLICATION_NAME} local state install dir (default prefix/var)"
+    FORCE
+  )
+else(WIN32)
+  SET(LOCALSTATE_INSTALL_DIR
+    "${EXEC_INSTALL_PREFIX}/var/${APPLICATION_NAME}"
+    CACHE PATH "The ${APPLICATION_NAME} local state install dir (default prefix/var)"
+    FORCE
+  )
+endif(WIN32)
+
