@@ -62,3 +62,21 @@ if(WITH_LUA)
 endif(WITH_LUA)
 
 ENABLE_TESTING()
+
+# uninstall target
+configure_file(
+    "${CMAKE_MODULE_PATH}/cmake_uninstall.cmake.in"
+    "${CMAKE_MODULE_PATH}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_MODULE_PATH}/cmake_uninstall.cmake)
+	
+# purge target
+configure_file(
+    "${CMAKE_MODULE_PATH}/cmake_purge.cmake.in"
+    "${CMAKE_MODULE_PATH}/cmake_purge.cmake"
+    IMMEDIATE @ONLY)
+
+add_custom_target(purge
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_MODULE_PATH}/cmake_purge.cmake)
