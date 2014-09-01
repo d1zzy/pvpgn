@@ -1,10 +1,10 @@
-[![Build Status](https://travis-ci.org/HarpyWar/pvpgn.svg?branch=master)](https://travis-ci.org/HarpyWar/pvpgn) [![Build status](https://ci.appveyor.com/api/projects/status/dqoj9lkvhfwthmn6)](https://ci.appveyor.com/project/HarpyWar/pvpgn)
 Player versus Player Gaming Network
 =====
-![](http://harpywar.com/images/items/pvpgn.gif)
+![](http://i.imgur.com/LfI3hXo.png)
 
 Original PvPGN 1.99 source code with tweaks.
 
+[![Build Status](https://travis-ci.org/HarpyWar/pvpgn.svg?branch=master)](https://travis-ci.org/HarpyWar/pvpgn) [![Build status](https://ci.appveyor.com/api/projects/status/dqoj9lkvhfwthmn6)](https://ci.appveyor.com/project/HarpyWar/pvpgn)
 
 Source Code changes
 --
