@@ -1,15 +1,15 @@
-PvPGN Bnet Emulation Chat Help Commands
+PvPGN Bnet Emulation Chat Hilfe Befehle
 
-New Commands:
+Neue Befehle:
 
-use /f help for a friend lists help
-use /users to view users online
-use /w or /msg <username> to whisper people
-use /join <channel> to join a channel
+nutze /f help fuer Hilfe mit der Freundesliste.
+nutze /users um zu sehen, welche Nutzer online sind.
+nutze /w or /msg <Nutzername> um Nutzer anzufluestern.
+nutze /join <Kanal> um einem Kanal beizutreten
 
-For Chan Ops:
+Fuerr Chan Ops:
 
-use /ban <username> bans a user from channel
-use /kick <username> kicks a user from channel
+nutze /ban <Nutzername> um einen Nutzer aus dem Kanal zu bannen.
+nutze /kick <Nutzername> um einen Nutzer aus dem Kanal zu kicken.
 
-For a more detailed help type: /help
+Fuer eine genauere Hilfe schreibe: /help
