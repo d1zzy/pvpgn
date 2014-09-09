@@ -1,21 +1,19 @@
-You are currently connected to a PvPGN Server (Player -vs- Player Gaming Network)
+Sie sind zur Zeit mit einem PvPGN Server (Player -vs- Player Gaming Network) verbunden.
 
-PvPGN TERMS OF USE:
+PvPGN NUTZUNGSBEDINGUNGEN:
 
-PvPGN is a Battle.net(R) emulation server and in no way affiliated with bnetd, warforge, or Blizzard Entertainment(R).
-PvPGN is provided "as is" without warrenties of any kind.
-We do not support the idea of Pirated software and urge you to purchase a legit copy of any games that you play on our servers.
+PvPGN ist ein Battle.net(R) Emulationsserver und ist auf keine Weise verbunden mit bnetd, warforge, oder Blizzard Entertainment(R).
+PvPGN wird zur Verfuegung gestellt "wie er ist" ohne Gewaehrleistungen jedweder Art.
+Wir unterstuetzen Softwarepiraterie nicht und halten Sie an, eine legale Kopie der Spiele zu erwerben, die Sie auf unserem Server spielen moechten.
 
-1. Information found on PvPGN.
-PvPGN does not endorse or stand behind the accuracy, truthfulness or reliability of any information (including statements of opinion or advice) provided on or by means of PvPGN. Any and all statements made in forums, chat or during game play reflect only the views of their author.
+1. Informationen, die auf PvPGN gefunden werden.
+PvPGN unterstuetzt oder garantiert nicht fuer die Genauigkeit, den Wahrheitsgehalt oder die Zuverlaessigkeit jedweder Informationen, darunter auch Meinungen und Ratschlaege, die auf oder ueber PvPGN vermittelt werden. Jede und alle Aussagen, die in Foren, Chatverlauefen oder in Spielen gemacht werden,  geben nur die Meinung ihrer Urheber wieder.
 
-2. Disclaimer of Warrenty.
-PvPGN is provided to you "as is" without warrenty of any kind. PvPGN does not warrent that their programm will be uninterrupted or error free.
+2. Ausschluss von Gewaehrleistung.
+PvPGN wird gestellt "wie er ist" ohne Gewaehrleistungen irgendeiner Art. PvPGN gewaehrleistet nicht, dass ihr Programm ungestoert und fehlerfrei laueft.
 
-3. Limitations of Liability
-PvPGN is in no way liable for loss or damage of any kind resulting from the use of PvPGN, including but not limited to, loss of goodwill, work stoppage, computer failure or malfunction, or any and all other damages or losses, commercial or otherwise.
-
-Battle.net(R) and Blizzard Entertainment(R) are trademarks or registered trademarks of Blizzard Entertainment in the U.S. and/or other countries.
-
-Besides all this... Happy gaming..
-PvPGN Project Page: http://pvpgn.berlios.de/
+3. begrenzte Haftbarkeit
+PvPGN ist in keiner Weise haftbar fuer Verlust oder Schaden jedweder Art, der aus der Benutzung von PvPGN resultiert. Das schliesst, ist aber nicht begrenzt auf, Verlust von Geschäftswerten, Computerfehlern oder -Versagen und jedwede Art von Schaden, Verlust, sei er kommerziell oder privat. 
+Battle.net(R) und Blizzard Entertainment(R) sind Warenzeichen oder eingetragene Warenzeichen von Blizzard Entertainment in den Vereinigten Staaten von Amerika und oder anderen Staaten.
+Davon abgesehen... Viel Spaß...
+PvPGN Projekt Seite: http://pvpgn.berlios.de/
