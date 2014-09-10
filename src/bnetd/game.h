@@ -179,6 +179,13 @@ namespace pvpgn
 			game_flag_private
 		} t_game_flag;
 
+
+		typedef enum
+		{
+			gamelist_source_none,
+			gamelist_source_joinbutton, /* show gamelist when user clicks "Join" button */
+		} t_gamelist_source_type;
+
 		typedef struct game
 #ifdef GAME_INTERNAL_ACCESS
 		{
@@ -263,7 +270,6 @@ namespace pvpgn
 	{
 		// game list structure with custom data
 		struct glist_cbdata {
-			const char * identifier;
 			unsigned tcount, counter;
 			t_connection *c;
 			t_game_type gtype;
@@ -332,7 +338,7 @@ namespace pvpgn
 		extern t_game * gamelist_find_game(char const * name, t_clienttag ctag, t_game_type type);
 		extern t_game * gamelist_find_game_available(char const * name, t_clienttag ctag, t_game_type type);
 		extern t_game * gamelist_find_game_byid(unsigned int id);
-		extern void gamelist_traverse(t_glist_func cb, void *data);
+		extern void gamelist_traverse(t_glist_func cb, void *data, t_gamelist_source_type);
 		extern int gamelist_total_games(void);
 		extern int game_set_realm(t_game * game, unsigned int realm);
 		extern unsigned int game_get_realm(t_game const * game);

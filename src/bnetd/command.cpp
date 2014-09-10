@@ -3029,7 +3029,7 @@ namespace pvpgn
 			if ((!prefs_get_hide_addr()) || (account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr"))) /* default to false */
 				msgtemp += localize(c, "--------addr--------");
 			message_send_text(c, message_type_info, c, msgtemp);
-			gamelist_traverse(_glist_cb, &cbdata);
+			gamelist_traverse(_glist_cb, &cbdata, gamelist_source_none);
 
 			return 0;
 		}

@@ -3768,13 +3768,12 @@ namespace pvpgn
 				else
 					eventlog(eventlog_level_debug, __FUNCTION__, "GAMELISTREPLY looking for public games tag=\"%s\" bngtype=0x%08x gtype=%d", tag_uint_to_str(clienttag_str, clienttag), bngtype, (int)gtype);
 
-				cbdata.identifier = "gamelist_join"; // just an unique string that allow to identify the structure in gamelist_traverse()
 				cbdata.counter = 0;
 				cbdata.tcount = 0;
 				cbdata.c = c;
 				cbdata.gtype = gtype;
 				cbdata.rpacket = rpacket;
-				gamelist_traverse(_glist_cb, &cbdata);
+				gamelist_traverse(_glist_cb, &cbdata, gamelist_source_joinbutton);
 
 				bn_int_set(&rpacket->u.server_gamelistreply.gamecount, cbdata.counter);
 				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] GAMELISTREPLY sent %u of %u games", conn_get_socket(c), cbdata.counter, cbdata.tcount);

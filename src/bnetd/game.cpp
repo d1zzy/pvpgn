@@ -2189,16 +2189,15 @@ namespace pvpgn
 		}
 
 
-		extern void gamelist_traverse(t_glist_func cb, void *data)
+		extern void gamelist_traverse(t_glist_func cb, void *data, t_gamelist_source_type gamelist_source)
 		{
 			t_elist *curr;
 			t_game *game;
 
 #ifdef WITH_LUA
-			struct glist_cbdata *cbdata = (struct glist_cbdata*)data;
-			// check that data is has needed struct
-			if (cbdata->identifier && strcmp(cbdata->identifier, "gamelist_join") == 0)
+			if (gamelist_source == gamelist_source_joinbutton)
 			{
+				struct glist_cbdata *cbdata = (struct glist_cbdata*)data;
 				// get gamelist from Lua script: pair(gameid=gamename)
 				std::vector<t_game*> gamelist = lua_handle_game_list(cbdata->c);
 				if (gamelist.size() > 0)

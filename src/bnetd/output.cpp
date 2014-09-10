@@ -147,7 +147,7 @@ namespace pvpgn
 				std::fprintf(fp, "\t\t<Games>\n");
 				std::fprintf(fp, "\t\t<Number>%d</Number>\n", gamelist_get_length());
 
-				gamelist_traverse(_glist_cb_xml, fp);
+				gamelist_traverse(_glist_cb_xml, fp, gamelist_source_none);
 
 				std::fprintf(fp, "\t\t</Games>\n");
 				std::fprintf(fp, "\t\t<Channels>\n");
@@ -179,7 +179,7 @@ namespace pvpgn
 
 				std::fprintf(fp, "[GAMES]\n");
 				_glist_cb_simple(NULL, NULL);	/* init number */
-				gamelist_traverse(_glist_cb_simple, fp);
+				gamelist_traverse(_glist_cb_simple, fp, gamelist_source_none);
 
 				std::fprintf(fp, "[USERS]\n");
 				number = 1;

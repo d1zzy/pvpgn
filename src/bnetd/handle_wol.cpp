@@ -616,7 +616,7 @@ namespace pvpgn
 				data.tcount = 0;
 				data.counter = 0;
 				data.conn = conn;
-				gamelist_traverse(&append_game_info, &data);
+				gamelist_traverse(&append_game_info, &data, gamelist_source_none);
 				DEBUG3("[%d] LIST sent %u of %u games", conn_get_socket(conn), data.counter, data.tcount);
 			}
 			irc_send(conn, RPL_LISTEND, ":End of LIST command");
