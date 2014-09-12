@@ -107,10 +107,7 @@ namespace pvpgn
 			// send message
 			if (c_dst)
 			{
-				// assign the same src connection, if it null
-				if (!c_src)
-					c_src = c_dst;
-
+				// src connection can be NULL if message_type == message_type_whisper (message will be sent from the server name)
 				message_send_text(c_dst, (t_message_type)message_type, c_src, text);
 			}
 
@@ -204,8 +201,6 @@ namespace pvpgn
 		{
 			const char *username, *attrkey;
 			int attrtype;
-			std::string attrvalue;
-			std::map<std::string, std::string> o_account;
 
 			try
 			{
@@ -221,22 +216,20 @@ namespace pvpgn
 					{
 					case attr_type_str:
 						if (const char * val = account_get_strattr(account, attrkey))
-							attrvalue = val;
+							st.push(val);
 						break;
 					case attr_type_num:
-						attrvalue = std_to_string(account_get_numattr(account, attrkey));
+						st.push(account_get_numattr(account, attrkey));
 						break;
 					case attr_type_bool:
-						attrvalue = account_get_boolattr(account, attrkey) == 0 ? "false" : "true";
+						st.push(account_get_boolattr(account, attrkey));
 						break;
 					case attr_type_raw:
 						if (const char * val = account_get_rawattr(account, attrkey))
-							attrvalue = val;
+							st.push(val);
 						break;
 					}
 				}
-
-				st.push(attrvalue);
 			}
 			catch (const std::exception& e)
 			{
@@ -246,7 +239,6 @@ namespace pvpgn
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
 			}
-
 			return 1;
 		}
 
