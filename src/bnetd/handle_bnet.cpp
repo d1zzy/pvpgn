@@ -1568,6 +1568,14 @@ namespace pvpgn
 								conn_login(c, account, username);
 								eventlog(eventlog_level_info, __FUNCTION__, "[%d] \"%s\" logged in (correct password)", conn_get_socket(c), username);
 								bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY1_MESSAGE_SUCCESS);
+#ifdef WITH_LUA
+								if (lua_handle_user(c, NULL, NULL, luaevent_user_login) == 1)
+								{
+									// feature to break login from Lua
+									conn_set_state(c, conn_state_destroy);
+									return -1;
+								}
+#endif
 #ifdef WIN32_GUI
 								guiOnUpdateUserList();
 #endif
@@ -1754,7 +1762,11 @@ namespace pvpgn
 
 #ifdef WITH_LUA
 					if (lua_handle_user(c, NULL, NULL, luaevent_user_login) == 1)
-						return 0;
+					{
+						// feature to break login from Lua
+						conn_set_state(c, conn_state_destroy);
+						return -1;
+					}
 #endif
 
 #ifdef WIN32_GUI
@@ -2163,12 +2175,21 @@ namespace pvpgn
 #endif
 					}
 					else if (hash_eq(clienthash, serverhash)) {
+
 						conn_login(c, account, username);
 						eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) \"%s\" logged in (right password)", conn_get_socket(c), username);
 						if ((conn_get_versionid(c) >= 0x0000000D) && (account_get_email(account) == NULL))
 							bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_EMAIL);
 						else
 							bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_OK);
+#ifdef WITH_LUA
+						if (lua_handle_user(c, NULL, NULL, luaevent_user_login) == 1)
+						{
+							// feature to break login from Lua
+							conn_set_state(c, conn_state_destroy);
+							return -1;
+						}
+#endif
 						// by amadeo updates the userlist
 #ifdef WIN32_GUI
 						guiOnUpdateUserList();
