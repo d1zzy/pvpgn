@@ -71,7 +71,7 @@ namespace pvpgn
 		extern int attrgroup_unload(t_attrgroup *attrgroup);
 		extern int attrgroup_read_accounts(int flag, t_attr_cb cb, void *data);
 		extern const char *attrgroup_get_attr(t_attrgroup *attrgroup, const char *key);
-		extern int attrgroup_set_attr(t_attrgroup *attrgroup, const char *key, const char *val);
+		extern int attrgroup_set_attr(t_attrgroup *attrgroup, const char *key, const char *val, bool set_dirty = true);
 		extern int attrgroup_save(t_attrgroup *attrgroup, int flags);
 		extern int attrgroup_flush(t_attrgroup *attrgroup, int flags);
 

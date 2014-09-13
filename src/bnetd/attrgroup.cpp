@@ -274,7 +274,8 @@ namespace pvpgn
 					attrgroup->loadedtabs->push_back(tab);
 			}
 #endif
-			return attrgroup_set_attr(attrgroup, key, val);
+			// set loaded attribute without a dirty flag
+			return attrgroup_set_attr(attrgroup, key, val, false);
 		}
 
 		extern int attrgroup_load(t_attrgroup *attrgroup, const char *tab)
@@ -287,6 +288,7 @@ namespace pvpgn
 #ifdef WITH_SQL
 				if (strcmp(prefs_get_storage_path(), "sql") == 0)
 				{
+					// find a tab
 					for (std::vector<const char *>::iterator it = attrgroup->loadedtabs->begin(); it != attrgroup->loadedtabs->end(); ++it)
 					if (strcmp(tab, *it) == 0)
 						return 0;
@@ -308,7 +310,6 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got error loading attributes");
 				return -1;
 			}
-			attrgroup_clear_dirty(attrgroup);
 
 			return 0;
 		}
@@ -466,7 +467,7 @@ namespace pvpgn
 			return attrgroup_get_attrlow(attrgroup, key, 1);
 		}
 
-		extern int attrgroup_set_attr(t_attrgroup *attrgroup, const char *key, const char *val)
+		extern int attrgroup_set_attr(t_attrgroup *attrgroup, const char *key, const char *val, bool set_dirty)
 		{
 			t_attr *attr;
 			const char *newkey = key;
@@ -497,8 +498,11 @@ namespace pvpgn
 			}
 
 			/* we have modified this attr and attrgroup */
+			if (set_dirty)
+			{
 				attr_set_dirty(attr);
 				attrgroup_set_dirty(attrgroup);
+			}
 
 		out:
 			if (newkey != key) xfree((void*)newkey);
