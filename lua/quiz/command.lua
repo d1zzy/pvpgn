@@ -60,13 +60,7 @@ function q_command_start(account, filename)
 	end
 
 	quiz:start(channel.name, filename)
-	
-		
-	i =0 
-	for t=0,1000000 do
-		file_save(t, "test.txt")
-	end
-	
+
 	return 0
 end
 
@@ -93,7 +87,7 @@ function q_command_toplist(account)
 	
 	-- load records (if it was not loaded yet)
 	if not q_load_records() then
-		return 1
+		return -1
 	end
 
 	local output = localize(account.name, "Top {} Quiz records:", config.quiz_users_in_top)
@@ -116,7 +110,7 @@ function q_command_stats(account, username)
 
 	-- load records (if it was not loaded yet)
 	if not q_load_records() then
-		return 1
+		return -1
 	end
 	
 	local found = false
