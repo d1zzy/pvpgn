@@ -11,26 +11,35 @@ function gh_handle_game_userjoin(game, account)
 	if not gh_is_bot(game.owner) then return end
 	
 	-- send ping silently
-	gh_write_silentping(account.name)
+	gh_set_silentflag(account.name)
 
-	local botaccount = account_get_by_name(game.owner)
+	local botaccount = api.account_get_by_name(game.owner)
 	-- send ping to bot (to save result)
 	command_ping(botaccount, "/ping")
 	
 	if (config.ghost_dota_server) then
-		-- show stats of each player in the game
+		-- user who is owner of the hostbot in the current game
+		local owner = gh_find_userbot_by_game(game.name)
+		-- if game is not ladder
+		if string:empty(gh_get_userbot_gametype(owner)) then return end
+	
+		
 		for u in string.split(game.players, ",") do
-			-- (except current player)
-			if (account.name ~= u) then
-				command_stats(botaccount, "/stats " .. u)
-			end
+			-- show stats of the player who joined the game for each other player
+			local useracc = api.account_get_by_name(u)
+			command_stats(useracc, "/stats " .. account.name)
+			
+			-- show stats of each player in the game to a player who joined the game
+			command_stats(account, "/stats " .. u)
 		end
+		api.message_send_text(account.name, message_type_info, nil, localize(account.name, "Joined ladder game. Game owner: {}", owner))
 	end
 end
 
 function gh_handle_user_login(account)
 	if gh_is_bot(account.name) then
-	-- activate pvpgn mode on ghost side
-		gh_message_send(botname, "/pvpgn init");
+		-- activate pvpgn mode on ghost side
+		gh_message_send(account.name, "/pvpgn init");
+		DEBUG("init bot " .. account.name)
 	end
 end

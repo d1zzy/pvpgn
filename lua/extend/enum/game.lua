@@ -5,6 +5,9 @@
 	Licensed under the same terms as Lua itself.
 ]]--
 
+-- Strings used here - not numbers, because these values will be 
+-- compare with string values returned from API.
+-- For example "0" != 0 in Lua.
 
 game_type_none,
 game_type_all,
@@ -27,7 +30,7 @@ game_type_diablo,
 game_type_diablo2open,
 game_type_diablo2closed,
 game_type_anongame
-= 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20
+= "0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"
 
 
 game_status_started,
@@ -35,7 +38,7 @@ game_status_full,
 game_status_open,
 game_status_loaded,
 game_status_done
-= 0,1,2,3,4
+= "0","1","2","3","4"
 
 
 game_result_none,
@@ -45,7 +48,7 @@ game_result_draw,
 game_result_disconnect,
 game_result_observer,
 game_result_playing
-= 0,1,2,3,4,5,6
+= "0","1","2","3","4","5","6"
 
 
 game_option_none,
@@ -81,7 +84,7 @@ game_option_topvbot_4,
 game_option_topvbot_3,
 game_option_topvbot_2,
 game_option_topvbot_1
-= 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32
+= "0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30","31","32"
 
 
 game_maptype_none,
@@ -91,7 +94,7 @@ game_maptype_ladder,
 game_maptype_pgl,
 game_maptype_kbk,
 game_maptype_compusa
-= 0,1,2,3,4,5,6
+= "0","1","2","3","4","5","6"
 
 
 game_tileset_none,
@@ -103,7 +106,7 @@ game_tileset_jungle,
 game_tileset_desert,
 game_tileset_ice,
 game_tileset_twilight
-= 0,1,2,3,4,5,6,7,8,9
+= "0","1","2","3","4","5","6","7","8","9"
 
 
 game_speed_none,
@@ -114,7 +117,7 @@ game_speed_normal,
 game_speed_fast,
 game_speed_faster,
 game_speed_fastest
-= 0,1,2,3,4,5,6,7
+= "0","1","2","3","4","5","6","7"
 
 
 game_difficulty_none,
@@ -124,10 +127,10 @@ game_difficulty_hell,
 game_difficulty_hardcore_normal,
 game_difficulty_hardcore_nightmare,
 game_difficulty_hardcore_hell
-= 0,1,2,3,4,5,6
+= "0","1","2","3","4","5","6"
 
 
 game_flag_none,
 game_flag_private
-= 0,1
+= "0","1"
 

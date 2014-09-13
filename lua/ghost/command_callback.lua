@@ -20,7 +20,7 @@ function command_ghost(account, text)
 	if not config.ghost then return 1 end
 	
 	-- restrict commands for authorized bots only
-	if not gh_is_bot_authorized(account.name) then return 1 end
+	if not gh_is_bot(account.name) then return 1 end
 	
 	local args = split_command(text, 5)
 	local cmd = args[1]
@@ -29,62 +29,88 @@ function command_ghost(account, text)
 	if code ~= "ok" then
 		if code == "err" then
 			local err_message = args[3]
-			-- HINT: handle error here
+			-- HINT: you can handle error here
 		end
 		return -1
 	end
 	
+	-- /ghost init
 	if (cmd == "init") then
-		DEBUG("(callback) pvpgn mode is activated on bot " .. account.name)
+		INFO("GHost bot is connected (" .. account.name .. ")")
+		
+	-- /ghost gameresult [players] [ratings] [results]
 	elseif (cmd == "gameresult") then
-		gh_callback_gameresult(args[2], args[3], args[4])
+		gh_callback_gameresult(args[3], args[4], args[5])
 
-	elseif (cmd == "host" or cmd == "chost") then
+	-- /ghost host [code] [user] [gamename]
+	elseif (cmd == "host") then
+		args = split_command(text, 4) -- support game name with spaces
 		gh_callback_host(args[3], account.name, args[4])
+	-- /ghost chost [code] [user] [gamename]
+	elseif (cmd == "chost") then
+		args = split_command(text, 4) -- support game name with spaces
+		gh_callback_chost(args[3], account.name, args[4])
+		
+	-- /ghost unhost [code] [user] [gamename]
 	elseif (cmd == "unhost") then
 		gh_callback_unhost(args[3], args[4])
+		
+	-- /ghost ping [code] [user] [players] [pings]
 	elseif (cmd == "ping") then
 		gh_callback_ping(args[3], args[4], args[5])
+		
+	-- /ghost swap [code] [user] [username1] [username2]
 	elseif (cmd == "swap") then
-		-- HINT: notify user about success usage
+		-- HINT: you can notify user about success usage
+		
+	-- /ghost open [code] [user] [slot]
 	elseif (cmd == "open") or (cmd == "close") then
-		-- HINT: notify user about success usage 
+		-- HINT: you can notify user about success usage 
+		
+	-- /ghost [cmd] [code] [user] [message]
 	elseif (cmd == "start") or (cmd == "abort") 
 		or (cmd == "pub") or (cmd == "priv") then
-		-- HINT: notify user about success usage
+		-- HINT: you can notify user about success usage
 	end
 	
-	-- FIXME: may be do not log bot commands? (return -1)
+	-- FIXME: may be do not log commands from bot? (return -1)
 	return 0
 end
 
 function gh_callback_host(username, botname, gamename)
-	gh_set_userbot(username, botname, gamename)
-	api.message_send_text(username, message_type_info, "Game " .. gamename .. " created")
+	local gametype = "5x5"
+	if string.find(game.name, "3x3") then gametype = "3x3" end
+			
+	gh_set_userbot(username, botname, gamename, gametype)
+	api.message_send_text(username, message_type_info, nil, localize(username, "Game \"{}\" is created by {}. You are an owner.", gamename, botname))
 end
+function gh_callback_chost(username, botname, gamename)
+	gh_set_userbot(username, botname, gamename, "")
+	api.message_send_text(username, message_type_info, nil, localize(username, "Game \"{}\" is created by {}. You are an owner.", gamename, botname))
+end
+
 
 function gh_callback_unhost(username, gamename)
 	gh_del_userbot(username)
-	api.message_send_text(username, message_type_info, "Game " .. gamename .. " destroyed")
+	api.message_send_text(username, message_type_info, nil, localize(username, "The game \"{}\" was destroyed.", gamename))
 end
 
-
 function gh_callback_ping(username, players, pings)
-	-- make sure that user is in a game
+	-- make sure that user is still in a game
 	local account = api.account_get_by_name(username)
 	local game = api.game_get_by_id(account.game_id)
 	if not next(game) then return end
 	-- make sure game owner is a bot
 	if not gh_is_bot(game.owner) then return end
 
-	-- silent flag (do not send result to user, just update in db)
-	local silent = gh_read_silentping(username)
-	
-	
+	-- get silent flag (do not send result to user)
+	-- it's needed to do not show ping when user join a game, but we want to save the ping into database
+	local silent = gh_get_silentflag(username)
+
 	local users = {}
 
-	-- fill table users
 	i = 1
+	-- fill usernames
 	for v in string.split(players, ",") do
 		-- init each user table
 		users[i] = {}
@@ -92,9 +118,8 @@ function gh_callback_ping(username, players, pings)
 		i = i + 1
 	end
 	i = 1
+	-- fill pings
 	for v in string.split(pings, ",") do
-		-- init each user table
-		users[i] = {}
 		users[i]["ping"] = v
 		i = i + 1
 	end
@@ -107,13 +132,13 @@ function gh_callback_ping(username, players, pings)
 		local pings = account_get_botping(u["name"])
 		local is_found = false
 		for k,v in pairs(pings) do
-			-- update user pings for current bot
+			-- update user ping for current bot
 			if (v.bot == game.owner) then
 				pings[k].ping = u["ping"]
 				is_found = true
 			end
 		end
-		-- if row not found for the botname then add a new one
+		-- if bot not found in database pings then add a new row
 		if not is_found then
 			local item = { 
 				date = os.time(), 
@@ -124,27 +149,26 @@ function gh_callback_ping(username, players, pings)
 		end
 		
 		-- save updated pings
-		account_set_ping2bot(u["name"], pings)
+		account_set_botping(u["name"], pings)
 
-		latency_all = latency_all .. string.format("{}: [{} {}]; ", u["name"], u["ping"], ms)
+		latency_all = latency_all .. string.format("%s: [%s %s]; ", u["name"], u["ping"], ms)
 		
 		-- if game started send ping of each players on a new line
 		if (game.status == game_status_started) and not (silent) then
-			api.message_send_text(username, message_type_info, localize(username, "{}'s latency to {}: {} {}", u["name"], game.owner, u["ping"], ms))
+			api.message_send_text(username, message_type_info, nil, localize(username, "{}'s latency to {}: {} {}", u["name"], game.owner, u["ping"], ms))
 		end	
-		
 	end
 	
 	-- if game not started send pings of all players in a single line
 	if not (game.status == game_status_started) and not (silent) then
-		api.message_send_text(u["name"], message_type_info, localize(username, "Latency: {}", latency_all))
+		api.message_send_text(username, message_type_info, nil, localize(username, "Latency: {}", latency_all))
 	end
 end
 
 
 function gh_callback_gameresult(players, ratings, results)
 	local users = {}
-	
+
 	-- fill table users
 	i = 1
 	for v in string.split(players, ",") do
@@ -155,12 +179,12 @@ function gh_callback_gameresult(players, ratings, results)
 	end
 	i = 1
 	for v in string.split(ratings, ",") do
-		users[i]["rating"] = v
+		users[i]["rating"] = tonumber(v)
 		i = i + 1
 	end
 	i = 1
 	for v in string.split(results, ",") do
-		users[i]["result"] = v
+		users[i]["result"] = tonumber(v)
 		i = i + 1
 	end
 
@@ -189,7 +213,7 @@ function gh_callback_gameresult(players, ratings, results)
 			ERROR(string.format("Bad game result (%s %s %s)", players, ratings, results))
 			return
 		end
-		
+
 		-- calc new stats
 		if u["result"] == 2 then -- leave & win
 			leaves = leaves + 1
@@ -203,21 +227,24 @@ function gh_callback_gameresult(players, ratings, results)
 			losses = losses + 1
 		end
 		
-		if streaks >= 0 then -- win
+		local result_str = localize(u["name"], "won")
+		
+		if streaks >= 0 then -- win streak
 			if u["result"] > 0 then 
 				streaks = streaks + 1
 			else
-				streaks = 1
+				streaks = -1
 			end
-		else -- loss
+		else -- loss streak
 			if u["result"] <= 0 then 
 				streaks = streaks - 1
 			else
-				streaks = -1
+				streaks = 1
 			end
+			result_str = localize(u["name"], "lose")
 		end
 		
-		-- update stats
+	-- update stats
 		if #users == 6 then
 			account_set_dotarating_3x3(u["name"], u["rating"])
 			account_set_dotawins_3x3(u["name"], wins)
@@ -233,12 +260,11 @@ function gh_callback_gameresult(players, ratings, results)
 		end
 		
 		-- diff between old and new rating
-		local points = rating-u["rating"]
-		local result_str = localize("won")
-		if pts < 0 then result_str = localize("lose") end
+		local points = u["rating"]-rating
 		
 		-- inform user about new stats
-		api.message_send_text(u["name"], message_type_info, localize(u["name"], "You {} {} points. New DotA ({}) rating: {} pts. Current {} streak: {}", result_str, points, rating, gametype, result_str, streaks))
+		api.message_send_text(u["name"], message_type_info, nil, localize(u["name"], "You {} {} points.", result_str, points))
+		api.message_send_text(u["name"], message_type_info, nil, localize(u["name"], "New DotA ({}) rating: {} pts. Current {} streak: {}", gametype, rating, result_str, streaks))
 	end
 	
 

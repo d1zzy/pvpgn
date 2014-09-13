@@ -60,6 +60,13 @@ function q_command_start(account, filename)
 	end
 
 	quiz:start(channel.name, filename)
+	
+		
+	i =0 
+	for t=0,1000000 do
+		file_save(t, "test.txt")
+	end
+	
 	return 0
 end
 

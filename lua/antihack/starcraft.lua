@@ -19,7 +19,7 @@ ah_mh_value = 139
 
 function ah_init()
 	timer_add("ah_timer", config.ah_interval, ah_timer_tick)
-	TRACE("Antihack activated")
+	INFO("Starcraft Antihack activated")
 end
 
 -- send memory check request to all players in games
@@ -50,7 +50,7 @@ function ah_handle_client(account, request_id, data)
 	if (request_id == ah_mh_request_id) then
 		-- read value from the memory
 		local value = bytes_to_int(data, 0, 2)
-		DEBUG(account.name .. " memory value: " .. value)
+		--TRACE(account.name .. " memory value: " .. value)
 		
 		if not (value == ah_mh_value) then
 			is_cheater = true

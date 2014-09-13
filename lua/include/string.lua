@@ -20,6 +20,7 @@ end
 
 -- Check string is nil or empty
 -- bool
+-- Usage example: string:empty("") -> true, string:empty(nil) -> true
 function string:empty(str)
 	return str == nil or str == ''
 end
@@ -37,6 +38,7 @@ function string.ends(str, ends)
 end
 
 -- Replace string
+-- Usage example: string.replace("hello world","world","Joe") -> "hello Joe"
 function string.replace(str, pattern, replacement)
 	if string:empty(str) then return str end
 	local s, n = string.gsub(str, pattern, replacement)
