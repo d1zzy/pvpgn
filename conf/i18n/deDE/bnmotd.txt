@@ -4,7 +4,7 @@
 %I
 %IEs sind %a Benutzerprofile auf dem Server.
 %IAktuell sind %U Spieler in %G Spielen von %N,
-%Iund %u Spieler spielen %g Spiele und chatten in %c Kanaelen.
+%Iund %u Spieler spielen %g Spiele und chatten in %c Kanälen.
 %IEin Problem mit den Befehlen? Schreibe /help und
 %Ilerne mehr über die Befehle.
 %IType /language to switch translation.
