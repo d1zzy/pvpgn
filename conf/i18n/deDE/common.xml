@@ -702,7 +702,7 @@
     </item>
     <item id="320" file="command.cpp" function="_handle_gameinfo_command">
       <original>Started: {}</original>
-      <translate>Begonnen: </translate>
+      <translate>Begonnen: {}</translate>
     </item>
     <item id="321" file="command.cpp" function="_handle_gameinfo_command">
       <original>Status: {}</original>
