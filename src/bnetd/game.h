@@ -183,7 +183,7 @@ namespace pvpgn
 		typedef enum
 		{
 			gamelist_source_none,
-			gamelist_source_joinbutton, /* show gamelist when user clicks "Join" button */
+			gamelist_source_joinbutton /* show gamelist when user clicks "Join" button */
 		} t_gamelist_source_type;
 
 		typedef struct game
