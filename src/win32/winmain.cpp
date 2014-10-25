@@ -25,7 +25,7 @@
 
 #include <cstdio>
 #include <windows.h>
-#if DEBUG
+#if _DEBUG
 #include <dbghelp.h>
 #endif
 #include <windowsx.h>
@@ -827,7 +827,7 @@ namespace pvpgn
 
 }
 
-#if DEBUG
+#if _DEBUG
 void make_minidump(EXCEPTION_POINTERS* e)
 {
 	auto hDbgHelp = LoadLibraryA("dbghelp");
@@ -883,7 +883,7 @@ using namespace pvpgn::bnetd;
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE reserved, LPSTR lpCmdLine, int nCmdShow)
 {
-#if DEBUG
+#if _DEBUG
 	SetUnhandledExceptionFilter(unhandled_handler);
 #endif
 	int result;
