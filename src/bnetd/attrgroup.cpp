@@ -232,8 +232,8 @@ namespace pvpgn
 			if (uid == defuid)
 				return 2;
 
-			// do not flush online users
-			if (!prefs_get_user_flush_connected())
+			// do not flush online users (but flash if FORCE)
+			if (!prefs_get_user_flush_connected() && !FLAG_ISSET(flags, FS_FORCE))
 			{
 				if (const char * username = attrgroup_get_attr(attrgroup, "BNET\\acct\\username"))
 				if (t_connection * c = connlist_find_connection_by_accountname(username))
