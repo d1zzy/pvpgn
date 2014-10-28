@@ -4370,14 +4370,14 @@ namespace pvpgn
 
 			// send message to author
 			msgtemp = localize(c, "Account {} is now locked", account_get_name(account));
-			msgtemp += account_get_locktext(account, false);
+			msgtemp += account_get_locktext(c, account, false);
 			message_send_text(c, message_type_error, c, msgtemp);
 
 			// send message to locked user
 			if ((user = connlist_find_connection_by_accountname(username)))
 			{
 				msgtemp = localize(c, "Your account has just been locked");
-				msgtemp += account_get_locktext(account, true);
+				msgtemp += account_get_locktext(c, account, true);
 				message_send_text(user, message_type_error, user, msgtemp);
 			}
 
@@ -4449,14 +4449,14 @@ namespace pvpgn
 
 			// send message to author
 			msgtemp = localize(c, "Account {} is now muted", account_get_name(account));
-			msgtemp += account_get_mutetext(account, false);
+			msgtemp += account_get_mutetext(c, account, false);
 			message_send_text(c, message_type_error, c, msgtemp);
 
 			// send message to muted user
 			if ((user = connlist_find_connection_by_accountname(username)))
 			{
 				msgtemp = localize(c, "Your account has just been muted");
-				msgtemp += account_get_mutetext(account, true);
+				msgtemp += account_get_mutetext(c, account, true);
 				message_send_text(user, message_type_error, user, msgtemp);
 			}
 

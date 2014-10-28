@@ -93,8 +93,8 @@ namespace pvpgn
 		extern int account_set_auth_mutetime(t_account * account, unsigned int val);
 		extern int account_set_auth_mutereason(t_account * account, char const * val);
 		extern int account_set_auth_muteby(t_account * account, char const * val);
-		extern std::string account_get_locktext(t_account * account, bool with_author = true, bool for_mute = false);
-		extern std::string account_get_mutetext(t_account * account, bool with_author = true);
+		extern std::string account_get_locktext(t_connection * c, t_account * account, bool with_author = true, bool for_mute = false);
+		extern std::string account_get_mutetext(t_connection * c, t_account * account, bool with_author = true);
 
 		/* profile */
 		extern char const * account_get_sex(t_account * account); /* the profile attributes are updated directly in bnetd.c */

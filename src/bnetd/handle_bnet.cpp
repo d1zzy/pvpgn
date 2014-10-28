@@ -1703,7 +1703,7 @@ namespace pvpgn
 					{
 						bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
 						std::string msgtemp = localize(c, "This account has been locked");
-						msgtemp += account_get_locktext(account, true);
+						msgtemp += account_get_locktext(c, account, true);
 						packet_append_string(rpacket, msgtemp.c_str());
 					}
 					else {
@@ -2131,7 +2131,7 @@ namespace pvpgn
 					eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
 					bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_CUSTOM);
 					std::string msgtemp = localize(c, "This account has been locked");
-					msgtemp += account_get_locktext(account, true);
+					msgtemp += account_get_locktext(c, account, true);
 					packet_append_string(rpacket, msgtemp.c_str());
 				}
 				else {

@@ -687,7 +687,7 @@ namespace pvpgn
 			{
 				std::string msgtemp;
 				msgtemp = localize(me, "You can't talk on the channel. Your account has been muted");
-				msgtemp += account_get_mutetext(acc, false);
+				msgtemp += account_get_mutetext(me, acc, false);
 				message_send_text(me, message_type_error, me, msgtemp);
 				return;
 			}
