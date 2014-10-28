@@ -5385,19 +5385,22 @@ namespace pvpgn
 			{
 				short gametype;
 				short length;
-				char const *data;
+				const char * data;
+				std::string data_s;
 
 				gametype = bn_int_get(packet->u.client_extrawork.gametype);
 				length = bn_int_get(packet->u.client_extrawork.length);
 
-				if (!(data = packet_get_str_const(packet, sizeof(t_client_extrawork), 1024))) {
+				if (!(data = (const char *)packet_get_raw_data_const(packet, sizeof(t_client_extrawork)))) {
 					eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad EXTRAWORK packet (missing or too long data)", conn_get_socket(c));
 					return -1;
 				}
-				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] Received EXTRAWORK packet with GameType: %d and Length: %d (%s)", conn_get_socket(c), gametype, length, data);
+				// extract substring with given length
+				data_s = std::string(data).substr(0, -1);
+				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] Received EXTRAWORK packet with GameType: %d and Length: %d (%s)", conn_get_socket(c), gametype, length, data_s.c_str());
 			
 	#ifdef WITH_LUA
-				lua_handle_client_extrawork(c, gametype, length, data);
+				lua_handle_client_extrawork(c, gametype, length, data_s.c_str());
 	#endif
 			}
 			return 0;
