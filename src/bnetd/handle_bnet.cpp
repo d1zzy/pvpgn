@@ -5396,7 +5396,7 @@ namespace pvpgn
 					return -1;
 				}
 				// extract substring with given length
-				data_s = std::string(data).substr(0, -1);
+				data_s = std::string(data).substr(0, length);
 				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] Received EXTRAWORK packet with GameType: %d and Length: %d (%s)", conn_get_socket(c), gametype, length, data_s.c_str());
 			
 	#ifdef WITH_LUA
