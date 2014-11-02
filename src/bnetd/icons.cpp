@@ -59,9 +59,11 @@ namespace pvpgn
 	{
 
 		static t_list * icon_head = NULL;
-		// TODO: wrapper to get value
+		/* use prefs_get_custom_icons() for this option */
 		static int enable_custom_icons = 0;
-
+		/* command groups for master users */
+		static int master_commandgroups = 0;
+		#define MASTER_COMMANDGROUPS_DEFAULT 8; /* default group flags if master_commandgroups is undefined */
 
 		static int skip_comments(char *buff);
 		static t_icon_var_info * _read_option(char *str, unsigned lineno);
@@ -105,9 +107,9 @@ namespace pvpgn
 			// split command args
 			std::vector<std::string> args = split_command(text, 3);
 
-			if (!(account_is_operator_or_admin(conn_get_account(c), channel_name)))
+			if (!((master_commandgroups & account_get_command_groups(conn_get_account(c)))))
 			{
-				/* Simple command syntax for users */
+				/* A) Simple command syntax for users */
 
 				iconname = args[1].c_str();  // icon code
 
@@ -209,7 +211,7 @@ namespace pvpgn
 				return 0;
 			}
 
-			/* Complex command syntax for operator and admins */
+			/* B) Complex command syntax for operator and admins */
 
 			if (args[1].empty())
 			{
@@ -714,6 +716,26 @@ namespace pvpgn
 							enable_custom_icons = 1;
 						else
 							enable_custom_icons = 0;
+
+					if (std::strcmp(option->key, "master_commandgroups") == 0)
+					{
+						// convert string groups from config to integer
+						for (int i = 0; i < strlen(option->value); i++)
+						{
+							if (option->value[i] == '1') master_commandgroups |= 1;
+							else if (option->value[i] == '2') master_commandgroups |= 2;
+							else if (option->value[i] == '3') master_commandgroups |= 4;
+							else if (option->value[i] == '4') master_commandgroups |= 8;
+							else if (option->value[i] == '5') master_commandgroups |= 16;
+							else if (option->value[i] == '6') master_commandgroups |= 32;
+							else if (option->value[i] == '7') master_commandgroups |= 64;
+							else if (option->value[i] == '8') master_commandgroups |= 128;
+						}
+					}
+					// set default value if not defined
+					if (master_commandgroups == 0)
+						master_commandgroups = MASTER_COMMANDGROUPS_DEFAULT;
+
 				}
 
 
