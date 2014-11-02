@@ -4382,6 +4382,8 @@ namespace pvpgn
 					ladderList_active = ladders.getLadderList(LadderKey(id, clienttag, sort, ladder_time_active));
 					ladderList_current = ladders.getLadderList(LadderKey(id, clienttag, sort, ladder_time_current));
 				}
+				if (!ladderList_active || ladderList_current)
+					error = true;
 
 				for (i = start; i < start + count; i++) {
 
