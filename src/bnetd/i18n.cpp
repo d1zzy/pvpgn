@@ -175,7 +175,7 @@ namespace pvpgn
 			{ "PER", "esES" },
 			{ "PRI", "esES" },
 			{ "URY", "esES" },
-			{ "VEN", "esES" },
+			{ "VEN", "esES" }
 		};
 
 		int convert_utf8_to_windows1251(const char* utf8, char* windows1251, size_t n);
@@ -434,7 +434,8 @@ namespace pvpgn
 						clienttag == CLIENTTAG_DIABLORTL_UINT || clienttag == CLIENTTAG_DIABLOSHR_UINT || clienttag == CLIENTTAG_WARCIIBNE_UINT)
 					{
 						convert_utf8_to_windows1251(buf, buf, MAX_MESSAGE_LEN);
-						convert_windows1252_to_utf8(buf);
+						if (clienttag != CLIENTTAG_WARCIIBNE_UINT)
+							convert_windows1252_to_utf8(buf);
 					}
 					break;
 
