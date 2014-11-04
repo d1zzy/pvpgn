@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 1999  Ross Combs (rocombs@cs.nmsu.edu)
  * Copyright (C) 2005 Dizzy
+ * Copyright (C) 2014 HarpyWar
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -217,10 +218,12 @@ namespace pvpgn
 				bn_int bntag;
 				if (strcasecmp(ext.c_str(), "pcx") == 0)
 					bn_int_tag_set(&bntag, EXTENSIONTAG_PCX);
-				else if (strcasecmp(ext.c_str(), "mng") == 0)
-					bn_int_tag_set(&bntag, EXTENSIONTAG_MNG);
 				else if (strcasecmp(ext.c_str(), "smk") == 0)
 					bn_int_tag_set(&bntag, EXTENSIONTAG_SMK);
+				else if (strcasecmp(ext.c_str(), "png") == 0)
+					bn_int_tag_set(&bntag, EXTENSIONTAG_MNG);
+				else if (strcasecmp(ext.c_str(), "mng") == 0)
+					bn_int_tag_set(&bntag, EXTENSIONTAG_MNG);
 				else {
 					ERROR1("unknown extension on filename \"%s\"", fname.c_str());
 					return;
@@ -298,12 +301,15 @@ namespace pvpgn
 				throw SystemError("open");
 			}
 
-			unsigned delay;
-			unsigned next_id;
-			unsigned id;
+			// FIXME: (HarpyWar) this value is unused, because game clients retrieve ads in interval of ~20 seconds;
+			//                   I think this is normal delay
+			unsigned delay = 30; 
 
-			std::string name, when, link, client, lang;
+			std::vector<std::map<std::string, std::string>> tmplist;
+
+			std::string name, link, client, lang;
 			std::string buff;
+			// 1) Read ad.conf file
 			for (unsigned line = 1; std::getline(fp, buff); ++line)
 			{
 				std::string::size_type idx(buff.find('#'));
@@ -315,15 +321,11 @@ namespace pvpgn
 				std::istringstream is(buff);
 
 				is >> name;
-				is >> id;
-				is >> when;
-				is >> delay;
 				is >> link;
-				is >> std::hex >> next_id;
 				is >> client;
 				is >> lang;
 
-				if (!is || name.size() < 2 || link.size() < 2 || client.size() < 2 || lang.size() < 2 || id < 1)
+				if (!is || name.size() < 2 || link.size() < 2 || client.size() < 2 || lang.size() < 2)
 				{
 					ERROR2("malformed line %u in file \"%s\"", line, fname.c_str());
 					continue;
@@ -338,20 +340,78 @@ namespace pvpgn
 				lang.erase(0, 1);
 				lang.erase(lang.size() - 1);
 
-				if (when == "init")
-					insert(adlist_init, name, id, delay, link, next_id, client, lang);
-				else if (when == "start")
-					insert(adlist_start, name, id, delay, link, next_id, client, lang);
-				else if (when == "norm")
-					insert(adlist_norm, name, id, delay, link, next_id, client, lang);
-				else
-					/*
-								ERROR4("when field has unknown value on line %u in file \"%s\": \"%s\" when == init: %d", line, fname.c_str(), when.c_str(), when == "init");
-								*/
-								eventlog(eventlog_level_error, __FUNCTION__, "when field has unknown value on line %u in file \"%s\": \"%s\" when == init: %d", line, fname.c_str(), when.c_str(), when == "init");
+				std::map<std::string, std::string> item;
+				item["name"] = name;
+				item["link"] = link;
+				item["client"] = client;
+				item["lang"] = lang;
+				tmplist.push_back(item);
+			}
+
+			unsigned id = 0;
+			int init_count = 0;
+
+			bool first = true;
+			std::map<std::string, int> tmpdata;
+			AdCtagRefMap when;
+			unsigned next_id;
+
+			// insert ads
+			for (std::vector<std::map<std::string, std::string>>::iterator it = tmplist.begin(); it != tmplist.end(); ++it)
+			{
+				id++;
+				tmpdata = get_rowdata(id, (*it)["client"], tmplist, init_count);
+				next_id = tmpdata["next_id"];
+
+				if ((*it)["client"] == CLIENTTAG_WAR3XP || (*it)["client"] == CLIENTTAG_WARCRAFT3)
+				{
+					// warcraft 3 doesn't return previous ad id in SID_CHECKAD, and we must process all ADs as "init"
+					// so they will be shown randomly
+					insert(adlist_init, (*it)["name"], id, delay, (*it)["link"], id + 1, (*it)["client"], (*it)["lang"]);
+				}
+				else if (tmpdata["when"] == 1)
+				{
+					init_count++;
+					// "init"
+					insert(adlist_init, (*it)["name"], id, delay, (*it)["link"], id+1, (*it)["client"], (*it)["lang"]);
+					id++;
+					// and duplicate the same ad in "start"
+					insert(adlist_start, (*it)["name"], id, delay, (*it)["link"], ++next_id, (*it)["client"], (*it)["lang"]);
+				}
+				else if (tmpdata["when"] > 1)
+				{
+					insert(adlist_norm, (*it)["name"], id, delay, (*it)["link"], next_id, (*it)["client"], (*it)["lang"]);
+				}
+
+				
 			}
 		}
 
+		std::map<std::string, int> AdBannerComponent::get_rowdata(int id, std::string client, std::vector<std::map<std::string, std::string>> templist, int init_count)
+		{
+			std::vector<std::string> clients;
+			std::map<std::string, int> data;
+
+			int tmpid = init_count;
+			// find clienttag
+			for (std::vector<std::map<std::string, std::string>>::iterator it = templist.begin(); it != templist.end(); ++it)
+			{
+				tmpid++;
+				if ((*it)["client"] == client)
+				{
+					if (tmpid <= id)
+						data["when"]++;
+
+					// set next_id if value is not greater of max size
+					if (tmpid > id)
+					{
+						data["next_id"] = tmpid;
+						break;
+					}
+				}
+			}
+			return data;
+		}
 
 		AdBannerComponent::~AdBannerComponent() throw()
 		{}
