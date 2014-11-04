@@ -84,7 +84,7 @@ namespace pvpgn
 			const AdBanner* findRandom(const AdCtagRefMap& where, AdKey adKey) const;
 			const AdBanner* randomFinder(const AdCtagRefMap& where, AdKey adKey) const;
 			void insert(AdCtagRefMap& where, const std::string& fname, unsigned id, unsigned delay, const std::string& link, unsigned next_id, const std::string& client, const std::string& lang);
-			std::map<std::string, int> get_rowdata(int id, std::string client, std::vector<std::map<std::string, std::string>> templist, int init_count);
+			std::map<std::string, int> get_rowdata(int id, std::string client, std::vector<std::map<std::string, std::string> > templist, int init_count);
 		};
 
 		extern scoped_ptr<AdBannerComponent> adbannerlist;

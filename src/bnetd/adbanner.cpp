@@ -305,7 +305,7 @@ namespace pvpgn
 			//                   I think this is normal delay
 			unsigned delay = 30; 
 
-			std::vector<std::map<std::string, std::string>> tmplist;
+			std::vector<std::map<std::string, std::string> > tmplist;
 
 			std::string name, link, client, lang;
 			std::string buff;
@@ -357,7 +357,7 @@ namespace pvpgn
 			unsigned next_id;
 
 			// insert ads
-			for (std::vector<std::map<std::string, std::string>>::iterator it = tmplist.begin(); it != tmplist.end(); ++it)
+			for (std::vector<std::map<std::string, std::string> >::iterator it = tmplist.begin(); it != tmplist.end(); ++it)
 			{
 				id++;
 				tmpdata = get_rowdata(id, (*it)["client"], tmplist, init_count);
@@ -387,14 +387,14 @@ namespace pvpgn
 			}
 		}
 
-		std::map<std::string, int> AdBannerComponent::get_rowdata(int id, std::string client, std::vector<std::map<std::string, std::string>> templist, int init_count)
+		std::map<std::string, int> AdBannerComponent::get_rowdata(int id, std::string client, std::vector<std::map<std::string, std::string> > templist, int init_count)
 		{
 			std::vector<std::string> clients;
 			std::map<std::string, int> data;
 
 			int tmpid = init_count;
 			// find clienttag
-			for (std::vector<std::map<std::string, std::string>>::iterator it = templist.begin(); it != templist.end(); ++it)
+			for (std::vector<std::map<std::string, std::string> >::iterator it = templist.begin(); it != templist.end(); ++it)
 			{
 				tmpid++;
 				if ((*it)["client"] == client)
