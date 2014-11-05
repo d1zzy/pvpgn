@@ -375,15 +375,14 @@ namespace pvpgn
 					// "init"
 					insert(adlist_init, (*it)["name"], id, delay, (*it)["link"], id+1, (*it)["client"], (*it)["lang"]);
 					id++;
+					if (next_id > 0) next_id++;
 					// and duplicate the same ad in "start"
-					insert(adlist_start, (*it)["name"], id, delay, (*it)["link"], ++next_id, (*it)["client"], (*it)["lang"]);
+					insert(adlist_start, (*it)["name"], id, delay, (*it)["link"], next_id, (*it)["client"], (*it)["lang"]);
 				}
 				else if (tmpdata["when"] > 1)
 				{
 					insert(adlist_norm, (*it)["name"], id, delay, (*it)["link"], next_id, (*it)["client"], (*it)["lang"]);
 				}
-
-				
 			}
 		}
 
