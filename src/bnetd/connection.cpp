@@ -137,16 +137,7 @@ namespace pvpgn
 					}
 				}
 				else {
-					INFO1("motd file %s not found, sending default motd file", lang_filename.c_str());
-					if (fp = std::fopen(filename, "r"))  {
-						message_send_file(c, fp);
-						if (std::fclose(fp) < 0) {
-							eventlog(eventlog_level_error, __FUNCTION__, "could not close MOTD file \"%s\" after reading (std::fopen: %s)", filename, std::strerror(errno));
-						}
-					}
-					else {
-						eventlog(eventlog_level_error, __FUNCTION__, "could not open MOTD file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
-					}
+					eventlog(eventlog_level_error, __FUNCTION__, "could not open MOTD file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
 				}
 			}
 			c->protocol.cflags |= conn_flags_welcomed;
@@ -1269,7 +1260,7 @@ namespace pvpgn
 				return; /* only war3 & w3xp have gamelang */
 
 			if (!tag_check_gamelang(gamelang)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got UNKNOWN gamelang");
+				eventlog(eventlog_level_warn, __FUNCTION__, "got UNKNOWN gamelang");
 				return;
 			}
 			if (c->protocol.client.gamelang != gamelang)

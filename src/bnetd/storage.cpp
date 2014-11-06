@@ -42,7 +42,7 @@ namespace pvpgn
 
 		extern int storage_init(const char *spath)
 		{
-			char *temp, *p;
+			char *p;
 			int res;
 			char dstr[256];
 
@@ -51,10 +51,8 @@ namespace pvpgn
 				return -1;
 			}
 
-			temp = xstrdup(spath);
 			if ((p = std::strchr((char *)spath, ':')) == NULL) {
 				eventlog(eventlog_level_error, __FUNCTION__, "malformed storage_path , driver not found");
-				xfree((void*)temp);
 				return -1;
 			}
 
@@ -83,8 +81,6 @@ namespace pvpgn
 				eventlog(eventlog_level_fatal, __FUNCTION__, "no known driver specified (%s)", spath);
 				res = -1;
 			}
-
-			xfree((void*)temp);
 
 			return res;
 		}
