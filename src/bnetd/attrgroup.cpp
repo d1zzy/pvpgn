@@ -103,6 +103,9 @@ namespace pvpgn
 			attrlayer_del_loadedlist(&attrgroup->loadedlist);
 
 #ifdef WITH_SQL
+			for (std::vector<const char *>::iterator it = attrgroup->loadedtabs->begin(); it != attrgroup->loadedtabs->end(); ++it)
+				xfree((void*)(*it));
+
 			// clear loaded tabs
 			attrgroup->loadedtabs->clear();
 #endif
@@ -232,7 +235,7 @@ namespace pvpgn
 			if (uid == defuid)
 				return 2;
 
-			// do not flush online users (but flash if FORCE)
+			// do not flush online users (but flush if FORCE!)
 			if (!prefs_get_user_flush_connected() && !FLAG_ISSET(flags, FS_FORCE))
 			{
 				if (const char * username = attrgroup_get_attr(attrgroup, "BNET\\acct\\username"))
@@ -272,6 +275,8 @@ namespace pvpgn
 				// add a tab if it's not found
 				if (!is_found)
 					attrgroup->loadedtabs->push_back(tab);
+				else
+					xfree((void*)tab);
 			}
 #endif
 			// set loaded attribute without a dirty flag
@@ -395,9 +400,11 @@ namespace pvpgn
 			/* only if the callers tell us to */
 			if (escape) *pkey = attrgroup_escape_key(*pkey);
 
+			const char * tab = key_get_tab(*pkey);
 			/* trigger loading of attributes if not loaded already */
-			if (attrgroup_load(attrgroup, key_get_tab(*pkey)))
+			if (attrgroup_load(attrgroup, tab))
 				return NULL;	/* eventlog happens earlier */
+			xfree((void*)tab);
 
 			/* we are doing attribute lookup so we are accessing it */
 			attrgroup_set_accessed(attrgroup);
