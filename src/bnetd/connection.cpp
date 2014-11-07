@@ -2529,7 +2529,7 @@ namespace pvpgn
 
 			// allow set icon to a user directly from the database (override default tag always if not null)
 			if (usericon = account_get_user_icon(account, clienttag))
-				std::sprintf(revtag, usericon);
+				std::sprintf(revtag, "%s", usericon);
 
 			// if custom_icons is enabled then set a custom client tag by player rating
 			if (prefs_get_custom_icons() == 1)

@@ -104,12 +104,12 @@ static char * write_to_pidfile(void)
 {
 	char *pidfile = xstrdup(d2dbs_prefs_get_pidfile());
 
-	if (pidfile[0] == '\0') {
-		xfree((void *)pidfile); /* avoid warning */
-		return NULL;
-	}
-
-	if (pidfile) {
+	if (pidfile)
+	{
+		if (pidfile[0] == '\0') {
+			xfree((void *)pidfile); /* avoid warning */
+			return NULL;
+		}
 #ifdef HAVE_GETPID
 		std::FILE * fp;
 

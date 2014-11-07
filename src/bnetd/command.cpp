@@ -2983,11 +2983,11 @@ namespace pvpgn
 			cbdata.c = c;
 			cbdata.lobby = false;
 
-			if (difficulty == "norm")
+			if (strcasecmp(difficulty, "norm") == 0)
 				cbdata.diff = game_difficulty_normal;
-			else if (difficulty == "night")
+			else if (strcasecmp(difficulty, "night") == 0)
 				cbdata.diff = game_difficulty_nightmare;
-			else if (difficulty == "hell")
+			else if (strcasecmp(difficulty, "hell") == 0)
 				cbdata.diff = game_difficulty_hell;
 			else
 				cbdata.diff = game_difficulty_none;
@@ -3385,7 +3385,7 @@ namespace pvpgn
 
 			// do not display sex if empty
 			std::string pattern = "Login: {} {} Sex: {}";
-			pattern = (account_get_sex(account) && strcmp(account_get_sex(account), "") == -1)
+			pattern = (account_get_sex(account) && strlen(account_get_sex(account)) > 0)
 				? pattern
 				: pattern.substr(0, pattern.find("Sex: ", 0));
 
@@ -3433,12 +3433,12 @@ namespace pvpgn
 
 			// do not display age if empty
 			pattern = "Location: {} Age: {}";
-			pattern = (account_get_age(account) && strcmp(account_get_age(account), "") == -1)
+			pattern = (account_get_age(account) && strlen(account_get_age(account)) > 0)
 						? pattern 
 						: pattern.substr(0, pattern.find("Age: ", 0));
 			const char * loc = account_get_loc(account);
 			msgtemp = localize(c, pattern.c_str(),
-				(loc && strcmp(loc, "") == -1) ? loc : "unknown",
+				(loc && strlen(loc) > 0) ? loc : "unknown",
 				account_get_age(account));
 			message_send_text(c, message_type_info, c, msgtemp);
 
@@ -3977,7 +3977,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft %s  %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal),
@@ -3986,7 +3986,7 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft active  %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
@@ -4011,7 +4011,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active  %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_BROODWARS_UINT, ladder_id_normal),
@@ -4020,7 +4020,7 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_BROODWARS_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active  %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
@@ -4045,7 +4045,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active  %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal),
@@ -4054,14 +4054,14 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active  %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman, clienttag, ladder_sort_highestrated, ladder_time_active));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active   %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman),
@@ -4070,7 +4070,7 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active   %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
@@ -4093,7 +4093,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current  %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman),
@@ -4102,7 +4102,7 @@ namespace pvpgn
 						account_get_ladder_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current  %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 			}
 			// --> aaron
@@ -4112,42 +4112,42 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo   %5u: %-20.20s %u/%u/0",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo %5u: %-20.20s %u/%u/0",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, clienttag, ladder_id_solo),
 						account_get_ladder_losses(account, clienttag, ladder_id_solo));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo   %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_team, clienttag, ladder_sort_default, ladder_time_default));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team   %5u: %-20.20s %u/%u/0",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team %5u: %-20.20s %u/%u/0",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, clienttag, ladder_id_team),
 						account_get_ladder_losses(account, clienttag, ladder_id_team));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team   %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ffa, clienttag, ladder_sort_default, ladder_time_default));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA   %5u: %-20.20s %u/%u/0",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA %5u: %-20.20s %u/%u/0",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, clienttag, ladder_id_ffa),
 						account_get_ladder_losses(account, clienttag, ladder_id_ffa));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA   %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ateam, clienttag, ladder_sort_default, ladder_time_default));
@@ -4159,7 +4159,7 @@ namespace pvpgn
 						xstr_cat_str(membernames, account_get_name(team_get_member(team, i)));
 						if ((i)) xstr_cat_char(membernames, ',');
 					}
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team   %5u: %-80.80s %u/%u/0",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team %5u: %-80.80s %u/%u/0",
 						rank,
 						xstr_get_str(membernames),
 						team_get_wins(team),
@@ -4167,7 +4167,7 @@ namespace pvpgn
 					xstr_free(membernames);
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team  %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 			}
 			//<---
@@ -4807,7 +4807,8 @@ namespace pvpgn
 
 			std::vector<std::string> args = split_command(text, 3);
 			// display help if [list] without [username], or not [list] without [groups]
-			if (((args[1] == "list" || args[1] == "l") && args[2].empty()) || !(args[1] == "list" || args[1] == "l") && args[3].empty())
+			if ( ((args[1] == "list" || args[1] == "l") && args[2].empty()) 
+				|| (!(args[1] == "list" || args[1] == "l") && args[3].empty()) )
 			{
 				describe_command(c, args[0].c_str());
 				return -1;

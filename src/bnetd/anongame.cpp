@@ -565,7 +565,7 @@ namespace pvpgn
 				t_connection *temp;
 				int level[ANONGAME_MAX_TEAMS];
 				int teams = _anongame_totalteams(queue);	/* number of teams */
-				int ppt = players[queue] / teams;	/* players per team */
+				int ppt = (teams > 0) ? (players[queue] / teams) : 0;	/* players per team */
 
 				for (i = 0; i < ANONGAME_MAX_TEAMS; i++)
 					level[i] = 0;
@@ -848,7 +848,10 @@ namespace pvpgn
 								a = conn_get_anongame(md->c);
 
 								/* add all the players on the team to player[][] */
-								for (i = 0; i < _anongame_totalplayers(queue) / _anongame_totalteams(queue); i++) {
+								int totalplayers = _anongame_totalplayers(queue);
+								int totalteams = _anongame_totalteams(queue);
+								int totalcount = (totalteams > 0) ? totalplayers / totalteams : 0;
+								for (i = 0; i < totalcount; i++) {
 									player[queue][teams + i * _anongame_totalteams(queue)] = a->tc[i];
 									players[queue]++;
 								}
@@ -1269,14 +1272,15 @@ namespace pvpgn
 					 * this should work for all PG team games
 					 * [Omega] */
 					k = i + 1;
-					for (j = 0; j < (tp / tt); j++) {
+					int _count = (tt > 0) ? tp / tt : 0;
+					for (j = 0; j < _count; j++) {
 						for (l = 0; l < (tt - 1); l++) {
 							oppon_level[i] += account_get_ladder_level(a->info->account[k % tp], ct, ladder_id_team);
 							k++;
 						}
 						k++;
 					}
-					oppon_level[i] /= (tp / tt * (tt - 1));
+					oppon_level[i] /= (_count * (tt - 1));
 				}
 			}
 

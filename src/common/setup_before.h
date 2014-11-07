@@ -266,7 +266,7 @@ const char * const BNTRACKD_LOGFILE = "logs/bntrackd.log";
 /***************************************************************/
 /* default values for W3XP anongameinfo packet */
 
-const char * const PVPGN_DEFAULT_URL = "www.pvpgn.org";
+const char * const PVPGN_DEFAULT_URL = "www.pvpgn.pro";
 
 const char * const PVPGN_PG_1V1_DESC = "Solo Games";
 const char * const PVPGN_AT_2V2_DESC = "2 player team";

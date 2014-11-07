@@ -105,7 +105,7 @@ namespace pvpgn
 					temp = 0;
 					packet_append_data(rpacket, &temp, 1);
 
-					/* need to add clan stuff here:
+					/* UNDONE: need to add clan stuff here:
 					 format:
 					 bn_int	ladder_tag (SNLC, 2NLC, 3NLC, 4NLC)
 					 bn_int	wins
@@ -921,7 +921,7 @@ namespace pvpgn
 			 *
 			 * not sure if there is overall winner packet sent at end of last final round
 			 */
-
+			// UNDONE: next two conditions never executed
 			else if ((0)) { /* User in finals - Shows user stats and start of next round*/
 				bn_byte_set(&rpacket->u.server_anongame_tournament_reply.type, 6);
 				bn_byte_set(&rpacket->u.server_anongame_tournament_reply.unknown, 0);

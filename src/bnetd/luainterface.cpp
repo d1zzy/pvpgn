@@ -557,7 +557,7 @@ namespace pvpgn
 		extern const char * lua_handle_user_icon(t_connection * c, const char * iconinfo)
 		{
 			t_account * account;
-			const char * result;
+			const char * result = NULL;
 			try
 			{
 				if (!(account = conn_get_account(c)))

@@ -79,6 +79,10 @@ namespace pvpgn
 		// add new line at the end of log file
 		extern void userlog_append(t_account * account, const char * text)
 		{
+			// is logging enabled?
+			if (!prefs_get_log_commands())
+				return;
+			
 			unsigned int groups = 0;
 			const char * cglist = prefs_get_log_command_groups();
 
@@ -99,11 +103,11 @@ namespace pvpgn
 			if (!account_is_operator_or_admin(account, NULL) && !(account_get_command_groups(account) & groups))
 				return;
 
-			bool is_found = false;
+			bool is_cmd_found = false;
 
 			// if command list empty then log all commands
 			if (userlog_commands.size() == 0)
-				is_found = true; 
+				is_cmd_found = true;
 			else
 			{
 				// get command name
@@ -114,12 +118,12 @@ namespace pvpgn
 				for (std::vector<std::string>::iterator it = userlog_commands.begin(); it != userlog_commands.end(); ++it) {
 					if (*it == cmd)
 					{
-						is_found = true;
+						is_cmd_found = true;
 						break;
 					}
 				}
 			}
-			if (!is_found)
+			if (!is_cmd_found)
 				return;
 
 			// get time string

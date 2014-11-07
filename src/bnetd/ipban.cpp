@@ -668,7 +668,7 @@ namespace pvpgn
 				}
 				counter++;
 				if (entry->endtime == 0)
-					std::sprintf(timestr, localize(c, "(perm)").c_str());
+					std::sprintf(timestr, "%s", localize(c, "(perm)").c_str());
 				else
 					std::sprintf(timestr, "(%.48s)", seconds_to_timestr(entry->endtime - now));
 

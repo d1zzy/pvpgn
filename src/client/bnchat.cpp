@@ -811,7 +811,7 @@ extern int main(int argc, char * argv[])
 	bn_int_set(&packet->u.client_fileinforeq.type, CLIENT_FILEINFOREQ_TYPE_TOS);
 	bn_int_set(&packet->u.client_fileinforeq.unknown2, CLIENT_FILEINFOREQ_UNKNOWN2);
 
-	if ((user.clienttag == CLIENTTAG_DIABLO2DV) || (user.clienttag == CLIENTTAG_DIABLO2XP))
+	if (strcasecmp(user.clienttag, CLIENTTAG_DIABLO2DV) == 0 || strcasecmp(user.clienttag, CLIENTTAG_DIABLO2XP) == 0)
 		packet_append_string(packet, CLIENT_FILEINFOREQ_FILE_TOSUNICODEUSA);
 	else
 		packet_append_string(packet, CLIENT_FILEINFOREQ_FILE_TOSUSA);

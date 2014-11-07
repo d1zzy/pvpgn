@@ -1630,6 +1630,7 @@ namespace pvpgn
 
 			}
 
+			// first player will be added here
 			if ((i == game->count) || (game->count == 0))
 			{
 

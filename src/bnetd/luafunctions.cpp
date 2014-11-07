@@ -564,13 +564,12 @@ namespace pvpgn
 		extern int __server_get_games(lua_State* L)
 		{
 			std::vector<std::map<std::string, std::string> > games;
-			t_game * game;
-
 			try
 			{
 				lua::stack st(L);
 
 				t_elist *   curr;
+				t_game * game;
 				elist_for_each(curr, gamelist())
 				{
 					if (game = elist_entry(curr, t_game, glist_link))

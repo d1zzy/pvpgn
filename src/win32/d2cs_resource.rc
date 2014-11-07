@@ -32,7 +32,7 @@ BEGIN
     CTEXT           D2CS_VERSION_STRING,IDC_STATIC,15,25,210,15
     CTEXT           "coded by the PvPGN Team",IDC_STATIC,15,40,210,15
     CTEXT           "- - - - - - - - - - - - - - -",IDC_STATIC,15,55,210,15
-    CTEXT           "visit us @ www.pvpgn.org or",IDC_STATIC,15,70,210,15
+    CTEXT           "visit us @ www.pvpgn.pro or",IDC_STATIC,15,70,210,15
     CTEXT           "irc.pvpgn.org #pvpgn",IDC_STATIC,15,80,210,15
     CTEXT           "©2002 ©2003 ©2004 PvPGN Is a Open Source Project",IDC_STATIC,15,100,210,15
     CTEXT           "As specified by the GPL",IDC_STATIC,15,110,210,15

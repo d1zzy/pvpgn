@@ -1627,7 +1627,7 @@ namespace pvpgn
 		{
 			t_packet * p;
 			char data[MAX_IRC_MESSAGE_LEN + 1];
-			unsigned len;
+			unsigned len = 0;
 
 			p = packet_create(packet_class_raw);
 

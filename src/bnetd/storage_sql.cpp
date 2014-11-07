@@ -588,7 +588,6 @@ namespace pvpgn
 			for (idx = 0, p = (char *)newkey; *p; p++, idx++)
 			if (*p == '\\' || *p == '`' || *p == '"' || *p == '\'') {
 				newkey = xstrdup(key);
-				newkey = xstrdup(key);
 				p = (char *)(newkey + idx);
 				*(p++) = '_';
 				for (; *p; p++)

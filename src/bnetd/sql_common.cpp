@@ -219,7 +219,7 @@ namespace pvpgn
 
 			sql->close();
 			sql = NULL;
-			if (tab_prefix != SQL_DEFAULT_PREFIX) {
+			if (strcmp(tab_prefix, SQL_DEFAULT_PREFIX) != 0) {
 				xfree((void*)tab_prefix);
 				tab_prefix = NULL;
 			}

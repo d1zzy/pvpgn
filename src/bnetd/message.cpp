@@ -1375,11 +1375,15 @@ namespace pvpgn
 				return -1;
 			}
 
-			for (i = 0; i < message->num_cached; i++)
-			if (message->packets[i])
-				packet_del_ref(message->packets[i]);
 			if (message->packets)
+			{
+				for (i = 0; i < message->num_cached; i++)
+				{
+					if (message->packets[i])
+						packet_del_ref(message->packets[i]);
+				}
 				xfree(message->packets);
+			}
 			if (message->classes)
 				xfree(message->classes);
 			if (message->dstflags)
@@ -1407,11 +1411,16 @@ namespace pvpgn
 
 			cclass = conn_get_class(dst);
 			mclass = conn_get_message_class(message->src, dst);
-			for (i = 0; i < message->num_cached; i++)
-			if (message->classes[i] == cclass && message->dstflags[i] == dstflags
-				&& message->mclasses[i] == mclass)
-				return message->packets[i];
 
+			if (message->classes && message->mclasses && message->packets)
+			{
+				for (i = 0; i < message->num_cached; i++)
+				{
+					if (message->classes[i] == cclass && message->dstflags[i] == dstflags
+						&& message->mclasses[i] == mclass)
+						return message->packets[i];
+				}
+			}
 			{
 				t_packet * *   temp_packets;
 				t_conn_class * temp_classes;
