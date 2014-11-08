@@ -1398,7 +1398,7 @@ namespace pvpgn
 
 		static t_packet * message_cache_lookup(t_message * message, t_connection *dst, unsigned int dstflags)
 		{
-			unsigned int i;
+			unsigned int i = 0;
 			t_packet * packet;
 			t_message_class mclass;
 			t_conn_class cclass;
@@ -1412,7 +1412,7 @@ namespace pvpgn
 			cclass = conn_get_class(dst);
 			mclass = conn_get_message_class(message->src, dst);
 
-			if (message->classes && message->mclasses && message->packets)
+			if (message->classes && message->mclasses && message->packets && message->dstflags)
 			{
 				for (i = 0; i < message->num_cached; i++)
 				{

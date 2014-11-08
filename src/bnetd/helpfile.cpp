@@ -176,7 +176,7 @@ namespace pvpgn
 						std::strcpy(buffer + position, p); position += std::strlen(p);
 						if (al)
 						{
-							for (; p[i + 1] == ' ' && p[i + 1] != '#'; i++); /* skip spaces */
+							for (; p[i + 1] == ' '; i++); /* skip spaces */
 							if (p[i + 1] == '\0' || p[i + 1] == '#')
 							{
 								al = 0; continue;

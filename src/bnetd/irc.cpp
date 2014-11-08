@@ -1481,19 +1481,18 @@ namespace pvpgn
 				return 0;
 			}
 
-			e = irc_get_listelems(params[1]);
+			if (e = irc_get_listelems(params[1]))
+			{
+				/* Make standart PvPGN KICK from RFC2812 KICK */
+				if (text)
+					snprintf(temp, sizeof(temp), "/kick %s %s", e[0], text);
+				else
+					snprintf(temp, sizeof(temp), "/kick %s", e[0]);
 
-			/* Make standart PvPGN KICK from RFC2812 KICK */
-			if (text)
-				snprintf(temp, sizeof(temp), "/kick %s %s", e[0], text);
-			else
-				snprintf(temp, sizeof(temp), "/kick %s", e[0]);
+				handle_command(conn, temp);
 
-			handle_command(conn, temp);
-
-			if (e)
 				irc_unget_listelems(e);
-
+			}
 			return 0;
 		}
 
