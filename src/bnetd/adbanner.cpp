@@ -204,6 +204,8 @@ namespace pvpgn
 				bn_int_tag_set(&bntag, EXTENSIONTAG_PCX);
 			else if (strcasecmp(ext.c_str(), "mng") == 0)
 				bn_int_tag_set(&bntag, EXTENSIONTAG_MNG);
+			else if (strcasecmp(ext.c_str(), "png") == 0)
+				bn_int_tag_set(&bntag, EXTENSIONTAG_MNG);
 			else if (strcasecmp(ext.c_str(), "smk") == 0)
 				bn_int_tag_set(&bntag, EXTENSIONTAG_SMK);
 			else {
