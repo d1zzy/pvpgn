@@ -581,27 +581,26 @@ namespace pvpgn
 			the same position	on the packet*/
 			desired_icon = bn_int_get(packet->u.client_findanongame.count);
 			//user_icon[4]=0;
-			if (desired_icon==0){
-			std::strcpy(user_icon,"1O3W"); // 103W is equal to Default Icon
-			eventlog(eventlog_level_info,__FUNCTION__,"[%d] Set icon packet to DEFAULT ICON [%4.4s]",conn_get_socket(c),user_icon);
-			}else{
-
-
-			std::memcpy(user_icon,&desired_icon,4);
-			eventlog(eventlog_level_info,__FUNCTION__,"[%d] Set icon packet to ICON [%s]",conn_get_socket(c),user_icon);
+			if (desired_icon == 0){
+				std::strcpy(user_icon, "1O3W"); // 103W is equal to Default Icon
+				eventlog(eventlog_level_info, __FUNCTION__, "[%d] Set icon packet to DEFAULT ICON [%4.4s]", conn_get_socket(c), user_icon);
+			}
+			else{
+				std::memcpy(user_icon, &desired_icon, 4);
+				eventlog(eventlog_level_info, __FUNCTION__, "[%d] Set icon packet to ICON [%s]", conn_get_socket(c), user_icon);
 			}
 
 			account = conn_get_account(c);
-
-
-			if (check_user_icon(account,user_icon) == 0)
+			
+			// ICON SWITCH HACK PROTECTION
+			if (check_user_icon(account, user_icon) == 0)
 			{
-				std::strcpy(user_icon,"1O3W"); // set icon to default
-				eventlog(eventlog_level_info,__FUNCTION__,"[%s] \"%s\" ICON SWITCH hack attempt, icon set to default ", conn_get_username(c),user_icon);
-				//conn_set_state(c,conn_state_destroy); // kill user session
+				std::strcpy(user_icon, "1O3W"); // set icon to default
+				eventlog(eventlog_level_info, __FUNCTION__, "[%s] \"%s\" ICON SWITCH hack attempt, icon set to default ", conn_get_username(c), user_icon);
+				//conn_set_state(c,conn_state_destroy); // dont kill user session
 			}
 
-			account_set_user_icon(conn_get_account(c),conn_get_clienttag(c),user_icon);
+			account_set_user_icon(conn_get_account(c), conn_get_clienttag(c), user_icon);
 			//FIXME: Still need a way to 'refresh the user/channel'
 			//_handle_rejoin_command(conn_get_account(c),"");
 			/* ??? channel_update_userflags() */
@@ -611,6 +610,7 @@ namespace pvpgn
 			return 0;
 		}
 
+		/* Check user choice for illegal icon */
 		// check user for illegal icon
 		// Modified by aancw 16/12/2014 
 		static int check_user_icon(t_account * account, const char * user_icon)
@@ -622,25 +622,26 @@ namespace pvpgn
 
 			len = std::strlen(user_icon);
 			if (len != 4)
-			eventlog(eventlog_level_error,__FUNCTION__,"got invalid user icon '%s'",user_icon);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid user icon '%s'", user_icon);
 
-			for (i=0; i<len && i < 2; i++)
+			for (i = 0; i < len && i < 2; i++)
 				temp_str[i] = user_icon[i];
 
-			number = temp_str[0]-'0';
+			number = temp_str[0] - '0';
 			user_race = temp_str[1];
 
 
-			int race[]={W3_RACE_RANDOM,W3_RACE_HUMANS,W3_RACE_ORCS,W3_RACE_UNDEAD,W3_RACE_NIGHTELVES,W3_RACE_DEMONS};
-			char race_char[6] = {'R','H','O','U','N','D'};
-			int icon_pos[5] = {2,3,4,5,6};
-			int icon_req_wins[5] = {25, 150, 350, 750, 1500};
-			int icon_req_wins_tourney[5] = {10,75,150,250,500};
+			int race[] = { W3_RACE_RANDOM, W3_RACE_HUMANS, W3_RACE_ORCS, W3_RACE_UNDEAD, W3_RACE_NIGHTELVES, W3_RACE_DEMONS };
+			char race_char[6] = { 'R', 'H', 'O', 'U', 'N', 'D' };
+			int icon_pos[5] = { 2, 3, 4, 5, 6 };
+			int icon_req_wins[5] = { 25, 150, 350, 750, 1500 };
+			int icon_req_wins_tourney[5] = { 10, 75, 150, 250, 500};
 
 			for (int i = 0; i < sizeof(race_char); i++)
 			{
 				if (user_race == race_char[i])
 				{
+					// Client will got DCed because of different req win normal and tournament
 					// Check if race is tournament or not
 					// Tournament req wins is different than normal icon
 					
@@ -650,7 +651,7 @@ namespace pvpgn
 						{
 							if (number == icon_pos[j])
 							{
-								// compare account race wins and require wins for tourney icon
+								// compare account race wins and require wins for tournament icon
 								if (account_get_racewins( account, race[i], account_get_ll_clienttag(account) ) >= icon_req_wins_tourney[j])
 									return 1;
 
@@ -660,6 +661,7 @@ namespace pvpgn
 					
 					}else
 					{
+						// When normal icon
 						for (int j = 0; j < sizeof(icon_pos); j++)
 						{
 							if (number == icon_pos[j])
