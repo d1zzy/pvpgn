@@ -9,6 +9,7 @@
 #define IDR_MENU                        104
 #define IDM_SAVE                        105
 #define IDM_RESTART                     106
+#define IDM_RESTART_LUA                 101
 #define IDM_SHUTDOWN                    107
 #define IDM_EXIT                        108
 #define IDM_CLEAR                       109

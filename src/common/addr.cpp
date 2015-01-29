@@ -155,7 +155,6 @@ namespace pvpgn
 
 		temp = (t_addr*)xmalloc(sizeof(t_addr));
 		temp->str = xstrdup(addr_num_to_addr_str(ipaddr, port));
-		temp->str = NULL;
 		temp->ip = ipaddr;
 		temp->port = port;
 		temp->data.p = NULL;

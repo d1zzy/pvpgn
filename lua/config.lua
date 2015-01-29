@@ -9,6 +9,14 @@
 -- Config table can be extended here with your own variables
 -- values are preloaded from bnetd.conf
 config = {
+	-- Path to "var" directory (with slash at the end)
+	-- Usage: config.vardir()
+	vardir = function()
+		return string.replace(config.statusdir, "status", "")
+	end,
+
+	flood_immunity_users = { "admin", "" }, -- ignore flood protection for these users
+
 	-- Quiz settings
 	quiz = true,
 	quiz_filelist = "misc, dota, warcraft", -- display available files in "/quiz start"
@@ -22,6 +30,12 @@ config = {
 	-- AntiHack (Starcraft)
 	ah = true,
 	ah_interval = 60, -- interval for send memory request to all players in games
-	
+
+	-- GHost++ (https://github.com/OHSystem/ohsystem)
+	ghost = false, -- enable GHost commands
+	ghost_bots = { "hostbot1", "hostbot2" }, -- list of authorized bots
+	ghost_dota_server = true, -- replace normal Warcraft 3 stats with DotA
+	ghost_ping_expire = 90, -- interval when outdated botpings should be removed (bot ping updates for each user when he join a game hosted by ghost); game list shows to user depending on the best ping to host bot
+
 }
 

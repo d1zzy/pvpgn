@@ -240,9 +240,9 @@ namespace pvpgn
 				}
 
 				if (first)
-					snprintf(msgtemp, sizeof(msgtemp), "%.64s topic: %.128s", channel_name, token);
+					snprintf(msgtemp, sizeof(msgtemp), "%.64s topic: %s", channel_name, token);
 				else
-					snprintf(msgtemp, sizeof(msgtemp), token);
+					snprintf(msgtemp, sizeof(msgtemp), "%s", token);
 
 				message_send_text(c, message_type_info, c, msgtemp);
 

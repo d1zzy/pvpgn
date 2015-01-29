@@ -175,7 +175,7 @@ namespace pvpgn
 			{ "PER", "esES" },
 			{ "PRI", "esES" },
 			{ "URY", "esES" },
-			{ "VEN", "esES" },
+			{ "VEN", "esES" }
 		};
 
 		int convert_utf8_to_windows1251(const char* utf8, char* windows1251, size_t n);
@@ -277,9 +277,6 @@ namespace pvpgn
 
 				output = fmt::format(format, args);
 
-				char* p = (char*)calloc(30, sizeof(char));
-				strcpy(p, "Hello world");
-
 				char tmp[MAX_MESSAGE_LEN];
 				strcpy(tmp, output.c_str());
 
@@ -288,7 +285,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				ERROR2("Can't format translation string \"%s\" (%s)", fmt, e.what());
+				WARN2("Can't format translation string \"%s\" (%s)", fmt, e.what());
 			}
 
 			return output;
@@ -432,11 +429,17 @@ namespace pvpgn
 			switch (gamelang)
 			{
 				case GAMELANG_RUSSIAN_UINT:
-					// Starcraft, Diablo 1, Warcraft 2
+					// All Blizzard games except Warcraft 3
 					if (clienttag == CLIENTTAG_STARCRAFT_UINT || clienttag == CLIENTTAG_BROODWARS_UINT || clienttag == CLIENTTAG_STARJAPAN_UINT || clienttag == CLIENTTAG_SHAREWARE_UINT ||
-						clienttag == CLIENTTAG_DIABLORTL_UINT || clienttag == CLIENTTAG_DIABLOSHR_UINT || clienttag == CLIENTTAG_WARCIIBNE_UINT)
+						clienttag == CLIENTTAG_DIABLORTL_UINT || clienttag == CLIENTTAG_DIABLOSHR_UINT || clienttag == CLIENTTAG_WARCIIBNE_UINT ||
+						clienttag == CLIENTTAG_DIABLO2DV_UINT || clienttag == CLIENTTAG_DIABLO2XP_UINT)
 					{
 						convert_utf8_to_windows1251(buf, buf, MAX_MESSAGE_LEN);
+					}
+					// There is an additional conversion in Starcraft and Diablo 2
+					if (clienttag == CLIENTTAG_STARCRAFT_UINT || clienttag == CLIENTTAG_BROODWARS_UINT || clienttag == CLIENTTAG_STARJAPAN_UINT || clienttag == CLIENTTAG_SHAREWARE_UINT ||
+						clienttag == CLIENTTAG_DIABLO2DV_UINT || clienttag == CLIENTTAG_DIABLO2XP_UINT)
+					{
 						convert_windows1252_to_utf8(buf);
 					}
 					break;

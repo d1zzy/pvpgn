@@ -1248,7 +1248,7 @@ namespace pvpgn
 			if (motd_failed) {
 				irc_send(conn, RPL_MOTDSTART, ":- Failed to load motd, sending default motd              ");
 				irc_send(conn, RPL_MOTD, ":- ====================================================== ");
-				irc_send(conn, RPL_MOTD, ":-                 http://www.pvpgn.org                   ");
+				irc_send(conn, RPL_MOTD, ":-                 http://www.pvpgn.pro                   ");
 				irc_send(conn, RPL_MOTD, ":- ====================================================== ");
 			}
 			irc_send(conn, RPL_ENDOFMOTD, ":End of /MOTD command");
@@ -1422,20 +1422,22 @@ namespace pvpgn
 			char ** e = NULL;
 			char temp[MAX_IRC_MESSAGE_LEN];
 
-			if ((conn_get_wol(conn) == 1) && (params[0])) {
-				t_channel * channel = conn_get_channel(conn);
+			if (params && params[0])
+			{
+				if (conn_get_wol(conn) == 1) {
+					t_channel * channel = conn_get_channel(conn);
 
-				if (channel)
-					channel_set_topic(channel_get_name(channel), text, NO_SAVE_TOPIC);
-				else {
-					snprintf(temp, sizeof(temp), "%s :You're not on that channel", params[0]);
-					irc_send(conn, ERR_NOTONCHANNEL, temp);
+					if (channel)
+						channel_set_topic(channel_get_name(channel), text, NO_SAVE_TOPIC);
+					else {
+						snprintf(temp, sizeof(temp), "%s :You're not on that channel", params[0]);
+						irc_send(conn, ERR_NOTONCHANNEL, temp);
+					}
 				}
+				e = irc_get_listelems(params[0]);
 			}
-
-			if (params != NULL) e = irc_get_listelems(params[0]);
-
-			if ((e) && (e[0])) {
+			if ((e) && (e[0])) 
+			{
 				t_channel *channel = conn_get_channel(conn);
 
 				if (channel) {
@@ -1479,19 +1481,18 @@ namespace pvpgn
 				return 0;
 			}
 
-			e = irc_get_listelems(params[1]);
+			if (e = irc_get_listelems(params[1]))
+			{
+				/* Make standart PvPGN KICK from RFC2812 KICK */
+				if (text)
+					snprintf(temp, sizeof(temp), "/kick %s %s", e[0], text);
+				else
+					snprintf(temp, sizeof(temp), "/kick %s", e[0]);
 
-			/* Make standart PvPGN KICK from RFC2812 KICK */
-			if (text)
-				snprintf(temp, sizeof(temp), "/kick %s %s", e[0], text);
-			else
-				snprintf(temp, sizeof(temp), "/kick %s", e[0]);
+				handle_command(conn, temp);
 
-			handle_command(conn, temp);
-
-			if (e)
 				irc_unget_listelems(e);
-
+			}
 			return 0;
 		}
 

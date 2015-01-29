@@ -5,13 +5,16 @@
 	Licensed under the same terms as Lua itself.
 ]]--
 
-
--- this function executes after preload all the lua scripts
+-- Entry point
+-- Executes after preload all the lua files
 function main()
 	
-	-- start antihack
 	if (config.ah) then
+		-- start antihack
 		ah_init()
 	end
-
+	
+	if (config.ghost) then
+		gh_load()
+	end
 end

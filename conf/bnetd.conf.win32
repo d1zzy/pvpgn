@@ -19,11 +19,10 @@
 #  storage_path = file:mode=plain;dir=<path_to_user_files>;clan=<path_to_clan_files>;team=<path_to_team_files>;default=/path/to/default/account #
 # * for cdb file driver:                                                     #
 #  storage_path = file:mode=cdb;dir=<path_to_cdb_files>;clan=<path_to_clan_files>;team=<path_to_team_files>;default=/path/to/default/account   #
-# * for sql/sql2 driver:                                                     #
+# * for sql driver:                                                          #
 #  storage_path = sql:variable=value;...;default=0 (0 is the default uid)    #
-# or storage_path = sql2:variable=value;...;default=0 (0 is the default uid) #
 #                                                                            #
-# Variables for sql/sql2 can be:                                             #
+# Variables for sql can be:                                                  #
 # - "mode" : tells PVPGN the sql mode you will use (mysql/pgsql/etc..)       #
 # - "host" : the database host                                               #
 # - "port" : the TCP/IP port if needed                                       #
@@ -41,10 +40,6 @@
 # storage_path = sql:mode=pgsql;host=127.0.0.1;name=pvpgn;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn_
 # storage_path = sql:mode=sqlite3;name=var\users.db;default=0;prefix=pvpgn_
 # storage_path = sql:mode=odbc;name=PVPGN;prefix=pvpgn_
-# storage_path = sql2:mode=mysql;host=127.0.0.1;name=PVPGN;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn_
-# storage_path = sql2:mode=pgsql;host=127.0.0.1;name=pvpgn;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn_
-# storage_path = sql2:mode=sqlite3;name=var\users.db;default=0;prefix=pvpgn_
-# storage_path = sql2:mode=odbc;name=PVPGN;prefix=pvpgn_
 #----------------------------------------------------------------------------#
 
 storage_path = file:mode=plain;dir=var\users;clan=var\clans;team=var\teams;default=conf\bnetd_default_user.plain
@@ -62,6 +57,7 @@ filedir     = files
 scriptdir   = lua
 reportdir   = var\reports
 chanlogdir  = var\chanlogs
+userlogdir  = var\userlogs
 i18ndir     = conf\i18n
 issuefile   = conf\bnissue.txt
 channelfile = conf\channel.conf
@@ -86,7 +82,6 @@ DBlayoutfile = conf\sql_DB_layout.conf
 supportfile = conf\supportfile.conf
 customicons_file = conf\icons.conf
 
-fortunecmd  = bin\fortune.exe
 
 #                                                                            #
 ##############################################################################
@@ -155,7 +150,6 @@ allow_d2cs_setname = true
 # the "filedir" directory specified above.
 iconfile = "icons.bni"
 war3_iconfile = "icons-WAR3.bni"
-star_iconfile = "icons_STAR.bni"
 
 #                                                                            #
 ##############################################################################
@@ -242,13 +236,15 @@ version_exeinfo_maxdiff = 0
 usersync  = 300
 # Number of seconds of inactivity before file is unloaded from memory.
 # (only checked during account file updates)
-userflush = 1200
+userflush = 3600
 # Number of users checked for updates at once. Higher values make sense if you 
 # either have very fast hardware or you don't have many number of accounts.
 # Lower values make sense if you have very high CPU usage on the system you run
 # the server (dont make it too low or your system will save accounts continously).
 # Modify this value ONLY if you know what you are doing!!
 userstep = 100
+# Flush connected users? Set "false" and they will never flushed untill logout (it will consume more memory but less CPU usage, because of no queries to a file)
+userflush_connected = true
 
 # How often to send user latency tests in seconds.
 latency = 600
@@ -640,3 +636,20 @@ clan_channel_default_private = 0
 # without accepted invitations need. This does not affect WAR3/W3XP ingame
 # clan management.
 clan_min_invites = 2
+
+###############################################################################
+# user commands logging                                                       #
+#-----------------------------------------------------------------------------#
+
+# Should commands from users be logged to files in the userlogdir?
+log_commands = true
+
+# Commands will be logged for users with these command groups
+# (global operators and admins are included)
+log_command_groups = 2345678
+
+# List of commands that will be logged
+# can be defined by connecting them with a comma (,)
+# set empty to log all commands
+log_command_list = ""
+

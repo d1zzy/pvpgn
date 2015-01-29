@@ -90,6 +90,7 @@
 #include "topic.h"
 #include "handle_apireg.h"
 #include "i18n.h"
+#include "userlog.h"
 #include "common/setup_after.h"
 
 #ifdef WITH_LUA
@@ -274,11 +275,13 @@ char * write_to_pidfile(void)
 {
 	char *pidfile = xstrdup(prefs_get_pidfile());
 
-	if (pidfile[0] == '\0') {
-		xfree((void *)pidfile); /* avoid warning */
-		return NULL;
-	}
-	if (pidfile) {
+	if (pidfile)
+	{
+		if (pidfile[0] == '\0') {
+			xfree((void *)pidfile); /* avoid warning */
+			return NULL;
+		}
+
 #ifdef HAVE_GETPID
 		std::FILE * fp;
 
@@ -384,6 +387,7 @@ int pre_server_startup(void)
 	if (realmlist_create(prefs_get_realmfile()) < 0)
 		eventlog(eventlog_level_error, __FUNCTION__, "could not load realm list");
 	topiclist_load(prefs_get_topicfile());
+	userlog_init();
 
 #ifdef WITH_LUA
 	lua_load(prefs_get_scriptdir());

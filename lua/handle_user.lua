@@ -10,11 +10,27 @@ function handle_user_whisper(account_src, account_dst, text)
 	--DEBUG(account_src.name.."->"..account_dst.name.. ": ".. text)
 	--return 1;
 end
+
 function handle_user_login(account)
+	if (config.ghost) then
+		gh_handle_user_login(account)
+	end
+	
+	-- send SID_REQUIREDWORK
+	--if account.archtag == ARCHTAG_WINX86 then
+	--	api.client_requiredwork(account.name, "IX86ExtraWork.mpq")
+	--end
+	
 	--DEBUG(account.name.." logged in")
 	--return 1;
 end
+
 function handle_user_disconnect(account)
 	--DEBUG(account.name.." disconnected")
+end
+
+function handle_user_icon(account, iconinfo)
+	--TRACE("iconinfo"..iconinfo)
+	--return iconinfo
 end
 

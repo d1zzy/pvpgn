@@ -129,7 +129,7 @@ function quiz:stop(username)
 
 		quiz_display_top_players()
 	else
-		-- if records.txt is empty then save first records
+		-- if quiz_records.txt is empty then save first records
 		q_records_total = q_records_current
 	end
 	q_save_records()

@@ -15,7 +15,7 @@ function command_redirect(account, text)
 	
 	if not args[1] or not args[2] then
 		api.describe_command(account.name, args[0])
-		return 1
+		return -1
 	end
 	
 	-- get destination account
@@ -23,10 +23,10 @@ function command_redirect(account, text)
 
 	if next(dest) == nil or dest.online == "false" then
 		api.message_send_text(account.name, message_type_error, account.name, localize(account.name, "User \"{}\" is offline", args[1]))
-		return 1
+		return -1
 	end
 	
 	api.message_send_text(dest.name, message_type_info, dest.name, args[2])
 	
-	return 1
+	return 0
 end

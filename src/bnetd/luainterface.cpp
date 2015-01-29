@@ -15,6 +15,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+#define GAME_INTERNAL_ACCESS
 #ifdef WITH_LUA
 #include "common/setup_before.h"
 
@@ -24,7 +25,7 @@
 #include <cerrno>
 #include <cstring>
 #include <cstdlib>
-
+#include <cmath>
 
 #include "compat/strcasecmp.h"
 #include "compat/snprintf.h"
@@ -94,7 +95,7 @@ namespace pvpgn
 					vm.load_file(files[i].c_str());
 
 					snprintf(_msgtemp, sizeof(_msgtemp), "%s", files[i].c_str());
-					eventlog(eventlog_level_trace, __FUNCTION__, _msgtemp);
+					eventlog(eventlog_level_info, __FUNCTION__, _msgtemp);
 				}
 
 				_register_functions();
@@ -131,7 +132,9 @@ namespace pvpgn
 				{ "account_get_friends", __account_get_friends },
 				{ "account_get_teams", __account_get_teams },
 				{ "clan_get_members", __clan_get_members },
+
 				{ "game_get_by_id", __game_get_by_id },
+				{ "game_get_by_name", __game_get_by_name },
 
 				{ "channel_get_by_id", __channel_get_by_id },
 
@@ -141,6 +144,7 @@ namespace pvpgn
 
 				{ "client_kill", __client_kill },
 				{ "client_readmemory", __client_readmemory },
+				{ "client_requiredwork", __client_requiredwork },
 
 				{ "command_get_group", __command_get_group },
 				{ "icon_get_rank", __icon_get_rank },
@@ -173,6 +177,7 @@ namespace pvpgn
 				config.update("scriptdir", prefs_get_scriptdir());
 				config.update("reportdir", prefs_get_reportdir());
 				config.update("chanlogdir", prefs_get_chanlogdir());
+				config.update("userlogdir", prefs_get_userlogdir());
 				config.update("localizefile", prefs_get_localizefile());
 				config.update("motdfile", prefs_get_motdfile());
 				config.update("motdw3file", prefs_get_motdw3file());
@@ -206,7 +211,6 @@ namespace pvpgn
 				config.update("allow_d2cs_setname", prefs_allow_d2cs_setname());
 				config.update("iconfile", prefs_get_iconfile());
 				config.update("war3_iconfile", prefs_get_war3_iconfile());
-				config.update("star_iconfile", prefs_get_star_iconfile());
 				config.update("tosfile", prefs_get_tosfile());
 				config.update("allowed_clients", prefs_get_allowed_clients());
 				config.update("skip_versioncheck", prefs_get_skip_versioncheck());
@@ -216,6 +220,7 @@ namespace pvpgn
 				config.update("version_exeinfo_maxdiff", prefs_get_version_exeinfo_maxdiff());
 				config.update("usersync", prefs_get_user_sync_timer());
 				config.update("userflush", prefs_get_user_flush_timer());
+				config.update("userflush_connected", prefs_get_user_flush_connected());
 				config.update("userstep", prefs_get_user_step());
 				config.update("latency", prefs_get_latency());
 				config.update("nullmsg", prefs_get_nullmsg());
@@ -294,6 +299,10 @@ namespace pvpgn
 				config.update("clan_max_members", prefs_get_clan_max_members());
 				config.update("clan_channel_default_private", prefs_get_clan_channel_default_private());
 				config.update("clan_min_invites", prefs_get_clan_min_invites());
+				config.update("log_commands", prefs_get_log_commands());
+				config.update("log_command_groups", prefs_get_log_command_groups());
+				config.update("log_command_list", prefs_get_log_command_list());
+
 			}
 
 		}
@@ -305,17 +314,29 @@ namespace pvpgn
 		/* Lua Events (called from scripts) */
 #ifndef _LUA_EVENTS_
 
-		extern int lua_handle_command(t_connection * c, char const * text)
+		extern int lua_handle_command(t_connection * c, char const * text, t_luaevent_type luaevent)
 		{
 			t_account * account;
-			int result = 0;
+			const char * func_name;
+			int result = -2;
+			switch (luaevent)
+			{
+			case luaevent_command:
+				func_name = "handle_command";
+				break;
+			case luaevent_command_before:
+				func_name = "handle_command_before";
+				break;
+			default:
+				return result;
+			}
 			try
 			{
 				if (!(account = conn_get_account(c)))
-					return 0;
+					return -2;
 
 				std::map<std::string, std::string> o_account = get_account_object(account);
-				lua::transaction(vm) << lua::lookup("handle_command") << o_account << text << lua::invoke >> result << lua::end; // invoke lua function
+				lua::transaction(vm) << lua::lookup(func_name) << o_account << text << lua::invoke >> result << lua::end; // invoke lua function
 
 			}
 			catch (const std::exception& e)
@@ -328,8 +349,6 @@ namespace pvpgn
 			}
 			return result;
 		}
-
-
 
 		extern void lua_handle_game(t_game * game, t_connection * c, t_luaevent_type luaevent)
 		{
@@ -389,6 +408,53 @@ namespace pvpgn
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
 			}
+		}
+
+		std::vector<t_game*> lua_handle_game_list(t_connection * c)
+		{
+			t_account * account;
+			std::vector<std::string> columns, data;
+			std::vector<t_game*> result;
+			try
+			{
+				if (!(account = conn_get_account(c)))
+					return result;
+
+				std::map<std::string, std::string> o_account = get_account_object(account);
+				lua::transaction(vm) << lua::lookup("handle_game_list") << o_account << lua::invoke >> columns >> data << lua::end; // invoke lua function
+			
+				// check consistency of data and columns
+				if (columns.size() == 0 || columns.size() != data.size() || std::floor((float)(data.size() / columns.size())) != (data.size() / columns.size()))
+					return result;
+
+				// fill map result
+				for (std::vector<std::string>::size_type i = 1; i < data.size(); i += columns.size())
+				{
+					// init empty game struct
+					t_game * game = (t_game*)xmalloc(sizeof(t_game));
+					game->id = 0;
+					game->name = NULL;
+
+					// next columns 
+					for (int j = 1; j < columns.size(); j++)
+					{
+						if (columns[j] == "id")
+							game->id = atoi(data[i+j-1].c_str());
+						else if (columns[j] == "name")
+							game->name = xstrdup(data[i + j - 1].c_str());
+					}
+					result.push_back(game);
+				}
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return result;
 		}
 
 
@@ -488,6 +554,30 @@ namespace pvpgn
 			return result;
 		}
 
+		extern const char * lua_handle_user_icon(t_connection * c, const char * iconinfo)
+		{
+			t_account * account;
+			const char * result = NULL;
+			try
+			{
+				if (!(account = conn_get_account(c)))
+					return 0;
+				std::map<std::string, std::string> o_account = get_account_object(account);
+
+				lua::transaction(vm) << lua::lookup("handle_user_icon") << o_account << iconinfo << lua::invoke >> result << lua::end; // invoke lua function
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+			return result;
+		}
+
+
 
 		extern void lua_handle_server(t_luaevent_type luaevent)
 		{
@@ -499,6 +589,9 @@ namespace pvpgn
 				break;
 			case luaevent_server_mainloop:
 				func_name = "handle_server_mainloop"; // one time per second
+				break;
+			case luaevent_server_rehash:
+				func_name = "handle_server_rehash"; // when restart Lua VM
 				break;
 			default:
 				return;
@@ -517,18 +610,9 @@ namespace pvpgn
 			}
 		}
 
-		extern void lua_handle_client(t_connection * c, int request_id, std::vector<int> data, t_luaevent_type luaevent)
+		extern void lua_handle_client_readmemory(t_connection * c, int request_id, std::vector<int> data)
 		{
 			t_account * account;
-			const char * func_name;
-			switch (luaevent)
-			{
-			case luaevent_client_readmemory:
-				func_name = "handle_client_readmemory";
-				break;
-			default:
-				return;
-			}
 			try
 			{
 				if (!(account = conn_get_account(c)))
@@ -536,7 +620,29 @@ namespace pvpgn
 
 				std::map<std::string, std::string> o_account = get_account_object(account);
 
-				lua::transaction(vm) << lua::lookup(func_name) << o_account << request_id << data << lua::invoke << lua::end; // invoke lua function
+				lua::transaction(vm) << lua::lookup("handle_client_readmemory") << o_account << request_id << data << lua::invoke << lua::end; // invoke lua function
+			}
+			catch (const std::exception& e)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, e.what());
+			}
+			catch (...)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "lua exception\n");
+			}
+		}
+
+		extern void lua_handle_client_extrawork(t_connection * c, int gametype, int length, const char * data)
+		{
+			t_account * account;
+			try
+			{
+				if (!(account = conn_get_account(c)))
+					return;
+
+				std::map<std::string, std::string> o_account = get_account_object(account);
+
+				lua::transaction(vm) << lua::lookup("handle_client_extrawork") << o_account << gametype << length << data << lua::invoke << lua::end; // invoke lua function
 			}
 			catch (const std::exception& e)
 			{

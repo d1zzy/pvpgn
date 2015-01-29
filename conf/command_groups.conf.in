@@ -165,6 +165,7 @@
 #		but will allow them to make themselves Server Admin & Server Operator.
 
 6	/operator /admin /flag /tag
+6	/log
 
 7	/set
 7	/commandgroups /cg

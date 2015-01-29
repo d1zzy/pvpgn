@@ -45,7 +45,7 @@ namespace pvpgn
 		static t_list * tournament_head = NULL;
 
 		static int tournamentlist_create(void);
-		static int gamelist_destroy(void);
+		static int _gamelist_destroy(void);
 		static t_tournament_user * tournament_get_user(t_account * account);
 		//static int tournament_get_in_game_status(t_account * account);
 
@@ -56,7 +56,7 @@ namespace pvpgn
 			return 0;
 		}
 
-		static int gamelist_destroy(void)
+		static int _gamelist_destroy(void)
 		{
 			t_elem *		curr;
 			t_tournament_user * user;
@@ -686,11 +686,14 @@ namespace pvpgn
 
 		extern int tournament_destroy(void)
 		{
-			if (tournament_info->format) xfree((void *)tournament_info->format);
-			if (tournament_info->sponsor) xfree((void *)tournament_info->sponsor);
-			if (tournament_info) xfree((void *)tournament_info);
+			if (tournament_info)
+			{
+				if (tournament_info->format) xfree((void *)tournament_info->format);
+				if (tournament_info->sponsor) xfree((void *)tournament_info->sponsor);
+				xfree((void *)tournament_info);
+			}
 			tournament_info = NULL;
-			gamelist_destroy();
+			_gamelist_destroy();
 			return 0;
 		}
 

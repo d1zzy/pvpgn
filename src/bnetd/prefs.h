@@ -49,6 +49,7 @@ namespace pvpgn
 		extern char const * prefs_get_DBlayoutfile(void);
 		extern unsigned int prefs_get_user_sync_timer(void);
 		extern unsigned int prefs_get_user_flush_timer(void);
+		extern unsigned int prefs_get_user_flush_connected(void);
 		extern unsigned int prefs_get_user_step(void);
 		extern char const * prefs_get_hostname(void);
 		extern char const * prefs_get_servername(void);
@@ -79,7 +80,6 @@ namespace pvpgn
 		extern char const * prefs_get_pidfile(void);
 		extern char const * prefs_get_iconfile(void);
 		extern char const * prefs_get_war3_iconfile(void);
-		extern char const * prefs_get_star_iconfile(void);
 		extern char const * prefs_get_tosfile(void);
 		extern char const * prefs_get_mpqauthfile(void);
 		extern char const * prefs_get_mpqfile(void);
@@ -91,10 +91,10 @@ namespace pvpgn
 		extern char const * prefs_get_ipbanfile(void);
 		extern unsigned int prefs_get_discisloss(void);
 		extern char const * prefs_get_helpfile(void);
-		extern char const * prefs_get_fortunecmd(void);
 		extern char const * prefs_get_transfile(void);
 		extern unsigned int prefs_get_chanlog(void);
 		extern char const * prefs_get_chanlogdir(void);
+		extern char const * prefs_get_userlogdir(void);
 		extern unsigned int prefs_get_quota(void);
 		extern unsigned int prefs_get_quota_lines(void);
 		extern unsigned int prefs_get_quota_time(void);
@@ -180,6 +180,9 @@ namespace pvpgn
 		extern unsigned int prefs_get_sync_on_logoff(void);
 		extern char const * prefs_get_irc_network_name(void);
 		extern unsigned int prefs_get_localize_by_country(void);
+		extern unsigned int prefs_get_log_commands(void);
+		extern char const * prefs_get_log_command_groups(void);
+		extern char const * prefs_get_log_command_list(void);
 
 		/**
 		*  Westwood Online Extensions

@@ -30,6 +30,8 @@
 # Enable icon sets below
 custom_icons = true
 
+# Command groups for master users who can manage icons of other users (allowed: 12345678)
+master_commandgroups = 678
 
 
 ##############################################################################
@@ -79,7 +81,7 @@ diablo		DRTL
 
 ##############################################################################
 # Starcraft icon set                                                         #
-# Use Bni Icon Builder to edit icons.bni (icons_STAR.bni is not used)        #
+# Use Bni Icon Builder to edit icons.bni                                     #
 #  https://github.com/HarpyWar/bni-icon-builder                              #
 #----------------------------------------------------------------------------#
 

@@ -55,6 +55,7 @@ namespace pvpgn
 
 			unsigned int usersync;
 			unsigned int userflush;
+			unsigned int userflush_connected;
 			unsigned int userstep;
 
 			char const * servername;
@@ -84,7 +85,6 @@ namespace pvpgn
 			unsigned int report_diablo_games;
 			char const * iconfile;
 			char const * war3_iconfile;
-			char const * star_iconfile;
 			char const * tosfile;
 			char const * mpqfile;
 			char const * trackaddrs;
@@ -96,10 +96,10 @@ namespace pvpgn
 			char const * ipbanfile;
 			unsigned int disc_is_loss;
 			char const * helpfile;
-			char const * fortunecmd;
 			char const * transfile;
 			unsigned int chanlog;
 			char const * chanlogdir;
+			char const * userlogdir;
 			unsigned int quota;
 			unsigned int quota_lines;
 			unsigned int quota_time;
@@ -164,6 +164,9 @@ namespace pvpgn
 			unsigned int sync_on_logoff;
 			char const * irc_network_name;
 			unsigned int localize_by_country;
+			unsigned int log_commands;
+			char const * log_command_groups;
+			char const * log_command_list;
 
 			char const * apiregaddrs;
 			char const * wolv1addrs;
@@ -244,6 +247,10 @@ namespace pvpgn
 		static int conf_set_userflush(const char *valstr);
 		static const char *conf_get_userflush(void);
 		static int conf_setdef_userflush(void);
+
+		static int conf_set_userflush_connected(const char *valstr);
+		static const char *conf_get_userflush_connected(void);
+		static int conf_setdef_userflush_connected(void);
 
 		static int conf_set_userstep(const char *valstr);
 		static const char *conf_get_userstep(void);
@@ -353,10 +360,6 @@ namespace pvpgn
 		static const char *conf_get_war3_iconfile(void);
 		static int conf_setdef_war3_iconfile(void);
 
-		static int conf_set_star_iconfile(const char *valstr);
-		static const char *conf_get_star_iconfile(void);
-		static int conf_setdef_star_iconfile(void);
-
 		static int conf_set_tosfile(const char *valstr);
 		static const char *conf_get_tosfile(void);
 		static int conf_setdef_tosfile(void);
@@ -401,10 +404,6 @@ namespace pvpgn
 		static const char *conf_get_helpfile(void);
 		static int conf_setdef_helpfile(void);
 
-		static int conf_set_fortunecmd(const char *valstr);
-		static const char *conf_get_fortunecmd(void);
-		static int conf_setdef_fortunecmd(void);
-
 		static int conf_set_transfile(const char *valstr);
 		static const char *conf_get_transfile(void);
 		static int conf_setdef_transfile(void);
@@ -416,6 +415,10 @@ namespace pvpgn
 		static int conf_set_chanlogdir(const char *valstr);
 		static const char *conf_get_chanlogdir(void);
 		static int conf_setdef_chanlogdir(void);
+
+		static int conf_set_userlogdir(const char *valstr);
+		static const char *conf_get_userlogdir(void);
+		static int conf_setdef_userlogdir(void);
 
 		static int conf_set_quota(const char *valstr);
 		static const char *conf_get_quota(void);
@@ -669,6 +672,18 @@ namespace pvpgn
 		static const char *conf_get_localize_by_country(void);
 		static int conf_setdef_localize_by_country(void);
 
+		static int conf_set_log_commands(const char *valstr);
+		static const char *conf_get_log_commands(void);
+		static int conf_setdef_log_commands(void);
+
+		static int conf_set_log_command_groups(const char *valstr);
+		static const char *conf_get_log_command_groups(void);
+		static int conf_setdef_log_command_groups(void);
+
+		static int conf_set_log_command_list(const char *valstr);
+		static const char *conf_get_log_command_list(void);
+		static int conf_setdef_log_command_list(void);
+
 
 		static int conf_setdef_apireg_addrs(void);
 		static int conf_set_apireg_addrs(const char *valstr);
@@ -730,6 +745,7 @@ namespace pvpgn
 			{ "supportfile", conf_set_supportfile, conf_get_supportfile, conf_setdef_supportfile },
 			{ "usersync", conf_set_usersync, conf_get_usersync, conf_setdef_usersync },
 			{ "userflush", conf_set_userflush, conf_get_userflush, conf_setdef_userflush },
+			{ "userflush_connected", conf_set_userflush_connected, conf_get_userflush_connected, conf_setdef_userflush_connected },
 			{ "userstep", conf_set_userstep, conf_get_userstep, conf_setdef_userstep },
 			{ "servername", conf_set_servername, conf_get_servername, conf_setdef_servername },
 			{ "hostname", conf_set_hostname, conf_get_hostname, conf_setdef_hostname },
@@ -757,7 +773,6 @@ namespace pvpgn
 			{ "report_diablo_games", conf_set_report_diablo_games, conf_get_report_diablo_games, conf_setdef_report_diablo_games },
 			{ "iconfile", conf_set_iconfile, conf_get_iconfile, conf_setdef_iconfile },
 			{ "war3_iconfile", conf_set_war3_iconfile, conf_get_war3_iconfile, conf_setdef_war3_iconfile },
-			{ "star_iconfile", conf_set_star_iconfile, conf_get_star_iconfile, conf_setdef_star_iconfile },
 			{ "tosfile", conf_set_tosfile, conf_get_tosfile, conf_setdef_tosfile },
 			{ "mpqfile", conf_set_mpqfile, conf_get_mpqfile, conf_setdef_mpqfile },
 			{ "trackaddrs", conf_set_trackaddrs, conf_get_trackaddrs, conf_setdef_trackaddrs },
@@ -769,10 +784,10 @@ namespace pvpgn
 			{ "ipbanfile", conf_set_ipbanfile, conf_get_ipbanfile, conf_setdef_ipbanfile },
 			{ "disc_is_loss", conf_set_disc_is_loss, conf_get_disc_is_loss, conf_setdef_disc_is_loss },
 			{ "helpfile", conf_set_helpfile, conf_get_helpfile, conf_setdef_helpfile },
-			{ "fortunecmd", conf_set_fortunecmd, conf_get_fortunecmd, conf_setdef_fortunecmd },
 			{ "transfile", conf_set_transfile, conf_get_transfile, conf_setdef_transfile },
 			{ "chanlog", conf_set_chanlog, conf_get_chanlog, conf_setdef_chanlog },
 			{ "chanlogdir", conf_set_chanlogdir, conf_get_chanlogdir, conf_setdef_chanlogdir },
+			{ "userlogdir", conf_set_userlogdir, conf_get_userlogdir, conf_setdef_userlogdir },
 			{ "quota", conf_set_quota, conf_get_quota, conf_setdef_quota },
 			{ "quota_lines", conf_set_quota_lines, conf_get_quota_lines, conf_setdef_quota_lines },
 			{ "quota_time", conf_set_quota_time, conf_get_quota_time, conf_setdef_quota_time },
@@ -836,6 +851,9 @@ namespace pvpgn
 			{ "ladder_prefix", conf_set_ladder_prefix, conf_get_ladder_prefix, conf_setdef_ladder_prefix },
 			{ "irc_network_name", conf_set_irc_network_name, conf_get_irc_network_name, conf_setdef_irc_network_name },
 			{ "localize_by_country", conf_set_localize_by_country, conf_get_localize_by_country, conf_setdef_localize_by_country },
+			{ "log_commands", conf_set_log_commands, conf_get_log_commands, conf_setdef_log_commands },
+			{ "log_command_groups", conf_set_log_command_groups, conf_get_log_command_groups, conf_setdef_log_command_groups },
+			{ "log_command_list", conf_set_log_command_list, conf_get_log_command_list, conf_setdef_log_command_list },
 
 			{ "apiregaddrs", conf_set_apireg_addrs, conf_get_apireg_addrs, conf_setdef_apireg_addrs },
 			{ "wgameresaddrs", conf_set_wgameres_addrs, conf_get_wgameres_addrs, conf_setdef_wgameres_addrs },
@@ -1174,6 +1192,27 @@ namespace pvpgn
 		static const char* conf_get_userflush(void)
 		{
 			return conf_get_int(prefs_runtime_config.userflush);
+		}
+
+
+		extern unsigned int prefs_get_user_flush_connected(void)
+		{
+			return prefs_runtime_config.userflush_connected;
+		}
+
+		static int conf_set_userflush_connected(const char *valstr)
+		{
+			return conf_set_bool(&prefs_runtime_config.userflush_connected, valstr, 0);
+		}
+
+		static int conf_setdef_userflush_connected(void)
+		{
+			return conf_set_bool(&prefs_runtime_config.userflush_connected, NULL, 0);
+		}
+
+		static const char* conf_get_userflush_connected(void)
+		{
+			return conf_get_bool(prefs_runtime_config.userflush_connected);
 		}
 
 
@@ -1790,27 +1829,6 @@ namespace pvpgn
 		}
 
 
-		extern char const * prefs_get_star_iconfile(void)
-		{
-			return prefs_runtime_config.star_iconfile;
-		}
-
-		static int conf_set_star_iconfile(const char *valstr)
-		{
-			return conf_set_str(&prefs_runtime_config.star_iconfile, valstr, NULL);
-		}
-
-		static int conf_setdef_star_iconfile(void)
-		{
-			return conf_set_str(&prefs_runtime_config.star_iconfile, NULL, BNETD_STAR_ICON_FILE);
-		}
-
-		static const char* conf_get_star_iconfile(void)
-		{
-			return prefs_runtime_config.star_iconfile;
-		}
-
-
 		extern char const * prefs_get_tosfile(void)
 		{
 			return prefs_runtime_config.tosfile;
@@ -2042,27 +2060,6 @@ namespace pvpgn
 		}
 
 
-		extern char const * prefs_get_fortunecmd(void)
-		{
-			return prefs_runtime_config.fortunecmd;
-		}
-
-		static int conf_set_fortunecmd(const char *valstr)
-		{
-			return conf_set_str(&prefs_runtime_config.fortunecmd, valstr, NULL);
-		}
-
-		static int conf_setdef_fortunecmd(void)
-		{
-			return conf_set_str(&prefs_runtime_config.fortunecmd, NULL, BNETD_FORTUNECMD);
-		}
-
-		static const char* conf_get_fortunecmd(void)
-		{
-			return prefs_runtime_config.fortunecmd;
-		}
-
-
 		extern char const * prefs_get_transfile(void)
 		{
 			return prefs_runtime_config.transfile;
@@ -2123,6 +2120,27 @@ namespace pvpgn
 		static const char* conf_get_chanlogdir(void)
 		{
 			return prefs_runtime_config.chanlogdir;
+		}
+
+
+		extern char const * prefs_get_userlogdir(void)
+		{
+			return prefs_runtime_config.userlogdir;
+		}
+
+		static int conf_set_userlogdir(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.userlogdir, valstr, NULL);
+		}
+
+		static int conf_setdef_userlogdir(void)
+		{
+			return conf_set_str(&prefs_runtime_config.userlogdir, NULL, BNETD_USERLOG_DIR);
+		}
+
+		static const char* conf_get_userlogdir(void)
+		{
+			return prefs_runtime_config.userlogdir;
 		}
 
 
@@ -3505,6 +3523,70 @@ namespace pvpgn
 		{
 			return conf_get_bool(prefs_runtime_config.localize_by_country);
 		}
+
+
+		extern unsigned int prefs_get_log_commands(void)
+		{
+			return prefs_runtime_config.log_commands;
+		}
+
+		static int conf_set_log_commands(const char *valstr)
+		{
+			return conf_set_bool(&prefs_runtime_config.log_commands, valstr, 0);
+		}
+
+		static int conf_setdef_log_commands(void)
+		{
+			return conf_set_bool(&prefs_runtime_config.log_commands, NULL, 1);
+		}
+
+		static const char* conf_get_log_commands(void)
+		{
+			return conf_get_bool(prefs_runtime_config.log_commands);
+		}
+
+
+		extern char const * prefs_get_log_command_groups(void)
+		{
+			return prefs_runtime_config.log_command_groups;
+		}
+
+		static int conf_set_log_command_groups(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.log_command_groups, valstr, NULL);
+		}
+
+		static int conf_setdef_log_command_groups(void)
+		{
+			return conf_set_str(&prefs_runtime_config.log_command_groups, NULL, BNETD_LOG_COMMAND_GROUPS);
+		}
+
+		static const char* conf_get_log_command_groups(void)
+		{
+			return prefs_runtime_config.log_command_groups;
+		}
+
+
+		extern char const * prefs_get_log_command_list(void)
+		{
+			return prefs_runtime_config.log_command_list;
+		}
+
+		static int conf_set_log_command_list(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.log_command_list, valstr, NULL);
+		}
+
+		static int conf_setdef_log_command_list(void)
+		{
+			return conf_set_str(&prefs_runtime_config.log_command_list, NULL, BNETD_LOG_COMMAND_LIST);
+		}
+
+		static const char* conf_get_log_command_list(void)
+		{
+			return prefs_runtime_config.log_command_list;
+		}
+
 
 
 		/**

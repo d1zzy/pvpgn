@@ -128,7 +128,7 @@ namespace pvpgn
 			}
 			else
 			{
-#ifdef HAVE_GETPWNAM
+#ifdef HAVE_GETPWNAME
 				struct passwd * ent;
 
 				eventlog(eventlog_level_debug, __FUNCTION__, "about to getpwnam(%s)", name);

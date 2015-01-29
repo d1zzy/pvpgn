@@ -5,9 +5,13 @@
 	Licensed under the same terms as Lua itself.
 ]]--
 
--- Load total records from records.txt to table
+-- Load total records from a text file into the table
 function q_load_records()
-	local filename = q_directory() .. "/records.txt"
+	local filename = config.vardir() .. "quiz_records.txt"
+	if not file_exists(filename) then
+		DEBUG("Could not open file with Quiz records: " .. filename)
+		return false
+	end
 	if not q_records_total or not next(q_records_total) then
 		-- fill records table
 		return file_load(filename, file_load_dictionary_callback, q_read_records_callback)
@@ -18,9 +22,9 @@ function q_read_records_callback(a, b)
 	table.insert(q_records_total, { username = a, points = b })
 end
 
--- Save total records from table to records.txt
+-- Save total records from the table into a text file
 function q_save_records()
-	local filename = q_directory() .. "/records.txt"
+	local filename = config.vardir() .. "quiz_records.txt"
 	file_save2(filename, q_save_records_callback)
 end
 function q_save_records_callback(file)

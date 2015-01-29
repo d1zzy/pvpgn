@@ -369,6 +369,9 @@ namespace pvpgn
 			t_server_findanongame_profile_clan	server_findanongame_profile_clan;
 
 			t_server_messagebox         server_messagebox;
+			t_server_requiredwork	    server_requiredwork;
+			t_client_extrawork	    client_extrawork;
+
 		} u;
 	} t_packet;
 

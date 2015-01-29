@@ -112,7 +112,7 @@ namespace pvpgn
 			if (hfd == NULL)
 			{ /* an error ocured opening readonly the help file, helpfile_unload was called, or helpfile_init hasn't been called */
 				message_send_text(c, message_type_error, c, localize(c, "Oops ! There is a problem with the help file. Please contact the administrator of the server."));
-				return 0;
+				return -1;
 			}
 
 			for (i = 0; text[i] != ' ' && text[i] != '\0'; i++); /* skip command */
@@ -131,7 +131,6 @@ namespace pvpgn
 			}
 
 			describe_command(c, cmd);
-
 			return 0;
 		}
 
@@ -146,7 +145,7 @@ namespace pvpgn
 			std::rewind(hfd);
 			while ((line = file_get_line(hfd)) != NULL)
 			{
-				for (i = 0; line[i] == ' ' && line[i] != '\0'; i++); /* skip spaces in front of %command */
+				for (i = 0; line[i] == ' '; i++); /* skip spaces in front of %command */
 				if (line[i] == '%')  /* is this a command ? */
 				{
 					char *p, *buffer;
@@ -166,7 +165,8 @@ namespace pvpgn
 						if (p[i] == ' ') al = 1; /* we have something after the command.. must remember that */
 						p[i] = '\0'; /* end the string at the end of the command */
 						p[0] = '/'; /* change the leading character (% or space) read from the help file to / */
-						if (!(command_get_group(p) & account_get_command_groups(conn_get_account(c)))) skip = 1;
+						if (!(command_get_group(p) & account_get_command_groups(conn_get_account(c)))) 
+							skip = 1;
 						if (length < std::strlen(p) + position + 1)
 							/* if we don't have enough space in the buffer then get some */
 							length = std::strlen(p) + position + 1; /* the new length */
@@ -176,7 +176,7 @@ namespace pvpgn
 						std::strcpy(buffer + position, p); position += std::strlen(p);
 						if (al)
 						{
-							for (; p[i + 1] == ' ' && p[i + 1] != '\0' && p[i + 1] != '#'; i++); /* skip spaces */
+							for (; p[i + 1] == ' '; i++); /* skip spaces */
 							if (p[i + 1] == '\0' || p[i + 1] == '#')
 							{
 								al = 0; continue;
@@ -204,7 +204,7 @@ namespace pvpgn
 			std::rewind(hfd);
 			while ((line = file_get_line(hfd)) != NULL)
 			{
-				for (i = 0; line[i] == ' ' && line[i] != '\0'; i++); /* skip spaces in front of %command */
+				for (i = 0; line[i] == ' '; i++); /* skip spaces in front of %command */
 				if (line[i] == '%') /* is this a command ? */
 				{
 					char *p;
@@ -249,7 +249,7 @@ namespace pvpgn
 						}
 						if (al)
 						{
-							for (; p[i + 1] == ' ' && p[i + 1] != '\0'; i++); /* skip spaces */
+							for (; p[i + 1] == ' '; i++); /* skip spaces */
 							if (p[i + 1] == '\0')
 							{
 								al = 0; continue;

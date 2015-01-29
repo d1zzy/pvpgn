@@ -105,7 +105,7 @@ namespace pvpgn
 					temp = 0;
 					packet_append_data(rpacket, &temp, 1);
 
-					/* need to add clan stuff here:
+					/* UNDONE: need to add clan stuff here:
 					 format:
 					 bn_int	ladder_tag (SNLC, 2NLC, 3NLC, 4NLC)
 					 bn_int	wins
@@ -564,6 +564,7 @@ namespace pvpgn
 		static int _client_anongame_set_icon(t_connection * c, t_packet const * const packet)
 		{
 			//BlacKDicK 04/20/2003
+			// Modified by aancw 16/12/2014
 			unsigned int desired_icon;
 			char user_icon[5];
 			t_account * account;
@@ -579,9 +580,9 @@ namespace pvpgn
 			that the client wants to set.'W3H2' for an example. For now it is ok, since they share
 			the same position	on the packet*/
 			desired_icon = bn_int_get(packet->u.client_findanongame.count);
-			user_icon[4] = 0;
+			//user_icon[4]=0;
 			if (desired_icon == 0){
-				std::strcpy(user_icon, "NULL");
+				std::strcpy(user_icon, "1O3W"); // 103W is equal to Default Icon
 				eventlog(eventlog_level_info, __FUNCTION__, "[%d] Set icon packet to DEFAULT ICON [%4.4s]", conn_get_socket(c), user_icon);
 			}
 			else{
@@ -590,13 +591,13 @@ namespace pvpgn
 			}
 
 			account = conn_get_account(c);
-
+			
 			// ICON SWITCH HACK PROTECTION
 			if (check_user_icon(account, user_icon) == 0)
 			{
+				std::strcpy(user_icon, "1O3W"); // set icon to default
 				eventlog(eventlog_level_info, __FUNCTION__, "[%s] \"%s\" ICON SWITCH hack attempt, icon set to default ", conn_get_username(c), user_icon);
-				std::strcpy(user_icon, "NULL"); // set icon to default
-				conn_set_state(c, conn_state_destroy); // kill user session
+				//conn_set_state(c,conn_state_destroy); // dont kill user session
 			}
 
 			account_set_user_icon(conn_get_account(c), conn_get_clienttag(c), user_icon);
@@ -610,6 +611,8 @@ namespace pvpgn
 		}
 
 		/* Check user choice for illegal icon */
+		// check user for illegal icon
+		// Modified by aancw 16/12/2014 
 		static int check_user_icon(t_account * account, const char * user_icon)
 		{
 			unsigned int i, len;
@@ -632,31 +635,49 @@ namespace pvpgn
 			char race_char[6] = { 'R', 'H', 'O', 'U', 'N', 'D' };
 			int icon_pos[5] = { 2, 3, 4, 5, 6 };
 			int icon_req_wins[5] = { 25, 150, 350, 750, 1500 };
+			int icon_req_wins_tourney[5] = { 10, 75, 150, 250, 500};
 
 			for (int i = 0; i < sizeof(race_char); i++)
 			{
 				if (user_race == race_char[i])
 				{
-					for (int j = 0; j < sizeof(icon_pos); j++)
+					// Client will got DCed because of different req win normal and tournament
+					// Check if race is tournament or not
+					// Tournament req wins is different than normal icon
+					
+					if(race_char[i] == 'D')
 					{
-						if (number == icon_pos[j])
+						for (int j = 0; j < sizeof(icon_pos); j++)
 						{
-							// compare account race wins and require wins
-							if (account_get_racewins(account, race[i], account_get_ll_clienttag(account)) >= icon_req_wins[j])
-								return 1;
+							if (number == icon_pos[j])
+							{
+								// compare account race wins and require wins for tournament icon
+								if (account_get_racewins( account, race[i], account_get_ll_clienttag(account) ) >= icon_req_wins_tourney[j])
+									return 1;
 
-							return 0;
+								return 0;
+							}
+						}
+					
+					}else
+					{
+						// When normal icon
+						for (int j = 0; j < sizeof(icon_pos); j++)
+						{
+							if (number == icon_pos[j])
+							{
+								// compare account race wins and require wins
+								if (account_get_racewins( account, race[i], account_get_ll_clienttag(account) ) >= icon_req_wins[j])
+									return 1;
+
+								return 0;
+							}
 						}
 					}
 				}
 			}
 			return 0;
 		}
-
-
-
-
-
 
 		static int _client_anongame_infos(t_connection * c, t_packet const * const packet)
 		{
@@ -921,7 +942,7 @@ namespace pvpgn
 			 *
 			 * not sure if there is overall winner packet sent at end of last final round
 			 */
-
+			// UNDONE: next two conditions never executed
 			else if ((0)) { /* User in finals - Shows user stats and start of next round*/
 				bn_byte_set(&rpacket->u.server_anongame_tournament_reply.type, 6);
 				bn_byte_set(&rpacket->u.server_anongame_tournament_reply.unknown, 0);

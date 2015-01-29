@@ -14,14 +14,14 @@ local username = nil
 
 function command_w3motd(account, text)
 	-- allow warcraft 3 client only
-	if not (account.clienttag == "W3XP" or account.clienttag == "WAR3") then
-		return 0
+	if not (account.clienttag == CLIENTTAG_WAR3XP or account.clienttag == CLIENTTAG_WARCRAFT3) then
+		return 1
 	end
-		
+
 	username = account.name
 	local data = file_load(config.motdw3file, w3motd_sendline_callback)
 	
-	return 1
+	return 0
 end
 
 function w3motd_sendline_callback(line)

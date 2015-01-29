@@ -15,3 +15,12 @@ function handle_server_mainloop()
 	
 	-- DEBUG(os.time())
 end
+
+
+-- When restart Lua VM
+function handle_server_rehash()
+	if (config.ghost) then
+		gh_unload()
+	end
+
+end

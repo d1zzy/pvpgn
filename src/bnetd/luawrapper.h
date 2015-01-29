@@ -14,6 +14,7 @@ extern "C"
 #include <lualib.h>
 }
 
+#include <typeinfo>
 #include <string>
 #include <cstring>
 #include <stdexcept>
@@ -329,7 +330,14 @@ namespace lua
 		template<typename T> bind& operator>>(T& v) throw()
 		{
 			if (refuse || retvals_number < 1)
-				v = T();
+			{
+				// INFO: (HarpyWar) -2 is default value if Lua code failed to run due to error
+				//                  it's needed for lua_handle_command()
+				if (typeid(T) == typeid(int))
+					v = T(-2);
+				else
+					v = T();
+			}
 			else
 			{
 				get(v, -retvals_number); retvals_number--;

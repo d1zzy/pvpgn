@@ -1,0 +1,15 @@
+PvPGN Bnet Emulation Chat Hilfe Befehle
+
+Neue Befehle:
+
+nutze /f help für Hilfe mit der Freundesliste.
+nutze /users um zu sehen, welche Nutzer online sind.
+nutze /w or /msg <Nutzername> um Nutzer anzuflüstern.
+nutze /join <Kanal> um einem Kanal beizutreten
+
+Fuerr Chan Ops:
+
+nutze /ban <Nutzername> um einen Nutzer aus dem Kanal zu bannen.
+nutze /kick <Nutzername> um einen Nutzer aus dem Kanal zu kicken.
+
+Für eine genauere Hilfe schreibe: /help

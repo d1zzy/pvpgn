@@ -81,6 +81,7 @@
 #include "clan.h"
 #include "common/flags.h"
 #include "icons.h"
+#include "userlog.h"
 #include "i18n.h"
 
 #include "attrlayer.h"
@@ -543,6 +544,7 @@ namespace pvpgn
 			{ "/alert", _handle_alert_command },
 			{ "/language", handle_language_command },
 			{ "/lang", handle_language_command },
+			{ "/log", handle_log_command },
 
 			{ NULL, NULL }
 
@@ -551,8 +553,17 @@ namespace pvpgn
 
 		extern int handle_command(t_connection * c, char const * text)
 		{
+			int result = 0;
 			t_command_table_row const *p;
 
+#ifdef WITH_LUA
+			// feature to ignore flood protection
+			result = lua_handle_command(c, text, luaevent_command_before);
+#endif
+			if (result == -1)
+				return result;
+
+			if (result == 0)
 			if ((text[0] != '\0') && (conn_quota_exceeded(c, text)))
 			{
 				msgtemp = localize(c, "You are sending commands to {} too quickly and risk being disconnected for flooding. Please slow down.", prefs_get_servername());
@@ -561,8 +572,16 @@ namespace pvpgn
 			}
 
 #ifdef WITH_LUA
-			if (lua_handle_command(c, text) > 0)
-				return 0;
+			result = lua_handle_command(c, text, luaevent_command);
+			// -1 = unsuccess, 0 = success, 1 = execute next c++ code
+			if (result == 0)
+			{
+				// log command
+				if (t_account * account = conn_get_account(c))
+					userlog_append(account, text);
+			}
+			if (result == 0 || result == -1)
+				return result;
 #endif
 
 			for (p = standard_command_table; p->command_string != NULL; p++)
@@ -579,7 +598,18 @@ namespace pvpgn
 						message_send_text(c, message_type_error, c, localize(c, "This command is reserved for admins."));
 						return 0;
 					}
-					if (p->command_handler != NULL) return ((p->command_handler)(c, text));
+					if (p->command_handler != NULL)
+					{
+						result = ((p->command_handler)(c, text));
+						// -1 = unsuccess, 0 = success
+						if (result == 0)
+						{
+							// log command
+							if (t_account * account = conn_get_account(c))
+								userlog_append(account, text);
+						}
+						return result;
+					}
 				}
 			}
 
@@ -591,7 +621,7 @@ namespace pvpgn
 
 			message_send_text(c, message_type_error, c, localize(c, "Unknown command."));
 			eventlog(eventlog_level_debug, __FUNCTION__, "got unknown command \"%s\"", text);
-			return 0;
+			return -1;
 		}
 
 
@@ -629,7 +659,7 @@ namespace pvpgn
 					{
 						if (args[2].empty()) {
 							describe_command(c, args[0].c_str());
-							return 0;
+							return -1;
 						}
 						char const *msg = args[2].c_str(); // message
 
@@ -683,7 +713,7 @@ namespace pvpgn
 							if (args[2].empty())
 							{
 								describe_command(c, args[0].c_str());
-								return 0;
+								return -1;
 							}
 							const char * username = args[2].c_str();
 
@@ -729,7 +759,7 @@ namespace pvpgn
 					if (args[1] != "invite" && args[1] != "inv")
 					{
 						describe_command(c, args[0].c_str());
-						return 0;
+						return -1;
 					}
 
 					if (args[2] == "get") {
@@ -773,7 +803,7 @@ namespace pvpgn
 				if ((args[1] == "create" || args[1] == "cre"))
 				{
 					message_send_text(c, message_type_error, c, localize(c, "You are already in clan \"{}\"", clan_get_name(clan)));
-					return 0;
+					return -1;
 				}
 			}
 			// user not in clan
@@ -787,7 +817,7 @@ namespace pvpgn
 					if (args[3].empty())
 					{
 						describe_command(c, args[0].c_str());
-						return 0;
+						return -1;
 					}
 					clantag = args[2].c_str(); // clan tag
 					clanname = args[3].c_str(); // clan name
@@ -822,7 +852,7 @@ namespace pvpgn
 			}
 
 			describe_command(c, args[0].c_str());
-			return 0;
+			return -1;
 		}
 
 		static int command_set_flags(t_connection * c)
@@ -842,7 +872,7 @@ namespace pvpgn
 
 			if (args[1].empty() || (args[1][0] != '+' && args[1][0] != '-')) {
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 
 			text = args[1].c_str();
@@ -901,7 +931,7 @@ namespace pvpgn
 
 			if (args[1].empty() || (args[1][0] != '+' && args[1][0] != '-')) {
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 
 			text = args[1].c_str();
@@ -969,7 +999,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 
@@ -1018,7 +1048,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 
@@ -1067,7 +1097,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 
@@ -1132,7 +1162,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 
@@ -1217,7 +1247,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 
@@ -1285,7 +1315,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 
@@ -1355,7 +1385,7 @@ namespace pvpgn
 
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 
@@ -1455,30 +1485,30 @@ namespace pvpgn
 
 				if (args[2].empty()) {
 					describe_command(c, args[0].c_str());
-					return 0;
+					return -1;
 				}
 				text = args[2].c_str(); // username
 
 				if (!(friend_acc = accountlist_find_account(text))) {
 					message_send_text(c, message_type_info, c, localize(c, "That user does not exist."));
-					return 0;
+					return -1;
 				}
 
 				switch (account_add_friend(my_acc, friend_acc)) {
 				case -1:
 					message_send_text(c, message_type_error, c, localize(c, "Server error."));
-					return 0;
+					return -1;
 				case -2:
 					message_send_text(c, message_type_info, c, localize(c, "You can't add yourself to your friends list."));
-					return 0;
+					return -1;
 				case -3:
 					msgtemp = localize(c, "You can only have a maximum of {} friends.", prefs_get_max_friends());
 					message_send_text(c, message_type_info, c, msgtemp);
-					return 0;
+					return -1;
 				case -4:
 					msgtemp = localize(c, "{} is already on your friends list!", text);
 					message_send_text(c, message_type_info, c, msgtemp);
-					return 0;
+					return -1;
 				}
 
 				msgtemp = localize(c, "Added {} to your friends list.", text);
@@ -1553,7 +1583,7 @@ namespace pvpgn
 
 				if (args[2].empty()) {
 					describe_command(c, args[0].c_str());
-					return 0;
+					return -1;
 				}
 				msg = args[2].c_str(); // message
 
@@ -1586,7 +1616,7 @@ namespace pvpgn
 
 				if (args[2].empty()) {
 					describe_command(c, args[0].c_str());
-					return 0;
+					return -1;
 				}
 				text = args[2].c_str(); // username
 
@@ -1595,7 +1625,7 @@ namespace pvpgn
 				case -2:
 					msgtemp = localize(c, "{} was not found on your friends list.", text);
 					message_send_text(c, message_type_info, c, msgtemp);
-					return 0;
+					return -1;
 				default:
 					msgtemp = localize(c, "Removed {} from your friends list.", text);
 					message_send_text(c, message_type_info, c, msgtemp);
@@ -1626,7 +1656,7 @@ namespace pvpgn
 
 				if (args[2].empty()) {
 					describe_command(c, args[0].c_str());
-					return 0;
+					return -1;
 				}
 				text = args[2].c_str(); // username
 
@@ -1669,7 +1699,7 @@ namespace pvpgn
 
 				if (args[2].empty()) {
 					describe_command(c, args[0].c_str());
-					return 0;
+					return -1;
 				}
 				text = args[2].c_str(); // username
 
@@ -1782,6 +1812,7 @@ namespace pvpgn
 			}
 			else {
 				describe_command(c, args[0].c_str());
+				return -1;
 			}
 
 			return 0;
@@ -1801,7 +1832,7 @@ namespace pvpgn
 			
 			if (args[1].empty()) {
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // message
 
@@ -1819,7 +1850,7 @@ namespace pvpgn
 			if (args[2].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 			text = args[2].c_str(); // message
@@ -1871,7 +1902,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			char const * cname = args[1].c_str(); // channel name
 
@@ -1880,12 +1911,12 @@ namespace pvpgn
 			{
 				message_send_text(c, message_type_error, c, localize(c, "That channel does not exist."));
 				message_send_text(c, message_type_error, c, localize(c, "(If you are trying to search for a user, use the /whois command.)"));
-				return 0;
+				return -1;
 			}
 			if (channel_check_banning(channel, c) == 1)
 			{
 				message_send_text(c, message_type_error, c, localize(c, "You are banned from that channel."));
-				return 0;
+				return -1;
 			}
 
 			std::strcpy(msgtemp0, localize(c, "Users in channel {}:", cname).c_str());
@@ -1913,7 +1944,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // username
 
@@ -1929,7 +1960,7 @@ namespace pvpgn
 			if (!(tname = conn_get_username(c)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Unable to obtain your account name."));
-				return 0;
+				return -1;
 			}
 
 			do_whois(c, tname);
@@ -1946,7 +1977,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // message
 
@@ -2037,7 +2068,7 @@ namespace pvpgn
 			}
 			else if (!(account = accountlist_find_account(username))) {
 				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
-				return 0;
+				return -1;
 			}
 
 			// clienttag
@@ -2045,7 +2076,7 @@ namespace pvpgn
 				clienttag = args[2].c_str();
 			else if (!(clienttag = tag_uint_to_str(clienttag_str, conn_get_clienttag(c)))) {
 				message_send_text(c, message_type_error, c, localize(c, "Unable to determine client game."));
-				return 0;
+				return -1;
 			}
 
 			clienttag_uint = tag_case_str_to_uint(clienttag);
@@ -2079,7 +2110,7 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, localize(c, "This game does not support win/loss records."));
 				message_send_text(c, message_type_error, c, localize(c, "You must supply a user name and a valid program ID."));
 				message_send_text(c, message_type_error, c, localize(c, "Example: /stats joe STAR"));
-				return 0;
+				return -1;
 			case CLIENTTAG_DIABLORTL_UINT:
 			case CLIENTTAG_DIABLOSHR_UINT:
 				msgtemp = localize(c, "{}'s record:", account_get_name(account));
@@ -2259,7 +2290,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // channelname
 
@@ -2267,18 +2298,18 @@ namespace pvpgn
 				if (strcasecmp(text, "Arranged Teams") == 0)
 				{
 					message_send_text(c, message_type_error, c, msgtemp = localize(c, "Channel Arranged Teams is a RESTRICTED Channel!"));
-					return 0;
+					return -1;
 				}
 
 				if (!(std::strlen(text) < MAX_CHANNELNAME_LEN))
 				{
 					msgtemp = localize(c, "Max channel name length exceeded (max {} symbols)", MAX_CHANNELNAME_LEN - 1);
 					message_send_text(c, message_type_error, c, msgtemp);
-					return 0;
+					return -1;
 				}
 
 				if ((channel = conn_get_channel(c)) && (strcasecmp(channel_get_name(channel), text) == 0))
-					return 0; // we don't have to do anything, we are already in this channel
+					return -1; // we don't have to do anything, we are already in this channel
 
 				if (conn_set_channel(c, text) < 0)
 					conn_set_channel(c, CHANNEL_NAME_BANNED); /* should not fail */
@@ -2367,7 +2398,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // username
 
@@ -2378,17 +2409,20 @@ namespace pvpgn
 			if (!(account = accountlist_find_account(text)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "No such user."));
-				return 0;
+				return -1;
 			}
 
 			if (conn_get_account(c) == account)
 			{
 				message_send_text(c, message_type_error, c, localize(c, "You can't squelch yourself."));
-				return 0;
+				return -1;
 			}
 
 			if (conn_add_ignore(c, account) < 0)
+			{
 				message_send_text(c, message_type_error, c, localize(c, "Could not squelch user."));
+				return -1;
+			}
 			else
 			{
 				msgtemp = localize(c, "{} has been squelched.", account_get_name(account));
@@ -2408,7 +2442,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // username
 
@@ -2419,11 +2453,14 @@ namespace pvpgn
 			if (!(account = accountlist_find_account(text)))
 			{
 				message_send_text(c, message_type_info, c, localize(c, "No such user."));
-				return 0;
+				return -1;
 			}
 
 			if (conn_del_ignore(c, account) < 0)
+			{
 				message_send_text(c, message_type_info, c, localize(c, "User was not being ignored."));
+				return -1;
+			}
 			else
 			{
 				t_message * message;
@@ -2433,7 +2470,7 @@ namespace pvpgn
 				if ((dest_c = account_get_conn(account)))
 				{
 					if (!(message = message_create(message_type_userflags, dest_c, NULL))) /* handles NULL text */
-						return 0;
+						return -1;
 					message_send(message, c);
 					message_destroy(message);
 				}
@@ -2455,7 +2492,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 			text = args[2].c_str(); // reason
@@ -2463,7 +2500,7 @@ namespace pvpgn
 			if (!(channel = conn_get_channel(c)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "This command can only be used inside a channel."));
-				return 0;
+				return -1;
 			}
 
 			acc = conn_get_account(c);
@@ -2474,29 +2511,29 @@ namespace pvpgn
 				!channel_conn_is_tmpOP(channel, account_get_conn(acc)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "You have to be at least a Channel Operator or tempOP to use this command."));
-				return 0;
+				return -1;
 			}
 			if (!(kuc = connlist_find_connection_by_accountname(username)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "That user is not logged in."));
-				return 0;
+				return -1;
 			}
 			if (conn_get_channel(kuc) != channel)
 			{
 				message_send_text(c, message_type_error, c, localize(c, "That user is not in this channel."));
-				return 0;
+				return -1;
 			}
 			if (account_get_auth_admin(conn_get_account(kuc), NULL) == 1 ||
 				account_get_auth_admin(conn_get_account(kuc), channel_get_name(channel)) == 1)
 			{
 				message_send_text(c, message_type_error, c, localize(c, "You cannot kick administrators."));
-				return 0;
+				return -1;
 			}
 			else if (account_get_auth_operator(conn_get_account(kuc), NULL) == 1 ||
 				account_get_auth_operator(conn_get_account(kuc), channel_get_name(channel)) == 1)
 			{
 				message_send_text(c, message_type_error, c, localize(c, "You cannot kick operators."));
-				return 0;
+				return -1;
 			}
 
 			{
@@ -2534,7 +2571,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 			text = args[2].c_str(); // reason
@@ -2542,7 +2579,7 @@ namespace pvpgn
 			if (!(channel = conn_get_channel(c)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "This command can only be used inside a channel."));
-				return 0;
+				return -1;
 			}
 			if (account_get_auth_admin(conn_get_account(c), NULL) != 1 && /* default to false */
 				account_get_auth_admin(conn_get_account(c), channel_get_name(channel)) != 1 && /* default to false */
@@ -2550,7 +2587,7 @@ namespace pvpgn
 				account_get_auth_operator(conn_get_account(c), channel_get_name(channel)) != 1) /* default to false */
 			{
 				message_send_text(c, message_type_error, c, localize(c, "You have to be at least a Channel Operator to use this command."));
-				return 0;
+				return -1;
 			}
 			{
 				t_account * account;
@@ -2563,13 +2600,13 @@ namespace pvpgn
 				else if (account_get_auth_admin(account, NULL) == 1 || account_get_auth_admin(account, channel_get_name(channel)) == 1)
 				{
 					message_send_text(c, message_type_error, c, localize(c, "You cannot ban administrators."));
-					return 0;
+					return -1;
 				}
 				else if (account_get_auth_operator(account, NULL) == 1 ||
 					account_get_auth_operator(account, channel_get_name(channel)) == 1)
 				{
 					message_send_text(c, message_type_error, c, localize(c, "You cannot ban operators."));
-					return 0;
+					return -1;
 				}
 			}
 
@@ -2605,14 +2642,14 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // username
 
 			if (!(channel = conn_get_channel(c)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "This command can only be used inside a channel."));
-				return 0;
+				return -1;
 			}
 			if (account_get_auth_admin(conn_get_account(c), NULL) != 1 && /* default to false */
 				account_get_auth_admin(conn_get_account(c), channel_get_name(channel)) != 1 && /* default to false */
@@ -2620,11 +2657,14 @@ namespace pvpgn
 				account_get_auth_operator(conn_get_account(c), channel_get_name(channel)) != 1) /* default to false */
 			{
 				message_send_text(c, message_type_error, c, localize(c, "You are not a channel operator."));
-				return 0;
+				return -1;
 			}
 
 			if (channel_unban_user(channel, text) < 0)
+			{
 				message_send_text(c, message_type_error, c, localize(c, "That user is not banned."));
+				return -1;
+			}
 			else
 			{
 				msgtemp = localize(c, "{} is no longer banned from this channel.", text);
@@ -2641,7 +2681,7 @@ namespace pvpgn
 			if (!(dest = conn_get_lastsender(c)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "No one messaged you, use /m instead"));
-				return 0;
+				return -1;
 			}
 
 			std::vector<std::string> args = split_command(text, 1);
@@ -2649,7 +2689,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // message
 
@@ -2667,7 +2707,7 @@ namespace pvpgn
 
 			if (!(realm = conn_get_realm(c))) {
 				message_send_text(c, message_type_info, c, localize(c, "You must join a realm first"));
-				return 0;
+				return -1;
 			}
 
 			std::vector<std::string> args = split_command(text, 1);
@@ -2675,7 +2715,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // message
 
@@ -2683,6 +2723,7 @@ namespace pvpgn
 			if (!(message = message_create(message_type_broadcast, c, msgtemp.c_str())))
 			{
 				message_send_text(c, message_type_info, c, "Could not broadcast message.");
+				return -1;
 			}
 			else
 			{
@@ -2709,18 +2750,21 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // username
 
 			if (!(account = accountlist_find_account(text)))
 			{
 				message_send_text(c, message_type_info, c, localize(c, "That user does not exist."));
-				return 0;
+				return -1;
 			}
 
 			if (conn_add_watch(c, account, 0) < 0) /* FIXME: adds all events for now */
+			{
 				message_send_text(c, message_type_error, c, localize(c, "Add to watch list failed."));
+				return -1;
+			}
 			else
 			{
 				msgtemp = localize(c, "User {} added to your watch list.", text);
@@ -2739,17 +2783,20 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // username
 			if (!(account = accountlist_find_account(text)))
 			{
 				message_send_text(c, message_type_info, c, localize(c, "That user does not exist."));
-				return 0;
+				return -1;
 			}
 
 			if (conn_del_watch(c, account, 0) < 0) /* FIXME: deletes all events for now */
+			{
 				message_send_text(c, message_type_error, c, localize(c, "Removal from watch list failed."));
+				return -1;
+			}
 			else
 			{
 				msgtemp = localize(c, "User {} removed from your watch list.", text);
@@ -2772,7 +2819,7 @@ namespace pvpgn
 				if ( !(clienttag = tag_validate_client(args[1].c_str())) )
 				{
 					describe_command(c, args[0].c_str());
-					return 0;
+					return -1;
 				}
 			}
 
@@ -2802,7 +2849,7 @@ namespace pvpgn
 				if (!(clienttag = tag_validate_client(args[1].c_str())))
 				{
 					describe_command(c, args[0].c_str());
-					return 0;
+					return -1;
 				}
 			}
 
@@ -2829,7 +2876,7 @@ namespace pvpgn
 			if (!(channel = conn_get_channel(c)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "This command can only be used inside a channel."));
-				return 0;
+				return -1;
 			}
 
 			std::strcpy(msgtemp0, localize(c, "Banned users:").c_str());
@@ -2936,11 +2983,11 @@ namespace pvpgn
 			cbdata.c = c;
 			cbdata.lobby = false;
 
-			if (difficulty == "norm")
+			if (strcasecmp(difficulty, "norm") == 0)
 				cbdata.diff = game_difficulty_normal;
-			else if (difficulty == "night")
+			else if (strcasecmp(difficulty, "night") == 0)
 				cbdata.diff = game_difficulty_nightmare;
-			else if (difficulty == "hell")
+			else if (strcasecmp(difficulty, "hell") == 0)
 				cbdata.diff = game_difficulty_hell;
 			else
 				cbdata.diff = game_difficulty_none;
@@ -2966,7 +3013,7 @@ namespace pvpgn
 				if (!(cbdata.tag = tag_validate_client(dest)))
 				{
 					describe_command(c, args[0].c_str());
-					return 0;
+					return -1;
 				}
 
 				if (cbdata.diff == game_difficulty_none)
@@ -2982,7 +3029,7 @@ namespace pvpgn
 			if ((!prefs_get_hide_addr()) || (account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr"))) /* default to false */
 				msgtemp += localize(c, "--------addr--------");
 			message_send_text(c, message_type_info, c, msgtemp);
-			gamelist_traverse(_glist_cb, &cbdata);
+			gamelist_traverse(_glist_cb, &cbdata, gamelist_source_none);
 
 			return 0;
 		}
@@ -3003,7 +3050,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // clienttag
 
@@ -3022,7 +3069,7 @@ namespace pvpgn
 				if (!(clienttag = tag_validate_client(text)))
 				{
 					describe_command(c, args[0].c_str());
-					return 0;
+					return -1;
 				}
 				msgtemp = localize(c, "Current channels of type {}", text);
 				message_send_text(c, message_type_info, c, msgtemp);
@@ -3085,20 +3132,20 @@ namespace pvpgn
 			if (args[2].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 
 			if (account_check_name(username) < 0) {
 				message_send_text(c, message_type_error, c, localize(c, "Account name contains some invalid symbol!"));
-				return 0;
+				return -1;
 			}
 
 			if (args[2].length() > MAX_USERPASS_LEN)
 			{
 				msgtemp = localize(c, "Maximum password length allowed is {}", MAX_USERPASS_LEN);
 				message_send_text(c, message_type_error, c, msgtemp);
-				return 0;
+				return -1;
 			}
 			for (i = 0; i < args[2].length(); i++)
 				if (std::isupper((int)args[2][i])) args[2][i] = std::tolower((int)args[2][i]);
@@ -3117,7 +3164,7 @@ namespace pvpgn
 			if (!temp) {
 				message_send_text(c, message_type_error, c, localize(c, "Failed to create account!"));
 				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] account \"%s\" not created (failed)", conn_get_socket(c), username);
-				return 0;
+				return -1;
 			}
 
 			msgtemp = localize(c, "Account {} created.", account_get_uid(temp));
@@ -3141,7 +3188,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 
 			if (args[2].empty())
@@ -3164,20 +3211,20 @@ namespace pvpgn
 			{
 				eventlog(eventlog_level_info, __FUNCTION__, "[%d] password change for \"%s\" refused (no change access)", conn_get_socket(c), username);
 				message_send_text(c, message_type_error, c, localize(c, "Only admins may change passwords for other accounts."));
-				return 0;
+				return -1;
 			}
 
 			if (!temp)
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Account does not exist."));
-				return 0;
+				return -1;
 			}
 
 			if (pass.length() > MAX_USERPASS_LEN)
 			{
 				msgtemp = localize(c, "Maximum password length allowed is {}", MAX_USERPASS_LEN);
 				message_send_text(c, message_type_error, c, msgtemp);
-				return 0;
+				return -1;
 			}
 
 			for (i = 0; i < pass.length(); i++)
@@ -3191,7 +3238,7 @@ namespace pvpgn
 			if (account_set_pass(temp, hash_get_str(passhash)) < 0)
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Unable to set password."));
-				return 0;
+				return -1;
 			}
 
 			if (account_get_auth_admin(account, NULL) == 1 ||
@@ -3223,7 +3270,7 @@ namespace pvpgn
 			if (!prefs_get_enable_conn_all() && !(account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-con"))) /* default to false */
 			{
 				message_send_text(c, message_type_error, c, localize(c, "This command is only enabled for admins."));
-				return 0;
+				return -1;
 			}
 
 			message_send_text(c, message_type_info, c, localize(c, "Current connections:"));
@@ -3248,7 +3295,7 @@ namespace pvpgn
 			else
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Unknown option."));
-				return 0;
+				return -1;
 			}
 
 			LIST_TRAVERSE_CONST(connlist(), curr)
@@ -3323,14 +3370,14 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			dest = args[1].c_str(); // username;
 
 			if (!(account = accountlist_find_account(dest)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
-				return 0;
+				return -1;
 			}
 
 			then = account_get_ll_ctime(account);
@@ -3338,7 +3385,7 @@ namespace pvpgn
 
 			// do not display sex if empty
 			std::string pattern = "Login: {} {} Sex: {}";
-			pattern = (account_get_sex(account) && strcmp(account_get_sex(account), "") == -1)
+			pattern = (account_get_sex(account) && strlen(account_get_sex(account)) > 0)
 				? pattern
 				: pattern.substr(0, pattern.find("Sex: ", 0));
 
@@ -3386,12 +3433,12 @@ namespace pvpgn
 
 			// do not display age if empty
 			pattern = "Location: {} Age: {}";
-			pattern = (account_get_age(account) && strcmp(account_get_age(account), "") == -1)
+			pattern = (account_get_age(account) && strlen(account_get_age(account)) > 0)
 						? pattern 
 						: pattern.substr(0, pattern.find("Age: ", 0));
 			const char * loc = account_get_loc(account);
 			msgtemp = localize(c, pattern.c_str(),
-				(loc && strcmp(loc, "") == -1) ? loc : "unknown",
+				(loc && strlen(loc) > 0) ? loc : "unknown",
 				account_get_age(account));
 			message_send_text(c, message_type_info, c, msgtemp);
 
@@ -3525,19 +3572,19 @@ namespace pvpgn
 			if (username[0] == '\0' || (username[0] == '#' && (username[1] < '0' || username[1] > '9')))
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 
 			if (username[0] == '#') {
 				if (!(user = connlist_find_connection_by_socket(std::atoi(username + 1)))) {
 					message_send_text(c, message_type_error, c, localize(c, "That connection doesn't exist."));
-					return 0;
+					return -1;
 				}
 			}
 			else {
 				if (!(user = connlist_find_connection_by_accountname(username))) {
 					message_send_text(c, message_type_error, c, localize(c, "That user is not logged in?"));
-					return 0;
+					return -1;
 				}
 			}
 
@@ -3566,7 +3613,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			session = args[1].c_str(); // session id
 			min = args[1].c_str(); // minutes of ban
@@ -3574,12 +3621,12 @@ namespace pvpgn
 			if (!std::isxdigit((int)session[0]))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "That is not a valid session."));
-				return 0;
+				return -1;
 			}
 			if (!(user = connlist_find_connection_by_sessionkey((unsigned int)std::strtoul(session, NULL, 16))))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "That session does not exist."));
-				return 0;
+				return -1;
 			}
 			if (min[0] != '\0' && ipbanlist_add(c, addr_num_to_ip_str(conn_get_addr(user)), ipbanlist_str_to_time_t(c, min)) == 0)
 			{
@@ -3607,14 +3654,14 @@ namespace pvpgn
 				if (!(game = conn_get_game(c)))
 				{
 					message_send_text(c, message_type_error, c, localize(c, "You are not in a game."));
-					return 0;
+					return -1;
 				}
 			}
 			else
 			if (!(game = gamelist_find_game_available(text, conn_get_clienttag(c), game_type_all)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "That game does not exist."));
-				return 0;
+				return -1;
 			}
 			std::string pub = localize(c, "public");
 			std::string prv = localize(c, "private");
@@ -3753,7 +3800,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			std::string mode_str = args[1];
 
@@ -3798,7 +3845,7 @@ namespace pvpgn
 			else
 			{
 				message_send_text(c, message_type_info, c, localize(c, "Invalid mode."));
-				return 0;
+				return -1;
 			}
 
 			server_restart_wraper(mode);
@@ -3822,7 +3869,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str();
 
@@ -3877,7 +3924,7 @@ namespace pvpgn
 			if (clockstr_to_seconds(dest, &delay) < 0)
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Invalid delay."));
-				return 0;
+				return -1;
 			}
 
 			server_quit_delay(delay);
@@ -3904,7 +3951,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			rank_s = args[1].c_str(); // rank
 			tag_s = args[2].c_str(); // clienttag
@@ -3912,7 +3959,7 @@ namespace pvpgn
 			if (str_to_uint(rank_s, &rank) < 0 || rank < 1)
 			{
 				message_send_text(c, message_type_error, c, "Invalid rank.");
-				return 0;
+				return -1;
 			}
 
 			if (!(clienttag = tag_validate_client(tag_s)))
@@ -3920,7 +3967,7 @@ namespace pvpgn
 				if (!(clienttag = conn_get_clienttag(c)))
 				{
 					message_send_text(c, message_type_error, c, localize(c, "Unable to determine client game."));
-					return 0;
+					return -1;
 				}
 			}
 
@@ -3930,7 +3977,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft %s  %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal),
@@ -3939,7 +3986,7 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft active  %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
@@ -3964,7 +4011,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active  %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_BROODWARS_UINT, ladder_id_normal),
@@ -3973,7 +4020,7 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_BROODWARS_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active  %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
@@ -3998,7 +4045,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active  %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal),
@@ -4007,14 +4054,14 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active  %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman, clienttag, ladder_sort_highestrated, ladder_time_active));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active   %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman),
@@ -4023,7 +4070,7 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active   %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
@@ -4046,7 +4093,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current  %5u: %-20.20s %u/%u/%u rating %u",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman),
@@ -4055,7 +4102,7 @@ namespace pvpgn
 						account_get_ladder_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current  %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 			}
 			// --> aaron
@@ -4065,42 +4112,42 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo   %5u: %-20.20s %u/%u/0",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo %5u: %-20.20s %u/%u/0",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, clienttag, ladder_id_solo),
 						account_get_ladder_losses(account, clienttag, ladder_id_solo));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo   %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_team, clienttag, ladder_sort_default, ladder_time_default));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team   %5u: %-20.20s %u/%u/0",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team %5u: %-20.20s %u/%u/0",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, clienttag, ladder_id_team),
 						account_get_ladder_losses(account, clienttag, ladder_id_team));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team   %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ffa, clienttag, ladder_sort_default, ladder_time_default));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA   %5u: %-20.20s %u/%u/0",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA %5u: %-20.20s %u/%u/0",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, clienttag, ladder_id_ffa),
 						account_get_ladder_losses(account, clienttag, ladder_id_ffa));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA   %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ateam, clienttag, ladder_sort_default, ladder_time_default));
@@ -4112,7 +4159,7 @@ namespace pvpgn
 						xstr_cat_str(membernames, account_get_name(team_get_member(team, i)));
 						if ((i)) xstr_cat_char(membernames, ',');
 					}
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team   %5u: %-80.80s %u/%u/0",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team %5u: %-80.80s %u/%u/0",
 						rank,
 						xstr_get_str(membernames),
 						team_get_wins(team),
@@ -4120,7 +4167,7 @@ namespace pvpgn
 					xstr_free(membernames);
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team  %5u: <none>", rank);
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 			}
 			//<---
@@ -4144,7 +4191,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			delta_s = args[1].c_str(); // timer delta
 			msgtext_s = args[2].c_str(); // message text display when timer elapsed
@@ -4152,7 +4199,7 @@ namespace pvpgn
 			if (clockstr_to_seconds(delta_s, &delta) < 0)
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Invalid duration."));
-				return 0;
+				return -1;
 			}
 
 			if (msgtext_s[0] == '\0')
@@ -4184,14 +4231,14 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 
 			if (!(dest_c = connlist_find_connection_by_accountname(username)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "That user is not logged on."));
-				return 0;
+				return -1;
 			}
 			msgtemp = localize(c, "Banning {} who is using IP address {}", conn_get_username(dest_c), addr_num_to_ip_str(conn_get_game_addr(dest_c)));
 			message_send_text(c, message_type_info, c, msgtemp);
@@ -4227,14 +4274,14 @@ namespace pvpgn
 			if (!(conn = connlist_find_connection_by_accountname(username)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "That user is not logged on."));
-				return 0;
+				return -1;
 			}
 
 			if (conn_get_account(conn) != conn_get_account(c) &&
 				prefs_get_hide_addr() && !(account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr"))) // default to false
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Address information for other users is only available to admins."));
-				return 0;
+				return -1;
 			}
 
 			msgtemp = localize(c, "Server TCP: {} (bind {})", addr_num_to_addr_str(conn_get_real_local_addr(conn), conn_get_real_local_port(conn)), addr_num_to_addr_str(conn_get_local_addr(conn), conn_get_local_port(conn)));
@@ -4300,7 +4347,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 			if (!args[2].empty())
@@ -4311,7 +4358,7 @@ namespace pvpgn
 			if (!(account = accountlist_find_account(username)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
-				return 0;
+				return -1;
 			}
 
 			account_set_auth_lock(account, 1);
@@ -4323,14 +4370,14 @@ namespace pvpgn
 
 			// send message to author
 			msgtemp = localize(c, "Account {} is now locked", account_get_name(account));
-			msgtemp += account_get_locktext(account, false);
+			msgtemp += account_get_locktext(c, account, false);
 			message_send_text(c, message_type_error, c, msgtemp);
 
 			// send message to locked user
 			if ((user = connlist_find_connection_by_accountname(username)))
 			{
 				msgtemp = localize(c, "Your account has just been locked");
-				msgtemp += account_get_locktext(account, true);
+				msgtemp += account_get_locktext(c, account, true);
 				message_send_text(user, message_type_error, user, msgtemp);
 			}
 
@@ -4346,14 +4393,14 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // username
 
 			if (!(account = accountlist_find_account(text)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
-				return 0;
+				return -1;
 			}
 
 			if ((user = connlist_find_connection_by_accountname(text)))
@@ -4379,7 +4426,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 			if (!args[2].empty())
@@ -4390,7 +4437,7 @@ namespace pvpgn
 			if (!(account = accountlist_find_account(username)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
-				return 0;
+				return -1;
 			}
 
 			account_set_auth_mute(account, 1);
@@ -4402,14 +4449,14 @@ namespace pvpgn
 
 			// send message to author
 			msgtemp = localize(c, "Account {} is now muted", account_get_name(account));
-			msgtemp += account_get_mutetext(account, false);
+			msgtemp += account_get_mutetext(c, account, false);
 			message_send_text(c, message_type_error, c, msgtemp);
 
 			// send message to muted user
 			if ((user = connlist_find_connection_by_accountname(username)))
 			{
 				msgtemp = localize(c, "Your account has just been muted");
-				msgtemp += account_get_mutetext(account, true);
+				msgtemp += account_get_mutetext(c, account, true);
 				message_send_text(user, message_type_error, user, msgtemp);
 			}
 
@@ -4425,14 +4472,14 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // username
 
 			if (!(account = accountlist_find_account(text)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
-				return 0;
+				return -1;
 			}
 
 			if ((user = connlist_find_connection_by_accountname(text)))
@@ -4456,7 +4503,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			flag_s = args[1].c_str(); // flag
 
@@ -4479,7 +4526,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			tag_s = args[1].c_str(); // flag
 
@@ -4516,7 +4563,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			text = args[1].c_str(); // ip or username
 
@@ -4574,7 +4621,7 @@ namespace pvpgn
 			if (args[2].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str(); // username
 			key = args[2].c_str(); // key
@@ -4585,13 +4632,13 @@ namespace pvpgn
 			if (strcasecmp(key, "bnet\\acct\\passhash1") == 0 || strcasecmp(key, "bnet\\acct\\username") == 0 || strcasecmp(key, "bnet\\username") == 0)
 			{
 				message_send_text(c, message_type_info, c, localize(c, "Access denied due to security reasons."));
-				return 0;
+				return -1;
 			}
 
 			if (!(account = accountlist_find_account(username)))
 			{
 				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
-				return 0;
+				return -1;
 			}
 
 			if (*value == '\0')
@@ -4740,7 +4787,10 @@ namespace pvpgn
 			else if ((user = connlist_find_connection_by_accountname(text)))
 				msgtemp = localize(c, "{} latency ()", text, conn_get_latency(user));
 			else
+			{
 				msgtemp = localize(c, "Invalid user.");
+				return -1;
+			}
 
 			message_send_text(c, message_type_info, c, msgtemp);
 			return 0;
@@ -4757,10 +4807,11 @@ namespace pvpgn
 
 			std::vector<std::string> args = split_command(text, 3);
 			// display help if [list] without [username], or not [list] without [groups]
-			if (((args[1] == "list" || args[1] == "l") && args[2].empty()) || !(args[1] == "list" || args[1] == "l") && args[3].empty())
+			if ( ((args[1] == "list" || args[1] == "l") && args[2].empty()) 
+				|| (!(args[1] == "list" || args[1] == "l") && args[3].empty()) )
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			command = args[1].c_str(); // command
 			username = args[2].c_str(); // username
@@ -4769,7 +4820,7 @@ namespace pvpgn
 
 			if (!(account = accountlist_find_account(username))) {
 				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
-				return 0;
+				return -1;
 			}
 
 			usergroups = account_get_command_groups(account);
@@ -4802,7 +4853,7 @@ namespace pvpgn
 				else {
 					msgtemp = localize(c, "Got bad group: {}", *g);
 					message_send_text(c, message_type_info, c, msgtemp);
-					return 0;
+					return -1;
 				}
 			}
 
@@ -4822,7 +4873,7 @@ namespace pvpgn
 
 			msgtemp = localize(c, "Got unknown command: {}", command);
 			message_send_text(c, message_type_info, c, msgtemp);
-			return 0;
+			return -1;
 		}
 
 		static int _handle_topic_command(t_connection * c, char const * text)
@@ -5054,7 +5105,7 @@ namespace pvpgn
 			if (args[2].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 			username = args[1].c_str();
 			tag = args[2].c_str(); // clienttag
@@ -5062,7 +5113,7 @@ namespace pvpgn
 			account = accountlist_find_account(username);
 			if (!account) {
 				message_send_text(c, message_type_error, c, localize(c, "Invalid user."));
-				return 0;
+				return -1;
 			}
 
 			if (strcasecmp(tag, "all"))
@@ -5123,7 +5174,7 @@ namespace pvpgn
 			if (args[1].empty())
 			{
 				describe_command(c, args[0].c_str());
-				return 0;
+				return -1;
 			}
 
 			// reduntant line - it adds a caption to message box

@@ -33,6 +33,9 @@
 #include "message.h"
 #include "channel.h"
 #include "command.h"
+#ifdef WITH_LUA
+#include "luainterface.h"
+#endif
 #include "common/setup_after.h"
 
 
@@ -294,6 +297,14 @@ namespace pvpgn
 													}
 
 													eventlog(eventlog_level_info, __FUNCTION__, "[%d] \"%s\" bot logged in (correct password)", conn_get_socket(c), loggeduser);
+#ifdef WITH_LUA
+													if (lua_handle_user(c, NULL, NULL, luaevent_user_login) == 1)
+													{
+														// feature to break login from Lua
+														conn_set_state(c, conn_state_destroy);
+														break;
+													}
+#endif
 												}
 												else
 												{

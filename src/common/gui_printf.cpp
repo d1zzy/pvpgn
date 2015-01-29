@@ -66,7 +66,7 @@ namespace pvpgn
 
 	extern int gui_lvprintf(t_eventlog_level l, const char *format, va_list arglist)
 	{
-		char buff[4096];
+		char buff[8192];
 		int result;
 		COLORREF clr;
 

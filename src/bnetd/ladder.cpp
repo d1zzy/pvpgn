@@ -240,8 +240,6 @@ namespace pvpgn
 			unsigned int wins, losses, points;
 			int curr;
 			int uid;
-			int pl1_points = account_get_ladder_points(players[0], clienttag, id);
-			int pl2_points = account_get_ladder_points(players[1], clienttag, id);
 
 			if (!players) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL players");
@@ -258,10 +256,13 @@ namespace pvpgn
 				return -1;
 			}
 
-			if (((results[0]) && (results[1])) && ((results[0] == results[1]) && (results[0] = game_result_disconnect))) {
+			if (((results[0]) && (results[1])) && ((results[0] == results[1]) && (results[0] == game_result_disconnect))) {
 				DEBUG0("Both players got game_result_disconnect - points counting terminated");
 				return 0;
 			}
+
+			int pl1_points = account_get_ladder_points(players[0], clienttag, id);
+			int pl2_points = account_get_ladder_points(players[1], clienttag, id);
 
 			for (curr = 0; curr < 2; curr++) {
 				t_account * account = players[curr];
@@ -676,6 +677,9 @@ namespace pvpgn
 								account_get_ladder_active_disconnects(account, clienttag, ladderId) +
 								account_get_ladder_active_draws(account, clienttag, ladderId);
 						}
+						if (games == 0)
+							return false;
+
 						unsigned int ratio = (wins << 10) / games;
 						switch (ladderSort)
 						{

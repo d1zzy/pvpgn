@@ -174,6 +174,7 @@ namespace pvpgn
 		static int _client_changeemailreq(t_connection * c, t_packet const *const packet);
 		static int _client_getpasswordreq(t_connection * c, t_packet const *const packet);
 		static int _client_claninforeq(t_connection * c, t_packet const *const packet);
+		static int _client_extrawork(t_connection * c, t_packet const *const packet);
 
 		/* connection state connected handler table */
 		static const t_htable_row bnet_htable_con[] = {
@@ -274,6 +275,7 @@ namespace pvpgn
 			{ CLIENT_CRASHDUMP, _client_crashdump },
 			{ CLIENT_SETEMAILREPLY, _client_setemailreply },
 			{ CLIENT_CLANINFOREQ, _client_claninforeq },
+			{ CLIENT_EXTRAWORK, _client_extrawork },
 			{ CLIENT_NULL, NULL },
 			{ -1, NULL }
 		};
@@ -1376,13 +1378,13 @@ namespace pvpgn
 			}
 
 			{
-				char const *tosfile;
+				char const *filename;
 
-				if (!(tosfile = packet_get_str_const(packet, sizeof(t_client_fileinforeq), MAX_FILENAME_STR))) {
+				if (!(filename = packet_get_str_const(packet, sizeof(t_client_fileinforeq), MAX_FILENAME_STR))) {
 					eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad FILEINFOREQ packet (missing or too long tosfile)", conn_get_socket(c));
 					return -1;
 				}
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] TOS requested: \"%s\" - type = 0x%02x", conn_get_socket(c), tosfile, bn_int_get(packet->u.client_fileinforeq.type));
+				eventlog(eventlog_level_info, __FUNCTION__, "[%d] file requested: \"%s\" - type = 0x%02x", conn_get_socket(c), filename, bn_int_get(packet->u.client_fileinforeq.type));
 
 				/* TODO: if type is TOSFILE make bnetd to send default tosfile if selected is not found */
 				if ((rpacket = packet_create(packet_class_bnet))) {
@@ -1397,8 +1399,8 @@ namespace pvpgn
 					 * timestamp doesn't work correctly and starcraft
 					 * needs name in client locale or displays hostname
 					 */
-					file_to_mod_time(c, tosfile, &rpacket->u.server_fileinforeply.timestamp);
-					packet_append_string(rpacket, tosfile);
+					file_to_mod_time(c, filename, &rpacket->u.server_fileinforeply.timestamp);
+					packet_append_string(rpacket, filename);
 					conn_push_outqueue(c, rpacket);
 					packet_del_ref(rpacket);
 				}
@@ -1566,6 +1568,14 @@ namespace pvpgn
 								conn_login(c, account, username);
 								eventlog(eventlog_level_info, __FUNCTION__, "[%d] \"%s\" logged in (correct password)", conn_get_socket(c), username);
 								bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY1_MESSAGE_SUCCESS);
+#ifdef WITH_LUA
+								if (lua_handle_user(c, NULL, NULL, luaevent_user_login) == 1)
+								{
+									// feature to break login from Lua
+									conn_set_state(c, conn_state_destroy);
+									return -1;
+								}
+#endif
 #ifdef WIN32_GUI
 								guiOnUpdateUserList();
 #endif
@@ -1693,7 +1703,7 @@ namespace pvpgn
 					{
 						bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
 						std::string msgtemp = localize(c, "This account has been locked");
-						msgtemp += account_get_locktext(account, true);
+						msgtemp += account_get_locktext(c, account, true);
 						packet_append_string(rpacket, msgtemp.c_str());
 					}
 					else {
@@ -1752,7 +1762,11 @@ namespace pvpgn
 
 #ifdef WITH_LUA
 					if (lua_handle_user(c, NULL, NULL, luaevent_user_login) == 1)
-						return 0;
+					{
+						// feature to break login from Lua
+						conn_set_state(c, conn_state_destroy);
+						return -1;
+					}
 #endif
 
 #ifdef WIN32_GUI
@@ -2117,7 +2131,7 @@ namespace pvpgn
 					eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
 					bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_CUSTOM);
 					std::string msgtemp = localize(c, "This account has been locked");
-					msgtemp += account_get_locktext(account, true);
+					msgtemp += account_get_locktext(c, account, true);
 					packet_append_string(rpacket, msgtemp.c_str());
 				}
 				else {
@@ -2161,12 +2175,21 @@ namespace pvpgn
 #endif
 					}
 					else if (hash_eq(clienthash, serverhash)) {
+
 						conn_login(c, account, username);
 						eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) \"%s\" logged in (right password)", conn_get_socket(c), username);
 						if ((conn_get_versionid(c) >= 0x0000000D) && (account_get_email(account) == NULL))
 							bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_EMAIL);
 						else
 							bn_int_set(&rpacket->u.server_logonproofreply.response, SERVER_LOGONPROOFREPLY_RESPONSE_OK);
+#ifdef WITH_LUA
+						if (lua_handle_user(c, NULL, NULL, luaevent_user_login) == 1)
+						{
+							// feature to break login from Lua
+							conn_set_state(c, conn_state_destroy);
+							return -1;
+						}
+#endif
 						// by amadeo updates the userlist
 #ifdef WIN32_GUI
 						guiOnUpdateUserList();
@@ -3304,7 +3327,7 @@ namespace pvpgn
 			{
 				_data.push_back(packet->u.data[i]);
 			}
-			lua_handle_client(c, request_id, _data, luaevent_client_readmemory);
+			lua_handle_client_readmemory(c, request_id, _data);
 #endif
 
 			return 0;
@@ -3574,13 +3597,6 @@ namespace pvpgn
 			return 0;
 		}
 
-		struct glist_cbdata {
-			unsigned tcount, counter;
-			t_connection *c;
-			t_game_type gtype;
-			t_packet *rpacket;
-		};
-
 		static int _glist_cb(t_game * game, void *data)
 		{
 			struct glist_cbdata *cbdata = (struct glist_cbdata*)data;
@@ -3778,7 +3794,7 @@ namespace pvpgn
 				cbdata.c = c;
 				cbdata.gtype = gtype;
 				cbdata.rpacket = rpacket;
-				gamelist_traverse(_glist_cb, &cbdata);
+				gamelist_traverse(_glist_cb, &cbdata, gamelist_source_joinbutton);
 
 				bn_int_set(&rpacket->u.server_gamelistreply.gamecount, cbdata.counter);
 				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] GAMELISTREPLY sent %u of %u games", conn_get_socket(c), cbdata.counter, cbdata.tcount);
@@ -4038,6 +4054,16 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad STARTGAME4 packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_startgame4), packet_get_size(packet));
 				return -1;
 			}
+
+			// Protection from hack attempt
+			// Large map name size will cause crash Starcraft client for user who select an item in game list ("Join" area)
+			// It occurs when the packet size of packet 0x0c in length interval 161-164
+			if (packet_get_size(packet) > 160)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got abnormal STARTGAME4 packet length (got %u bytes, hack attempt?)", conn_get_socket(c), packet_get_size(packet));
+				return -1;
+			}
+
 			// Quick hack to make W3 part channels when creating a game
 			if (conn_get_channel(c))
 				conn_part_channel(c);
@@ -4356,6 +4382,8 @@ namespace pvpgn
 					ladderList_active = ladders.getLadderList(LadderKey(id, clienttag, sort, ladder_time_active));
 					ladderList_current = ladders.getLadderList(LadderKey(id, clienttag, sort, ladder_time_current));
 				}
+				if (!ladderList_active || ladderList_current)
+					error = true;
 
 				for (i = start; i < start + count; i++) {
 
@@ -5345,6 +5373,41 @@ namespace pvpgn
 			eventlog(eventlog_level_info, __FUNCTION__, "[%d] get password for account \"%s\" to email \"%s\"", conn_get_socket(c), account_get_name(account), email);
 			return 0;
 		}
+
+
+
+		static int _client_extrawork(t_connection * c, t_packet const *const packet)
+		{
+			t_packet *rpacket;
+
+			if (packet_get_size(packet) < sizeof(t_client_extrawork)) {
+				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad EXTRAWORK packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_extrawork), packet_get_size(packet));
+				return -1;
+			}
+			{
+				short gametype;
+				short length;
+				const char * data;
+				std::string data_s;
+
+				gametype = bn_int_get(packet->u.client_extrawork.gametype);
+				length = bn_int_get(packet->u.client_extrawork.length);
+
+				if (!(data = (const char *)packet_get_raw_data_const(packet, sizeof(t_client_extrawork)))) {
+					eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad EXTRAWORK packet (missing or too long data)", conn_get_socket(c));
+					return -1;
+				}
+				// extract substring with given length
+				data_s = std::string(data).substr(0, length);
+				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] Received EXTRAWORK packet with GameType: %d and Length: %d (%s)", conn_get_socket(c), gametype, length, data_s.c_str());
+			
+	#ifdef WITH_LUA
+				lua_handle_client_extrawork(c, gametype, length, data_s.c_str());
+	#endif
+			}
+			return 0;
+		}
+
 	}
 
 }

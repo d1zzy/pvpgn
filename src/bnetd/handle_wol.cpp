@@ -616,7 +616,7 @@ namespace pvpgn
 				data.tcount = 0;
 				data.counter = 0;
 				data.conn = conn;
-				gamelist_traverse(&append_game_info, &data);
+				gamelist_traverse(&append_game_info, &data, gamelist_source_none);
 				DEBUG3("[%d] LIST sent %u of %u games", conn_get_socket(conn), data.counter, data.tcount);
 			}
 			irc_send(conn, RPL_LISTEND, ":End of LIST command");
@@ -1627,7 +1627,7 @@ namespace pvpgn
 		{
 			t_packet * p;
 			char data[MAX_IRC_MESSAGE_LEN + 1];
-			unsigned len;
+			unsigned len = 0;
 
 			p = packet_create(packet_class_raw);
 
@@ -1686,39 +1686,38 @@ namespace pvpgn
 			if ((numparams >= 1) && (params[0]) && (text)) {
 				cl_tag = tag_sku_to_uint(std::atoi(params[0]));
 
-				e = irc_get_ladderelems(text);
+				if (e = irc_get_ladderelems(text))
+				{
+					//TIMESTAMP 1147130452
+					//TOTAL 12033
+					//NOTFOUND
+					// TIMESTAMP 1188740860
+					// 'TOTAL 27466
+					/*    std::sprintf(temp,"TIMESTAMP %lu\n", std::time(NULL));
+						std::strcat(data,temp);
+						std::sprintf(temp,"TOTAL 88\n");
+						std::strcat(data,temp);*/
 
-				//TIMESTAMP 1147130452
-				//TOTAL 12033
-				//NOTFOUND
-				// TIMESTAMP 1188740860
-				// 'TOTAL 27466
-				/*    std::sprintf(temp,"TIMESTAMP %lu\n", std::time(NULL));
-					std::strcat(data,temp);
-					std::sprintf(temp,"TOTAL 88\n");
-					std::strcat(data,temp);*/
-
-				for (i = 0; e[i]; i++) {
-					/* Now we have in e[i] names */
-					if (e[i] && (std::strcmp(e[i], ":") != 0)) {
-						cl_account = accountlist_find_account(e[i]);
-						if (cl_account && cl_tag && (rank = account_get_ladder_rank(cl_account, cl_tag, id))) {
-							points = account_get_ladder_points(cl_account, cl_tag, id);
-							wins = account_get_ladder_wins(cl_account, cl_tag, id);
-							losses = account_get_ladder_losses(cl_account, cl_tag, id);
-							disconnects = account_get_ladder_disconnects(cl_account, cl_tag, id);
-							std::sprintf(temp, "%u  %s  %u  %u  %u  0  %u\r\n", rank, e[i], points, wins, losses, disconnects);
-							std::strcat(data, temp);
+					for (i = 0; e[i]; i++) {
+						/* Now we have in e[i] names */
+						if (e[i] && (std::strcmp(e[i], ":") != 0)) {
+							cl_account = accountlist_find_account(e[i]);
+							if (cl_account && cl_tag && (rank = account_get_ladder_rank(cl_account, cl_tag, id))) {
+								points = account_get_ladder_points(cl_account, cl_tag, id);
+								wins = account_get_ladder_wins(cl_account, cl_tag, id);
+								losses = account_get_ladder_losses(cl_account, cl_tag, id);
+								disconnects = account_get_ladder_disconnects(cl_account, cl_tag, id);
+								std::sprintf(temp, "%u  %s  %u  %u  %u  0  %u\r\n", rank, e[i], points, wins, losses, disconnects);
+								std::strcat(data, temp);
+							}
+							else
+								std::strcat(data, "NOTFOUND\r\n");
 						}
-						else
-							std::strcat(data, "NOTFOUND\r\n");
 					}
-				}
-
-				if (e)
 					irc_unget_ladderelems(e);
 
-				_ladder_send(conn, data);
+					_ladder_send(conn, data);
+				}
 			}
 			else {
 				WARN0("Not enough parameters");

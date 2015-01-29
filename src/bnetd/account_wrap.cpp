@@ -455,10 +455,9 @@ namespace pvpgn
 
 
 		/* Return text with account lock */
-		extern std::string account_get_locktext(t_account * account, bool with_author, bool for_mute)
+		extern std::string account_get_locktext(t_connection * c, t_account * account, bool with_author, bool for_mute)
 		{
 			std::string msgtemp;
-			t_connection * c = account_get_conn(account);
 
 			// append author of ban
 			if (with_author)
@@ -484,9 +483,9 @@ namespace pvpgn
 			}
 			return msgtemp;
 		}
-		extern std::string account_get_mutetext(t_account * account, bool with_author)
+		extern std::string account_get_mutetext(t_connection * c, t_account * account, bool with_author)
 		{
-			return account_get_locktext(account, with_author, true);
+			return account_get_locktext(c, account, with_author, true);
 		}
 		/****************************************************************/
 

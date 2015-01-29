@@ -15,7 +15,7 @@ function users_count()
 	return count
 end
 
--- Get count of all server account 
+-- Get count of all server account that were used by the server
 function accounts_count()
 	local count = 0
 	for i,account in pairs(api.server_get_users(true)) do

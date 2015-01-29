@@ -459,7 +459,7 @@ namespace pvpgn
 		{
 			t_packet * p;
 			char data[MAX_IRC_MESSAGE_LEN + 1];
-			unsigned len;
+			unsigned len = 0;
 			t_apiregmember * apiregmember;
 			t_elem * curr;
 
@@ -881,7 +881,7 @@ namespace pvpgn
 						}
 					}
 				}
-				snprintf(data, sizeof(data), "HRESULT=%s\nMessage=%s\nNewNick=%s\nNewPass=%s\nAge=%s\nConsent=0\nEND\r", hresult, message, newnick, newpass, age, consent);
+				snprintf(data, sizeof(data), "HRESULT=%s\nMessage=%s\nNewNick=%s\nNewPass=%s\nAge=%s\nConsent=%s\nEND\r", hresult, message, newnick, newpass, age, consent);
 				apireg_send(apiregmember_get_conn(apiregmember), data);
 				return 0;
 			}

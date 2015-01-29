@@ -91,10 +91,10 @@ function account_set_auth_lock(username, value)
 end
 
 function account_get_auth_locktime(username)
-	return api.account_get_attr(username, "BNET\\auth\\locktime", attr_type_int)
+	return api.account_get_attr(username, "BNET\\auth\\locktime", attr_type_num)
 end
 function account_set_auth_locktime(username, value)
-	return api.account_set_attr(username, "BNET\\auth\\locktime", attr_type_int, value)
+	return api.account_set_attr(username, "BNET\\auth\\locktime", attr_type_num, value)
 end
 
 function account_get_auth_lockreason(username)
@@ -119,10 +119,10 @@ function account_set_auth_mute(username, value)
 end
 
 function account_get_auth_mutetime(username)
-	return api.account_get_attr(username, "BNET\\auth\\mutetime", attr_type_int)
+	return api.account_get_attr(username, "BNET\\auth\\mutetime", attr_type_num)
 end
 function account_set_auth_mutetime(username, value)
-	return api.account_set_attr(username, "BNET\\auth\\mutetime", attr_type_int, value)
+	return api.account_set_attr(username, "BNET\\auth\\mutetime", attr_type_num, value)
 end
 
 function account_get_auth_mutereason(username)
@@ -140,17 +140,17 @@ function account_set_auth_muteby(username, value)
 end
 
 function account_get_auth_command_groups(username)
-	return api.account_get_attr(username, "BNET\\auth\\command_groups", attr_type_int)
+	return api.account_get_attr(username, "BNET\\auth\\command_groups", attr_type_num)
 end
 function account_set_auth_command_groups(username, value)
-	return api.account_set_attr(username, "BNET\\auth\\command_groups", attr_type_int, value)
+	return api.account_set_attr(username, "BNET\\auth\\command_groups", attr_type_num, value)
 end
 
 function account_get_acct_lastlogin_time(username)
-	return api.account_get_attr(username, "BNET\\acct\\lastlogin_time", attr_type_int)
+	return api.account_get_attr(username, "BNET\\acct\\lastlogin_time", attr_type_num)
 end
 function account_set_acct_lastlogin_time(username, value)
-	return api.account_set_attr(username, "BNET\\acct\\lastlogin_time", attr_type_int, value)
+	return api.account_set_attr(username, "BNET\\acct\\lastlogin_time", attr_type_num, value)
 end
 
 function account_get_acct_lastlogin_owner(username)
@@ -161,10 +161,10 @@ function account_set_acct_lastlogin_owner(username, value)
 end
 
 function account_get_acct_createtime(username)
-	return api.account_get_attr(username, "BNET\\acct\\ctime", attr_type_int)
+	return api.account_get_attr(username, "BNET\\acct\\ctime", attr_type_num)
 end
 function account_set_acct_createtime(username, value)
-	return api.account_set_attr(username, "BNET\\acct\\ctime", attr_type_int, value)
+	return api.account_set_attr(username, "BNET\\acct\\ctime", attr_type_num, value)
 end
 
 function account_get_acct_lastlogin_clienttag(username)
@@ -520,4 +520,125 @@ function account_get_locale(username)
 end
 function account_set_locale(username, value)
 	return api.account_set_attr(username, "Record\\WOL\\auth\\locale", attr_type_str, value)
+end
+
+
+
+--
+-- Warcraft 3 (DotA)
+--
+
+function account_get_dotarating_3x3(username)
+	value = api.account_get_attr(username, "Record\\W3XP\\dota_3_rating", attr_type_num)
+	if (value == 0) then value = 1000 end
+	return value
+end
+function account_set_dotarating_3x3(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_3_rating", attr_type_num, value)
+end
+
+function account_get_dotawins_3x3(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_3_wins", attr_type_num)
+end
+function account_set_dotawins_3x3(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_3_wins", attr_type_num, value)
+end
+
+function account_get_dotalosses_3x3(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_3_losses", attr_type_num)
+end
+function account_set_dotalosses_3x3(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_3_losses", attr_type_num, value)
+end
+
+function account_get_dotastreaks_3x3(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_3_streaks", attr_type_num)
+end
+function account_set_dotastreaks_3x3(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_3_streaks", attr_type_num, value)
+end
+
+function account_get_dotaleaves_3x3(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_3_leaves", attr_type_num)
+end
+function account_set_dotaleaves_3x3(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_3_leaves", attr_type_num, value)
+end
+
+
+function account_get_dotarating_5x5(username)
+	value = api.account_get_attr(username, "Record\\W3XP\\dota_5_rating", attr_type_num)
+	if (value == 0) then value = 1000 end
+	return value
+end
+function account_set_dotarating_5x5(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_5_rating", attr_type_num, value)
+end
+
+function account_get_dotawins_5x5(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_5_wins", attr_type_num)
+end
+function account_set_dotawins_5x5(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_5_wins", attr_type_num, value)
+end
+
+function account_get_dotalosses_5x5(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_5_losses", attr_type_num)
+end
+function account_set_dotalosses_5x5(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_5_losses", attr_type_num, value)
+end
+
+function account_get_dotastreaks_5x5(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_5_streaks", attr_type_num)
+end
+function account_set_dotastreaks_5x5(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_5_streaks", attr_type_num, value)
+end
+
+function account_get_dotaleaves_5x5(username)
+	return api.account_get_attr(username, "Record\\W3XP\\dota_5_leaves", attr_type_num)
+end
+function account_set_dotaleaves_5x5(username, value)
+	return api.account_set_attr(username, "Record\\W3XP\\dota_5_leaves", attr_type_num, value)
+end
+
+function account_get_botping(username)
+	value = api.account_get_attr(username, "BNET\\acct\\botping", attr_type_str)
+	local pings = {}
+	-- if pings were not set yet then return empty table
+	if string.empty(value) then return pings end
+
+	-- deserialize and return table
+	-- data format: "unixtime,botname,ping;..."
+	for chunk in string.split(value,";") do
+		local item = {}
+		i = 1
+		for v in string.split(chunk,",") do
+			if (i == 1) then 
+				item.date = v
+			elseif (i == 2) then 
+				item.bot = v
+			elseif (i == 3) then 
+				item.ping = v
+			end
+			i = i + 1
+		end
+		table.insert(pings, item)
+	end
+	-- sort by ping ascending
+	table.sort(pings, function(a,b) return tonumber(a.ping) < tonumber(b.ping) end)
+	return pings
+end
+-- pings is a table that received from account_get_botping()
+function account_set_botping(username, pings)
+	local value = ""
+	-- serialize table
+	for k,v in pairs(pings) do
+		-- ignore expired pings
+		if (os.time() - tonumber(v.date)) < 60*60*24*config.ghost_ping_expire then
+			value = value .. string.format("%s,%s,%s;", v.date, v.bot, v.ping);
+		end
+	end
+	return api.account_set_attr(username, "BNET\\acct\\botping", attr_type_str, value)
 end

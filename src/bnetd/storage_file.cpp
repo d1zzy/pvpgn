@@ -65,7 +65,7 @@ namespace pvpgn
 		static t_storage_info *file_create_account(char const *);
 		static t_storage_info *file_get_defacct(void);
 		static int file_free_info(t_storage_info *);
-		static int file_read_attrs(t_storage_info *, t_read_attr_func, void *);
+		static int file_read_attrs(t_storage_info *, t_read_attr_func, void *, const char *);
 		static t_attr *file_read_attr(t_storage_info *, const char *);
 		static int file_write_attrs(t_storage_info *, const t_hlist *);
 		static int file_read_accounts(int, t_read_accounts_func, void *);
@@ -295,7 +295,7 @@ namespace pvpgn
 			return 0;
 		}
 
-		static int file_read_attrs(t_storage_info * info, t_read_attr_func cb, void *data)
+		static int file_read_attrs(t_storage_info * info, t_read_attr_func cb, void *data, const char *ktab)
 		{
 			if (accountsdir == NULL || file == NULL)
 			{

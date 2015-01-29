@@ -200,6 +200,9 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL rawname");
 				return -1;
 			}
+			// ignore request for icons_STAR.bni (deprecated https://github.com/HarpyWar/pvpgn/issues/55)
+			if (strcmp(rawname, BNETD_STAR_ICON_FILE) == 0)
+				return -1;
 
 			if (!(rpacket = packet_create(packet_class_file)))
 			{

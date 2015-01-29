@@ -81,7 +81,9 @@ namespace pvpgn
 #define STORAGE_SQL_DEFAULT_UID	0
 #define SQL_DEFAULT_PREFIX	""
 
-#define SQL_ON_DEMAND	1
+/* FIXME: (HarpyWar) do not define SQL_ON_DEMAND - instead it will cause a lot of sql queries (one attribute selection = one query)
+		  https://github.com/HarpyWar/pvpgn/issues/85 */
+//#define SQL_ON_DEMAND	1
 
 		extern t_sql_engine *sql;
 		extern unsigned int sql_defacct;

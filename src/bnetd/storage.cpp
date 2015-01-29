@@ -25,7 +25,6 @@
 #include "storage_file.h"
 #ifdef WITH_SQL
 #include "storage_sql.h"
-#include "storage_sql2.h"
 #endif
 
 #include "compat/strdup.h"
@@ -43,7 +42,7 @@ namespace pvpgn
 
 		extern int storage_init(const char *spath)
 		{
-			char *temp, *p;
+			char *p;
 			int res;
 			char dstr[256];
 
@@ -52,17 +51,14 @@ namespace pvpgn
 				return -1;
 			}
 
-			temp = xstrdup(spath);
 			if ((p = std::strchr((char *)spath, ':')) == NULL) {
 				eventlog(eventlog_level_error, __FUNCTION__, "malformed storage_path , driver not found");
-				xfree((void*)temp);
 				return -1;
 			}
 
 			std::strcpy(dstr, "file");
 #ifdef WITH_SQL
 			std::strcat(dstr, ", sql");
-			std::strcat(dstr, ", sql2");
 #endif
 			eventlog(eventlog_level_info, __FUNCTION__, "initializing storage layer (available drivers: %s)", dstr);
 
@@ -80,19 +76,11 @@ namespace pvpgn
 				if (!res)
 					eventlog(eventlog_level_info, __FUNCTION__, "using sql storage driver");
 			}
-			else if (strcasecmp(spath, "sql2") == 0) {
-				storage = &storage_sql2;
-				res = storage->init(p + 1);
-				if (!res)
-					eventlog(eventlog_level_info, __FUNCTION__, "using sql2 storage driver");
-			}
 #endif
 			else {
 				eventlog(eventlog_level_fatal, __FUNCTION__, "no known driver specified (%s)", spath);
 				res = -1;
 			}
-
-			xfree((void*)temp);
 
 			return res;
 		}

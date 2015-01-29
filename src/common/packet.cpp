@@ -433,6 +433,8 @@ namespace pvpgn
 					return "CLIENT_ADCLICK2";
 				case CLIENT_READMEMORY:
 					return "CLIENT_READMEMORY";
+				case CLIENT_EXTRAWORK:
+					return "CLIENT_EXTRAWORK";
 				case CLIENT_UNKNOWN_24:
 					return "CLIENT_UNKNOWN_24";
 				case CLIENT_LADDERREQ:

@@ -41,6 +41,7 @@ namespace pvpgn
 		extern std::map<std::string, std::string> get_account_object(const char *username);
 		extern std::map<std::string, std::string> get_account_object(t_account *account);
 		extern std::map<std::string, std::string> get_game_object(unsigned int gameid);
+		extern std::map<std::string, std::string> get_game_object(const char * gamename, t_clienttag clienttag, t_game_type gametype);
 		extern std::map<std::string, std::string> get_game_object(t_game * game);
 		extern std::map<std::string, std::string> get_channel_object(unsigned int channelid);
 		extern std::map<std::string, std::string> get_channel_object(t_channel * channel);

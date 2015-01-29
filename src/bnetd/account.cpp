@@ -53,6 +53,7 @@
 #include "storage.h"
 #include "common/flags.h"
 #include "common/xalloc.h"
+#include "common/xstring.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -570,14 +571,7 @@ namespace pvpgn
 
 
 			if (tname = account_get_name(account)) {
-				char temp[MAX_USERNAME_LEN];
-				for (i = 0; i < std::strlen(tname); i++) {
-					temp[i] = tname[i];
-					if (isupper((int)temp[i])) {
-						temp[i] = tolower((int)temp[i]);
-					}
-				}
-				if (strstr(temp, vague_username)) {
+				if (find_substr((char*)tname, vague_username)) {
 					return tname;
 				}
 				return NULL;

@@ -35,6 +35,7 @@ namespace pvpgn
 	extern char *		str_strip_affix(char * str, char const * affix);
 	extern char *str_replace(char *orig, char *rep, char *with);
 	extern std::string str_replace_nl(char const * text);
+	extern bool find_substr(char * input, const char * find);
 
 	#define safe_toupper(X) (std::islower((int)X)?std::toupper((int)X):(X))
 
