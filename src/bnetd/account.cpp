@@ -130,22 +130,6 @@ namespace pvpgn
 
 			if (username) 
 			{ 
-
-#ifdef WIN32
-				// illegal filenames in Windows
-				static const char* const badfilenames[] = {
-					"com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9", "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "con", "nul", "prn", "aux"
-				};
-				for (int i = 0; i < (sizeof(badfilenames) / sizeof(*badfilenames)); i++)
-				{
-					if (strcasecmp(username, badfilenames[i]) == 0)
-					{
-						eventlog(eventlog_level_debug, __FUNCTION__, "user name is invalid (illegal file name in Windows)");
-						goto err;
-					}
-				}
-#endif
-
 				/* actually making a new account */
 				/* first check if such a username already owns an account.
 				 * we search in the memory hash mainly for non-indexed storage types.

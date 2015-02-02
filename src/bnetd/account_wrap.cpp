@@ -364,6 +364,22 @@ namespace pvpgn
 
 		extern int account_get_auth_lock(t_account * account)
 		{
+
+#ifdef WIN32
+			// do not allow login with illegal Windows filenames
+			// 1) account will not created on plain file storage
+			// 2) it may cause a crash when writing a userlog commands into a file with that name
+			for (int i = 0; i < (sizeof(ILLEGALFILENAMES) / sizeof(*ILLEGALFILENAMES)); i++)
+			{
+				if (strcasecmp(account_get_name(account), ILLEGALFILENAMES[i]) == 0)
+				{
+					account_set_auth_lockreason(account, "user name is illegal");
+					eventlog(eventlog_level_debug, __FUNCTION__, "user name is invalid (reserved file name on Windows)");
+					return true;
+				}
+			}
+#endif
+
 			// check for unlock
 			if (unsigned int locktime = account_get_auth_locktime(account))
 			{
