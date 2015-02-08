@@ -128,7 +128,9 @@ namespace pvpgn
 			account->namehash = 0; /* hash it later before inserting */
 			account->uid = 0; /* hash it later before inserting */
 
-			if (username) { /* actually making a new account */
+			if (username) 
+			{ 
+				/* actually making a new account */
 				/* first check if such a username already owns an account.
 				 * we search in the memory hash mainly for non-indexed storage types.
 				 * indexed storage types check themselves if the username exists already

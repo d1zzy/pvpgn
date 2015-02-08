@@ -246,6 +246,13 @@ const char * const BNETD_LOG_COMMAND_GROUPS = "2345678";
 const char * const BNETD_LOG_COMMAND_LIST = "";
 
 
+#ifdef WIN32
+// reserved filenames on Windows
+const char* const ILLEGALFILENAMES[] = {
+	"com1", "com2", "com3", "com4", "com5", "com6", "com7", "com8", "com9", "lpt1", "lpt2", "lpt3", "lpt4", "lpt5", "lpt6", "lpt7", "lpt8", "lpt9", "con", "nul", "prn", "aux"
+};
+#endif
+
 /***************************************************************/
 /* default values for the tracking server */
 
