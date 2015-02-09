@@ -44,7 +44,6 @@ namespace pvpgn
 	extern int hex_to_str(char const * source, char * data, int datalen);
 	extern char * buildpath(char const *root, const char *suffix);
 	extern int timestr_to_time(char const * timestr, std::time_t* ptime);
-	extern void strlower(char* str);
 
 	static inline char * str_skip_space(char *str)
 	{

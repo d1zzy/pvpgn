@@ -134,7 +134,7 @@ namespace pvpgn
 			}
 
 			user = xstrdup(username);
-			strlower(user);
+			strtolower(user);
 			snprintf(query, sizeof(query), "SELECT count(*) FROM %sBNET WHERE username='%s'", tab_prefix, user);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 
@@ -534,7 +534,7 @@ namespace pvpgn
 			* way to check for account existence by an uid */
 			if (name) {
 				char *user = xstrdup(name);
-				strlower(user);
+				strtolower(user);
 
 				snprintf(query, sizeof(query), "SELECT "SQL_UID_FIELD" FROM %sBNET WHERE username='%s'", tab_prefix, user);
 				xfree(user);

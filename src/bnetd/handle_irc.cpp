@@ -33,6 +33,7 @@
 #include "common/util.h"
 #include "common/list.h"
 #include "common/addr.h"
+#include "common/xstring.h"
 
 #include "compat/snprintf.h"
 
@@ -284,8 +285,7 @@ namespace pvpgn
 															if (pass) {
 																t_hash h;
 
-																for (p = pass; *p; p++)
-																if (std::isupper((int)*p)) *p = std::tolower(*p);
+																strtolower(pass);
 																bnet_hash(&h, std::strlen(pass), pass);
 																irc_authenticate(conn, hash_get_str(h));
 															}
@@ -325,8 +325,7 @@ namespace pvpgn
 								break;
 							}
 
-							for (j = 0; j < std::strlen(pass); j++)
-							if (std::isupper((int)pass[j])) pass[j] = std::tolower((int)pass[j]);
+							strtolower(pass);
 
 							bnet_hash(&passhash, std::strlen(pass), pass);
 

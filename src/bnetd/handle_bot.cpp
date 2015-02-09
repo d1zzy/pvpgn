@@ -26,6 +26,7 @@
 #include "common/packet.h"
 #include "common/bnethash.h"
 #include "common/tag.h"
+#include "common/xstring.h"
 
 #include "connection.h"
 #include "account.h"
@@ -222,9 +223,7 @@ namespace pvpgn
 													{
 														unsigned int i;
 
-														for (i = 0; i < std::strlen(testpass); i++)
-														if (std::isupper((int)testpass[i]))
-															testpass[i] = std::tolower((int)testpass[i]);
+														strtolower(testpass);
 													}
 													if (bnet_hash(&trypasshash1, std::strlen(testpass), testpass) < 0) /* FIXME: force to lowercase */
 													{

@@ -32,6 +32,7 @@
 #include "common/addr.h"
 #include "common/xalloc.h"
 #include "common/network.h"
+#include "common/xstring.h"
 #include "prefs.h"
 #include "game.h"
 #include "net.h"
@@ -76,12 +77,7 @@ namespace pvpgn
 			ASSERT(charname, 0);
 			len = std::strlen(charname);
 			for (hash = 0, i = 0, pos = 0; i < len; i++) {
-				if (isascii((int)charname[i])) {
-					ch = (unsigned int)(unsigned char)std::tolower((int)charname[i]);
-				}
-				else {
-					ch = (unsigned int)(unsigned char)charname[i];
-				}
+				ch = safe_tolower(charname[i]);
 				hash ^= ROTL(ch, pos, (std::numeric_limits<unsigned int>::digits));
 				pos += (std::numeric_limits<unsigned char>::digits) - 1;
 			}

@@ -23,6 +23,7 @@
 #include "common/eventlog.h"
 #include "common/bnethash.h"
 #include "common/version.h"
+#include "common/xstring.h"
 #include "common/setup_after.h"
 
 using namespace pvpgn;
@@ -105,9 +106,7 @@ extern int main(int argc, char * argv[])
 		}
 
 		/* FIXME: what is the max password length? */
-		for (i = 0; i < std::strlen(buff); i++)
-		if (isascii((int)buff[i]) && std::isupper((int)buff[i])) /* some std::tolower()'s are broken */
-			buff[i] = std::tolower((int)buff[i]);
+		strtolower(buff);
 
 		bnet_hash(&hash, std::strlen(buff), buff);
 		std::printf("\"BNET\\\\acct\\\\passhash1\"=\"%s\"\n", hash_get_str(hash));

@@ -50,7 +50,7 @@ namespace pvpgn
 	{
 		unsigned char retval;
 
-		if (std::isalpha(ch)) retval = std::tolower(ch);
+		if (std::isalpha(ch)) retval = safe_tolower(ch);
 		else retval = ch;
 		if (retval < 'A') retval -= ('0' - 0);
 		else retval -= ('a' - 0xa);
