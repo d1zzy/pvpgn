@@ -1098,7 +1098,7 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got bad clienttag");
 				return -1;
 			}
-			sprintf(key, sizeof(key), "Record\\%s\\%s\\wins", tag_uint_to_str(clienttag_str, clienttag), ladder_id_str[(int)id]);
+			snprintf(key, sizeof(key), "Record\\%s\\%s\\wins", tag_uint_to_str(clienttag_str, clienttag), ladder_id_str[(int)id]);
 			return account_set_numattr(account, key, account_get_ladder_wins(account, clienttag, id) + 1);
 		}
 
@@ -1535,7 +1535,7 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got bad clienttag");
 				return 0;
 			}
-			std::sprintf(key, "Record\\%s\\0\\strength", tag_uint_to_str(clienttag_str, clienttag));
+			snprintf(key, sizeof(key), "Record\\%s\\0\\strength", tag_uint_to_str(clienttag_str, clienttag));
 			return account_get_numattr(account, key);
 		}
 
@@ -1550,7 +1550,7 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got bad clienttag");
 				return -1;
 			}
-			sprintf(key, sizeof(key), "Record\\%s\\0\\strength", tag_uint_to_str(clienttag_str, clienttag));
+			snprintf(key, sizeof(key), "Record\\%s\\0\\strength", tag_uint_to_str(clienttag_str, clienttag));
 			return account_set_numattr(account, key, strength);
 		}
 
@@ -2182,7 +2182,7 @@ namespace pvpgn
 			char         key[256];
 			char clienttag_str[5];
 
-			sprintf(key, sizeof(key), "Record\\%s\\%s\\level", tag_uint_to_str(clienttag_str, clienttag), ladder_id_str[(int)id]);
+			snprintf(key, sizeof(key), "Record\\%s\\%s\\level", tag_uint_to_str(clienttag_str, clienttag), ladder_id_str[(int)id]);
 			return account_set_numattr(account, key, level);
 		}
 
