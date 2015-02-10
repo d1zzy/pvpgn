@@ -79,6 +79,11 @@ namespace pvpgn
 			iterator(const iterator& orig) :ptr(orig.ptr) {}
 			~iterator() throw() {}
 
+			iterator& operator=(const iterator& i) {
+                ptr = i.ptr;
+                return *this;
+			}
+
 			bool operator==(const iterator& op) const {
 				return ptr == op.ptr;
 			}
