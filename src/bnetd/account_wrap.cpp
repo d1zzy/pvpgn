@@ -1810,7 +1810,7 @@ namespace pvpgn
 			}
 			else
 			{
-				snprintf(chars_in_realm, sizeof(chars_in_realm) "%s", ch->name);
+				snprintf(chars_in_realm, sizeof(chars_in_realm), "%s", ch->name);
 			}
 
 			eventlog(eventlog_level_debug, __FUNCTION__, "new character list for realm \"%s\" is \"%s\"", ch->realmname, chars_in_realm);
