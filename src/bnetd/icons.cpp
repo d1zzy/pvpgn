@@ -243,7 +243,7 @@ namespace pvpgn
 			user_c = account_get_conn(account);
 
 
-			switch (std::tolower(subcommand[0]))
+			switch (safe_tolower(subcommand[0]))
 			{
 				// set
 				case 's':

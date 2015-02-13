@@ -723,7 +723,7 @@ namespace pvpgn
 				ch = name[i];
 				/* hardcoded safety checks */
 				if (ch == '/' || ch == '\\') return -1;
-				if (std::isalnum((int)ch)) continue;
+				if (std::isalnum((unsigned char)ch)) continue;
 				if (std::strchr(prefs_get_account_allowed_symbols(), ch)) continue;
 				return -1;
 			}

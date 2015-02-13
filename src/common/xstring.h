@@ -37,7 +37,8 @@ namespace pvpgn
 	extern std::string str_replace_nl(char const * text);
 	extern bool find_substr(char * input, const char * find);
 
-	#define safe_toupper(X) (std::islower((int)X)?std::toupper((int)X):(X))
+	#define safe_toupper(X) (std::islower((unsigned char)X)?std::toupper((unsigned char)X):(X))
+	#define safe_tolower(X) (std::isupper((unsigned char)X)?std::tolower((unsigned char)X):(X))
 
 	/*
 	Fix for std::string for some unix compilers

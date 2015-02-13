@@ -384,7 +384,7 @@ namespace pvpgn
 				out[outpos++] = '\\';
 				out[outpos++] = '"';
 			}
-			else if (std::isprint((int)in[inpos]))
+			else if (std::isprint((unsigned char)in[inpos]))
 				out[outpos++] = in[inpos];
 			else if (in[inpos] == '\a')
 			{
@@ -682,11 +682,6 @@ namespace pvpgn
 
 		*ptime = std::mktime(&when);
 		return 0;
-	}
-
-	extern void strlower(char* str)
-	{
-		for (; *str; str++) *str = std::tolower(*str);
 	}
 
 }

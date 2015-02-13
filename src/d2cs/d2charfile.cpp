@@ -676,7 +676,7 @@ namespace pvpgn
 			unsigned char	ch;
 
 			if (!name) return -1;
-			if (!std::isalnum((int)name[0])) return -1;
+			if (!std::isalnum((unsigned char)name[0])) return -1;
 
 			for (i = 1; i <= MAX_CHARNAME_LEN; i++) {
 				ch = name[i];

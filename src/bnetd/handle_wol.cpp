@@ -34,6 +34,7 @@
 #include "common/list.h"
 #include "common/addr.h"
 #include "common/trans.h"
+#include "common/xstring.h"
 
 #include "common/packet.h"
 
@@ -340,9 +341,7 @@ namespace pvpgn
 					t_account * tempacct;
 					t_hash pass_hash;
 					char * pass = xstrdup(conn_wol_get_apgar(conn)); /* FIXME: Do not use bnet passhash when we have wol passhash */
-
-					for (unsigned j = 0; j < std::strlen(pass); j++)
-					if (std::isupper((int)pass[j])) pass[j] = std::tolower((int)pass[j]);
+					strtolower(pass);
 
 					bnet_hash(&pass_hash, std::strlen(pass), pass);
 

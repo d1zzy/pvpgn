@@ -3148,7 +3148,7 @@ namespace pvpgn
 				return -1;
 			}
 			for (i = 0; i < args[2].length(); i++)
-				if (std::isupper((int)args[2][i])) args[2][i] = std::tolower((int)args[2][i]);
+				args[2][i] = safe_tolower(args[2][i]);
 			pass = args[2].c_str(); // password
 
 
@@ -3228,7 +3228,7 @@ namespace pvpgn
 			}
 
 			for (i = 0; i < pass.length(); i++)
-				if (std::isupper((int)pass[i])) pass[i] = std::tolower((int)pass[i]);
+				pass[i] = safe_tolower(pass[i]);
 
 			bnet_hash(&passhash, pass.length(), pass.c_str());
 

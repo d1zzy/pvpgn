@@ -51,6 +51,7 @@
 #include "common/network.h"
 #include "common/hexdump.h"
 #include "common/version.h"
+#include "common/xstring.h"
 #ifdef CLIENTDEBUG
 # include "common/eventlog.h"
 #endif
@@ -921,9 +922,7 @@ extern int main(int argc, char * argv[])
 				std::printf("password must not be more than %u characters long. Try again.\n", MAX_USERPASS_LEN);
 				continue;
 			}
-			for (i = 0; i < std::strlen(password); i++)
-			if (std::isupper((int)password[i]))
-				password[i] = std::tolower((int)password[i]);
+			strtolower(password);
 
 			client.munged = 1;
 			client.commpos = 0;
@@ -942,8 +941,7 @@ extern int main(int argc, char * argv[])
 			std::printf("\n");
 			if (status < 0)
 				continue;
-			for (i = 0; i < std::strlen(passwordvrfy); i++)
-				passwordvrfy[i] = std::tolower((int)passwordvrfy[i]);
+			strtolower(passwordvrfy);
 
 			if (std::strcmp(password, passwordvrfy) != 0)
 			{
@@ -1048,8 +1046,7 @@ extern int main(int argc, char * argv[])
 			std::printf("\n");
 			if (status < 0)
 				continue;
-			for (i = 0; i < std::strlen(passwordprev); i++)
-				passwordprev[i] = std::tolower((int)passwordprev[i]);
+			strtolower(passwordprev);
 
 			client.munged = 1;
 			client.commpos = 0;
@@ -1068,8 +1065,7 @@ extern int main(int argc, char * argv[])
 			std::printf("\n");
 			if (status < 0)
 				continue;
-			for (i = 0; i < std::strlen(password); i++)
-				password[i] = std::tolower((int)password[i]);
+			strtolower(password);
 
 			client.munged = 1;
 			client.commpos = 0;
@@ -1088,8 +1084,7 @@ extern int main(int argc, char * argv[])
 			std::printf("\n");
 			if (status < 0)
 				continue;
-			for (i = 0; i < std::strlen(passwordvrfy); i++)
-				passwordvrfy[i] = std::tolower((int)passwordvrfy[i]);
+			strtolower(passwordvrfy);
 
 			if (std::strcmp(password, passwordvrfy) != 0)
 			{
@@ -1190,8 +1185,7 @@ extern int main(int argc, char * argv[])
 			std::printf("\n");
 			if (status < 0)
 				continue;
-			for (i = 0; i < std::strlen(password); i++)
-				password[i] = std::tolower((int)password[i]);
+			strtolower(password);
 		}
 
 		/* now login */

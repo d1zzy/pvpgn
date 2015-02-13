@@ -668,7 +668,6 @@ namespace pvpgn
 			t_packet *rpacket;
 			char const *username;
 			char const *plainpass;
-			char upass[20];
 			char lpass[20];
 			t_hash sc_hash;
 			unsigned int i;
@@ -694,7 +693,7 @@ namespace pvpgn
 			account_verifier = (const char *)packet_get_data_const(packet, offsetof(t_client_createaccount_w3, password_verifier), 32);
 
 			for (i = 0; i<16; i++){
-				int value = account_verifier[i];
+				int value = (unsigned char)account_verifier[i];
 				if (value == 0)
 					break;
 				presume_plainpass &= (std::isprint(value)>0);
@@ -734,13 +733,11 @@ namespace pvpgn
 				goto out;
 			}
 
-			if (presume_plainpass && plainpass) {
+			if (plainpass) {
 				/* convert plaintext password to lowercase for sc etc. */
 				std::strncpy(lpass, plainpass, 16);
 				lpass[16] = 0;
-				for (i = 0; i < std::strlen(lpass); i++)
-				if (std::isupper((int)lpass[i]))
-					lpass[i] = std::tolower((int)lpass[i]);
+				strtolower(lpass);
 			}
 
 			//set password hash for sc etc.

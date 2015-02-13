@@ -26,6 +26,7 @@
 #include "compat/strcasecmp.h"
 #include "common/xalloc.h"
 #include "common/introtate.h"
+#include "common/xstring.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -241,10 +242,7 @@ namespace pvpgn
 
 			for (hash = 0, pos = 0, i = 0; i < std::strlen(string); i++)
 			{
-				if (isascii((int)string[i]))
-					ch = (unsigned int)(unsigned char)std::tolower((int)string[i]);
-				else
-					ch = (unsigned int)(unsigned char)string[i];
+				ch = safe_tolower(string[i]);
 				hash ^= ROTL(ch, pos, (std::numeric_limits<unsigned int>::digits));
 				pos += (std::numeric_limits<unsigned char>::digits) - 1;
 			}
