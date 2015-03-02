@@ -648,10 +648,10 @@ namespace pvpgn
 				temp = temp + (unsigned int)bn_int_nget(*((bn_int *)chdata));
 				i += 4;
 				if (i < size) {
-					*chdata++;
-					*chdata++;
-					*chdata++;
-					*chdata++;
+					*(chdata++);
+					*(chdata++);
+					*(chdata++);
+					*(chdata++);
 				}
 			}
 
