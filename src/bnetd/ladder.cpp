@@ -122,7 +122,7 @@ namespace pvpgn
 
 		extern int ladder_init_account_wol(t_account * account, t_clienttag clienttag, t_ladder_id id)
 		{
-			unsigned int uid, rating;
+			unsigned int uid;
 
 			if (!account)
 			{
