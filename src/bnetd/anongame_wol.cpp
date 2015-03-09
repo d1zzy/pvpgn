@@ -264,7 +264,6 @@ namespace pvpgn
 
 		static t_anongame_wol_player * anongame_wol_matchlist_find_player_by_conn(t_connection * conn)
 		{
-			t_anongame_wol_player * player;
 			t_elem * curr;
 
 			if (!conn) {
@@ -511,8 +510,6 @@ namespace pvpgn
 		static int anongame_wol_tokenize_line(t_connection * conn, char const * text)
 		{
 			t_anongame_wol_player * player;
-			t_tag ctag;
-			char const * channelname;
 			char * command;     /* Match, CINFO, SINFO, Pings */
 			char * tag;         /* ADR, COL, COU... */
 			char * param;       /* value of paramtag */
