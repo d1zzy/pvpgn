@@ -1659,6 +1659,8 @@ namespace pvpgn
 				else
 					return 1; /* Is integer */
 			}
+
+			return -1; /* We shouldn't get here */
 		}
 
 		static int _handle_listsearch_command(t_connection * conn, int numparams, char ** params, char * text)
