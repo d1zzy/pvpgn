@@ -1794,7 +1794,6 @@ namespace pvpgn
 				char const *account_salt;
 				char const *account_verifier;
 				const char *conn_client_public_key;
-				const char *server_public_key;
 				int i;
 
 				/* PELISH: Does not need to check conn_client_public_key != NULL because we testing packet size */
@@ -1840,7 +1839,6 @@ namespace pvpgn
 						bn_int_set(&rpacket->u.server_loginreply_w3.message, SERVER_LOGINREPLY_W3_MESSAGE_BADACCT);
 					}
 					else if (!(account_salt = account_get_salt(account)))  {
-						const char *passhash;
 						eventlog(eventlog_level_info, __FUNCTION__, "[%d] (W3) \"%s\" passed account check (even though account has no salt)", conn_get_socket(c), username);
 						conn_set_loggeduser(c, username);
 						bn_int_set(&rpacket->u.server_loginreply_w3.message, SERVER_LOGINREPLY_W3_MESSAGE_SUCCESS);
@@ -1910,7 +1908,6 @@ namespace pvpgn
 				char const *account_salt;
 				char const *account_verifier;
 				const char *conn_client_public_key;
-				const char *server_public_key;
 				int i;
 
 				/* PELISH: Does not need to check conn_client_public_key != NULL because we testing packet size */
@@ -2036,8 +2033,6 @@ namespace pvpgn
 					eventlog(eventlog_level_info, __FUNCTION__, "[%d] passchange for \"%s\" refused (this account is locked)", conn_get_socket(c), username);
 				}
 				else {
-					t_hash serverhash;
-					t_hash clienthash;
 					int i;
 					const char * client_password_proof;
 
@@ -3303,7 +3298,6 @@ namespace pvpgn
 		
 		static int _client_readmemory(t_connection * c, t_packet const *const packet)
 		{
-			char * memory;
 			unsigned int size, offset, request_id;
 
 			if (packet_get_size(packet) < sizeof(t_client_readmemory)) {
@@ -5375,8 +5369,6 @@ namespace pvpgn
 
 		static int _client_extrawork(t_connection * c, t_packet const *const packet)
 		{
-			t_packet *rpacket;
-
 			if (packet_get_size(packet) < sizeof(t_client_extrawork)) {
 				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad EXTRAWORK packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_extrawork), packet_get_size(packet));
 				return -1;
