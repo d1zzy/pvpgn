@@ -696,7 +696,6 @@ namespace pvpgn
 			void const * data;
 			wol_gameres_type type;
 			t_wol_gameres_result * gameres_result;
-			unsigned int i;
 
 			DEBUG2("[%d] got WOL Gameres packet length %u", conn_get_socket(c), packet_get_size(packet));
 			offset = sizeof(t_wolgameres_header);
