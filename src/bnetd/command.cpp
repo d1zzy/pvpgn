@@ -1862,7 +1862,6 @@ namespace pvpgn
 
 		static int _handle_status_command(t_connection * c, char const *text)
 		{
-			char const * ctag;
 			t_clienttag clienttag;
 
 			// get clienttag
@@ -2053,7 +2052,6 @@ namespace pvpgn
 		static int _handle_stats_command(t_connection * c, char const *text)
 		{
 			char const * username;
-			unsigned int i, j;
 			t_account *  account;
 			char const * clienttag = NULL;
 			t_clienttag  clienttag_uint;
@@ -2482,7 +2480,6 @@ namespace pvpgn
 		static int _handle_kick_command(t_connection * c, char const *text)
 		{
 			char const * username;
-			unsigned int      i, j;
 			t_channel const * channel;
 			t_connection *    kuc;
 			t_account *	    acc;
@@ -3036,7 +3033,6 @@ namespace pvpgn
 
 		static int _handle_channels_command(t_connection * c, char const *text)
 		{
-			unsigned int      i;
 			t_elem const *    curr;
 			t_channel const * channel;
 			t_clienttag       clienttag;
@@ -3122,7 +3118,7 @@ namespace pvpgn
 
 		static int _handle_addacct_command(t_connection * c, char const *text)
 		{
-			unsigned int i, j;
+			unsigned int i;
 			t_account  * temp;
 			t_hash       passhash;
 			char const * username, *pass;
@@ -3176,7 +3172,7 @@ namespace pvpgn
 
 		static int _handle_chpass_command(t_connection * c, char const *text)
 		{
-			unsigned int i, j;
+			unsigned int i;
 			t_account  * account;
 			t_account  * temp;
 			t_hash       passhash;
@@ -3262,7 +3258,6 @@ namespace pvpgn
 			t_elem const * curr;
 			t_connection * conn;
 			char           name[19];
-			unsigned int   i; /* for loop */
 			char const *   channel_name;
 			char const *   game_name;
 			char           clienttag_str[5];
@@ -3641,7 +3636,6 @@ namespace pvpgn
 
 		static int _handle_gameinfo_command(t_connection * c, char const *text)
 		{
-			unsigned int   i;
 			t_game const * game;
 			char clienttag_str[5];
 
@@ -3912,7 +3906,6 @@ namespace pvpgn
 		static int _handle_shutdown_command(t_connection * c, char const *text)
 		{
 			char const * dest;
-			unsigned int i, j;
 			unsigned int delay;
 
 			std::vector<std::string> args = split_command(text, 1);
@@ -4257,7 +4250,6 @@ namespace pvpgn
 		static int _handle_netinfo_command(t_connection * c, char const *text)
 		{
 			char const * username;
-			unsigned int   i, j;
 			t_connection * conn;
 			t_game const * game;
 			unsigned int   addr;
@@ -4496,7 +4488,6 @@ namespace pvpgn
 		static int _handle_flag_command(t_connection * c, char const *text)
 		{
 			char const * flag_s;
-			unsigned int i, j;
 			unsigned int newflag;
 
 			std::vector<std::string> args = split_command(text, 1);
@@ -5155,8 +5146,6 @@ namespace pvpgn
 		/* Send message to all clients (similar to announce, but in messagebox) */
 		static int _handle_alert_command(t_connection * c, char const * text)
 		{
-			char const * channel_name;
-			const char * topic;
 			t_clienttag  clienttag;
 			t_clienttag  clienttag_dest;
 
