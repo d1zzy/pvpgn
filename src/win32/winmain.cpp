@@ -569,7 +569,7 @@ namespace pvpgn
 
 		static void guiAddText(const char *str, COLORREF clr)
 		{
-			int start_lines, text_length, end_lines;
+			int text_length;
 			CHARRANGE cr;
 			CHARRANGE ds;
 			CHARFORMAT fmt;
