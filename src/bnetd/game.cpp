@@ -2195,6 +2195,8 @@ namespace pvpgn
 			t_elist *curr;
 
 #ifdef WITH_LUA
+			t_game *game;
+
 			if (gamelist_source == gamelist_source_joinbutton)
 			{
 				struct glist_cbdata *cbdata = (struct glist_cbdata*)data;
