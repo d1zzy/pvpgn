@@ -560,7 +560,6 @@ namespace pvpgn
 		extern char const *accountlist_find_vague_account(t_account * account, char const *vague_username)
 		{
 			char const *tname;
-			int i;
 
 			if (!vague_username) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL vague_username");
