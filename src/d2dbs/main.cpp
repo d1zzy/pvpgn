@@ -155,6 +155,8 @@ static int config_init(int argc, char * * argv)
 	}
 
 #ifdef DO_DAEMONIZE
+	int		 pid;
+
 	if (!cmdline_get_foreground()) {
 		if (!((pid = setup_daemon()) == 0)) {
 			return pid;
