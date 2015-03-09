@@ -213,8 +213,6 @@ int eventlog_startup(void)
 
 int fork_bnetd(int foreground)
 {
-	int		pid;
-
 #ifdef DO_DAEMONIZE
 	if (!foreground) {
 		if (chdir("/") < 0) {
