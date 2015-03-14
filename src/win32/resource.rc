@@ -9,7 +9,11 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #ifndef __BORLANDC__
+#ifdef __AFXRES_H__
 #include "afxres.h"
+#else
+#include "winres.h"
+#endif //__AFXRES_H__
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
