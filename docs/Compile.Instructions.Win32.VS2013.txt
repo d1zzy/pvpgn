@@ -1,0 +1,56 @@
+A step-by-step guide for building the SVN version of PvPGN using Visual Studio
+==============================================================================
+
+Requirements:
+	- CMake 3.2.1 ( http://www.cmake.org/files/v3.2/cmake-3.2.1-win32-x86.zip )
+	- Visual Studio 2013 Community Edition ( https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx )
+	- zlib 1.2.8 ( http://zlib.net/zlib128-dll.zip )
+	- PvPGN source from SVN (in this example I have them extracted under D:/svn/pvpgn/ )
+ 
+Optional:
+	- MySQL ( http://dev.mysql.com/downloads/mysql/ )
+	- PostgreSQL ( http://www.postgresql.org/download/windows/ )
+	- SQLite ( https://sqlite.org/download.html )
+     
+Step-by-step guide:
+	- Install Visual Studio
+	- Install CMake
+	- Obtain PvPGN from the SVN
+
+	- Create a folder called "zlib" inside your PvPGN base folder ( i.e. D:/svn/pvpgn/zlib/ )
+	- Extract the following files from zlib128-dll.zip\include into the "zlib" folder:
+		zconf.h, zlib.h
+	-Extract the following files from the zlib128-dll.zip\lib into the "zlib" folder:
+		zdll.lib
+
+	- Install MySQL if you intend to use it as a storage backend
+	- Install PostgreSQL if you intend to use it as a storage backend
+	- SQLite stub
+
+	- Create a folder called "build" inside your PvPGN base folder ( i.e. D:/svn/pvpgn/build/ )
+	- Run cmake-gui.exe
+		- Where is the source code: D:\svn\pvpgn
+		- Where to build the binaries: D:\svn\pvpgn\build
+	- Click the "Configure" button
+		- Select "Visual Studio 12 2013" as the generator
+		- Select "Use default native compilers"
+		- Click "Finish" button
+	- Enable optional components if required ( WITH_MYSQL, WITH_PGSQL, WITH_SQLITE3, WITH_LUA )
+	- You may want to disable WITH_WIN32_GUI, that choice is up to you
+	- Click the "Configure" button again
+	- Click the "Generate" button
+	- Close CMake
+
+	- Open D:/svn/pvpgn/build/pvpgn.sln with Visual Studio
+	- Build the "ALL_BUILD" project
+	- Build the "INSTALL" project
+
+	- Open C:\Program Files (x86)\pvpgn
+	- Extract the following files from zlib128-dll.zip into the "pvpgn" folder:
+		zlib1.dll
+	- If required, extract the following files from C:\Program Files\MySQL\MySQL Server 5.6.23\lib\opt\ into the "pvpgn" folder:
+    	libmysql.dll 
+	- If required, extract the following files from C:\Program Files\PostgreSQL\9.4.1\bin\ into the "pvpgn" folder:
+		libpq.dll, libintl-2.dll, libiconv-2.dll, krb5_32.dll, comerr32.dll
+	- If required, extract the following files from sqlite-dll-win32-x86-3080803.zip into the "pvpgn" folder:
+		sqlite3.dll
