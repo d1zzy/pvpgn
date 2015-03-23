@@ -339,6 +339,11 @@ valgrind cannot find (yes, valgrind is superb but there is a class of bugs,
 especially overflows which valgrind can't help you with) you should then try 
 the next debugging tool.
 
+2. Deleaker (http://deleaker.com)
+
+For developers on Windows and uses Visual Studio, Deleaker is an extension for Visual Studio that helps you detect and localize resource leaks in memory, GDI and USER objects, handles. It integrates into Visual Studio's debugging functionality and displays useful information to trace leaks back to their source code.
+Deleaker also comes with a standalone program for developers using other compilers.
+
 Appendix C. How to generate and use "core" files
 =================================================
 
