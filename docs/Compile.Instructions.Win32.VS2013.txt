@@ -1,11 +1,11 @@
-A step-by-step guide for building the SVN version of PvPGN using Visual Studio
-==============================================================================
+A step-by-step guide for building the Github version of PvPGN using Visual Studio
+=================================================================================
 
 Requirements:
 	- CMake 3.2.1 ( http://www.cmake.org/files/v3.2/cmake-3.2.1-win32-x86.zip )
 	- Visual Studio 2013 Community Edition ( https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx )
 	- zlib 1.2.8 ( http://zlib.net/zlib128-dll.zip )
-	- PvPGN source from SVN (in this example I have them extracted under D:/svn/pvpgn/ )
+	- PvPGN source from Github (in this example I have them extracted under D:/pvpgn/ )
  
 Optional:
 	- MySQL ( http://dev.mysql.com/downloads/mysql/ )
@@ -15,9 +15,9 @@ Optional:
 Step-by-step guide:
 	- Install Visual Studio
 	- Install CMake
-	- Obtain PvPGN from the SVN
+	- Obtain PvPGN from Github
 
-	- Create a folder called "zlib" inside your PvPGN base folder ( i.e. D:/svn/pvpgn/zlib/ )
+	- Create a folder called "zlib" inside your PvPGN base folder ( i.e. D:/pvpgn/zlib/ )
 	- Extract the following files from zlib128-dll.zip\include into the "zlib" folder:
 		zconf.h, zlib.h
 	-Extract the following files from the zlib128-dll.zip\lib into the "zlib" folder:
@@ -27,10 +27,10 @@ Step-by-step guide:
 	- Install PostgreSQL if you intend to use it as a storage backend
 	- SQLite stub
 
-	- Create a folder called "build" inside your PvPGN base folder ( i.e. D:/svn/pvpgn/build/ )
+	- Create a folder called "build" inside your PvPGN base folder ( i.e. D:/pvpgn/build/ )
 	- Run cmake-gui.exe
-		- Where is the source code: D:\svn\pvpgn
-		- Where to build the binaries: D:\svn\pvpgn\build
+		- Where is the source code: D:\pvpgn
+		- Where to build the binaries: D:\pvpgn\build
 	- Click the "Configure" button
 		- Select "Visual Studio 12 2013" as the generator
 		- Select "Use default native compilers"
@@ -41,7 +41,7 @@ Step-by-step guide:
 	- Click the "Generate" button
 	- Close CMake
 
-	- Open D:/svn/pvpgn/build/pvpgn.sln with Visual Studio
+	- Open D:/pvpgn/build/pvpgn.sln with Visual Studio
 	- Build the "ALL_BUILD" project
 	- Build the "INSTALL" project
 
