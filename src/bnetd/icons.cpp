@@ -891,6 +891,8 @@ namespace pvpgn
 				}
 			}
 
+			std::fclose(fp);
+
 			return 0;
 		}
 
