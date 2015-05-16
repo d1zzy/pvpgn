@@ -736,6 +736,9 @@ namespace pvpgn
 					if (master_commandgroups == 0)
 						master_commandgroups = MASTER_COMMANDGROUPS_DEFAULT;
 
+					xfree(option->key);
+					xfree(option->value);
+					xfree(option);
 				}
 
 
