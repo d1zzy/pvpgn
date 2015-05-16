@@ -667,6 +667,7 @@ namespace pvpgn
 					if (list_remove_elem(icon_head, &curr) < 0)
 						eventlog(eventlog_level_error, __FUNCTION__, "could not remove item from list");
 
+					xfree(iconset->clienttag);
 					xfree(iconset);
 				}
 
