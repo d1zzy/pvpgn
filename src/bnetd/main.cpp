@@ -213,9 +213,9 @@ int eventlog_startup(void)
 
 int fork_bnetd(int foreground)
 {
+#ifdef DO_DAEMONIZE
 	int		pid;
 
-#ifdef DO_DAEMONIZE
 	if (!foreground) {
 		if (chdir("/") < 0) {
 			eventlog(eventlog_level_error, __FUNCTION__, "could not change working directory to / (chdir: %s)", std::strerror(errno));

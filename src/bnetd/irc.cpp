@@ -772,7 +772,6 @@ namespace pvpgn
 			case message_type_error:
 			{
 									   char temp[MAX_IRC_MESSAGE_LEN];
-									   char temp_[MAX_IRC_MESSAGE_LEN];
 									   std::sprintf(temp, ":%s", text);
 									   if (conn_get_wol(dst) == 1) {
 										   if ((type == message_type_info) || (type == message_type_error))
@@ -1067,6 +1066,8 @@ namespace pvpgn
 				conn_unget_chatname(m, name);
 			}
 			irc_send(c, RPL_NAMREPLY, temp);
+
+			return 0;
 		}
 
 		extern int irc_send_rpl_namreply(t_connection * c, t_channel const * channel)

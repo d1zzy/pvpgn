@@ -149,13 +149,14 @@ static int config_init(int argc, char * * argv)
 	char const * levels;
 	char *       temp;
 	char const * tok;
-	int		 pid;
 
 	if (cmdline_load(argc, argv) < 0) {
 		return -1;
 	}
 
 #ifdef DO_DAEMONIZE
+	int		 pid;
+
 	if (!cmdline_get_foreground()) {
 		if (!((pid = setup_daemon()) == 0)) {
 			return pid;

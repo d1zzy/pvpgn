@@ -267,8 +267,6 @@ namespace pvpgn
 
 		extern int handle_wol_welcome(t_connection * conn)
 		{
-			char _temp[MAX_IRC_MESSAGE_LEN];
-
 			/* This function need rewrite */
 			conn_set_state(conn, conn_state_bot_password);
 
@@ -640,9 +638,7 @@ namespace pvpgn
 
 			if (numparams >= 1) {
 				char ** e;
-				char const * ircname;
 				char const * verytemp;
-				char temp[MAX_IRC_MESSAGE_LEN];
 				int i;
 
 				e = irc_get_listelems(params[0]);
@@ -1663,6 +1659,8 @@ namespace pvpgn
 				else
 					return 1; /* Is integer */
 			}
+
+			return -1; /* We shouldn't get here */
 		}
 
 		static int _handle_listsearch_command(t_connection * conn, int numparams, char ** params, char * text)

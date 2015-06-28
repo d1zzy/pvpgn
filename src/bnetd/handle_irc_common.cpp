@@ -300,7 +300,6 @@ namespace pvpgn
 			unsigned int i;
 			char ircline[MAX_IRC_MESSAGE_LEN];
 			char const * data;
-			char test[MAX_IRC_MESSAGE_LEN];
 
 			if (!packet) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL packet");

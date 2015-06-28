@@ -272,7 +272,6 @@ namespace pvpgn
 				for (i = 0; ((e) && (e[i])); i++) {
 					if (strcasecmp(e[i], "NICKSERV") == 0) {
 						char * pass;
-						char * p;
 
 						pass = std::strchr(text, ' ');
 						if (pass)
@@ -304,7 +303,6 @@ namespace pvpgn
 							}
 						}
 						else if (strcasecmp(text, "register") == 0) {
-							unsigned int j;
 							t_hash       passhash;
 							t_account  * temp;
 							char         msgtemp[MAX_IRC_MESSAGE_LEN];
@@ -528,9 +526,7 @@ namespace pvpgn
 
 			if (numparams >= 1) {
 				char ** e;
-				char const * ircname;
 				char const * verytemp;
-				char temp[MAX_IRC_MESSAGE_LEN];
 				int i;
 
 				e = irc_get_listelems(params[0]);

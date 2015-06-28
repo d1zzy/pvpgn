@@ -323,7 +323,6 @@ namespace pvpgn
 
 		static t_apiregmember * apireglist_find_apiregmember_by_conn(t_connection * conn)
 		{
-			t_apiregmember * apiregmember;
 			t_elem * curr;
 
 			if (!conn) {
@@ -460,7 +459,6 @@ namespace pvpgn
 			t_packet * p;
 			char data[MAX_IRC_MESSAGE_LEN + 1];
 			unsigned len = 0;
-			t_apiregmember * apiregmember;
 			t_elem * curr;
 
 			p = packet_create(packet_class_raw);

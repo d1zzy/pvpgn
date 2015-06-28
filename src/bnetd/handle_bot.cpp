@@ -221,8 +221,6 @@ namespace pvpgn
 
 													testpass = xstrdup(linestr);
 													{
-														unsigned int i;
-
 														strtolower(testpass);
 													}
 													if (bnet_hash(&trypasshash1, std::strlen(testpass), testpass) < 0) /* FIXME: force to lowercase */

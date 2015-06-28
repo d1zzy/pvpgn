@@ -87,7 +87,6 @@ extern int main(int argc, char * argv[])
 	{
 		char         buff[256];
 		t_hash       hash;
-		unsigned int i;
 
 		eventlog_set(stderr); /* bnet_hash() and friends use eventlog */
 

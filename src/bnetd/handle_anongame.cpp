@@ -568,7 +568,6 @@ namespace pvpgn
 			unsigned int desired_icon;
 			char user_icon[5];
 			t_account * account;
-			t_clienttag ctag;
 
 			// disable with custom icons
 			if (prefs_get_custom_icons() == 1)

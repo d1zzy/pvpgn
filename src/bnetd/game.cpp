@@ -2193,9 +2193,10 @@ namespace pvpgn
 		extern void gamelist_traverse(t_glist_func cb, void *data, t_gamelist_source_type gamelist_source)
 		{
 			t_elist *curr;
-			t_game *game;
 
 #ifdef WITH_LUA
+			t_game *game;
+
 			if (gamelist_source == gamelist_source_joinbutton)
 			{
 				struct glist_cbdata *cbdata = (struct glist_cbdata*)data;

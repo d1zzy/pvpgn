@@ -80,7 +80,6 @@ namespace pvpgn
 			char const * subcommand, *username, *iconname;
 			char const *usericon, *iconalias, *iconcode;
 			t_clienttag clienttag;
-			char clienttag_str[5];
 			std::string output_icons = "";
 			int count = 1; // 1 icon in stash ("default" icon)
 			bool is_selected = false;
@@ -459,7 +458,6 @@ namespace pvpgn
 			t_elem *		curr_var;
 			t_icon_var_info *		var;
 			t_iconset_info * iconset;
-			t_icon_var_info *		item;
 
 			if (!code || !clienttag)
 				return NULL;
@@ -509,7 +507,6 @@ namespace pvpgn
 			t_elem *		curr_var;
 			t_icon_var_info *		var;
 			t_iconset_info * iconset;
-			t_icon_var_info *		item;
 
 			std::string output = "";
 
@@ -632,8 +629,6 @@ namespace pvpgn
 			int rating;
 			char clienttag_str[5];
 			t_icon_info * icon;
-			t_icon_info * uicon;
-			const char * usericon;
 
 			tag_uint_to_str(clienttag_str, clienttag);
 
@@ -1040,7 +1035,6 @@ namespace pvpgn
 		static char * _find_attr_key(char * clienttag)
 		{
 			t_elem *		curr;
-			t_elem *		curr_icon;
 			t_iconset_info *		iconset;
 
 			if (icon_head) {
