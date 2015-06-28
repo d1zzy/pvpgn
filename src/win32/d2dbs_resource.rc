@@ -3,8 +3,12 @@
 
 #define APSTUDIO_READONLY_SYMBOLS
 #ifndef __BORLANDC__
+#ifdef __AFXRES_H__
 #include "afxres.h"
-#endif
+#else
+#include "winres.h"
+#endif //__AFXRES_H__
+#endif //__BORLANDC__
 
 /* Menu */
 ID_MENU MENU DISCARDABLE 
