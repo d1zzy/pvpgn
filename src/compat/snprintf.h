@@ -18,19 +18,11 @@
 #ifndef INCLUDED_SNPRINTF_PROTOS
 #define INCLUDED_SNPRINTF_PROTOS
 
-#include <cstdio>
-
-#if !defined(HAVE_SNPRINTF)
-#ifdef HAVE__SNPRINTF
-#define snprintf _snprintf
-#else
+#ifndef HAVE_SNPRINTF
 namespace pvpgn
 {
-
 	extern int snprintf(char *str, size_t size, const char *format, ...);
-
 }
-#endif
-#endif
+#endif /* HAVE_SNPRINTF */
 
 #endif /* INCLUDED_SNPRINTF_PROTOS */

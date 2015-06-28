@@ -18,10 +18,10 @@
 #include "common/setup_before.h"
 #include "compat/snprintf.h"
 #include <cstdarg>
-#include "compat/vsnprintf.h"
+#include <cstdio>
 #include "common/setup_after.h"
 
-#if !defined(HAVE_SNPRINTF) && !defined(HAVE__SNPRINTF)
+#ifndef HAVE_SNPRINTF
 
 namespace pvpgn
 {
@@ -34,6 +34,7 @@ namespace pvpgn
 		va_start(args, format);
 		result = vsnprintf(str, size, format, args);
 		va_end(args);
+
 		return result;
 	}
 
