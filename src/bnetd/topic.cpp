@@ -230,7 +230,7 @@ namespace pvpgn
 			{
 				if (token[0] == 'n')
 				{
-					*token++;
+					*(token++);
 					if (first && start_with_bs)
 					{
 						snprintf(msgtemp, sizeof(msgtemp), "%.64s topic:", channel_name);
