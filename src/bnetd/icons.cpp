@@ -662,6 +662,7 @@ namespace pvpgn
 					if (list_remove_elem(icon_head, &curr) < 0)
 						eventlog(eventlog_level_error, __FUNCTION__, "could not remove item from list");
 
+					xfree(iconset->clienttag);
 					xfree(iconset);
 				}
 
@@ -731,6 +732,9 @@ namespace pvpgn
 					if (master_commandgroups == 0)
 						master_commandgroups = MASTER_COMMANDGROUPS_DEFAULT;
 
+					xfree(option->key);
+					xfree(option->value);
+					xfree(option);
 				}
 
 
@@ -885,6 +889,8 @@ namespace pvpgn
 					eventlog(eventlog_level_trace, __FUNCTION__, "loaded %u custom icons for %s", counter, icon_set->clienttag);
 				}
 			}
+
+			std::fclose(fp);
 
 			return 0;
 		}
