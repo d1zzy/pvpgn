@@ -233,7 +233,7 @@ namespace pvpgn
 			unsigned int uid = *((unsigned int *)attrgroup->storage);
 			t_storage_info *defacct = storage->get_defacct();
 			unsigned int defuid = *((unsigned int *)defacct);
-			std::atexit(reinterpret_cast<void(__cdecl*)()>(storage->free_info(defacct)));
+			std::atexit(reinterpret_cast<void(*)()>(storage->free_info(defacct)));
 
 			// do not flush default account
 			if (uid == defuid)
