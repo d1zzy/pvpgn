@@ -108,7 +108,7 @@ namespace pvpgn
 
 		static char const * file_get_info(t_connection * c, char const * rawname, unsigned int * len, bn_long * modtime)
 		{
-			const char *filename;
+			const char *filename = nullptr;
 			t_bnettime   bt;
 			struct stat sfile;
 
@@ -137,10 +137,13 @@ namespace pvpgn
 			// if localized file not found in "i18n"
 			if (!filename || stat(filename, &sfile) < 0)
 			{
+				if (filename)
+					xfree((void*)filename);
 				// try find it in "files"
 				filename = buildpath(prefs_get_filedir(), rawname);
 				if (stat(filename, &sfile) < 0) { /* try again */
 					/* FIXME: check for lower-case version of filename */
+					xfree((void*)filename);
 					return NULL;
 				}
 			}
@@ -184,7 +187,7 @@ namespace pvpgn
 		 */
 		extern int file_send(t_connection * c, char const * rawname, unsigned int adid, unsigned int etag, unsigned int startoffset, int need_header)
 		{
-			char const * filename;
+			char filenamestk[FILENAME_MAX] = {};
 			t_packet *   rpacket;
 			std::FILE *       fp;
 			unsigned int filelen;
@@ -212,12 +215,17 @@ namespace pvpgn
 			packet_set_size(rpacket, sizeof(t_server_file_reply));
 			packet_set_type(rpacket, SERVER_FILE_REPLY);
 
-			if ((filename = file_get_info(c, rawname, &filelen, &rpacket->u.server_file_reply.timestamp)))
 			{
-				if (!(fp = std::fopen(filename, "rb")))
+				char const *filename = file_get_info(c, rawname, &filelen, &rpacket->u.server_file_reply.timestamp);
+				std::strcpy(filenamestk, filename);
+				xfree((void*)filename);
+			} //let filename go out of scope
+			if (filenamestk)
+			{
+				if (!(fp = std::fopen(filenamestk, "rb")))
 				{
 					/* FIXME: check for lower-case version of filename */
-					eventlog(eventlog_level_error, __FUNCTION__, "stat() succeeded yet could not open file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "stat() succeeded yet could not open file \"%s\" for reading (std::fopen: %s)", filenamestk, std::strerror(errno));
 					filelen = 0;
 				}
 			}
@@ -258,18 +266,18 @@ namespace pvpgn
 			 */
 			if (!fp)
 			{
-				eventlog(eventlog_level_warn, __FUNCTION__, "[%d] sending no data for file \"%s\" (\"%s\")", conn_get_socket(c), rawname, filename);
+				eventlog(eventlog_level_warn, __FUNCTION__, "[%d] sending no data for file \"%s\" (\"%s\")", conn_get_socket(c), rawname, filenamestk);
 				return -1;
 			}
 
-			eventlog(eventlog_level_info, __FUNCTION__, "[%d] sending file \"%s\" (\"%s\") of length %d", conn_get_socket(c), rawname, filename, filelen);
+			eventlog(eventlog_level_info, __FUNCTION__, "[%d] sending file \"%s\" (\"%s\") of length %d", conn_get_socket(c), rawname, filenamestk, filelen);
 			for (;;)
 			{
 				if (!(rpacket = packet_create(packet_class_raw)))
 				{
 					eventlog(eventlog_level_error, __FUNCTION__, "could not create raw packet");
 					if (std::fclose(fp) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"%s\" after reading (std::fclose: %s)", filename, std::strerror(errno));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"%s\" after reading (std::fclose: %s)", filenamestk, std::strerror(errno));
 					return -1;
 				}
 				if ((nbytes = std::fread(packet_get_raw_data_build(rpacket, 0), 1, MAX_PACKET_SIZE, fp))<(int)MAX_PACKET_SIZE)

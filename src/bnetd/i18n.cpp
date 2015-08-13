@@ -192,7 +192,7 @@ namespace pvpgn
 
 		extern int i18n_load(void)
 		{
-			std::string lang_filename;
+			const char *lang_filename = nullptr;
 			pugi::xml_document doc;
 			std::string original, translate;
 
@@ -200,16 +200,20 @@ namespace pvpgn
 			for (int i = 0; i < (sizeof(languages) / sizeof(*languages)); i++)
 			{
 				lang_filename = i18n_filename(prefs_get_localizefile(), languages[i]);
-				if (FILE *f = fopen(lang_filename.c_str(), "r")) {
+				if (FILE *f = fopen(lang_filename, "r"))
+				{
 					fclose(f);
 
-					if (!doc.load_file(lang_filename.c_str()))
+					if (!doc.load_file(lang_filename))
 					{
-						ERROR1("could not parse localization file \"%s\"", lang_filename.c_str());
+						ERROR1("could not parse localization file \"%s\"", lang_filename);
+						xfree((void*)lang_filename);
 						continue;
 					}
 				}
-				else {
+				else
+				{
+					xfree((void*)lang_filename);
 					// file not exists, ignore it
 					continue;
 				}
@@ -253,7 +257,8 @@ namespace pvpgn
 					translations[original][languages[i]] = translate;
 				}
 
-				INFO1("localization file loaded \"%s\"", lang_filename.c_str());
+				INFO1("localization file loaded \"%s\"", lang_filename);
+				xfree((void*)lang_filename);
 			}
 
 			return 0;
@@ -314,12 +319,16 @@ namespace pvpgn
 			tag_uint_to_str(lang_str, gamelang);
 
 			struct stat sfile;
-			const char * _filename;
-			
-			_filename = buildpath(buildpath(prefs_get_i18ndir(), lang_str), filename);
+			const char * tmpfilename = buildpath(prefs_get_i18ndir(), lang_str);
+			const char * _filename = buildpath(tmpfilename, filename);
+			xfree((void*)tmpfilename);
+
 			// if localized file not found
 			if (stat(_filename, &sfile) < 0)
 			{
+				// free previously allocated memory first
+				xfree((void*)_filename);
+
 				// use default file
 				_filename = buildpath(prefs_get_i18ndir(), filename);
 			}
