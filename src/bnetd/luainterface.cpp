@@ -164,8 +164,8 @@ namespace pvpgn
 
 			// global variables
 			lua::table g(vm);
-			g.update(" PVPGN_SOFTWARE ", PVPGN_SOFTWARE);
-			g.update(" PVPGN_VERSION ", PVPGN_VERSION);
+			g.update("PVPGN_SOFTWARE", PVPGN_SOFTWARE);
+			g.update("PVPGN_VERSION", PVPGN_VERSION);
 
 			// config variables from bnetd.conf
 			lua::transaction bind(vm);
