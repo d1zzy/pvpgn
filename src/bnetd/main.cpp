@@ -407,6 +407,7 @@ void post_server_shutdown(int status)
 		teamlist_unload();
 		clanlist_unload();
 		tournament_destroy();
+		customicons_unload();
 		anongame_infos_unload();
 		anongame_wol_matchlist_destroy();
 		trans_unload();
@@ -563,8 +564,11 @@ extern int main(int argc, char ** argv)
 		if (a == 0)
 			eventlog(eventlog_level_info, __FUNCTION__, "server has shut down");
 		prefs_unload();
-		eventlog_close();
 		cmdline_unload();
+		//guiOnClose
+#ifndef WIN32_GUI
+		eventlog_close();
+#endif
 
 		if (a == 0)
 			return 0;

@@ -390,6 +390,7 @@ namespace pvpgn
 			}
 			else {
 				eventlog(eventlog_level_debug, __FUNCTION__, "GUI wants to exit...");
+				eventlog_close();
 				SetEvent(gui.event_ready);
 			}
 		}
@@ -886,7 +887,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE reserved, LPSTR lpCmdLine, i
 #if _DEBUG
 	SetUnhandledExceptionFilter(unhandled_handler);
 #endif
-	int result;
 	Console     console;
 
 	if (cmdline_load(__argc, __argv) != 1) {
@@ -903,7 +903,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE reserved, LPSTR lpCmdLine, i
 	_beginthread(pvpgn::bnetd::guiThread, 0, (void*)hInstance);
 	WaitForSingleObject(pvpgn::bnetd::gui.event_ready, INFINITE);
 
-	result = app_main(__argc, __argv);
+	auto result = app_main(__argc, __argv);
 
 	pvpgn::bnetd::gui.main_finished = TRUE;
 	eventlog(pvpgn::eventlog_level_debug, __FUNCTION__, "server exited ( return : %i )", result);
