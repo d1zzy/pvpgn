@@ -159,8 +159,8 @@ namespace pvpgn
 				std::sprintf(temp, ":Maximum length exceeded");
 			irc_send(conn, RPL_WELCOME, temp);
 
-			if ((14 + std::strlen(server_get_hostname()) + 10 + std::strlen(PVPGN_SOFTWARE" "PVPGN_VERSION) + 1) <= MAX_IRC_MESSAGE_LEN)
-				std::sprintf(temp, ":Your host is %s, running "PVPGN_SOFTWARE" "PVPGN_VERSION, server_get_hostname());
+			if ((14 + std::strlen(server_get_hostname()) + 10 + std::strlen(PVPGN_SOFTWARE " " PVPGN_VERSION) + 1) <= MAX_IRC_MESSAGE_LEN)
+				std::sprintf(temp, ":Your host is %s, running " PVPGN_SOFTWARE " " PVPGN_VERSION, server_get_hostname());
 			else
 				std::sprintf(temp, ":Maximum length exceeded");
 			irc_send(conn, RPL_YOURHOST, temp);
@@ -174,13 +174,13 @@ namespace pvpgn
 			irc_send(conn, RPL_CREATED, temp);
 
 			/* we don't give mode information on MYINFO we give it on ISUPPORT */
-			if ((std::strlen(server_get_hostname()) + 7 + std::strlen(PVPGN_SOFTWARE" "PVPGN_VERSION) + 9 + 1) <= MAX_IRC_MESSAGE_LEN)
-				std::sprintf(temp, "%s "PVPGN_SOFTWARE" "PVPGN_VERSION" - -", server_get_hostname());
+			if ((std::strlen(server_get_hostname()) + 7 + std::strlen(PVPGN_SOFTWARE " " PVPGN_VERSION) + 9 + 1) <= MAX_IRC_MESSAGE_LEN)
+				std::sprintf(temp, "%s " PVPGN_SOFTWARE " " PVPGN_VERSION " - -", server_get_hostname());
 			else
 				std::sprintf(temp, ":Maximum length exceeded");
 			irc_send(conn, RPL_MYINFO, temp);
 
-			std::sprintf(temp, "NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX=%s CHANTYPES="CHANNEL_TYPE" NETWORK=%s IRCD="PVPGN_SOFTWARE,
+			std::sprintf(temp, "NICKLEN=%d TOPICLEN=%d CHANNELLEN=%d PREFIX=%s CHANTYPES=" CHANNEL_TYPE " NETWORK=%s IRCD=" PVPGN_SOFTWARE,
 				MAX_CHARNAME_LEN, MAX_TOPIC_LEN, MAX_CHANNELNAME_LEN, CHANNEL_PREFIX, prefs_get_irc_network_name());
 
 			if ((std::strlen(temp)) <= MAX_IRC_MESSAGE_LEN)
@@ -338,7 +338,7 @@ namespace pvpgn
 								break;
 							}
 
-							snprintf(msgtemp, sizeof(msgtemp), "Account "UID_FORMAT" created.", account_get_uid(temp));
+							snprintf(msgtemp, sizeof(msgtemp), "Account " UID_FORMAT " created.", account_get_uid(temp));
 							message_send_text(conn, message_type_info, conn, msgtemp);
 							eventlog(eventlog_level_debug, __FUNCTION__, "[%d] account \"%s\" created", conn_get_socket(conn), username);
 							conn_unget_chatname(conn, username);

@@ -242,7 +242,7 @@ namespace pvpgn
 						break;
 
 					case 'v':
-						std::strcpy(&out[outpos], PVPGN_SOFTWARE" "PVPGN_VERSION);
+						std::strcpy(&out[outpos], PVPGN_SOFTWARE " " PVPGN_VERSION);
 						outpos += std::strlen(&out[outpos]);
 						break;
 

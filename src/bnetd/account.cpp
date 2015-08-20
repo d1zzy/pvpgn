@@ -643,7 +643,7 @@ namespace pvpgn
 						curraccount = (t_account*)entry_get_data(curr);
 						if (curraccount->uid == uid)
 						{
-							eventlog(eventlog_level_debug, __FUNCTION__, "BUG: user \"%s\":"UID_FORMAT" already has an account (\"%s\":"UID_FORMAT")", username, uid, account_get_name(curraccount), curraccount->uid);
+							eventlog(eventlog_level_debug, __FUNCTION__, "BUG: user \"%s\":" UID_FORMAT " already has an account (\"%s\":" UID_FORMAT ")", username, uid, account_get_name(curraccount), curraccount->uid);
 							hashtable_entry_release(curr);
 							return NULL;
 						}
@@ -656,7 +656,7 @@ namespace pvpgn
 					{
 						if (strcasecmp(tname, username) == 0)
 						{
-							eventlog(eventlog_level_debug, __FUNCTION__, "BUG: user \"%s\":"UID_FORMAT" already has an account (\"%s\":"UID_FORMAT")", username, uid, tname, curraccount->uid);
+							eventlog(eventlog_level_debug, __FUNCTION__, "BUG: user \"%s\":" UID_FORMAT " already has an account (\"%s\":" UID_FORMAT ")", username, uid, tname, curraccount->uid);
 							hashtable_entry_release(curr);
 							return NULL;
 						}

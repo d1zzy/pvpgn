@@ -83,7 +83,7 @@ extern int main(int argc, char * argv[])
 		forcefile = 1;
 	else if (std::strcmp(argv[a], "-v") == 0 || std::strcmp(argv[a], "--version") == 0)
 	{
-		std::printf("version "PVPGN_VERSION"\n");
+		std::printf("version " PVPGN_VERSION "\n");
 		return EXIT_SUCCESS;
 	}
 	else if (std::strcmp(argv[a], "-h") == 0 || std::strcmp(argv[a], "--help") == 0 || std::strcmp(argv[a], "--usage")
