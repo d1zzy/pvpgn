@@ -22,6 +22,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <cstdlib>
 #include <string>
 
 #include "common/eventlog.h"
@@ -230,7 +231,10 @@ namespace pvpgn
 
 			assert(attrgroup->storage);
 			unsigned int uid = *((unsigned int *)attrgroup->storage);
-			unsigned int defuid = *((unsigned int *)storage->get_defacct());
+			t_storage_info *defacct = storage->get_defacct();
+			unsigned int defuid = *((unsigned int *)defacct);
+			std::atexit(reinterpret_cast<void(*)()>(storage->free_info(defacct)));
+
 			// do not flush default account
 			if (uid == defuid)
 				return 2;

@@ -67,7 +67,7 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL filename");
 				return -1;
 			}
-			const char * _filename;
+			const char * _filename = nullptr;
 
 			// iterate language list
 			for (int i = 0; i < (sizeof(languages) / sizeof(*languages)); i++)
@@ -77,9 +77,12 @@ namespace pvpgn
 				if (!(hfd_list[languages[i]] = std::fopen(_filename, "r")))
 				{
 					eventlog(eventlog_level_error, __FUNCTION__, "could not open help file \"%s\" for reading (std::fopen: %s)", _filename, std::strerror(errno));
+					xfree((void*)_filename);
 					return -1;
 				}
+				xfree((void*)_filename);
 			}
+
 			return 0;
 		}
 

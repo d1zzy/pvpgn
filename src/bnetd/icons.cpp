@@ -663,6 +663,16 @@ namespace pvpgn
 						eventlog(eventlog_level_error, __FUNCTION__, "could not remove item from list");
 
 					xfree(iconset->clienttag);
+					if (iconset->attr_key)
+						xfree(iconset->attr_key);
+					if (iconset->stats)
+						xfree((void*)iconset->stats);
+					if (iconset->icon_info)
+						xfree(iconset->icon_info);//need to free ->rank and ->icon_code too somehow
+					if (iconset->iconstash)
+						xfree(iconset->iconstash);//need to free ->key and ->value too somehow
+					if (iconset->vars)
+						xfree(iconset->vars);//need to free ->key and ->value too somehow
 					xfree(iconset);
 				}
 
@@ -928,12 +938,14 @@ namespace pvpgn
 
 			str = str_skip_space(str);
 			if (*str != '=') {
+				xfree((void*)icon_var);
 				return NULL;
 			}
 
 			str = str_skip_space(str + 1);
 			if (!*str) {
 				eventlog(eventlog_level_error, __FUNCTION__, "missing value at line %u", lineno);
+				xfree((void*)icon_var);
 				return NULL;
 			}
 
@@ -957,6 +969,7 @@ namespace pvpgn
 
 				if (*cp != '"') {
 					eventlog(eventlog_level_error, __FUNCTION__, "missing end quota at line %u", lineno);
+					xfree((void*)icon_var);
 					return NULL;
 				}
 
@@ -964,6 +977,7 @@ namespace pvpgn
 				cp = str_skip_space(cp + 1);
 				if (*cp) {
 					eventlog(eventlog_level_error, __FUNCTION__, "extra characters in value after ending quote at line %u", lineno);
+					xfree((void*)icon_var);
 					return NULL;
 				}
 			}
@@ -974,6 +988,7 @@ namespace pvpgn
 					cp = str_skip_space(cp + 1);
 					if (*cp) {
 						eventlog(eventlog_level_error, __FUNCTION__, "extra characters after the value at line %u", lineno);
+						xfree((void*)icon_var);
 						return NULL;
 					}
 				}

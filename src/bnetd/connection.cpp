@@ -127,18 +127,21 @@ namespace pvpgn
 				c->protocol.cflags |= conn_flags_welcomed;
 				return;
 			}
-			if (filename = prefs_get_motdfile()) {
-				std::string lang_filename = i18n_filename(filename, conn_get_gamelang_localized(c));
+			if (filename = prefs_get_motdfile())
+			{
+				const char *lang_filename = i18n_filename(filename, conn_get_gamelang_localized(c));
 
-				if (fp = std::fopen(lang_filename.c_str(), "r")) {
+				if (fp = std::fopen(lang_filename, "r")) {
 					message_send_file(c, fp);
 					if (std::fclose(fp) < 0) {
-						eventlog(eventlog_level_error, __FUNCTION__, "could not close MOTD file \"%s\" after reading (std::fopen: %s)", lang_filename.c_str(), std::strerror(errno));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not close MOTD file \"%s\" after reading (std::fopen: %s)", lang_filename, std::strerror(errno));
 					}
 				}
 				else {
 					eventlog(eventlog_level_error, __FUNCTION__, "could not open MOTD file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
 				}
+
+				xfree((void*)lang_filename);
 			}
 			c->protocol.cflags |= conn_flags_welcomed;
 		}

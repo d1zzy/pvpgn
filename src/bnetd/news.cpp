@@ -146,9 +146,11 @@ namespace pvpgn
 			}
 
 			// FIXME: (HarpyWar) change news loading when user log on to send a localized version
-			if ((fp = std::fopen(i18n_filename(filename, GAMELANG_ENGLISH_UINT), "rt")) == NULL) {
+			const char *ENfilename = i18n_filename(filename, GAMELANG_ENGLISH_UINT);
+			if ((fp = std::fopen(ENfilename, "rt")) == NULL) {
 				eventlog(eventlog_level_warn, __FUNCTION__, "can't open news file");
 				_news_insert_default();
+				xfree((void*)ENfilename);
 				return 0;
 			}
 
@@ -161,6 +163,7 @@ namespace pvpgn
 				if (buff[0] == '{') {
 					if (_news_parsetime(buff + 1, &date, line)) {
 						eventlog(eventlog_level_error, __FUNCTION__, "error parsing news date on line %u", line);
+						xfree((void*)ENfilename);
 						return -1;
 					}
 					date_set = 1;
@@ -184,6 +187,7 @@ namespace pvpgn
 				_news_insert_default();
 			}
 
+			xfree((void*)ENfilename);
 			return 0;
 		}
 
