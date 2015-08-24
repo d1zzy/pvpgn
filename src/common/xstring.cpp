@@ -293,19 +293,19 @@ namespace pvpgn
 
 		// next insert point
 		char *ins = orig;
-		char *tmp;
+		char *tmp = nullptr;
 		for (count = 0; tmp = std::strstr(ins, rep); ++count)
 			ins = tmp + len_rep;
 
 		// the return string
-		char *result;
+		char *result = nullptr;
 
 		// first time through the loop, all the variable are set correctly
 		// from here on,
 		//    tmp points to the end of the result string
 		//    ins points to the next occurrence of rep in orig
 		//    orig points to the remainder of orig after "end of rep"
-		char *tmp = result = (char*)xmalloc(std::strlen(orig) + (len_with - len_rep) * count + 1);
+		tmp = result = (char*)xmalloc(std::strlen(orig) + (len_with - len_rep) * count + 1);
 
 		if (!result)
 			return nullptr;
