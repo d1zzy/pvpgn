@@ -15,12 +15,10 @@
 #cmakedefine HAVE_TERMIOS_H
 #cmakedefine HAVE_SYS_TYPES_H
 #cmakedefine HAVE_SYS_WAIT_H
-#cmakedefine HAVE_SYS_IOCTL_H
 #cmakedefine HAVE_STDINT_H
 #cmakedefine HAVE_SYS_FILE_H
 #cmakedefine HAVE_POLL_H
 #cmakedefine HAVE_SYS_POLL_H
-#cmakedefine HAVE_SYS_STROPTS_H
 #cmakedefine HAVE_SYS_STAT_H
 #cmakedefine HAVE_PWD_H
 #cmakedefine HAVE_GRP_H
@@ -34,7 +32,6 @@
 #cmakedefine HAVE_SYS_EVENT_H
 #cmakedefine HAVE_SYS_EPOLL_H
 #cmakedefine HAVE_SYS_RESOURCE_H
-#cmakedefine HAVE_PCAP_H
 #cmakedefine HAVE_WINDOWS_H
 #cmakedefine HAVE_WINSOCK2_H
 #cmakedefine HAVE_PROCESS_H

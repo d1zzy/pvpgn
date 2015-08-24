@@ -416,9 +416,6 @@
 # define HAVE_SYS_FILE_H 1
 #endif
 
-/* Define if you have the <sys/ioctl.h> header file.  */
-/* #undef HAVE_SYS_IOCTL_H */
-
 /* Define if you have the <sys/mman.h> header file. */
 /* #undef HAVE_SYS_MMAN_H */
 
@@ -444,9 +441,6 @@
 
 /* Define if you have the <sys/stat.h> header file.  */
 #define HAVE_SYS_STAT_H 1
-
-/* Define if you have the <sys/stropts.h> header file.  */
-/* #undef HAVE_SYS_STROPTS_H */
 
 /* Define if you have the <sys/time.h> header file.  */
 /* #undef HAVE_SYS_TIME_H */ /* MinGW has this header, but confilcts with compat/gettimeofday.h */
