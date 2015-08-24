@@ -19,9 +19,11 @@
 #include "common/setup_before.h"
 #include "common/util.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <cctype>
 #include <cstdio>
+#include <string>
 
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
@@ -114,22 +116,7 @@ namespace pvpgn
 
 	extern char * strreverse(char * str)
 	{
-		unsigned int len;
-		char         temp;
-		char *start, *end;
-
-		if (!str)
-			return NULL;
-
-		len = std::strlen(str);
-
-		for (start = str, end = str + len - 1; start < end; start++, end--)
-		{
-			temp = *end;
-			*end = *start;
-			*start = temp;
-		}
-
+		std::reverse(str, str + std::strlen(str));
 		return str;
 	}
 

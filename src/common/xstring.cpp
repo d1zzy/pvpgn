@@ -18,6 +18,7 @@
 #include "common/setup_before.h"
 #include "xstring.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cctype>
 #include <cstring>
@@ -292,6 +293,7 @@ namespace pvpgn
 
 		// next insert point
 		char *ins = orig;
+		char *tmp;
 		for (count = 0; tmp = std::strstr(ins, rep); ++count)
 			ins = tmp + len_rep;
 
@@ -339,26 +341,13 @@ namespace pvpgn
 	// (case insensitive)
 	extern bool find_substr(char * input, const char * find)
 	{
-		char c1[2], c2[2];
-		bool is_found = false;
-		int pos = 0;
-		int b = true;
-		for (int i = 0; i < strlen(input); i++)
-		{
-			c1[0] = input[i]; c1[1] = '\0';
-			c2[0] = find[pos]; c2[1] = '\0';
-			if (strcasecmp(c1, c2) == 0)
-			{
-				if (pos == strlen(find) - 1)
-				{
-					is_found = true;
-					break;
-				}
-				pos++;
-			}
-			else
-				pos = 0;
-		}
-		return is_found;
+		std::string str1(input);
+		std::string str2(find);
+
+		return std::lexicographical_compare(
+			str1.begin(), str1.end(),
+			str2.begin(), str2.end(),
+			[](char ch1, char ch2) { return std::toupper(ch1) == std::toupper(ch2); }
+		);
 	}
 }
