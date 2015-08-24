@@ -276,46 +276,49 @@ namespace pvpgn
 	// You must free the result if result is non-NULL.
 	extern char *str_replace(char *orig, char *rep, char *with)
 	{
-		char *result; // the return string
-		char *ins;    // the next insert point
-		char *tmp;    // varies
-		int len_rep;  // length of rep
-		int len_with; // length of with
-		int len_front; // distance between rep and end of last rep
-		int count;    // number of replacements
-
 		if (!orig)
-			return NULL;
-		if (!rep)
-			rep = "";
-		len_rep = strlen(rep);
-		if (!with)
-			with = "";
-		len_with = strlen(with);
+			return nullptr;
 
-		ins = orig;
-		for (count = 0; tmp = strstr(ins, rep); ++count) {
+		if (!rep)
+			std::strcpy(rep, "");
+		int len_rep = std::strlen(rep);
+
+		if (!with)
+			std::strcpy(with, "");
+		int len_with = std::strlen(with);
+
+		// number of replacements
+		int count = 0;
+
+		// next insert point
+		char *ins = orig;
+		for (count = 0; tmp = std::strstr(ins, rep); ++count)
 			ins = tmp + len_rep;
-		}
+
+		// the return string
+		char *result;
 
 		// first time through the loop, all the variable are set correctly
 		// from here on,
 		//    tmp points to the end of the result string
 		//    ins points to the next occurrence of rep in orig
 		//    orig points to the remainder of orig after "end of rep"
-		tmp = result = (char*)xmalloc(strlen(orig) + (len_with - len_rep) * count + 1);
+		char *tmp = result = (char*)xmalloc(std::strlen(orig) + (len_with - len_rep) * count + 1);
 
 		if (!result)
-			return NULL;
+			return nullptr;
 
-		while (count--) {
-			ins = strstr(orig, rep);
+		// distance between rep and end of last rep
+		int len_front = 0;
+		while (count--)
+		{
+			ins = std::strstr(orig, rep);
 			len_front = ins - orig;
-			tmp = strncpy(tmp, orig, len_front) + len_front;
-			tmp = strcpy(tmp, with) + len_with;
+			tmp = std::strncpy(tmp, orig, len_front) + len_front;
+			tmp = std::strcpy(tmp, with) + len_with;
 			orig += len_front + len_rep; // move to next "end of rep"
 		}
-		strcpy(tmp, orig);
+		std::strcpy(tmp, orig);
 		return result;
 	}
 

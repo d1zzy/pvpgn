@@ -68,7 +68,7 @@ namespace pvpgn
 		t_sql_engine *sql = NULL;
 
 #ifndef SQL_ON_DEMAND
-		char *sql_tables[] = { "BNET", "Record", "profile", "friend", "Team", NULL };
+		char const *sql_tables[] = { "BNET", "Record", "profile", "friend", "Team", NULL };
 #endif	/* SQL_ON_DEMAND */
 
 		const char* tab_prefix = SQL_DEFAULT_PREFIX;
