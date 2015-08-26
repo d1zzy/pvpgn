@@ -1925,9 +1925,9 @@ namespace pvpgn
 			account_set_friend(my_acc, nf, fuid);
 			account_set_friendcount(my_acc, nf + 1);
 			if (account_check_mutual(facc, my_uid) == 0)
-				friendlist_add_account(flist, facc, 1);
+				friendlist_add_account(flist, facc, FRIEND_ISMUTUAL);
 			else
-				friendlist_add_account(flist, facc, 0);
+				friendlist_add_account(flist, facc, FRIEND_NOTMUTUAL);
 
 			return 0;
 		}
@@ -1990,7 +1990,7 @@ namespace pvpgn
 				if ((facc = friend_get_account(fr)) &&
 					(fflist = account_get_friends(facc)) &&
 					(ffr = friendlist_find_account(fflist, account)))
-					friend_set_mutual(ffr, 0);
+					friend_set_mutual(ffr, FRIEND_NOTMUTUAL);
 				friendlist_remove_friend(flist, fr);
 				return i;
 			}

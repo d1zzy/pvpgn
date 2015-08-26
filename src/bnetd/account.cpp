@@ -770,7 +770,7 @@ namespace pvpgn
 				t_friend * fr;
 				if ((fr = friendlist_find_uid(account->friends, myuserid)) != NULL)
 				{
-					friend_set_mutual(fr, 1);
+					friend_set_mutual(fr, FRIEND_ISMUTUAL);
 					return 0;
 				}
 			}
@@ -859,9 +859,9 @@ namespace pvpgn
 						continue;
 					}
 					if (account_check_mutual(acc, account_get_uid(account)) == 0)
-						friendlist_add_account(account->friends, acc, 1);
+						friendlist_add_account(account->friends, acc, FRIEND_ISMUTUAL);
 					else
-						friendlist_add_account(account->friends, acc, 0);
+						friendlist_add_account(account->friends, acc, FRIEND_NOTMUTUAL);
 				}
 				else {
 					if ((acc = friend_get_account(fr)) == NULL)
@@ -870,9 +870,9 @@ namespace pvpgn
 						continue;
 					}
 					if (account_check_mutual(acc, account_get_uid(account)) == 0)
-						friend_set_mutual(fr, 1);
+						friend_set_mutual(fr, FRIEND_ISMUTUAL);
 					else
-						friend_set_mutual(fr, 0);
+						friend_set_mutual(fr, FRIEND_NOTMUTUAL);
 				}
 			}
 			if (!newlist)

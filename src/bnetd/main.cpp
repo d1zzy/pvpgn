@@ -104,6 +104,17 @@
 using namespace pvpgn::bnetd;
 using namespace pvpgn;
 
+static int * emergency_mem = new int[1048576]; // 1 MiB
+void new_oom_handler()
+{
+	delete[] emergency_mem;
+	eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory, forcing immediate shutdown");
+
+	std::abort();
+}
+
+// FIXME: Use new instead of malloc everywhere
+
 void *oom_buffer = NULL;
 
 static int bnetd_oom_handler(void)
@@ -313,6 +324,9 @@ int pre_server_startup(void)
 		eventlog(eventlog_level_error, __FUNCTION__, "OOM init failed");
 		return STATUS_OOM_FAILURE;
 	}
+
+	std::set_new_handler(new_oom_handler);
+
 	if (storage_init(prefs_get_storage_path()) < 0) {
 		eventlog(eventlog_level_error, "pre_server_startup", "storage init failed");
 		return STATUS_STORAGE_FAILURE;
@@ -450,6 +464,7 @@ void post_server_shutdown(int status)
 		storage_close();
 	case STATUS_STORAGE_FAILURE:
 		oom_free();
+		delete[] emergency_mem;
 	case STATUS_OOM_FAILURE:
 	case -1:
 		break;
