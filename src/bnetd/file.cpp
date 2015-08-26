@@ -114,22 +114,22 @@ namespace pvpgn
 
 			if (!rawname) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL rawname");
-				return NULL;
+				return nullptr;
 			}
 
 			if (!len) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL len");
-				return NULL;
+				return nullptr;
 			}
 
 			if (!modtime) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL modtime");
-				return NULL;
+				return nullptr;
 			}
 
 			if (std::strchr(rawname, '/') || std::strchr(rawname, '\\')) {
 				eventlog(eventlog_level_warn, __FUNCTION__, "got rawname containing '/' or '\\' \"%s\"", rawname);
-				return NULL;
+				return nullptr;
 			}
 
 
@@ -144,7 +144,7 @@ namespace pvpgn
 				if (stat(filename, &sfile) < 0) { /* try again */
 					/* FIXME: check for lower-case version of filename */
 					xfree((void*)filename);
-					return NULL;
+					return nullptr;
 				}
 			}
 
@@ -158,7 +158,7 @@ namespace pvpgn
 
 		extern int file_to_mod_time(t_connection * c, char const * rawname, bn_long * modtime)
 		{
-			char const * filename;
+			const char * filename = nullptr;
 			unsigned int len;
 
 			if (!rawname)
