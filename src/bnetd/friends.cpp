@@ -212,7 +212,7 @@ namespace pvpgn
 			}
 
 			t_elem * elem = nullptr;
-			if (!list_remove_data(flist, fr, &elem))
+			if (list_remove_data(flist, fr, &elem) != 0)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "could not remove item from list");
 				return -1;
@@ -244,7 +244,7 @@ namespace pvpgn
 			}
 
 			t_elem * elem = nullptr;
-			if (!list_remove_data(flist, fr, &elem))
+			if (list_remove_data(flist, fr, &elem) != 0)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "could not remove item from list");
 				return -1;
@@ -276,7 +276,7 @@ namespace pvpgn
 			}
 
 			t_elem * elem = nullptr;
-			if (!list_remove_data(flist, fr, &elem))
+			if (list_remove_data(flist, fr, &elem) != 0)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "could not remove item from list");
 				return -1;
