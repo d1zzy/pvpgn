@@ -150,6 +150,8 @@ namespace pvpgn
 			{
 				ERROR1("could not write into user log file \"%s\"", filename);
 			}
+
+			xfree(filename);
 		}
 
 		// read "count" lines from the end starting from "startline"
@@ -258,6 +260,9 @@ namespace pvpgn
 					eventlog(eventlog_level_info, __FUNCTION__, "created user directory: %s", filepath);
 				}
 			}
+
+			xfree(filepath);
+
 			filepath = buildpath(filepath, lusername.c_str());
 			std::strcat(filepath, ".log");
 
