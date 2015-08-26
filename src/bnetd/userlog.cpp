@@ -261,9 +261,13 @@ namespace pvpgn
 				}
 			}
 
+			char *tmp = new char[std::strlen(filepath) + 1];
+			strcpy(tmp, filepath);
 			xfree(filepath);
 
-			filepath = buildpath(filepath, lusername.c_str());
+			filepath = buildpath(tmp, lusername.c_str());
+			delete[] tmp;
+
 			std::strcat(filepath, ".log");
 
 			return filepath;
