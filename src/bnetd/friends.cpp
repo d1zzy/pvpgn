@@ -132,7 +132,7 @@ namespace pvpgn
 					continue;
 				}
 
-				if (!list_remove_elem(flist, &curr))
+				if (list_remove_elem(flist, &curr) != 0)
 					eventlog(eventlog_level_error, __FUNCTION__, "could not remove elem from flist");
 				delete(fr);
 			}
@@ -162,7 +162,7 @@ namespace pvpgn
 				}
 				if (fr->mutual == FRIEND_UNLOADEDMUTUAL)
 				{
-					if (!list_remove_elem(flist, &curr))
+					if (list_remove_elem(flist, &curr) != 0)
 						eventlog(eventlog_level_error, __FUNCTION__, "could not remove item from list");
 				}
 			}
