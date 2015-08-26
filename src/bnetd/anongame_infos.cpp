@@ -127,7 +127,7 @@ namespace pvpgn
 				for (i = 0; i < anongame_infos_DESC_count; i++)
 				{
 					if ((descs[i]))
-						free((void *)descs[i]);
+						xfree((void *)descs[i]);
 				}
 				xfree((void *)descs);
 			}
