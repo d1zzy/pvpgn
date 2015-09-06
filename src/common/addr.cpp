@@ -52,15 +52,17 @@ namespace pvpgn
 	{
 		static unsigned int curr = 0;
 		static char         temp[HACK_SIZE][64];
-		struct sockaddr_in  tsa;
+		struct sockaddr_in  tsa = { 0 };
 
 		curr = (curr + 1) % HACK_SIZE;
 
-		std::memset(&tsa, 0, sizeof(tsa));
 		tsa.sin_family = PSOCK_AF_INET;
 		tsa.sin_port = htons((unsigned short)0);
 		tsa.sin_addr.s_addr = htonl(ipaddr);
-		std::sprintf(temp[curr], "%.32s:%hu", inet_ntoa(tsa.sin_addr), port);
+
+		char addrstr[INET_ADDRSTRLEN] = { 0 };
+		inet_ntop(AF_INET, &(tsa.sin_addr), addrstr, sizeof(addrstr));
+		std::sprintf(temp[curr], "%.32s:%hu", addrstr, port);
 
 		return temp[curr];
 	}
@@ -79,7 +81,10 @@ namespace pvpgn
 		tsa.sin_family = PSOCK_AF_INET;
 		tsa.sin_port = htons((unsigned short)0);
 		tsa.sin_addr.s_addr = htonl(ipaddr);
-		std::sprintf(temp[curr], "%.32s", inet_ntoa(tsa.sin_addr));
+
+		char addrstr[INET_ADDRSTRLEN] = { 0 };
+		inet_ntop(AF_INET, &(tsa.sin_addr), addrstr, sizeof(addrstr));
+		std::sprintf(temp[curr], "%.32s", addrstr);
 
 		return temp[curr];
 	}
@@ -97,7 +102,10 @@ namespace pvpgn
 		tsa.sin_family = PSOCK_AF_INET;
 		tsa.sin_port = htons((unsigned short)0);
 		tsa.sin_addr.s_addr = htonl(netipaddr);
-		std::sprintf(temp[curr], "%.32s/0x%08x", inet_ntoa(tsa.sin_addr), netmask);
+
+		char addrstr[INET_ADDRSTRLEN] = { 0 };
+		inet_ntop(AF_INET, &(tsa.sin_addr), addrstr, sizeof(addrstr));
+		std::sprintf(temp[curr], "%.32s/0x%08x", addrstr, netmask);
 
 		return temp[curr];
 	}
@@ -233,7 +241,8 @@ namespace pvpgn
 			struct sockaddr_in tsa;
 
 			tsa.sin_addr.s_addr = htonl(defipaddr);
-			hoststr = inet_ntoa(tsa.sin_addr);
+			char addrstr[INET_ADDRSTRLEN] = { 0 };
+			hoststr = inet_ntop(AF_INET, &(tsa.sin_addr), addrstr, sizeof(addrstr));
 		}
 
 		if (!(hostname = host_lookup(hoststr, &ipaddr)))

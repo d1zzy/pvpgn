@@ -41,6 +41,14 @@
 #include "handle_signal.h"
 #include "game.h"
 #include "d2ladder.h"
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+# include <Ws2tcpip.h>
+#endif
+
 #include "common/setup_after.h"
 
 
@@ -116,7 +124,13 @@ static int server_accept(int sock)
 	if (csock<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"error accept new connection");
 		return -1;
-	} else eventlog(eventlog_level_info,__FUNCTION__,"accept connection from %s",inet_ntoa(caddr.sin_addr));
+	}
+	else
+	{
+		char addrstr[INET_ADDRSTRLEN] = { 0 };
+		inet_ntop(AF_INET, &(caddr.sin_addr), addrstr, sizeof(addrstr));
+		eventlog(eventlog_level_info, __FUNCTION__, "accept connection from %s", addrstr);
+	}
 
 	val=1;
 	if (psock_setsockopt(csock, PSOCK_SOL_SOCKET, PSOCK_SO_KEEPALIVE, &val,sizeof(val))<0) {

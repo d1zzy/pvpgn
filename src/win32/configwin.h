@@ -176,9 +176,6 @@
 /* Define if you have the index function.  */
 /* #undef HAVE_INDEX */
 
-/* Define if you have the inet_ntoa function.  */
-#define HAVE_INET_NTOA 1
-
 /* Define if you have the <inttypes.h> header file. */
 #ifdef __MINGW32__
 # define HAVE_INTTYPES_H 1

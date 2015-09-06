@@ -87,6 +87,14 @@
 #include "anongame_infos.h"
 #include "topic.h"
 #include "i18n.h"
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+# include <Ws2tcpip.h>
+#endif
+
 #include "common/setup_after.h"
 
 #ifdef WITH_LUA
@@ -275,9 +283,10 @@ namespace pvpgn
 				return 0;
 			}
 
-			if (ipbanlist_check(inet_ntoa(caddr.sin_addr)) != 0)
+			char addrstr[INET_ADDRSTRLEN] = { 0 };
+			if (ipbanlist_check(inet_ntop(AF_INET, &(caddr.sin_addr), addrstr, sizeof(addrstr))) != 0)
 			{
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] connection from banned address %s denied (closing connection)", csocket, inet_ntoa(caddr.sin_addr));
+				eventlog(eventlog_level_info, __FUNCTION__, "[%d] connection from banned address %s denied (closing connection)", csocket, addrstr);
 				psock_close(csocket);
 				return -1;
 			}

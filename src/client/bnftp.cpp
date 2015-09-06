@@ -44,6 +44,14 @@
 # include "common/eventlog.h"
 #endif
 #include "client.h"
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+# include <Ws2tcpip.h>
+#endif
+
 #include "common/setup_after.h"
 
 using namespace pvpgn;
@@ -419,7 +427,9 @@ extern int main(int argc, char * argv[])
 		return EXIT_FAILURE;
 	}
 
-	std::printf("Connected to %s:%hu.\n", inet_ntoa(saddr.sin_addr), servport);
+	char addrstr[INET_ADDRSTRLEN] = { 0 };
+	inet_ntop(AF_INET, &(saddr.sin_addr), addrstr, sizeof(addrstr));
+	std::printf("Connected to %s:%hu.\n", addrstr, servport);
 
 #ifdef CLIENTDEBUG
 	eventlog_set(stderr);

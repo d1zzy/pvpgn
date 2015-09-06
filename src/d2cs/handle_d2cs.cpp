@@ -37,6 +37,14 @@
 #include "d2ladder.h"
 #include "d2charfile.h"
 #include "d2charlist.h"
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+# include <Ws2tcpip.h>
+#endif
+
 #include "common/setup_after.h"
 
 
@@ -327,7 +335,10 @@ static int on_client_creategamereq(t_connection * c, t_packet * packet)
 				packet_append_string(gspacket,d2cs_conn_get_account(c));
 				packet_append_string(gspacket,d2cs_conn_get_charname(c));
 				addr.s_addr = htonl(d2cs_conn_get_addr(c));
-				packet_append_string(gspacket,inet_ntoa(addr));
+
+				char addrstr[INET_ADDRSTRLEN] = { 0 };
+				inet_ntop(AF_INET, &(addr), addrstr, sizeof(addrstr));
+				packet_append_string(gspacket,addrstr);
 				conn_push_outqueue(d2gs_get_connection(gs),gspacket);
 			}
 			packet_del_ref(gspacket);
@@ -415,7 +426,10 @@ static int on_client_joingamereq(t_connection * c, t_packet * packet)
 				packet_append_string(gspacket,charname);
 				packet_append_string(gspacket,account);
 				addr.s_addr = htonl(d2cs_conn_get_addr(c));
-				packet_append_string(gspacket,inet_ntoa(addr));
+
+				char addrstr[INET_ADDRSTRLEN] = { 0 };
+				inet_ntop(AF_INET, &(addr), addrstr, sizeof(addrstr));
+				packet_append_string(gspacket,addrstr);
 				conn_push_outqueue(d2gs_get_connection(gs),gspacket);
 			}
 			packet_del_ref(gspacket);

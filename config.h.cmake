@@ -55,8 +55,6 @@
 #cmakedefine HAVE_SOCKET
 #cmakedefine HAVE_STRDUP
 #cmakedefine HAVE_STRTOUL
-#cmakedefine HAVE_INET_ATON
-#cmakedefine HAVE_INET_NTOA
 #cmakedefine HAVE_UNAME
 #cmakedefine HAVE_RECV
 #cmakedefine HAVE_SEND

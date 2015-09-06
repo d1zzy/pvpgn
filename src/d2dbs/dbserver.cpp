@@ -37,6 +37,14 @@
 #include "charlock.h"
 #include "dbspacket.h"
 #include "handle_signal.h"
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+# include <Ws2tcpip.h>
+#endif
+
 #include "common/setup_after.h"
 
 #ifdef WIN32
@@ -255,7 +263,9 @@ namespace pvpgn
 			it->nCharsInWriteBuffer = 0;
 			list_append_data(dbs_server_connection_list, it);
 			in.s_addr = htonl(ipaddr);
-			std::strncpy((char*)it->serverip, inet_ntoa(in), sizeof(it->serverip) - 1);
+			char addrstr[INET_ADDRSTRLEN] = { 0 };
+			inet_ntop(AF_INET, &(in), addrstr, sizeof(addrstr));
+			std::strncpy((char*)it->serverip, addrstr, sizeof(it->serverip) - 1);
 
 			return 1;
 		}
@@ -330,10 +340,12 @@ namespace pvpgn
 						return;
 					}
 
+					char addrstr[INET_ADDRSTRLEN] = { 0 };
+					inet_ntop(AF_INET, &(sinRemote.sin_addr), addrstr, sizeof(addrstr));
 					eventlog(eventlog_level_info, __FUNCTION__, "accepted connection from %s:%d , socket %d .",
-						inet_ntoa(sinRemote.sin_addr), ntohs(sinRemote.sin_port), sd);
+						addrstr, ntohs(sinRemote.sin_port), sd);
 					eventlog_step(prefs_get_logfile_gs(), eventlog_level_info, __FUNCTION__, "accepted connection from %s:%d , socket %d .",
-						inet_ntoa(sinRemote.sin_addr), ntohs(sinRemote.sin_port), sd);
+						addrstr, ntohs(sinRemote.sin_port), sd);
 					setsockopt_keepalive(sd);
 					dbs_server_list_add_socket(sd, ntohl(sinRemote.sin_addr.s_addr));
 					if (psock_ctl(sd, PSOCK_NONBLOCK) < 0) {

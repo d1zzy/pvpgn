@@ -24,7 +24,6 @@
 #include <ctime>
 
 #include "compat/gethostname.h"
-#include "compat/inet_ntoa.h"
 #include "common/tag.h"
 #include "common/packet.h"
 #include "common/init_protocol.h"
@@ -38,6 +37,14 @@
 #endif
 #include "udptest.h"
 #include "client.h"
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+# include <Ws2tcpip.h>
+#endif
+
 #include "common/setup_after.h"
 
 
@@ -237,7 +244,9 @@ namespace pvpgn
 				goto error_sd;
 			}
 
-			std::printf("Connected to %s:%hu.\n", inet_ntoa(saddr->sin_addr), servport);
+			char addrstr[INET_ADDRSTRLEN] = { 0 };
+			inet_ntop(AF_INET, &(saddr->sin_addr), addrstr, sizeof(addrstr));
+			std::printf("Connected to %s:%hu.\n", addrstr, servport);
 
 #ifdef CLIENTDEBUG
 			eventlog_set(stderr);
