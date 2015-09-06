@@ -190,7 +190,7 @@ namespace pvpgn
 		unsigned char const * data;
 		unsigned int          inc;
 
-		if (!hashout || !*hashout)
+		if (!hashout)
 		{
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL hashout");
 			return -1;
@@ -249,7 +249,7 @@ namespace pvpgn
 		unsigned int          inc;
 		unsigned int          orgSize;
 
-		if (!hashout || !*hashout)
+		if (!hashout)
 		{
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL hashout");
 			return -1;
