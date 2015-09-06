@@ -129,6 +129,7 @@ check_include_file_cxx(sys/epoll.h HAVE_SYS_EPOLL_H)
 message(STATUS "Checking Win32 headers")
 check_include_file_cxx(windows.h HAVE_WINDOWS_H)
 check_include_file_cxx(winsock2.h HAVE_WINSOCK2_H)
+check_include_file_cxx(ws2tcpip.h HAVE_WS2TCPIP_H)
 check_include_file_cxx(process.h HAVE_PROCESS_H)
 
 message(STATUS "Checking other headers")
@@ -200,7 +201,6 @@ check_symbol_exists(_vsnprintf "stdio.h" HAVE__VSNPRINTF)
 check_symbol_exists(snprintf "stdio.h" HAVE_SNPRINTF)
 check_symbol_exists(_snprintf "stdio.h" HAVE__SNPRINTF)
 check_function_exists(setpgrp HAVE_SETPGRP)
-check_function_exists(inet_aton HAVE_INET_ATON)
 
 # winsock2.h and ws2_32 should provide these
 if(HAVE_WINSOCK2_H)

@@ -25,11 +25,18 @@
 #include <cassert>
 
 #include "compat/psock.h"
-#include "compat/inet_aton.h"
 #include "common/eventlog.h"
 #include "common/list.h"
 #include "common/util.h"
 #include "common/xalloc.h"
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+# include <Ws2tcpip.h>
+#endif
+
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -127,7 +134,7 @@ namespace pvpgn
 		if (!hp || !hp->h_addr_list)
 #endif
 		{
-			if (inet_aton(hoststr, &tsa.sin_addr))
+			if (inet_pton(AF_INET, hoststr, &tsa.sin_addr) == 1)
 			{
 				*ipaddr = ntohl(tsa.sin_addr.s_addr);
 				return hoststr; /* We could call gethostbyaddr() on tsa to try and get the
@@ -416,8 +423,8 @@ namespace pvpgn
 		if (str_to_uint(netmaskstr, &netmask) < 0)
 		{
 			struct sockaddr_in tsa;
-
-			if (inet_aton(netmaskstr, &tsa.sin_addr))
+			
+			if (inet_pton(AF_INET, netmaskstr, &tsa.sin_addr) == 1)
 				netmask = ntohl(tsa.sin_addr.s_addr);
 			else
 			{

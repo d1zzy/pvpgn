@@ -176,9 +176,6 @@
 /* Define if you have the index function.  */
 /* #undef HAVE_INDEX */
 
-/* Define if you have the inet_aton function.  */
-/* #undef HAVE_INET_ATON */
-
 /* Define if you have the inet_ntoa function.  */
 #define HAVE_INET_NTOA 1
 

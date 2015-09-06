@@ -34,6 +34,7 @@
 #cmakedefine HAVE_SYS_RESOURCE_H
 #cmakedefine HAVE_WINDOWS_H
 #cmakedefine HAVE_WINSOCK2_H
+#cmakedefine HAVE_WS2TCPIP_H
 #cmakedefine HAVE_PROCESS_H
 
 #cmakedefine SIZEOF_UNSIGNED_CHAR ${SIZEOF_UNSIGNED_CHAR}
