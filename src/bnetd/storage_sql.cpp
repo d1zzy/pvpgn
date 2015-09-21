@@ -165,10 +165,10 @@ namespace pvpgn
 
 			info = xmalloc(sizeof(t_sql_info));
 			*((unsigned int *)info) = uid;
-			snprintf(query, sizeof(query), "DELETE FROM %sBNET WHERE "SQL_UID_FIELD" = '%u'", tab_prefix, uid);
+			snprintf(query, sizeof(query), "DELETE FROM %sBNET WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			sql->query(query);
-			snprintf(query, sizeof(query), "INSERT INTO %sBNET ("SQL_UID_FIELD",username) VALUES('%u','%s')", tab_prefix, uid, user);
+			snprintf(query, sizeof(query), "INSERT INTO %sBNET (" SQL_UID_FIELD ",username) VALUES('%u','%s')", tab_prefix, uid, user);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			if (sql->query(query))
 			{
@@ -176,10 +176,10 @@ namespace pvpgn
 				goto err_info;
 			}
 
-			snprintf(query, sizeof(query), "DELETE FROM %sprofile WHERE "SQL_UID_FIELD" = '%u'", tab_prefix, uid);
+			snprintf(query, sizeof(query), "DELETE FROM %sprofile WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			sql->query(query);
-			snprintf(query, sizeof(query), "INSERT INTO %sprofile ("SQL_UID_FIELD") VALUES('%u')", tab_prefix, uid);
+			snprintf(query, sizeof(query), "INSERT INTO %sprofile (" SQL_UID_FIELD ") VALUES('%u')", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			if (sql->query(query))
 			{
@@ -187,10 +187,10 @@ namespace pvpgn
 				goto err_info;
 			}
 
-			snprintf(query, sizeof(query), "DELETE FROM %sRecord WHERE "SQL_UID_FIELD" = '%u'", tab_prefix, uid);
+			snprintf(query, sizeof(query), "DELETE FROM %sRecord WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			sql->query(query);
-			snprintf(query, sizeof(query), "INSERT INTO %sRecord ("SQL_UID_FIELD") VALUES('%u')", tab_prefix, uid);
+			snprintf(query, sizeof(query), "INSERT INTO %sRecord (" SQL_UID_FIELD ") VALUES('%u')", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			if (sql->query(query))
 			{
@@ -198,10 +198,10 @@ namespace pvpgn
 				goto err_info;
 			}
 
-			snprintf(query, sizeof(query), "DELETE FROM %sfriend WHERE "SQL_UID_FIELD" = '%u'", tab_prefix, uid);
+			snprintf(query, sizeof(query), "DELETE FROM %sfriend WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			sql->query(query);
-			snprintf(query, sizeof(query), "INSERT INTO %sfriend ("SQL_UID_FIELD") VALUES('%u')", tab_prefix, uid);
+			snprintf(query, sizeof(query), "INSERT INTO %sfriend (" SQL_UID_FIELD ") VALUES('%u')", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			if (sql->query(query))
 			{
@@ -255,7 +255,7 @@ namespace pvpgn
 				if (strcmp(ktab, *tab) != 0)
 					continue;
 
-				snprintf(query, sizeof(query), "SELECT * FROM %s%s WHERE "SQL_UID_FIELD"='%u'", tab_prefix, *tab, uid);
+				snprintf(query, sizeof(query), "SELECT * FROM %s%s WHERE " SQL_UID_FIELD "='%u'", tab_prefix, *tab, uid);
 				eventlog(eventlog_level_trace, __FUNCTION__, query);
 
 				if ((result = sql->query_res(query)) != NULL && sql->num_rows(result) == 1 && sql->num_fields(result) > 1)
@@ -460,7 +460,7 @@ namespace pvpgn
 				}
 
 				/* FIRST TIME UPDATE EACH ATTRIBUTE IN A SINGLE QUERY AND SAVE ATTRIBUTE NAME IN `knownattributes` */
-				snprintf(query, sizeof(query), "UPDATE %s%s SET `%s` = '%s' WHERE "SQL_UID_FIELD" = '%u'", tab_prefix, tab, col, escape, uid);
+				snprintf(query, sizeof(query), "UPDATE %s%s SET `%s` = '%s' WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, tab, col, escape, uid);
 				eventlog(eventlog_level_trace, "db_set", query);
 
 				if (sql->query(query) || !sql->affected_rows()) {
@@ -476,7 +476,7 @@ namespace pvpgn
 					//          eventlog(eventlog_level_trace, "db_set", "retry insert query: %s", query);
 					if (sql->query(query) || !sql->affected_rows()) {
 						// Tried everything, now trying to insert that user to the table for the first time
-						snprintf(query2, sizeof(query2), "INSERT INTO %s%s ("SQL_UID_FIELD",`%s`) VALUES ('%u','%s')", tab_prefix, tab, col, uid, escape);
+						snprintf(query2, sizeof(query2), "INSERT INTO %s%s (" SQL_UID_FIELD ",`%s`) VALUES ('%u','%s')", tab_prefix, tab, col, uid, escape);
 						eventlog(eventlog_level_trace, __FUNCTION__, query2);
 						//              eventlog(eventlog_level_error, __FUNCTION__, "update failed so tried INSERT for the last chance");
 						if (sql->query(query2))
@@ -502,7 +502,7 @@ namespace pvpgn
 			{
 				query_s = "UPDATE " + std::string(tab_prefix) + q->first + " SET ";
 				query_s += q->second.substr(0, q->second.size() - 2); // remove last reduntant comma at the end of the string with parameters
-				query_s += " WHERE "SQL_UID_FIELD" = '" + std_to_string(uid) + "'";
+				query_s += " WHERE " SQL_UID_FIELD " = '" + std_to_string(uid) + "'";
 
 				if (!sql->query(query_s.c_str()))
 				{
@@ -536,11 +536,11 @@ namespace pvpgn
 				char *user = xstrdup(name);
 				strtolower(user);
 
-				snprintf(query, sizeof(query), "SELECT "SQL_UID_FIELD" FROM %sBNET WHERE username='%s'", tab_prefix, user);
+				snprintf(query, sizeof(query), "SELECT " SQL_UID_FIELD " FROM %sBNET WHERE username='%s'", tab_prefix, user);
 				xfree(user);
 			}
 			else
-				snprintf(query, sizeof(query), "SELECT "SQL_UID_FIELD" FROM %sBNET WHERE "SQL_UID_FIELD" = '%u'", tab_prefix, uid);
+				snprintf(query, sizeof(query), "SELECT " SQL_UID_FIELD " FROM %sBNET WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
 			
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 

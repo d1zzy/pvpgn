@@ -239,10 +239,10 @@ namespace pvpgn
 				return 0;
 			}
 
-			snprintf(query, sizeof(query), "SELECT max("SQL_UID_FIELD") FROM %sBNET", tab_prefix);
+			snprintf(query, sizeof(query), "SELECT max(" SQL_UID_FIELD ") FROM %sBNET", tab_prefix);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			if ((result = sql->query_res(query)) == NULL) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"SELECT max("SQL_UID_FIELD") FROM %sBNET\"", tab_prefix);
+				eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"SELECT max(" SQL_UID_FIELD ") FROM %sBNET\"", tab_prefix);
 				return 0;
 			}
 
@@ -286,7 +286,7 @@ namespace pvpgn
 			/* don't actually load anything here if ST_FORCE is not set as SQL is indexed */
 			if (!FLAG_ISSET(flag, ST_FORCE)) return 1;
 
-			snprintf(query, sizeof(query), "SELECT DISTINCT("SQL_UID_FIELD") FROM %sBNET", tab_prefix);
+			snprintf(query, sizeof(query), "SELECT DISTINCT(" SQL_UID_FIELD ") FROM %sBNET", tab_prefix);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			if ((result = sql->query_res(query)) != NULL)
 			{
@@ -404,7 +404,7 @@ namespace pvpgn
 					clan->channel_type = prefs_get_clan_channel_default_private();
 					clan->members = list_create();
 
-					snprintf(query, sizeof(query), "SELECT "SQL_UID_FIELD", status, join_time FROM %sclanmember WHERE cid='%u'", tab_prefix, clan->clanid);
+					snprintf(query, sizeof(query), "SELECT " SQL_UID_FIELD ", status, join_time FROM %sclanmember WHERE cid='%u'", tab_prefix, clan->clanid);
 					eventlog(eventlog_level_trace, __FUNCTION__, query);
 					if ((result2 = sql->query_res(query)) != NULL)
 					{
@@ -519,7 +519,7 @@ namespace pvpgn
 					if (member->modified)
 					{
 						uid = account_get_uid(member->memberacc);
-						snprintf(query, sizeof(query), "SELECT count(*) FROM %sclanmember WHERE "SQL_UID_FIELD"='%u'", tab_prefix, uid);
+						snprintf(query, sizeof(query), "SELECT count(*) FROM %sclanmember WHERE " SQL_UID_FIELD "='%u'", tab_prefix, uid);
 						eventlog(eventlog_level_trace, __FUNCTION__, query);
 						if ((result = sql->query_res(query)) != NULL)
 						{
@@ -533,9 +533,9 @@ namespace pvpgn
 							num = std::atol(row[0]);
 							sql->free_result(result);
 							if (num < 1)
-								snprintf(query, sizeof(query), "INSERT INTO %sclanmember (cid, "SQL_UID_FIELD", status, join_time) VALUES('%u', '%u', '%d', '%u')", tab_prefix, clan->clanid, uid, member->status, (unsigned)member->join_time);
+								snprintf(query, sizeof(query), "INSERT INTO %sclanmember (cid, " SQL_UID_FIELD ", status, join_time) VALUES('%u', '%u', '%d', '%u')", tab_prefix, clan->clanid, uid, member->status, (unsigned)member->join_time);
 							else
-								snprintf(query, sizeof(query), "UPDATE %sclanmember SET cid='%u', status='%d', join_time='%u' WHERE "SQL_UID_FIELD"='%u'", tab_prefix, clan->clanid, member->status, (unsigned)member->join_time, uid);
+								snprintf(query, sizeof(query), "UPDATE %sclanmember SET cid='%u', status='%d', join_time='%u' WHERE " SQL_UID_FIELD "='%u'", tab_prefix, clan->clanid, member->status, (unsigned)member->join_time, uid);
 							eventlog(eventlog_level_trace, __FUNCTION__, query);
 							if (sql->query(query) < 0)
 							{
@@ -613,7 +613,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			snprintf(query, sizeof(query), "DELETE FROM %sclanmember WHERE "SQL_UID_FIELD"='%u'", tab_prefix, uid);
+			snprintf(query, sizeof(query), "DELETE FROM %sclanmember WHERE " SQL_UID_FIELD "='%u'", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			if (sql->query(query) != 0)
 			{
