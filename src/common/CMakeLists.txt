@@ -11,8 +11,8 @@ set(COMMON_SOURCES
 	fdwbackend.h field_sizes.h file_protocol.h flags.h 
 	give_up_root_privileges.cpp give_up_root_privileges.h hashtable.cpp 
 	hashtable.h hexdump.cpp hexdump.h init_protocol.h introtate.h 
-	irc_protocol.h list.cpp list.h lstr.h network.cpp network.h packet.cpp 
-	packet.h proginfo.cpp proginfo.h queue.cpp queue.h rcm.cpp rcm.h 
+	irc_protocol.h list.cpp list.h lstr.h make_unique.hpp network.cpp network.h 
+	packet.cpp packet.h proginfo.cpp proginfo.h queue.cpp queue.h rcm.cpp rcm.h 
 	rlimit.cpp rlimit.h scoped_array.h scoped_ptr.h setup_after.h 
 	setup_before.h systemerror.cpp systemerror.h tag.cpp tag.h token.cpp 
 	token.h tracker.h trans.cpp trans.h udp_protocol.h util.cpp util.h 

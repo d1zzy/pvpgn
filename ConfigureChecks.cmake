@@ -14,6 +14,7 @@ include(CheckSymbolExists)
 include(CheckTypeSize)
 include(CheckLibraryExists)
 include(CheckCXXCompilerFlag)
+include(CheckCXXSourceCompiles)
 include(CheckMkdirArgs)
 
 # setup short variable path names
@@ -201,6 +202,16 @@ check_symbol_exists(_vsnprintf "stdio.h" HAVE__VSNPRINTF)
 check_symbol_exists(snprintf "stdio.h" HAVE_SNPRINTF)
 check_symbol_exists(_snprintf "stdio.h" HAVE__SNPRINTF)
 check_function_exists(setpgrp HAVE_SETPGRP)
+
+CHECK_CXX_SOURCE_COMPILES(
+"
+#include <memory>
+int main() {
+	auto foo = std::make_unique<int>(1);
+	return 0;
+}
+" HAVE_MAKE_UNIQUE)
+
 
 # winsock2.h and ws2_32 should provide these
 if(HAVE_WINSOCK2_H)
