@@ -2038,7 +2038,8 @@ namespace pvpgn
 			
 			if (conn_is_irc_variant(c) == 0)
 			{
-				channel_display_topic(c, channel_get_name(c->protocol.chat.channel));
+				class_topic Topic;
+				Topic.display(c, std::string(channel_get_name(c->protocol.chat.channel)));
 			}
 
 			if (c->protocol.chat.channel && (channel_get_flags(c->protocol.chat.channel) & channel_flags_moderated))

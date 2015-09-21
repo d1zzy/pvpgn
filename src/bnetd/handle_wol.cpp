@@ -461,7 +461,7 @@ namespace pvpgn
 			gamelist_data* data = static_cast<gamelist_data*>(vdata);
 			t_channel *  gamechannel;
 			const char * gamename;
-			char * topic = NULL;
+			std::string topicstr;
 
 			std::memset(temp, 0, sizeof(temp));
 			std::memset(temp_a, 0, sizeof(temp_a));
@@ -486,10 +486,11 @@ namespace pvpgn
 				return 0;
 			}
 
-			topic = channel_get_topic(channel_get_name(gamechannel));
+			class_topic Topic;
+			topicstr = Topic.get(channel_get_name(gamechannel));
 
-			if (topic) {
-				if (std::strlen(gamename) + 1 + 20 + 1 + 1 + strlen(topic) > MAX_IRC_MESSAGE_LEN) {
+			if (topicstr.empty() == false) {
+				if (std::strlen(gamename) + 1 + 20 + 1 + 1 + std::strlen(topicstr.c_str()) > MAX_IRC_MESSAGE_LEN) {
 					WARN0("LISTREPLY length exceeded");
 					return 0;
 				}
@@ -541,8 +542,8 @@ namespace pvpgn
 
 			std::strcat(temp, "::");
 
-			if (topic) {
-				snprintf(temp_a, sizeof(temp_a), "%s", topic);  /* topic */
+			if (topicstr.c_str()) {
+				snprintf(temp_a, sizeof(temp_a), "%s", topicstr.c_str());  /* topic */
 				std::strcat(temp, temp_a);
 			}
 

@@ -1482,13 +1482,6 @@ namespace pvpgn
 						anongame_infos_load(prefs_get_anongame_infos_file());
 					}
 
-					if (do_restart == restart_mode_all || do_restart == restart_mode_topiclist)
-					{
-						topiclist_unload();
-						if (topiclist_load(prefs_get_topicfile()) < 0)
-							eventlog(eventlog_level_error, __FUNCTION__, "could not load new topic list");
-					}
-
 #ifdef WITH_LUA
 					if (do_restart == restart_mode_all || do_restart == restart_mode_lua)
 					{
