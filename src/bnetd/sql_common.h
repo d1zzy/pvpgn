@@ -90,7 +90,7 @@ namespace pvpgn
 		extern const char* tab_prefix;
 
 #ifndef SQL_ON_DEMAND
-		extern char *sql_tables[];
+		extern char const *sql_tables[];
 #endif /* SQL_ON_DEMAND */
 
 		extern int sql_init(const char *);
