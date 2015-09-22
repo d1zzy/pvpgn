@@ -1731,7 +1731,7 @@ namespace pvpgn
 			return 0;
 		}
 
-		/* Show message box on a client side (https://github.com/HarpyWar/pvpgn/issues/15) */
+		/* Show message box on a client side (https://github.com/pvpgn/pvpgn-server/issues/15) */
 		extern int messagebox_show(t_connection * dst, char const * text, char const * caption, int type)
 		{
 			t_packet *rpacket;

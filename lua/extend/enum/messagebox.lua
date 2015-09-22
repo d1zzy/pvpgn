@@ -6,7 +6,7 @@
 ]]--
 
 
--- https://github.com/HarpyWar/pvpgn/issues/15
+-- https://github.com/pvpgn/pvpgn-server/issues/15
 -- http://msdn.microsoft.com/en-us/library/windows/desktop/ms645505(v=vs.85).aspx
 --
 -- use math_or(mb_type1, mb_type2) to combine two messagebox types
