@@ -640,13 +640,13 @@ namespace pvpgn
 	{
 		t_clienttag clienttag;
 		if (!client || strlen(client) != 4)
-			return NULL;
+			return 0;
 
 		// toupper
 		clienttag = tag_case_str_to_uint(client);
 		
 		if (!tag_check_client(clienttag))
-			return NULL;
+			return 0;
 
 		return clienttag;
 	}
