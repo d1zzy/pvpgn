@@ -4046,13 +4046,17 @@ namespace pvpgn
 				return -1;
 			}
 
-			// Protection from hack attempt
-			// Large map name size will cause crash Starcraft client for user who select an item in game list ("Join" area)
-			// It occurs when the packet size of packet 0x0c in length interval 161-164
-			if (packet_get_size(packet) > 160)
+			if (conn_get_clienttag(c) == CLIENTTAG_STARCRAFT_UINT || conn_get_clienttag(c) == CLIENTTAG_BROODWARS_UINT)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got abnormal STARTGAME4 packet length (got %u bytes, hack attempt?)", conn_get_socket(c), packet_get_size(packet));
-				return -1;
+				// FIXME: (HarpyWar) Protection from hack attempt
+				// Large map name size will cause crash Starcraft client for user who select an item in game list ("Join" area)
+				// It occurs when the packet size of packet 0x0c in length interval 161-164
+				// https://github.com/pvpgn/pvpgn-server/issues/159
+				if (packet_get_size(packet) > 160)
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "[%d] got abnormal STARTGAME4 packet length (got %u bytes, hack attempt?)", conn_get_socket(c), packet_get_size(packet));
+					return -1;
+				}
 			}
 
 			// Quick hack to make W3 part channels when creating a game
