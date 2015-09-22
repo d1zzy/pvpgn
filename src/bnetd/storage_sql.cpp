@@ -249,7 +249,7 @@ namespace pvpgn
 
 			uid = *((unsigned int *)info);
 
-			for (tab = sql_tables; *tab; tab++)
+			for (tab = const_cast<char **>(sql_tables); *tab; tab++)
 			{
 				// process only a table where the attribute is in
 				if (strcmp(ktab, *tab) != 0)
