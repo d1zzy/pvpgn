@@ -27,9 +27,9 @@ include(ConfigureChecks.cmake)
 
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-    # Minimum G++ version: 4.8
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
-        message(FATAL_ERROR "G++ 4.8 or higher required")
+    # Minimum G++ version: 5.1
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.1)
+        message(FATAL_ERROR "G++ 5.1 or higher required")
     endif()
 
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pedantic -Wno-variadic-macros")
@@ -39,8 +39,9 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif ()
 
 if (MSVC)
-	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 17.0)
-		message(FATAL_ERROR "Visual Studio 2012 or higher required")
+	# cl.exe version
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.0)
+		message(FATAL_ERROR "Visual Studio 2015 or higher required")
 	endif()
 endif ()
 
