@@ -8,7 +8,7 @@ Next generation of PvPGN &mdash; Battle.net<sup> v1.0</sup> game server emulator
 
 [Deleaker](http://www.deleaker.com/) helps us to find leaks
 
-[![Build Status](https://travis-ci.org/pvpgn/pvpgn-server.svg?branch=master)](https://travis-ci.org/pvpgn/pvpgn-server) [![Build status](https://ci.appveyor.com/api/projects/status/dqoj9lkvhfwthmn6)](https://ci.appveyor.com/project/pvpgn/pvpgn-server)
+[![Build Status](https://travis-ci.org/pvpgn/pvpgn-server.svg?branch=master)](https://travis-ci.org/pvpgn/pvpgn-server) [![Build status](https://ci.appveyor.com/api/projects/status/dqoj9lkvhfwthmn6)](https://ci.appveyor.com/project/HarpyWar/pvpgn)
 
 
 Source Code changes (since v1.99)
