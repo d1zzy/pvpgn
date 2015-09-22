@@ -241,7 +241,8 @@ namespace pvpgn
 			if (psock_connect(sd, (struct sockaddr *)saddr, sizeof(*saddr)) < 0)
 			{
 				std::fprintf(stderr, "%s: could not connect to server \"%s\" port %hu (psock_connect: %s)\n", progname, servname, servport, std::strerror(psock_errno()));
-				goto error_sd;
+				psock_close(sd);
+				return -1;
 			}
 
 			char addrstr[INET_ADDRSTRLEN] = { 0 };
@@ -258,7 +259,12 @@ namespace pvpgn
 			if (!(packet = packet_create(packet_class_init)))
 			{
 				std::fprintf(stderr, "%s: could not create packet\n", progname);
-				goto error_lsock;
+				if (lsock >= 0)
+					psock_close(lsock);
+
+				psock_close(sd);
+
+				return -1;
 			}
 			bn_byte_set(&packet->u.client_initconn.cclass, CLIENT_INITCONN_CLASS_BNET);
 			client_blocksend_packet(sd, packet);
@@ -268,7 +274,12 @@ namespace pvpgn
 			if (!(rpacket = packet_create(packet_class_bnet)))
 			{
 				std::fprintf(stderr, "%s: could not create packet\n", progname);
-				goto error_lsock;
+				if (lsock >= 0)
+					psock_close(lsock);
+
+				psock_close(sd);
+
+				return -1;
 			}
 
 			get_defversioninfo(progname, clienttag, &versionid, &gameversion, &exeinfo, &checksum);
@@ -279,7 +290,14 @@ namespace pvpgn
 				if (!(packet = packet_create(packet_class_bnet)))
 				{
 					std::fprintf(stderr, "%s: could not create packet\n", progname);
-					goto error_rpacket;
+					packet_destroy(rpacket);
+
+					if (lsock >= 0)
+						psock_close(lsock);
+
+					psock_close(sd);
+
+					return -1;
 				}
 				packet_set_size(packet, sizeof(t_client_unknown_1b));
 				packet_set_type(packet, CLIENT_UNKNOWN_1B);
@@ -295,7 +313,14 @@ namespace pvpgn
 			if (!(packet = packet_create(packet_class_bnet)))
 			{
 				std::fprintf(stderr, "%s: could not create packet\n", progname);
-				goto error_rpacket;
+				packet_destroy(rpacket);
+
+				if (lsock >= 0)
+					psock_close(lsock);
+
+				psock_close(sd);
+
+				return -1;
 			}
 			packet_set_size(packet, sizeof(t_client_countryinfo_109));
 			packet_set_type(packet, CLIENT_COUNTRYINFO_109);
@@ -329,7 +354,14 @@ namespace pvpgn
 			if (client_blockrecv_packet(sd, rpacket) < 0)
 			{
 				std::fprintf(stderr, "%s: server closed connection\n", progname);
-				goto error_rpacket;
+				packet_destroy(rpacket);
+
+				if (lsock >= 0)
+					psock_close(lsock);
+
+				psock_close(sd);
+
+				return -1;
 			}
 			while (packet_get_type(rpacket) != SERVER_AUTHREQ_109 &&
 				packet_get_type(rpacket) != SERVER_AUTHREPLY_109);
@@ -347,7 +379,14 @@ namespace pvpgn
 					if (!(packet = packet_create(packet_class_bnet)))
 					{
 						std::fprintf(stderr, "%s: could not create packet\n", progname);
-						goto error_rpacket;
+						packet_destroy(rpacket);
+
+						if (lsock >= 0)
+							psock_close(lsock);
+
+						psock_close(sd);
+
+						return -1;
 					}
 					packet_set_size(packet, sizeof(t_client_authreq_109));
 					packet_set_type(packet, CLIENT_AUTHREQ_109);
@@ -375,14 +414,28 @@ namespace pvpgn
 					if (client_blockrecv_packet(sd, rpacket) < 0)
 					{
 						std::fprintf(stderr, "%s: server closed connection\n", progname);
-						goto error_rpacket;
+						packet_destroy(rpacket);
+
+						if (lsock >= 0)
+							psock_close(lsock);
+
+						psock_close(sd);
+
+						return -1;
 					}
 					while (packet_get_type(rpacket) != SERVER_AUTHREPLY_109);
 					//FIXME: check if AUTHREPLY_109 is success or fail
 					if (bn_int_get(rpacket->u.server_authreply_109.message) != SERVER_AUTHREPLY_109_MESSAGE_OK)
 					{
 						std::fprintf(stderr, "AUTHREPLY_109 failed - closing connection\n");
-						goto error_rpacket;
+						packet_destroy(rpacket);
+
+						if (lsock >= 0)
+							psock_close(lsock);
+
+						psock_close(sd);
+
+						return -1;
 					}
 				}
 			}
@@ -393,7 +446,14 @@ namespace pvpgn
 			if (!(packet = packet_create(packet_class_bnet)))
 			{
 				std::fprintf(stderr, "%s: could not create packet\n", progname);
-				goto error_rpacket;
+				packet_destroy(rpacket);
+
+				if (lsock >= 0)
+					psock_close(lsock);
+
+				psock_close(sd);
+
+				return -1;
 			}
 			packet_set_size(packet, sizeof(t_client_iconreq));
 			packet_set_type(packet, CLIENT_ICONREQ);
@@ -404,7 +464,14 @@ namespace pvpgn
 			if (client_blockrecv_packet(sd, rpacket) < 0)
 			{
 				std::fprintf(stderr, "%s: server closed connection\n", progname);
-				goto error_rpacket;
+				packet_destroy(rpacket);
+
+				if (lsock >= 0)
+					psock_close(lsock);
+
+				psock_close(sd);
+
+				return -1;
 			}
 			while (packet_get_type(rpacket) != SERVER_ICONREPLY);
 			dprintf("Got ICONREPLY\n");
@@ -416,7 +483,14 @@ namespace pvpgn
 				if (!(packet = packet_create(packet_class_bnet)))
 				{
 					std::fprintf(stderr, "%s: could not create packet\n", progname);
-					goto error_rpacket;
+					packet_destroy(rpacket);
+
+					if (lsock >= 0)
+						psock_close(lsock);
+
+					psock_close(sd);
+
+					return -1;
 				}
 
 				{
@@ -466,7 +540,14 @@ namespace pvpgn
 				if (client_blockrecv_packet(sd, rpacket) < 0)
 				{
 					std::fprintf(stderr, "%s: server closed connection\n", progname);
-					goto error_rpacket;
+					packet_destroy(rpacket);
+
+					if (lsock >= 0)
+						psock_close(lsock);
+
+					psock_close(sd);
+
+					return -1;
 				}
 				while (packet_get_type(rpacket) != SERVER_CDKEYREPLY2);
 				dprintf("Got CDKEYREPLY2 (%u)\n", bn_int_get(rpacket->u.server_cdkeyreply2.message));
@@ -474,23 +555,6 @@ namespace pvpgn
 
 			packet_destroy(rpacket);
 			return sd;
-
-			/* error cleanup */
-
-		error_rpacket:
-
-			packet_destroy(rpacket);
-
-		error_lsock:
-
-			if (lsock >= 0)
-				psock_close(lsock);
-
-		error_sd:
-
-			psock_close(sd);
-
-			return -1;
 		}
 
 	}
