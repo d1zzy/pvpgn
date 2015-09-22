@@ -8,7 +8,7 @@ clone_folder: c:\pvpgn
 
 install:
   - cmd: cd c:\
-  - cmd: appveyor DownloadFile https://github.com/HarpyWar/pvpgn-magic-builder/archive/master.zip
+  - cmd: appveyor DownloadFile https://github.com/pvpgn/pvpgn-magic-builder/archive/master.zip
   - cmd: 7z.exe x master.zip >nul
   - cmd: ren pvpgn-magic-builder-master builder
   - cmd: mkdir c:\builder\source\
