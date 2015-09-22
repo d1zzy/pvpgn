@@ -414,7 +414,7 @@ namespace pvpgn
 				if (endtime == 0)
 				{
 					msgtemp = localize(c, "{} banned permamently by {}.", cp, conn_get_username(c));
-					eventlog(eventlog_level_info, __FUNCTION__, msgtemp.c_str());
+					eventlog(eventlog_level_info, __FUNCTION__, "%s", msgtemp.c_str());
 					message_send_admins(c, message_type_info, msgtemp.c_str());
 					msgtemp = localize(c, "{} banned permamently.", cp);
 					message_send_text(c, message_type_info, c, msgtemp);
@@ -422,7 +422,7 @@ namespace pvpgn
 				else
 				{
 					msgtemp = localize(c, "{} banned for {} by {}.", cp, seconds_to_timestr(entry->endtime - now), conn_get_username(c));
-					eventlog(eventlog_level_info, __FUNCTION__, msgtemp.c_str());
+					eventlog(eventlog_level_info, __FUNCTION__, "%s", msgtemp.c_str());
 					message_send_admins(c, message_type_info, msgtemp.c_str());
 					msgtemp = localize(c, "{} banned for {}.", cp, seconds_to_timestr(entry->endtime - now));
 					message_send_text(c, message_type_info, c, msgtemp);
