@@ -2002,9 +2002,9 @@ namespace pvpgn
 			if (!channel)
 			{
 				if (clantag)
-					channel = channel_create(channelname, channelname, NULL, 0, 1, 1, prefs_get_chanlog(), NULL, NULL, (prefs_get_maxusers_per_channel() > 0) ? prefs_get_maxusers_per_channel() : -1, 0, 1, 0);
+					channel = channel_create(channelname, channelname, 0, 0, 1, 1, prefs_get_chanlog(), NULL, NULL, (prefs_get_maxusers_per_channel() > 0) ? prefs_get_maxusers_per_channel() : -1, 0, 1, 0);
 				else
-					channel = channel_create(channelname, channelname, NULL, 0, 1, 1, prefs_get_chanlog(), NULL, NULL, (prefs_get_maxusers_per_channel() > 0) ? prefs_get_maxusers_per_channel() : -1, 0, 0, 0);
+					channel = channel_create(channelname, channelname, 0, 0, 1, 1, prefs_get_chanlog(), NULL, NULL, (prefs_get_maxusers_per_channel() > 0) ? prefs_get_maxusers_per_channel() : -1, 0, 0, 0);
 				if (!channel)
 				{
 					eventlog(eventlog_level_error, __FUNCTION__, "[%d] could not create channel on join \"%s\"", conn_get_socket(c), channelname);
