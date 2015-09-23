@@ -4123,7 +4123,13 @@ namespace pvpgn
 				return false;
 			}
 
-			return c->protocol.wol.findme;
+			bool bRet;
+			if (c->protocol.wol.findme == 0)
+				bRet = false;
+			else
+				bRet = true;
+
+			return bRet;
 		}
 
 		extern void conn_wol_set_pageme(t_connection * c, bool pageme)
@@ -4145,7 +4151,13 @@ namespace pvpgn
 				return false;
 			}
 
-			return c->protocol.wol.pageme;
+			bool bRet;
+			if (c->protocol.wol.pageme == 0)
+				bRet = false;
+			else
+				bRet = true;
+
+			return bRet;
 		}
 
 		extern void conn_wol_set_anongame_player(t_connection * c, t_anongame_wol_player * anongame_player)
