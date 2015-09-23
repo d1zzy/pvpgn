@@ -847,7 +847,6 @@ extern int main(int argc, char * argv[])
 	for (;;)
 	{
 		char         password[MAX_MESSAGE_LEN];
-		unsigned int i;
 		int          status;
 
 		if (newacct)
