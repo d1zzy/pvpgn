@@ -172,7 +172,7 @@ namespace pvpgn
 			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 			if (sql->query(query))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "user insert failed (query: '%s')", "%s", query);
+				eventlog(eventlog_level_error, __FUNCTION__, "user insert failed (query: '%s')", query);
 				goto err_info;
 			}
 
