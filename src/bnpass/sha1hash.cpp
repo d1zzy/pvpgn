@@ -86,7 +86,6 @@ extern int main(int argc, char * argv[])
 	{
 		char         buff[256];
 		t_hash       hash;
-		unsigned int i;
 
 		eventlog_set(stderr); /* sha1_hash() and friends use eventlog */
 
