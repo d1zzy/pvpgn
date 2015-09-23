@@ -98,7 +98,8 @@ namespace pvpgn
 
 
 		// http://msdn.microsoft.com/en-us/goglobal/bb896001.aspx
-		extern const char * countries[][2] =
+		extern const char * countries[][2];
+		const char * countries[][2] =
 		{
 			/* English (uses if other not found) */
 			{ "USA", "enUS" },
