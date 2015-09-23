@@ -15,12 +15,10 @@
 #cmakedefine HAVE_TERMIOS_H
 #cmakedefine HAVE_SYS_TYPES_H
 #cmakedefine HAVE_SYS_WAIT_H
-#cmakedefine HAVE_SYS_IOCTL_H
 #cmakedefine HAVE_STDINT_H
 #cmakedefine HAVE_SYS_FILE_H
 #cmakedefine HAVE_POLL_H
 #cmakedefine HAVE_SYS_POLL_H
-#cmakedefine HAVE_SYS_STROPTS_H
 #cmakedefine HAVE_SYS_STAT_H
 #cmakedefine HAVE_PWD_H
 #cmakedefine HAVE_GRP_H
@@ -34,9 +32,9 @@
 #cmakedefine HAVE_SYS_EVENT_H
 #cmakedefine HAVE_SYS_EPOLL_H
 #cmakedefine HAVE_SYS_RESOURCE_H
-#cmakedefine HAVE_PCAP_H
 #cmakedefine HAVE_WINDOWS_H
 #cmakedefine HAVE_WINSOCK2_H
+#cmakedefine HAVE_WS2TCPIP_H
 #cmakedefine HAVE_PROCESS_H
 
 #cmakedefine SIZEOF_UNSIGNED_CHAR ${SIZEOF_UNSIGNED_CHAR}
@@ -57,8 +55,6 @@
 #cmakedefine HAVE_SOCKET
 #cmakedefine HAVE_STRDUP
 #cmakedefine HAVE_STRTOUL
-#cmakedefine HAVE_INET_ATON
-#cmakedefine HAVE_INET_NTOA
 #cmakedefine HAVE_UNAME
 #cmakedefine HAVE_RECV
 #cmakedefine HAVE_SEND
@@ -111,6 +107,7 @@
 #cmakedefine HAVE_SNPRINTF
 #cmakedefine HAVE__SNPRINTF
 #cmakedefine HAVE_SETPGRP
+#cmakedefine HAVE_MAKE_UNIQUE
 
 #cmakedefine BNETD_DEFAULT_CONF_FILE "${BNETD_DEFAULT_CONF_FILE}"
 #cmakedefine D2CS_DEFAULT_CONF_FILE "${D2CS_DEFAULT_CONF_FILE}"

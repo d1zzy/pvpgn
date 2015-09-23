@@ -30,7 +30,6 @@
 
 #include "compat/stdfileno.h"
 #include "compat/psock.h"
-#include "compat/inet_ntoa.h"
 #include "compat/pgetpid.h"
 #include "common/tracker.h"
 #include "common/eventlog.h"
@@ -39,6 +38,14 @@
 #include "common/util.h"
 #include "common/version.h"
 #include "common/bn_type.h"
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+# include <Ws2tcpip.h>
+#endif
+
 #include "common/setup_after.h"
 
 using namespace pvpgn;
@@ -283,9 +290,11 @@ namespace {
 					}
 					else
 					{
+						char addrstr[INET_ADDRSTRLEN] = { 0 };
+						inet_ntop(AF_INET, &(server->address), addrstr, sizeof(addrstr));
 						if (prefs.XML_mode == 1)
 						{
-							std::fprintf(outfile, "<server>\n\t<address>%s</address>\n", inet_ntoa(server->address));
+							std::fprintf(outfile, "<server>\n\t<address>%s</address>\n", addrstr);
 							std::fprintf(outfile, "\t<port>%hu</port>\n", bn_short_nget(server->info.port));
 							std::fprintf(outfile, "\t<location>%s</location>\n", server->info.server_location);
 							std::fprintf(outfile, "\t<software>%s</software>\n", server->info.software);
@@ -305,7 +314,7 @@ namespace {
 						}
 						else
 						{
-							std::fprintf(outfile, "%s\n##\n", inet_ntoa(server->address));
+							std::fprintf(outfile, "%s\n##\n", addrstr);
 							std::fprintf(outfile, "%hu\n##\n", bn_short_nget(server->info.port));
 							std::fprintf(outfile, "%s\n##\n", server->info.server_location);
 							std::fprintf(outfile, "%s\n##\n", server->info.software);
@@ -410,6 +419,9 @@ namespace {
 							list_append_data(serverlist_head, server);
 						}
 
+						char addrstr2[INET_ADDRSTRLEN] = { 0 };
+						inet_ntop(AF_INET, &(cliaddr.sin_addr), addrstr2, sizeof(addrstr2));
+
 						eventlog(eventlog_level_debug, __FUNCTION__,
 							"Packet received from %s:"
 							" packet_version=%u"
@@ -426,7 +438,7 @@ namespace {
 							" uptime=%lu"
 							" total_games=%lu"
 							" total_logins=%lu",
-							inet_ntoa(cliaddr.sin_addr),
+							addrstr2,
 							bn_short_nget(packet.packet_version),
 							bn_int_nget(packet.flags),
 							bn_short_nget(packet.port),

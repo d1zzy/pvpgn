@@ -17,6 +17,10 @@
 #ifndef INCLUDED_FRIENDS_H
 #define INCLUDED_FRIENDS_H
 
+#define FRIEND_UNLOADEDMUTUAL -1
+#define FRIEND_NOTMUTUAL 0
+#define FRIEND_ISMUTUAL 1
+
 #include "account.h"
 
 namespace pvpgn
@@ -24,29 +28,33 @@ namespace pvpgn
 
 	namespace bnetd
 	{
-
-		typedef struct friend_struct {
-			char mutual; /* -1 - unloaded(used to remove deleted elems when reload); 0 - not mutual ; 1 - is mutual */
-			t_account *friendacc;
+		typedef struct friend_struct
+		{
+			/*	FRIEND_UNLOADEDMUTUAL:	unloaded(used to remove deleted elems when reload)
+			*	FRIEND_NOTMUTUAL:		not mutual
+			*	FRIEND_ISMUTUAL:		is mutual
+			*/
+			int mutual;
+			t_account *friendacc = nullptr;
 		} t_friend;
 
 #ifndef JUST_NEED_TYPES
 
 		extern t_account * friend_get_account(t_friend *);
-		extern int friend_set_account(t_friend *, t_account * acc);
+		extern int friend_set_account(t_friend *, t_account *);
 		extern char friend_get_mutual(t_friend *);
-		extern int friend_set_mutual(t_friend *, char);
+		extern int friend_set_mutual(t_friend *, int);
 
 		extern int friendlist_unload(t_list *);
 		extern int friendlist_close(t_list *);
 		extern int friendlist_purge(t_list *);
 		extern int friendlist_add_account(t_list *, t_account *, int);
-		extern int friendlist_remove_friend(t_list * flist, t_friend *);
+		extern int friendlist_remove_friend(t_list *, t_friend *);
 		extern int friendlist_remove_account(t_list *, t_account *);
 		extern int friendlist_remove_username(t_list *, const char *);
 		extern t_friend * friendlist_find_account(t_list *, t_account *);
 		extern t_friend * friendlist_find_username(t_list *, const char *);
-		extern t_friend * friendlist_find_uid(t_list *, unsigned);
+		extern t_friend * friendlist_find_uid(t_list *, unsigned int);
 
 #endif
 

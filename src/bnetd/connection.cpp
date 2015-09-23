@@ -2002,9 +2002,9 @@ namespace pvpgn
 			if (!channel)
 			{
 				if (clantag)
-					channel = channel_create(channelname, channelname, NULL, 0, 1, 1, prefs_get_chanlog(), NULL, NULL, (prefs_get_maxusers_per_channel() > 0) ? prefs_get_maxusers_per_channel() : -1, 0, 1, 0);
+					channel = channel_create(channelname, channelname, 0, 0, 1, 1, prefs_get_chanlog(), NULL, NULL, (prefs_get_maxusers_per_channel() > 0) ? prefs_get_maxusers_per_channel() : -1, 0, 1, 0);
 				else
-					channel = channel_create(channelname, channelname, NULL, 0, 1, 1, prefs_get_chanlog(), NULL, NULL, (prefs_get_maxusers_per_channel() > 0) ? prefs_get_maxusers_per_channel() : -1, 0, 0, 0);
+					channel = channel_create(channelname, channelname, 0, 0, 1, 1, prefs_get_chanlog(), NULL, NULL, (prefs_get_maxusers_per_channel() > 0) ? prefs_get_maxusers_per_channel() : -1, 0, 0, 0);
 				if (!channel)
 				{
 					eventlog(eventlog_level_error, __FUNCTION__, "[%d] could not create channel on join \"%s\"", conn_get_socket(c), channelname);
@@ -2038,7 +2038,8 @@ namespace pvpgn
 			
 			if (conn_is_irc_variant(c) == 0)
 			{
-				channel_display_topic(c, channel_get_name(c->protocol.chat.channel));
+				class_topic Topic;
+				Topic.display(c, std::string(channel_get_name(c->protocol.chat.channel)));
 			}
 
 			if (c->protocol.chat.channel && (channel_get_flags(c->protocol.chat.channel) & channel_flags_moderated))
@@ -4122,7 +4123,13 @@ namespace pvpgn
 				return false;
 			}
 
-			return c->protocol.wol.findme;
+			bool bRet;
+			if (c->protocol.wol.findme == 0)
+				bRet = false;
+			else
+				bRet = true;
+
+			return bRet;
 		}
 
 		extern void conn_wol_set_pageme(t_connection * c, bool pageme)
@@ -4144,7 +4151,13 @@ namespace pvpgn
 				return false;
 			}
 
-			return c->protocol.wol.pageme;
+			bool bRet;
+			if (c->protocol.wol.pageme == 0)
+				bRet = false;
+			else
+				bRet = true;
+
+			return bRet;
 		}
 
 		extern void conn_wol_set_anongame_player(t_connection * c, t_anongame_wol_player * anongame_player)

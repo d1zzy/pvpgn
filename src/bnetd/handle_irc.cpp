@@ -451,19 +451,19 @@ namespace pvpgn
 
 			if (numparams == 0) {
 				t_elem const * curr;
-
+				class_topic Topic;
 				LIST_TRAVERSE_CONST(channellist(), curr)
 				{
 					t_channel const * channel = (const t_channel*)elem_get_data(curr);
 					char const * tempname;
-					char * topic = channel_get_topic(channel_get_name(channel));
+					std::string topicstr = Topic.get(channel_get_name(channel));
 
 					tempname = irc_convert_channel(channel, conn);
 
 					/* FIXME: AARON: only list channels like in /channels command */
-					if (topic) {
-						if (std::strlen(tempname) + 1 + 20 + 1 + 1 + std::strlen(topic) < MAX_IRC_MESSAGE_LEN)
-							snprintf(temp, sizeof(temp), "%s %u :%s", tempname, channel_get_length(channel), topic);
+					if (topicstr.empty() == false) {
+						if (std::strlen(tempname) + 1 + 20 + 1 + 1 + std::strlen(topicstr.c_str()) < MAX_IRC_MESSAGE_LEN)
+							snprintf(temp, sizeof(temp), "%s %u :%s", tempname, channel_get_length(channel), topicstr.c_str());
 						else
 							eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
 					}
@@ -479,6 +479,7 @@ namespace pvpgn
 			else if (numparams >= 1) {
 				int i;
 				char ** e;
+				class_topic Topic;
 
 				e = irc_get_listelems(params[0]);
 				/* FIXME: support wildcards! */
@@ -487,7 +488,7 @@ namespace pvpgn
 					t_channel const * channel;
 					char const * verytemp; /* another good example for creative naming conventions :) */
 					char const * tempname;
-					char * topic;
+					std::string topicstr;
 
 					verytemp = irc_convert_ircname(e[i]);
 					if (!verytemp)
@@ -496,12 +497,12 @@ namespace pvpgn
 					if (!channel)
 						continue; /* channel doesn't exist */
 
-					topic = channel_get_topic(channel_get_name(channel));
+					topicstr = Topic.get(channel_get_name(channel));
 					tempname = irc_convert_channel(channel, conn);
 
-					if (topic) {
-						if (std::strlen(tempname) + 1 + 20 + 1 + 1 + std::strlen(topic) < MAX_IRC_MESSAGE_LEN)
-							snprintf(temp, sizeof(temp), "%s %u :%s", tempname, channel_get_length(channel), topic);
+					if (topicstr.c_str()) {
+						if (std::strlen(tempname) + 1 + 20 + 1 + 1 + std::strlen(topicstr.c_str()) < MAX_IRC_MESSAGE_LEN)
+							snprintf(temp, sizeof(temp), "%s %u :%s", tempname, channel_get_length(channel), topicstr.c_str());
 						else
 							eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
 					}

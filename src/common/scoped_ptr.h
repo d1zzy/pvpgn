@@ -37,9 +37,9 @@ namespace pvpgn
 		explicit scoped_ptr(V* ptr_)
 			:ptr(ptr_) {}
 
-		/** initilize the object transfering ownership from an std::auto_ptr<> */
+		/** initilize the object transfering ownership from an std::unique_ptr<> */
 		template<typename V>
-		explicit scoped_ptr(std::auto_ptr<V>& aptr)
+		explicit scoped_ptr(std::unique_ptr<V>& aptr)
 			:ptr(aptr.release()) {}
 
 		/** release memory if aquired ownershipt */
@@ -93,7 +93,7 @@ namespace pvpgn
 	private:
 		T* ptr;
 
-		/* do not allow to copy a scoped_ptr (use std::auto_ptr<> if you need that) */
+		/* do not allow to copy a scoped_ptr (use std::unique_ptr<> if you need that) */
 		scoped_ptr(const scoped_ptr&);
 		scoped_ptr& operator=(const scoped_ptr&);
 

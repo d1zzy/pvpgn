@@ -92,7 +92,6 @@ namespace pvpgn
 			restart_mode_tournament,
 			restart_mode_icons,
 			restart_mode_anongame,
-			restart_mode_topiclist,
 			restart_mode_lua
 		};
 

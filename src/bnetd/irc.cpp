@@ -1400,12 +1400,14 @@ namespace pvpgn
 			return 0;
 		}
 
-		extern int irc_send_topic(t_connection * c, t_channel const * channel){
-			char * topic;
+		extern int irc_send_topic(t_connection * c, t_channel const * channel)
+		{
+			class_topic Topic;
+			std::string topicstr = Topic.get(channel_get_name(channel));
 			char temp[MAX_IRC_MESSAGE_LEN];
 
-			if ((topic = channel_get_topic(channel_get_name(channel)))) {
-				snprintf(temp, sizeof(temp), "%s :%s", irc_convert_channel(channel, c), topic);
+			if (topicstr.empty() == false) {
+				snprintf(temp, sizeof(temp), "%s :%s", irc_convert_channel(channel, c), topicstr.c_str());
 				irc_send(c, RPL_TOPIC, temp);
 			}
 			else {
@@ -1422,14 +1424,14 @@ namespace pvpgn
 		{
 			char ** e = NULL;
 			char temp[MAX_IRC_MESSAGE_LEN];
+			class_topic Topic;
 
 			if (params && params[0])
 			{
 				if (conn_get_wol(conn) == 1) {
 					t_channel * channel = conn_get_channel(conn);
-
 					if (channel)
-						channel_set_topic(channel_get_name(channel), text, NO_SAVE_TOPIC);
+						Topic.set(std::string(channel_get_name(channel)), std::string(text), false);
 					else {
 						snprintf(temp, sizeof(temp), "%s :You're not on that channel", params[0]);
 						irc_send(conn, ERR_NOTONCHANNEL, temp);

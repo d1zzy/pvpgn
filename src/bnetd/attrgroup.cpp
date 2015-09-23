@@ -233,18 +233,23 @@ namespace pvpgn
 			unsigned int uid = *((unsigned int *)attrgroup->storage);
 			t_storage_info *defacct = storage->get_defacct();
 			unsigned int defuid = *((unsigned int *)defacct);
-			std::atexit(reinterpret_cast<void(*)()>(storage->free_info(defacct)));
 
 			// do not flush default account
 			if (uid == defuid)
+			{
+				storage->free_info(defacct);
 				return 2;
+			}
 
 			// do not flush online users (but flush if FORCE!)
 			if (!prefs_get_user_flush_connected() && !FLAG_ISSET(flags, FS_FORCE))
 			{
 				if (const char * username = attrgroup_get_attr(attrgroup, "BNET\\acct\\username"))
-				if (t_connection * c = connlist_find_connection_by_accountname(username))
-					return 2;
+					if (t_connection * c = connlist_find_connection_by_accountname(username))
+					{
+						storage->free_info(defacct);
+						return 2;
+					}
 			}
 
 			/* sync data to disk if dirty */
@@ -257,6 +262,8 @@ namespace pvpgn
 			hlist_init(&attrgroup->list);	/* reset list */
 
 			attrgroup_clear_loaded(attrgroup);
+
+			storage->free_info(defacct);
 
 			return 1;
 		}

@@ -176,12 +176,6 @@
 /* Define if you have the index function.  */
 /* #undef HAVE_INDEX */
 
-/* Define if you have the inet_aton function.  */
-/* #undef HAVE_INET_ATON */
-
-/* Define if you have the inet_ntoa function.  */
-#define HAVE_INET_NTOA 1
-
 /* Define if you have the <inttypes.h> header file. */
 #ifdef __MINGW32__
 # define HAVE_INTTYPES_H 1
@@ -416,9 +410,6 @@
 # define HAVE_SYS_FILE_H 1
 #endif
 
-/* Define if you have the <sys/ioctl.h> header file.  */
-/* #undef HAVE_SYS_IOCTL_H */
-
 /* Define if you have the <sys/mman.h> header file. */
 /* #undef HAVE_SYS_MMAN_H */
 
@@ -444,9 +435,6 @@
 
 /* Define if you have the <sys/stat.h> header file.  */
 #define HAVE_SYS_STAT_H 1
-
-/* Define if you have the <sys/stropts.h> header file.  */
-/* #undef HAVE_SYS_STROPTS_H */
 
 /* Define if you have the <sys/time.h> header file.  */
 /* #undef HAVE_SYS_TIME_H */ /* MinGW has this header, but confilcts with compat/gettimeofday.h */

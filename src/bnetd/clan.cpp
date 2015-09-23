@@ -1383,7 +1383,7 @@ namespace pvpgn
 			if (member->memberacc != NULL)
 			{
 				account_set_clanmember((t_account*)member->memberacc, NULL);
-				if (member->fullmember == true)
+				if (member->fullmember == 1)
 					storage->remove_clanmember(account_get_uid((t_account*)member->memberacc));
 			}
 			xfree((void *)member);

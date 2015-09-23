@@ -258,7 +258,14 @@ namespace pvpgn
 					eventlog(eventlog_level_info, __FUNCTION__, "created user directory: %s", filepath);
 				}
 			}
-			filepath = buildpath(filepath, lusername.c_str());
+
+			char *tmp = new char[std::strlen(filepath) + 1];
+			strcpy(tmp, filepath);
+			xfree(filepath);
+
+			filepath = buildpath(tmp, lusername.c_str());
+			delete[] tmp;
+
 			std::strcat(filepath, ".log");
 
 			return filepath;

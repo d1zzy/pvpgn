@@ -28,7 +28,6 @@
 
 #include "compat/termios.h"
 #include "compat/psock.h"
-#include "compat/inet_ntoa.h"
 #include "common/bnet_protocol.h"
 #include "common/util.h"
 #include "common/tag.h"
@@ -48,6 +47,14 @@
 */
 #include "client_connect.h"
 #include "client.h"
+
+#ifdef HAVE_ARPA_INET_H
+# include <arpa/inet.h>
+#endif
+#ifdef HAVE_WS2TCPIP_H
+# include <Ws2tcpip.h>
+#endif
+
 #include "common/setup_after.h"
 
 
@@ -697,7 +704,9 @@ extern int main(int argc, char * argv[])
 					else
 					{
 						laddr.s_addr = htonl(val);
-						std::printf("                 Last login host: %s\n", inet_ntoa(laddr));
+						char addrstr[INET_ADDRSTRLEN] = { 0 };
+						inet_ntop(AF_INET, &(laddr), addrstr, sizeof(addrstr));
+						std::printf("                 Last login host: %s\n", addrstr);
 					}
 
 					if (j < keys && (temp = packet_get_str_const(rpacket, strpos, 256)))
@@ -731,7 +740,9 @@ extern int main(int argc, char * argv[])
 					else
 					{
 						laddr.s_addr = htonl(val);
-						std::printf("                First login host: %s\n", inet_ntoa(laddr));
+						char addrstr[INET_ADDRSTRLEN] = { 0 };
+						inet_ntop(AF_INET, &(laddr), addrstr, sizeof(addrstr));
+						std::printf("                First login host: %s\n", addrstr);
 					}
 
 					if (j < keys && (temp = packet_get_str_const(rpacket, strpos, 256)))

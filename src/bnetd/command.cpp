@@ -3832,8 +3832,6 @@ namespace pvpgn
 				mode = restart_mode_icons;
 			else if (mode_str == "anongame")
 				mode = restart_mode_anongame;
-			else if (mode_str == "topiclist")
-				mode = restart_mode_topiclist;
 			else if (mode_str == "lua")
 				mode = restart_mode_lua;
 			else
@@ -4869,45 +4867,48 @@ namespace pvpgn
 
 		static int _handle_topic_command(t_connection * c, char const * text)
 		{
-			char const * channel_name;
-			const char * topic;
-			t_channel * channel;
-			int  do_save = NO_SAVE_TOPIC;
-
 			std::vector<std::string> args = split_command(text, 1);
-			topic = args[1].c_str();
+			std::string topicstr = args[1];
 
-			if (!(channel = conn_get_channel(c))) {
+			
+			t_channel * channel = conn_get_channel(c);
+			if (channel == nullptr)
+			{
 				message_send_text(c, message_type_error, c, localize(c, "This command can only be used inside a channel."));
 				return -1;
 			}
-
-			channel_name = channel_get_name(channel);
+			
+			class_topic Topic;
+			char const * channel_name = channel_get_name(channel);
 
 			// set channel topic
-			if (topic[0] != '\0')
+			if (!topicstr.empty())
 			{
-				if (std::strlen(topic) >= MAX_TOPIC_LEN)
+				if ((topicstr.size() + 1) > MAX_TOPIC_LEN)
 				{
 					msgtemp = localize(c, "Max topic length exceeded (max {} symbols)", MAX_TOPIC_LEN);
 					message_send_text(c, message_type_error, c, msgtemp);
 					return -1;
 				}
 
-				if (!(account_is_operator_or_admin(conn_get_account(c), channel_name))) {
+				if (!(account_is_operator_or_admin(conn_get_account(c), channel_name)))
+				{
 					msgtemp = localize(c, "You must be at least a Channel Operator of {} to set the topic", channel_name);
 					message_send_text(c, message_type_error, c, msgtemp);
 					return -1;
 				}
 
+				bool do_save;
 				if (channel_get_permanent(channel))
-					do_save = DO_SAVE_TOPIC;
+					do_save = true;
+				else
+					do_save = false;
 
-				channel_set_topic(channel_name, topic, do_save);
+				Topic.set(std::string(channel_name), std::string(topicstr), do_save);
 			}
 
 			// display channel topic
-			if (channel_display_topic(c, channel_name) < 0)
+			if (Topic.display(c, std::string(channel_name)) != 0)
 			{
 				msgtemp = localize(c, "{} topic: no topic", channel_name);
 				message_send_text(c, message_type_info, c, msgtemp);

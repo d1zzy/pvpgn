@@ -1,68 +1,72 @@
 /*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+*	Copyright (C) 2015  xboi209
+*
+*	This program is free software: you can redistribute it and/or modify
+*	it under the terms of the GNU General Public License as published by
+*	the Free Software Foundation, either version 3 of the License, or
+*	(at your option) any later version.
+*
+*	This program is distributed in the hope that it will be useful,
+*	but WITHOUT ANY WARRANTY; without even the implied warranty of
+*	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*	GNU General Public License for more details.
+*
+*	You should have received a copy of the GNU General Public License
+*	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #ifndef INCLUDED_TOPIC_TYPES
 #define INCLUDED_TOPIC_TYPES
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "connection.h"
-
-namespace pvpgn
-{
-
-	namespace bnetd
-	{
-
-		typedef struct s_topic
-#ifdef TOPIC_INTERNAL_ACCESS
-		{
-			char *   channel_name;
-			char *   topic;
-			int      save;
-		}
-#endif
-		t_topic;
-
-	}
-
-}
-
-#define DO_SAVE_TOPIC 1
-#define NO_SAVE_TOPIC 0
-
+#include "common/list.h"
 #endif
 
 #ifndef JUST_NEED_TYPES
 #ifndef INCLUDED_TOPIC_PROTOS
 #define INCLUDED_TOPIC_PROTOS
-
 namespace pvpgn
 {
 
 	namespace bnetd
 	{
 
-		int    topiclist_load(char const * topicfile);
-		int    topiclist_unload(void);
-		int    channel_set_topic(char const * channel_name, char const * topic_text, int do_save);
-		char * channel_get_topic(char const * channel_name);
-		int   channel_display_topic(t_connection * c, const char * channel_name);
+		class class_topic
+		{
+		//all public member functions of class_topic verify channel name and topic length
+		public:
+			class_topic();
 
-	}
+			std::string get(std::string channel_name);
+			int set(std::string channel_name, std::string topic_text, bool do_save);
+			int display(t_connection * c, std::string channel_name);
+		private:
+			struct t_topic
+			{
+				std::string channel_name;
+				std::string topicstr;
+				bool save;
+			};
 
-}
+			class class_topiclist
+			{
+			public:
+				static bool IsHeadLoaded;
+				class_topic::t_topic * get(std::string channel_name);
+				int save();
+				void add(std::string channel_name, std::string topic_text, bool do_save);
+			private:
+				static std::vector<std::shared_ptr<class_topic::t_topic>> Head;
+			} topiclist;
+		};
+
+	} //namespace bnetd
+
+} //namespace pvpgn
 
 #endif
 #endif
