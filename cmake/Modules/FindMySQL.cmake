@@ -25,16 +25,17 @@
 #  License text for the above reference.)
  
 if( WIN32 )
+	set(MYENV "PROGRAMFILES(X86)")
 	find_path( MYSQL_INCLUDE_DIR
 		NAMES "mysql.h"
 		PATHS "$ENV{PROGRAMFILES}/MySQL/*/include"
-			  "$ENV{PROGRAMFILES(x86)}/MySQL/*/include"
+			  "$ENV{${MYENV}}/MySQL/*/include"
 			  "$ENV{SYSTEMDRIVE}/MySQL/*/include" )
 	
 	find_library( MYSQL_LIBRARY
 		NAMES "mysqlclient" "mysqlclient_r" "libmysql"
 		PATHS "$ENV{PROGRAMFILES}/MySQL/*/lib"
-			  "$ENV{PROGRAMFILES(x86)}/MySQL/*/lib"
+			  "$ENV{${MYENV}}/MySQL/*/lib"
 			  "$ENV{SYSTEMDRIVE}/MySQL/*/lib" )
 else()
 	find_path( MYSQL_INCLUDE_DIR
