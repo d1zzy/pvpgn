@@ -4908,7 +4908,7 @@ namespace pvpgn
 			}
 
 			// display channel topic
-			if (Topic.display(c, std::string(channel_name)) != 0)
+			if (Topic.display(c, std::string(channel_name)) == false)
 			{
 				msgtemp = localize(c, "{} topic: no topic", channel_name);
 				message_send_text(c, message_type_info, c, msgtemp);
