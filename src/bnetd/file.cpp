@@ -67,6 +67,7 @@ namespace pvpgn
 		static const char * file_find_localized(t_connection * c, const char *rawname)
 		{
 			const char ** pattern, **alias;
+			size_t rawnamelen = std::strlen(rawname);
 
 			for (pattern = requestfiles, alias = requestfiles + 1; *pattern; pattern += 2, alias += 2)
 			{
@@ -81,7 +82,7 @@ namespace pvpgn
 					// but we can extract it from the filename, so do it in next code
 
 					// if there is no country tag in the file (just in case to prevent crash from invalid filename)
-					if ((strlen(*pattern) + 4) > strlen(rawname))
+					if ((strlen(*pattern) + 4) > rawnamelen)
 						return NULL;
 
 					// get language tag from the file name (like "termsofservice-ruRU.txt")
