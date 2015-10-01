@@ -672,9 +672,12 @@ namespace
 		if (!client->munged)
 		{
 			std::printf("\r");
-			for (unsigned i = 0; i < std::strlen(mode_get_prompt(client->mode)); i++)
+			size_t client_modelen = std::strlen(mode_get_prompt(client->mode));
+			for (unsigned i = 0; i < client_modelen; i++)
 				std::printf(" ");
-			for (unsigned i = 0; i < std::strlen(client->text) && i < client->screen_width - std::strlen(mode_get_prompt(client->mode)); i++)
+
+			size_t client_textlen = std::strlen(client->text);
+			for (unsigned i = 0; i < client_textlen && i < client->screen_width - client_modelen; i++)
 				std::printf(" ");
 			std::printf("\r");
 			client->munged = 1;
