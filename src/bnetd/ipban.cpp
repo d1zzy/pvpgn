@@ -955,13 +955,14 @@ namespace pvpgn
 			char *	matched;
 			char *	ipstr;
 			unsigned int 	i;
+			size_t strlen = std::strlen(str);
 
-			if (std::strlen(str) < 7)
+			if (strlen < 7)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "string too short");
 				return 0;
 			}
-			for (i = 0; i < std::strlen(str); i++)
+			for (i = 0; i < strlen; i++)
 			if (!std::isdigit((int)str[i]) && str[i] != '.' && str[i] != '*' && str[i] != '/' && str[i] != '-')
 			{
 				eventlog(eventlog_level_debug, __FUNCTION__, "illegal character on position %i", i);
