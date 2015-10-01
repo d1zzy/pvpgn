@@ -98,7 +98,7 @@ namespace pvpgn
 		scoped_ptr& operator=(const scoped_ptr&);
 
 		void cleanup() {
-			if (ptr) delete ptr;
+			delete ptr;
 		}
 	};
 
