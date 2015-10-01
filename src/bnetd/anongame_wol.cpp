@@ -415,7 +415,7 @@ namespace pvpgn
 														   mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
 
 														   /* We have madatory of game */
-														   snprintf(_temp, sizeof(_temp), ":Start %u,0,0,10000,0,1,0,1,1,0,1,x,2,1,165368,%s,1:", random, mapname);
+														   snprintf(_temp, sizeof(_temp), ":Start %d,0,0,10000,0,1,0,1,1,0,1,x,2,1,165368,%s,1:", random, mapname);
 														   std::strcat(temp, _temp);
 
 														   /* GameHost informations */
@@ -449,7 +449,7 @@ namespace pvpgn
 														  mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
 
 														  /* We have madatory of game */
-														  snprintf(_temp, sizeof(_temp), ":Start %u,0,0,10000,0,0,1,1,1,0,3,0,x,2,1,163770,%s,1:", random, mapname);
+														  snprintf(_temp, sizeof(_temp), ":Start %d,0,0,10000,0,0,1,1,1,0,3,0,x,2,1,163770,%s,1:", random, mapname);
 														  std::strcat(temp, _temp);
 
 														  /* GameHost informations */
@@ -471,7 +471,7 @@ namespace pvpgn
 														  DEBUG0("Generating COOP game for Yuri's Revenge");
 
 														  /* We have madatory of game */
-														  snprintf(_temp, sizeof(_temp), ":Start %u,0,0,10000,10,0,1,1,0,1,3,0,x,2,1,163770,C1A01MD.MAP,1:", random);
+														  snprintf(_temp, sizeof(_temp), ":Start %d,0,0,10000,10,0,1,1,0,1,3,0,x,2,1,163770,C1A01MD.MAP,1:", random);
 														  std::strcat(temp, _temp);
 
 														  /* GameHost informations */
