@@ -1542,8 +1542,8 @@ namespace pvpgn
 						temp = xstrdup(account_get_name(account));
 					}
 					else{
-						char uid_string[MAX_USERNAME_LEN];
-						sprintf(uid_string, "#%i", userid);
+						char uid_string[MAX_USERNAME_LEN] = {};
+						snprintf(uid_string, sizeof(uid_string), "#%u", userid);
 						temp = xstrdup(uid_string);
 					}
 				}
