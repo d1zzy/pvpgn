@@ -165,6 +165,8 @@ namespace pvpgn
 			char c, prev_c = 0;
 			long pos;
 
+			size_t search_substrlen = std::strlen(search_substr);
+
 			char * filename = userlog_filename(username);
 			if (FILE *fp = fopen(filename, "r"))
 			{
@@ -202,7 +204,7 @@ namespace pvpgn
 							linecount++;
 							if (linecount >= startline)
 							{
-								if (search_substr && strlen(search_substr) > 0)
+								if (search_substr && search_substrlen > 0)
 								{
 									if (find_substr(line, search_substr))
 										lines[linecount] = xstrdup(line);
