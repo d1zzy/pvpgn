@@ -725,8 +725,9 @@ namespace pvpgn
 
 					if (std::strcmp(option->key, "master_commandgroups") == 0)
 					{
+						size_t option_valuelen = std::strlen(option->value);
 						// convert string groups from config to integer
-						for (int i = 0; i < strlen(option->value); i++)
+						for (int i = 0; i < option_valuelen; i++)
 						{
 							if (option->value[i] == '1') master_commandgroups |= 1;
 							else if (option->value[i] == '2') master_commandgroups |= 2;
