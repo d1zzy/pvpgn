@@ -1085,7 +1085,7 @@ namespace pvpgn
 			{
 				std::fprintf(fp, "\n");
 				for (i = 0; i < realcount; i++)
-					std::fprintf(fp, "%s's standard ladder record is now %u/%u/%u (rating %u [#%05u]) (%u draws)\n",
+					std::fprintf(fp, "%s's standard ladder record is now %u/%u/%u (rating %u [#%05d]) (%u draws)\n",
 					account_get_name(game->players[i]),
 					account_get_ladder_wins(game->players[i], game->clienttag, ladder_id_normal),
 					account_get_ladder_losses(game->players[i], game->clienttag, ladder_id_normal),
@@ -1098,7 +1098,7 @@ namespace pvpgn
 			{
 				std::fprintf(fp, "\n");
 				for (i = 0; i < realcount; i++)
-					std::fprintf(fp, "%s's ironman ladder record is now %u/%u/%u (rating %u [#%05u]) (%u draws)\n",
+					std::fprintf(fp, "%s's ironman ladder record is now %u/%u/%u (rating %u [#%05d]) (%u draws)\n",
 					account_get_name(game->players[i]),
 					account_get_ladder_wins(game->players[i], game->clienttag, ladder_id_ironman),
 					account_get_ladder_losses(game->players[i], game->clienttag, ladder_id_ironman),
