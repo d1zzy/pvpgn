@@ -2555,7 +2555,7 @@ namespace pvpgn
 			{
 				if (conn_get_versionid(c) <= 0x000000c7)
 				{
-					std::sprintf(playerinfo, "%s %u %u %u %u %u",
+					std::sprintf(playerinfo, "%s %u %d %u %u %u",
 						revtag,
 						account_get_ladder_rating(account, clienttag, ladder_id_normal),
 						account_get_ladder_rank(account, clienttag, ladder_id_normal),
@@ -2564,7 +2564,7 @@ namespace pvpgn
 				}
 				else
 				{
-					std::sprintf(playerinfo, "%s %u %u %u %u %u %u %u %u %s",
+					std::sprintf(playerinfo, "%s %u %d %u %u %u %u %u %u %s",
 						revtag,
 						account_get_ladder_rating(account, clienttag, ladder_id_normal),
 						account_get_ladder_rank(account, clienttag, ladder_id_normal),
@@ -2577,7 +2577,7 @@ namespace pvpgn
 			}
 			else if (clienttag == CLIENTTAG_SHAREWARE_UINT)
 			{
-				std::sprintf(playerinfo, "%s %u %u %u %u %u",
+				std::sprintf(playerinfo, "%s %u %d %u %u %u",
 					revtag,
 					account_get_ladder_rating(account, clienttag, ladder_id_normal),
 					account_get_ladder_rank(account, clienttag, ladder_id_normal),
@@ -2619,7 +2619,7 @@ namespace pvpgn
 				a = account_get_ladder_rating(account, clienttag, ladder_id_normal);
 				b = account_get_ladder_rating(account, clienttag, ladder_id_ironman);
 
-				std::sprintf(playerinfo, "%s %u %u %u %u %u %u %u %u",
+				std::sprintf(playerinfo, "%s %u %d %u %u %u %u %u %d",
 					revtag,
 					a,
 					account_get_ladder_rank(account, clienttag, ladder_id_normal),
