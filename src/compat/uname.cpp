@@ -117,7 +117,7 @@ namespace pvpgn
 				break;
 			}
 
-			std::sprintf(buf->version, "%ld.%02ld", osver.dwMajorVersion, osver.dwMinorVersion);
+			snprintf(buf->version, sizeof(buf->version), "%lu.%02lu", osver.dwMajorVersion, osver.dwMinorVersion);
 
 			if (osver.szCSDVersion[0] != '\0' &&
 				(std::strlen(osver.szCSDVersion) + std::strlen(buf->version) + 1) <
@@ -154,7 +154,7 @@ namespace pvpgn
 					case PROCESSOR_INTEL_386:
 					case PROCESSOR_INTEL_486:
 					case PROCESSOR_INTEL_PENTIUM:
-						std::sprintf(buf->machine, "i%ld", sysinfo.dwProcessorType);
+						snprintf(buf->machine, sizeof(buf->machine), "i%lu", sysinfo.dwProcessorType);
 						break;
 					default:
 						std::strcpy(buf->machine, "i386");
