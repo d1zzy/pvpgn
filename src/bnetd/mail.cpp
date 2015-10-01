@@ -256,7 +256,6 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::istringstream istr(text);
 			std::string token;
 
 			char const *subcommand;
