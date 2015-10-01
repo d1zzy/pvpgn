@@ -95,6 +95,9 @@ namespace pvpgn
 				bn_int_set(&rpacket->u.server_findanongame_profile_clan.count, count);
 				rescount = 0;
 
+				temp = 0;
+				packet_append_data(rpacket, &temp, 1);
+				/*
 				if (!(clan))
 				{
 					temp = 0;
@@ -118,8 +121,9 @@ namespace pvpgn
 					 6 times:
 					 bn_int  wins
 					 bn_int	losses
-					 */
+					 /
 				}
+				*/
 
 				bn_byte_set(&rpacket->u.server_findanongame_profile_clan.rescount, rescount);
 
