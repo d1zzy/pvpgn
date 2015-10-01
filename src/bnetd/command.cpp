@@ -5108,7 +5108,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			if (strcasecmp(tag, "all"))
+			if (strcasecmp(tag, "all") != 0)
 			{
 				ctag = tag_validate_client(tag);
 				all = 0;
