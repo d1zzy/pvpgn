@@ -142,8 +142,7 @@ namespace pvpgn
 		if (password)
 			xfree(password);
 
-		if (B)
-			delete B;
+		delete B;
 	}
 
 	BigInt
