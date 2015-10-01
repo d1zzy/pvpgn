@@ -3085,7 +3085,7 @@ namespace pvpgn
 					)
 				{
 
-					snprintf(msgtemp0, sizeof(msgtemp0), " %-26.26s %5u - ",
+					snprintf(msgtemp0, sizeof(msgtemp0), " %-26.26s %5d - ",
 						channel_get_name(channel),
 						channel_get_length(channel));
 
@@ -3330,7 +3330,7 @@ namespace pvpgn
 					channel_name,
 					game_name);
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), " %3u %-6.6s %-12.12s %4.4s %-15.15s 0x%08x 0x%04x %9u %-16.16s %-8.8s %.16s",
+					snprintf(msgtemp0, sizeof(msgtemp0), " %3d %-6.6s %-12.12s %4.4s %-15.15s 0x%08x 0x%04x %9u %-16.16s %-8.8s %.16s",
 					conn_get_socket(conn),
 					conn_class_get_str(conn_get_class(conn)),
 					conn_state_get_str(conn_get_state(conn)),
@@ -4150,7 +4150,7 @@ namespace pvpgn
 						xstr_cat_str(membernames, account_get_name(team_get_member(team, i)));
 						if ((i)) xstr_cat_char(membernames, ',');
 					}
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team %5u: %-80.80s %u/%u/0",
+					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team %5u: %-80.80s %d/%d/0",
 						rank,
 						xstr_get_str(membernames),
 						team_get_wins(team),
