@@ -337,7 +337,6 @@ namespace pvpgn
 
 			bool first = true;
 			std::map<std::string, int> tmpdata;
-			AdCtagRefMap when;
 			unsigned next_id;
 
 			// insert ads
