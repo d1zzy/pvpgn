@@ -157,7 +157,9 @@ namespace pvpgn
 			if (topic == nullptr)
 				return false;
 
-			if (topic->topicstr.empty())
+			auto topicstr = topic->topicstr;
+
+			if (topicstr.empty())
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "topic is empty");
 				return false;
@@ -165,7 +167,7 @@ namespace pvpgn
 
 			//send parts of topic string as separate message if there's a newline character
 			std::regex rgx("\\\\n+");
-			std::sregex_token_iterator iter(topic->topicstr.begin(), topic->topicstr.end(), rgx, -1), end;
+			std::sregex_token_iterator iter(topicstr.begin(), topicstr.end(), rgx, -1), end;
 			for (bool first = true; iter != end; ++iter)
 			{
 				std::string msg(iter->str());
