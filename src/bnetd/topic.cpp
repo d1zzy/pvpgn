@@ -89,7 +89,7 @@ namespace pvpgn
 		}
 
 		//Get channel_name's topic string
-		std::string class_topic::get(std::string channel_name)
+		std::string class_topic::get(const std::string channel_name)
 		{
 			if ((channel_name.size() + 1) > MAX_CHANNELNAME_LEN || channel_name.empty() == true)
 			{
@@ -105,7 +105,7 @@ namespace pvpgn
 		}
 
 		//Sets channel_name's topic
-		bool class_topic::set(std::string channel_name, std::string topic_text, bool do_save)
+		bool class_topic::set(const std::string channel_name, const std::string topic_text, bool do_save)
 		{
 			if ((channel_name.size() + 1) > MAX_CHANNELNAME_LEN || channel_name.empty() == true)
 			{
@@ -145,7 +145,7 @@ namespace pvpgn
 		}
 
 		// Displays channel_name's topic to connection c
-		bool class_topic::display(t_connection * c, std::string channel_name)
+		bool class_topic::display(t_connection * c, const std::string channel_name)
 		{
 			if ((channel_name.size() + 1) > MAX_CHANNELNAME_LEN || channel_name.empty() == true)
 			{
@@ -182,7 +182,7 @@ namespace pvpgn
 
 
 		//Get t_topic pointer of channel_name
-		std::shared_ptr<class_topic::t_topic> class_topic::class_topiclist::get(std::string channel_name)
+		std::shared_ptr<class_topic::t_topic> class_topic::class_topiclist::get(const std::string channel_name)
 		{
 			for (auto topic : this->Head)
 			{
