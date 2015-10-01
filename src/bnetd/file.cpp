@@ -220,20 +220,12 @@ namespace pvpgn
 				std::strcpy(filenamestk, filename);
 				xfree((void*)filename);
 			} //let filename go out of scope
-			if (filenamestk)
+
+			if (!(fp = std::fopen(filenamestk, "rb")))
 			{
-				if (!(fp = std::fopen(filenamestk, "rb")))
-				{
-					/* FIXME: check for lower-case version of filename */
-					eventlog(eventlog_level_error, __FUNCTION__, "stat() succeeded yet could not open file \"%s\" for reading (std::fopen: %s)", filenamestk, std::strerror(errno));
-					filelen = 0;
-				}
-			}
-			else
-			{
-				fp = NULL;
+				/* FIXME: check for lower-case version of filename */
+				eventlog(eventlog_level_error, __FUNCTION__, "stat() succeeded yet could not open file \"%s\" for reading (std::fopen: %s)", filenamestk, std::strerror(errno));
 				filelen = 0;
-				bn_long_set_a_b(&rpacket->u.server_file_reply.timestamp, 0, 0);
 			}
 
 			if (fp)
