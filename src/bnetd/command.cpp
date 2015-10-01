@@ -2811,7 +2811,7 @@ namespace pvpgn
 			std::vector<std::string> args = split_command(text, 1);
 			clienttag_str = args[1].c_str(); // clienttag
 
-			if (strlen(clienttag_str) > 0)
+			if (clienttag_str[0] != '\0')
 			{
 				if ( !(clienttag = tag_validate_client(args[1].c_str())) )
 				{
@@ -2841,7 +2841,7 @@ namespace pvpgn
 			std::vector<std::string> args = split_command(text, 1);
 			clienttag_str = args[1].c_str(); // clienttag
 
-			if (strlen(clienttag_str) > 0)
+			if (clienttag_str[0] != '\0')
 			{
 				if (!(clienttag = tag_validate_client(args[1].c_str())))
 				{
@@ -3433,7 +3433,7 @@ namespace pvpgn
 						: pattern.substr(0, pattern.find("Age: ", 0));
 			const char * loc = account_get_loc(account);
 			msgtemp = localize(c, pattern.c_str(),
-				(loc && strlen(loc) > 0) ? loc : "unknown",
+				(loc && loc[0] != '\0') ? loc : "unknown",
 				account_get_age(account));
 			message_send_text(c, message_type_info, c, msgtemp);
 
