@@ -85,9 +85,10 @@ namespace pvpgn
 			
 			unsigned int groups = 0;
 			const char * cglist = prefs_get_log_command_groups();
+			size_t cglistlen = std::strlen(cglist);
 
 			// convert string groups from config to integer
-			for (int i = 0; i < strlen(cglist); i++)
+			for (int i = 0; i < cglistlen; i++)
 			{
 				if (cglist[i] == '1') groups |= 1;
 				else if (cglist[i] == '2') groups |= 2;
