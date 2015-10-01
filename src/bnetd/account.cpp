@@ -712,7 +712,8 @@ namespace pvpgn
 				return -1;
 			}
 
-			for (i = 0; i < std::strlen(name); i++)
+			size_t namelen = std::strlen(name);
+			for (i = 0; i < namelen; i++)
 			{
 				/* These are the Battle.net rules but they are too strict.
 				 * We want to allow any characters that wouldn't cause
