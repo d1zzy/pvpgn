@@ -29,7 +29,6 @@
 #include <string.h>
 
 #include "compat/strcasecmp.h"
-#include "compat/snprintf.h"
 
 #include "common/token.h"
 
@@ -605,13 +604,13 @@ namespace pvpgn
 							value = "0";
 
 						// replace in a text
-						snprintf(tmp, sizeof(tmp), "{{%s}}", var->key);
+						std::snprintf(tmp, sizeof(tmp), "{{%s}}", var->key);
 						text = str_replace((char*)text, tmp, (char*)value);
 
 						// also replace {var}->rank
 						if (icon = customicons_get_icon_by_rating(atoi(value), clienttag_str))
 						{
-							snprintf(tmp, sizeof(tmp), "{{%s->rank}}", var->key);
+							std::snprintf(tmp, sizeof(tmp), "{{%s->rank}}", var->key);
 							text = str_replace((char*)text, tmp, icon->rank);
 						}
 					}

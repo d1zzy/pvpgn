@@ -27,8 +27,6 @@
 #include "common/tag.h"
 #include "common/bn_type.h"
 
-#include "compat/snprintf.h"
-
 #include "connection.h"
 #include "game.h"
 #include "account.h"
@@ -742,20 +740,20 @@ namespace pvpgn
 					switch (type) {
 					case wol_gameres_type_bool:
 					case wol_gameres_type_byte:
-						snprintf(ch_data, sizeof(ch_data), "%u", (unsigned int)bn_byte_get(*((bn_byte *)data)));
+						std::snprintf(ch_data, sizeof(ch_data), "%u", (unsigned int)bn_byte_get(*((bn_byte *)data)));
 						break;
 					case wol_gameres_type_int:
 					case wol_gameres_type_time:
-						snprintf(ch_data, sizeof(ch_data), "%u", (unsigned int)bn_int_nget(*((bn_int *)data)));
+						std::snprintf(ch_data, sizeof(ch_data), "%u", (unsigned int)bn_int_nget(*((bn_int *)data)));
 						break;
 					case wol_gameres_type_string:
-						snprintf(ch_data, sizeof(ch_data), "%s", (char *)data);
+						std::snprintf(ch_data, sizeof(ch_data), "%s", (char *)data);
 						break;
 					case wol_gameres_type_bigint:
-						snprintf(ch_data, sizeof(ch_data), "%u", wol_gameres_get_long_from_data(datalen, data));
+						std::snprintf(ch_data, sizeof(ch_data), "%u", wol_gameres_get_long_from_data(datalen, data));
 						break;
 					default:
-						snprintf(ch_data, sizeof(ch_data), "UNKNOWN");
+						std::snprintf(ch_data, sizeof(ch_data), "UNKNOWN");
 						break;
 					}
 					eventlog(eventlog_level_warn, __FUNCTION__, "[%d] got unknown WOL Gameres tag: %s, data type %u, data lent %u, data %s", conn_get_socket(c), wgtag_str, datatype, datalen, ch_data);

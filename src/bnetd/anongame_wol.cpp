@@ -24,7 +24,6 @@
 #include <cctype>
 #include <cstdlib>
 
-#include "compat/snprintf.h"
 #include "compat/strcasecmp.h"
 
 #include "common/irc_protocol.h"
@@ -292,7 +291,6 @@ namespace pvpgn
 		{
 			t_packet * p;
 			char data[MAX_IRC_MESSAGE_LEN + 1];
-			unsigned len;
 			char const * nick;
 
 			if (!conn) {
@@ -316,19 +314,12 @@ namespace pvpgn
 			if (!nick)
 				nick = "UserName";
 
-			/* snprintf isn't portable -> check message length first */
-			len = 1 + 12 + 1 + std::strlen(command) + 1 + std::strlen(nick) + 1 + std::strlen(text) + 2;
-			if (len > MAX_IRC_MESSAGE_LEN) {
-				eventlog(eventlog_level_error, __FUNCTION__, "message to send is too large (%u bytes)", len);
-				return -1;
-			}
-			else
-				std::sprintf(data, ":matchbot!u@h %s %s %s", command, nick, text);
+			std::snprintf(data, sizeof(data), ":matchbot!u@h %s %s %s", command, nick, text);
 
 			DEBUG2("[%d] sent \"%s\"", conn_get_socket(conn), data);
 			std::strcat(data, "\r\n");
 			packet_set_size(p, 0);
-			packet_append_data(p, data, len);
+			packet_append_data(p, data, std::strlen(data));
 			conn_push_outqueue(conn, p);
 			packet_del_ref(p);
 			return 0;
@@ -415,15 +406,15 @@ namespace pvpgn
 														   mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
 
 														   /* We have madatory of game */
-														   snprintf(_temp, sizeof(_temp), ":Start %d,0,0,10000,0,1,0,1,1,0,1,x,2,1,165368,%s,1:", random, mapname);
+														   std::snprintf(_temp, sizeof(_temp), ":Start %d,0,0,10000,0,1,0,1,1,0,1,x,2,1,165368,%s,1:", random, mapname);
 														   std::strcat(temp, _temp);
 
 														   /* GameHost informations */
-														   snprintf(_temp, sizeof(_temp), "%s,%d,%d,%x,1,%x,", conn_get_chatname(conn_pl1), pl1_country, pl1_colour, anongame_wol_player_get_address(player1), anongame_wol_player_get_port(player1));
+														   std::snprintf(_temp, sizeof(_temp), "%s,%d,%d,%x,1,%x,", conn_get_chatname(conn_pl1), pl1_country, pl1_colour, anongame_wol_player_get_address(player1), anongame_wol_player_get_port(player1));
 														   std::strcat(temp, _temp);
 
 														   /* GameJoinie informations */
-														   snprintf(_temp, sizeof(_temp), "%s,%d,%d,%x,1,%x", conn_get_chatname(conn_pl2), pl2_country, pl2_colour, anongame_wol_player_get_address(player2), anongame_wol_player_get_port(player2));
+														   std::snprintf(_temp, sizeof(_temp), "%s,%d,%d,%x,1,%x", conn_get_chatname(conn_pl2), pl2_country, pl2_colour, anongame_wol_player_get_address(player2), anongame_wol_player_get_port(player2));
 														   std::strcat(temp, _temp);
 
 														   _send_msg(conn_pl1, "PRIVMSG", temp);
@@ -449,19 +440,19 @@ namespace pvpgn
 														  mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
 
 														  /* We have madatory of game */
-														  snprintf(_temp, sizeof(_temp), ":Start %d,0,0,10000,0,0,1,1,1,0,3,0,x,2,1,163770,%s,1:", random, mapname);
+														  std::snprintf(_temp, sizeof(_temp), ":Start %d,0,0,10000,0,0,1,1,1,0,3,0,x,2,1,163770,%s,1:", random, mapname);
 														  std::strcat(temp, _temp);
 
 														  /* GameHost informations */
-														  snprintf(_temp, sizeof(_temp), "%s,%d,%d,-2,-2,", conn_get_chatname(conn_pl1), pl1_country, pl1_colour);
+														  std::snprintf(_temp, sizeof(_temp), "%s,%d,%d,-2,-2,", conn_get_chatname(conn_pl1), pl1_country, pl1_colour);
 														  std::strcat(temp, _temp);
-														  snprintf(_temp, sizeof(_temp), "%x,1,%x,", anongame_wol_player_get_address(player1), anongame_wol_player_get_port(player1));
+														  std::snprintf(_temp, sizeof(_temp), "%x,1,%x,", anongame_wol_player_get_address(player1), anongame_wol_player_get_port(player1));
 														  std::strcat(temp, _temp);
 
 														  /* GameJoinie informations */
-														  snprintf(_temp, sizeof(_temp), "%s,%d,%d,-2,-2,", conn_get_chatname(conn_pl2), pl2_country, pl2_colour);
+														  std::snprintf(_temp, sizeof(_temp), "%s,%d,%d,-2,-2,", conn_get_chatname(conn_pl2), pl2_country, pl2_colour);
 														  std::strcat(temp, _temp);
-														  snprintf(_temp, sizeof(_temp), "%x,1,%x", anongame_wol_player_get_address(player2), anongame_wol_player_get_port(player2));
+														  std::snprintf(_temp, sizeof(_temp), "%x,1,%x", anongame_wol_player_get_address(player2), anongame_wol_player_get_port(player2));
 														  std::strcat(temp, _temp);
 
 														  _send_msg(conn_pl1, "PRIVMSG", temp);
@@ -471,23 +462,23 @@ namespace pvpgn
 														  DEBUG0("Generating COOP game for Yuri's Revenge");
 
 														  /* We have madatory of game */
-														  snprintf(_temp, sizeof(_temp), ":Start %d,0,0,10000,10,0,1,1,0,1,3,0,x,2,1,163770,C1A01MD.MAP,1:", random);
+														  std::snprintf(_temp, sizeof(_temp), ":Start %d,0,0,10000,10,0,1,1,0,1,3,0,x,2,1,163770,C1A01MD.MAP,1:", random);
 														  std::strcat(temp, _temp);
 
 														  /* GameHost informations */
-														  snprintf(_temp, sizeof(_temp), "%s,0,4,0,-2,", conn_get_chatname(conn_pl1));
+														  std::snprintf(_temp, sizeof(_temp), "%s,0,4,0,-2,", conn_get_chatname(conn_pl1));
 														  std::strcat(temp, _temp);
-														  snprintf(_temp, sizeof(_temp), "%x,1,%x,", anongame_wol_player_get_address(player1), anongame_wol_player_get_port(player1));
+														  std::snprintf(_temp, sizeof(_temp), "%x,1,%x,", anongame_wol_player_get_address(player1), anongame_wol_player_get_port(player1));
 														  std::strcat(temp, _temp);
 
 														  /* GameJoinie informations */
-														  snprintf(_temp, sizeof(_temp), "%s,0,5,1,-2,", conn_get_chatname(anongame_wol_player_get_conn(player2)));
+														  std::snprintf(_temp, sizeof(_temp), "%s,0,5,1,-2,", conn_get_chatname(anongame_wol_player_get_conn(player2)));
 														  std::strcat(temp, _temp);
-														  snprintf(_temp, sizeof(_temp), "%x,1,%x", anongame_wol_player_get_address(player2), anongame_wol_player_get_port(player2));
+														  std::snprintf(_temp, sizeof(_temp), "%x,1,%x", anongame_wol_player_get_address(player2), anongame_wol_player_get_port(player2));
 														  std::strcat(temp, _temp);
 
 														  /* Some computers for coop games */
-														  snprintf(_temp, sizeof(_temp), ":@:0,-1,-1,-2,-2,0,-1,-1,-2,-2,1,8,1,-2,-2,1,8,2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,");
+														  std::snprintf(_temp, sizeof(_temp), ":@:0,-1,-1,-2,-2,0,-1,-1,-2,-2,1,8,1,-2,-2,1,8,2,-2,-2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,");
 														  std::strcat(temp, _temp);
 
 														  _send_msg(conn_pl1, "PRIVMSG", temp);

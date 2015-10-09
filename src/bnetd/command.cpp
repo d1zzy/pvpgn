@@ -37,7 +37,6 @@
 #include <string>
 
 #include "compat/strcasecmp.h"
-#include "compat/snprintf.h"
 #include "common/tag.h"
 #include "common/util.h"
 #include "common/version.h"
@@ -1802,8 +1801,8 @@ namespace pvpgn
 						}
 
 						frienduid = account_get_name(friend_acc);
-						if (!software.empty()) snprintf(msgtemp0, sizeof(msgtemp0), "%d: %s%.16s%.128s, %.64s", i + 1, friend_get_mutual(fr) ? "*" : " ", frienduid, status.c_str(), software.c_str());
-						else snprintf(msgtemp0, sizeof(msgtemp0), "%d: %.16s%.128s", i + 1, frienduid, status.c_str());
+						if (!software.empty()) std::snprintf(msgtemp0, sizeof(msgtemp0), "%d: %s%.16s%.128s, %.64s", i + 1, friend_get_mutual(fr) ? "*" : " ", frienduid, status.c_str(), software.c_str());
+						else std::snprintf(msgtemp0, sizeof(msgtemp0), "%d: %.16s%.128s", i + 1, frienduid, status.c_str());
 						message_send_text(c, message_type_info, c, msgtemp0);
 					}
 				}
@@ -2942,7 +2941,7 @@ namespace pvpgn
 				(cbdata->diff == game_difficulty_none || game_get_difficulty(game) == cbdata->diff) &&
 				(cbdata->lobby == false || (game_get_status(game) != game_status_started && game_get_status(game) != game_status_done)))
 			{
-				snprintf(msgtemp0, sizeof(msgtemp0), " %-16.16s %1.1s %-8.8s %-21.21s %5u ",
+				std::snprintf(msgtemp0, sizeof(msgtemp0), " %-16.16s %1.1s %-8.8s %-21.21s %5u ",
 					game_get_name(game),
 					game_get_flag(game) != game_flag_private ? "n" : "y",
 					game_status_get_str(game_get_status(game)),
@@ -3085,7 +3084,7 @@ namespace pvpgn
 					)
 				{
 
-					snprintf(msgtemp0, sizeof(msgtemp0), " %-26.26s %5d - ",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), " %-26.26s %5d - ",
 						channel_get_name(channel),
 						channel_get_length(channel));
 
@@ -3309,7 +3308,7 @@ namespace pvpgn
 				else game_name = localize(c, "none").c_str();
 
 				if (text[0] == '\0')
-					snprintf(msgtemp0, sizeof(msgtemp0), " %-6.6s %4.4s %-15.15s %9u %-16.16s %-8.8s",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), " %-6.6s %4.4s %-15.15s %9u %-16.16s %-8.8s",
 					conn_class_get_str(conn_get_class(conn)),
 					tag_uint_to_str(clienttag_str, conn_get_fake_clienttag(conn)),
 					name,
@@ -3318,7 +3317,7 @@ namespace pvpgn
 					game_name);
 				else
 				if (prefs_get_hide_addr() && !(account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr"))) /* default to false */
-					snprintf(msgtemp0, sizeof(msgtemp0), " %3d %-6.6s %-12.12s %4.4s %-15.15s 0x%08x 0x%04x %9u %-16.16s %-8.8s",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), " %3d %-6.6s %-12.12s %4.4s %-15.15s 0x%08x 0x%04x %9u %-16.16s %-8.8s",
 					conn_get_socket(conn),
 					conn_class_get_str(conn_get_class(conn)),
 					conn_state_get_str(conn_get_state(conn)),
@@ -3330,7 +3329,7 @@ namespace pvpgn
 					channel_name,
 					game_name);
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), " %3d %-6.6s %-12.12s %4.4s %-15.15s 0x%08x 0x%04x %9u %-16.16s %-8.8s %.16s",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), " %3d %-6.6s %-12.12s %4.4s %-15.15s 0x%08x 0x%04x %9u %-16.16s %-8.8s %.16s",
 					conn_get_socket(conn),
 					conn_class_get_str(conn_get_class(conn)),
 					conn_state_get_str(conn_get_state(conn)),
@@ -3968,7 +3967,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft active %5u: %-20.20s %u/%u/%u rating %u",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal),
@@ -3977,14 +3976,14 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft active %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft current %5u: %-20.20s %u/%u/%u rating %u",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft current %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal),
@@ -3993,7 +3992,7 @@ namespace pvpgn
 						account_get_ladder_rating(account, CLIENTTAG_STARCRAFT_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft current %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "StarCraft current %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 			}
 			else if (clienttag == CLIENTTAG_BROODWARS_UINT)
@@ -4002,7 +4001,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active %5u: %-20.20s %u/%u/%u rating %u",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_BROODWARS_UINT, ladder_id_normal),
@@ -4011,14 +4010,14 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_BROODWARS_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "Brood War active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War current %5u: %-20.20s %u/%u/%u rating %u",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "Brood War current %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, CLIENTTAG_BROODWARS_UINT, ladder_id_normal),
@@ -4027,7 +4026,7 @@ namespace pvpgn
 						account_get_ladder_rating(account, CLIENTTAG_BROODWARS_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "Brood War current %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "Brood War current %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 			}
 			else if (clienttag == CLIENTTAG_WARCIIBNE_UINT)
@@ -4036,7 +4035,7 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active %5u: %-20.20s %u/%u/%u rating %u",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal),
@@ -4045,14 +4044,14 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman, clienttag, ladder_sort_highestrated, ladder_time_active));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active %5u: %-20.20s %u/%u/%u rating %u",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_active_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman),
@@ -4061,14 +4060,14 @@ namespace pvpgn
 						account_get_ladder_active_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan active %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_normal, clienttag, ladder_sort_highestrated, ladder_time_current));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard current %5u: %-20.20s %u/%u/%u rating %u",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard current %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal),
@@ -4077,14 +4076,14 @@ namespace pvpgn
 						account_get_ladder_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_normal));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard current %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II standard current %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ironman, clienttag, ladder_sort_highestrated, ladder_time_current));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current %5u: %-20.20s %u/%u/%u rating %u",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current %5u: %-20.20s %u/%u/%u rating %u",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman),
@@ -4093,7 +4092,7 @@ namespace pvpgn
 						account_get_ladder_rating(account, CLIENTTAG_WARCIIBNE_UINT, ladder_id_ironman));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft II IronMan current %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 			}
 			// --> aaron
@@ -4103,42 +4102,42 @@ namespace pvpgn
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo %5u: %-20.20s %u/%u/0",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo %5u: %-20.20s %u/%u/0",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, clienttag, ladder_id_solo),
 						account_get_ladder_losses(account, clienttag, ladder_id_solo));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Solo %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_team, clienttag, ladder_sort_default, ladder_time_default));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team %5u: %-20.20s %u/%u/0",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team %5u: %-20.20s %u/%u/0",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, clienttag, ladder_id_team),
 						account_get_ladder_losses(account, clienttag, ladder_id_team));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 Team %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ffa, clienttag, ladder_sort_default, ladder_time_default));
 				referencedObject = ladderList->getReferencedObject(rank);
 				if ((referencedObject) && (account = referencedObject->getAccount()))
 				{
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA %5u: %-20.20s %u/%u/0",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA %5u: %-20.20s %u/%u/0",
 						rank,
 						account_get_name(account),
 						account_get_ladder_wins(account, clienttag, ladder_id_ffa),
 						account_get_ladder_losses(account, clienttag, ladder_id_ffa));
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 FFA %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 
 				ladderList = ladders.getLadderList(LadderKey(ladder_id_ateam, clienttag, ladder_sort_default, ladder_time_default));
@@ -4150,7 +4149,7 @@ namespace pvpgn
 						xstr_cat_str(membernames, account_get_name(team_get_member(team, i)));
 						if ((i)) xstr_cat_char(membernames, ',');
 					}
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team %5u: %-80.80s %d/%d/0",
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team %5u: %-80.80s %d/%d/0",
 						rank,
 						xstr_get_str(membernames),
 						team_get_wins(team),
@@ -4158,7 +4157,7 @@ namespace pvpgn
 					xstr_free(membernames);
 				}
 				else
-					snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team %5u: <none>", rank);
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "WarCraft3 AT Team %5u: <none>", rank);
 				message_send_text(c, message_type_info, c, msgtemp0);
 			}
 			//<---
@@ -4499,7 +4498,7 @@ namespace pvpgn
 			newflag = std::strtoul(flag_s, NULL, 0);
 			conn_set_flags(c, newflag);
 
-			snprintf(msgtemp0, sizeof(msgtemp0), "0x%08x.", newflag);
+			std::snprintf(msgtemp0, sizeof(msgtemp0), "0x%08x.", newflag);
 
 			msgtemp = localize(c, "Flags set to {}.", msgtemp0);
 			message_send_text(c, message_type_info, c, msgtemp);
@@ -4588,7 +4587,7 @@ namespace pvpgn
 				}
 
 				if (std::strcmp(ip, addr_num_to_ip_str(conn_get_addr(conn))) == 0) {
-					snprintf(msgtemp0, sizeof(msgtemp0), "   %s", conn_get_loggeduser(conn));
+					std::snprintf(msgtemp0, sizeof(msgtemp0), "   %s", conn_get_loggeduser(conn));
 					message_send_text(c, message_type_info, c, msgtemp0);
 					count++;
 				}

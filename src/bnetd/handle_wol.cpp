@@ -38,8 +38,6 @@
 
 #include "common/packet.h"
 
-#include "compat/snprintf.h"
-
 #include "prefs.h"
 #include "command.h"
 #include "irc.h"
@@ -236,7 +234,7 @@ namespace pvpgn
 			temphash = account_get_wol_apgar(a);
 
 			if (connlist_find_connection_by_account(a) && prefs_get_kick_old_login() == 0) {
-				snprintf(temp, sizeof(temp), "%s :Account is already in use!", conn_get_loggeduser(conn));
+				std::snprintf(temp, sizeof(temp), "%s :Account is already in use!", conn_get_loggeduser(conn));
 				irc_send(conn, ERR_NICKNAMEINUSE, temp);
 			}
 			else if (account_get_auth_lock(a) == 1) {
@@ -298,11 +296,11 @@ namespace pvpgn
 				clanid = clan_get_clanid(clan);
 				clantag = clantag_to_str(clan_get_clantag(clan));
 				clanname = clan_get_name(clan);
-				snprintf(_temp, sizeof(_temp), "%u`%s`%s`0`0`1`0`0`0`0`0`0`0`x`x`x", clanid, clanname, clantag);
+				std::snprintf(_temp, sizeof(_temp), "%u`%s`%s`0`0`1`0`0`0`0`0`0`0`x`x`x", clanid, clanname, clantag);
 				irc_send(conn, RPL_BATTLECLAN, _temp);
 			}
 			else {
-				snprintf(_temp, sizeof(_temp), ":ID does not exist");
+				std::snprintf(_temp, sizeof(_temp), ":ID does not exist");
 				irc_send(conn, ERR_IDNOEXIST, _temp);
 			}
 			return 0;
@@ -422,7 +420,7 @@ namespace pvpgn
 								}
 							}
 							else {
-								snprintf(msgtemp, sizeof(msgtemp), "%s :No such channel", e[0]);
+								std::snprintf(msgtemp, sizeof(msgtemp), "%s :No such channel", e[0]);
 								irc_send(conn, ERR_NOSUCHCHANNEL, msgtemp);
 							}
 						}
@@ -517,22 +515,22 @@ namespace pvpgn
 			std::strcat(temp, gamename);
 			std::strcat(temp, " ");
 
-			snprintf(temp_a, sizeof(temp_a), "%u ", game_get_ref(game)); /* curent players */
+			std::snprintf(temp_a, sizeof(temp_a), "%u ", game_get_ref(game)); /* curent players */
 			std::strcat(temp, temp_a);
 
-			snprintf(temp_a, sizeof(temp_a), "%u ", game_get_maxplayers(game)); /* max players */
+			std::snprintf(temp_a, sizeof(temp_a), "%u ", game_get_maxplayers(game)); /* max players */
 			std::strcat(temp, temp_a);
 
-			snprintf(temp_a, sizeof(temp_a), "%u ", channel_wol_get_game_type(gamechannel)); /* game type */
+			std::snprintf(temp_a, sizeof(temp_a), "%u ", channel_wol_get_game_type(gamechannel)); /* game type */
 			std::strcat(temp, temp_a);
 
-			snprintf(temp_a, sizeof(temp_a), "%u ", (game_get_type(game) == game_type_ladder) ? 1 : 0); /* tournament */
+			std::snprintf(temp_a, sizeof(temp_a), "%u ", (game_get_type(game) == game_type_ladder) ? 1 : 0); /* tournament */
 			std::strcat(temp, temp_a);
 
-			snprintf(temp_a, sizeof(temp_a), "%s ", channel_wol_get_game_extension(gamechannel));  /* game extension */
+			std::snprintf(temp_a, sizeof(temp_a), "%s ", channel_wol_get_game_extension(gamechannel));  /* game extension */
 			std::strcat(temp, temp_a);
 
-			snprintf(temp_a, sizeof(temp_a), "%u ", conn_get_addr(game_get_owner(game))); /* owner IP - FIXME: address translation here!! */
+			std::snprintf(temp_a, sizeof(temp_a), "%u ", conn_get_addr(game_get_owner(game))); /* owner IP - FIXME: address translation here!! */
 			std::strcat(temp, temp_a);
 
 			if (std::strcmp(game_get_pass(game), "") == 0)
@@ -543,7 +541,7 @@ namespace pvpgn
 			std::strcat(temp, "::");
 
 			if (topicstr.c_str()) {
-				snprintf(temp_a, sizeof(temp_a), "%s", topicstr.c_str());  /* topic */
+				std::snprintf(temp_a, sizeof(temp_a), "%s", topicstr.c_str());  /* topic */
 				std::strcat(temp, temp_a);
 			}
 
@@ -724,7 +722,7 @@ namespace pvpgn
 				if (clienttag != CLIENTTAG_WWOL_UINT)
 					conn_set_clienttag(conn, clienttag);
 
-				snprintf(temp, sizeof(temp), ":none none none 1 %s NONREQ", params[0]);
+				std::snprintf(temp, sizeof(temp), ":none none none 1 %s NONREQ", params[0]);
 				eventlog(eventlog_level_debug, __FUNCTION__, "[** WOL **] VERCHK %s", temp);
 				irc_send(conn, RPL_VERCHK_NONREQ, temp);
 			}
@@ -846,7 +844,7 @@ namespace pvpgn
 					if (user = connlist_find_connection_by_accountname(params[i]))
 						codepage = conn_wol_get_codepage(user);
 
-					snprintf(_temp, sizeof(_temp), "%s`%u", params[i], codepage);
+					std::snprintf(_temp, sizeof(_temp), "%s`%u", params[i], codepage);
 					std::strcat(temp, _temp);
 
 					if (i < numparams - 1)
@@ -891,7 +889,7 @@ namespace pvpgn
 					if (account = accountlist_find_account(params[i]))
 						locale = account_get_locale(account);
 
-					snprintf(_temp, sizeof(_temp), "%s`%u", params[i], locale);
+					std::snprintf(_temp, sizeof(_temp), "%s`%u", params[i], locale);
 					std::strcat(temp, _temp);
 					if (i < numparams - 1)
 						std::strcat(temp, "`");
@@ -917,7 +915,7 @@ namespace pvpgn
 			std::memset(_temp, 0, sizeof(_temp));
 
 			if ((numparams >= 1) && (params[0])) {
-				snprintf(_temp, sizeof(_temp), "%s`%u", params[0], 0);
+				std::snprintf(_temp, sizeof(_temp), "%s`%u", params[0], 0);
 				irc_send(conn, RPL_GET_INSIDER, _temp);
 			}
 			else
@@ -973,7 +971,7 @@ namespace pvpgn
 					}
 
 					if (!(gamename) || !(game = gamelist_find_game_available(gamename, conn_get_clienttag(conn), game_type_all))) {
-						snprintf(_temp, sizeof(_temp), "%s :Game channel has closed", e[0]);
+						std::snprintf(_temp, sizeof(_temp), "%s :Game channel has closed", e[0]);
 						irc_send(conn, ERR_GAMEHASCLOSED, _temp);
 						if (e)
 							irc_unget_listelems(e);
@@ -983,7 +981,7 @@ namespace pvpgn
 					channel = game_get_channel(game);
 
 					if (game_get_ref(game) == game_get_maxplayers(game)) {
-						snprintf(_temp, sizeof(_temp), "%s :Channel is full", e[0]);
+						std::snprintf(_temp, sizeof(_temp), "%s :Channel is full", e[0]);
 						irc_send(conn, ERR_CHANNELISFULL, _temp);
 						if (e)
 							irc_unget_listelems(e);
@@ -991,7 +989,7 @@ namespace pvpgn
 					}
 
 					if (channel_check_banning(channel, conn)) {
-						snprintf(_temp, sizeof(_temp), "%s :You are banned from that channel.", e[0]);
+						std::snprintf(_temp, sizeof(_temp), "%s :You are banned from that channel.", e[0]);
 						irc_send(conn, ERR_BANNEDFROMCHAN, _temp);
 						if (e)
 							irc_unget_listelems(e);
@@ -1003,7 +1001,7 @@ namespace pvpgn
 							strcpy(gamepass, params[2]);
 						}
 						else {
-							snprintf(_temp, sizeof(_temp), "%s :Bad password", e[0]);
+							std::snprintf(_temp, sizeof(_temp), "%s :Bad password", e[0]);
 							irc_send(conn, ERR_BADCHANNELKEY, _temp);
 							if (e)
 								irc_unget_listelems(e);
@@ -1014,7 +1012,7 @@ namespace pvpgn
 					gametype = game_get_type(game);
 
 					if ((conn_set_game(conn, gamename, gamepass, "", gametype, 0)) < 0) {
-						snprintf(_temp, sizeof(_temp), "%s :JOINGAME failed", e[0]);
+						std::snprintf(_temp, sizeof(_temp), "%s :JOINGAME failed", e[0]);
 						irc_send(conn, ERR_GAMEHASCLOSED, _temp);
 					}
 					else {
@@ -1051,7 +1049,7 @@ namespace pvpgn
 							irc_send_rpl_namreply(conn, channel);
 						}
 						else {
-							snprintf(_temp, sizeof(_temp), "%s :JOINGAME failed", e[0]);
+							std::snprintf(_temp, sizeof(_temp), "%s :JOINGAME failed", e[0]);
 							irc_send(conn, ERR_GAMEHASCLOSED, _temp);
 						}
 					}
@@ -1068,7 +1066,7 @@ namespace pvpgn
 
 				if ((numparams == 7)) {
 					/* WOLv1 JOINGAME Create */
-					snprintf(_temp, sizeof(_temp), "%s %s %s %s 0 %s :%s", params[1], params[2], params[3], params[4], params[6], params[0]);
+					std::snprintf(_temp, sizeof(_temp), "%s %s %s %s 0 %s :%s", params[1], params[2], params[3], params[4], params[6], params[0]);
 				}
 				/* WOLv2 JOINGAME Create */
 				else if ((numparams >= 8)) {
@@ -1077,7 +1075,7 @@ namespace pvpgn
 
 					if (clan)
 						clanid = clan_get_clanid(clan);
-					snprintf(_temp, sizeof(_temp), "%s %s %s %s %u %u %s :%s", params[1], params[2], params[3], params[4], clanid, conn_get_addr(conn), params[6], params[0]);
+					std::snprintf(_temp, sizeof(_temp), "%s %s %s %s %u %u %s :%s", params[1], params[2], params[3], params[4], clanid, conn_get_addr(conn), params[6], params[0]);
 				}
 				eventlog(eventlog_level_debug, __FUNCTION__, "[** WOL **] JOINGAME [Game Options] (%s)", _temp);
 
@@ -1166,7 +1164,7 @@ namespace pvpgn
 							channel_message_send(channel, message_type_gameopt_talk, conn, text);
 						}
 						else {
-							snprintf(temp, sizeof(temp), "%s :No such channel", params[0]);
+							std::snprintf(temp, sizeof(temp), "%s :No such channel", params[0]);
 							irc_send(conn, ERR_NOSUCHCHANNEL, temp);
 						}
 					}
@@ -1176,7 +1174,7 @@ namespace pvpgn
 							message_send_text(user, message_type_gameopt_whisper, conn, text);
 						}
 						else {
-							snprintf(temp, sizeof(temp), "%s :No such nick", e[i]);
+							std::snprintf(temp, sizeof(temp), "%s :No such nick", e[i]);
 							irc_send(conn, ERR_NOSUCHNICK, temp);
 						}
 					}
@@ -1201,10 +1199,10 @@ namespace pvpgn
 
 				if ((user = connlist_find_connection_by_accountname(params[0])) && (conn_wol_get_findme(user))) {
 					wolname = irc_convert_channel(conn_get_channel(user), conn);
-					snprintf(_temp, sizeof(_temp), "0 :%s", wolname); /* User found in channel wolname */
+					std::snprintf(_temp, sizeof(_temp), "0 :%s", wolname); /* User found in channel wolname */
 				}
 				else
-					snprintf(_temp, sizeof(_temp), "1 :"); /* user not loged or have not allowed find */
+					std::snprintf(_temp, sizeof(_temp), "1 :"); /* user not loged or have not allowed find */
 
 				irc_send(conn, RPL_FIND_USER, _temp);
 			}
@@ -1225,10 +1223,10 @@ namespace pvpgn
 
 				if ((user = connlist_find_connection_by_accountname(params[0])) && (conn_wol_get_findme(user))) {
 					wolname = irc_convert_channel(conn_get_channel(user), conn);
-					snprintf(_temp, sizeof(_temp), "0 :%s,0", wolname); /* User found in channel wolname */
+					std::snprintf(_temp, sizeof(_temp), "0 :%s,0", wolname); /* User found in channel wolname */
 				}
 				else
-					snprintf(_temp, sizeof(_temp), "1 :"); /* user not loged or have not allowed find */
+					std::snprintf(_temp, sizeof(_temp), "1 :"); /* user not loged or have not allowed find */
 
 				irc_send(conn, RPL_FIND_USER_EX, _temp);
 			}
@@ -1258,9 +1256,9 @@ namespace pvpgn
 				}
 
 				if (paged)
-					snprintf(_temp, sizeof(_temp), "0 :"); /* Page was succesfull */
+					std::snprintf(_temp, sizeof(_temp), "0 :"); /* Page was succesfull */
 				else
-					snprintf(_temp, sizeof(_temp), "1 :"); /* User not loged in or have not allowed page */
+					std::snprintf(_temp, sizeof(_temp), "1 :"); /* User not loged in or have not allowed page */
 
 				irc_send(conn, RPL_PAGE, _temp);
 			}
@@ -1313,7 +1311,7 @@ namespace pvpgn
 					for (user = channel_get_first(channel); user; user = channel_get_next()) {
 						char const * name = conn_get_chatname(user);
 						if (std::strcmp(conn_get_chatname(conn), name) != 0) {
-							snprintf(temp, sizeof(temp), "%s ", addr_num_to_ip_str(conn_get_addr(game_get_owner(game))));
+							std::snprintf(temp, sizeof(temp), "%s ", addr_num_to_ip_str(conn_get_addr(game_get_owner(game))));
 						}
 					}
 				}
@@ -1325,7 +1323,7 @@ namespace pvpgn
 						if ((user = connlist_find_connection_by_accountname(e[i]))) {
 							addr = addr_num_to_ip_str(conn_get_addr(user));
 						}
-						snprintf(_temp_a, sizeof(_temp_a), "%s %s ", e[i], addr);
+						std::snprintf(_temp_a, sizeof(_temp_a), "%s %s ", e[i], addr);
 						std::strcat(temp, _temp_a);
 					}
 					std::strcat(temp, ":");
@@ -1333,7 +1331,7 @@ namespace pvpgn
 
 				game_set_status(game, game_status_started);
 
-				snprintf(_temp_a, sizeof(_temp_a), "%u %u", game_get_id(game), game_get_start_time(game));
+				std::snprintf(_temp_a, sizeof(_temp_a), "%u %u", game_get_id(game), game_get_start_time(game));
 				std::strcat(temp, _temp_a);
 
 				for (i = 0; ((e) && (e[i])); i++) {
@@ -1366,7 +1364,7 @@ namespace pvpgn
 			*/
 
 			if ((numparams >= 1) && (params[0])) {
-				snprintf(temp, sizeof(temp), "5 %s", params[0]);
+				std::snprintf(temp, sizeof(temp), "5 %s", params[0]);
 				message_send_text(conn, message_wol_advertr, conn, temp);
 			}
 			else
@@ -1402,7 +1400,7 @@ namespace pvpgn
 				}
 				else {
 					/* FIXME: This is not dumped from original servers... this is probably wrong */
-					snprintf(temp, sizeof(temp), "%s :No such channel", params[0]);
+					std::snprintf(temp, sizeof(temp), "%s :No such channel", params[0]);
 					irc_send(conn, ERR_NOSUCHCHANNEL, temp);
 				}
 			}
@@ -1448,7 +1446,7 @@ namespace pvpgn
 					}
 					friend_acc = friend_get_account(fr);
 					friend_name = account_get_name(friend_acc);
-					snprintf(_temp, sizeof(_temp), "%s`", friend_name);
+					std::snprintf(_temp, sizeof(_temp), "%s`", friend_name);
 					std::strcat(temp, _temp);
 				}
 			}
@@ -1478,11 +1476,11 @@ namespace pvpgn
 					account_add_friend(my_acc, friend_acc);
 					/* FIXME: Check if add friend is done if not then send right message */
 
-					snprintf(temp, sizeof(temp), "%s", params[0]);
+					std::snprintf(temp, sizeof(temp), "%s", params[0]);
 					irc_send(conn, RPL_ADD_BUDDY, temp);
 				}
 				else {
-					snprintf(temp, sizeof(temp), "%s :No such nick", params[0]);
+					std::snprintf(temp, sizeof(temp), "%s :No such nick", params[0]);
 					irc_send(conn, ERR_NOSUCHNICK, temp);
 					/* NOTE: this is not dumped from WOL, this not shows message
 					  but in Emperor doesnt gives name to list, in RA2 have no efect */
@@ -1521,7 +1519,7 @@ namespace pvpgn
 				*  Btw I dont know another then RPL_DEL_BUDDY message yet.
 				*/
 
-				snprintf(temp, sizeof(temp), "%s", friend_name);
+				std::snprintf(temp, sizeof(temp), "%s", friend_name);
 				irc_send(conn, RPL_DEL_BUDDY, temp);
 			}
 			else
@@ -1538,11 +1536,11 @@ namespace pvpgn
 
 			if ((numparams >= 1) && (params[0])) {
 				if ((user = connlist_find_connection_by_accountname(params[0]))) {
-					snprintf(temp, sizeof(temp), ": %s", text);
+					std::snprintf(temp, sizeof(temp), ": %s", text);
 					message_send_text(user, message_type_host, conn, temp);
 				}
 				else {
-					snprintf(temp, sizeof(temp), "%s :No such nick", params[0]);
+					std::snprintf(temp, sizeof(temp), "%s :No such nick", params[0]);
 					irc_send(conn, ERR_NOSUCHNICK, temp);
 				}
 			}
@@ -1573,7 +1571,7 @@ namespace pvpgn
 
 				for (i = 0; ((e) && (e[i])); i++) {
 					if ((user = connlist_find_connection_by_accountname(e[i]))) {
-						snprintf(temp, sizeof(temp), "%s %s", params[0], params[1]);
+						std::snprintf(temp, sizeof(temp), "%s %s", params[0], params[1]);
 						/* FIXME: set user to linvitelist! */
 						message_send_text(user, message_type_invmsg, conn, temp);
 					}
@@ -1603,11 +1601,11 @@ namespace pvpgn
 				if ((user = connlist_find_connection_by_accountname(params[0]))) {
 					addr = addr_num_to_ip_str(conn_get_addr(user));
 					//FIXME: We are not sure of first parameter. It can be also nickname of command sender
-					snprintf(temp, sizeof(temp), "%s %s", params[0], addr);
+					std::snprintf(temp, sizeof(temp), "%s %s", params[0], addr);
 					message_send_text(conn, message_wol_userip, conn, temp);
 				}
 				else {
-					snprintf(temp, sizeof(temp), "%s :No such nick", params[0]);
+					std::snprintf(temp, sizeof(temp), "%s :No such nick", params[0]);
 					irc_send(conn, ERR_NOSUCHNICK, temp);
 				}
 			}

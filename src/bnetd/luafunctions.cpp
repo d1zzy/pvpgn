@@ -26,7 +26,6 @@
 #include <sstream>
 
 #include "compat/strcasecmp.h"
-#include "compat/snprintf.h"
 #include "common/tag.h"
 #include "common/util.h"
 #include "common/eventlog.h"

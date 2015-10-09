@@ -26,7 +26,6 @@
 #include <ctime>
 #include <cstdlib>
 
-#include "compat/snprintf.h"
 #include "compat/strcasecmp.h"
 
 #include "common/irc_protocol.h"
@@ -79,7 +78,6 @@ namespace pvpgn
 		{
 			t_packet * p;
 			char data[MAX_IRC_MESSAGE_LEN + 1];
-			unsigned len;
 			char const * ircname = server_get_hostname();
 			char const * nick;
 
@@ -100,29 +98,15 @@ namespace pvpgn
 			if (!nick)
 				nick = "UserName";
 
-			/* snprintf isn't portable -> check message length first */
-			if (params) {
-				len = 1 + std::strlen(ircname) + 1 + std::strlen(command) + 1 + std::strlen(nick) + 1 + std::strlen(params) + 2;
-				if (len > MAX_IRC_MESSAGE_LEN) {
-					eventlog(eventlog_level_error, __FUNCTION__, "message to send is too large (%u bytes)", len);
-					return -1;
-				}
-				else
-					std::sprintf(data, ":%s %s %s %s", ircname, command, nick, params);
-			}
-			else {
-				len = 1 + std::strlen(ircname) + 1 + std::strlen(command) + 1 + std::strlen(nick) + 1 + 2;
-				if (len > MAX_IRC_MESSAGE_LEN) {
-					eventlog(eventlog_level_error, __FUNCTION__, "message to send is too large (%u bytes)", len);
-					return -1;
-				}
-				else
-					std::sprintf(data, ":%s %s %s", ircname, command, nick);
-			}
+			if (params)
+					std::snprintf(data, sizeof(data), ":%s %s %s %s", ircname, command, nick, params);
+			else
+					std::snprintf(data, sizeof(data), ":%s %s %s", ircname, command, nick);
+
 			DEBUG2("[%d] sent \"%s\"", conn_get_socket(conn), data);
 			std::strcat(data, "\r\n");
 			packet_set_size(p, 0);
-			packet_append_data(p, data, len);
+			packet_append_data(p, data, std::strlen(data));
 			conn_push_outqueue(conn, p);
 			packet_del_ref(p);
 			return 0;
@@ -242,7 +226,7 @@ namespace pvpgn
 			}
 
 			if (connlist_find_connection_by_account(a) && prefs_get_kick_old_login() == 0) {
-				snprintf(temp, sizeof(temp), "%s :Account is already in use!", conn_get_loggeduser(conn));
+				std::snprintf(temp, sizeof(temp), "%s :Account is already in use!", conn_get_loggeduser(conn));
 				irc_send(conn, ERR_NICKNAMEINUSE, temp);
 			}
 			else if (account_get_auth_lock(a) == 1) {
@@ -1278,14 +1262,14 @@ namespace pvpgn
 			else {
 				if ((params) && (params[0])) {
 					if (conn_get_loggeduser(conn)){
-						snprintf(temp, sizeof(temp), ":%s", params[0]);
+						std::snprintf(temp, sizeof(temp), ":%s", params[0]);
 						message_send_text(conn, message_type_nick, conn, temp);
 					}
 					conn_set_loggeduser(conn, params[0]);
 				}
 				else if (text) {
 					if (conn_get_loggeduser(conn)){
-						snprintf(temp, sizeof(temp), ":%s", text);
+						std::snprintf(temp, sizeof(temp), ":%s", text);
 						message_send_text(conn, message_type_nick, conn, temp);
 					}
 					conn_set_loggeduser(conn, text);
@@ -1368,7 +1352,7 @@ namespace pvpgn
 
 					if ((ircname) && (channel = channellist_find_channel_by_name(ircname, NULL, NULL))) {
 						if (channel_check_banning(channel, conn)) {
-							snprintf(temp, sizeof(temp), "%s :You are banned from that channel.", e[0]);
+							std::snprintf(temp, sizeof(temp), "%s :You are banned from that channel.", e[0]);
 							irc_send(conn, ERR_BANNEDFROMCHAN, temp);
 							if (e)
 								irc_unget_listelems(e);
@@ -1379,7 +1363,7 @@ namespace pvpgn
 							(account_get_auth_operator(acc, NULL) != 1) && (account_get_auth_operator(acc, ircname) != 1) &&
 							(channel_get_max(channel) != -1) && (channel_get_curr(channel) >= channel_get_max(channel))) {
 
-							snprintf(temp, sizeof(temp), "%s :The channel is currently full.", e[0]);
+							std::snprintf(temp, sizeof(temp), "%s :The channel is currently full.", e[0]);
 							irc_send(conn, ERR_CHANNELISFULL, temp);
 							if (e)
 								irc_unget_listelems(e);
@@ -1388,7 +1372,7 @@ namespace pvpgn
 					}
 
 					if ((!(ircname)) || (conn_set_channel(conn, ircname) < 0)) {
-						snprintf(temp, sizeof(temp), "%s :JOIN failed", e[0]);
+						std::snprintf(temp, sizeof(temp), "%s :JOIN failed", e[0]);
 						irc_send(conn, ERR_NOSUCHCHANNEL, temp); /* Anything is still bad */
 					}
 				}
@@ -1407,11 +1391,11 @@ namespace pvpgn
 			char temp[MAX_IRC_MESSAGE_LEN];
 
 			if (topicstr.empty() == false) {
-				snprintf(temp, sizeof(temp), "%s :%s", irc_convert_channel(channel, c), topicstr.c_str());
+				std::snprintf(temp, sizeof(temp), "%s :%s", irc_convert_channel(channel, c), topicstr.c_str());
 				irc_send(c, RPL_TOPIC, temp);
 			}
 			else {
-				snprintf(temp, sizeof(temp), "%s :", irc_convert_channel(channel, c));
+				std::snprintf(temp, sizeof(temp), "%s :", irc_convert_channel(channel, c));
 				irc_send(c, RPL_TOPIC, temp);
 				/* PELISH: This is according to RFC2812 but brakes WOLv1/WOLv2 */
 				//snprintf(temp, sizeof(temp), "%s :No topic is set", irc_convert_channel(channel,c));
@@ -1433,7 +1417,7 @@ namespace pvpgn
 					if (channel)
 						Topic.set(std::string(channel_get_name(channel)), std::string(text), false);
 					else {
-						snprintf(temp, sizeof(temp), "%s :You're not on that channel", params[0]);
+						std::snprintf(temp, sizeof(temp), "%s :You're not on that channel", params[0]);
 						irc_send(conn, ERR_NOTONCHANNEL, temp);
 					}
 				}
@@ -1450,12 +1434,12 @@ namespace pvpgn
 						irc_send_topic(conn, channel);
 					}
 					else {
-						snprintf(temp, sizeof(temp), "%s :You're not on that channel", e[0]);
+						std::snprintf(temp, sizeof(temp), "%s :You're not on that channel", e[0]);
 						irc_send(conn, ERR_NOTONCHANNEL, temp);
 					}
 				}
 				else {
-					snprintf(temp, sizeof(temp), "%s :You're not on that channel", e[0]);
+					std::snprintf(temp, sizeof(temp), "%s :You're not on that channel", e[0]);
 					irc_send(conn, ERR_NOTONCHANNEL, temp);
 				}
 				irc_unget_listelems(e);
@@ -1488,9 +1472,9 @@ namespace pvpgn
 			{
 				/* Make standart PvPGN KICK from RFC2812 KICK */
 				if (text)
-					snprintf(temp, sizeof(temp), "/kick %s %s", e[0], text);
+					std::snprintf(temp, sizeof(temp), "/kick %s %s", e[0], text);
 				else
-					snprintf(temp, sizeof(temp), "/kick %s", e[0]);
+					std::snprintf(temp, sizeof(temp), "/kick %s", e[0]);
 
 				handle_command(conn, temp);
 
@@ -1520,7 +1504,7 @@ namespace pvpgn
 				banned = (char*)elem_get_data(curr);
 
 				//FIXME: right now we lie about who have gives ban and also about bantime
-				snprintf(temp, sizeof(temp), "%s %s!*@* %s 1208297879", irc_convert_channel(channel, conn), banned, ircname);
+				std::snprintf(temp, sizeof(temp), "%s %s!*@* %s 1208297879", irc_convert_channel(channel, conn), banned, ircname);
 				irc_send(conn, RPL_BANLIST, temp);
 			}
 			return 0;
@@ -1545,14 +1529,14 @@ namespace pvpgn
 
 				/* FIXME: Supports more than one channel in MODE command */
 				if (!(channel = conn_get_channel(conn))) {
-					snprintf(temp, sizeof(temp), "%s :No such channel", params[0]);
+					std::snprintf(temp, sizeof(temp), "%s :No such channel", params[0]);
 					irc_send(conn, ERR_NOSUCHCHANNEL, temp);
 					return 0;
 				}
 
 				if (numparams == 1) {
 					/* FIXME: Send real CHANELMODE flags! */
-					snprintf(temp, sizeof(temp), "%s +tns", params[0]);
+					std::snprintf(temp, sizeof(temp), "%s +tns", params[0]);
 					irc_send(conn, RPL_CHANNELMODEIS, temp);
 					return 0;
 				}
@@ -1560,12 +1544,12 @@ namespace pvpgn
 				if (numparams == 2) {
 					if (std::strcmp(params[1], "b") == 0) {
 						irc_send_banlist(conn, channel);
-						snprintf(temp, sizeof(temp), "%s :End of channel ban list", params[0]);
+						std::snprintf(temp, sizeof(temp), "%s :End of channel ban list", params[0]);
 						irc_send(conn, RPL_ENDOFBANLIST, temp);
 						return 0;
 					}
 					else {
-						snprintf(temp, sizeof(temp), ":%s is unknown mode char to me for %s", params[1], params[0]);
+						std::snprintf(temp, sizeof(temp), ":%s is unknown mode char to me for %s", params[1], params[0]);
 						irc_send(conn, ERR_UNKNOWNMODE, temp);
 						return 0;
 					}
@@ -1575,44 +1559,44 @@ namespace pvpgn
 				if ((channel_conn_is_tmpOP(channel, conn) != 1) &&
 					(account_get_auth_admin(acc, NULL) != 1) && (account_get_auth_admin(acc, ircname) != 1) &&
 					(account_get_auth_operator(acc, NULL) != 1) && (account_get_auth_operator(acc, ircname) != 1)) {
-					snprintf(temp, sizeof(temp), "%s :You're not channel operator", params[0]);
+					std::snprintf(temp, sizeof(temp), "%s :You're not channel operator", params[0]);
 					irc_send(conn, ERR_CHANOPRIVSNEEDED, temp);
 					return 0;
 				}
 
 				if (std::strcmp(params[1], "+b") == 0) {
 					channel_ban_user(channel, params[2]);
-					snprintf(temp, sizeof(temp), "%s %s %s!*@*", params[0], params[1], params[2]);
+					std::snprintf(temp, sizeof(temp), "%s %s %s!*@*", params[0], params[1], params[2]);
 					channel_message_send(channel, message_type_mode, conn, temp);
 				}
 				else if (std::strcmp(params[1], "-b") == 0) {
 					channel_unban_user(channel, params[2]);
-					snprintf(temp, sizeof(temp), "%s %s %s!*@*", params[0], params[1], params[2]);
+					std::snprintf(temp, sizeof(temp), "%s %s %s!*@*", params[0], params[1], params[2]);
 					channel_message_send(channel, message_type_mode, conn, temp);
 				}
 				else if (std::strcmp(params[1], "+o") == 0) {
-					snprintf(temp, sizeof(temp), "/op %s", params[2]);
+					std::snprintf(temp, sizeof(temp), "/op %s", params[2]);
 					handle_command(conn, temp);
-					snprintf(temp, sizeof(temp), "%s %s %s", params[0], params[1], params[2]);
+					std::snprintf(temp, sizeof(temp), "%s %s %s", params[0], params[1], params[2]);
 					channel_message_send(channel, message_type_mode, conn, temp);
 				}
 				else if (std::strcmp(params[1], "-o") == 0) {
-					snprintf(temp, sizeof(temp), "/deop %s", params[2]);
+					std::snprintf(temp, sizeof(temp), "/deop %s", params[2]);
 					handle_command(conn, temp);
-					snprintf(temp, sizeof(temp), "%s %s %s", params[0], params[1], params[2]);
+					std::snprintf(temp, sizeof(temp), "%s %s %s", params[0], params[1], params[2]);
 					channel_message_send(channel, message_type_mode, conn, temp);
 				}
 				else if (std::strcmp(params[1], "+v") == 0) {
-					snprintf(temp, sizeof(temp), "/voice %s", params[2]);
+					std::snprintf(temp, sizeof(temp), "/voice %s", params[2]);
 					handle_command(conn, temp);
-					snprintf(temp, sizeof(temp), "%s %s %s", params[0], params[1], params[2]);
+					std::snprintf(temp, sizeof(temp), "%s %s %s", params[0], params[1], params[2]);
 					channel_message_send(channel, message_type_mode, conn, temp);
 				}
 				else if (std::strcmp(params[1], "-v") == 0) {
-					snprintf(temp, sizeof(temp), "/devoice %s", params[2]);
+					std::snprintf(temp, sizeof(temp), "/devoice %s", params[2]);
 					handle_command(conn, temp);
 
-					snprintf(temp, sizeof(temp), "%s %s %s", params[0], params[1], params[2]);
+					std::snprintf(temp, sizeof(temp), "%s %s %s", params[0], params[1], params[2]);
 					channel_message_send(channel, message_type_mode, conn, temp);
 				}
 				else if (std::strcmp(params[1], "+i") == 0) {
@@ -1620,16 +1604,16 @@ namespace pvpgn
 				}
 				else if (std::strcmp(params[1], "+l") == 0) {
 					channel_set_max(channel, std::atoi(params[2]));
-					snprintf(temp, sizeof(temp), "%s %s %s", params[0], params[1], params[2]);
+					std::snprintf(temp, sizeof(temp), "%s %s %s", params[0], params[1], params[2]);
 					channel_message_send(channel, message_type_mode, conn, temp);
 				}
 				else if (std::strcmp(params[1], "-l") == 0) {
 					channel_set_max(channel, -1);
-					snprintf(temp, sizeof(temp), "%s %s", params[0], params[1]);
+					std::snprintf(temp, sizeof(temp), "%s %s", params[0], params[1]);
 					channel_message_send(channel, message_type_mode, conn, temp);
 				}
 				else {
-					snprintf(temp, sizeof(temp), ":%s is unknown mode char to me for %s", params[1], params[0]);
+					std::snprintf(temp, sizeof(temp), ":%s is unknown mode char to me for %s", params[1], params[0]);
 					irc_send(conn, ERR_UNKNOWNMODE, temp);
 				}
 			}
@@ -1653,18 +1637,18 @@ namespace pvpgn
 			if ((numparams >= 1) && (params[0])) {
 				if (std::strcmp(params[0], ircname) == 0) {
 					now = std::time(NULL);
-					snprintf(temp, sizeof(temp), "%s :%lu", ircname, now);
+					std::snprintf(temp, sizeof(temp), "%s :%lu", ircname, now);
 					irc_send(conn, RPL_TIME, temp);
 				}
 				else {
-					snprintf(temp, sizeof(temp), "%s :No such server", params[0]);
+					std::snprintf(temp, sizeof(temp), "%s :No such server", params[0]);
 					irc_send(conn, ERR_NOSUCHSERVER, temp);
 				}
 			}
 			else {
 				/* RPL_TIME contains time and name of this server */
 				now = std::time(NULL);
-				snprintf(temp, sizeof(temp), "%s :%lu", ircname, now);
+				std::snprintf(temp, sizeof(temp), "%s :%lu", ircname, now);
 				irc_send(conn, RPL_TIME, temp);
 			}
 			return 0;

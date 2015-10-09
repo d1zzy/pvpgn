@@ -25,7 +25,6 @@
 #include <algorithm>
 
 #include "compat/strcasecmp.h"
-#include "compat/snprintf.h"
 #include "compat/pdir.h"
 #include "compat/mkdir.h"
 #include "common/util.h"

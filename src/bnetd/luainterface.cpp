@@ -28,7 +28,6 @@
 #include <cmath>
 
 #include "compat/strcasecmp.h"
-#include "compat/snprintf.h"
 #include "compat/pdir.h"
 #include "common/tag.h"
 #include "common/util.h"
@@ -94,13 +93,13 @@ namespace pvpgn
 				{
 					vm.load_file(files[i].c_str());
 
-					snprintf(_msgtemp, sizeof(_msgtemp), "%s", files[i].c_str());
+					std::snprintf(_msgtemp, sizeof(_msgtemp), "%s", files[i].c_str());
 					eventlog(eventlog_level_info, __FUNCTION__, "%s", _msgtemp);
 				}
 
 				_register_functions();
 
-				snprintf(_msgtemp, sizeof(_msgtemp), "Lua sripts were successfully loaded (%u files)", files.size());
+				std::snprintf(_msgtemp, sizeof(_msgtemp), "Lua sripts were successfully loaded (%u files)", files.size());
 				eventlog(eventlog_level_info, __FUNCTION__, "%s", _msgtemp);
 			}
 			catch (const std::exception& e)

@@ -22,7 +22,6 @@
 #include <cassert>
 #include <cstring>
 
-#include "compat/snprintf.h"
 #include "common/eventlog.h"
 #include "common/xalloc.h"
 #include "common/util.h"
@@ -90,7 +89,7 @@ namespace pvpgn
 	extern const char* conf_get_int(unsigned ival)
 	{
 		static char tmpbuf[128];
-		snprintf(tmpbuf, sizeof(tmpbuf), "%u", ival);
+		std::snprintf(tmpbuf, sizeof(tmpbuf), "%u", ival);
 		return tmpbuf;
 	}
 

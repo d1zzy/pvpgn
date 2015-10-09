@@ -31,7 +31,6 @@
 
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
-#include "compat/snprintf.h"
 #include "common/packet.h"
 #include "common/eventlog.h"
 #include "common/tag.h"
@@ -5236,7 +5235,7 @@ namespace pvpgn
 					else {
 						char channelname[10];
 						clanmember_set_fullmember(member, 1);
-						snprintf(channelname, sizeof(channelname), "Clan %s", clantag_to_str(clan_get_clantag(clan)));
+						std::snprintf(channelname, sizeof(channelname), "Clan %s", clantag_to_str(clan_get_clantag(clan)));
 						if (conn_get_channel(c)) {
 							conn_update_w3_playerinfo(c);
 							channel_set_userflags(c);
