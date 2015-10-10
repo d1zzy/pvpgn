@@ -32,6 +32,8 @@
 #include "common/tag.h"
 #undef JUST_NEED_TYPES
 
+#include <string>
+
 namespace pvpgn
 {
 
@@ -63,14 +65,20 @@ namespace pvpgn
 
 		/* authorization */
 		extern int account_get_auth_admin(t_account * account, char const * channelname);
+		extern int account_get_auth_admin(t_account * account, std::string channelname);
 		extern int account_set_auth_admin(t_account * account, char const * channelname, int val);
+		extern int account_set_auth_admin(t_account * account, std::string channelname, int val);
 		extern int account_get_auth_announce(t_account * account);
 		extern int account_get_auth_botlogin(t_account * account);
 		extern int account_get_auth_bnetlogin(t_account * account);
 		extern int account_get_auth_operator(t_account * account, char const * channelname);
+		extern int account_get_auth_operator(t_account * account, std::string channelname);
 		extern int account_set_auth_operator(t_account * account, char const * channelname, int val);
+		extern int account_set_auth_operator(t_account * account, std::string channelname, int val);
 		extern int account_get_auth_voice(t_account * account, char const * channelname);
+		extern int account_get_auth_voice(t_account * account, std::string channelname);
 		extern int account_set_auth_voice(t_account * account, char const * channelname, int val);
+		extern int account_set_auth_voice(t_account * account, std::string channelname, int val);
 		extern int account_get_auth_changepass(t_account * account);
 		extern int account_get_auth_changeprofile(t_account * account);
 		extern int account_get_auth_createnormalgame(t_account * account);
@@ -97,10 +105,10 @@ namespace pvpgn
 		extern std::string account_get_mutetext(t_connection * c, t_account * account, bool with_author = true);
 
 		/* profile */
-		extern char const * account_get_sex(t_account * account); /* the profile attributes are updated directly in bnetd.c */
-		extern char const * account_get_age(t_account * account);
-		extern char const * account_get_loc(t_account * account);
-		extern char const * account_get_desc(t_account * account);
+		extern std::string account_get_sex(t_account * account); /* the profile attributes are updated directly in bnetd.c */
+		extern std::string account_get_age(t_account * account);
+		extern std::string account_get_loc(t_account * account);
+		extern std::string account_get_desc(t_account * account);
 
 		/* last login */
 		extern unsigned int account_get_ll_ctime(t_account * account);
@@ -108,10 +116,12 @@ namespace pvpgn
 		extern int account_set_ll_time(t_account * account, unsigned int t);
 		extern char const * account_get_ll_user(t_account * account);
 		extern int account_set_ll_user(t_account * account, char const * user);
+		extern int account_set_ll_user(t_account * account, std::string user);
 		extern t_clienttag account_get_ll_clienttag(t_account * account);
 		extern int account_set_ll_clienttag(t_account * account, t_clienttag clienttag);
 		extern char const * account_get_ll_owner(t_account * account);
 		extern int account_set_ll_owner(t_account * account, char const * owner);
+		extern int account_set_ll_owner(t_account * account, std::string owner);
 		extern char const * account_get_ll_ip(t_account * account);
 		extern int account_set_ll_ip(t_account * account, char const * ip);
 
@@ -130,6 +140,7 @@ namespace pvpgn
 		extern int account_set_normal_disconnects(t_account * account, t_clienttag clienttag, unsigned discs);
 		extern int account_set_normal_last_time(t_account * account, t_clienttag clienttag, t_bnettime t);
 		extern int account_set_normal_last_result(t_account * account, t_clienttag clienttag, char const * result);
+		extern int account_set_normal_last_result(t_account * account, t_clienttag clienttag, std::string result);
 
 		/* ladder stats (active) */
 		extern unsigned int account_get_ladder_active_wins(t_account * account, t_clienttag clienttag, t_ladder_id id);
@@ -191,7 +202,9 @@ namespace pvpgn
 
 		/* Diablo II closed characters */
 		extern char const * account_get_closed_characterlist(t_account * account, t_clienttag clienttag, char const * realmname);
+		extern char const * account_get_closed_characterlist(t_account * account, t_clienttag clienttag, std::string realmname);
 		extern int account_set_closed_characterlist(t_account * account, t_clienttag clienttag, char const * charlist);
+		extern int account_set_closed_characterlist(t_account * account, t_clienttag clienttag, std::string charlist);
 		extern int account_add_closed_character(t_account * account, t_clienttag clienttag, t_character * ch);
 		extern int account_check_closed_character(t_account * account, t_clienttag clienttag, char const * realmname, char const * charname);
 
@@ -239,23 +252,27 @@ namespace pvpgn
 		extern unsigned int account_get_icon_profile(t_account * account, t_clienttag clienttag);
 
 		extern int account_set_user_iconstash(t_account * account, t_clienttag clienttag, char const * value);
+		extern int account_set_user_iconstash(t_account * account, t_clienttag clienttag, std::string value);
 		extern char const * account_get_user_iconstash(t_account * account, t_clienttag clienttag);
 		extern int account_set_user_icon(t_account * account, t_clienttag clienttag, char const * usericon);
+		extern int account_set_user_icon(t_account * account, t_clienttag clienttag, std::string usericon);
 		extern char const * account_get_user_icon(t_account * account, t_clienttag clienttag);
 		extern unsigned int account_icon_to_profile_icon(char const * icon, t_account * account, t_clienttag ctag);
 		extern char const * account_icon_default(t_account * account, t_clienttag clienttag);
 
 		extern int account_is_operator_or_admin(t_account * account, char const * channel);
 
-		extern int account_set_email(t_account * account, char const * email);
+		extern int account_set_email(t_account * account, std::string email);
 		extern char const * account_get_email(t_account * account);
 
 		extern int account_set_userlang(t_account * account, const char * lang);
+		extern int account_set_userlang(t_account * account, std::string lang);
 		extern char const * account_get_userlang(t_account * account);
 
 		/*  Westwood Online Extensions */
 		extern char const * account_get_wol_apgar(t_account * account);
 		extern int account_set_wol_apgar(t_account * account, char const * apgar);
+		extern int account_set_wol_apgar(t_account * account, std::string apgar);
 		extern int account_get_locale(t_account * account);
 		extern int account_set_locale(t_account * account, int locale);
 		extern int account_get_ladder_points(t_account * account, t_clienttag clienttag, t_ladder_id id);

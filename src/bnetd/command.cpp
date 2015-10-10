@@ -3378,8 +3378,9 @@ namespace pvpgn
 			tmthen = std::localtime(&then); /* FIXME: determine user's timezone */
 
 			// do not display sex if empty
+			std::string sex = account_get_sex(account);
 			std::string pattern = "Login: {} {} Sex: {}";
-			pattern = (account_get_sex(account) && strlen(account_get_sex(account)) > 0)
+			pattern = (sex.length() > 0)
 				? pattern
 				: pattern.substr(0, pattern.find("Sex: ", 0));
 
@@ -3426,13 +3427,14 @@ namespace pvpgn
 			}
 
 			// do not display age if empty
+			std::string age = account_get_age(account);
 			pattern = "Location: {} Age: {}";
-			pattern = (account_get_age(account) && strlen(account_get_age(account)) > 0)
+			pattern = (age.length() > 0)
 						? pattern 
 						: pattern.substr(0, pattern.find("Age: ", 0));
-			const char * loc = account_get_loc(account);
+			std::string loc = account_get_loc(account);
 			msgtemp = localize(c, pattern.c_str(),
-				(loc && loc[0] != '\0') ? loc : "unknown",
+				(!loc.empty()) ? loc : "unknown",
 				account_get_age(account));
 			message_send_text(c, message_type_info, c, msgtemp);
 
@@ -3495,7 +3497,7 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
-			std::strncpy(msgtemp0, account_get_desc(account), sizeof(msgtemp0));
+			std::strncpy(msgtemp0, account_get_desc(account).c_str(), sizeof(msgtemp0));
 			msgtemp0[sizeof(msgtemp0)-1] = '\0';
 			for (tok = std::strtok(msgtemp0, "\r\n"); tok; tok = std::strtok(NULL, "\r\n"))
 				message_send_text(c, message_type_info, c, tok);

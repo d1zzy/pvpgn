@@ -2982,8 +2982,8 @@ namespace pvpgn
 				packet_set_type(rpacket, SERVER_PROFILEREPLY);
 				bn_int_set(&rpacket->u.server_profilereply.count, count);
 				bn_byte_set(&rpacket->u.server_profilereply.fail, 0);
-				packet_append_string(rpacket, account_get_desc(account));
-				packet_append_string(rpacket, account_get_loc(account));
+				packet_append_string(rpacket, account_get_desc(account).c_str());
+				packet_append_string(rpacket, account_get_loc(account).c_str());
 				if ((clanmember = account_get_clanmember(account)) && (clan = clanmember_get_clan(clanmember)))
 					bn_int_set(&clanTAG, clan_get_clantag(clan));
 				else
