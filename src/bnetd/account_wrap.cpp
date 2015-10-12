@@ -187,10 +187,12 @@ namespace pvpgn
 				return -1;
 			}
 
-			auto temp_buffer = std::make_shared<char>(length * 3 + 1);
+			char * temp_buffer = (char *)xmalloc(length * 3 + 1);
 
-			str_to_hex(temp_buffer.get(), val, length);
-			int result = account_set_strattr(account, key, temp_buffer.get());
+			str_to_hex(temp_buffer, val, length);
+			int result = account_set_strattr(account, key, temp_buffer);
+
+			xfree((void *)temp_buffer);
 
 			return result;
 		}
