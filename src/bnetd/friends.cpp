@@ -117,7 +117,7 @@ namespace pvpgn
 		{
 			if (flist == nullptr)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL flist");
+				eventlog(eventlog_level_trace, __FUNCTION__, "got NULL flist");
 				return -1;
 			}
 
