@@ -52,7 +52,6 @@
 #cmakedefine HAVE_EPOLL_CREATE
 #cmakedefine HAVE_FORK
 #cmakedefine HAVE_FTIME
-#cmakedefine HAVE_GETENV
 #cmakedefine HAVE_GETGID
 #cmakedefine HAVE_GETGRNAM
 #cmakedefine HAVE_GETHOSTBYNAME

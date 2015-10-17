@@ -120,7 +120,6 @@ namespace pvpgn
 #endif
 #endif
 
-#ifdef HAVE_GETENV
 			{
 				char const * str;
 				int          val;
@@ -130,7 +129,6 @@ namespace pvpgn
 				if (!*h && (str = std::getenv("LINES")) && (val = std::atoi(str)) > 0)
 					*h = val;
 			}
-#endif
 
 			if (!*w)
 				*w = DEF_SCREEN_WIDTH;
