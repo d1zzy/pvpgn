@@ -92,7 +92,6 @@
 #cmakedefine HAVE_STRNCASECMP
 #cmakedefine HAVE_STRNICMP
 #cmakedefine HAVE_STRSEP
-#cmakedefine HAVE_STRTOUL
 #cmakedefine HAVE_UNAME
 #cmakedefine HAVE_WAIT
 #cmakedefine HAVE_WAITPID
