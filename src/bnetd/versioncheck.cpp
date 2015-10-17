@@ -183,7 +183,6 @@ namespace pvpgn
 
 			if (std::strcmp(prefs_get_version_exeinfo_match(), "parse") == 0)
 			{
-#ifdef HAVE_MKTIME
 				struct std::tm t1;
 				char *exe;
 				char mask[MAX_EXEINFO_STR + 1];
@@ -263,11 +262,6 @@ namespace pvpgn
 				else
 					parsed_exeinfo->time = std::mktime(&t1);
 				parsed_exeinfo->size = size;
-
-#else
-				eventlog(eventlog_level_error, __FUNCTION__, "Your std::system does not support std::mktime(). Please select another exeinfo matching method.");
-				return NULL;
-#endif
 			}
 
 			return parsed_exeinfo;
