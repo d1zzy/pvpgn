@@ -73,11 +73,6 @@
 #cmakedefine HAVE_STRICMP
 #cmakedefine HAVE_STRNICMP
 #cmakedefine HAVE_CHDIR
-#cmakedefine HAVE_DIFFTIME
-#cmakedefine HAVE_STRCHR
-#cmakedefine HAVE_STRRCHR
-#cmakedefine HAVE_INDEX
-#cmakedefine HAVE_RINDEX
 #cmakedefine HAVE_WAIT
 #cmakedefine HAVE_WAITPID
 #cmakedefine HAVE_PIPE
