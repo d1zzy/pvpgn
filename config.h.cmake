@@ -97,8 +97,6 @@
 #cmakedefine HAVE_SETITIMER
 #cmakedefine HAVE_EPOLL_CREATE
 #cmakedefine HAVE_GETRLIMIT
-#cmakedefine HAVE_VSNPRINTF
-#cmakedefine HAVE__VSNPRINTF
 #cmakedefine HAVE_SETPGRP
 #cmakedefine HAVE_MAKE_UNIQUE
 

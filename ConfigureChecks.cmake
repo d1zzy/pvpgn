@@ -188,8 +188,6 @@ check_function_exists(strnicmp HAVE_STRNICMP)
 check_function_exists(strsep HAVE_STRSEP)
 check_function_exists(strtoul HAVE_STRTOUL)
 check_function_exists(uname HAVE_UNAME)
-check_symbol_exists(vsnprintf "stdio.h" HAVE_VSNPRINTF)
-check_symbol_exists(_vsnprintf "stdio.h" HAVE__VSNPRINTF)
 check_function_exists(wait HAVE_WAIT)
 check_function_exists(waitpid HAVE_WAITPID)
 

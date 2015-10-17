@@ -5,5 +5,4 @@ add_library(compat
 	rename.h send.h socket.h statmacros.h
 	stdfileno.h strcasecmp.cpp strcasecmp.h strdup.cpp strdup.h
 	strerror.cpp strerror.h strncasecmp.cpp strncasecmp.h strsep.cpp
-	strsep.h strtoul.cpp strtoul.h termios.h uint.h uname.cpp uname.h
-	vsnprintf.cpp vsnprintf.h)
+	strsep.h strtoul.cpp strtoul.h termios.h uint.h uname.cpp uname.h)
