@@ -31,7 +31,6 @@
 #include <iterator>
 #include <algorithm>
 
-#include "compat/snprintf.h"
 #include "common/eventlog.h"
 #include "common/util.h"
 #include "common/xstring.h"
@@ -135,7 +134,7 @@ namespace pvpgn
 
 			user = xstrdup(username);
 			strtolower(user);
-			snprintf(query, sizeof(query), "SELECT count(*) FROM %sBNET WHERE username='%s'", tab_prefix, user);
+			std::snprintf(query, sizeof(query), "SELECT count(*) FROM %sBNET WHERE username='%s'", tab_prefix, user);
 			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 
 			if ((result = sql->query_res(query)) != NULL)
@@ -165,10 +164,10 @@ namespace pvpgn
 
 			info = xmalloc(sizeof(t_sql_info));
 			*((unsigned int *)info) = uid;
-			snprintf(query, sizeof(query), "DELETE FROM %sBNET WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
+			std::snprintf(query, sizeof(query), "DELETE FROM %sBNET WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 			sql->query(query);
-			snprintf(query, sizeof(query), "INSERT INTO %sBNET (" SQL_UID_FIELD ",username) VALUES('%u','%s')", tab_prefix, uid, user);
+			std::snprintf(query, sizeof(query), "INSERT INTO %sBNET (" SQL_UID_FIELD ",username) VALUES('%u','%s')", tab_prefix, uid, user);
 			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 			if (sql->query(query))
 			{
@@ -176,10 +175,10 @@ namespace pvpgn
 				goto err_info;
 			}
 
-			snprintf(query, sizeof(query), "DELETE FROM %sprofile WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
+			std::snprintf(query, sizeof(query), "DELETE FROM %sprofile WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 			sql->query(query);
-			snprintf(query, sizeof(query), "INSERT INTO %sprofile (" SQL_UID_FIELD ") VALUES('%u')", tab_prefix, uid);
+			std::snprintf(query, sizeof(query), "INSERT INTO %sprofile (" SQL_UID_FIELD ") VALUES('%u')", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 			if (sql->query(query))
 			{
@@ -187,10 +186,10 @@ namespace pvpgn
 				goto err_info;
 			}
 
-			snprintf(query, sizeof(query), "DELETE FROM %sRecord WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
+			std::snprintf(query, sizeof(query), "DELETE FROM %sRecord WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 			sql->query(query);
-			snprintf(query, sizeof(query), "INSERT INTO %sRecord (" SQL_UID_FIELD ") VALUES('%u')", tab_prefix, uid);
+			std::snprintf(query, sizeof(query), "INSERT INTO %sRecord (" SQL_UID_FIELD ") VALUES('%u')", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 			if (sql->query(query))
 			{
@@ -198,10 +197,10 @@ namespace pvpgn
 				goto err_info;
 			}
 
-			snprintf(query, sizeof(query), "DELETE FROM %sfriend WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
+			std::snprintf(query, sizeof(query), "DELETE FROM %sfriend WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 			sql->query(query);
-			snprintf(query, sizeof(query), "INSERT INTO %sfriend (" SQL_UID_FIELD ") VALUES('%u')", tab_prefix, uid);
+			std::snprintf(query, sizeof(query), "INSERT INTO %sfriend (" SQL_UID_FIELD ") VALUES('%u')", tab_prefix, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 			if (sql->query(query))
 			{
@@ -255,7 +254,7 @@ namespace pvpgn
 				if (strcmp(ktab, *tab) != 0)
 					continue;
 
-				snprintf(query, sizeof(query), "SELECT * FROM %s%s WHERE " SQL_UID_FIELD "='%u'", tab_prefix, *tab, uid);
+				std::snprintf(query, sizeof(query), "SELECT * FROM %s%s WHERE " SQL_UID_FIELD "='%u'", tab_prefix, *tab, uid);
 				eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 
 				if ((result = sql->query_res(query)) != NULL && sql->num_rows(result) == 1 && sql->num_fields(result) > 1)
@@ -341,7 +340,7 @@ namespace pvpgn
 				return NULL;
 			}
 
-			snprintf(query, sizeof(query), "SELECT `%s` FROM %s%s WHERE " SQL_UID_FIELD " = %u", col, tab_prefix, tab, uid);
+			std::snprintf(query, sizeof(query), "SELECT `%s` FROM %s%s WHERE " SQL_UID_FIELD " = %u", col, tab_prefix, tab, uid);
 			eventlog(eventlog_level_trace, __FUNCTION__, query);
 			if ((result = sql->query_res(query)) == NULL)
 				return NULL;
@@ -460,14 +459,14 @@ namespace pvpgn
 				}
 
 				/* FIRST TIME UPDATE EACH ATTRIBUTE IN A SINGLE QUERY AND SAVE ATTRIBUTE NAME IN `knownattributes` */
-				snprintf(query, sizeof(query), "UPDATE %s%s SET `%s` = '%s' WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, tab, col, escape, uid);
+				std::snprintf(query, sizeof(query), "UPDATE %s%s SET `%s` = '%s' WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, tab, col, escape, uid);
 				eventlog(eventlog_level_trace, "db_set", "%s", query);
 
 				if (sql->query(query) || !sql->affected_rows()) {
 					char query2[512];
 
 					//	    eventlog(eventlog_level_debug, __FUNCTION__, "trying to insert new column %s", col);
-					snprintf(query2, sizeof(query2), "ALTER TABLE %s%s ADD COLUMN `%s` VARCHAR(128)", tab_prefix, tab, col);
+					std::snprintf(query2, sizeof(query2), "ALTER TABLE %s%s ADD COLUMN `%s` VARCHAR(128)", tab_prefix, tab, col);
 					eventlog(eventlog_level_trace, __FUNCTION__, "%s", query2);
 					
 					sql->query(query2);
@@ -476,7 +475,7 @@ namespace pvpgn
 					//          eventlog(eventlog_level_trace, "db_set", "retry insert query: %s", query);
 					if (sql->query(query) || !sql->affected_rows()) {
 						// Tried everything, now trying to insert that user to the table for the first time
-						snprintf(query2, sizeof(query2), "INSERT INTO %s%s (" SQL_UID_FIELD ",`%s`) VALUES ('%u','%s')", tab_prefix, tab, col, uid, escape);
+						std::snprintf(query2, sizeof(query2), "INSERT INTO %s%s (" SQL_UID_FIELD ",`%s`) VALUES ('%u','%s')", tab_prefix, tab, col, uid, escape);
 						eventlog(eventlog_level_trace, __FUNCTION__, "%s", query2);
 						//              eventlog(eventlog_level_error, __FUNCTION__, "update failed so tried INSERT for the last chance");
 						if (sql->query(query2))
@@ -536,11 +535,11 @@ namespace pvpgn
 				char *user = xstrdup(name);
 				strtolower(user);
 
-				snprintf(query, sizeof(query), "SELECT " SQL_UID_FIELD " FROM %sBNET WHERE username='%s'", tab_prefix, user);
+				std::snprintf(query, sizeof(query), "SELECT " SQL_UID_FIELD " FROM %sBNET WHERE username='%s'", tab_prefix, user);
 				xfree(user);
 			}
 			else
-				snprintf(query, sizeof(query), "SELECT " SQL_UID_FIELD " FROM %sBNET WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
+				std::snprintf(query, sizeof(query), "SELECT " SQL_UID_FIELD " FROM %sBNET WHERE " SQL_UID_FIELD " = '%u'", tab_prefix, uid);
 			
 			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
 

@@ -105,6 +105,7 @@ namespace pvpgn
 
 			out = xstrdup(in);
 			size = std::strlen(out);
+			size_t textlen = std::strlen(text);
 
 			for (inpos = outpos = 0; inpos < std::strlen(in); inpos++)
 			{
@@ -120,7 +121,7 @@ namespace pvpgn
 				if (in[inpos] == '*')
 				{
 					off1 = offsets[0];
-					off2 = std::strlen(text);
+					off2 = textlen;
 				}
 				else if (in[inpos] == '{')
 				{
@@ -173,7 +174,7 @@ namespace pvpgn
 					}
 					off1 = offsets[arg1];
 					if (arg2 + 1 == numargs)
-						off2 = std::strlen(text);
+						off2 = textlen;
 					else
 						off2 = offsets[arg2 + 1] - 1;
 

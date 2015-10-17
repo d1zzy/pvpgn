@@ -31,7 +31,6 @@
 #include "common/packet.h"
 
 #include "compat/strcasecmp.h"
-#include "compat/snprintf.h"
 
 #include "prefs.h"
 #include "irc.h"
@@ -810,10 +809,10 @@ namespace pvpgn
 			std::memset(age, 0, sizeof(age));
 			std::memset(consent, 0, sizeof(consent));
 
-			snprintf(hresult, sizeof(hresult), "0");
-			snprintf(message, sizeof(message), "((Message))");
-			snprintf(age, sizeof(age), "((Age))");
-			snprintf(consent, sizeof(consent), "((Consent))");
+			std::snprintf(hresult, sizeof(hresult), "0");
+			std::snprintf(message, sizeof(message), "((Message))");
+			std::snprintf(age, sizeof(age), "((Age))");
+			std::snprintf(consent, sizeof(consent), "((Consent))");
 
 			//   	if (!newnick)
 			//   	   snprintf(newnick,sizeof(newnick),"((NewNick))");
@@ -827,31 +826,31 @@ namespace pvpgn
 			DEBUG3("APIREG:/%s/%s/%s/", apiregmember_get_request(apiregmember), apiregmember_get_newnick(apiregmember), apiregmember_get_newpass(apiregmember));
 
 			if ((request) && (std::strcmp(apiregmember_get_request(apiregmember), REQUEST_AGEVERIFY) == 0)) {
-				snprintf(data, sizeof(data), "HRESULT=%s\nMessage=%s\nNewNick=((NewNick))\nNewPass=((NewPass))\n", hresult, message);
+				std::snprintf(data, sizeof(data), "HRESULT=%s\nMessage=%s\nNewNick=((NewNick))\nNewPass=((NewPass))\n", hresult, message);
 				/* FIXME: Count real age here! */
-				snprintf(age, sizeof(age), "28"); /* FIXME: Here must be counted age */
-				snprintf(temp, sizeof(temp), "Age=%s\nConsent=((Consent))\nEND\r", age);
+				std::snprintf(age, sizeof(age), "28"); /* FIXME: Here must be counted age */
+				std::snprintf(temp, sizeof(temp), "Age=%s\nConsent=((Consent))\nEND\r", age);
 				std::strcat(data, temp);
 				apireg_send(apiregmember_get_conn(apiregmember), data);
 				return 0;
 			}
 			else if ((request) && (std::strcmp(apiregmember_get_request(apiregmember), REQUEST_GETNICK) == 0)) {
 				if (!prefs_get_allow_new_accounts()){
-					snprintf(message, sizeof(message), "Account creation is not allowed");
-					snprintf(hresult, sizeof(hresult), "-2147221248");
+					std::snprintf(message, sizeof(message), "Account creation is not allowed");
+					std::snprintf(hresult, sizeof(hresult), "-2147221248");
 				}
 				else {
 					if (!newnick) {
-						snprintf(message, sizeof(message), "Nick must be specifed!");
-						snprintf(hresult, sizeof(hresult), "-2147221248");
+						std::snprintf(message, sizeof(message), "Nick must be specifed!");
+						std::snprintf(hresult, sizeof(hresult), "-2147221248");
 					}
 					else if (!newpass) {
-						snprintf(message, sizeof(message), "Pussword must be specifed!");
-						snprintf(hresult, sizeof(hresult), "-2147221248");
+						std::snprintf(message, sizeof(message), "Pussword must be specifed!");
+						std::snprintf(hresult, sizeof(hresult), "-2147221248");
 					}
 					else if (account = accountlist_find_account(newnick)) {
-						snprintf(message, sizeof(message), "That login is already in use! Please try another NICK name.");
-						snprintf(hresult, sizeof(hresult), "-2147221248");
+						std::snprintf(message, sizeof(message), "That login is already in use! Please try another NICK name.");
+						std::snprintf(hresult, sizeof(hresult), "-2147221248");
 					}
 					else {  /* done, we can create new account */
 						t_account * tempacct;
@@ -874,12 +873,12 @@ namespace pvpgn
 							account_set_wol_apgar(tempacct, wol_pass_hash);
 							if (apiregmember_get_email(apiregmember))
 								account_set_email(tempacct, apiregmember_get_email(apiregmember));
-							snprintf(message, sizeof(message), "Welcome in the amazing world of PvPGN! Your login can be used for all PvPGN Supported games!");
-							snprintf(hresult, sizeof(hresult), "0");
+							std::snprintf(message, sizeof(message), "Welcome in the amazing world of PvPGN! Your login can be used for all PvPGN Supported games!");
+							std::snprintf(hresult, sizeof(hresult), "0");
 						}
 					}
 				}
-				snprintf(data, sizeof(data), "HRESULT=%s\nMessage=%s\nNewNick=%s\nNewPass=%s\nAge=%s\nConsent=%s\nEND\r", hresult, message, newnick, newpass, age, consent);
+				std::snprintf(data, sizeof(data), "HRESULT=%s\nMessage=%s\nNewNick=%s\nNewPass=%s\nAge=%s\nConsent=%s\nEND\r", hresult, message, newnick, newpass, age, consent);
 				apireg_send(apiregmember_get_conn(apiregmember), data);
 				return 0;
 			}

@@ -256,9 +256,6 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::istringstream istr(text);
-			std::string token;
-
 			char const *subcommand;
 
 			std::vector<std::string> args = split_command(text, 3);

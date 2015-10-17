@@ -29,7 +29,6 @@
 #include <string.h>
 
 #include "compat/strcasecmp.h"
-#include "compat/snprintf.h"
 
 #include "common/token.h"
 
@@ -605,13 +604,13 @@ namespace pvpgn
 							value = "0";
 
 						// replace in a text
-						snprintf(tmp, sizeof(tmp), "{{%s}}", var->key);
+						std::snprintf(tmp, sizeof(tmp), "{{%s}}", var->key);
 						text = str_replace((char*)text, tmp, (char*)value);
 
 						// also replace {var}->rank
 						if (icon = customicons_get_icon_by_rating(atoi(value), clienttag_str))
 						{
-							snprintf(tmp, sizeof(tmp), "{{%s->rank}}", var->key);
+							std::snprintf(tmp, sizeof(tmp), "{{%s->rank}}", var->key);
 							text = str_replace((char*)text, tmp, icon->rank);
 						}
 					}
@@ -725,8 +724,9 @@ namespace pvpgn
 
 					if (std::strcmp(option->key, "master_commandgroups") == 0)
 					{
+						size_t option_valuelen = std::strlen(option->value);
 						// convert string groups from config to integer
-						for (int i = 0; i < strlen(option->value); i++)
+						for (int i = 0; i < option_valuelen; i++)
 						{
 							if (option->value[i] == '1') master_commandgroups |= 1;
 							else if (option->value[i] == '2') master_commandgroups |= 2;

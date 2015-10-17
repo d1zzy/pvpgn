@@ -337,7 +337,6 @@ namespace pvpgn
 
 			bool first = true;
 			std::map<std::string, int> tmpdata;
-			AdCtagRefMap when;
 			unsigned next_id;
 
 			// insert ads
@@ -372,7 +371,6 @@ namespace pvpgn
 
 		std::map<std::string, int> AdBannerComponent::get_rowdata(int id, std::string client, std::vector<std::map<std::string, std::string> > templist, int init_count)
 		{
-			std::vector<std::string> clients;
 			std::map<std::string, int> data;
 
 			int tmpid = init_count;

@@ -12,7 +12,6 @@ project(pvpgn CXX)
 option(WITH_BNETD "compile the bnetd target" ON)
 option(WITH_D2CS "compile the d2cs target" ON)
 option(WITH_D2DBS "compile the d2dbs target" ON)
-option(WITH_ANSI "enforce strict ISO C++ conforming" ON)
 option(WITH_LUA "enable Lua support" OFF)
 if(WIN32)
 	option(WITH_WIN32_GUI "enable GUI building (default on)" ON)
@@ -44,6 +43,13 @@ if (MSVC)
 		message(FATAL_ERROR "Visual Studio 2015 or higher required")
 	endif()
 endif ()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+       set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pedantic")
+  
+       # Pass CXX flags to flags.
+       set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSEQAN_CXX_FLAGS_=\"${CMAKE_CXX_FLAGS}\"")
+endif()
 
 subdirs(src conf man files)
 if(WITH_LUA)

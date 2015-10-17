@@ -25,7 +25,6 @@
 #include <algorithm>
 
 #include "compat/strcasecmp.h"
-#include "compat/snprintf.h"
 #include "compat/pdir.h"
 #include "compat/mkdir.h"
 #include "common/util.h"
@@ -85,9 +84,10 @@ namespace pvpgn
 			
 			unsigned int groups = 0;
 			const char * cglist = prefs_get_log_command_groups();
+			size_t cglistlen = std::strlen(cglist);
 
 			// convert string groups from config to integer
-			for (int i = 0; i < strlen(cglist); i++)
+			for (int i = 0; i < cglistlen; i++)
 			{
 				if (cglist[i] == '1') groups |= 1;
 				else if (cglist[i] == '2') groups |= 2;
@@ -164,6 +164,8 @@ namespace pvpgn
 			char c, prev_c = 0;
 			long pos;
 
+			size_t search_substrlen = std::strlen(search_substr);
+
 			char * filename = userlog_filename(username);
 			if (FILE *fp = fopen(filename, "r"))
 			{
@@ -201,7 +203,7 @@ namespace pvpgn
 							linecount++;
 							if (linecount >= startline)
 							{
-								if (search_substr && strlen(search_substr) > 0)
+								if (search_substr && search_substrlen > 0)
 								{
 									if (find_substr(line, search_substr))
 										lines[linecount] = xstrdup(line);

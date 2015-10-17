@@ -37,7 +37,6 @@
 #endif
 
 #include "compat/strcasecmp.h"
-#include "compat/snprintf.h"
 
 #include "common/token.h"
 

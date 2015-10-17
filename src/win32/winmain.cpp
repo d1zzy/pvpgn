@@ -144,7 +144,8 @@ namespace pvpgn
 			WNDCLASSEX wc;
 			MSG msg;
 
-			LoadLibrary("RichEd20.dll");
+			if (LoadLibrary("RichEd20.dll") == NULL)
+				guiDEAD("Could not load RichEd20.dll");
 			wc.cbSize = sizeof(WNDCLASSEX);
 			wc.style = CS_HREDRAW | CS_VREDRAW;
 			wc.lpfnWndProc = (WNDPROC)guiWndProc;

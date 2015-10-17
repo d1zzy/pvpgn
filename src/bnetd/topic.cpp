@@ -64,18 +64,32 @@ namespace pvpgn
 			//loop through each line in topic file
 			while (std::getline(topicfile_stream, strLine))
 			{
-				//obtain channel name and topic string pair from current line
-				if (std::regex_search(strLine, match, rgx))
-					this->topiclist.add(match[1].str(), match[2].str(), true);
-				else
+				//skip empty lines
+				if (strLine.empty() == true)
+					continue;
+
+				if (!std::regex_search(strLine, match, rgx))
+				{
 					eventlog(eventlog_level_error, __FUNCTION__, "Invalid line in topic file (%s)", strLine.c_str());
+					continue;
+				}
+
+				//check if current line in file already exists in Head
+				if (this->topiclist.get(match[1].str()) != nullptr)
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "Duplicate line for channel %s in topic file", match[1].str().c_str());
+					continue;
+				}
+
+				//save current line to Head
+				this->topiclist.add(match[1].str(), match[2].str(), true);
 			}
 
 			this->topiclist.IsHeadLoaded = true;
 		}
 
 		//Get channel_name's topic string
-		std::string class_topic::get(std::string channel_name)
+		std::string class_topic::get(const std::string channel_name)
 		{
 			if ((channel_name.size() + 1) > MAX_CHANNELNAME_LEN || channel_name.empty() == true)
 			{
@@ -83,7 +97,7 @@ namespace pvpgn
 				return std::string();
 			}
 
-			class_topic::t_topic * topic = this->topiclist.get(channel_name);
+			auto topic = this->topiclist.get(channel_name);
 			if (topic == nullptr)
 				return std::string();
 
@@ -91,23 +105,23 @@ namespace pvpgn
 		}
 
 		//Sets channel_name's topic
-		int class_topic::set(std::string channel_name, std::string topic_text, bool do_save)
+		bool class_topic::set(const std::string channel_name, const std::string topic_text, bool do_save)
 		{
 			if ((channel_name.size() + 1) > MAX_CHANNELNAME_LEN || channel_name.empty() == true)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "got invalid channel name length");
-				return -1;
+				return false;
 			}
 
 			if ((topic_text.size() + 1) > MAX_TOPIC_LEN || topic_text.empty() == true)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "got invalid topic length");
-				return -1;
+				return false;
 			}
 
-			class_topic::t_topic * topic = this->topiclist.get(channel_name);
+			auto topic = this->topiclist.get(channel_name);
 
-			if (topic)
+			if (topic != nullptr)
 			{
 				eventlog(eventlog_level_trace, __FUNCTION__, "Setting <%s>'s topic to <%s>", channel_name.c_str(), topic_text.c_str());
 				topic->topicstr = topic_text;
@@ -120,38 +134,40 @@ namespace pvpgn
 
 			if (do_save == true)
 			{
-				if (this->topiclist.save() != 0)
+				if (this->topiclist.save() == false)
 				{
 					eventlog(eventlog_level_error, __FUNCTION__, "error saving topic list");
-					return -1;
+					return false;
 				}
 			}
 
-			return 0;
+			return true;
 		}
 
 		// Displays channel_name's topic to connection c
-		int class_topic::display(t_connection * c, std::string channel_name)
+		bool class_topic::display(t_connection * c, const std::string channel_name)
 		{
 			if ((channel_name.size() + 1) > MAX_CHANNELNAME_LEN || channel_name.empty() == true)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "got invalid channel name length");
-				return -1;
+				return false;
 			}
 
-			class_topic::t_topic * topic = this->topiclist.get(channel_name);
+			auto topic = this->topiclist.get(channel_name);
 			if (topic == nullptr)
-				return -1;
+				return false;
 
-			if (topic->topicstr.empty())
+			auto topicstr = topic->topicstr;
+
+			if (topicstr.empty())
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "topic is empty");
-				return -1;
+				return false;
 			}
 
 			//send parts of topic string as separate message if there's a newline character
 			std::regex rgx("\\\\n+");
-			std::sregex_token_iterator iter(topic->topicstr.begin(), topic->topicstr.end(), rgx, -1), end;
+			std::sregex_token_iterator iter(topicstr.begin(), topicstr.end(), rgx, -1), end;
 			for (bool first = true; iter != end; ++iter)
 			{
 				std::string msg(iter->str());
@@ -163,17 +179,17 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, msg);
 			}
 
-			return 0;
+			return true;
 		}
 
 
 		//Get t_topic pointer of channel_name
-		class_topic::t_topic * class_topic::class_topiclist::get(std::string channel_name)
+		std::shared_ptr<class_topic::t_topic> class_topic::class_topiclist::get(const std::string channel_name)
 		{
 			for (auto topic : this->Head)
 			{
 				if (strcasecmp(channel_name.c_str(), topic->channel_name.c_str()) == 0)
-					return topic.get();
+					return topic;
 			}
 			eventlog(eventlog_level_debug, __FUNCTION__, "returning nullptr");
 
@@ -181,22 +197,45 @@ namespace pvpgn
 		}
 
 		//Saves data from Head vector to topic file
-		int class_topic::class_topiclist::save()
+		bool class_topic::class_topiclist::save()
 		{
-			std::ofstream topicfile_stream(prefs_get_topicfile(), std::ofstream::trunc); //FIXME: optimize this
+			std::fstream topicfile_stream(prefs_get_topicfile(), std::ofstream::app);
 			if (!topicfile_stream)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "couldn't open topic file");
-				return -1;
+				return false;
 			}
 
-			for (auto topic : this->Head)
+			std::string strLine;
+			std::smatch match;
+			const std::regex rgx("(.*)\t(.*)"); // tab character separates the channel name and topic
+
+			//Check if data in Head vector already exists in topic file
+			while (std::getline(topicfile_stream, strLine))
 			{
-				if (topic->save == true)
-					topicfile_stream << topic->channel_name << "\t" << topic->topicstr << std::endl; // tab character separates the channel name and topic
-			}
+				if (!std::regex_search(strLine, match, rgx))
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "Invalid line in topic file (%s)", strLine.c_str());
+					continue;
+				}
 
-			return 0;
+				for (auto topic : this->Head)
+				{
+					if (topic->save == true)
+					{
+						if (match[1].str() == topic->channel_name)
+						{
+							break;
+						}
+						else
+						{
+							topicfile_stream << topic->channel_name << "\t" << topic->topicstr << std::endl;
+							break;
+						}
+					}
+				}
+			}
+			return true;
 		}
 
 		//Adds a new pointer to the Head vector

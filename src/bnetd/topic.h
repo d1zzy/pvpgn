@@ -41,9 +41,9 @@ namespace pvpgn
 		public:
 			class_topic();
 
-			std::string get(std::string channel_name);
-			int set(std::string channel_name, std::string topic_text, bool do_save);
-			int display(t_connection * c, std::string channel_name);
+			std::string get(const std::string channel_name);
+			bool set(const std::string channel_name, const std::string topic_text, bool do_save);
+			bool display(t_connection * c, const std::string channel_name);
 		private:
 			struct t_topic
 			{
@@ -56,8 +56,8 @@ namespace pvpgn
 			{
 			public:
 				static bool IsHeadLoaded;
-				class_topic::t_topic * get(std::string channel_name);
-				int save();
+				std::shared_ptr<class_topic::t_topic> get(const std::string channel_name);
+				bool save();
 				void add(std::string channel_name, std::string topic_text, bool do_save);
 			private:
 				static std::vector<std::shared_ptr<class_topic::t_topic>> Head;

@@ -28,8 +28,6 @@
 #include "common/util.h"
 #include "common/irc_protocol.h"
 
-#include "compat/snprintf.h"
-
 #include "handle_irc.h"
 #include "handle_wol.h"
 #include "handle_wserv.h"
@@ -264,7 +262,7 @@ namespace pvpgn
 				char temp[MAX_IRC_MESSAGE_LEN + 1];
 
 				if ((38 + std::strlen(command) + 16 + 1) < sizeof(temp)) {
-					snprintf(temp, sizeof(temp), ":Unrecognized command \"%s\" (before login)", command);
+					std::snprintf(temp, sizeof(temp), ":Unrecognized command \"%s\" (before login)", command);
 					irc_send(conn, ERR_UNKNOWNCOMMAND, temp);
 				}
 				else {

@@ -28,7 +28,6 @@
 #ifdef WIN32_GUI
 #include <win32/winmain.h>
 #endif
-#include "compat/snprintf.h"
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
 #include "compat/socket.h"
@@ -1542,8 +1541,8 @@ namespace pvpgn
 						temp = xstrdup(account_get_name(account));
 					}
 					else{
-						char uid_string[MAX_USERNAME_LEN];
-						sprintf(uid_string, "#%i", userid);
+						char uid_string[MAX_USERNAME_LEN] = {};
+						std::snprintf(uid_string, sizeof(uid_string), "#%u", userid);
 						temp = xstrdup(uid_string);
 					}
 				}
@@ -1924,13 +1923,13 @@ namespace pvpgn
 					if (!channel)
 					{
 						char msgtemp[MAX_MESSAGE_LEN];
-						snprintf(msgtemp, sizeof(msgtemp), "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
+						std::snprintf(msgtemp, sizeof(msgtemp), "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
 						message_send_text(c, message_type_error, c, msgtemp);
 
 						if (conn_get_game(c) || c->protocol.chat.channel == NULL) {
 							// FIXME: This is not tested to be according to battle.net!!
 							// This is fix for empty clan channels with preventing to join CHANNEL_NAME_BANNED when is used _handle_join_command
-							snprintf(msgtemp, sizeof(msgtemp), "You have been redirected to %s.", CHANNEL_NAME_BANNED);
+							std::snprintf(msgtemp, sizeof(msgtemp), "You have been redirected to %s.", CHANNEL_NAME_BANNED);
 							message_send_text(c, message_type_error, c, msgtemp);
 							channel = channellist_find_channel_by_name(CHANNEL_NAME_BANNED, conn_get_country(c), realm_get_name(conn_get_realm(c)));
 						}
@@ -2555,7 +2554,7 @@ namespace pvpgn
 			{
 				if (conn_get_versionid(c) <= 0x000000c7)
 				{
-					std::sprintf(playerinfo, "%s %u %u %u %u %u",
+					std::sprintf(playerinfo, "%s %u %d %u %u %u",
 						revtag,
 						account_get_ladder_rating(account, clienttag, ladder_id_normal),
 						account_get_ladder_rank(account, clienttag, ladder_id_normal),
@@ -2564,7 +2563,7 @@ namespace pvpgn
 				}
 				else
 				{
-					std::sprintf(playerinfo, "%s %u %u %u %u %u %u %u %u %s",
+					std::sprintf(playerinfo, "%s %u %d %u %u %u %u %u %u %s",
 						revtag,
 						account_get_ladder_rating(account, clienttag, ladder_id_normal),
 						account_get_ladder_rank(account, clienttag, ladder_id_normal),
@@ -2577,7 +2576,7 @@ namespace pvpgn
 			}
 			else if (clienttag == CLIENTTAG_SHAREWARE_UINT)
 			{
-				std::sprintf(playerinfo, "%s %u %u %u %u %u",
+				std::sprintf(playerinfo, "%s %u %d %u %u %u",
 					revtag,
 					account_get_ladder_rating(account, clienttag, ladder_id_normal),
 					account_get_ladder_rank(account, clienttag, ladder_id_normal),
@@ -2619,7 +2618,7 @@ namespace pvpgn
 				a = account_get_ladder_rating(account, clienttag, ladder_id_normal);
 				b = account_get_ladder_rating(account, clienttag, ladder_id_ironman);
 
-				std::sprintf(playerinfo, "%s %u %u %u %u %u %u %u %u",
+				std::sprintf(playerinfo, "%s %u %d %u %u %u %u %u %d",
 					revtag,
 					a,
 					account_get_ladder_rank(account, clienttag, ladder_id_normal),

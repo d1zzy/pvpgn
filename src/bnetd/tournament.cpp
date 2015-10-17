@@ -601,7 +601,8 @@ namespace pvpgn
 						pointer = std::strchr(pointer, '\"');
 						pointer[0] = '\0';
 
-						for (i = 0; i < std::strlen(value); i++) {
+						size_t valuelen = std::strlen(value);
+						for (i = 0; i < valuelen; i++) {
 							if (value[i] == 'H') intvalue = intvalue | 0x01;
 							if (value[i] == 'O') intvalue = intvalue | 0x02;
 							if (value[i] == 'N') intvalue = intvalue | 0x04;

@@ -35,8 +35,6 @@
 #include "common/addr.h"
 #include "common/xstring.h"
 
-#include "compat/snprintf.h"
-
 #include "prefs.h"
 #include "command.h"
 #include "irc.h"
@@ -327,7 +325,7 @@ namespace pvpgn
 
 							bnet_hash(&passhash, std::strlen(pass), pass);
 
-							snprintf(msgtemp, sizeof(msgtemp), "Trying to create account \"%s\" with password \"%s\"", username, pass);
+							std::snprintf(msgtemp, sizeof(msgtemp), "Trying to create account \"%s\" with password \"%s\"", username, pass);
 							message_send_text(conn, message_type_info, conn, msgtemp);
 
 							temp = accountlist_create_account(username, hash_get_str(passhash));
@@ -338,7 +336,7 @@ namespace pvpgn
 								break;
 							}
 
-							snprintf(msgtemp, sizeof(msgtemp), "Account " UID_FORMAT " created.", account_get_uid(temp));
+							std::snprintf(msgtemp, sizeof(msgtemp), "Account " UID_FORMAT " created.", account_get_uid(temp));
 							message_send_text(conn, message_type_info, conn, msgtemp);
 							eventlog(eventlog_level_debug, __FUNCTION__, "[%d] account \"%s\" created", conn_get_socket(conn), username);
 							conn_unget_chatname(conn, username);
@@ -346,7 +344,7 @@ namespace pvpgn
 						else {
 							char tmp[MAX_IRC_MESSAGE_LEN + 1];
 							message_send_text(conn, message_type_notice, NULL, "Invalid arguments for NICKSERV");
-							snprintf(tmp, sizeof(tmp), ":Unrecognized command \"%s\"", text);
+							std::snprintf(tmp, sizeof(tmp), ":Unrecognized command \"%s\"", text);
 							message_send_text(conn, message_type_notice, NULL, tmp);
 						}
 					}
@@ -463,13 +461,13 @@ namespace pvpgn
 					/* FIXME: AARON: only list channels like in /channels command */
 					if (topicstr.empty() == false) {
 						if (std::strlen(tempname) + 1 + 20 + 1 + 1 + std::strlen(topicstr.c_str()) < MAX_IRC_MESSAGE_LEN)
-							snprintf(temp, sizeof(temp), "%s %u :%s", tempname, channel_get_length(channel), topicstr.c_str());
+							std::snprintf(temp, sizeof(temp), "%s %u :%s", tempname, channel_get_length(channel), topicstr.c_str());
 						else
 							eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
 					}
 					else {
 						if (std::strlen(tempname) + 1 + 20 + 1 + 1 < MAX_IRC_MESSAGE_LEN)
-							snprintf(temp, sizeof(temp), "%s %u :", tempname, channel_get_length(channel));
+							std::snprintf(temp, sizeof(temp), "%s %u :", tempname, channel_get_length(channel));
 						else
 							eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
 					}
@@ -502,13 +500,13 @@ namespace pvpgn
 
 					if (topicstr.c_str()) {
 						if (std::strlen(tempname) + 1 + 20 + 1 + 1 + std::strlen(topicstr.c_str()) < MAX_IRC_MESSAGE_LEN)
-							snprintf(temp, sizeof(temp), "%s %u :%s", tempname, channel_get_length(channel), topicstr.c_str());
+							std::snprintf(temp, sizeof(temp), "%s %u :%s", tempname, channel_get_length(channel), topicstr.c_str());
 						else
 							eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
 					}
 					else {
 						if (std::strlen(tempname) + 1 + 20 + 1 + 1 < MAX_IRC_MESSAGE_LEN)
-							snprintf(temp, sizeof(temp), "%s %u :", tempname, channel_get_length(channel));
+							std::snprintf(temp, sizeof(temp), "%s %u :", tempname, channel_get_length(channel));
 						else
 							eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
 					}
@@ -605,9 +603,9 @@ namespace pvpgn
 				for (i = 0; ((e) && (e[i])); i++) {
 					if ((c = connlist_find_connection_by_accountname(e[i]))) {
 						if (prefs_get_hide_addr() && !(account_get_command_groups(conn_get_account(conn)) & command_get_group("/admin-addr")))
-							snprintf(temp, sizeof(temp), "%s %s hidden * :%s", e[i], clienttag_uint_to_str(conn_get_clienttag(c)), "PvPGN user");
+							std::snprintf(temp, sizeof(temp), "%s %s hidden * :%s", e[i], clienttag_uint_to_str(conn_get_clienttag(c)), "PvPGN user");
 						else
-							snprintf(temp, sizeof(temp), "%s %s %s * :%s", e[i], clienttag_uint_to_str(conn_get_clienttag(c)), addr_num_to_ip_str(conn_get_addr(c)), "PvPGN user");
+							std::snprintf(temp, sizeof(temp), "%s %s %s * :%s", e[i], clienttag_uint_to_str(conn_get_clienttag(c)), addr_num_to_ip_str(conn_get_addr(c)), "PvPGN user");
 						irc_send(conn, RPL_WHOISUSER, temp);
 
 						if ((chan = conn_get_channel(conn))) {
@@ -623,7 +621,7 @@ namespace pvpgn
 							else if (flags & MF_VOICE)
 								flg = '+';
 							else flg = ' ';
-							snprintf(temp2, sizeof(temp2), "%s :%c%s", e[i], flg, irc_convert_channel(chan, conn));
+							std::snprintf(temp2, sizeof(temp2), "%s :%c%s", e[i], flg, irc_convert_channel(chan, conn));
 							irc_send(conn, RPL_WHOISCHANNELS, temp2);
 						}
 

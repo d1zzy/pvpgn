@@ -78,7 +78,7 @@ inline int IsInf(double x) {
 #endif
 }
 
-#define FMT_SNPRINTF snprintf
+#define FMT_SNPRINTF std::snprintf
 
 #else  // _MSC_VER
 

@@ -53,9 +53,6 @@ if(WITH_ODBC)
 endif(WITH_ODBC)
 if(WITH_MYSQL)
     find_package(MySQL REQUIRED)
-    # disable strict ANSI checking when using MySQL headers
-    # which contain invalid "long long" type
-    set(WITH_ANSI OFF)
 endif(WITH_MYSQL)
 if(WITH_SQLITE3)
     find_package(SQLite3 REQUIRED)
@@ -239,18 +236,6 @@ endif(HAVE_WINSOCK2_H)
 check_mkdir_args(MKDIR_TAKES_ONE_ARG)
 
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-
-#check_cxx_compiler_flag("-Wall" WITH_FLAG_WALL)
-
-if(WITH_ANSI)
-  # on MINGW non-standard library features are conditioned on __STRICT_ANSI__ not being defined
-  # (which is stupid since a program using specific system functions can still be standard
-  # conformant, -ansi doesn't mean to not use non ANSI features it just means to respect
-  # the standard text)
-  if(NOT MINGW AND NOT MSVC)
-    check_cxx_compiler_flag("-pedantic -ansi" WITH_FLAG_ANSIPEDANTIC)
-  endif(NOT MINGW AND NOT MSVC)
-endif(WITH_ANSI)
 
 # new VS.Net deprecates with warnings most of ISO C functions without this
 if(MSVC)

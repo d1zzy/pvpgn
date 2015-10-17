@@ -298,8 +298,8 @@ namespace pvpgn
 			}
 			else if (std::strcmp(prefs_get_version_exeinfo_match(), "wildcard") == 0) {
 				unsigned int i;
-
-				for (i = 0; i < std::strlen(pattern->exe); i++)
+				size_t pattern_exelen = std::strlen(pattern->exe);
+				for (i = 0; i < pattern_exelen; i++)
 				if ((pattern->exe[i] != '?') && /* out "don't care" sign */
 					(safe_toupper(pattern->exe[i]) != safe_toupper(match->exe[i])))
 					return 1; /* neq */

@@ -295,7 +295,7 @@ new_accounts = true
 
 # Set this to the maximum number of accounts you want to allow to be
 # created on your server. A value of 0 means infinite and is the default.
-#max_accounts = 0
+max_accounts = 0
 
 # If someone attempts to log in more than once, should it kick off the old
 # login, or deny the new one?

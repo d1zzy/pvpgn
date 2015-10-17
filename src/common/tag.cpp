@@ -22,6 +22,7 @@
 
 #include <cstring>
 #include <cctype>
+#include <string>
 
 #include "compat/strcasecmp.h"
 
@@ -166,6 +167,19 @@ namespace pvpgn
 		tag_str[3] = ((unsigned char)(tag_uint)& 0xff);
 		tag_str[4] = '\0';
 		return tag_str;
+	}
+	extern std::string tag_uint_to_str2(t_tag tag_uint)
+	{
+		if (!tag_uint) /* return "UNKN" if tag_uint = 0 */
+			return std::string(TAG_UNKNOWN);
+
+		char tag_str[5] = {};
+		tag_str[0] = ((unsigned char)(tag_uint >> 24));
+		tag_str[1] = ((unsigned char)(tag_uint >> 16) & 0xff);
+		tag_str[2] = ((unsigned char)(tag_uint >> 8) & 0xff);
+		tag_str[3] = ((unsigned char)(tag_uint)& 0xff);
+		tag_str[4] = '\0';
+		return std::string(tag_str);
 	}
 
 	extern const char * tag_uint_to_revstr(char * tag_str, t_tag tag_uint)

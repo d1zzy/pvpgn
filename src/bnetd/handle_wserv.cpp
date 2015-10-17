@@ -34,8 +34,6 @@
 #include "common/addr.h"
 #include "common/trans.h"
 
-#include "compat/snprintf.h"
-
 #include "prefs.h"
 #include "irc.h"
 #include "message.h"
@@ -117,7 +115,7 @@ namespace pvpgn
 					ftphostname = prefs_get_wol_autoupdate_serverhost();
 					ftpusername = prefs_get_wol_autoupdate_username();
 					ftppassword = prefs_get_wol_autoupdate_password();
-					snprintf(temp, sizeof(temp), ":%s %s %s %s 131075 %s REQ", ftphostname, ftpusername, ftppassword, filestring, params[0]);
+					std::snprintf(temp, sizeof(temp), ":%s %s %s %s 131075 %s REQ", ftphostname, ftpusername, ftppassword, filestring, params[0]);
 					irc_send(conn, RPL_UPDATE_FTP, temp);
 				}
 				else
@@ -170,13 +168,13 @@ namespace pvpgn
 					//            snprintf(temp, sizeof(temp), ":c.xwis.net 4000 '0:%s' %s %s %s", wolname, woltimezone, wollong, wollat);
 					//            snprintf(temp, sizeof(temp), ":c.xwis.net 4010 '0:%s' %s %s %s", wolname, woltimezone, wollong, wollat);
 					//            snprintf(temp, sizeof(temp), ":a.xwis.net 4010 '0:%s' %s %s %s", wolname, woltimezone, wollong, wollat);
-					snprintf(temp, sizeof(temp), ":%s %d '0:%s' %s %s %s", wolip, BNETD_WOLV2_PORT, wolname, woltimezone, wollong, wollat);
+					std::snprintf(temp, sizeof(temp), ":%s %d '0:%s' %s %s %s", wolip, BNETD_WOLV2_PORT, wolname, woltimezone, wollong, wollat);
 					irc_send(conn, RPL_WOLSERV, temp);
 				}
 
 				//  Only for Emperor: Battle for Dune
 				if (conn_get_clienttag(conn) == CLIENTTAG_EMPERORBD_UINT) {
-					snprintf(temp, sizeof(temp), ":%s %d '0:Emperor %s' %s %s %s", wolip, BNETD_WOLV2_PORT, wolname, woltimezone, wollong, wollat);
+					std::snprintf(temp, sizeof(temp), ":%s %d '0:Emperor %s' %s %s %s", wolip, BNETD_WOLV2_PORT, wolname, woltimezone, wollong, wollat);
 					irc_send(conn, RPL_WOLSERV, temp);
 				}
 
@@ -193,14 +191,14 @@ namespace pvpgn
 
 				//  There are servers for anyone game
 				// FIXME: Check if is WOLv1 supported
-				snprintf(temp, sizeof(temp), ":%s %d 'Live chat server' %s %s %s", wolip, BNETD_WOLV1_PORT, woltimezone, wollong, wollat);
+				std::snprintf(temp, sizeof(temp), ":%s %d 'Live chat server' %s %s %s", wolip, BNETD_WOLV1_PORT, woltimezone, wollong, wollat);
 				irc_send(conn, RPL_WOLSERV, temp);
 			}
 
 			// If game is not allowed than we still send this servers 
-			snprintf(temp, sizeof(temp), ":%s %d 'Gameres server' %s %s %s", wolip, BNETD_WGAMERES_PORT, woltimezone, wollong, wollat);
+			std::snprintf(temp, sizeof(temp), ":%s %d 'Gameres server' %s %s %s", wolip, BNETD_WGAMERES_PORT, woltimezone, wollong, wollat);
 			irc_send(conn, RPL_GAMERESSERV, temp);
-			snprintf(temp, sizeof(temp), ":%s %d 'Ladder server' %s %s %s", wolip, BNETD_WOLV2_PORT, woltimezone, wollong, wollat);
+			std::snprintf(temp, sizeof(temp), ":%s %d 'Ladder server' %s %s %s", wolip, BNETD_WOLV2_PORT, woltimezone, wollong, wollat);
 			irc_send(conn, RPL_LADDERSERV, temp);
 			// There is Word Domination Tour server for Firestorm (maybe for future coding)
 			//snprintf(temp, sizeof(temp), ":%s %d 'WDT server' %s %s %s", wolip, BNETD_WOLV2_PORT, woltimezone, wollong, wollat); //I dont know for what is this server...?

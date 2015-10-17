@@ -148,7 +148,7 @@ static int oom_setup(void)
 
 static void oom_free(void)
 {
-	if (oom_buffer) free(oom_buffer);
+	free(oom_buffer);
 	oom_buffer = NULL;
 }
 
