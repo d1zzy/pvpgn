@@ -104,8 +104,6 @@
 #cmakedefine HAVE_GETRLIMIT
 #cmakedefine HAVE_VSNPRINTF
 #cmakedefine HAVE__VSNPRINTF
-#cmakedefine HAVE_SNPRINTF
-#cmakedefine HAVE__SNPRINTF
 #cmakedefine HAVE_SETPGRP
 #cmakedefine HAVE_MAKE_UNIQUE
 
