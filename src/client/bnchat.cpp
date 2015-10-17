@@ -34,7 +34,6 @@
 #endif
 
 #include "compat/psock.h"
-#include "compat/vsnprintf.h"
 #include "compat/termios.h"
 #include "compat/strcasecmp.h"
 #include "common/field_sizes.h"
@@ -699,7 +698,7 @@ namespace
 			ansi_text_color_fore(color);
 
 		va_start(args, fmt);
-		vsnprintf(buffer, 2048, fmt, args);
+		std::vsnprintf(buffer, 2048, fmt, args);
 		va_end(args);
 
 		str_print_term(stdout, buffer, 0, 1);
