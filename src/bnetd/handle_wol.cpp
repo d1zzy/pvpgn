@@ -233,11 +233,12 @@ namespace pvpgn
 			tempapgar = conn_wol_get_apgar(conn);
 			temphash = account_get_wol_apgar(a);
 
-			if (connlist_find_connection_by_account(a) && prefs_get_kick_old_login() == 0) {
-				std::snprintf(temp, sizeof(temp), "%s :Account is already in use!", conn_get_loggeduser(conn));
-				irc_send(conn, ERR_NICKNAMEINUSE, temp);
+			if (connlist_find_connection_by_account(a) && prefs_get_kick_old_login() == 0)
+			{
+				irc_send(conn, ERR_NICKNAMEINUSE, std::string(std::string(conn_get_loggeduser(conn)) + " :Account is already in use!").c_str());
 			}
-			else if (account_get_auth_lock(a) == 1) {
+			else if (account_get_auth_lock(a) == 1)
+			{
 				/* FIXME: Send real error code */
 				message_send_text(conn, message_type_notice, NULL, "Authentication rejected (account is locked) ");
 			}
@@ -280,29 +281,28 @@ namespace pvpgn
 
 		static int handle_wol_send_claninfo(t_connection * conn, t_clan * clan)
 		{
-			char _temp[MAX_IRC_MESSAGE_LEN];
 			unsigned int clanid;
 			const char * clantag;
 			const char * clanname;
 
-			std::memset(_temp, 0, sizeof(_temp));
-
-			if (!conn) {
+			if (!conn)
+			{
 				ERROR0("got NULL connection");
 				return -1;
 			}
 
-			if (clan) {
+			if (clan)
+			{
 				clanid = clan_get_clanid(clan);
 				clantag = clantag_to_str(clan_get_clantag(clan));
 				clanname = clan_get_name(clan);
-				std::snprintf(_temp, sizeof(_temp), "%u`%s`%s`0`0`1`0`0`0`0`0`0`0`x`x`x", clanid, clanname, clantag);
-				irc_send(conn, RPL_BATTLECLAN, _temp);
+				irc_send(conn, RPL_BATTLECLAN, std::string(std::to_string(clanid) + "`" + std::string(clanname) + "`" + std::string(clantag) + "`0`0`1`0`0`0`0`0`0`0`x`x`x").c_str());
 			}
-			else {
-				std::snprintf(_temp, sizeof(_temp), ":ID does not exist");
-				irc_send(conn, ERR_IDNOEXIST, _temp);
+			else
+			{
+				irc_send(conn, ERR_IDNOEXIST, ":ID does not exist");
 			}
+
 			return 0;
 		}
 
@@ -420,8 +420,7 @@ namespace pvpgn
 								}
 							}
 							else {
-								std::snprintf(msgtemp, sizeof(msgtemp), "%s :No such channel", e[0]);
-								irc_send(conn, ERR_NOSUCHCHANNEL, msgtemp);
+								irc_send(conn, ERR_NOSUCHCHANNEL, std::string(std::string(e[0]) + " :No such channel").c_str());
 							}
 						}
 						else {
@@ -717,17 +716,19 @@ namespace pvpgn
 			*  :[servername] 379 [username] :none none none [oldversnum] [SKU] REQ
 			*/
 
-			if (numparams == 2) {
+			if (numparams == 2)
+			{
 				clienttag = tag_sku_to_uint(std::atoi(params[0]));
 				if (clienttag != CLIENTTAG_WWOL_UINT)
 					conn_set_clienttag(conn, clienttag);
 
-				std::snprintf(temp, sizeof(temp), ":none none none 1 %s NONREQ", params[0]);
-				eventlog(eventlog_level_debug, __FUNCTION__, "[** WOL **] VERCHK %s", temp);
-				irc_send(conn, RPL_VERCHK_NONREQ, temp);
+				std::string tmp(":none none none 1 " + std::string(params[0]) + " NONREQ");
+				eventlog(eventlog_level_debug, __FUNCTION__, "[** WOL **] VERCHK %s", tmp.c_str());
+				irc_send(conn, RPL_VERCHK_NONREQ, tmp.c_str());
 			}
 			else
 				irc_send(conn, ERR_NEEDMOREPARAMS, "VERCHK :Not enough parameters");
+
 			return 0;
 		}
 
@@ -829,28 +830,24 @@ namespace pvpgn
 
 		static int _handle_getcodepage_command(t_connection * conn, int numparams, char ** params, char * text)
 		{
-			char temp[MAX_IRC_MESSAGE_LEN];
-			char _temp[MAX_IRC_MESSAGE_LEN];
+			std::string temp;
 
-			std::memset(temp, 0, sizeof(temp));
-			std::memset(_temp, 0, sizeof(_temp));
-
-			if ((numparams >= 1) && (params[0])) {
-				int i;
-				for (i = 0; i < numparams; i++) {
-					t_connection * user;
+			if ((numparams >= 1) && (params[0]))
+			{
+				for (auto i = 0; i < numparams; i++)
+				{
 					int codepage = 0;
-
-					if (user = connlist_find_connection_by_accountname(params[i]))
+					t_connection * user = connlist_find_connection_by_accountname(params[i]);
+					if (user)
 						codepage = conn_wol_get_codepage(user);
 
-					std::snprintf(_temp, sizeof(_temp), "%s`%u", params[i], codepage);
-					std::strcat(temp, _temp);
+					temp.append(std::string(params[i]) + "`" + std::to_string(codepage));
 
 					if (i < numparams - 1)
-						std::strcat(temp, "`");
+						temp.append("`");
 				}
-				irc_send(conn, RPL_GET_CODEPAGE, temp);
+
+				irc_send(conn, RPL_GET_CODEPAGE, temp.c_str());
 			}
 			else
 				irc_send(conn, ERR_NEEDMOREPARAMS, "GETCODEPAGE :Not enough parameters");
@@ -874,27 +871,22 @@ namespace pvpgn
 
 		static int _handle_getlocale_command(t_connection * conn, int numparams, char ** params, char * text)
 		{
-			char temp[MAX_IRC_MESSAGE_LEN];
-			char _temp[MAX_IRC_MESSAGE_LEN];
+			std::string temp;
 
-			std::memset(temp, 0, sizeof(temp));
-			std::memset(_temp, 0, sizeof(_temp));
-
-			if ((numparams >= 1) && (params[0])) {
-				int i;
-				for (i = 0; i < numparams; i++) {
-					t_account * account;
+			if ((numparams >= 1) && (params[0]))
+			{
+				for (auto i = 0; i < numparams; i++)
+				{
 					int locale = 0;
-
-					if (account = accountlist_find_account(params[i]))
+					t_account * account = accountlist_find_account(params[i]);
+					if (account)
 						locale = account_get_locale(account);
 
-					std::snprintf(_temp, sizeof(_temp), "%s`%u", params[i], locale);
-					std::strcat(temp, _temp);
+					temp.append(std::string(params[i]) + "`" + std::to_string(locale));
 					if (i < numparams - 1)
-						std::strcat(temp, "`");
+						temp.append("`");
 				}
-				irc_send(conn, RPL_GET_LOCALE, temp);
+				irc_send(conn, RPL_GET_LOCALE, temp.c_str());
 			}
 			else
 				irc_send(conn, ERR_NEEDMOREPARAMS, "GETLOCALE :Not enough parameters");
@@ -903,8 +895,6 @@ namespace pvpgn
 
 		static int _handle_getinsider_command(t_connection * conn, int numparams, char ** params, char * text)
 		{
-			char _temp[MAX_IRC_MESSAGE_LEN];
-
 			/**
 			 * Here is imput expected:
 			 *   GETINSIDER [nickname]
@@ -912,14 +902,11 @@ namespace pvpgn
 			 *   :[servername] 399 [nick] [nickname]`0
 			 */
 
-			std::memset(_temp, 0, sizeof(_temp));
-
-			if ((numparams >= 1) && (params[0])) {
-				std::snprintf(_temp, sizeof(_temp), "%s`%u", params[0], 0);
-				irc_send(conn, RPL_GET_INSIDER, _temp);
-			}
+			if ((numparams >= 1) && (params[0]))
+				irc_send(conn, RPL_GET_INSIDER, std::string(std::string(params[0]) + "`0").c_str());
 			else
 				irc_send(conn, ERR_NEEDMOREPARAMS, "GETINSIDER :Not enough parameters");
+
 			return 0;
 		}
 
@@ -970,52 +957,63 @@ namespace pvpgn
 						return 0;
 					}
 
-					if (!(gamename) || !(game = gamelist_find_game_available(gamename, conn_get_clienttag(conn), game_type_all))) {
-						std::snprintf(_temp, sizeof(_temp), "%s :Game channel has closed", e[0]);
-						irc_send(conn, ERR_GAMEHASCLOSED, _temp);
+					if (!(gamename) || !(game = gamelist_find_game_available(gamename, conn_get_clienttag(conn), game_type_all)))
+					{
+						irc_send(conn, ERR_GAMEHASCLOSED, std::string(std::string(e[0]) + " :Game channel has closed").c_str());
+
 						if (e)
 							irc_unget_listelems(e);
+
 						return 0;
 					}
 
 					channel = game_get_channel(game);
 
-					if (game_get_ref(game) == game_get_maxplayers(game)) {
-						std::snprintf(_temp, sizeof(_temp), "%s :Channel is full", e[0]);
-						irc_send(conn, ERR_CHANNELISFULL, _temp);
+					if (game_get_ref(game) == game_get_maxplayers(game))
+					{
+						irc_send(conn, ERR_CHANNELISFULL, std::string(std::string(e[0]) + " :Channel is full.").c_str());
+
 						if (e)
 							irc_unget_listelems(e);
+
 						return 0;
 					}
 
-					if (channel_check_banning(channel, conn)) {
-						std::snprintf(_temp, sizeof(_temp), "%s :You are banned from that channel.", e[0]);
-						irc_send(conn, ERR_BANNEDFROMCHAN, _temp);
+					if (channel_check_banning(channel, conn))
+					{
+						irc_send(conn, ERR_BANNEDFROMCHAN, std::string(std::string(e[0]) + " :You are banned from that channel.").c_str());
+						
 						if (e)
 							irc_unget_listelems(e);
+
 						return 0;
 					}
 
-					if (std::strcmp(game_get_pass(game), "") != 0) {
-						if ((numparams == 3) && (params[2]) && (std::strcmp(params[2], game_get_pass(game)) == 0)) {
-							strcpy(gamepass, params[2]);
+					if (std::strcmp(game_get_pass(game), "") != 0)
+					{
+						if ((numparams == 3) && (params[2]) && (std::strcmp(params[2], game_get_pass(game)) == 0))
+						{
+							std::strcpy(gamepass, params[2]);
 						}
-						else {
-							std::snprintf(_temp, sizeof(_temp), "%s :Bad password", e[0]);
-							irc_send(conn, ERR_BADCHANNELKEY, _temp);
+						else
+						{
+							irc_send(conn, ERR_BADCHANNELKEY, std::string(std::string(e[0]) + ":Bad password").c_str());
+
 							if (e)
 								irc_unget_listelems(e);
+
 							return 0;
 						}
 					}
 
 					gametype = game_get_type(game);
 
-					if ((conn_set_game(conn, gamename, gamepass, "", gametype, 0)) < 0) {
-						std::snprintf(_temp, sizeof(_temp), "%s :JOINGAME failed", e[0]);
-						irc_send(conn, ERR_GAMEHASCLOSED, _temp);
+					if ((conn_set_game(conn, gamename, gamepass, "", gametype, 0)) < 0)
+					{
+						irc_send(conn, ERR_GAMEHASCLOSED, std::string(std::string(e[0]) + " :JOINGAME failed").c_str());
 					}
-					else {
+					else
+					{
 						/*conn_set_channel()*/
 						channel = game_get_channel(game);
 						conn_set_channel_var(conn, channel);
@@ -1048,9 +1046,9 @@ namespace pvpgn
 
 							irc_send_rpl_namreply(conn, channel);
 						}
-						else {
-							std::snprintf(_temp, sizeof(_temp), "%s :JOINGAME failed", e[0]);
-							irc_send(conn, ERR_GAMEHASCLOSED, _temp);
+						else
+						{
+							irc_send(conn, ERR_GAMEHASCLOSED, std::string(std::string(e[0]) + " :JOINGAME failed").c_str());
 						}
 					}
 				}

@@ -325,8 +325,7 @@ namespace pvpgn
 
 							bnet_hash(&passhash, std::strlen(pass), pass);
 
-							std::snprintf(msgtemp, sizeof(msgtemp), "Trying to create account \"%s\" with password \"%s\"", username, pass);
-							message_send_text(conn, message_type_info, conn, msgtemp);
+							message_send_text(conn, message_type_info, conn, std::string("Trying to create account \"" + std::string(username) + "\" with password \"" + std::string(pass) + "\"").c_str());
 
 							temp = accountlist_create_account(username, hash_get_str(passhash));
 							if (!temp) {
@@ -336,16 +335,13 @@ namespace pvpgn
 								break;
 							}
 
-							std::snprintf(msgtemp, sizeof(msgtemp), "Account " UID_FORMAT " created.", account_get_uid(temp));
-							message_send_text(conn, message_type_info, conn, msgtemp);
+							message_send_text(conn, message_type_info, conn, std::string("Account #" + std::to_string(account_get_uid(temp)) + " created."));
 							eventlog(eventlog_level_debug, __FUNCTION__, "[%d] account \"%s\" created", conn_get_socket(conn), username);
 							conn_unget_chatname(conn, username);
 						}
 						else {
-							char tmp[MAX_IRC_MESSAGE_LEN + 1];
-							message_send_text(conn, message_type_notice, NULL, "Invalid arguments for NICKSERV");
-							std::snprintf(tmp, sizeof(tmp), ":Unrecognized command \"%s\"", text);
-							message_send_text(conn, message_type_notice, NULL, tmp);
+							message_send_text(conn, message_type_notice, nullptr, "Invalid arguments for NICKSERV");
+							message_send_text(conn, message_type_notice, nullptr, std::string(":Unrecognized command \"" + std::string(text) + "\"").c_str());
 						}
 					}
 					else if (conn_get_state(conn) == conn_state_loggedin) {
@@ -443,38 +439,30 @@ namespace pvpgn
 
 		static int _handle_list_command(t_connection * conn, int numparams, char ** params, char * text)
 		{
-			char temp[MAX_IRC_MESSAGE_LEN];
-
+			std::string tmp;
 			irc_send(conn, RPL_LISTSTART, "Channel :Users Names"); /* backward compatibility */
 
-			if (numparams == 0) {
+			if (numparams == 0)
+			{
 				t_elem const * curr;
 				class_topic Topic;
 				LIST_TRAVERSE_CONST(channellist(), curr)
 				{
 					t_channel const * channel = (const t_channel*)elem_get_data(curr);
-					char const * tempname;
+					char const * tempname = irc_convert_channel(channel, conn);
 					std::string topicstr = Topic.get(channel_get_name(channel));
 
-					tempname = irc_convert_channel(channel, conn);
-
 					/* FIXME: AARON: only list channels like in /channels command */
-					if (topicstr.empty() == false) {
-						if (std::strlen(tempname) + 1 + 20 + 1 + 1 + std::strlen(topicstr.c_str()) < MAX_IRC_MESSAGE_LEN)
-							std::snprintf(temp, sizeof(temp), "%s %u :%s", tempname, channel_get_length(channel), topicstr.c_str());
-						else
-							eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
-					}
-					else {
-						if (std::strlen(tempname) + 1 + 20 + 1 + 1 < MAX_IRC_MESSAGE_LEN)
-							std::snprintf(temp, sizeof(temp), "%s %u :", tempname, channel_get_length(channel));
-						else
-							eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
-					}
-					irc_send(conn, RPL_LIST, temp);
+					tmp = std::string(tempname) + " " + std::to_string(channel_get_length(channel)) + " :" + topicstr;
+
+					if (tmp.length() > MAX_IRC_MESSAGE_LEN)
+						eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
+
+					irc_send(conn, RPL_LIST, tmp.c_str());
 				}
 			}
-			else if (numparams >= 1) {
+			else if (numparams >= 1)
+			{
 				int i;
 				char ** e;
 				class_topic Topic;
@@ -482,40 +470,33 @@ namespace pvpgn
 				e = irc_get_listelems(params[0]);
 				/* FIXME: support wildcards! */
 
-				for (i = 0; ((e) && (e[i])); i++) {
-					t_channel const * channel;
-					char const * verytemp; /* another good example for creative naming conventions :) */
-					char const * tempname;
-					std::string topicstr;
-
-					verytemp = irc_convert_ircname(e[i]);
+				for (i = 0; ((e) && (e[i])); i++)
+				{
+					char const * verytemp = irc_convert_ircname(e[i]);
 					if (!verytemp)
 						continue; /* something is wrong with the name ... */
-					channel = channellist_find_channel_by_name(verytemp, NULL, NULL);
+
+					t_channel const * channel = channellist_find_channel_by_name(verytemp, NULL, NULL);
 					if (!channel)
 						continue; /* channel doesn't exist */
 
-					topicstr = Topic.get(channel_get_name(channel));
-					tempname = irc_convert_channel(channel, conn);
+					std::string topicstr = Topic.get(channel_get_name(channel));
+					char const * tempname = irc_convert_channel(channel, conn);
 
-					if (topicstr.c_str()) {
-						if (std::strlen(tempname) + 1 + 20 + 1 + 1 + std::strlen(topicstr.c_str()) < MAX_IRC_MESSAGE_LEN)
-							std::snprintf(temp, sizeof(temp), "%s %u :%s", tempname, channel_get_length(channel), topicstr.c_str());
-						else
-							eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
-					}
-					else {
-						if (std::strlen(tempname) + 1 + 20 + 1 + 1 < MAX_IRC_MESSAGE_LEN)
-							std::snprintf(temp, sizeof(temp), "%s %u :", tempname, channel_get_length(channel));
-						else
-							eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
-					}
-					irc_send(conn, RPL_LIST, temp);
+					tmp = std::string(tempname) + " " + std::to_string(channel_get_length(channel)) + " :" + topicstr;
+
+					if (tmp.length() > MAX_IRC_MESSAGE_LEN)
+						eventlog(eventlog_level_warn, __FUNCTION__, "LISTREPLY length exceeded");
+
+					irc_send(conn, RPL_LIST, tmp.c_str());
 				}
+
 				if (e)
 					irc_unget_listelems(e);
 			}
+
 			irc_send(conn, RPL_LISTEND, ":End of LIST command");
+
 			return 0;
 		}
 
@@ -589,30 +570,29 @@ namespace pvpgn
 
 		static int _handle_whois_command(t_connection * conn, int numparams, char ** params, char * text)
 		{
-			char temp[MAX_IRC_MESSAGE_LEN];
-			char temp2[MAX_IRC_MESSAGE_LEN];
-			if (numparams >= 1) {
+			std::string tmp;
+
+			if (numparams >= 1)
+			{
 				int i;
-				char ** e;
+				char ** e = irc_get_listelems(params[0]);
 				t_connection * c;
 				t_channel * chan;
 
-				temp[0] = '\0';
-				temp2[0] = '\0';
-				e = irc_get_listelems(params[0]);
-				for (i = 0; ((e) && (e[i])); i++) {
-					if ((c = connlist_find_connection_by_accountname(e[i]))) {
+				for (i = 0; ((e) && (e[i])); i++)
+				{
+					if ((c = connlist_find_connection_by_accountname(e[i])))
+					{
 						if (prefs_get_hide_addr() && !(account_get_command_groups(conn_get_account(conn)) & command_get_group("/admin-addr")))
-							std::snprintf(temp, sizeof(temp), "%s %s hidden * :%s", e[i], clienttag_uint_to_str(conn_get_clienttag(c)), "PvPGN user");
+							tmp = std::string(e[i]) + " " + std::string(clienttag_uint_to_str(conn_get_clienttag(c))) + " hidden * :PvPGN user";
 						else
-							std::snprintf(temp, sizeof(temp), "%s %s %s * :%s", e[i], clienttag_uint_to_str(conn_get_clienttag(c)), addr_num_to_ip_str(conn_get_addr(c)), "PvPGN user");
-						irc_send(conn, RPL_WHOISUSER, temp);
+							tmp = std::string(e[i]) + " " + std::string(clienttag_uint_to_str(conn_get_clienttag(c))) + " " + std::string(addr_num_to_ip_str(conn_get_addr(c))) + " * :PvPGN user";
+						irc_send(conn, RPL_WHOISUSER, tmp.c_str());
 
-						if ((chan = conn_get_channel(conn))) {
-							char flg;
-							unsigned int flags;
-
-							flags = conn_get_flags(c);
+						if ((chan = conn_get_channel(conn)))
+						{
+							std::string flg;
+							auto flags = conn_get_flags(c);
 
 							if (flags & MF_BLIZZARD)
 								flg = '@';
@@ -620,9 +600,11 @@ namespace pvpgn
 								flg = '%';
 							else if (flags & MF_VOICE)
 								flg = '+';
-							else flg = ' ';
-							std::snprintf(temp2, sizeof(temp2), "%s :%c%s", e[i], flg, irc_convert_channel(chan, conn));
-							irc_send(conn, RPL_WHOISCHANNELS, temp2);
+							else
+								flg = ' ';
+
+							tmp = std::string(e[i]) + " :" + flg + std::string(irc_convert_channel(chan, conn));
+							irc_send(conn, RPL_WHOISCHANNELS, tmp.c_str());
 						}
 
 					}

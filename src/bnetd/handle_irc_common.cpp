@@ -258,18 +258,16 @@ namespace pvpgn
 			}
 
 			if (handle_irc_common_con_command(conn, command, numparams, params, text) != -1) {}
-			else if (conn_get_state(conn) != conn_state_loggedin) {
-				char temp[MAX_IRC_MESSAGE_LEN + 1];
-
-				if ((38 + std::strlen(command) + 16 + 1) < sizeof(temp)) {
-					std::snprintf(temp, sizeof(temp), ":Unrecognized command \"%s\" (before login)", command);
-					irc_send(conn, ERR_UNKNOWNCOMMAND, temp);
-				}
-				else {
+			else if (conn_get_state(conn) != conn_state_loggedin)
+			{
+				std::string tmp(":Unrecognized command \"" + std::string(command) + "\" (before login)");
+				if (tmp.length() > MAX_IRC_MESSAGE_LEN)
+					irc_send(conn, ERR_UNKNOWNCOMMAND, tmp.c_str());
+				else
 					irc_send(conn, ERR_UNKNOWNCOMMAND, ":Unrecognized command (before login)");
-				}
 			}
-			else {
+			else
+			{
 				/* command is handled later */
 				unrecognized_before = 1;
 			}

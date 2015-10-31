@@ -5232,14 +5232,17 @@ namespace pvpgn
 						clan_remove_member(clan, member);
 						bn_byte_set(&rpacket->u.server_clan_invitereply.result, CLAN_RESPONSE_CLAN_FULL);
 					}
-					else {
-						char channelname[10];
+					else
+					{
 						clanmember_set_fullmember(member, 1);
-						std::snprintf(channelname, sizeof(channelname), "Clan %s", clantag_to_str(clan_get_clantag(clan)));
-						if (conn_get_channel(c)) {
+						if (conn_get_channel(c))
+						{
 							conn_update_w3_playerinfo(c);
 							channel_set_userflags(c);
-							if (conn_set_channel(c, channelname) < 0) {
+
+							std::string channelname("Clan " + std::string(clantag_to_str(clan_get_clantag(clan))));
+							if (conn_set_channel(c, channelname.c_str()) < 0)
+							{
 								conn_set_channel(c, CHANNEL_NAME_BANNED);	/* should not fail */
 							}
 							clanmember_set_online(c);
