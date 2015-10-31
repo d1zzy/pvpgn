@@ -23,6 +23,7 @@
 #define __PVPGN_FDWBACKEND_INCLUDED__
 
 #include <stdexcept>
+#include <string>
 
 namespace pvpgn
 {
@@ -33,7 +34,7 @@ namespace pvpgn
 		class InitError :public std::runtime_error
 		{
 		public:
-			explicit InitError(const std::string& str = "")
+			explicit InitError(const std::string& str)
 				:std::runtime_error(str) {}
 			~InitError() throw() {}
 		};
