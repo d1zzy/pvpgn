@@ -1234,7 +1234,7 @@ namespace pvpgn
 			 */
 
 			/* opponent level calculation has to be done here, because later on, the level of other players
-			 * may allready be modified
+			 * may already be modified
 			 */
 			for (i = 0; i < tp; i++) {
 				int j, k, l;

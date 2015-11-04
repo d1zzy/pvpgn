@@ -253,7 +253,7 @@ namespace pvpgn
 				return;
 			}
 
-			// check if where allready knows about ctag
+			// check if where already knows about ctag
 			AdCtagRefMap::iterator cit2(where.find(adKey));
 			// if not register ctag
 			if (cit2 == where.end())

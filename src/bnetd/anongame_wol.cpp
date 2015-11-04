@@ -289,37 +289,40 @@ namespace pvpgn
 
 		static int _send_msg(t_connection * conn, char const * command, char const * text)
 		{
-			t_packet * p;
-			char data[MAX_IRC_MESSAGE_LEN + 1];
-			char const * nick;
-
-			if (!conn) {
+			if (!conn)
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection");
 				return -1;
 			}
-			if (!command) {
+			if (!command)
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL command");
 				return -1;
 			}
-			if (!text) {
+			if (!text)
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL text");
 				return -1;
 			}
-			if (!(p = packet_create(packet_class_raw))) {
+
+			t_packet * p = packet_create(packet_class_raw);
+			if (!p)
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "could not create packet");
 				return -1;
 			}
 
-			nick = conn_get_loggeduser(conn);
+			const char *nick = conn_get_loggeduser(conn);
 			if (!nick)
 				nick = "UserName";
 
-			std::snprintf(data, sizeof(data), ":matchbot!u@h %s %s %s", command, nick, text);
+			std::string data(":matchbot!u@h " + std::string(command) + " " + std::string(nick) + " " + std::string(text));
+			data.erase(MAX_IRC_MESSAGE_LEN, std::string::npos);
 
-			DEBUG2("[%d] sent \"%s\"", conn_get_socket(conn), data);
-			std::strcat(data, "\r\n");
+			DEBUG2("[%d] sent \"%s\"", conn_get_socket(conn), data.c_str());
+			data.append("\r\n");
 			packet_set_size(p, 0);
-			packet_append_data(p, data, std::strlen(data));
+			packet_append_data(p, data.c_str(), data.length());
 			conn_push_outqueue(conn, p);
 			packet_del_ref(p);
 			return 0;
@@ -391,37 +394,37 @@ namespace pvpgn
 				if ((player1 != player2) && ((conn_get_channel(conn_pl1)) == (conn_get_channel(conn_pl2)))) {
 					switch (ctag) {
 					case CLIENTTAG_REDALERT2_UINT: {
-													   random = rand();
+						random = rand();
 
-													   if (std::strcmp(channelname, RAL2_CHANNEL_FFA) == 0) {
-														   int pl1_colour = anongame_wol_player_get_colour(player1);
-														   int pl1_country = anongame_wol_player_get_country(player1);
-														   int pl2_colour = anongame_wol_player_get_colour(player2);
-														   int pl2_country = anongame_wol_player_get_country(player2);
+						if (std::strcmp(channelname, RAL2_CHANNEL_FFA) == 0) {
+							int pl1_colour = anongame_wol_player_get_colour(player1);
+							int pl1_country = anongame_wol_player_get_country(player1);
+							int pl2_colour = anongame_wol_player_get_colour(player2);
+							int pl2_country = anongame_wol_player_get_country(player2);
 
-														   DEBUG0("Generating SOLO game for Red Alert 2");
+							DEBUG0("Generating SOLO game for Red Alert 2");
 
-														   _get_pair(&pl1_colour, &pl2_colour, 7, true);
-														   _get_pair(&pl1_country, &pl2_country, 8, false);
-														   mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
+							_get_pair(&pl1_colour, &pl2_colour, 7, true);
+							_get_pair(&pl1_country, &pl2_country, 8, false);
+							mapname = anongame_get_map_from_prefs(ANONGAME_TYPE_1V1, ctag);
 
-														   /* We have madatory of game */
-														   std::snprintf(_temp, sizeof(_temp), ":Start %d,0,0,10000,0,1,0,1,1,0,1,x,2,1,165368,%s,1:", random, mapname);
-														   std::strcat(temp, _temp);
+							/* We have madatory of game */
+							std::snprintf(_temp, sizeof(_temp), ":Start %d,0,0,10000,0,1,0,1,1,0,1,x,2,1,165368,%s,1:", random, mapname);
+							std::strcat(temp, _temp);
 
-														   /* GameHost informations */
-														   std::snprintf(_temp, sizeof(_temp), "%s,%d,%d,%x,1,%x,", conn_get_chatname(conn_pl1), pl1_country, pl1_colour, anongame_wol_player_get_address(player1), anongame_wol_player_get_port(player1));
-														   std::strcat(temp, _temp);
+							/* GameHost informations */
+							std::snprintf(_temp, sizeof(_temp), "%s,%d,%d,%x,1,%x,", conn_get_chatname(conn_pl1), pl1_country, pl1_colour, anongame_wol_player_get_address(player1), anongame_wol_player_get_port(player1));
+							std::strcat(temp, _temp);
 
-														   /* GameJoinie informations */
-														   std::snprintf(_temp, sizeof(_temp), "%s,%d,%d,%x,1,%x", conn_get_chatname(conn_pl2), pl2_country, pl2_colour, anongame_wol_player_get_address(player2), anongame_wol_player_get_port(player2));
-														   std::strcat(temp, _temp);
+							/* GameJoinie informations */
+							std::snprintf(_temp, sizeof(_temp), "%s,%d,%d,%x,1,%x", conn_get_chatname(conn_pl2), pl2_country, pl2_colour, anongame_wol_player_get_address(player2), anongame_wol_player_get_port(player2));
+							std::strcat(temp, _temp);
 
-														   _send_msg(conn_pl1, "PRIVMSG", temp);
-														   _send_msg(conn_pl2, "PRIVMSG", temp);
-													   }
-													   else
-														   ERROR1("undefined channel type for %s channel", channelname);
+							_send_msg(conn_pl1, "PRIVMSG", temp);
+							_send_msg(conn_pl2, "PRIVMSG", temp);
+						}
+						else
+							ERROR1("undefined channel type for %s channel", channelname);
 					}
 						return 0;
 					case CLIENTTAG_YURISREV_UINT: {

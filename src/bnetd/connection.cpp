@@ -181,7 +181,7 @@ namespace pvpgn
 
 			if (now == (std::time_t)0) /* zero means user logged out before expiration */
 			{
-				eventlog(eventlog_level_trace, __FUNCTION__, "[%d] connection allready closed", conn_get_socket(c));
+				eventlog(eventlog_level_trace, __FUNCTION__, "[%d] connection already closed", conn_get_socket(c));
 				return;
 			}
 
@@ -699,7 +699,7 @@ namespace pvpgn
 				lua_handle_user(c, NULL, NULL, luaevent_user_disconnect);
 #endif
 
-				if (account_get_conn(c->protocol.account) == c)  /* make sure you don't set this when allready on new conn (relogin with same account) */
+				if (account_get_conn(c->protocol.account) == c)  /* make sure you don't set this when already on new conn (relogin with same account) */
 					account_set_conn(c->protocol.account, NULL);
 				c->protocol.account = NULL; /* the account code will free the memory later */
 			}

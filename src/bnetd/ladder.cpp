@@ -32,6 +32,7 @@
 #include <map>
 #include <cmath>
 #include <algorithm>
+#include <vector>
 
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
@@ -65,10 +66,10 @@ namespace pvpgn
 		static t_xplevel_entry * xplevels;
 		int w3_xpcalc_maxleveldiff;
 
-		const char * ladder_id_str[] = { "0", "1", "", "3", "", "solo", "team", "ffa" };
-		const char * bin_ladder_id_str[] = { "", "", "", "I", "", "SOLO", "TEAM", "FFA", "AT" };
-		const char * bin_ladder_sort_str[] = { "R", "W", "G", "" };
-		const char * bin_ladder_time_str[] = { "A", "C", "" };
+		const std::vector<std::string> ladder_id_str = { "0", "1", "", "3", "", "solo", "team", "ffa" };
+		const std::vector<std::string> bin_ladder_id_str = { "", "", "", "I", "", "SOLO", "TEAM", "FFA", "AT" };
+		const std::vector<std::string> bin_ladder_sort_str = { "R", "W", "G", "" };
+		const std::vector<std::string> bin_ladder_time_str = { "A", "C", "" };
 
 		Ladders ladders;
 
@@ -955,9 +956,9 @@ namespace pvpgn
 		{
 			ladderFilename = clienttag_uint_to_str(ladderKey_.getClienttag());
 			ladderFilename += "_";
-			ladderFilename += bin_ladder_time_str[ladderKey_.getLadderTime()];
-			ladderFilename += bin_ladder_sort_str[ladderKey_.getLadderSort()];
-			ladderFilename += bin_ladder_id_str[ladderKey_.getLadderId()];
+			ladderFilename += bin_ladder_time_str.at(static_cast<size_t>(ladderKey_.getLadderTime()));
+			ladderFilename += bin_ladder_sort_str.at(static_cast<size_t>(ladderKey_.getLadderSort()));
+			ladderFilename += bin_ladder_id_str.at(static_cast<size_t>(ladderKey_.getLadderId()));
 			ladderFilename += "_LADDER";
 		}
 
