@@ -23,6 +23,7 @@
 #define __PVPGN_FDWBACKEND_INCLUDED__
 
 #include <stdexcept>
+#include <string>
 
 namespace pvpgn
 {
