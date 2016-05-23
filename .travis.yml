@@ -11,8 +11,8 @@ compiler: gcc
 before_install:
   - sudo apt-get update --fix-missing
   - sudo apt-get install build-essential zlib1g-dev libmysqlclient-dev liblua5.1-0-dev
-  - (cd /tmp && wget http://www.cmake.org/files/v3.3/cmake-3.3.2.tar.gz && tar zxf cmake-3.3.2.tar.gz)
-  - (cd /tmp/cmake-3.3.2 && cmake . && make && sudo make install) > /dev/null 2>&1
+  - (cd /tmp && wget --no-check-certificate https://cmake.org/files/v3.4/cmake-3.4.0.tar.gz && tar zxf cmake-3.4.0.tar.gz)
+  - (cd /tmp/cmake-3.4.0 && cmake . && make && sudo make install) > /dev/null 2>&1
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
   - sudo apt-get -qq install g++-5

@@ -16,6 +16,7 @@ include(CheckLibraryExists)
 include(CheckCXXCompilerFlag)
 include(CheckCXXSourceCompiles)
 include(CheckMkdirArgs)
+include(CheckIncludeFiles)
 
 # setup short variable path names
 set(BINDIR ${BIN_INSTALL_DIR})
@@ -113,9 +114,7 @@ message(STATUS "Checking optional POSIX/required SUS headers")
 check_include_file_cxx(sys/timeb.h HAVE_SYS_TIMEB_H)
 
 message(STATUS "Checking FreeBSD-based headers")
-if (HAVE_SYS_TYPES_H)
-check_include_file_cxx(sys/event.h HAVE_SYS_EVENT_H)
-endif()
+check_include_files("sys/types.h;sys/event.h" HAVE_SYS_EVENT_H)
 check_include_file_cxx(sys/param.h HAVE_SYS_PARAM_H)
 
 message(STATUS "Checking BSD headers")
