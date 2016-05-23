@@ -1677,7 +1677,7 @@ namespace pvpgn
 					eventlog(eventlog_level_info, __FUNCTION__, "[%d] login for \"%s\" refused (already logged in)", conn_get_socket(c), username);
 					if (supports_locked_reply) {
 						bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_LOCKED);
-						packet_append_string(rpacket, "This account is allready logged in.");
+						packet_append_string(rpacket, "This account is already logged in.");
 					}
 					else {
 						bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY2_MESSAGE_BADPASS);
@@ -2131,7 +2131,7 @@ namespace pvpgn
 					int i;
 					const char * client_password_proof;
 
-					/* PELISH: This can not occur - We allready tested packet size which must be wrong firstly.
+					/* PELISH: This can not occur - We already tested packet size which must be wrong firstly.
 					   Also pvpgn will crash when will dereferencing NULL pointer (so we cant got this errorlog message)
 					   I vote for deleting this "if" */
 					if (!(client_password_proof = (const char*)packet_get_data_const(packet, offsetof(t_client_logonproofreq, client_password_proof), 20))) {
@@ -2557,12 +2557,12 @@ namespace pvpgn
 
 
 				if (!(team = account_find_team_by_accounts(members[0], members, ctag))) {
-					team = create_team(members, ctag);	//no need to free on return -1 because it's allready in teamlist
+					team = create_team(members, ctag);	//no need to free on return -1 because it's already in teamlist
 
 					eventlog(eventlog_level_trace, __FUNCTION__, "this team has never played before, creating new team");
 				}
 				else {
-					eventlog(eventlog_level_trace, __FUNCTION__, "this team has allready played before");
+					eventlog(eventlog_level_trace, __FUNCTION__, "this team has already played before");
 				}
 
 				teamid = team_get_teamid(team);
@@ -3502,7 +3502,7 @@ namespace pvpgn
 			}
 
 			if ((channel = conn_get_channel(c)) && (strcasecmp(channel_get_name(channel), cname) == 0))
-				return 0;		//we are allready in this channel
+				return 0;		//we are already in this channel
 
 			std::string tmpstr;
 			clienttag = conn_get_clienttag(c);
@@ -5125,12 +5125,12 @@ namespace pvpgn
 						(conn_account = conn_get_account(conn)))) {
 						response_code = CLAN_RESPONSE_NOT_FOUND;
 
-						// target user allready in a clan or creating a clan
+						// target user already in a clan or creating a clan
 					}
 					else if (account_get_clanmember_forced(conn_get_account(conn))) {
 						response_code = CLAN_RESPONSE_NOT_FOUND;
 
-						// clan allready full
+						// clan allready ful
 					}
 					else if (clan_get_member_count(clan) >= prefs_get_clan_max_members()) {
 						response_code = CLAN_RESPONSE_CLAN_FULL;
@@ -5232,14 +5232,17 @@ namespace pvpgn
 						clan_remove_member(clan, member);
 						bn_byte_set(&rpacket->u.server_clan_invitereply.result, CLAN_RESPONSE_CLAN_FULL);
 					}
-					else {
-						char channelname[10];
+					else
+					{
 						clanmember_set_fullmember(member, 1);
-						std::snprintf(channelname, sizeof(channelname), "Clan %s", clantag_to_str(clan_get_clantag(clan)));
-						if (conn_get_channel(c)) {
+						if (conn_get_channel(c))
+						{
 							conn_update_w3_playerinfo(c);
 							channel_set_userflags(c);
-							if (conn_set_channel(c, channelname) < 0) {
+
+							std::string channelname("Clan " + std::string(clantag_to_str(clan_get_clantag(clan))));
+							if (conn_set_channel(c, channelname.c_str()) < 0)
+							{
 								conn_set_channel(c, CHANNEL_NAME_BANNED);	/* should not fail */
 							}
 							clanmember_set_online(c);

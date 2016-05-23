@@ -154,7 +154,7 @@ static void oom_free(void)
 
 FILE	*hexstrm = NULL;
 
-char serviceLongName[] = "PvPGN service";
+char serviceLongName[] = PVPGN_SOFTWARE " service";
 char serviceName[] = "pvpgn";
 char serviceDescription[] = "Player vs. Player Gaming Network - Server";
 

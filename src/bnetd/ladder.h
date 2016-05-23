@@ -44,7 +44,7 @@ namespace pvpgn
 			ladder_sort_default
 		} t_ladder_sort;
 
-		extern const char * bin_ladder_sort_str[];
+		extern const std::vector<std::string> bin_ladder_sort_str;
 
 		typedef enum
 		{
@@ -53,7 +53,7 @@ namespace pvpgn
 			ladder_time_default
 		} t_ladder_time;
 
-		extern const char * bin_ladder_time_str[];
+		extern const std::vector<std::string> bin_ladder_time_str;
 
 		typedef enum
 		{
@@ -66,8 +66,8 @@ namespace pvpgn
 			ladder_id_ateam = 8
 		} t_ladder_id;
 
-		const extern char * ladder_id_str[];
-		const extern char * bin_ladder_id_str[];
+		const extern std::vector<std::string> ladder_id_str;
+		const extern std::vector<std::string> bin_ladder_id_str;
 
 		typedef enum
 		{

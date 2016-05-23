@@ -1885,7 +1885,7 @@ namespace pvpgn
 
 			if (game->reported_results[i])
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "player \"%s\" allready reported results - skipping this report", account_get_name(account));
+				eventlog(eventlog_level_error, __FUNCTION__, "player \"%s\" already reported results - skipping this report", account_get_name(account));
 				return -1;
 			}
 

@@ -181,7 +181,7 @@ namespace pvpgn
 
 			if (now == (std::time_t)0) /* zero means user logged out before expiration */
 			{
-				eventlog(eventlog_level_trace, __FUNCTION__, "[%d] connection allready closed", conn_get_socket(c));
+				eventlog(eventlog_level_trace, __FUNCTION__, "[%d] connection already closed", conn_get_socket(c));
 				return;
 			}
 
@@ -699,7 +699,7 @@ namespace pvpgn
 				lua_handle_user(c, NULL, NULL, luaevent_user_disconnect);
 #endif
 
-				if (account_get_conn(c->protocol.account) == c)  /* make sure you don't set this when allready on new conn (relogin with same account) */
+				if (account_get_conn(c->protocol.account) == c)  /* make sure you don't set this when already on new conn (relogin with same account) */
 					account_set_conn(c->protocol.account, NULL);
 				c->protocol.account = NULL; /* the account code will free the memory later */
 			}
@@ -1535,18 +1535,18 @@ namespace pvpgn
 			else {
 				unsigned int userid = 0;
 				str_to_uint(&username[1], &userid);
-				if (userid != 0){
-					if (prefs_get_account_force_username()){
+				if (userid != 0)
+				{
+					if (prefs_get_account_force_username())
+					{
 						t_account* account = accountlist_find_account_by_uid(userid);
 						temp = xstrdup(account_get_name(account));
 					}
-					else{
-						char uid_string[MAX_USERNAME_LEN] = {};
-						std::snprintf(uid_string, sizeof(uid_string), "#%u", userid);
-						temp = xstrdup(uid_string);
-					}
+					else
+						temp = xstrdup(std::string("#" + userid).c_str());
 				}
-				else{  //theoretically this should never happen...
+				else
+				{  //theoretically this should never happen...
 					eventlog(eventlog_level_error, __FUNCTION__, "got invalid numeric uid \"%s\"", username);
 					// set value that would have been set prior to this bugfix...
 					temp = xstrdup(username);
@@ -1922,15 +1922,13 @@ namespace pvpgn
 				if ((!clan) || (clan_get_clantag(clan) != clantag)) {
 					if (!channel)
 					{
-						char msgtemp[MAX_MESSAGE_LEN];
-						std::snprintf(msgtemp, sizeof(msgtemp), "Unable to join channel %s, there is no member of that clan in the channel!", channelname);
-						message_send_text(c, message_type_error, c, msgtemp);
+						message_send_text(c, message_type_error, c, std::string("Unable to join channel " + std::string(channelname) + ", there is no member of that clan in the channel!").c_str());
 
-						if (conn_get_game(c) || c->protocol.chat.channel == NULL) {
+						if (conn_get_game(c) || c->protocol.chat.channel == NULL)
+						{
 							// FIXME: This is not tested to be according to battle.net!!
 							// This is fix for empty clan channels with preventing to join CHANNEL_NAME_BANNED when is used _handle_join_command
-							std::snprintf(msgtemp, sizeof(msgtemp), "You have been redirected to %s.", CHANNEL_NAME_BANNED);
-							message_send_text(c, message_type_error, c, msgtemp);
+							message_send_text(c, message_type_error, c, std::string("You have been redirected to " + std::string(CHANNEL_NAME_BANNED)).c_str());
 							channel = channellist_find_channel_by_name(CHANNEL_NAME_BANNED, conn_get_country(c), realm_get_name(conn_get_realm(c)));
 						}
 						else

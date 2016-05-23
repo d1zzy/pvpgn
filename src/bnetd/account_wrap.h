@@ -216,7 +216,7 @@ namespace pvpgn
 		extern int account_remove_friend(t_account * account, int friendnum);
 		extern int account_remove_friend2(t_account * account, const char * friendname);
 
-		extern char const * race_get_str(unsigned int race);
+		extern std::string race_get_str(unsigned int race);
 		extern int account_set_admin(t_account * account);
 		extern int account_set_demoteadmin(t_account * account);
 

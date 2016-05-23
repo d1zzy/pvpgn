@@ -1105,7 +1105,7 @@ namespace pvpgn
 				return 0;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\wins");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\wins");
 
 			return account_get_numattr(account, key.c_str());
 		}
@@ -1119,7 +1119,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\wins");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\wins");
 
 			return account_set_numattr(account, key.c_str(), account_get_ladder_wins(account, clienttag, id) + 1);
 		}
@@ -1133,7 +1133,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\wins");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\wins");
 
 			return account_set_numattr(account, key.c_str(), wins);
 		}
@@ -1147,7 +1147,7 @@ namespace pvpgn
 				return 0;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\losses");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\losses");
 
 			return account_get_numattr(account, key.c_str());
 		}
@@ -1161,7 +1161,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\losses");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\losses");
 
 			return account_set_numattr(account, key.c_str(), account_get_ladder_losses(account, clienttag, id) + 1);
 		}
@@ -1175,7 +1175,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\losses");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\losses");
 
 			return account_set_numattr(account, key.c_str(), losses);
 		}
@@ -1189,7 +1189,7 @@ namespace pvpgn
 				return 0;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\draws");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\draws");
 
 			return account_get_numattr(account, key.c_str());
 		}
@@ -1203,7 +1203,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\draws");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\draws");
 
 			return account_set_numattr(account, key.c_str(), account_get_ladder_draws(account, clienttag, id) + 1);
 		}
@@ -1217,7 +1217,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\draws");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\draws");
 
 			return account_set_numattr(account, key.c_str(), draws);
 		}
@@ -1231,7 +1231,7 @@ namespace pvpgn
 				return 0;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\disconnects");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\disconnects");
 
 			return account_get_numattr(account, key.c_str());
 		}
@@ -1245,7 +1245,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\disconnects");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\disconnects");
 
 			return account_set_numattr(account, key.c_str(), account_get_ladder_disconnects(account, clienttag, id) + 1);
 		}
@@ -1259,7 +1259,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\disconnects");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\disconnects");
 
 			return account_set_numattr(account, key.c_str(), discs);
 		}
@@ -1336,7 +1336,7 @@ namespace pvpgn
 				return 0;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\rank");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\rank");
 
 			return account_get_numattr(account, key.c_str());
 		}
@@ -1350,7 +1350,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\rank");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\rank");
 
 			int retval = 0;
 			if (account_set_numattr(account, key.c_str(), rank) < 0)
@@ -1359,7 +1359,7 @@ namespace pvpgn
 			unsigned int oldrank = account_get_ladder_high_rank(account, clienttag, id);
 			if (oldrank == 0 || rank < oldrank)
 			{
-				key = "Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\high rank";
+				key = "Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\high rank";
 
 				if (account_set_numattr(account, key.c_str(), rank) < 0)
 					retval = -1;
@@ -2026,9 +2026,10 @@ namespace pvpgn
 
 		// WAR3 Play Game & Profile Funcs
 
-		extern char const * race_get_str(unsigned int race)
+		extern std::string race_get_str(unsigned int race)
 		{
-			switch (race) {
+			switch (race)
+			{
 			case W3_RACE_ORCS:
 				return "orcs";
 			case W3_RACE_HUMANS:
@@ -2046,17 +2047,17 @@ namespace pvpgn
 				return "demons";
 			default:
 				eventlog(eventlog_level_warn, __FUNCTION__, "unknown race: %x", race);
-				return nullptr;
+				return std::string();
 			}
 		}
 
 		extern int account_inc_racewins(t_account * account, unsigned int intrace, t_clienttag clienttag)
 		{
-			char const * race = race_get_str(intrace);
-			if (race == nullptr)
+			std::string race = race_get_str(intrace);
+			if (race.empty())
 				return -1;
 
-			std::string table("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(race) + "\\wins");
+			std::string table("Record\\" + tag_uint_to_str2(clienttag) + "\\" + race + "\\wins");
 			unsigned int wins = account_get_numattr(account, table.c_str()); wins++;
 
 			return account_set_numattr(account, table.c_str(), wins);
@@ -2064,22 +2065,22 @@ namespace pvpgn
 
 		extern int account_get_racewins(t_account * account, unsigned int intrace, t_clienttag clienttag)
 		{
-			char const *race = race_get_str(intrace);
-			if (race == nullptr)
+			std::string race = race_get_str(intrace);
+			if (race.empty())
 				return 0;
 
-			std::string table("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(race) + "\\wins");
+			std::string table("Record\\" + tag_uint_to_str2(clienttag) + "\\" + race + "\\wins");
 
 			return account_get_numattr(account, table.c_str());
 		}
 
 		extern int account_inc_racelosses(t_account * account, unsigned int intrace, t_clienttag clienttag)
 		{
-			char const *race = race_get_str(intrace);
-			if (race == nullptr)
+			std::string race = race_get_str(intrace);
+			if (race.empty())
 				return -1;
 
-			std::string table("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(race) + "\\losses");
+			std::string table("Record\\" + tag_uint_to_str2(clienttag) + "\\" + race + "\\losses");
 
 			unsigned int losses = account_get_numattr(account, table.c_str()); losses++;
 
@@ -2089,11 +2090,11 @@ namespace pvpgn
 
 		extern int account_get_racelosses(t_account * account, unsigned int intrace, t_clienttag clienttag)
 		{
-			char const *race = race_get_str(intrace);
-			if (race == nullptr)
+			std::string race = race_get_str(intrace);
+			if (race.empty())
 				return 0;
 
-			std::string table("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(race) + "\\losses");
+			std::string table("Record\\" + tag_uint_to_str2(clienttag) + "\\" + race + "\\losses");
 
 			return account_get_numattr(account, table.c_str());
 
@@ -2142,28 +2143,28 @@ namespace pvpgn
 
 		extern int account_get_ladder_xp(t_account * account, t_clienttag clienttag, t_ladder_id id)
 		{
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\xp");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\xp");
 
 			return account_get_numattr(account, key.c_str());
 		}
 
 		extern int account_set_ladder_xp(t_account * account, t_clienttag clienttag, t_ladder_id id, unsigned int xp)
 		{
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\xp");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\xp");
 
 			return account_set_numattr(account, key.c_str(), xp);
 		}
 
 		extern int account_get_ladder_level(t_account * account, t_clienttag clienttag, t_ladder_id id)
 		{
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\level");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\level");
 
 			return account_get_numattr(account, key.c_str());
 		}
 
 		extern int account_set_ladder_level(t_account * account, t_clienttag clienttag, t_ladder_id id, unsigned int level)
 		{
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\level");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\level");
 
 			return account_set_numattr(account, key.c_str(), level);
 		}
@@ -2737,14 +2738,14 @@ namespace pvpgn
 
 		extern int account_get_ladder_points(t_account * account, t_clienttag clienttag, t_ladder_id id)
 		{
-			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\points");
+			std::string key("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\points");
 
 			return account_get_numattr(account, key.c_str());
 		}
 
 		extern int account_set_ladder_points(t_account * account, t_clienttag clienttag, t_ladder_id id, unsigned int points)
 		{
-			std::string key ("Record\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ladder_id_str[static_cast<int>(id)]) + "\\points");
+			std::string key ("Record\\" + tag_uint_to_str2(clienttag) + "\\" + ladder_id_str.at(static_cast<size_t>(id)) + "\\points");
 			return account_set_numattr(account, key.c_str(), points);
 		}
 

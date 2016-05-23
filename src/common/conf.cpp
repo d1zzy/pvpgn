@@ -21,6 +21,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <string>
 
 #include "common/eventlog.h"
 #include "common/xalloc.h"
@@ -88,9 +89,7 @@ namespace pvpgn
 
 	extern const char* conf_get_int(unsigned ival)
 	{
-		static char tmpbuf[128];
-		std::snprintf(tmpbuf, sizeof(tmpbuf), "%u", ival);
-		return tmpbuf;
+		return std::to_string(ival).c_str();
 	}
 
 	extern const char* conf_get_bool(unsigned ival)
