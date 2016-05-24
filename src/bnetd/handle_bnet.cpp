@@ -3207,31 +3207,26 @@ namespace pvpgn
 
 		static int _client_adreq(t_connection * c, t_packet const *const packet)
 		{
-			t_packet *rpacket;
-
-			if (packet_get_size(packet) < sizeof(t_client_adreq)) {
+			if (packet_get_size(packet) < sizeof(t_client_adreq))
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad ADREQ packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_adreq), packet_get_size(packet));
 				return -1;
 			}
 
-			{
-				const AdBanner *ad = adbannerlist->pick(conn_get_clienttag(c), conn_get_gamelang(c), bn_int_get(packet->u.client_adreq.prev_adid));
-				if (!ad)
-					return 0;
+			AdBanner ad = AdBanner::pick(conn_get_clienttag(c), conn_get_gamelang(c), bn_int_get(packet->u.client_adreq.prev_adid));
+			if (ad.empty())
+				return 0;
 
-				/*                  eventlog(eventlog_level_debug,__FUNCTION__,"[%d] picking ad file=\"%s\" id=0x%06x tag=%u",conn_get_socket(c),adbanner_get_filename(ad),adbanner_get_id(ad),adbanner_get_extensiontag(ad)); */
-				if ((rpacket = packet_create(packet_class_bnet))) {
-					packet_set_size(rpacket, sizeof(t_server_adreply));
-					packet_set_type(rpacket, SERVER_ADREPLY);
-					bn_int_set(&rpacket->u.server_adreply.adid, ad->getId());
-					bn_int_set(&rpacket->u.server_adreply.extensiontag, ad->getExtensionTag());
-					file_to_mod_time(c, ad->getFilename(), &rpacket->u.server_adreply.timestamp);
-					packet_append_string(rpacket, ad->getFilename());
-					packet_append_string(rpacket, ad->getLink());
-					conn_push_outqueue(c, rpacket);
-					packet_del_ref(rpacket);
-				}
-			}
+			t_packet *rpacket = packet_create(packet_class_bnet);
+			packet_set_size(rpacket, sizeof(t_server_adreply));
+			packet_set_type(rpacket, SERVER_ADREPLY);
+			bn_int_set(&rpacket->u.server_adreply.adid, ad.get_id());
+			bn_int_set(&rpacket->u.server_adreply.extensiontag, ad.get_extension_tag());
+			file_to_mod_time(c, ad.get_filename().c_str(), &rpacket->u.server_adreply.timestamp);
+			packet_append_string(rpacket, ad.get_filename().c_str());
+			packet_append_string(rpacket, ad.get_url().c_str());
+			conn_push_outqueue(c, rpacket);
+			packet_del_ref(rpacket);
 
 			return 0;
 		}
@@ -3268,29 +3263,26 @@ namespace pvpgn
 
 		static int _client_adclick2(t_connection * c, t_packet const *const packet)
 		{
-			t_packet *rpacket;
-
-			if (packet_get_size(packet) < sizeof(t_client_adclick2)) {
+			if (packet_get_size(packet) < sizeof(t_client_adclick2))
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad ADCLICK2 packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_adclick2), packet_get_size(packet));
 				return -1;
 			}
 
-			eventlog(eventlog_level_info, __FUNCTION__, "[%d] ad click2 for adid 0x%04hx from \"%s\"", conn_get_socket(c), bn_int_get(packet->u.client_adclick2.adid), conn_get_username(c));
+			eventlog(eventlog_level_trace, __FUNCTION__, "[%d] ad click2 for adid 0x%04hx from \"%s\"", conn_get_socket(c), bn_int_get(packet->u.client_adclick2.adid), conn_get_username(c));
 
-			{
-				const AdBanner *ad = adbannerlist->find(conn_get_clienttag(c), conn_get_gamelang(c), bn_int_get(packet->u.client_adclick2.adid));
-				if (!ad)
-					return -1;
 
-				if ((rpacket = packet_create(packet_class_bnet))) {
-					packet_set_size(rpacket, sizeof(t_server_adclickreply2));
-					packet_set_type(rpacket, SERVER_ADCLICKREPLY2);
-					bn_int_set(&rpacket->u.server_adclickreply2.adid, ad->getId());
-					packet_append_string(rpacket, ad->getLink());
-					conn_push_outqueue(c, rpacket);
-					packet_del_ref(rpacket);
-				}
-			}
+			AdBanner ad = AdBanner::find(conn_get_clienttag(c), conn_get_gamelang(c), bn_int_get(packet->u.client_adclick2.adid));
+			if (ad.empty())
+				return 0;
+
+			t_packet *rpacket = packet_create(packet_class_bnet);
+			packet_set_size(rpacket, sizeof(t_server_adclickreply2));
+			packet_set_type(rpacket, SERVER_ADCLICKREPLY2);
+			bn_int_set(&rpacket->u.server_adclickreply2.adid, ad.get_id());
+			packet_append_string(rpacket, ad.get_url().c_str());
+			conn_push_outqueue(c, rpacket);
+			packet_del_ref(rpacket);
 
 			return 0;
 		}

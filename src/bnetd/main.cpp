@@ -21,6 +21,7 @@
 
 #include <exception>
 #include <iostream>
+#include <stdexcept>
 
 #include <cerrno>
 #include <cstring>
@@ -366,7 +367,16 @@ int pre_server_startup(void)
 	ipbanlist_create();
 	if (ipbanlist_load(prefs_get_ipbanfile()) < 0)
 		eventlog(eventlog_level_error, __FUNCTION__, "could not load IP ban list");
-	adbannerlist.reset(new AdBannerComponent(prefs_get_adfile()));
+
+	try
+	{
+		AdBanner().load(prefs_get_adfile());
+	}
+	catch (const std::runtime_error& e)
+	{
+		eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+	}
+
 	if (autoupdate_load(prefs_get_mpqfile()) < 0)
 		eventlog(eventlog_level_error, __FUNCTION__, "could not load autoupdate list");
 	if (versioncheck_load(prefs_get_versioncheck_file()) < 0)
@@ -441,7 +451,6 @@ void post_server_shutdown(int status)
 		news_unload();
 		versioncheck_unload();
 		autoupdate_unload();
-		adbannerlist.reset();
 		ipbanlist_save(prefs_get_ipbanfile());
 		ipbanlist_destroy();
 		helpfile_unload();
