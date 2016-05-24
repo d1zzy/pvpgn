@@ -65,7 +65,7 @@ namespace pvpgn
 			m_lang(lang)
 		{
 			char language[5] = {};
-			eventlog(eventlog_level_debug, __FUNCTION__, "Created ad id=0x%08x filename=\"%s\" link=\"%s\" client=\"%s\" lang=\"%s\"", id, filename.c_str(), url.c_str(), clienttag ? clienttag_uint_to_str(clienttag) : "NULL", lang ? tag_uint_to_str(language, lang) : "NULL");
+			eventlog(eventlog_level_debug, __FUNCTION__, "Created ad id=0x%08zu filename=\"%s\" link=\"%s\" client=\"%s\" lang=\"%s\"", id, filename.c_str(), url.c_str(), clienttag ? clienttag_uint_to_str(clienttag) : "NULL", lang ? tag_uint_to_str(language, lang) : "NULL");
 		}
 
 		void AdBanner::load(const std::string& filename)
