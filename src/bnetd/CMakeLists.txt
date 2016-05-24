@@ -38,6 +38,7 @@ set(BNETD_SOURCES
 	luaobjects.cpp luaobjects.h luawrapper.cpp luawrapper.h
 	i18n.cpp i18n.h userlog.cpp userlog.h
 	../win32/winmain.cpp ../win32/winmain.h
+	../json/json.hpp
 	)
 	
 set(BNETD_CONSOLE_RESOURCES

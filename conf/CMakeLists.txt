@@ -1,5 +1,5 @@
 # generate the configs with proper line endings
-set(OUTPUT_CONFS ad.conf anongame_infos.conf address_translation.conf 
+set(OUTPUT_CONFS ad.json anongame_infos.conf address_translation.conf 
   autoupdate.conf bnalias.conf bnban.conf bnetd_default_user.plain 
   bnissue.txt bnmaps.conf bnxpcalc.conf
   bnxplevel.conf channel.conf command_groups.conf realm.conf 
@@ -15,7 +15,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/d2cs.conf.in ${CMAKE_CURRENT_BINARY_D
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/d2dbs.conf.in ${CMAKE_CURRENT_BINARY_DIR}/d2dbs.conf)
 
 if(WITH_BNETD)
-  set(BNETD_CONFS bnetd.conf ad.conf anongame_infos.conf address_translation.conf 
+  set(BNETD_CONFS bnetd.conf ad.json anongame_infos.conf address_translation.conf 
   autoupdate.conf bnalias.conf bnban.conf 
   bnetd_default_user.plain bnissue.txt bnmaps.conf  
   bnxpcalc.conf bnxplevel.conf channel.conf command_groups.conf  

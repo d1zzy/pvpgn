@@ -1438,7 +1438,14 @@ namespace pvpgn
 
 					if (do_restart == restart_mode_all || do_restart == restart_mode_banners)
 					{
-						adbannerlist.reset(new AdBannerComponent(prefs_get_adfile()));
+						try
+						{
+							AdBanner().load(prefs_get_adfile());
+						}
+						catch (const std::runtime_error& e)
+						{
+							eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+						}
 					}
 
 					if (do_restart == restart_mode_all || do_restart == restart_mode_tracker)

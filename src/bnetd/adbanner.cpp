@@ -20,383 +20,209 @@
 #include "common/setup_before.h"
 #include "adbanner.h"
 
-#include <stdexcept>
-#include <fstream>
-#include <sstream>
+#include <algorithm>
 #include <cstring>
+#include <fstream>
+#include <random>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
+#include "json/json.hpp"
+
+#include "common/bn_type.h"
 #include "compat/strcasecmp.h"
 #include "common/eventlog.h"
-#include "common/systemerror.h"
 #include "connection.h"
 #include "common/setup_after.h"
+
+
+using json = nlohmann::json;
 
 
 namespace pvpgn
 {
 	namespace bnetd
 	{
-		scoped_ptr<AdBannerComponent> adbannerlist;
+		std::vector<AdBanner> AdBanner::m_banners;
 
-		AdBanner::AdBanner(unsigned id_, bn_int extag, unsigned delay_, unsigned next_, const std::string& fname, const std::string& link_, t_clienttag client_, t_gamelang lang_)
-			:id(id_), extensiontag(bn_int_get(extag)), delay(delay_), next(next_), filename(fname), link(link_), client(client_), lang(lang_)
-		{
-			/* I'm aware that this statement looks stupid */
-			if (client && (!tag_check_client(client)))
-				throw std::runtime_error("banner with invalid clienttag \"" + std::string(clienttag_uint_to_str(client)) + "\"encountered");
-
-			char language[5];
-			eventlog(eventlog_level_debug, __FUNCTION__, "created ad id=0x%08x filename=\"%s\" extensiontag=0x%04x delay=%u link=\"%s\" next_id=0x%08x client=\"%s\" lang=\"%s\"", id, filename.c_str(), extensiontag, delay, link.c_str(), next, client ? clienttag_uint_to_str(client) : "NULL", lang ? tag_uint_to_str(language, lang) : "NULL");
-		}
-
-
-		AdBanner::~AdBanner() throw()
+		AdBanner::AdBanner()
+			: m_id(0),
+			m_extensiontag(0),
+			m_filename(),
+			m_url(),
+			m_client(0),
+			m_lang(0)
 		{
 		}
 
-		const AdBanner* AdBannerComponent::find(t_clienttag ctag, t_gamelang lang, unsigned id) const
+		AdBanner::AdBanner(std::size_t id, bn_int extensiontag, const std::string& filename, const std::string& url, t_clienttag clienttag, t_gamelang lang)
+			: m_id(id),
+			m_extensiontag(bn_int_get(extensiontag)),
+			m_filename(filename),
+			m_url(url),
+			m_client(clienttag),
+			m_lang(lang)
 		{
-			return find(std::make_pair(ctag, lang), id);
+			char language[5] = {};
+			eventlog(eventlog_level_debug, __FUNCTION__, "Created ad id=0x%08zu filename=\"%s\" link=\"%s\" client=\"%s\" lang=\"%s\"", id, filename.c_str(), url.c_str(), clienttag ? clienttag_uint_to_str(clienttag) : "NULL", lang ? tag_uint_to_str(language, lang) : "NULL");
 		}
 
-		const AdBanner* AdBannerComponent::find(AdKey adKey, unsigned id) const
+		void AdBanner::load(const std::string& filename)
 		{
-			const AdBanner* result;
-			if ((result = finder(adKey, id)))
-				return result;
-			else if ((result = finder(std::make_pair(adKey.first, 0), id)))
-				return result;
-			else if ((result = finder(std::make_pair(0, adKey.second), id)))
-				return result;
-			else
-				return finder(std::make_pair(0, 0), id);
-		}
+			m_banners.clear();
 
-		const AdBanner* AdBannerComponent::finder(AdKey adKey, unsigned id) const
-		{
-			AdCtagMap::const_iterator cit(adlist.find(adKey));
-			if (cit == adlist.end()) return 0;
+			std::ifstream file_stream(filename, std::ios::in);
+			if (!file_stream.is_open())
+				throw std::runtime_error("Could not open " + filename);
 
-			AdIdMap::const_iterator iit(cit->second.find(id));
-			if (iit == cit->second.end()) return 0;
-
-			return &(iit->second);
-		}
-
-		const AdBanner* AdBannerComponent::pick(t_clienttag ctag, t_gamelang lang, unsigned prev_id) const
-		{
-			return pick(std::make_pair(ctag, lang), prev_id);
-		}
-
-		const AdBanner* AdBannerComponent::pick(AdKey adKey, unsigned  prev_id) const
-		{ 
-			/* eventlog(eventlog_level_debug,__FUNCTION__,"prev_id=%u init_count=%u start_count=%u norm_count=%u",prev_id,adbannerlist_init_count,adbannerlist_start_count,adbannerlist_norm_count); */
-			/* if this is the first ad, randomly choose an init sequence (if there is one) */
-			if (prev_id == 0 && !adlist_init.empty())
-				return findRandom(adlist_init, adKey);
-			//        return list_get_data_by_pos(adbannerlist_init_head,((unsigned int)std::rand())%adbannerlist_init_count);
-			/* eventlog(eventlog_level_debug,__FUNCTION__,"not sending init banner"); */
-
-			unsigned next_id = 0;
-			const AdBanner* prev(find(adKey, prev_id));
-			if (prev) next_id = prev->getNextId();
-
-			/* return its next ad if there is one */
-			if (next_id)
+			json j;
+			try
 			{
-				const AdBanner* curr(find(adKey, next_id));
-				if (curr) return curr;
-				ERROR1("could not locate next requested ad with id 0x%06x", next_id);
+				j << file_stream;
 			}
-			/* eventlog(eventlog_level_debug,__FUNCTION__,"not sending next banner"); */
-
-			/* otherwise choose another starting point randomly */
-			if (!adlist_start.empty())
-				return findRandom(adlist_start, adKey);
-
-			/* eventlog(eventlog_level_debug,__FUNCTION__,"not sending start banner... nothing to return"); */
-			return NULL; /* nothing else to return */
-		}
-
-		unsigned AdBanner::getId() const
-		{
-			return id;
-		}
-
-		unsigned AdBanner::getNextId() const
-		{
-			return next;
-		}
-
-		unsigned AdBanner::getExtensionTag() const
-		{
-			return extensiontag;
-		}
-
-
-		char const * AdBanner::getFilename() const
-		{
-			return filename.c_str();
-		}
-
-
-		char const * AdBanner::getLink() const
-		{
-			return link.c_str();
-		}
-
-
-		t_clienttag AdBanner::getClient() const
-		{
-			return client;
-		}
-
-		const AdBanner* AdBannerComponent::findRandom(const AdCtagRefMap& where, AdKey adKey) const
-		{
-			const AdBanner* result;
-			// first try language and client specific ad
-			if ((result = randomFinder(where, adKey)))
-				return result;
-			// then try discarding language
-			else if ((result = randomFinder(where, std::make_pair(adKey.first, 0))))
-				return result;
-			// now discard client
-			else if ((result = randomFinder(where, std::make_pair(0, adKey.second))))
-				return result;
-			// and finally look for a totally unspecific ad
-			else
-				return randomFinder(where, std::make_pair(0, 0));
-
-		}
-
-		const AdBanner* AdBannerComponent::randomFinder(const AdCtagRefMap& where, AdKey adKey) const
-		{
-			/* first try to lookup a random banner into the specific client tag map */
-			AdCtagRefMap::const_iterator cit(where.find(adKey));
-			if (cit == where.end() || cit->second.size() == 0)
-				return 0;
-
-			unsigned pos = (static_cast<unsigned>(std::rand())) % cit->second.size();
-			/* TODO: optimize this linear search ? */
-			for (AdIdRefMap::const_iterator it(cit->second.begin()); it != cit->second.end(); ++it)
+			catch (const std::invalid_argument& e)
 			{
-				if (!pos) return &(it->second->second);
-				--pos;
+				throw std::runtime_error("Invalid JSON file: " + std::string(e.what()));
 			}
 
-			return 0;
-		}
-
-
-		void AdBannerComponent::insert(AdCtagRefMap& where, const std::string& fname, unsigned id, unsigned delay, const std::string& link, unsigned next_id, const std::string& client, const std::string& lang)
-		{
-			std::string::size_type idx(fname.rfind('.'));
-			if (idx == std::string::npos || idx + 4 != fname.size())
+			for (const auto& ad : j["ads"])
 			{
-				ERROR1("Invalid extension for '%s'", fname.c_str());
-				return;
-			}
-
-			std::string ext(fname.substr(idx + 1));
-
-			bn_int bntag;
-			if (strcasecmp(ext.c_str(), "pcx") == 0)
-				bn_int_tag_set(&bntag, EXTENSIONTAG_PCX);
-			else if (strcasecmp(ext.c_str(), "mng") == 0)
-				bn_int_tag_set(&bntag, EXTENSIONTAG_MNG);
-			else if (strcasecmp(ext.c_str(), "png") == 0)
-				bn_int_tag_set(&bntag, EXTENSIONTAG_MNG);
-			else if (strcasecmp(ext.c_str(), "smk") == 0)
-				bn_int_tag_set(&bntag, EXTENSIONTAG_SMK);
-			else {
-				ERROR1("unknown extension on filename \"%s\"", fname.c_str());
-				return;
-			}
-
-			t_clienttag ctag;
-			if (!strcasecmp(client.c_str(), "NULL"))
-				ctag = 0;
-			else
-				ctag = clienttag_str_to_uint(client.c_str());
-
-			t_gamelang ltag;
-			if (!strcasecmp(lang.c_str(), "any"))
-				ltag = 0;
-			else
-			{
-				ltag = tag_str_to_uint(lang.c_str());
-				if (!tag_check_gamelang(ltag))
+				try
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got unknown language tag \"%s\"", lang.c_str());
-					return;
+					if (ad["filename"].get<std::string>().find('/') != std::string::npos
+						|| ad["filename"].get<std::string>().find('\\') != std::string::npos)
+						throw std::runtime_error("Paths are not supported (" + ad["filename"].get<std::string>() + ")");
+
+					std::size_t ext = ad["filename"].get<std::string>().find('.');
+					if (ext == std::string::npos)
+						throw std::runtime_error("Filename must contain an extension");
+
+					std::string file_extension(ad["filename"].get<std::string>().substr(ext + 1));
+					bn_int extensiontag = {};
+					if (strcasecmp(file_extension.c_str(), "pcx") == 0)
+						bn_int_tag_set(&extensiontag, EXTENSIONTAG_PCX);
+					else if (strcasecmp(file_extension.c_str(), "mng") == 0)
+						bn_int_tag_set(&extensiontag, EXTENSIONTAG_MNG);
+					else if (strcasecmp(file_extension.c_str(), "png") == 0)
+						bn_int_tag_set(&extensiontag, EXTENSIONTAG_MNG);
+					else if (strcasecmp(file_extension.c_str(), "smk") == 0)
+						bn_int_tag_set(&extensiontag, EXTENSIONTAG_SMK);
+					else
+						throw std::runtime_error("Unknown file extension (" + file_extension + ")");
+
+					t_clienttag ctag = 0;
+					if (strcasecmp(ad["client"].get<std::string>().c_str(), "NULL") != 0)
+					{
+						ctag = clienttag_str_to_uint(ad["client"].get<std::string>().c_str());
+
+						if (std::strcmp(clienttag_uint_to_str(ctag), "UNKN") == 0)
+							throw std::runtime_error("Unknown client tag (" + ad["client"].get<std::string>() + ")");
+					}
+
+					t_gamelang ltag = 0;
+					if (strcasecmp(ad["lang"].get<std::string>().c_str(), "any") != 0)
+					{
+						ltag = tag_str_to_uint(ad["lang"].get<std::string>().c_str());
+
+						if (!tag_check_gamelang(ltag))
+							throw std::runtime_error("Unknown language (" + ad["lang"].get<std::string>() + ")");
+					}
+
+					m_banners.push_back(AdBanner(m_banners.size(), extensiontag, ad["filename"].get<std::string>(),
+						ad["url"].get<std::string>(), ctag, ltag));
 				}
-			}
-
-			AdKey adKey = std::make_pair(ctag, ltag);
-
-			// check if the ctag is known so far
-			AdCtagMap::iterator cit(adlist.find(adKey));
-			// if not register the ctag then insert new
-			if (cit == adlist.end())
-			{
-				std::pair<AdCtagMap::iterator, bool> res(adlist.insert(std::make_pair(adKey, AdIdMap())));
-				if (!res.second)
-					throw std::runtime_error("Could not insert unexistent element into map?!");
-				cit = res.first;
-			}
-
-			// insert the adbanner into the ctag specific AdIdMap
-			std::pair<AdIdMap::iterator, bool> res(cit->second.insert(std::make_pair(id, AdBanner(id, bntag, delay, next_id, fname, link, ctag, ltag))));
-			if (!res.second)
-			{
-				ERROR0("Couldnt insert new ad banner, duplicate banner IDs ?!");
-				return;
-			}
-
-			// check if where already knows about ctag
-			AdCtagRefMap::iterator cit2(where.find(adKey));
-			// if not register ctag
-			if (cit2 == where.end())
-			{
-				std::pair<AdCtagRefMap::iterator, bool> res2(where.insert(std::make_pair(adKey, AdIdRefMap())));
-				if (!res2.second)
+				catch (const std::runtime_error& e)
 				{
-					cit->second.erase(res.first);
-					throw std::runtime_error("Could not insert unexistent element into map?!");
-				}
-				cit2 = res2.first;
-			}
-
-			// insert reference to adbanner into the ctag specific AdIdRefMap
-			if (!cit2->second.insert(std::make_pair(id, res.first)).second)
-			{
-				cit->second.erase(res.first);
-				throw std::runtime_error("Could not insert unexistent element into map?!");
-			}
-		}
-
-		AdBannerComponent::AdBannerComponent(const std::string& fname)
-			:adlist(), adlist_init(), adlist_start(), adlist_norm()
-		{
-			std::ifstream fp(fname.c_str());
-			if (!fp)
-			{
-				ERROR2("could not open adbanner file \"%s\" for reading (std::fopen: %s)", fname.c_str(), std::strerror(errno));
-				throw SystemError("open");
-			}
-
-			// FIXME: (HarpyWar) this value is unused, because game clients retrieve ads in interval of ~20 seconds;
-			//                   I think this is normal delay
-			unsigned delay = 30; 
-
-			std::vector<std::map<std::string, std::string> > tmplist;
-
-			std::string name, link, client, lang;
-			std::string buff;
-			// 1) Read ad.conf file
-			for (unsigned line = 1; std::getline(fp, buff); ++line)
-			{
-				std::string::size_type idx(buff.find('#'));
-				if (idx != std::string::npos) buff.erase(idx);
-
-				idx = buff.find_first_not_of(" \t");
-				if (idx == std::string::npos) continue;
-
-				std::istringstream is(buff);
-
-				is >> name;
-				is >> link;
-				is >> client;
-				is >> lang;
-
-				if (!is || name.size() < 2 || link.size() < 2 || client.size() < 2 || lang.size() < 2)
-				{
-					ERROR2("malformed line %u in file \"%s\"", line, fname.c_str());
+					eventlog(eventlog_level_error, __FUNCTION__, "Could not load ad: %s", e.what());
 					continue;
 				}
-
-				name.erase(0, 1);
-				name.erase(name.size() - 1);
-				link.erase(0, 1);
-				link.erase(link.size() - 1);
-				client.erase(0, 1);
-				client.erase(client.size() - 1);
-				lang.erase(0, 1);
-				lang.erase(lang.size() - 1);
-
-				std::map<std::string, std::string> item;
-				item["name"] = name;
-				item["link"] = link;
-				item["client"] = client;
-				item["lang"] = lang;
-				tmplist.push_back(item);
-			}
-
-			unsigned id = 0;
-			int init_count = 0;
-
-			bool first = true;
-			std::map<std::string, int> tmpdata;
-			unsigned next_id;
-
-			// insert ads
-			for (std::vector<std::map<std::string, std::string> >::iterator it = tmplist.begin(); it != tmplist.end(); ++it)
-			{
-				id++;
-				tmpdata = get_rowdata(id, (*it)["client"], tmplist, init_count);
-				next_id = tmpdata["next_id"];
-
-				if ((*it)["client"] == CLIENTTAG_WAR3XP || (*it)["client"] == CLIENTTAG_WARCRAFT3)
-				{
-					// warcraft 3 doesn't return previous ad id in SID_CHECKAD, and we must process all ADs as "init"
-					// so they will be shown randomly
-					insert(adlist_init, (*it)["name"], id, delay, (*it)["link"], id + 1, (*it)["client"], (*it)["lang"]);
-				}
-				else if (tmpdata["when"] == 1)
-				{
-					init_count++;
-					// "init"
-					insert(adlist_init, (*it)["name"], id, delay, (*it)["link"], id+1, (*it)["client"], (*it)["lang"]);
-					id++;
-					if (next_id > 0) next_id++;
-					// and duplicate the same ad in "start"
-					insert(adlist_start, (*it)["name"], id, delay, (*it)["link"], next_id, (*it)["client"], (*it)["lang"]);
-				}
-				else if (tmpdata["when"] > 1)
-				{
-					insert(adlist_norm, (*it)["name"], id, delay, (*it)["link"], next_id, (*it)["client"], (*it)["lang"]);
-				}
 			}
 		}
 
-		std::map<std::string, int> AdBannerComponent::get_rowdata(int id, std::string client, std::vector<std::map<std::string, std::string> > templist, int init_count)
+		AdBanner AdBanner::pick(t_clienttag client_tag, t_gamelang client_lang, std::size_t prev_ad_id)
 		{
-			std::map<std::string, int> data;
-
-			int tmpid = init_count;
-			// find clienttag
-			for (std::vector<std::map<std::string, std::string> >::iterator it = templist.begin(); it != templist.end(); ++it)
+			auto random_ad = [client_tag, client_lang, prev_ad_id]()
 			{
-				tmpid++;
-				if ((*it)["client"] == client)
+				std::vector<AdBanner> candidates = {};
+				std::copy_if(m_banners.begin(), m_banners.end(), std::back_inserter(candidates), [=](const AdBanner& a) -> bool
 				{
-					if (tmpid <= id)
-						data["when"]++;
+					return a.get_client() == client_tag
+						&& a.get_language() == client_lang
+						&& a.get_id() != prev_ad_id
+						? true : false;
+				});
 
-					// set next_id if value is not greater of max size
-					if (tmpid > id)
-					{
-						data["next_id"] = tmpid;
-						break;
-					}
-				}
+				std::default_random_engine eng{};
+				std::uniform_int_distribution<std::size_t> random(0, m_banners.size() - 1);
+
+				return m_banners.at(random(eng));
+			};
+
+			switch (m_banners.size())
+			{
+			case 0:
+				return AdBanner();
+			case 1:
+				return m_banners.at(0);
+			default:
+				if (prev_ad_id == 0)
+					return random_ad();
+				else
+					return m_banners.at(prev_ad_id + 1);
 			}
-			return data;
 		}
 
-		AdBannerComponent::~AdBannerComponent() throw()
-		{}
+		AdBanner AdBanner::find(t_clienttag client_tag, t_gamelang client_lang, std::size_t ad_id)
+		{
+			auto result = std::find_if(m_banners.begin(), m_banners.end(), 
+				[client_tag, client_lang, ad_id](const AdBanner& a) -> bool
+			{
+				return a.get_client() == client_tag && a.get_language() == client_lang && a.get_id() == ad_id ? true : false;
+			});
+			
+			return result != m_banners.end() ? m_banners.at(result - m_banners.begin()) : AdBanner();
+		}
 
+		bool AdBanner::empty() const
+		{
+			return this->m_client == 0
+				&& this->m_extensiontag == 0
+				&& this->m_filename.empty()
+				&& this->m_id == 0
+				&& this->m_lang == 0
+				&& this->m_url.empty()
+				? true : false;
+		}
+
+		std::size_t AdBanner::get_id() const
+		{
+			return this->m_id;
+		}
+
+		unsigned int AdBanner::get_extension_tag() const
+		{
+			return this->m_extensiontag;
+		}
+
+		std::string AdBanner::get_filename() const
+		{
+			return this->m_filename;
+		}
+
+		std::string AdBanner::get_url() const
+		{
+			return this->m_url;
+		}
+
+		t_clienttag AdBanner::get_client() const
+		{
+			return this->m_client;
+		}
+
+		t_gamelang AdBanner::get_language() const
+		{
+			return this->m_lang;
+		}
 	}
-
 }

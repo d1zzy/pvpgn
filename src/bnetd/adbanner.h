@@ -19,78 +19,48 @@
 #define INCLUDED_ADBANNER_H
 
 #include <string>
-#include <map>
 #include <vector>
 
 #include "common/tag.h"
-#include "common/scoped_ptr.h"
 #include "common/bn_type.h"
+
 
 namespace pvpgn
 {
-
 	namespace bnetd
 	{
-
 		class AdBanner
 		{
 		public:
-			AdBanner(unsigned id_, bn_int extag, unsigned delay_, unsigned next_, const std::string& fname, const std::string& link_, t_clienttag client_, t_gamelang lang_);
-			~AdBanner() throw();
+			AdBanner();
 
-			unsigned getId() const;
-			unsigned getNextId() const;
-			unsigned getExtensionTag() const;
-			char const * getFilename() const;
-			char const * getLink() const;
-			t_clienttag getClient() const;
-			t_gamelang getGameLang() const;
+			void load(const std::string& filename);
 
-		private:
-			unsigned id;
-			unsigned extensiontag;
-			unsigned delay; /* in seconds */
-			unsigned next; /* adid or 0 */
-			const std::string filename;
-			const std::string link;
-			t_clienttag client;
-			t_gamelang lang;
-		};
+			static AdBanner pick(t_clienttag client_tag, t_gamelang client_lang, std::size_t prev_ad_id);
+			static AdBanner find(t_clienttag client_tag, t_gamelang client_lang, std::size_t ad_id);
 
-		class AdBannerComponent
-		{
-		public:
-			explicit AdBannerComponent(const std::string& fname);
-			~AdBannerComponent() throw();
+			bool empty() const;
 
-			typedef std::pair<t_clienttag, t_gamelang> AdKey;
-			const AdBanner* pick(t_clienttag ctag, t_gamelang lang, unsigned prev_id) const;
-			const AdBanner* find(t_clienttag ctag, t_gamelang lang, unsigned id) const;
+			std::size_t get_id() const;
+			unsigned int get_extension_tag() const;
+			std::string get_filename() const;
+			std::string get_url() const;
+			t_clienttag get_client() const;
+			t_gamelang get_language() const;
 
 		private:
-			typedef std::map<unsigned, AdBanner> AdIdMap;
-			typedef std::map<AdKey, AdIdMap> AdCtagMap;
-			typedef std::map<unsigned, AdIdMap::const_iterator> AdIdRefMap;
-			typedef std::map<AdKey, AdIdRefMap> AdCtagRefMap;
+			AdBanner(std::size_t id, bn_int extensiontag, const std::string& filename, const std::string& url, t_clienttag clienttag, t_gamelang lang);
 
-			AdCtagMap adlist;
-			AdCtagRefMap adlist_init;
-			AdCtagRefMap adlist_start;
-			AdCtagRefMap adlist_norm;
+			static std::vector<AdBanner> m_banners;
 
-			const AdBanner* pick(AdKey adKey, unsigned prev_id) const;
-			const AdBanner* find(AdKey adKey, unsigned id) const;
-			const AdBanner* finder(AdKey adKey, unsigned id) const;
-			const AdBanner* findRandom(const AdCtagRefMap& where, AdKey adKey) const;
-			const AdBanner* randomFinder(const AdCtagRefMap& where, AdKey adKey) const;
-			void insert(AdCtagRefMap& where, const std::string& fname, unsigned id, unsigned delay, const std::string& link, unsigned next_id, const std::string& client, const std::string& lang);
-			std::map<std::string, int> get_rowdata(int id, std::string client, std::vector<std::map<std::string, std::string> > templist, int init_count);
+			const std::size_t m_id;
+			const std::string m_filename;
+			const unsigned int m_extensiontag;
+			const std::string m_url;
+			const t_clienttag m_client;
+			const t_gamelang m_lang;
 		};
-
-		extern scoped_ptr<AdBannerComponent> adbannerlist;
-
 	}
-
 }
 
 #endif
