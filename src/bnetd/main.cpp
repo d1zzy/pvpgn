@@ -372,7 +372,7 @@ int pre_server_startup(void)
 	{
 		AdBanner().load(prefs_get_adfile());
 	}
-	catch (const std::runtime_error& e)
+	catch (const std::exception& e)
 	{
 		eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
 	}
