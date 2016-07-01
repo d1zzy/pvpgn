@@ -142,7 +142,13 @@ namespace pvpgn
 
 		AdBanner AdBanner::pick(t_clienttag client_tag, t_gamelang client_lang, std::size_t prev_ad_id)
 		{
-			auto random_ad = [client_tag, client_lang, prev_ad_id]()
+			switch (m_banners.size())
+			{
+			case 0:
+				return AdBanner();
+			case 1:
+				return m_banners.at(0);
+			default:
 			{
 				std::vector<AdBanner> candidates = {};
 				std::copy_if(m_banners.begin(), m_banners.end(), std::back_inserter(candidates), [=](const AdBanner& a) -> bool
@@ -157,19 +163,7 @@ namespace pvpgn
 				std::uniform_int_distribution<std::size_t> random(0, m_banners.size() - 1);
 
 				return m_banners.at(random(eng));
-			};
-
-			switch (m_banners.size())
-			{
-			case 0:
-				return AdBanner();
-			case 1:
-				return m_banners.at(0);
-			default:
-				if (prev_ad_id == 0)
-					return random_ad();
-				else
-					return m_banners.at(prev_ad_id + 1);
+			}
 			}
 		}
 
