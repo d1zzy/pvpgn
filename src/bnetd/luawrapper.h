@@ -60,7 +60,7 @@ namespace lua
 
 		virtual const char* what() const
 		{
-			return this->m_what.c_str();
+			return m_what.c_str();
 		}
 	protected:
 		std::string m_what;
@@ -115,7 +115,7 @@ namespace lua
 			}
 		}
 
-		lua_State* get_st() const noexcept
+		lua_State* get_st() const
 		{
 			return st;
 		}
