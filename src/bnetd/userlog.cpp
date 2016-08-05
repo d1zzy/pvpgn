@@ -158,11 +158,11 @@ namespace pvpgn
 		extern std::map<long, char*> userlog_read(const char* username, long startline, const char* search_substr)
 		{
 			if (!username)
-				throw std::exception("username is a nullptr");
+				throw std::runtime_error("username is a nullptr");
 
 			FILE* fp = std::fopen(userlog_filename(username), "r");
 			if (!fp)
-				throw std::exception("Could not open userlog");
+				throw std::runtime_error("Could not open userlog");
 
 			// set position to the end of file
 			std::fseek(fp, 0, SEEK_END);
