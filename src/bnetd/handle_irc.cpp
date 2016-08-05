@@ -303,7 +303,6 @@ namespace pvpgn
 						else if (strcasecmp(text, "register") == 0) {
 							t_hash       passhash;
 							t_account  * temp;
-							char         msgtemp[MAX_IRC_MESSAGE_LEN];
 							char       * username = (char *)conn_get_loggeduser(conn);
 
 							if (account_check_name(username)<0) {

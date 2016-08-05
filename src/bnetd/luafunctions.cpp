@@ -517,7 +517,6 @@ namespace pvpgn
 		extern int __server_get_users(lua_State* L)
 		{
 			bool allaccounts = false;
-			const char *username;
 			std::vector<std::map<std::string, std::string> > users;
 			t_connection * conn;
 			t_account * account;
