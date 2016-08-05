@@ -1,7 +1,29 @@
-
 /*
- * Copyright (C) Anton Burdinuk
- */
+*	Copyright (c) 2009, Anton Burdinuk <clark15b@gmail.com>
+*	All rights reserved.
+*
+*	Redistribution and use in source and binary forms, with or without
+*	modification, are permitted provided that the following conditions are met:
+*	* Redistributions of source code must retain the above copyright
+*	notice, this list of conditions and the following disclaimer.
+*	* Redistributions in binary form must reproduce the above copyright
+*	notice, this list of conditions and the following disclaimer in the
+*	documentation and/or other materials provided with the distribution.
+*	* Neither the name of the organization nor the
+*	names of its contributors may be used to endorse or promote products
+*	derived from this software without specific prior written permission.
+*
+*	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+*	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+*	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+*	DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+*	DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+*	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+*	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+*	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+*	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+*	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 #ifdef WITH_LUA
 #include "luawrapper.h"
@@ -14,7 +36,7 @@ namespace lua
 }
 
 
-void lua::throw_lua_exception(lua_State* st, const std::string& addinfo) throw(std::exception)
+void lua::throw_lua_exception(lua_State* st, const std::string& addinfo)
 {
 	size_t len = 0;
 
@@ -30,32 +52,32 @@ void lua::throw_lua_exception(lua_State* st, const std::string& addinfo) throw(s
 
 	lua_pop(st, 1);
 
-	throw(exception(s));
+	throw exception(s);
 }
 
-void lua::vm::initialize(void) throw(std::exception)
+void lua::vm::initialize()
 {
 	done();
 
 	st = lua_open();
 
 	if (!st)
-		throw(exception("can`t create lua virtual machine instance"));
+		throw exception("can`t create lua virtual machine instance");
 
 	luaL_openlibs(st);
 }
 
-void lua::vm::load_file(const char* file) throw(std::exception)
+void lua::vm::load_file(const char* file)
 {
 	if (!st)
-		throw(exception("lua virtual machine is not ready"));
+		throw exception("lua virtual machine is not ready");
 
 	if (luaL_loadfile(st, file) || lua_pcall(st, 0, 0, 0))
 		throw_lua_exception(st);
 }
 
 
-void lua::vm::eval(const std::string& stmt, int offset) throw(std::exception)
+void lua::vm::eval(const std::string& stmt, int offset)
 {
 	enum { max_chunk_name_len = 64 };
 
@@ -71,7 +93,7 @@ void lua::vm::eval(const std::string& stmt, int offset) throw(std::exception)
 }
 
 
-void lua::bind::lookup(const char* name) throw()
+void lua::bind::lookup(const char* name)
 {
 	if (!refuse)
 	{
@@ -83,7 +105,7 @@ void lua::bind::lookup(const char* name) throw()
 	}
 }
 
-void lua::bind::end(void) throw()
+void lua::bind::end(void)
 {
 	if (!refuse && mutex)
 	{
@@ -98,7 +120,7 @@ void lua::bind::end(void) throw()
 	}
 }
 
-void lua::bind::invoke(void) throw(std::exception)
+void lua::bind::invoke(void)
 {
 	int function_index = -(args_number + 1);
 
@@ -113,7 +135,7 @@ void lua::bind::invoke(void) throw(std::exception)
 	}
 }
 
-void lua::bind::m_invoke(void) throw(std::exception)
+void lua::bind::m_invoke(void)
 {
 	if (!refuse)
 	{
