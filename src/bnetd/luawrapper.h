@@ -1,11 +1,33 @@
 /*
- * Copyright (C) Anton Burdinuk
- * https://code.google.com/p/luasp/
- */
+*	Copyright (c) 2009, Anton Burdinuk <clark15b@gmail.com>
+*	All rights reserved.
+*
+*	Redistribution and use in source and binary forms, with or without
+*	modification, are permitted provided that the following conditions are met:
+*	* Redistributions of source code must retain the above copyright
+*	notice, this list of conditions and the following disclaimer.
+*	* Redistributions in binary form must reproduce the above copyright
+*	notice, this list of conditions and the following disclaimer in the
+*	documentation and/or other materials provided with the distribution.
+*	* Neither the name of the organization nor the
+*	names of its contributors may be used to endorse or promote products
+*	derived from this software without specific prior written permission.
+*
+*	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+*	ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+*	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+*	DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+*	DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+*	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+*	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+*	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+*	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+*	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 #ifdef WITH_LUA
-#ifndef __LUAWRAPPER_H
-#define __LUAWRAPPER_H
+#ifndef INCLUDED_LUAWRAPPER_H
+#define INCLUDED_LUAWRAPPER_H
 
 extern "C"
 {
@@ -14,11 +36,11 @@ extern "C"
 #include <lualib.h>
 }
 
-#include <typeinfo>
-#include <string>
 #include <cstring>
-#include <stdexcept>
 #include <map>
+#include <stdexcept>
+#include <string>
+#include <typeinfo>
 #include <vector>
 
 namespace lua
@@ -27,56 +49,85 @@ namespace lua
 
 	class exception : public std::exception
 	{
-	protected:
-		std::string _what;
 	public:
-		explicit exception(const std::string s) :_what(s) {}
+		explicit exception(const std::string s) : m_what(s)
+		{
+		}
 
-		virtual ~exception(void) throw() {}
+		virtual ~exception()
+		{
+		}
 
-		virtual const char* what(void) const throw() { return _what.c_str(); }
+		virtual const char* what() const
+		{
+			return this->m_what.c_str();
+		}
+	protected:
+		std::string m_what;
 	};
 
 	// check Lua VM for errors and throw C++ lua::exception
-	void throw_lua_exception(lua_State* st, const std::string& addinfo = std::string()) throw(std::exception);
+	void throw_lua_exception(lua_State* st, const std::string& addinfo = std::string());
 
 	// Lua VM instance
 
 	class vm
 	{
+	public:
+		vm() : st(nullptr), mutex(0)
+		{
+		}
+
+		explicit vm(lua_State* _st) : st(_st), mutex(0)
+		{
+		}
+
+		~vm()
+		{
+			this->done();
+		}
+
+		// create new Lua VM instance
+		void initialize();
+
+		// load and execute Lua script from file
+		void load_file(const char* file);
+
+		// load and execute Lua statement from string
+		void eval(const std::string& stmt, int offset = 0);
+
+		// register external C function
+		void reg(const char* name, lua_CFunction func)
+		{
+			lua_register(st, name, func);
+		}
+		void reg(const char* package, const luaL_Reg* members)
+		{
+			luaL_register(st, package, members);
+		}
+
+		// destroy Lua VM instance
+		void done()
+		{
+			if (st)
+			{
+				lua_close(st);
+			}
+		}
+
+		lua_State* get_st() const noexcept
+		{
+			return st;
+		}
+
+		friend class stack;
+		friend class bind;
 	protected:
 		lua_State* st;
 
 		// mutex for lua::bind
 		int mutex;
 
-	public:
-		vm(void) :st(0), mutex(0) {}
-
-		explicit vm(lua_State* _st) :st(_st), mutex(0) {}
-
-		~vm(void) throw() { done(); }
-
-		// create new Lua VM instance
-		void initialize(void) throw(std::exception);
-
-		// load and execute Lua script from file
-		void load_file(const char* file) throw(std::exception);
-
-		// load and execute Lua statement from string
-		void eval(const std::string& stmt, int offset = 0) throw(std::exception);
-
-		// register external C function
-		void reg(const char* name, lua_CFunction func) throw() { lua_register(st, name, func); }
-		void reg(const char* package, const luaL_Reg* members) throw() { luaL_register(st, package, members); }
-
-		// destroy Lua VM instance
-		void done(void) throw() { if (st) { lua_close(st); st = 0; } }
-
-		lua_State* get_st(void) const throw() { return st; }
-
-		friend class stack;
-		friend class bind;
 	};
 
 
@@ -84,30 +135,55 @@ namespace lua
 
 	class stack
 	{
-	protected:
-		lua_State* st;
-
-		int st_top;
-
 	public:
 		// initialize stack
-		stack(void) :st(0), st_top(0) {}
-		explicit stack(lua_State* _st) :st(_st), st_top(_st ? lua_gettop(_st) : 0) {}
-		explicit stack(const vm& _vm) :st(_vm.st), st_top(_vm.st ? lua_gettop(_vm.st) : 0) {}
+		stack() : st(nullptr), st_top(0)
+		{
+		}
+		explicit stack(lua_State* _st) : st(_st), st_top(_st ? lua_gettop(_st) : 0)
+		{
+		}
+		explicit stack(const vm& _vm) : st(_vm.st), st_top(_vm.st ? lua_gettop(_vm.st) : 0)
+		{
+		}
 
 		// return current stack size
-		int size(void) const throw() { return lua_gettop(st); }
+		int size() const
+		{
+			return lua_gettop(st);
+		}
 
 		// find field in table
-		void find(const char* name, int index = LUA_GLOBALSINDEX) throw() { lua_getfield(st, index, name); }
+		void find(const char* name, int index = LUA_GLOBALSINDEX)
+		{
+			lua_getfield(st, index, name);
+		}
 
 		// push to stack scalar
-		void push(unsigned int v) throw() { lua_pushinteger(st, v); }
-		void push(int v) throw() { lua_pushinteger(st, v); }
-		void push_boolean(int v) throw() { lua_pushboolean(st, v); }
-		void push(double v) throw() { lua_pushnumber(st, v); }
-		void push(const std::string& v) throw() { lua_pushlstring(st, v.c_str(), v.length()); }
-		void push(const char* v) throw() { lua_pushlstring(st, v, std::strlen(v) ); }
+		void push(unsigned int v)
+		{
+			lua_pushinteger(st, v);
+		}
+		void push(int v)
+		{
+			lua_pushinteger(st, v);
+		}
+		void push_boolean(int v)
+		{
+			lua_pushboolean(st, v);
+		}
+		void push(double v)
+		{
+			lua_pushnumber(st, v);
+		}
+		void push(const std::string& v)
+		{
+			lua_pushlstring(st, v.c_str(), v.length());
+		}
+		void push(const char* v)
+		{
+			lua_pushlstring(st, v, std::strlen(v));
+		}
 
 		// push to stack std::map
 		template<typename _key, typename _val, typename _comp, typename _alloc>
@@ -139,16 +215,28 @@ namespace lua
 
 
 		// recv from stack scalar
-		void get(unsigned int& v, int index) throw() { v = lua_tointeger(st, index); }
-		void get(int& v, int index) throw() { v = lua_tointeger(st, index); }
-		void get(bool& v, int index) throw() { v = lua_toboolean(st, index); }
-		void get(double& v, int index) throw() { v = lua_tonumber(st, index); }
-		void get(const char*& v, int index) throw()
+		void get(unsigned int& v, int index)
+		{
+			v = lua_tointeger(st, index);
+		}
+		void get(int& v, int index)
+		{
+			v = lua_tointeger(st, index);
+		}
+		void get(bool& v, int index)
+		{
+			v = lua_toboolean(st, index);
+		}
+		void get(double& v, int index)
+		{
+			v = lua_tonumber(st, index);
+		}
+		void get(const char*& v, int index)
 		{
 			size_t len = 0;
 			v = lua_tolstring(st, index, &len);
 		}
-		void get(std::string& v, int index) throw()
+		void get(std::string& v, int index)
 		{
 			size_t len = 0;
 
@@ -159,7 +247,7 @@ namespace lua
 
 		// recv from stack std::map
 		template<typename _key, typename _val, typename _comp, typename _alloc>
-		void get(std::map<_key, _val, _comp, _alloc>& v, int index) throw()
+		void get(std::map<_key, _val, _comp, _alloc>& v, int index)
 		{
 			if (lua_type(st, index) == LUA_TTABLE)
 			{
@@ -180,7 +268,7 @@ namespace lua
 
 		// recv from stack std::vector (use std::map instead)
 		template<typename _val, typename _alloc>
-		void get(std::vector<_val, _alloc>& v, int index) throw()
+		void get(std::vector<_val, _alloc>& v, int index)
 		{
 			if (lua_type(st, index) == LUA_TTABLE)
 			{
@@ -211,7 +299,7 @@ namespace lua
 
 		// get value of stack with index check
 		template<typename T>
-		void at(int index, T& v) throw()
+		void at(int index, T& v)
 		{
 			if (index > 0 && index <= size())
 				get(v, index);
@@ -220,8 +308,17 @@ namespace lua
 		}
 
 		// pop last values from stack
-		void pop(void) throw() { lua_pop(st, 1); }
-		void popn(int n) throw() { lua_pop(st, n); }
+		void pop()
+		{
+			lua_pop(st, 1);
+		}
+		void popn(int n)
+		{
+			lua_pop(st, n);
+		}
+	protected:
+		lua_State* st;
+		int st_top;
 	};
 
 
@@ -237,12 +334,14 @@ namespace lua
 
 	class lookup			// find field in last table (or LUA_GLOBALSINDEX if first)
 	{
-	protected:
-		std::string name;
 	public:
-		lookup(const std::string& _name) :name(_name) {}
+		lookup(const std::string& _name) :name(_name)
+		{
+		}
 
 		friend class bind;
+	protected:
+		std::string name;
 	};
 
 
@@ -250,16 +349,20 @@ namespace lua
 
 	class table : protected stack
 	{
-	protected:
-		int index;
 	public:
-		table(void) :stack(0), index(0) {}
-		explicit table(lua_State* _st, int _index) :stack(_st), index(_index) {}
-		explicit table(vm& _vm) :stack(_vm.get_st()), index(LUA_GLOBALSINDEX) {}
+		table() : stack(nullptr), index(0)
+		{
+		}
+		explicit table(lua_State* _st, int _index) : stack(_st), index(_index)
+		{
+		}
+		explicit table(vm& _vm) :stack(_vm.get_st()), index(LUA_GLOBALSINDEX)
+		{
+		}
 
 		// get field value
 		template<typename _VAL>
-		void query(const char* name, _VAL& val) throw()
+		void query(const char* name, _VAL& val)
 		{
 			if (st)
 			{
@@ -271,7 +374,7 @@ namespace lua
 
 		// set field value
 		template<typename _VAL>
-		void update(const char* name, const _VAL& val) throw()
+		void update(const char* name, const _VAL& val)
 		{
 			if (st)
 			{
@@ -279,6 +382,8 @@ namespace lua
 				lua_setfield(st, index, name);
 			}
 		}
+	protected:
+		int index;
 	};
 
 
@@ -286,28 +391,26 @@ namespace lua
 
 	class bind : protected stack
 	{
-	private:
-		int& mutex;
-		int refuse;
-
-	protected:
-		int args_number, retvals_number;
-		int cur_index;
-
 	public:
-		explicit bind(vm& _vm) :stack(_vm), refuse(0), args_number(0), retvals_number(0),
+		explicit bind(vm& _vm) : stack(_vm), refuse(0), args_number(0), retvals_number(0),
 			cur_index(LUA_GLOBALSINDEX), mutex(_vm.mutex)
 		{
-			if (mutex) refuse++; else mutex++;
+			if (mutex)
+				refuse++;
+			else
+				mutex++;
 		}
 
-		~bind(void) throw() { end(); }
+		~bind()
+		{
+			end();
+		}
 
 		// find field in last table
-		void lookup(const char* name) throw();
+		void lookup(const char* name);
 
 		// return lua::table object for last table
-		lua::table table(void) throw()
+		lua::table table()
 		{
 			if (lua_type(st, -1) == LUA_TTABLE)
 				return lua::table(st, lua_gettop(st));
@@ -315,19 +418,27 @@ namespace lua
 		}
 
 		// execute last function
-		void invoke(void) throw(std::exception);
+		void invoke();
 
 		// execute last function as method
-		void m_invoke(void) throw(std::exception);
+		void m_invoke();
 
 		// end transaction (free Lua stack)
-		void end(void) throw();
+		void end();
 
 		// push function argument to Lua stack
-		template<typename T> bind& operator<<(const T& v) throw() { if (!refuse) { push(v); args_number++; } return *this; }
+		template<typename T> bind& operator<<(const T& v)
+		{
+			if (!refuse)
+			{
+				push(v);
+				args_number++
+			}
+			return *this;
+		}
 
 		// pop function return value from stack
-		template<typename T> bind& operator>>(T& v) throw()
+		template<typename T> bind& operator >> (T& v)
 		{
 			if (refuse || retvals_number < 1)
 			{
@@ -347,15 +458,40 @@ namespace lua
 		}
 
 		// for manipulators
-		bind& operator<<(const lua::lookup& f) throw(std::exception) { bind::lookup(f.name.c_str()); return *this; }
-		bind& operator<<(const lua::invoke_type&) throw(std::exception) { bind::invoke(); return *this; }
-		bind& operator<<(const lua::m_invoke_type&) throw(std::exception) { bind::m_invoke(); return *this; }
-		bind& operator<<(const lua::release_type&) throw(std::exception) { bind::end(); return *this; }
+		bind& operator<<(const lua::lookup& f)
+		{
+			bind::lookup(f.name.c_str());
+			return *this;
+		}
+		bind& operator<<(const lua::invoke_type&)
+		{
+			bind::invoke();
+			return *this;
+		}
+		bind& operator<<(const lua::m_invoke_type&)
+		{
+			bind::m_invoke();
+			return *this;
+		}
+		bind& operator<<(const lua::release_type&)
+		{
+			bind::end();
+			return *this;
+		}
+
+	protected:
+		int args_number;
+		int retvals_number;
+		int cur_index;
+
+	private:
+		int& mutex;
+		int refuse;
 	};
 
-	typedef bind transaction;
-	typedef lookup function;
-	typedef lookup field;
+	using transaction = bind;
+	using function = lookup;
+	using field = lookup;
 }
 
 
