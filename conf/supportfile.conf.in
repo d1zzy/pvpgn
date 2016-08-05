@@ -2,8 +2,7 @@
 # some lines are commented out, cause they weren't installed by default in older versions
 
 IX86ver1.mpq
-ver-ix86-1.mpq
-ver-IX86-2.mpq
+ver-IX86-1.mpq
 PMACver1.mpq
 XMACver1.mpq
 bnserver-D2DV.ini

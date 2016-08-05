@@ -64,25 +64,25 @@
 # Warcraft III - TFT (Expansion) 1.27a
 # Note: this version check is sent in both FT and ROC mode
 "B=454282227 C=2370009462 A=2264812340 4 A=A^S B=B-C C=C-A A=A+B" \
- ver-IX86-2.mpq \
+ ver-IX86-1.mpq \
  IX86 \
  W3XP \
- "war3.exe 02/11/16 22:40:40 514536" \
+ "War3.exe 08/05/16 03:15:27 514536" \
  0x0000001b \
  1.27.0.16 \
- 0x5714f86e \
+ 0x960947fd \
  W3XP_127A
 
 # Warcraft III - ROC 1.27a
 # Note: this version check is sent in both FT and ROC mode
 "B=454282227 C=2370009462 A=2264812340 4 A=A^S B=B-C C=C-A A=A+B" \
- ver-IX86-2.mpq \
+ ver-IX86-1.mpq \
  IX86 \
  WAR3 \
- "war3.exe 02/11/16 22:40:40 514536" \
+ "War3.exe 08/05/16 03:15:27 514536" \
  0x0000001b \
  1.27.0.16 \
- 0x5714f86e \
+ 0x960947fd \
  WAR3_127A
 
 # Diablo II - LoD (Expansion) 1.13c
