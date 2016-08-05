@@ -20,9 +20,10 @@
 #ifndef INCLUDED_USERLOGS_PROTOS
 #define INCLUDED_USERLOGS_PROTOS
 
-#define JUST_NEED_TYPES
 #include <string>
 #include <vector>
+
+#define JUST_NEED_TYPES
 #include "connection.h"
 #undef JUST_NEED_TYPES
 
@@ -34,7 +35,7 @@ namespace pvpgn
 		extern void userlog_init();
 
 		extern void userlog_append(t_account * account, const char * text);
-		extern std::map<long, char*> userlog_read(const char * username, long startline, const char * search_substr = NULL);
+		extern std::map<long, char*> userlog_read(const char* username, long startline, const char* search_substr = nullptr);
 		extern std::map<long, char*> userlog_find_text(const char * username, const char * search_substr, long startline);
 		extern char * userlog_filename(const char * username, bool force_create_path = false);
 
