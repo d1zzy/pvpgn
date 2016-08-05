@@ -208,7 +208,6 @@ namespace pvpgn
 			char const * tempapgar;
 			char const * temphash;
 			char const * username;
-			char temp[MAX_IRC_MESSAGE_LEN];
 
 			if (!conn) {
 				ERROR0("got NULL connection");
@@ -397,7 +396,6 @@ namespace pvpgn
 						if (e[i][0] == '#') {
 							/* channel message */
 							t_channel * channel;
-							char msgtemp[MAX_IRC_MESSAGE_LEN];
 
 							//PELISH: We does not support talk for not inside-channel clients now but in WOL is that feature not needed
 							if (channel = conn_get_channel(conn)) {
@@ -701,7 +699,6 @@ namespace pvpgn
 
 		static int _handle_verchk_command(t_connection * conn, int numparams, char ** params, char * text)
 		{
-			char temp[MAX_IRC_MESSAGE_LEN];
 			t_clienttag clienttag;
 
 			/**
