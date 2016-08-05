@@ -425,20 +425,19 @@ max_friends = 20
 #----------------------------------------------------------------------------#
 
 # Set track=0 to disable tracking.  Any other number will set number
-# of seconds between sending tracking packets. This is OFF by default.
+# of seconds between sending tracking packets. This is ON by default.
 #track = 0
 track = 60
 
 # Tracking server(s)
 # Use a comma delimited list of hostnames with optional UDP port numbers
 # after colons. (port 6114 is the default for the newer tracking protocol)
-#trackaddrs = "track.pvpgn.org,localhost:9999"
-trackaddrs = "track.pvpgn.org,track.dreaming-bg.com,bntrack.darkwings.org,track.muleslow.net,bnet.mivabe.nl"
+trackaddrs = "track.pvpgn.org,bntrack.darkwings.org,track.muleslow.net,bnet.mivabe.nl,track.eurobattle.net"
 
 # Change these to match your system, for example:
 location = "unknown"
 description = "unknown"
-url = "unknown"
+url = "https://github.com/pvpgn/pvpgn-server"
 contact_name = "a PvPGN user"
 contact_email = "unknown"
 
