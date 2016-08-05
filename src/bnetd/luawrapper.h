@@ -432,7 +432,7 @@ namespace lua
 			if (!refuse)
 			{
 				push(v);
-				args_number++
+				args_number++;
 			}
 			return *this;
 		}
