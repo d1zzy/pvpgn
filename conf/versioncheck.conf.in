@@ -64,38 +64,26 @@
 # Warcraft III - TFT (Expansion) 1.27a
 # Note: this version check is sent in both FT and ROC mode
 "B=454282227 C=2370009462 A=2264812340 4 A=A^S B=B-C C=C-A A=A+B" \
- ver-IX86-2.mpq \
+ ver-IX86-1.mpq \
  IX86 \
  W3XP \
- "war3.exe 02/11/16 22:40:40 514536" \
+ "War3.exe 08/05/16 03:15:27 514536" \
  0x0000001b \
  1.27.0.16 \
- 0x5714f86e \
+ 0x960947fd \
  W3XP_127A
 
-# Warcraft III - TFT (Expansion) 1.26a
+# Warcraft III - ROC 1.27a
 # Note: this version check is sent in both FT and ROC mode
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
- IX86 \
- W3XP \
- "war3.exe 03/18/11 20:03:55 471040" \
- 0x0000001a \
- 1.26.0.1 \
- 0xf2e7cec2 \
- W3XP_126A
-
-# Warcraft III - ROC 1.26a
-# Note: this version check is sent in both FT and ROC mode
-"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
+"B=454282227 C=2370009462 A=2264812340 4 A=A^S B=B-C C=C-A A=A+B" \
+ ver-IX86-1.mpq \
  IX86 \
  WAR3 \
- "war3.exe 03/18/11 20:03:55 471040" \
- 0x0000001a \
- 1.26.0.1 \
- 0xf2e7cec2 \
- WAR3_126A
+ "War3.exe 08/05/16 03:15:27 514536" \
+ 0x0000001b \
+ 1.27.0.16 \
+ 0x960947fd \
+ WAR3_127A
 
 # Diablo II - LoD (Expansion) 1.13c
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
@@ -166,6 +154,29 @@
 # -=-=-=-=-=- Older Versions -=-=-=-=-=-=- Update Required -=-=-=-=-=-
 
 # =================== WarCraft 3 Expansion Entries ==================
+# Warcraft III - TFT (Expansion) 1.26a
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ W3XP \
+ "war3.exe 03/18/11 20:03:55 471040" \
+ 0x0000001a \
+ 1.26.0.1 \
+ 0xf2e7cec2 \
+ W3XP_126A
+
+# Warcraft III - ROC 1.26a
+# Note: this version check is sent in both FT and ROC mode
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ WAR3 \
+ "war3.exe 03/18/11 20:03:55 471040" \
+ 0x0000001a \
+ 1.26.0.1 \
+ 0xf2e7cec2 \
+ WAR3_126A
 
 # Warcraft III - TFT (Expansion) 1.25b
 # Note: this version check is sent in both FT and ROC mode
