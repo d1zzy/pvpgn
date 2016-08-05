@@ -54,11 +54,11 @@ namespace lua
 		{
 		}
 
-		virtual ~exception()
+		virtual ~exception() throw()
 		{
 		}
 
-		virtual const char* what() const
+		virtual const char* what() const throw()
 		{
 			return m_what.c_str();
 		}
@@ -187,7 +187,7 @@ namespace lua
 
 		// push to stack std::map
 		template<typename _key, typename _val, typename _comp, typename _alloc>
-		void push(const std::map<_key, _val, _comp, _alloc>& v) throw()
+		void push(const std::map<_key, _val, _comp, _alloc>& v)
 		{
 			lua_newtable(st);
 
@@ -201,7 +201,7 @@ namespace lua
 
 		// push to stack std::vector
 		template<typename _val, typename _alloc>
-		void push(const std::vector<_val, _alloc>& v) throw()
+		void push(const std::vector<_val, _alloc>& v)
 		{
 			lua_newtable(st);
 
