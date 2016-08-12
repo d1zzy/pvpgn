@@ -44,33 +44,17 @@ namespace pvpgn
 {
 	namespace bnetd
 	{
-		std::vector<AdBanner> AdBanner::m_banners;
+		AdBannerSelector AdBannerList;
 
-		AdBanner::AdBanner()
-			: m_id(0),
-			m_extensiontag(0),
-			m_filename(),
-			m_url(),
-			m_client(0),
-			m_lang(0)
+		bool AdBannerSelector::is_loaded() const noexcept
 		{
+			return this->m_loaded;
 		}
 
-		AdBanner::AdBanner(std::size_t id, bn_int extensiontag, const std::string& filename, const std::string& url, t_clienttag clienttag, t_gamelang lang)
-			: m_id(id),
-			m_extensiontag(bn_int_get(extensiontag)),
-			m_filename(filename),
-			m_url(url),
-			m_client(clienttag),
-			m_lang(lang)
+		void AdBannerSelector::load(const std::string& filename)
 		{
-			char language[5] = {};
-			eventlog(eventlog_level_debug, __FUNCTION__, "Created ad id=0x%08zu filename=\"%s\" link=\"%s\" client=\"%s\" lang=\"%s\"", id, filename.c_str(), url.c_str(), clienttag ? clienttag_uint_to_str(clienttag) : "NULL", lang ? tag_uint_to_str(language, lang) : "NULL");
-		}
-
-		void AdBanner::load(const std::string& filename)
-		{
-			m_banners.clear();
+			if (this->is_loaded())
+				throw std::runtime_error("An ad banner file is already loaded");
 
 			std::ifstream file_stream(filename, std::ios::in);
 			if (!file_stream.is_open())
@@ -86,6 +70,13 @@ namespace pvpgn
 				throw std::runtime_error("Invalid JSON file: " + std::string(e.what()));
 			}
 
+			const std::map<std::string, std::string> extension_map = {
+				{ "pcx", EXTENSIONTAG_PCX },
+				{ "mng", EXTENSIONTAG_MNG },
+				{ "png", EXTENSIONTAG_MNG },
+				{ "smk", EXTENSIONTAG_SMK }
+			};
+
 			for (const auto& ad : j["ads"])
 			{
 				try
@@ -94,22 +85,24 @@ namespace pvpgn
 						|| ad["filename"].get<std::string>().find('\\') != std::string::npos)
 						throw std::runtime_error("Paths are not supported (" + ad["filename"].get<std::string>() + ")");
 
-					std::size_t ext = ad["filename"].get<std::string>().find('.');
+					const std::size_t ext = ad["filename"].get<std::string>().find('.');
 					if (ext == std::string::npos)
 						throw std::runtime_error("Filename must contain an extension");
 
-					std::string file_extension(ad["filename"].get<std::string>().substr(ext + 1));
+					const std::string file_extension(ad["filename"].get<std::string>().substr(ext + 1));
 					bn_int extensiontag = {};
-					if (strcasecmp(file_extension.c_str(), "pcx") == 0)
-						bn_int_tag_set(&extensiontag, EXTENSIONTAG_PCX);
-					else if (strcasecmp(file_extension.c_str(), "mng") == 0)
-						bn_int_tag_set(&extensiontag, EXTENSIONTAG_MNG);
-					else if (strcasecmp(file_extension.c_str(), "png") == 0)
-						bn_int_tag_set(&extensiontag, EXTENSIONTAG_MNG);
-					else if (strcasecmp(file_extension.c_str(), "smk") == 0)
-						bn_int_tag_set(&extensiontag, EXTENSIONTAG_SMK);
-					else
-						throw std::runtime_error("Unknown file extension (" + file_extension + ")");
+					for (const auto& m : extension_map)
+					{
+						if (strcasecmp(file_extension.c_str(), m.first.c_str()) == 0)
+						{
+							bn_int_tag_set(&extensiontag, m.second.c_str());
+							break;
+						}
+					}
+					if (extensiontag == 0)
+					{
+						throw std::runtime_error("Unsupported file extension (" + file_extension + ")");
+					}
 
 					t_clienttag ctag = 0;
 					if (strcasecmp(ad["client"].get<std::string>().c_str(), "NULL") != 0)
@@ -121,7 +114,7 @@ namespace pvpgn
 					}
 
 					t_gamelang ltag = 0;
-					if (strcasecmp(ad["lang"].get<std::string>().c_str(), "any") != 0)
+					if (strcasecmp(ad["lang"].get<std::string>().c_str(), "NULL") != 0)
 					{
 						ltag = tag_str_to_uint(ad["lang"].get<std::string>().c_str());
 
@@ -129,7 +122,7 @@ namespace pvpgn
 							throw std::runtime_error("Unknown language (" + ad["lang"].get<std::string>() + ")");
 					}
 
-					m_banners.push_back(AdBanner(m_banners.size(), extensiontag, ad["filename"].get<std::string>(),
+					this->m_banners.push_back(AdBanner(m_banners.size(), extensiontag, ad["filename"].get<std::string>(),
 						ad["url"].get<std::string>(), ctag, ltag));
 				}
 				catch (const std::runtime_error& e)
@@ -138,85 +131,123 @@ namespace pvpgn
 					continue;
 				}
 			}
+
+			this->m_loaded = true;
 		}
 
-		AdBanner AdBanner::pick(t_clienttag client_tag, t_gamelang client_lang, std::size_t prev_ad_id)
+		void AdBannerSelector::unload() noexcept
 		{
-			switch (m_banners.size())
+			this->m_banners.clear();
+			this->m_loaded = false;
+		}
+
+		std::size_t AdBannerSelector::size() const noexcept
+		{
+			return this->m_banners.size();
+		}
+
+		const AdBanner* const AdBannerSelector::pick(t_clienttag client_tag, t_gamelang client_lang, std::size_t prev_ad_id)
+		{
+			switch (this->m_banners.size())
 			{
 			case 0:
-				return AdBanner();
+				return nullptr;
 			case 1:
-				return m_banners.at(0);
+				return &this->m_banners.at(0);
 			default:
 			{
-				std::vector<AdBanner> candidates = {};
-				std::copy_if(m_banners.begin(), m_banners.end(), std::back_inserter(candidates), [=](const AdBanner& a) -> bool
+				std::vector<std::size_t> candidates = {};
+				std::for_each(this->m_banners.begin(), this->m_banners.end(), 
+					[client_tag, client_lang, prev_ad_id, &candidates](const AdBanner& ad) -> void
 				{
-					return a.get_client() == client_tag
-						&& a.get_language() == client_lang
-						&& a.get_id() != prev_ad_id
-						? true : false;
+					if ((ad.get_client() == client_tag || ad.get_client() == 0)
+						&& (ad.get_language() == client_lang || ad.get_language() == 0)
+						&& (ad.get_id() != prev_ad_id))
+					{
+						candidates.push_back(ad.get_id());
+					}
 				});
 
-				std::default_random_engine eng{};
-				std::uniform_int_distribution<std::size_t> random(0, m_banners.size() - 1);
+				if (candidates.empty())
+				{
+					return nullptr;
+				}
 
-				return m_banners.at(random(eng));
+				std::default_random_engine engine {};
+				std::uniform_int_distribution<std::size_t> random(0, candidates.size() - 1);
+
+				return &this->m_banners.at(candidates.at(random(engine)));
 			}
 			}
 		}
 
-		AdBanner AdBanner::find(t_clienttag client_tag, t_gamelang client_lang, std::size_t ad_id)
+		const AdBanner* const AdBannerSelector::find(t_clienttag client_tag, t_gamelang client_lang, std::size_t ad_id)
 		{
-			auto result = std::find_if(m_banners.begin(), m_banners.end(), 
+			auto result = std::find_if(m_banners.begin(), m_banners.end(),
 				[client_tag, client_lang, ad_id](const AdBanner& a) -> bool
 			{
-				return a.get_client() == client_tag && a.get_language() == client_lang && a.get_id() == ad_id ? true : false;
+				return a.get_client() == client_tag
+					&& a.get_language() == client_lang
+					&& a.get_id() == ad_id;
 			});
-			
-			return result != m_banners.end() ? m_banners.at(result - m_banners.begin()) : AdBanner();
+
+			return result != m_banners.end() ? &*result : nullptr;
 		}
 
-		bool AdBanner::empty() const
+		/***************************************************************************************************/
+
+		AdBanner::AdBanner(std::size_t id, bn_int extensiontag, const std::string& filename, const std::string& url, t_clienttag clienttag, t_gamelang language) 
+			: m_id(id),
+			m_extensiontag(bn_int_get(extensiontag)),
+			m_filename(filename),
+			m_url(url),
+			m_client(clienttag),
+			m_language(language)
+		{
+			char lang[5] = {};
+			eventlog(eventlog_level_info, __FUNCTION__, "Created ad id=0x%08zu filename=\"%s\" link=\"%s\" client=\"%s\" lang=\"%s\"", 
+				id, filename.c_str(), url.c_str(), clienttag ? clienttag_uint_to_str(clienttag) : "NULL", 
+				language ? tag_uint_to_str(lang, language) : "NULL");
+		}
+
+		bool AdBanner::is_empty() const
 		{
 			return this->m_client == 0
 				&& this->m_extensiontag == 0
 				&& this->m_filename.empty()
 				&& this->m_id == 0
-				&& this->m_lang == 0
-				&& this->m_url.empty()
-				? true : false;
+				&& this->m_language == 0
+				&& this->m_url.empty();
 		}
 
-		std::size_t AdBanner::get_id() const
+		std::size_t AdBanner::get_id() const noexcept
 		{
 			return this->m_id;
 		}
 
-		unsigned int AdBanner::get_extension_tag() const
-		{
-			return this->m_extensiontag;
-		}
-
-		std::string AdBanner::get_filename() const
+		std::string AdBanner::get_filename() const noexcept
 		{
 			return this->m_filename;
 		}
 
-		std::string AdBanner::get_url() const
+		unsigned int AdBanner::get_extension_tag() const noexcept
+		{
+			return this->m_extensiontag;
+		}
+
+		std::string AdBanner::get_url() const noexcept
 		{
 			return this->m_url;
 		}
 
-		t_clienttag AdBanner::get_client() const
+		t_clienttag AdBanner::get_client() const noexcept
 		{
 			return this->m_client;
 		}
 
-		t_gamelang AdBanner::get_language() const
+		t_gamelang AdBanner::get_language() const noexcept
 		{
-			return this->m_lang;
+			return this->m_language;
 		}
 	}
 }
