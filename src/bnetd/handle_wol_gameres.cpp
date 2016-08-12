@@ -2663,13 +2663,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %u build %u units", num, (unsigned int)bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player %d build %" PRIu32 " units", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %u build %u units", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player %d build %lu units", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %u for UNB%u", type, num);
+				WARN2("got unknown gameres type %d for UNB%d", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2720,7 +2720,7 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d build % " PRIu32 " planes", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player %d build %" PRIu32 " planes", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
 				DEBUG2("Player %d build %lu planes", num, wol_gameres_get_long_from_data(size, data));
@@ -2776,7 +2776,7 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d build % " PRIu32 " buildings", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player %d build %" PRIu32 " buildings", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
 				DEBUG2("Player %d build %lu buildings", num, wol_gameres_get_long_from_data(size, data));

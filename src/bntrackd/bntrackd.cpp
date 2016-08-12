@@ -426,8 +426,8 @@ namespace {
 						eventlog(eventlog_level_debug, __FUNCTION__,
 							"Packet received from %s:"
 							" packet_version=%" PRIu16
-							" flags=0x%08 " PRIu32 "x"
-							" port=%" PRIu32
+							" flags=0x%08" PRIu32 "x"
+							" port=%" PRIu16
 							" software=\"%s\""
 							" version=\"%s\""
 							" platform=\"%s\""
