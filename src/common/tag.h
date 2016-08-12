@@ -21,24 +21,15 @@
 #ifndef INCLUDED_TAG_TYPES
 #define INCLUDED_TAG_TYPES
 
-#ifdef JUST_NEED_TYPES
-#include "compat/uint.h"
-#else
-#define JUST_NEED_TYPES
-#include "compat/uint.h"
-#undef JUST_NEED_TYPES
-#endif
-
+#include <cstdint>
 #include <string>
 
 namespace pvpgn
 {
-
-	typedef t_uint32	t_tag;
-	typedef t_tag		t_archtag;
-	typedef t_tag		t_clienttag;
-	typedef t_tag		t_gamelang;
-
+	using t_tag = std::uint32_t;
+	using t_archtag = t_tag;
+	using t_clienttag = t_tag;
+	using t_gamelang = t_tag;
 }
 
 typedef enum {

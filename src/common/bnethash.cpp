@@ -19,10 +19,10 @@
 #include "common/setup_before.h"
 #include "common/bnethash.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 
-#include "compat/uint.h"
 #include "common/bn_type.h"
 #include "common/introtate.h"
 #include "common/eventlog.h"
@@ -36,10 +36,10 @@ namespace pvpgn
 		do_blizzard_hash,
 		do_sha1_hash
 	} t_hash_variant;
-
+	
 	static void hash_init(t_hash * hash);
-	static void do_hash(t_hash * hash, t_uint32 * tmp);
-	static void hash_set_16(t_uint32 * dst, unsigned char const * src, unsigned int count, t_hash_variant hash_variant);
+	static void do_hash(t_hash * hash, std::uint32_t * tmp);
+	static void hash_set_16(std::uint32_t * dst, unsigned char const * src, unsigned int count, t_hash_variant hash_variant);
 
 
 	static void hash_init(t_hash * hash)
@@ -52,10 +52,10 @@ namespace pvpgn
 	}
 
 
-	static void do_hash(t_hash * hash, t_uint32 * tmp, t_hash_variant hash_variant)
+	static void do_hash(t_hash * hash, std::uint32_t * tmp, t_hash_variant hash_variant)
 	{
 		unsigned int i;
-		t_uint32     a, b, c, d, e, g;
+		std::uint32_t     a, b, c, d, e, g;
 
 		for (i = 0; i < 64; i++)
 		if (hash_variant == do_blizzard_hash)
@@ -123,7 +123,7 @@ namespace pvpgn
 	 * zeros. In case of SHA1 hash variant a binary 1 is appended after
 	 * the actual data.
 	 */
-	static void hash_set_16(t_uint32 * dst, unsigned char const * src, unsigned int count,
+	static void hash_set_16(std::uint32_t * dst, unsigned char const * src, unsigned int count,
 		t_hash_variant hash_variant)
 	{
 		unsigned int i;
@@ -135,49 +135,49 @@ namespace pvpgn
 
 			if (hash_variant == do_blizzard_hash) {
 				if (pos < count)
-					dst[i] |= ((t_uint32)src[pos]);
+					dst[i] |= ((std::uint32_t)src[pos]);
 			}
 			else {
 				if (pos < count)
-					dst[i] |= ((t_uint32)src[pos]) << 24;
+					dst[i] |= ((std::uint32_t)src[pos]) << 24;
 				else if (pos == count)
-					dst[i] |= ((t_uint32)0x80000000);
+					dst[i] |= ((std::uint32_t)0x80000000);
 			}
 			pos++;
 
 			if (hash_variant == do_blizzard_hash) {
 				if (pos < count)
-					dst[i] |= ((t_uint32)src[pos]) << 8;
+					dst[i] |= ((std::uint32_t)src[pos]) << 8;
 			}
 			else {
 				if (pos < count)
-					dst[i] |= ((t_uint32)src[pos]) << 16;
+					dst[i] |= ((std::uint32_t)src[pos]) << 16;
 				else if (pos == count)
-					dst[i] |= ((t_uint32)0x800000);
+					dst[i] |= ((std::uint32_t)0x800000);
 			}
 			pos++;
 
 			if (hash_variant == do_blizzard_hash) {
 				if (pos < count)
-					dst[i] |= ((t_uint32)src[pos]) << 16;
+					dst[i] |= ((std::uint32_t)src[pos]) << 16;
 			}
 			else {
 				if (pos < count)
-					dst[i] |= ((t_uint32)src[pos]) << 8;
+					dst[i] |= ((std::uint32_t)src[pos]) << 8;
 				else if (pos == count)
-					dst[i] |= ((t_uint32)0x8000);
+					dst[i] |= ((std::uint32_t)0x8000);
 			}
 			pos++;
 
 			if (hash_variant == do_blizzard_hash) {
 				if (pos < count)
-					dst[i] |= ((t_uint32)src[pos]) << 24;
+					dst[i] |= ((std::uint32_t)src[pos]) << 24;
 			}
 			else {
 				if (pos < count)
-					dst[i] |= ((t_uint32)src[pos]);
+					dst[i] |= ((std::uint32_t)src[pos]);
 				else if (pos == count)
-					dst[i] |= ((t_uint32)0x80);
+					dst[i] |= ((std::uint32_t)0x80);
 			}
 			pos++;
 		}
@@ -186,9 +186,9 @@ namespace pvpgn
 
 	extern int bnet_hash(t_hash * hashout, unsigned int size, void const * datain)
 	{
-		t_uint32              tmp[64 + 16];
-		unsigned char const * data;
-		unsigned int          inc;
+		std::uint32_t tmp[64 + 16];
+		const unsigned char* data;
+		unsigned int inc;
 
 		if (!hashout)
 		{
@@ -221,9 +221,9 @@ namespace pvpgn
 		return 0;
 	}
 
-	static void hash_set_length(t_uint32 * dst, unsigned int size){
-		t_uint32 size_high = 0;
-		t_uint32 size_low = 0;
+	static void hash_set_length(std::uint32_t * dst, unsigned int size){
+		std::uint32_t size_high = 0;
+		std::uint32_t size_low = 0;
 		unsigned int counter;
 		for (counter = 0; counter < size; counter++){
 			size_low += 8;
@@ -244,7 +244,7 @@ namespace pvpgn
 
 	extern int sha1_hash(t_hash * hashout, unsigned int size, void const * datain)
 	{
-		t_uint32              tmp[64 + 16];
+		std::uint32_t         tmp[64 + 16];
 		unsigned char const * data;
 		unsigned int          inc;
 		unsigned int          orgSize;

@@ -19,19 +19,11 @@
 #ifndef INCLUDED_BNETHASH_TYPES
 #define INCLUDED_BNETHASH_TYPES
 
-#ifdef JUST_NEED_TYPES
-# include "compat/uint.h"
-#else
-# define JUST_NEED_TYPES
-# include "compat/uint.h"
-# undef JUST_NEED_TYPES
-#endif
+#include <cstdint>
 
 namespace pvpgn
 {
-
-	typedef t_uint32 t_hash[5];
-
+	using t_hash = std::uint32_t[5];
 }
 
 #endif

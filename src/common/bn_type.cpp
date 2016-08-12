@@ -18,6 +18,7 @@
 #include "common/setup_before.h"
 #include "common/bn_type.h"
 
+#include <cstdint>
 #include <cstring>
 
 #include "common/eventlog.h"
@@ -230,9 +231,9 @@ namespace pvpgn
 	/************************************************************/
 
 
-	extern t_uint8 bn_byte_get(bn_byte const src)
+	extern std::uint8_t bn_byte_get(bn_byte const src)
 	{
-		t_uint8 temp;
+		std::uint8_t temp;
 
 		if (!src)
 		{
@@ -240,14 +241,14 @@ namespace pvpgn
 			return 0;
 		}
 
-		temp = ((t_uint8)src[0]);
+		temp = ((std::uint8_t)src[0]);
 		return temp;
 	}
 
 
-	extern t_uint16 bn_short_get(bn_short const src)
+	extern std::uint16_t bn_short_get(bn_short const src)
 	{
-		t_uint16 temp;
+		std::uint16_t temp;
 
 		if (!src)
 		{
@@ -255,15 +256,15 @@ namespace pvpgn
 			return 0;
 		}
 
-		temp = ((t_uint16)src[0]);
-		temp |= ((t_uint16)src[1]) << 8;
+		temp = ((std::uint16_t)src[0]);
+		temp |= ((std::uint16_t)src[1]) << 8;
 		return temp;
 	}
 
 
-	extern t_uint16 bn_short_nget(bn_short const src)
+	extern std::uint16_t bn_short_nget(bn_short const src)
 	{
-		t_uint16 temp;
+		std::uint16_t temp;
 
 		if (!src)
 		{
@@ -271,15 +272,15 @@ namespace pvpgn
 			return 0;
 		}
 
-		temp = ((t_uint16)src[1]);
-		temp |= ((t_uint16)src[0]) << 8;
+		temp = ((std::uint16_t)src[1]);
+		temp |= ((std::uint16_t)src[0]) << 8;
 		return temp;
 	}
 
 
-	extern t_uint32 bn_int_get(bn_int const src)
+	extern std::uint32_t bn_int_get(bn_int const src)
 	{
-		t_uint32 temp;
+		std::uint32_t temp;
 
 		if (!src)
 		{
@@ -287,17 +288,17 @@ namespace pvpgn
 			return 0;
 		}
 
-		temp = ((t_uint32)src[0]);
-		temp |= ((t_uint32)src[1]) << 8;
-		temp |= ((t_uint32)src[2]) << 16;
-		temp |= ((t_uint32)src[3]) << 24;
+		temp = ((std::uint32_t)src[0]);
+		temp |= ((std::uint32_t)src[1]) << 8;
+		temp |= ((std::uint32_t)src[2]) << 16;
+		temp |= ((std::uint32_t)src[3]) << 24;
 		return temp;
 	}
 
 
-	extern t_uint32 bn_int_nget(bn_int const src)
+	extern std::uint32_t bn_int_nget(bn_int const src)
 	{
-		t_uint32 temp;
+		std::uint32_t temp;
 
 		if (!src)
 		{
@@ -305,18 +306,55 @@ namespace pvpgn
 			return 0;
 		}
 
-		temp = ((t_uint32)src[3]);
-		temp |= ((t_uint32)src[2]) << 8;
-		temp |= ((t_uint32)src[1]) << 16;
-		temp |= ((t_uint32)src[0]) << 24;
+		temp = ((std::uint32_t)src[3]);
+		temp |= ((std::uint32_t)src[2]) << 8;
+		temp |= ((std::uint32_t)src[1]) << 16;
+		temp |= ((std::uint32_t)src[0]) << 24;
+		return temp;
+	}
+
+	extern std::uint64_t bn_long_get(bn_long const src)
+	{
+		std::uint64_t temp;
+
+		if (!src)
+		{
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL src");
+			return 0;
+		}
+
+		temp = ((std::uint64_t)src[0]);
+		temp |= ((std::uint64_t)src[1]) << 8;
+		temp |= ((std::uint64_t)src[2]) << 16;
+		temp |= ((std::uint64_t)src[3]) << 24;
+		temp |= ((std::uint64_t)src[4]) << 32;
+		temp |= ((std::uint64_t)src[5]) << 40;
+		temp |= ((std::uint64_t)src[6]) << 48;
+		temp |= ((std::uint64_t)src[7]) << 56;
+		return temp;
+	}
+
+	extern std::uint32_t bn_long_get_a(bn_long const src)
+	{
+		std::uint32_t temp;
+
+		if (!src)
+		{
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL src");
+			return 0;
+		}
+
+		temp = ((std::uint32_t)src[4]);
+		temp |= ((std::uint32_t)src[5]) << 8;
+		temp |= ((std::uint32_t)src[6]) << 16;
+		temp |= ((std::uint32_t)src[7]) << 24;
 		return temp;
 	}
 
 
-#ifdef HAVE_T_LONG
-	extern t_uint64 bn_long_get(bn_long const src)
+	extern std::uint32_t bn_long_get_b(bn_long const src)
 	{
-		t_uint64 temp;
+		std::uint32_t temp;
 
 		if (!src)
 		{
@@ -324,51 +362,10 @@ namespace pvpgn
 			return 0;
 		}
 
-		temp = ((t_uint64)src[0]);
-		temp |= ((t_uint64)src[1]) << 8;
-		temp |= ((t_uint64)src[2]) << 16;
-		temp |= ((t_uint64)src[3]) << 24;
-		temp |= ((t_uint64)src[4]) << 32;
-		temp |= ((t_uint64)src[5]) << 40;
-		temp |= ((t_uint64)src[6]) << 48;
-		temp |= ((t_uint64)src[7]) << 56;
-		return temp;
-	}
-#endif
-
-
-	extern t_uint32 bn_long_get_a(bn_long const src)
-	{
-		t_uint32 temp;
-
-		if (!src)
-		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL src");
-			return 0;
-		}
-
-		temp = ((t_uint32)src[4]);
-		temp |= ((t_uint32)src[5]) << 8;
-		temp |= ((t_uint32)src[6]) << 16;
-		temp |= ((t_uint32)src[7]) << 24;
-		return temp;
-	}
-
-
-	extern t_uint32 bn_long_get_b(bn_long const src)
-	{
-		t_uint32 temp;
-
-		if (!src)
-		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL src");
-			return 0;
-		}
-
-		temp = ((t_uint32)src[0]);
-		temp |= ((t_uint32)src[1]) << 8;
-		temp |= ((t_uint32)src[2]) << 16;
-		temp |= ((t_uint32)src[3]) << 24;
+		temp = ((std::uint32_t)src[0]);
+		temp |= ((std::uint32_t)src[1]) << 8;
+		temp |= ((std::uint32_t)src[2]) << 16;
+		temp |= ((std::uint32_t)src[3]) << 24;
 		return temp;
 	}
 
@@ -376,7 +373,7 @@ namespace pvpgn
 	/************************************************************/
 
 
-	extern int bn_byte_set(bn_byte * dst, t_uint8 src)
+	extern int bn_byte_set(bn_byte * dst, std::uint8_t src)
 	{
 		if (!dst)
 		{
@@ -384,12 +381,12 @@ namespace pvpgn
 			return -1;
 		}
 
-		(*dst)[0] = (unsigned char)((src));
+		(*dst)[0] = (std::uint8_t)((src));
 		return 0;
 	}
 
 
-	extern int bn_short_set(bn_short * dst, t_uint16 src)
+	extern int bn_short_set(bn_short * dst, std::uint16_t src)
 	{
 		if (!dst)
 		{
@@ -397,13 +394,13 @@ namespace pvpgn
 			return -1;
 		}
 
-		(*dst)[0] = (unsigned char)((src)& 0xff);
-		(*dst)[1] = (unsigned char)((src >> 8));
+		(*dst)[0] = (std::uint8_t)((src)& 0xff);
+		(*dst)[1] = (std::uint8_t)((src >> 8));
 		return 0;
 	}
 
 
-	extern int bn_short_nset(bn_short * dst, t_uint16 src)
+	extern int bn_short_nset(bn_short * dst, std::uint16_t src)
 	{
 		if (!dst)
 		{
@@ -411,13 +408,13 @@ namespace pvpgn
 			return -1;
 		}
 
-		(*dst)[0] = (unsigned char)((src >> 8));
-		(*dst)[1] = (unsigned char)((src)& 0xff);
+		(*dst)[0] = (std::uint8_t)((src >> 8));
+		(*dst)[1] = (std::uint8_t)((src)& 0xff);
 		return 0;
 	}
 
 
-	extern int bn_int_set(bn_int * dst, t_uint32 src)
+	extern int bn_int_set(bn_int * dst, std::uint32_t src)
 	{
 		if (!dst)
 		{
@@ -425,15 +422,15 @@ namespace pvpgn
 			return -1;
 		}
 
-		(*dst)[0] = (unsigned char)((src)& 0xff);
-		(*dst)[1] = (unsigned char)((src >> 8) & 0xff);
-		(*dst)[2] = (unsigned char)((src >> 16) & 0xff);
-		(*dst)[3] = (unsigned char)((src >> 24));
+		(*dst)[0] = (std::uint8_t)((src)& 0xff);
+		(*dst)[1] = (std::uint8_t)((src >> 8) & 0xff);
+		(*dst)[2] = (std::uint8_t)((src >> 16) & 0xff);
+		(*dst)[3] = (std::uint8_t)((src >> 24));
 		return 0;
 	}
 
 
-	extern int bn_int_nset(bn_int * dst, t_uint32 src)
+	extern int bn_int_nset(bn_int * dst, std::uint32_t src)
 	{
 		if (!dst)
 		{
@@ -441,16 +438,34 @@ namespace pvpgn
 			return -1;
 		}
 
-		(*dst)[0] = (unsigned char)((src >> 24));
-		(*dst)[1] = (unsigned char)((src >> 16) & 0xff);
-		(*dst)[2] = (unsigned char)((src >> 8) & 0xff);
-		(*dst)[3] = (unsigned char)((src)& 0xff);
+		(*dst)[0] = (std::uint8_t)((src >> 24));
+		(*dst)[1] = (std::uint8_t)((src >> 16) & 0xff);
+		(*dst)[2] = (std::uint8_t)((src >> 8) & 0xff);
+		(*dst)[3] = (std::uint8_t)((src)& 0xff);
+		return 0;
+	}
+
+	extern int bn_long_set(bn_long * dst, std::uint64_t src)
+	{
+		if (!dst)
+		{
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL dst");
+			return -1;
+		}
+
+		(*dst)[0] = (std::uint8_t)((src)& 0xff);
+		(*dst)[1] = (std::uint8_t)((src >> 8) & 0xff);
+		(*dst)[2] = (std::uint8_t)((src >> 16) & 0xff);
+		(*dst)[3] = (std::uint8_t)((src >> 24) & 0xff);
+		(*dst)[4] = (std::uint8_t)((src >> 32) & 0xff);
+		(*dst)[5] = (std::uint8_t)((src >> 40) & 0xff);
+		(*dst)[6] = (std::uint8_t)((src >> 48) & 0xff);
+		(*dst)[7] = (std::uint8_t)((src >> 56));
 		return 0;
 	}
 
 
-#ifdef HAVE_T_LONG
-	extern int bn_long_set(bn_long * dst, t_uint64 src)
+	extern int bn_long_nset(bn_long * dst, std::uint64_t src)
 	{
 		if (!dst)
 		{
@@ -458,19 +473,38 @@ namespace pvpgn
 			return -1;
 		}
 
-		(*dst)[0] = (unsigned char)((src)& 0xff);
-		(*dst)[1] = (unsigned char)((src >> 8) & 0xff);
-		(*dst)[2] = (unsigned char)((src >> 16) & 0xff);
-		(*dst)[3] = (unsigned char)((src >> 24) & 0xff);
-		(*dst)[4] = (unsigned char)((src >> 32) & 0xff);
-		(*dst)[5] = (unsigned char)((src >> 40) & 0xff);
-		(*dst)[6] = (unsigned char)((src >> 48) & 0xff);
-		(*dst)[7] = (unsigned char)((src >> 56));
+		(*dst)[0] = (std::uint8_t)((src >> 56));
+		(*dst)[1] = (std::uint8_t)((src >> 48) & 0xff);
+		(*dst)[2] = (std::uint8_t)((src >> 40) & 0xff);
+		(*dst)[3] = (std::uint8_t)((src >> 32) & 0xff);
+		(*dst)[4] = (std::uint8_t)((src >> 24) & 0xff);
+		(*dst)[5] = (std::uint8_t)((src >> 16) & 0xff);
+		(*dst)[6] = (std::uint8_t)((src >> 8) & 0xff);
+		(*dst)[7] = (std::uint8_t)((src)& 0xff);
+		return 0;
+	}
+
+	extern int bn_long_set_a_b(bn_long * dst, std::uint32_t srca, std::uint32_t srcb)
+	{
+		if (!dst)
+		{
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL dst");
+			return -1;
+		}
+
+		(*dst)[0] = (std::uint8_t)((srcb)& 0xff);
+		(*dst)[1] = (std::uint8_t)((srcb >> 8) & 0xff);
+		(*dst)[2] = (std::uint8_t)((srcb >> 16) & 0xff);
+		(*dst)[3] = (std::uint8_t)((srcb >> 24) & 0xff);
+		(*dst)[4] = (std::uint8_t)((srca)& 0xff);
+		(*dst)[5] = (std::uint8_t)((srca >> 8) & 0xff);
+		(*dst)[6] = (std::uint8_t)((srca >> 16) & 0xff);
+		(*dst)[7] = (std::uint8_t)((srca >> 24));
 		return 0;
 	}
 
 
-	extern int bn_long_nset(bn_long * dst, t_uint64 src)
+	extern int bn_long_nset_a_b(bn_long * dst, std::uint32_t srca, std::uint32_t srcb)
 	{
 		if (!dst)
 		{
@@ -478,55 +512,14 @@ namespace pvpgn
 			return -1;
 		}
 
-		(*dst)[0] = (unsigned char)((src >> 56));
-		(*dst)[1] = (unsigned char)((src >> 48) & 0xff);
-		(*dst)[2] = (unsigned char)((src >> 40) & 0xff);
-		(*dst)[3] = (unsigned char)((src >> 32) & 0xff);
-		(*dst)[4] = (unsigned char)((src >> 24) & 0xff);
-		(*dst)[5] = (unsigned char)((src >> 16) & 0xff);
-		(*dst)[6] = (unsigned char)((src >> 8) & 0xff);
-		(*dst)[7] = (unsigned char)((src)& 0xff);
-		return 0;
-	}
-#endif
-
-
-	extern int bn_long_set_a_b(bn_long * dst, t_uint32 srca, t_uint32 srcb)
-	{
-		if (!dst)
-		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL dst");
-			return -1;
-		}
-
-		(*dst)[0] = (unsigned char)((srcb)& 0xff);
-		(*dst)[1] = (unsigned char)((srcb >> 8) & 0xff);
-		(*dst)[2] = (unsigned char)((srcb >> 16) & 0xff);
-		(*dst)[3] = (unsigned char)((srcb >> 24) & 0xff);
-		(*dst)[4] = (unsigned char)((srca)& 0xff);
-		(*dst)[5] = (unsigned char)((srca >> 8) & 0xff);
-		(*dst)[6] = (unsigned char)((srca >> 16) & 0xff);
-		(*dst)[7] = (unsigned char)((srca >> 24));
-		return 0;
-	}
-
-
-	extern int bn_long_nset_a_b(bn_long * dst, t_uint32 srca, t_uint32 srcb)
-	{
-		if (!dst)
-		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL dst");
-			return -1;
-		}
-
-		(*dst)[0] = (unsigned char)((srca >> 24));
-		(*dst)[1] = (unsigned char)((srca >> 16) & 0xff);
-		(*dst)[2] = (unsigned char)((srca >> 8) & 0xff);
-		(*dst)[3] = (unsigned char)((srca)& 0xff);
-		(*dst)[4] = (unsigned char)((srcb >> 24) & 0xff);
-		(*dst)[5] = (unsigned char)((srcb >> 16) & 0xff);
-		(*dst)[6] = (unsigned char)((srcb >> 8) & 0xff);
-		(*dst)[7] = (unsigned char)((srcb)& 0xff);
+		(*dst)[0] = (std::uint8_t)((srca >> 24));
+		(*dst)[1] = (std::uint8_t)((srca >> 16) & 0xff);
+		(*dst)[2] = (std::uint8_t)((srca >> 8) & 0xff);
+		(*dst)[3] = (std::uint8_t)((srca)& 0xff);
+		(*dst)[4] = (std::uint8_t)((srcb >> 24) & 0xff);
+		(*dst)[5] = (std::uint8_t)((srcb >> 16) & 0xff);
+		(*dst)[6] = (std::uint8_t)((srcb >> 8) & 0xff);
+		(*dst)[7] = (std::uint8_t)((srcb)& 0xff);
 		return 0;
 	}
 
@@ -655,7 +648,7 @@ namespace pvpgn
 	/************************************************************/
 
 
-	extern int uint32_to_int(t_uint32 num)
+	extern int uint32_to_int(std::uint32_t num)
 	{
 		if (num < (1UL << 30))
 			return (int)num;

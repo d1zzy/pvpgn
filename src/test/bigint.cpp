@@ -19,13 +19,12 @@
 
 #include "common/bigint.h"
 
-#include <string>
-#include <iostream>
 #include <cassert>
+#include <cstdint>
+#include <iostream>
+#include <string>
 
 #include "common/xalloc.h"
-
-#include "compat/uint.h"
 
 #include "common/setup_after.h"
 
@@ -44,15 +43,15 @@ void constructorTests()
 	assert(number->toHexString() == "00");
 	delete number;
 
-	number = new BigInt((t_uint8)0xFF);
+	number = new BigInt((std::uint8_t)0xFF);
 	assert(number->toHexString() == "ff");
 	delete number;
 
-	number = new BigInt((t_uint16)0xFFFF);
+	number = new BigInt((std::uint16_t)0xFFFF);
 	assert(number->toHexString() == "ffff");
 	delete number;
 
-	number = new BigInt((t_uint32)0xFFFFFFFF);
+	number = new BigInt((std::uint32_t)0xFFFFFFFF);
 	assert(number->toHexString() == "ffffffff");
 	delete number;
 
@@ -79,45 +78,45 @@ void getDataTests()
 		assert(data[i] = data4[i]);
 	}
 	xfree(data);
-	data = BigInt((t_uint32)0x12345678).getData(3);
-	assert(BigInt(data, 3) == BigInt((t_uint32)0x345678));
+	data = BigInt((std::uint32_t)0x12345678).getData(3);
+	assert(BigInt(data, 3) == BigInt((std::uint32_t)0x345678));
 	xfree(data);
-	data = BigInt((t_uint32)0x12345678).getData(2);
-	assert(BigInt(data, 2) == BigInt((t_uint16)0x5678));
+	data = BigInt((std::uint32_t)0x12345678).getData(2);
+	assert(BigInt(data, 2) == BigInt((std::uint16_t)0x5678));
 	xfree(data);
-	data = BigInt((t_uint32)0x12345678).getData(1);
-	assert(BigInt(data, 1) == BigInt((t_uint8)0x78));
+	data = BigInt((std::uint32_t)0x12345678).getData(1);
+	assert(BigInt(data, 1) == BigInt((std::uint8_t)0x78));
 	xfree(data);
 }
 
 void compareOperatorsTests()
 {
 	// std::cout << __FUNCTION__ << "\n";
-	assert(BigInt((t_uint32)0x12345678) == BigInt(data3, 4));
-	assert(BigInt((t_uint16)0x27a2) < BigInt((t_uint16)0x9876));
-	assert(BigInt() < BigInt((t_uint16)0x9876));
-	assert(BigInt((t_uint16)0x9876) > BigInt());
+	assert(BigInt((std::uint32_t)0x12345678) == BigInt(data3, 4));
+	assert(BigInt((std::uint16_t)0x27a2) < BigInt((std::uint16_t)0x9876));
+	assert(BigInt() < BigInt((std::uint16_t)0x9876));
+	assert(BigInt((std::uint16_t)0x9876) > BigInt());
 }
 
 void addTests()
 {
 	// std::cout << __FUNCTION__ << "\n";
-	assert(BigInt((t_uint32)0x12344321) + BigInt((t_uint32)0x43211234) == BigInt((t_uint32)0x55555555));
-	assert(BigInt((t_uint16)0xFFFF) + BigInt((t_uint8)0x01) == BigInt((t_uint32)0x00010000));
+	assert(BigInt((std::uint32_t)0x12344321) + BigInt((std::uint32_t)0x43211234) == BigInt((std::uint32_t)0x55555555));
+	assert(BigInt((std::uint16_t)0xFFFF) + BigInt((std::uint8_t)0x01) == BigInt((std::uint32_t)0x00010000));
 }
 
 void subTests()
 {
 	// std::cout << __FUNCTION__ << "\n";
-	assert(BigInt((t_uint32)0x00010000) - BigInt((t_uint8)0x01) == BigInt((t_uint16)0xFFFF));
-	assert(BigInt((t_uint32)0x12345678) - BigInt((t_uint16)0x9876) == BigInt((t_uint32)0x1233BE02));
-	assert(BigInt((t_uint8)0x10) - BigInt((t_uint8)0xFF) == BigInt((t_uint8)0x00));
+	assert(BigInt((std::uint32_t)0x00010000) - BigInt((std::uint8_t)0x01) == BigInt((std::uint16_t)0xFFFF));
+	assert(BigInt((std::uint32_t)0x12345678) - BigInt((std::uint16_t)0x9876) == BigInt((std::uint32_t)0x1233BE02));
+	assert(BigInt((std::uint8_t)0x10) - BigInt((std::uint8_t)0xFF) == BigInt((std::uint8_t)0x00));
 }
 
 void mulTests()
 {
 	// std::cout << __FUNCTION__ << "\n";
-	assert(BigInt((t_uint8)0x02) * BigInt((t_uint8)0xff) == BigInt((t_uint16)0x01fe));
+	assert(BigInt((std::uint8_t)0x02) * BigInt((std::uint8_t)0xff) == BigInt((std::uint16_t)0x01fe));
 	const unsigned char data4[] = { 0x01, 0x4b, 0x66, 0xdc, 0x1d, 0xf4, 0xd8, 0x40 };
 	assert(BigInt(data3, 4) * BigInt(data3, 4) == BigInt(data4, 8));
 }
@@ -125,18 +124,18 @@ void mulTests()
 void divTests()
 {
 	// std::cout << __FUNCTION__ << "\n";
-	assert(BigInt((t_uint16)0x9876) / BigInt((t_uint32)0x98765432) == BigInt());
-	assert(BigInt((t_uint32)0x1e0f7fbc) / BigInt((t_uint16)0x1e2f) == BigInt((t_uint16)0xfef4));
-	assert(BigInt((t_uint32)0x01000000) / BigInt((t_uint32)0x00FFFFFF) == BigInt((t_uint8)0x01));
-	assert(BigInt(data4, 16) / BigInt((t_uint8)0x02) > BigInt());
+	assert(BigInt((std::uint16_t)0x9876) / BigInt((std::uint32_t)0x98765432) == BigInt());
+	assert(BigInt((std::uint32_t)0x1e0f7fbc) / BigInt((std::uint16_t)0x1e2f) == BigInt((std::uint16_t)0xfef4));
+	assert(BigInt((std::uint32_t)0x01000000) / BigInt((std::uint32_t)0x00FFFFFF) == BigInt((std::uint8_t)0x01));
+	assert(BigInt(data4, 16) / BigInt((std::uint8_t)0x02) > BigInt());
 }
 
 void modTests()
 {
 	// std::cout << __FUNCTION__ << "\n";
-	assert(BigInt((t_uint32)0x1e0f7fbc) % BigInt((t_uint16)0x1e2f) == BigInt((t_uint16)0x18f0));
-	assert(BigInt((t_uint32)0x01000000) % BigInt((t_uint32)0x00FFFFFF) == BigInt((t_uint8)0x01));
-	assert(BigInt((t_uint32)0x80000000) % BigInt((t_uint32)0xFFFFFFFF) == BigInt((t_uint32)0x80000000));
+	assert(BigInt((std::uint32_t)0x1e0f7fbc) % BigInt((std::uint16_t)0x1e2f) == BigInt((std::uint16_t)0x18f0));
+	assert(BigInt((std::uint32_t)0x01000000) % BigInt((std::uint32_t)0x00FFFFFF) == BigInt((std::uint8_t)0x01));
+	assert(BigInt((std::uint32_t)0x80000000) % BigInt((std::uint32_t)0xFFFFFFFF) == BigInt((std::uint32_t)0x80000000));
 
 }
 
@@ -153,9 +152,9 @@ void randTests()
 void powmTests()
 {
 	// std::cout << __FUNCTION__ << "\n";
-	assert(BigInt((t_uint8)0x02).powm(BigInt((t_uint8)0x1F), BigInt((t_uint32)0xFFFFFFFF)) == BigInt((t_uint32)0x80000000));
+	assert(BigInt((std::uint8_t)0x02).powm(BigInt((std::uint8_t)0x1F), BigInt((std::uint32_t)0xFFFFFFFF)) == BigInt((std::uint32_t)0x80000000));
 	BigInt mod = BigInt::random(32);
-	assert(BigInt((t_uint8)0x2f).powm(BigInt::random(32), mod) < mod);
+	assert(BigInt((std::uint8_t)0x2f).powm(BigInt::random(32), mod) < mod);
 }
 
 int main()

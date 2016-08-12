@@ -35,7 +35,8 @@ namespace pvpgn
 	namespace bnetd
 	{
 
-		typedef enum {
+		typedef enum : int
+		{
 			wol_gameres_type_unknown = 0,
 			wol_gameres_type_byte = 1,
 			wol_gameres_type_bool = 2,

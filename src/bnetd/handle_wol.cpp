@@ -21,9 +21,11 @@
 #include "common/setup_before.h"
 #include "handle_wol.h"
 
-#include <cstring>
 #include <cctype>
+#include <cinttypes>
+#include <cstdint>
 #include <cstdlib>
+#include <cstring>
 
 #include "compat/strcasecmp.h"
 #include "common/irc_protocol.h"
@@ -1326,7 +1328,7 @@ namespace pvpgn
 
 				game_set_status(game, game_status_started);
 
-				std::snprintf(_temp_a, sizeof(_temp_a), "%u %u", game_get_id(game), game_get_start_time(game));
+				std::snprintf(_temp_a, sizeof(_temp_a), "%u %" PRId64, game_get_id(game), static_cast<std::int64_t>(game_get_start_time(game)));
 				std::strcat(temp, _temp_a);
 
 				for (i = 0; ((e) && (e[i])); i++) {

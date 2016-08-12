@@ -18,23 +18,23 @@
  */
 
 #include "common/setup_before.h"
+#include "bnetsrp3.h"
+
+#include <cassert>
+#include <cctype>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
-#include <cstdlib>
-#include <cstring>
-#include <cstdio>
-#include <cctype>
-#include <cassert>
-
-#include "bnetsrp3.h"
 
 #include "common/bigint.h"
 #include "common/bnethash.h"
 #include "common/eventlog.h"
 #include "common/util.h"
 #include "common/xalloc.h"
-#include "compat/uint.h"
 #include "common/xstring.h"
 
 #include "common/setup_after.h"
@@ -42,7 +42,7 @@
 namespace pvpgn
 {
 
-	t_uint8 bnetsrp3_g = 0x2F;
+	std::uint8_t bnetsrp3_g = 0x2F;
 
 	const unsigned char bnetsrp3_N[] = {
 		0xF8, 0xFF, 0x1A, 0x8B, 0x61, 0x99, 0x18, 0x03,
@@ -172,12 +172,12 @@ namespace pvpgn
 		BnetSRP3::getScrambler(BigInt& B) const
 	{
 			unsigned char raw_B[32];
-			t_uint32 scrambler;
+			std::uint32_t scrambler;
 			t_hash hash;
 
 			B.getData(raw_B, 32, 4, false);
 			sha1_hash(&hash, 32, raw_B);
-			scrambler = *(t_uint32*)hash;
+			scrambler = *(std::uint32_t*)hash;
 
 			return BigInt(scrambler);
 		}

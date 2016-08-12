@@ -15,11 +15,11 @@
  * GNU Affero General Public License for more details.
  */
 
-#ifndef __BIGINT_INCLUDED__
-#define __BIGINT_INCLUDED__
+#ifndef INCLUDED_BIGINT_H
+#define INCLUDED_BIGINT_H
 
+#include <cstdint>
 #include <string>
-#include "compat/uint.h"
 
 namespace pvpgn
 {
@@ -28,9 +28,9 @@ namespace pvpgn
 	{
 	public:
 		BigInt();
-		explicit BigInt(t_uint8 input);
-		explicit BigInt(t_uint16 input);
-		explicit BigInt(t_uint32 input);
+		explicit BigInt(std::uint8_t input);
+		explicit BigInt(std::uint16_t input);
+		explicit BigInt(std::uint32_t input);
 		BigInt(const BigInt& input);
 		BigInt& operator=(const BigInt& input);
 		BigInt(unsigned char const* input, int input_size, int blockSize = 1, bool bigEndian = true);
@@ -52,17 +52,11 @@ namespace pvpgn
 		std::string toHexString() const;
 
 	private:
-
-#ifdef  HAVE_UINT64_T
-		explicit BigInt(t_uint64 input);
-		typedef t_uint32 bigint_base;
-		typedef t_uint64 bigint_extended;
+		
+		explicit BigInt(std::uint64_t input);
+		using bigint_base = std::uint32_t;
+		using bigint_extended = std::uint64_t;
 #define bigint_base_mask 0xffffffff
-#else
-		typedef t_uint16 bigint_base;
-		typedef t_uint32 bigint_extended;
-#define bigint_base_mask 0xffff
-#endif
 #define bigint_extended_carry bigint_base_mask+0x01
 #define bigint_base_bitcount (sizeof(bigint_base)*8)
 

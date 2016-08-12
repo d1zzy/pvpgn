@@ -17,9 +17,11 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 	*/
 #include "common/setup_before.h"
+
+#include <cerrno>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <cerrno>
 
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
@@ -55,7 +57,7 @@ namespace
 		if (pixelsize == 0) return NULL;
 
 		dst = new_tgaimg(width, height, src->bpp, type);
-		dst->data = (t_uint8*)xmalloc(width*height*pixelsize);
+		dst->data = (std::uint8_t*)xmalloc(width*height*pixelsize);
 
 		datap = src->data;
 		datap += y*src->width*pixelsize;

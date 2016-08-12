@@ -18,17 +18,7 @@
 #ifndef INCLUDED_CHARACTER_TYPES
 #define INCLUDED_CHARACTER_TYPES
 
-#ifdef CHARACTER_INTERNAL_ACCESS
-
-#ifdef JUST_NEED_TYPES
-# include "compat/uint.h"
-#else
-# define JUST_NEED_TYPES
-# include "compat/uint.h"
-# undef JUST_NEED_TYPES
-#endif
-
-#endif
+#include <cstdint>
 
 namespace pvpgn
 {
@@ -63,43 +53,43 @@ namespace pvpgn
 			char const * guildname; /* max 3 chars */
 
 			/* stored in Battle.net format for now */
-			t_uint8      helmgfx;
-			t_uint8      bodygfx;
-			t_uint8      leggfx;
-			t_uint8      lhandweapon;
-			t_uint8      lhandgfx;
-			t_uint8      rhandweapon;
-			t_uint8      rhandgfx;
-			t_uint8      chclass;
-			t_uint8      level;
-			t_uint8      status;
-			t_uint8      title;
-			t_uint8      emblembgc;
-			t_uint8      emblemfgc;
-			t_uint8      emblemnum;
+			std::uint8_t      helmgfx;
+			std::uint8_t      bodygfx;
+			std::uint8_t      leggfx;
+			std::uint8_t      lhandweapon;
+			std::uint8_t      lhandgfx;
+			std::uint8_t      rhandweapon;
+			std::uint8_t      rhandgfx;
+			std::uint8_t      chclass;
+			std::uint8_t      level;
+			std::uint8_t      status;
+			std::uint8_t      title;
+			std::uint8_t      emblembgc;
+			std::uint8_t      emblemfgc;
+			std::uint8_t      emblemnum;
 
 			/* not sure what these represent */
-			t_uint32     unknown1;
-			t_uint32     unknown2;
-			t_uint32     unknown3;
-			t_uint32     unknown4;
-			t_uint8      unknownb1;
-			t_uint8      unknownb2;
-			t_uint8      unknownb3;
-			t_uint8      unknownb4;
-			t_uint8      unknownb5;
-			t_uint8      unknownb6;
-			t_uint8      unknownb7;
-			t_uint8      unknownb8;
-			t_uint8      unknownb9;
-			t_uint8      unknownb10;
-			t_uint8      unknownb11;
-			t_uint8      unknownb13;
-			t_uint8      unknownb14;
+			std::uint32_t     unknown1;
+			std::uint32_t     unknown2;
+			std::uint32_t     unknown3;
+			std::uint32_t     unknown4;
+			std::uint8_t      unknownb1;
+			std::uint8_t      unknownb2;
+			std::uint8_t      unknownb3;
+			std::uint8_t      unknownb4;
+			std::uint8_t      unknownb5;
+			std::uint8_t      unknownb6;
+			std::uint8_t      unknownb7;
+			std::uint8_t      unknownb8;
+			std::uint8_t      unknownb9;
+			std::uint8_t      unknownb10;
+			std::uint8_t      unknownb11;
+			std::uint8_t      unknownb13;
+			std::uint8_t      unknownb14;
 
 			/* Keep some generic "data", basically the blob that is sent between client and server, in an array */
-			t_uint8      data[64];
-			t_uint8      datalen;
+			std::uint8_t      data[64];
+			std::uint8_t      datalen;
 		}
 #endif
 		t_character;
@@ -117,7 +107,6 @@ namespace pvpgn
 #define INCLUDED_CHARACTER_PROTOS
 
 #define JUST_NEED_TYPES
-#include "compat/uint.h"
 #include "account.h"
 #undef JUST_NEED_TYPES
 

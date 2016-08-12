@@ -19,7 +19,6 @@
 #include "common/setup_before.h"
 #include "fileio.h"
 
-#include "compat/uint.h"
 #include "common/xalloc.h"
 #include "common/setup_after.h"
 
@@ -80,65 +79,65 @@ namespace pvpgn
 
 		/* ----------------------------------------------------------------- */
 
-		extern t_uint8 file_readb(void) {
+		extern std::uint8_t file_readb(void) {
 			unsigned char buff[1];
 			if (std::fread(buff, 1, sizeof(buff), r_file->f) < sizeof(buff)) {
 				if (std::ferror(r_file->f)) std::perror("file_readb: std::fread");
 				return 0;
 			}
-			return (((t_uint8)buff[0]));
+			return (((std::uint8_t)buff[0]));
 		}
 
 
-		extern t_uint16 file_readw_le(void) {
+		extern std::uint16_t file_readw_le(void) {
 			unsigned char buff[2];
 			if (std::fread(buff, 1, sizeof(buff), r_file->f) < sizeof(buff)) {
 				if (std::ferror(r_file->f)) std::perror("file_readw_le: std::fread");
 				return 0;
 			}
-			return (((t_uint16)buff[0])) |
-				(((t_uint16)buff[1]) << 8);
+			return (((std::uint16_t)buff[0])) |
+				(((std::uint16_t)buff[1]) << 8);
 		}
 
 
-		extern t_uint16 file_readw_be(void) {
+		extern std::uint16_t file_readw_be(void) {
 			unsigned char buff[2];
 			if (std::fread(buff, 1, sizeof(buff), r_file->f) < sizeof(buff)) {
 				if (std::ferror(r_file->f)) std::perror("file_readw_be: std::fread");
 				return 0;
 			}
-			return (((t_uint16)buff[0]) << 8) |
-				(((t_uint16)buff[1]));
+			return (((std::uint16_t)buff[0]) << 8) |
+				(((std::uint16_t)buff[1]));
 		}
 
 
-		extern t_uint32 file_readd_le(void) {
+		extern std::uint32_t file_readd_le(void) {
 			unsigned char buff[4];
 			if (std::fread(buff, 1, sizeof(buff), r_file->f) < sizeof(buff)) {
 				if (std::ferror(r_file->f)) std::perror("file_readd_le: std::fread");
 				return 0;
 			}
-			return (((t_uint32)buff[0])) |
-				(((t_uint32)buff[1]) << 8) |
-				(((t_uint32)buff[2]) << 16) |
-				(((t_uint32)buff[3]) << 24);
+			return (((std::uint32_t)buff[0])) |
+				(((std::uint32_t)buff[1]) << 8) |
+				(((std::uint32_t)buff[2]) << 16) |
+				(((std::uint32_t)buff[3]) << 24);
 		}
 
 
-		extern t_uint32 file_readd_be(void) {
+		extern std::uint32_t file_readd_be(void) {
 			unsigned char buff[4];
 			if (std::fread(buff, 1, sizeof(buff), r_file->f) < sizeof(buff)) {
 				if (std::ferror(r_file->f)) std::perror("file_readd_be: std::fread");
 				return 0;
 			}
-			return (((t_uint32)buff[0]) << 24) |
-				(((t_uint32)buff[1]) << 16) |
-				(((t_uint32)buff[2]) << 8) |
-				(((t_uint32)buff[3]));
+			return (((std::uint32_t)buff[0]) << 24) |
+				(((std::uint32_t)buff[1]) << 16) |
+				(((std::uint32_t)buff[2]) << 8) |
+				(((std::uint32_t)buff[3]));
 		}
 
 
-		extern int file_writeb(t_uint8 u) {
+		extern int file_writeb(std::uint8_t u) {
 			unsigned char buff[1];
 			buff[0] = (u);
 			if (std::fwrite(buff, 1, sizeof(buff), w_file->f) < sizeof(buff)) {
@@ -149,7 +148,7 @@ namespace pvpgn
 		}
 
 
-		extern int file_writew_le(t_uint16 u) {
+		extern int file_writew_le(std::uint16_t u) {
 			unsigned char buff[2];
 			buff[0] = (u);
 			buff[1] = (u >> 8);
@@ -161,7 +160,7 @@ namespace pvpgn
 		}
 
 
-		extern int file_writew_be(t_uint16 u) {
+		extern int file_writew_be(std::uint16_t u) {
 			unsigned char buff[2];
 			buff[0] = (u >> 8);
 			buff[1] = (u);
@@ -173,7 +172,7 @@ namespace pvpgn
 		}
 
 
-		extern int file_writed_le(t_uint32 u) {
+		extern int file_writed_le(std::uint32_t u) {
 			unsigned char buff[4];
 			buff[0] = (u);
 			buff[1] = (u >> 8);
@@ -187,7 +186,7 @@ namespace pvpgn
 		}
 
 
-		extern int file_writed_be(t_uint32 u) {
+		extern int file_writed_be(std::uint32_t u) {
 			unsigned char buff[4];
 			buff[0] = (u >> 24);
 			buff[1] = (u >> 16);

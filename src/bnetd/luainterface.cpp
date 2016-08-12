@@ -99,7 +99,7 @@ namespace pvpgn
 
 				_register_functions();
 
-				std::snprintf(_msgtemp, sizeof(_msgtemp), "Lua sripts were successfully loaded (%u files)", files.size());
+				std::snprintf(_msgtemp, sizeof(_msgtemp), "Lua sripts were successfully loaded (%zu files)", files.size());
 				eventlog(eventlog_level_info, __FUNCTION__, "%s", _msgtemp);
 			}
 			catch (const std::exception& e)

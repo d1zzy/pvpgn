@@ -16,22 +16,22 @@
  */
 
 #include "common/setup_before.h"
-#include <iostream>
-#include <sstream>
-#include <stdexcept>
+#include "bigint.h"
+
+#include <algorithm>
+#include <cassert>
+#include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <cstdio>
-#include <cassert>
+#include <iostream>
+#include <stdexcept>
+#include <sstream>
 
-#include "bigint.h"
 #include "common/xalloc.h"
 
-#include "compat/uint.h"
-
 #include "common/setup_after.h"
-#include <algorithm>
-
+ 
 namespace pvpgn
 {
 
@@ -44,26 +44,26 @@ namespace pvpgn
 		segment[0] = 0;
 	}
 
-	BigInt::BigInt(t_uint8 input)
+	BigInt::BigInt(std::uint8_t input)
 	{
 		segment_count = 1;
 		segment = (bigint_base*)xmalloc(segment_count * sizeof(bigint_base));
 		segment[0] = input;
 	}
 
-	BigInt::BigInt(t_uint16 input)
+	BigInt::BigInt(std::uint16_t input)
 	{
 		segment_count = 1;
 		segment = (bigint_base*)xmalloc(segment_count * sizeof(bigint_base));
 		segment[0] = input;
 	}
 
-	BigInt::BigInt(t_uint32 input)
+	BigInt::BigInt(std::uint32_t input)
 	{
 #ifndef HAVE_UINT64_T
 		int i;
 #endif
-		segment_count = sizeof(t_uint32) / sizeof(bigint_base);
+		segment_count = sizeof(std::uint32_t) / sizeof(bigint_base);
 		segment = (bigint_base*)xmalloc(segment_count * sizeof(bigint_base));
 #ifdef HAVE_UINT64_T
 		segment[0] = input;
@@ -75,18 +75,16 @@ namespace pvpgn
 #endif
 	}
 
-#ifdef HAVE_UINT64_T
-	BigInt::BigInt(t_uint64 input)
+	BigInt::BigInt(std::uint64_t input)
 	{
 		int i;
-		segment_count = sizeof(t_uint64) / sizeof(bigint_base);
+		segment_count = sizeof(std::uint64_t) / sizeof(bigint_base);
 		segment = (bigint_base*)xmalloc(segment_count * sizeof(bigint_base));
 		for (i = 0; i < segment_count; i++){
 			segment[i] = input & bigint_base_mask;
 			input >>= bigint_base_bitcount;
 		}
 	}
-#endif
 
 	BigInt::BigInt(const BigInt& input)
 		:segment_count(input.segment_count)
@@ -575,7 +573,7 @@ namespace pvpgn
 				}
 				else if (exp.segment[0] == 0x00)
 				{
-					return BigInt((t_uint8)0x01);
+					return BigInt((std::uint8_t)0x01);
 				}
 			}
 
@@ -583,14 +581,14 @@ namespace pvpgn
 			if (exp.segment[0] % 2 == 0)
 			{
 				// exp is even
-				BigInt half = exp / (BigInt((t_uint8)0x02));
+				BigInt half = exp / (BigInt((std::uint8_t)0x02));
 				BigInt halfpow = this->powm(half, mod);
 				return (halfpow * halfpow) % mod;
 			}
 			else
 			{
 				// exp is odd
-				BigInt half = exp / (BigInt((t_uint8)0x02));
+				BigInt half = exp / (BigInt((std::uint8_t)0x02));
 				BigInt halfpow = this->powm(half, mod);
 				return (((halfpow * halfpow) % mod) * *this) % mod;
 			}

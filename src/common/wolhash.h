@@ -18,19 +18,9 @@
 #ifndef INCLUDED_WOLHASH_TYPES
 #define INCLUDED_WOLHASH_TYPES
 
-#ifdef JUST_NEED_TYPES
-# include "compat/uint.h"
-#else
-# define JUST_NEED_TYPES
-# include "compat/uint.h"
-# undef JUST_NEED_TYPES
-#endif
-
 namespace pvpgn
 {
-
-	typedef char t_wolhash[9];
-
+	using t_wolhash = char[9];
 }
 
 #endif

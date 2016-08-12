@@ -28,9 +28,9 @@
 #include "asnprintf.h"
 
 #include <cctype>
+#include <cstdint>
 #include <cstring>
 
-#include "compat/uint.h"
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -45,14 +45,14 @@ namespace pvpgn
 		return i;
 	}
 
-	t_uint32 do_div(t_uint64 *n, t_uint32 base)
+	std::uint32_t do_div(std::uint64_t *n, std::uint32_t base)
 	{
-		t_uint32 remainder = *n % base;
+		std::uint32_t remainder = *n % base;
 		*n = *n / base;
 		return remainder;
 	}
 
-	static char * number(char * buf, char * end, t_uint64 num, int base, int size, int precision, int type)
+	static char * number(char * buf, char * end, std::uint64_t num, int base, int size, int precision, int type)
 	{
 		char c, sign, tmp[66];
 		const char *digits;
@@ -68,9 +68,9 @@ namespace pvpgn
 		c = (type & ZEROPAD) ? '0' : ' ';
 		sign = 0;
 		if (type & SIGN) {
-			if ((t_int64)num < 0) {
+			if ((std::int64_t)num < 0) {
 				sign = '-';
-				num = -(t_int64)num;
+				num = -(std::int64_t)num;
 				size--;
 			}
 			else if (type & PLUS) {
@@ -151,7 +151,7 @@ namespace pvpgn
 	int vasnprintf(char *buf, std::size_t size, t_fmtentry *entries, unsigned entlen, const char *fmt, std::va_list args)
 	{
 		int len;
-		t_uint64 num;
+		std::uint64_t num;
 		int i, base;
 		char *str, *end, c;
 		const char *s;

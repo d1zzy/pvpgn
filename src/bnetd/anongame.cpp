@@ -19,8 +19,9 @@
 #include "common/setup_before.h"
 #include "anongame.h"
 
-#include <cstring>
+#include <cstdint>
 #include <cstdlib>
+#include <cstring>
 
 #include "compat/strdup.h"
 #include "common/packet.h"
@@ -75,14 +76,14 @@ namespace pvpgn
 
 		static int _anongame_gametype_to_queue(int type, int gametype);
 		static int _anongame_level_by_queue(t_connection * c, int queue);
-		static const char * _get_map_from_prefs(int queue, t_uint32 cur_prefs, t_clienttag clienttag);
+		static const char * _get_map_from_prefs(int queue, std::uint32_t cur_prefs, t_clienttag clienttag);
 		static unsigned int _anongame_get_gametype_tab(int queue);
 
 		static int _anongame_totalplayers(int queue);
 		static int _anongame_totalteams(int queue);
 
 		static int _handle_anongame_search(t_connection * c, t_packet const *packet);
-		static int _anongame_queue(t_connection * c, int queue, t_uint32 map_prefs);
+		static int _anongame_queue(t_connection * c, int queue, std::uint32_t map_prefs);
 		static int _anongame_compare_level(void const *a, void const *b);
 		static int _anongame_order_queue(int queue);
 		static int _anongame_match(t_connection * c, int queue);
@@ -235,7 +236,7 @@ namespace pvpgn
 			}
 		}
 
-		static const char * _get_map_from_prefs(int queue, t_uint32 cur_prefs, t_clienttag clienttag)
+		static const char * _get_map_from_prefs(int queue, std::uint32_t cur_prefs, t_clienttag clienttag)
 		{
 			int i, j = 0;
 			const char *default_map, *selected;
@@ -386,8 +387,8 @@ namespace pvpgn
 			t_packet *rpacket;
 			t_connection *tc[6];
 			t_anongame *a, *ta;
-			t_uint8 teamsize = 0;
-			t_uint8 option = bn_byte_get(packet->u.client_findanongame.option);
+			std::uint8_t teamsize = 0;
+			std::uint8_t option = bn_byte_get(packet->u.client_findanongame.option);
 
 			if (!(a = conn_get_anongame(c))) {
 				if (!(a = conn_create_anongame(c))) {
@@ -518,7 +519,7 @@ namespace pvpgn
 			return 0;
 		}
 
-		static int _anongame_queue(t_connection * c, int queue, t_uint32 map_prefs)
+		static int _anongame_queue(t_connection * c, int queue, std::uint32_t map_prefs)
 		{
 			int level;
 			t_matchdata *md;
@@ -815,7 +816,7 @@ namespace pvpgn
 			t_elem *curr;
 			int diff;
 			t_anongame *a = conn_get_anongame(c);
-			t_uint32 cur_prefs = a->map_prefs;
+			std::uint32_t cur_prefs = a->map_prefs;
 			t_connection *inv_c[ANONGAME_MAX_TEAMS];
 			int maxlevel, minlevel;
 			int teams = 0;
@@ -1173,8 +1174,8 @@ namespace pvpgn
 			t_anongame *a = conn_get_anongame(gamec);
 			int tp = anongame_get_totalplayers(a);
 			int oppon_level[ANONGAME_MAX_GAMECOUNT];
-			t_uint8 gametype = a->queue;
-			t_uint8 plnum = a->playernum;
+			std::uint8_t gametype = a->queue;
+			std::uint8_t plnum = a->playernum;
 			t_clienttag ct = conn_get_clienttag(c);
 			int tt = _anongame_totalteams(gametype);
 
@@ -1440,7 +1441,7 @@ namespace pvpgn
 			return a->count;
 		}
 
-		extern t_uint32 anongame_get_id(t_anongame * a)
+		extern std::uint32_t anongame_get_id(t_anongame * a)
 		{
 			if (!a) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL anongame");
@@ -1458,7 +1459,7 @@ namespace pvpgn
 			return a->tc[tpnumber];
 		}
 
-		extern t_uint32 anongame_get_race(t_anongame * a)
+		extern std::uint32_t anongame_get_race(t_anongame * a)
 		{
 			if (!a) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL anongame");
@@ -1467,7 +1468,7 @@ namespace pvpgn
 			return a->race;
 		}
 
-		extern t_uint32 anongame_get_handle(t_anongame * a)
+		extern std::uint32_t anongame_get_handle(t_anongame * a)
 		{
 			if (!a) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL anongame");
@@ -1503,7 +1504,7 @@ namespace pvpgn
 			return a->joined;
 		}
 
-		extern t_uint8 anongame_get_playernum(t_anongame * a)
+		extern std::uint8_t anongame_get_playernum(t_anongame * a)
 		{
 			if (!a) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL anongame");
@@ -1512,7 +1513,7 @@ namespace pvpgn
 			return a->playernum;
 		}
 
-		extern t_uint8 anongame_get_queue(t_anongame * a)
+		extern std::uint8_t anongame_get_queue(t_anongame * a)
 		{
 			if (!a) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL anongame");
@@ -1560,7 +1561,7 @@ namespace pvpgn
 			a->info->results[a->playernum - 1] = results;
 		}
 
-		extern void anongame_set_handle(t_anongame * a, t_uint32 h)
+		extern void anongame_set_handle(t_anongame * a, std::uint32_t h)
 		{
 			if (!a) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL anongame");
@@ -1617,7 +1618,7 @@ namespace pvpgn
 			t_connection *gamec;
 			char const *username;
 			t_anongame *a = NULL;
-			t_uint8 gametype, plnum;
+			std::uint8_t gametype, plnum;
 			int tp, i;
 
 			if (!c) {

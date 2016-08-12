@@ -23,12 +23,13 @@
 #include "common/setup_before.h"
 #include "handle_bnet.h"
 
-#include <cinttypes>
-#include <fstream>
-#include <cerrno>
-#include <sstream>
-#include <cstring>
 #include <cctype>
+#include <cerrno>
+#include <cinttypes>
+#include <cstdint>
+#include <cstring>
+#include <fstream>
+#include <sstream>
 
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
@@ -3492,7 +3493,7 @@ namespace pvpgn
 			int found = 1;
 			t_clan *user_clan;
 			t_clantag clantag;
-			t_uint32 clienttag;
+			std::uint32_t clienttag;
 			t_channel *channel;
 
 			if (packet_get_size(packet) < sizeof(t_client_joinchannel)) {
