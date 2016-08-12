@@ -19,12 +19,12 @@
 #include "common/setup_before.h"
 #include "character.h"
 
+#include <cstdint>
 #include <cstring>
 
 #include "compat/strcasecmp.h"
 #include "common/eventlog.h"
 #include "common/list.h"
-#include "compat/uint.h"
 #include "common/bnet_protocol.h"
 #include "account.h"
 #include "account_wrap.h"
@@ -43,7 +43,7 @@ namespace pvpgn
 		static t_list * characterlist_head = NULL;
 
 
-		static t_character_class bncharacter_class_to_character_class(t_uint8 cclass)
+		static t_character_class bncharacter_class_to_character_class(std::uint8_t cclass)
 		{
 			switch (cclass)
 			{

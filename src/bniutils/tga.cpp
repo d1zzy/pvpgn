@@ -19,8 +19,9 @@
 #include "common/setup_before.h"
 #include "tga.h"
 
-#include <cstring>
 #include <cerrno>
+#include <cstdint>
+#include <cstring>
 
 #include "common/xalloc.h"
 #include "fileio.h"
@@ -353,7 +354,7 @@ namespace pvpgn
 			}
 
 			/* Now, we can alloc img->data */
-			img->data = (t_uint8*)xmalloc(img->width*img->height*pixelsize);
+			img->data = (std::uint8_t*)xmalloc(img->width*img->height*pixelsize);
 			if (img->imgtype == tgaimgtype_uncompressed_truecolor) {
 				if (std::fread(img->data, pixelsize, img->width*img->height, f) < (unsigned)(img->width*img->height)) {
 					std::fprintf(stderr, "load_tga: error while reading data!\n");

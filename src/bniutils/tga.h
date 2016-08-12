@@ -19,14 +19,9 @@
 #ifndef INCLUDED_TGA_H
 #define INCLUDED_TGA_H
 
+#include <cstdint>
 #include <cstdio>
-#ifdef JUST_NEED_TYPES
-# include "compat/uint.h"
-#else
-# define JUST_NEED_TYPES
-# include "compat/uint.h"
-# undef JUST_NEED_TYPES
-#endif
+
 
 namespace pvpgn
 {
@@ -34,30 +29,32 @@ namespace pvpgn
 	namespace bni
 	{
 
-		typedef struct {
-			t_uint8  idlen; /* number of bytes in Field 6: 0==no id */
-			t_uint8  cmaptype; /* colormap: 0==none, 1==included, <128==TrueVision, >=128==developer */
-			t_uint8  imgtype; /* pixel format: <128==TrueVision, >=128==developer */
-			t_uint16 cmapfirst; /* first entry offset */
-			t_uint16 cmaplen; /* number of colormap entries */
-			t_uint8  cmapes; /* size of a single colormap entry in bits, 15 forces 1 attribute bit, 32 forces 8  */
-			t_uint16 xorigin; /* x coordinate of lower left hand corner with origin at left of screen */
-			t_uint16 yorigin; /* y coordinate of lower left hand corner with origin at bottom of screen */
-			t_uint16 width; /* width in pixels */
-			t_uint16 height; /* height in pixels */
-			t_uint8  bpp; /* bits per pixel, including attributes and alpha channel */
-			t_uint8  desc; /* image descriptor: bits 0,1,2,3==num attribute bits per pixel, bit 4==horizontal order, bit 5==vertical order, bits 6,7==interleaving */
+		typedef struct
+		{
+			std::uint8_t idlen; /* number of bytes in Field 6: 0==no id */
+			std::uint8_t cmaptype; /* colormap: 0==none, 1==included, <128==TrueVision, >=128==developer */
+			std::uint8_t imgtype; /* pixel format: <128==TrueVision, >=128==developer */
+			std::uint16_t cmapfirst; /* first entry offset */
+			std::uint16_t cmaplen; /* number of colormap entries */
+			std::uint8_t cmapes; /* size of a single colormap entry in bits, 15 forces 1 attribute bit, 32 forces 8  */
+			std::uint16_t xorigin; /* x coordinate of lower left hand corner with origin at left of screen */
+			std::uint16_t yorigin; /* y coordinate of lower left hand corner with origin at bottom of screen */
+			std::uint16_t width; /* width in pixels */
+			std::uint16_t height; /* height in pixels */
+			std::uint8_t bpp; /* bits per pixel, including attributes and alpha channel */
+			std::uint8_t desc; /* image descriptor: bits 0,1,2,3==num attribute bits per pixel, bit 4==horizontal order, bit 5==vertical order, bits 6,7==interleaving */
 			/* field 6, optional */
 			/* field 7, colormap data in ARGB, optional, entries are (min(cmapes/3,8)*3+7)/8 bits wide */
-			t_uint8 *data;
+			std::uint8_t* data;
 			/* field 9, developer area, optional */
 			/* field 10, extension area, optional */
-			t_uint32 extareaoff; /* extension area offset, 0==none */
-			t_uint32 devareaoff; /* developer area offset, 0==none */
+			std::uint32_t extareaoff; /* extension area offset, 0==none */
+			std::uint32_t devareaoff; /* developer area offset, 0==none */
 			/* magic, null terminated */
 		} t_tgaimg;
 
-		typedef enum {
+		typedef enum
+		{
 			tgaimgtype_empty = 0,
 			tgaimgtype_uncompressed_mapped = 1,
 			tgaimgtype_uncompressed_truecolor = 2,

@@ -20,10 +20,8 @@
 #ifndef INCLUDED_FILEIO_PROTOS
 #define INCLUDED_FILEIO_PROTOS
 
+#include <cstdint>
 #include <cstdio>
-#define JUST_NEED_TYPES
-# include "compat/uint.h"
-#undef JUST_NEED_TYPES
 
 namespace pvpgn
 {
@@ -36,16 +34,16 @@ namespace pvpgn
 		extern void file_wpush(std::FILE *f);
 		extern void file_wpop(void);
 
-		extern t_uint8 file_readb(void);
-		extern t_uint16 file_readw_le(void);
-		extern t_uint16 file_readw_be(void);
-		extern t_uint32 file_readd_le(void);
-		extern t_uint32 file_readd_be(void);
-		extern int file_writeb(t_uint8 u);
-		extern int file_writew_le(t_uint16 u);
-		extern int file_writew_be(t_uint16 u);
-		extern int file_writed_le(t_uint32 u);
-		extern int file_writed_be(t_uint32 u);
+		extern std::uint8_t file_readb(void);
+		extern std::uint16_t file_readw_le(void);
+		extern std::uint16_t file_readw_be(void);
+		extern std::uint32_t file_readd_le(void);
+		extern std::uint32_t file_readd_be(void);
+		extern int file_writeb(std::uint8_t u);
+		extern int file_writew_le(std::uint16_t u);
+		extern int file_writew_be(std::uint16_t u);
+		extern int file_writed_le(std::uint32_t u);
+		extern int file_writed_be(std::uint32_t u);
 
 	}
 

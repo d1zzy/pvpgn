@@ -17,9 +17,11 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 	*/
 #include "common/setup_before.h"
-#include <cstring>
+
 #include <cerrno>
+#include <cstdint>
 #include <cstdlib>
+#include <cstring>
 
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
@@ -265,7 +267,7 @@ extern int main(int argc, char * argv[])
 			img->height += bni.icons->icon[i].y;
 		}
 		std::fprintf(stderr, "Info: Creating TGA with %ux%ux%ubpp.\n", img->width, img->height, img->bpp);
-		img->data = (t_uint8*)xmalloc(img->width*img->height*getpixelsize(img));
+		img->data = (std::uint8_t*)xmalloc(img->width*img->height*getpixelsize(img));
 		yline = 0;
 		for (i = 0; i < bni.numicons; i++) {
 			t_tgaimg *icon;
