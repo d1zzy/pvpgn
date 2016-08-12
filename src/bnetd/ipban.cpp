@@ -20,11 +20,13 @@
 #define IPBAN_INTERNAL_ACCESS
 #include "ipban.h"
 
-#include <cstdio>
-#include <cerrno>
-#include <cstring>
-#include <cstdlib>
 #include <cctype>
+#include <cerrno>
+#include <cinttypes>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <vector>
 
 #include "compat/strsep.h"
@@ -215,9 +217,10 @@ namespace pvpgn
 					continue;
 				}
 				if (entry->endtime == 0)
-					std::sprintf(line, "%s\n", ipstr);
+					std::snprintf(line, sizeof(line), "%s\n", ipstr);
 				else
-					std::sprintf(line, "%s %ld\n", ipstr, entry->endtime);
+					std::sprintf(line, "%s %" PRId64 "\n", ipstr, static_cast<std::int64_t>(entry->endtime));
+
 				if (!(std::fwrite(line, std::strlen(line), 1, fp)))
 					eventlog(eventlog_level_error, __FUNCTION__, "could not write to banlist file (write: %s)", std::strerror(errno));
 				xfree(ipstr);

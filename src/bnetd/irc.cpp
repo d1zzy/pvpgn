@@ -21,10 +21,12 @@
 #include "common/setup_before.h"
 #include "irc.h"
 
-#include <cstring>
+#include <cinttypes>
+#include <cstdint>
 #include <cstdio>
-#include <ctime>
 #include <cstdlib>
+#include <cstring>
+#include <ctime>
 
 #include "compat/strcasecmp.h"
 
@@ -1627,17 +1629,16 @@ namespace pvpgn
 
 		extern int _handle_time_command(t_connection * conn, int numparams, char ** params, char * text)
 		{
-			char temp[MAX_IRC_MESSAGE_LEN];
+			char temp[MAX_IRC_MESSAGE_LEN] = {}; // PELISH: According to RFC2812
 			std::time_t now;
 			char const * ircname = server_get_hostname();
 
-			/* PELISH: According to RFC2812 */
-			std::memset(temp, 0, sizeof(temp));
-
-			if ((numparams >= 1) && (params[0])) {
-				if (std::strcmp(params[0], ircname) == 0) {
+			if ((numparams >= 1) && (params[0]))
+			{
+				if (std::strcmp(params[0], ircname) == 0)
+				{
 					now = std::time(NULL);
-					std::snprintf(temp, sizeof(temp), "%s :%lu", ircname, now);
+					std::snprintf(temp, sizeof(temp), "%s :%" PRId64, ircname, static_cast<std::int64_t>(now));
 					irc_send(conn, RPL_TIME, temp);
 				}
 				else {
@@ -1648,7 +1649,7 @@ namespace pvpgn
 			else {
 				/* RPL_TIME contains time and name of this server */
 				now = std::time(NULL);
-				std::snprintf(temp, sizeof(temp), "%s :%lu", ircname, now);
+				std::snprintf(temp, sizeof(temp), "%s :%" PRId64, ircname, static_cast<std::int64_t>(now));
 				irc_send(conn, RPL_TIME, temp);
 			}
 			return 0;
