@@ -6,7 +6,8 @@ The configuration file consists of a single array named ````ads```` which can co
 - ````filename````: A string containing the filename of the ad banner, should not include a path.
 - ````url````: A string containing the URL that users should be directed to when clicking on the ad banner.
 - ````client````: A string containing the 4 character client tag that the ad banner should be shown to, a string of "NULL" will cause the ad banner to be shown to any client.
-- ````lang````: A string containing a 4 character language code that will be displayed to users who have enabled that particular language, a string of "any" will cause the ad banner to be shown to any user. (e.g. deDE for German, enUS for English)
+- ````lang````: A string containing a 4 character language code that will be displayed to users who have enabled that particular language, a string of "NULL" will cause the ad banner to be shown to any user.
+    - Valid ````lang```` tags: ````enUS````, ````deDE````, ````csCZ````, ````esES````, ````frFR````, ````itIT````, ````jaJA````, ````koKR````, ````plPL````, ````ruRU````, ````zhCN````, ````zhTW````, ````NULL````.
 
 ### File Formats
 | Client     | Banner Format |

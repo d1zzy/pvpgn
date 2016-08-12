@@ -5148,6 +5148,9 @@ namespace pvpgn
 		/* Send message to all clients (similar to announce, but in messagebox) */
 		static int _handle_alert_command(t_connection * c, char const * text)
 		{
+
+			return 0;
+			/*********************************************************************/
 			t_clienttag  clienttag;
 			t_clienttag  clienttag_dest;
 

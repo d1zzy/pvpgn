@@ -1440,9 +1440,14 @@ namespace pvpgn
 					{
 						try
 						{
-							AdBanner().load(prefs_get_adfile());
+							if (AdBannerList.is_loaded())
+							{
+								AdBannerList.unload();
+							}
+
+							AdBannerList.load(prefs_get_adfile());
 						}
-						catch (const std::runtime_error& e)
+						catch (const std::exception& e)
 						{
 							eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
 						}

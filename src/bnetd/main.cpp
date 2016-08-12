@@ -370,7 +370,12 @@ int pre_server_startup(void)
 
 	try
 	{
-		AdBanner().load(prefs_get_adfile());
+		if (AdBannerList.is_loaded())
+		{
+			AdBannerList.unload();
+		}
+		
+		AdBannerList.load(prefs_get_adfile());
 	}
 	catch (const std::exception& e)
 	{
