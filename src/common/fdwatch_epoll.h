@@ -26,7 +26,6 @@
 #ifdef HAVE_EPOLL
 
 #ifdef HAVE_SYS_EPOLL_H
-# include "compat/uint.h"
 # include <sys/epoll.h>
 #endif
 
