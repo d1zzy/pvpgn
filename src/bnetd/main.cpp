@@ -32,9 +32,6 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifdef HAVE_SYS_UTSNAME_H
-# include <sys/utsname.h>
-#endif
 #ifdef WIN32
 # include "win32/service.h"
 #endif
@@ -490,14 +487,14 @@ void post_server_shutdown(int status)
 
 void pvpgn_greeting(void)
 {
-	struct utsname     utsbuf;
 #ifdef HAVE_GETPID
 	eventlog(eventlog_level_info, __FUNCTION__, PVPGN_SOFTWARE" version " PVPGN_VERSION " process %u", (unsigned int)getpid());
 #else
 	eventlog(eventlog_level_info, __FUNCTION__, PVPGN_SOFTWARE" version "PVPGN_VERSION);
 #endif
 
-	if (!(uname(&utsbuf) < 0))
+	struct utsname utsbuf = {};
+	if (uname(&utsbuf) == 0)
 	{
 		eventlog(eventlog_level_info, __FUNCTION__, "running on %s (%s %s, %s)", utsbuf.sysname, utsbuf.version, utsbuf.release, utsbuf.machine);
 	}

@@ -42,6 +42,8 @@ if (MSVC)
 	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.0)
 		message(FATAL_ERROR "Visual Studio 2015 or higher required")
 	endif()
+	
+	add_definitions(-DUNICODE -D_UNICODE)
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")

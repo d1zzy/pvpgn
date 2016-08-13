@@ -17,10 +17,13 @@
 #ifdef WIN32
 
 #include <cstring>
-#include <windows.h>
-#include <winsvc.h>
+#include <cwchar>
+#include <string>
+#include <vector>
 
-#if !defined(WINADVAPI)
+#include <windows.h>
+
+#ifndef WINADVAPI
 #if !defined(_ADVAPI32_)
 #define WINADVAPI DECLSPEC_IMPORT
 #else
@@ -43,64 +46,92 @@ extern int main(int argc, char ** argv);
 SERVICE_STATUS serviceStatus;
 SERVICE_STATUS_HANDLE serviceStatusHandle = 0;
 
-typedef WINADVAPI BOOL(WINAPI *CSD_T)(SC_HANDLE, DWORD, LPCVOID);
+typedef WINADVAPI BOOL(WINAPI *CSD_T)(SC_HANDLE hService, DWORD dwInfoLevel, LPVOID lpInfo);
 
 void Win32_ServiceInstall()
 {
-	SERVICE_DESCRIPTION sdBuf;
-	CSD_T ChangeServiceDescription;
-	HMODULE advapi32;
-	SC_HANDLE serviceControlManager = OpenSCManager(0, 0, SC_MANAGER_CREATE_SERVICE);
-
-	if (serviceControlManager)
+	SC_HANDLE serviceControlManager = OpenSCManagerW(nullptr, nullptr, SC_MANAGER_CREATE_SERVICE);
+	if (!serviceControlManager)
 	{
-		char path[_MAX_PATH + 10];
-		if (GetModuleFileName(0, path, sizeof(path) / sizeof(path[0])) > 0)
-		{
-			SC_HANDLE service;
-			std::strcat(path, " --service");
-			service = CreateService(serviceControlManager,
-				serviceName, serviceLongName,
-				SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
-				SERVICE_AUTO_START, SERVICE_ERROR_IGNORE, path,
-				0, 0, 0, 0, 0);
-			if (service)
-			{
-				sdBuf.lpDescription = serviceDescription;
-
-				if (!(advapi32 = GetModuleHandle("ADVAPI32.DLL")))
-				{
-					CloseServiceHandle(service);
-					CloseServiceHandle(serviceControlManager);
-					return;
-				}
-
-				if (!(ChangeServiceDescription = (CSD_T)GetProcAddress(advapi32, "ChangeServiceConfig2A")))
-				{
-					CloseServiceHandle(service);
-					CloseServiceHandle(serviceControlManager);
-					return;
-				}
-
-				ChangeServiceDescription(
-					service,                // handle to service  
-					SERVICE_CONFIG_DESCRIPTION, // change: description  
-					&sdBuf);
-				CloseServiceHandle(service);
-			}
-		}
-		CloseServiceHandle(serviceControlManager);
+		return;
 	}
+
+	wchar_t path[MAX_PATH + 10] = {};
+	if (GetModuleFileNameW(nullptr, path, sizeof path / sizeof *path) != 0)
+	{
+		return;
+	}
+
+	std::wcscat(path, L"--service");
+
+	auto utf8_decode = [](const std::string& str)
+	{
+		if (str.empty())
+			return std::wstring();
+		int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
+		std::wstring wstrTo(size_needed, 0);
+		MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
+		return wstrTo;
+	};
+
+	SC_HANDLE service = CreateServiceW(serviceControlManager,
+		utf8_decode(serviceName).c_str(), utf8_decode(serviceLongName).c_str(),
+		SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
+		SERVICE_AUTO_START, SERVICE_ERROR_IGNORE, path,
+		0, 0, 0, 0, 0);
+	if (service == NULL)
+	{
+		return;
+	}
+
+	SERVICE_DESCRIPTIONW sdBuf = {};
+	auto temp = utf8_decode(serviceDescription);
+	std::vector<wchar_t> buffer(temp.begin(), temp.end());
+	sdBuf.lpDescription = buffer.data();
+	
+	HMODULE advapi32 = GetModuleHandleW(L"advapi32.dll");
+	if (advapi32 == NULL)
+	{
+		CloseServiceHandle(service);
+		CloseServiceHandle(serviceControlManager);
+		return;
+	}
+
+	auto ChangeServiceDescription = reinterpret_cast<CSD_T>(GetProcAddress(advapi32, "ChangeServiceConfig2W"));
+	if (ChangeServiceDescription == NULL)
+	{
+		CloseServiceHandle(service);
+		CloseServiceHandle(serviceControlManager);
+		return;
+	}
+
+	ChangeServiceDescription(
+		service,                // handle to service  
+		SERVICE_CONFIG_DESCRIPTION, // change: description  
+		&sdBuf);
+	CloseServiceHandle(service);
+
+	CloseServiceHandle(serviceControlManager);
 }
 
 void Win32_ServiceUninstall()
 {
-	SC_HANDLE serviceControlManager = OpenSCManager(0, 0, SC_MANAGER_CONNECT);
+	SC_HANDLE serviceControlManager = OpenSCManagerW(nullptr, nullptr, SC_MANAGER_CONNECT);
 
 	if (serviceControlManager)
 	{
-		SC_HANDLE service = OpenService(serviceControlManager,
-			serviceName, SERVICE_QUERY_STATUS | DELETE);
+		auto utf8_decode = [](const std::string& str)
+		{
+			if (str.empty())
+				return std::wstring();
+			int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
+			std::wstring wstrTo(size_needed, 0);
+			MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
+			return wstrTo;
+		};
+
+		SC_HANDLE service = OpenServiceW(serviceControlManager,
+			utf8_decode(serviceName).c_str(), SERVICE_QUERY_STATUS | DELETE);
 		if (service)
 		{
 			SERVICE_STATUS serviceStatus;
@@ -158,7 +189,7 @@ void WINAPI ServiceControlHandler(DWORD controlCode)
 	SetServiceStatus(serviceStatusHandle, &serviceStatus);
 }
 
-void WINAPI ServiceMain(DWORD argc, char *argv[])
+void WINAPI ServiceMain(DWORD argc, char* argv[])
 {
 	// initialise service status
 	serviceStatus.dwServiceType = SERVICE_WIN32;
@@ -170,17 +201,29 @@ void WINAPI ServiceMain(DWORD argc, char *argv[])
 	serviceStatus.dwCheckPoint = 0;
 	serviceStatus.dwWaitHint = 0;
 
-	serviceStatusHandle = RegisterServiceCtrlHandler(serviceName, ServiceControlHandler);
+	auto utf8_decode = [](const std::string& str)
+	{
+		if (str.empty())
+			return std::wstring();
+		int size_needed = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
+		std::wstring wstrTo(size_needed, 0);
+		MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], size_needed);
+		return wstrTo;
+	};
+
+	serviceStatusHandle = RegisterServiceCtrlHandlerW(utf8_decode(serviceName).c_str(), ServiceControlHandler);
 
 	if (serviceStatusHandle)
 	{
-		char path[_MAX_PATH + 1];
-		unsigned int i, last_slash = 0;
+		wchar_t path[MAX_PATH + 1] = {};
+		unsigned last_slash = 0;
 
-		GetModuleFileName(0, path, sizeof(path) / sizeof(path[0]));
+		GetModuleFileNameW(0, path, sizeof path / sizeof *path);
 
-		for (i = 0; i < std::strlen(path); i++) {
-			if (path[i] == '\\') last_slash = i;
+		for (std::size_t i = 0; i < std::wcslen(path); i++)
+		{
+			if (path[i] == '\\')
+				last_slash = i;
 		}
 
 		path[last_slash] = 0;
@@ -190,7 +233,7 @@ void WINAPI ServiceMain(DWORD argc, char *argv[])
 		SetServiceStatus(serviceStatusHandle, &serviceStatus);
 
 		// do initialisation here
-		SetCurrentDirectory(path);
+		SetCurrentDirectoryW(path);
 
 		// running
 		serviceStatus.dwControlsAccepted |= (SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN);
@@ -228,15 +271,13 @@ void WINAPI ServiceMain(DWORD argc, char *argv[])
 
 void Win32_ServiceRun()
 {
-	SERVICE_TABLE_ENTRY serviceTable[] =
+	SERVICE_TABLE_ENTRYA serviceTable[] =
 	{
 		{ serviceName, ServiceMain },
 		{ 0, 0 }
 	};
 
-	if (!StartServiceCtrlDispatcher(serviceTable))
-	{
-	}
+	StartServiceCtrlDispatcherA(serviceTable);
 }
 
 #endif

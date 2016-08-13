@@ -13,9 +13,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#ifndef INCLUDED_COMMON_VERSION_H
+#define INCLUDED_COMMON_VERSION_H
+
+#define WIDEN(quote) WIDEN2(quote)
+#define WIDEN2(quote) L##quote
+
 #ifndef PVPGN_VERSION
 #define PVPGN_VERSION "1.99.7-PRO"
+#define PVPGN_VERSIONW WIDEN(PVPGN_VERSIONW)
 #endif
+
 #ifndef PVPGN_SOFTWARE
 #define PVPGN_SOFTWARE "PvPGN"
+#define PVPGN_SOFTWAREW WIDEN(PVPGN_SOFTWARE)
+#endif
+
 #endif

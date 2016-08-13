@@ -17,7 +17,7 @@
  */
 #ifdef WITH_SQL_ODBC
 #include "common/setup_before.h"
-#ifdef WIN32
+#ifdef HAVE_WINDOWS_H
 # include <windows.h>
 #endif
 #include <sqlext.h>

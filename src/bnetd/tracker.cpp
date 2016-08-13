@@ -24,10 +24,6 @@
 #include <cstring>
 #include <cerrno>
 
-#ifdef HAVE_SYS_UTSNAME_H
-# include <sys/utsname.h>
-#endif
-
 #include "compat/psock.h"
 #include "compat/strerror.h"
 #include "compat/uname.h"
@@ -93,7 +89,6 @@ namespace pvpgn
 			t_addr const *     addrt;
 			t_elem const *     currt;
 			t_trackpacket      packet;
-			struct utsname     utsbuf;
 			struct sockaddr_in tempaddr;
 			t_laddr_info *     laddr_info;
 			char               tempa[64];
@@ -140,18 +135,16 @@ namespace pvpgn
 				bn_int_nset(&packet.total_logins, connlist_total_logins());
 				bn_int_nset(&packet.total_games, gamelist_total_games());
 
-				if (uname(&utsbuf) < 0)
+				static struct utsname utsbuf = {};
+				if (utsbuf.sysname[0] == '0')
 				{
-					eventlog(eventlog_level_warn, __FUNCTION__, "could not get platform info (uname: %s)", pstrerror(errno));
-					std::strncpy((char *)packet.platform, "", sizeof(packet.platform));
+					if (uname(&utsbuf) != 0)
+					{
+						eventlog(eventlog_level_warn, __FUNCTION__, "could not get platform info (uname: %s)", pstrerror(errno));
+						std::snprintf(reinterpret_cast<char*>(packet.platform), sizeof packet.platform, "");
+					}
 				}
-				else
-				{
-					std::strncpy((char *)packet.platform,
-						utsbuf.sysname,
-						sizeof(packet.platform));
-					bn_byte_set(&packet.platform[sizeof(packet.platform) - 1], '\0');
-				}
+				std::snprintf(reinterpret_cast<char*>(packet.platform), sizeof packet.platform, "%s", utsbuf.sysname);
 
 				LIST_TRAVERSE_CONST(laddrs, currl)
 				{

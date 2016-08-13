@@ -25,8 +25,12 @@
 
 #include <cstdio>
 #include <cstring>
+#include <cwchar>
 #include <string>
+#include <vector>
+
 #include <windows.h>
+
 #if _DEBUG
 #include <dbghelp.h>
 #endif
@@ -72,11 +76,10 @@ namespace pvpgn
 		static void	guiThread(void*);
 		static void	guiAddText(const char *, COLORREF);
 		static void	guiAddText_user(const char *, COLORREF);
-		static void	guiDEAD(std::string msg);
-		static void	guiDEAD(char* msg);
+		static void	guiDEAD(const std::wstring& msg);
 		static void	guiMoveWindow(HWND, RECT*);
-		static void	guiClearLogWindow(void);
-		static void	guiKillTrayIcon(void);
+		static void	guiClearLogWindow();
+		static void	guiKillTrayIcon();
 
 		long PASCAL guiWndProc(HWND, UINT, WPARAM, LPARAM);
 		static void	guiOnCommand(HWND, int, HWND, UINT);
@@ -91,9 +94,9 @@ namespace pvpgn
 		static void	guiOnMouseMove(HWND, int, int, UINT);
 		static void	guiOnLButtonDown(HWND, BOOL, int, int, UINT);
 		static void	guiOnLButtonUp(HWND, int, int, UINT);
-		static void	guiOnServerConfig(void);
+		static void	guiOnServerConfig();
 		static void	guiOnAbout(HWND);
-		static void	guiOnUpdates(void);
+		static void	guiOnUpdates();
 		static void	guiOnAnnounce(HWND);
 		static void	guiOnUserStatusChange(HWND);
 
@@ -129,7 +132,7 @@ namespace pvpgn
 
 		static struct gui_struc gui;
 
-		char	selected_item[255];
+		char selected_item[255] = {};
 
 		int fprintf(FILE *stream, const char *format, ...)
 		{
@@ -143,50 +146,51 @@ namespace pvpgn
 
 		static void guiThread(void *param)
 		{
-			WNDCLASSEX wc;
-			MSG msg;
+			if (LoadLibraryW(L"RichEd20.dll") == nullptr)
+				guiDEAD(L"Could not load RichEd20.dll");
 
-			if (LoadLibrary("RichEd20.dll") == NULL)
-				guiDEAD("Could not load RichEd20.dll");
-			wc.cbSize = sizeof(WNDCLASSEX);
+			WNDCLASSEXW wc = {};
+			wc.cbSize = sizeof(WNDCLASSEXW);
 			wc.style = CS_HREDRAW | CS_VREDRAW;
-			wc.lpfnWndProc = (WNDPROC)guiWndProc;
+			wc.lpfnWndProc = static_cast<WNDPROC>(guiWndProc);
 			wc.cbClsExtra = 0;
 			wc.cbWndExtra = 0;
-			wc.hInstance = (HINSTANCE)param;
-			wc.hIcon = LoadIcon(wc.hInstance, MAKEINTRESOURCE(IDI_ICON1));
-			wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-			wc.hbrBackground = 0;
-			wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU);
-			wc.lpszClassName = "BnetdWndClass";
-			wc.hIconSm = NULL;
+			wc.hInstance = static_cast<HINSTANCE>(param);
+			wc.hIcon = LoadIconW(wc.hInstance, MAKEINTRESOURCEW(IDI_ICON1));
+			wc.hCursor = LoadCursorW(nullptr, IDC_ARROW);
+			wc.hbrBackground = nullptr;
+			wc.lpszMenuName = MAKEINTRESOURCEW(IDR_MENU);
+			wc.lpszClassName = L"BnetdWndClass";
+			wc.hIconSm = nullptr;
 
-			if (!RegisterClassEx(&wc))
-				guiDEAD("cant register WNDCLASS");
+			if (!RegisterClassExW(&wc))
+				guiDEAD(L"cant register WNDCLASS");
 
-			gui.hwnd = CreateWindowEx(
+			gui.hwnd = CreateWindowExW(
 				0,
 				wc.lpszClassName,
-				"The Player -vs- Player Gaming Network Server",
+				L"Player -vs- Player Gaming Network Server",
 				WS_OVERLAPPEDWINDOW,
 				CW_USEDEFAULT,
 				CW_USEDEFAULT,
 				CW_USEDEFAULT,
 				CW_USEDEFAULT,
-				NULL,
-				NULL,
-				(HINSTANCE)param,
-				NULL);
+				nullptr,
+				nullptr,
+				static_cast<HINSTANCE>(param),
+				nullptr);
 
 			if (!gui.hwnd)
-				guiDEAD("cant create window");
+				guiDEAD(L"cant create window");
 
 			ShowWindow(gui.hwnd, SW_SHOW);
 			SetEvent(gui.event_ready);
-			while (GetMessage(&msg, NULL, 0, 0))
+
+			MSG msg = {};
+			while (GetMessageW(&msg, nullptr, 0, 0))
 			{
 				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				DispatchMessageW(&msg);
 			}
 		}
 
@@ -209,82 +213,83 @@ namespace pvpgn
 				HANDLE_MSG(hwnd, WM_MOUSEMOVE, guiOnMouseMove);
 
 			case WM_CAPTURECHANGED:
-				guiOnCaptureChanged((HWND)lParam);
+				guiOnCaptureChanged(reinterpret_cast<HWND>(lParam));
 				return 0;
 			case WM_SHELLNOTIFY:
 				return guiOnShellNotify(wParam, lParam);
 			}
 
-			return DefWindowProc(hwnd, message, wParam, lParam);
+			return DefWindowProcW(hwnd, message, wParam, lParam);
 		}
 
 		static BOOL guiOnCreate(HWND hwnd, LPCREATESTRUCT lpCreateStruct)
 		{
-			ghwndConsole = CreateWindowEx(
+			ghwndConsole = CreateWindowExW(
 				0,
 				RICHEDIT_CLASS,
-				NULL,
+				nullptr,
 				WS_CHILD | WS_VISIBLE | ES_READONLY | ES_MULTILINE | WS_VSCROLL | WS_HSCROLL | ES_NOHIDESEL,
 				0, 0,
 				0, 0,
 				hwnd,
 				0,
 				0,
-				NULL);
+				nullptr);
 
 			if (!ghwndConsole)
 				return FALSE;
 
-			gui.hwndUsers = CreateWindowEx(
+			gui.hwndUsers = CreateWindowExW(
 				WS_EX_CLIENTEDGE,
-				"LISTBOX",
-				NULL,
+				L"LISTBOX",
+				nullptr,
 				WS_CHILD | WS_VISIBLE | LBS_STANDARD | LBS_NOINTEGRALHEIGHT,
 				0, 0,
 				0, 0,
 				hwnd,
 				0,
 				0,
-				NULL);
+				nullptr);
 
 			if (!gui.hwndUsers)
 				return FALSE;
 
 			//amadeo: temp. button for useredit until rightcklick is working....
-			gui.hwndUserEditButton = CreateWindow(
-				"button",
-				"Edit User Status",
+			gui.hwndUserEditButton = CreateWindowExW(
+				0L,
+				L"button",
+				L"Edit User Status",
 				WS_CHILD | WS_VISIBLE | ES_LEFT,
 				0, 0,
 				0, 0,
 				hwnd,
-				(HMENU)881,
+				reinterpret_cast<HMENU>(881),
 				0,
-				NULL);
+				nullptr);
 
 			if (!gui.hwndUserEditButton)
 				return FALSE;
 
-			gui.hwndUserCount = CreateWindowEx(
+			gui.hwndUserCount = CreateWindowExW(
 				WS_EX_CLIENTEDGE,
-				"edit",
-				" 0 user(s) online:",
+				L"edit",
+				L" 0 user(s) online:",
 				WS_CHILD | WS_VISIBLE | ES_CENTER | ES_READONLY,
 				0, 0,
 				0, 0,
 				hwnd,
 				0,
 				0,
-				NULL);
+				nullptr);
 
 			if (!gui.hwndUserCount)
 				return FALSE;
 
-			SendMessage(gui.hwndUserCount, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
-			SendMessage(gui.hwndUsers, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
-			SendMessage(gui.hwndUserEditButton, WM_SETFONT, (WPARAM)GetStockObject(DEFAULT_GUI_FONT), 0);
+			SendMessageW(gui.hwndUserCount, WM_SETFONT, reinterpret_cast<WPARAM>(GetStockObject(DEFAULT_GUI_FONT)), 0);
+			SendMessageW(gui.hwndUsers, WM_SETFONT, reinterpret_cast<WPARAM>(GetStockObject(DEFAULT_GUI_FONT)), 0);
+			SendMessageW(gui.hwndUserEditButton, WM_SETFONT, reinterpret_cast<WPARAM>(GetStockObject(DEFAULT_GUI_FONT)), 0);
 			BringWindowToTop(gui.hwndUsers);
-			std::strcpy(gui.szDefaultStatus, "Void");
+			std::snprintf(gui.szDefaultStatus, sizeof(gui.szDefaultStatus), "%s", "Void");
 
 			gui.y_ratio = (100 << 10) / 100;
 			gui.x_ratio = (0 << 10) / 100;
@@ -412,38 +417,36 @@ namespace pvpgn
 
 		static void guiOnSize(HWND hwnd, UINT state, int cx, int cy)
 		{
-			int cy_console, cy_edge, cx_edge, cy_frame, cy_status;
-
 			if (state == SIZE_MINIMIZED)
 			{
-				NOTIFYICONDATA dta;
+				NOTIFYICONDATAW dta = {};
 
-				dta.cbSize = sizeof(NOTIFYICONDATA);
+				dta.cbSize = sizeof(NOTIFYICONDATAW);
 				dta.hWnd = hwnd;
 				dta.uID = IDI_TRAY;
 				dta.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
 				dta.uCallbackMessage = WM_SHELLNOTIFY;
-				dta.hIcon = LoadIcon(GetWindowInstance(hwnd), MAKEINTRESOURCE(IDI_ICON1));
-				std::strcpy(dta.szTip, std::string(std::string(PVPGN_SOFTWARE) + " " + std::string(PVPGN_VERSION)).c_str());
-				Shell_NotifyIcon(NIM_ADD, &dta);
+				dta.hIcon = LoadIconW(GetWindowInstance(hwnd), MAKEINTRESOURCE(IDI_ICON1));
+				std::swprintf(dta.szTip, sizeof dta.szTip / sizeof *dta.szTip, L"%ls %ls", PVPGN_SOFTWAREW, PVPGN_VERSION);
+				Shell_NotifyIconW(NIM_ADD, &dta);
 				ShowWindow(hwnd, SW_HIDE);
 				return;
 			}
 
 			if (state == SIZE_RESTORED)
 			{
-				NOTIFYICONDATA dta;
+				NOTIFYICONDATAW dta = {};
 
 				dta.hWnd = hwnd;
 				dta.uID = IDI_TRAY;
-				Shell_NotifyIcon(NIM_DELETE, &dta);
+				Shell_NotifyIconW(NIM_DELETE, &dta);
 			}
 
-			cy_status = 0;
-			cy_edge = GetSystemMetrics(SM_CYEDGE);
-			cx_edge = GetSystemMetrics(SM_CXEDGE);
-			cy_frame = (cy_edge << 1) + GetSystemMetrics(SM_CYBORDER) + 1;
-			cy_console = ((cy - cy_status - cy_frame - cy_edge * 2)*gui.y_ratio) >> 10;
+			int cy_status = 0;
+			int cy_edge = GetSystemMetrics(SM_CYEDGE);
+			int cx_edge = GetSystemMetrics(SM_CXEDGE);
+			int cy_frame = (cy_edge << 1) + GetSystemMetrics(SM_CYBORDER) + 1;
+			int cy_console = ((cy - cy_status - cy_frame - cy_edge * 2) * gui.y_ratio) >> 10;
 			gui.rectConsoleEdge.left = 0;
 			gui.rectConsoleEdge.right = cx - 140;
 			gui.rectConsoleEdge.top = 0;
@@ -475,12 +478,12 @@ namespace pvpgn
 				GetCursorPos(&p);
 				ScreenToClient(hwnd, &p);
 				if (PtInRect(&gui.rectHDivider, p))
-					SetCursor(LoadCursor(0, IDC_SIZENS));
+					SetCursor(LoadCursorW(0, IDC_SIZENS));
 
 				return TRUE;
 			}
 
-			return FORWARD_WM_SETCURSOR(hwnd, hwndCursor, codeHitTest, msg, DefWindowProc);
+			return FORWARD_WM_SETCURSOR(hwnd, hwndCursor, codeHitTest, msg, DefWindowProcW);
 		}
 
 		static void guiOnLButtonDown(HWND hwnd, BOOL fDoubleClick, int x, int y, UINT keyFlags)
@@ -537,31 +540,31 @@ namespace pvpgn
 
 		static void guiOnUpdates()
 		{
-			ShellExecute(NULL, "open", "http://pvpgn.pro/", NULL, NULL, SW_SHOW);
+			ShellExecuteW(nullptr, L"open", L"http://pvpgn.pro/", nullptr, nullptr, SW_SHOW);
 		}
 
 		static void guiOnAnnounce(HWND hwnd)
 		{
-			DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_ANN), hwnd, (DLGPROC)AnnDlgProc);
+			DialogBoxW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDD_ANN), hwnd, static_cast<DLGPROC>(AnnDlgProc));
 		}
 
 		static void guiOnUserStatusChange(HWND hwnd)
 		{
 			int  index;
-			index = SendMessage(gui.hwndUsers, LB_GETCURSEL, 0, 0);
-			SendMessage(gui.hwndUsers, LB_GETTEXT, index, (LPARAM)selected_item);
-			DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_KICKUSER), hwnd, (DLGPROC)KickDlgProc);
-			SendMessage(gui.hwndUsers, LB_SETCURSEL, -1, 0);
+			index = SendMessageW(gui.hwndUsers, LB_GETCURSEL, 0, 0);
+			SendMessageW(gui.hwndUsers, LB_GETTEXT, index, reinterpret_cast<LPARAM>(selected_item));
+			DialogBoxW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDD_KICKUSER), hwnd, static_cast<DLGPROC>(KickDlgProc));
+			SendMessageW(gui.hwndUsers, LB_SETCURSEL, -1, 0);
 		}
 
 		static void guiOnAbout(HWND hwnd)
 		{
-			DialogBox(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_ABOUT), hwnd, (DLGPROC)AboutDlgProc);
+			DialogBoxW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDD_ABOUT), hwnd, static_cast<DLGPROC>(AboutDlgProc));
 		}
 
 		static void guiOnServerConfig()
 		{
-			ShellExecute(NULL, NULL, "conf\\bnetd.conf", NULL, NULL, SW_SHOW);
+			ShellExecuteW(nullptr, nullptr, L"conf\\bnetd.conf", nullptr, nullptr, SW_SHOW);
 		}
 
 		extern void guiOnUpdateUserList()
@@ -570,80 +573,74 @@ namespace pvpgn
 			t_elem const * curr;
 			t_account * acc;
 
-			SendMessage(gui.hwndUsers, LB_RESETCONTENT, 0, 0);
+			SendMessageW(gui.hwndUsers, LB_RESETCONTENT, 0, 0);
 
 			LIST_TRAVERSE_CONST(connlist(), curr)
 			{
-				if (!(c = (t_connection *)elem_get_data(curr))) continue;
-				if (!(acc = conn_get_account(c))) continue;
+				if (!(c = (t_connection *)elem_get_data(curr)))
+					continue;
+				if (!(acc = conn_get_account(c)))
+					continue;
 
-				SendMessage(gui.hwndUsers, LB_ADDSTRING, 0, (LPARAM)account_get_name(acc));
+				SendMessageW(gui.hwndUsers, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(account_get_name(acc)));
 			}
 
-			std::string UserCount(std::to_string(connlist_login_get_length()) + " user(s) online:");
-			SendMessage(gui.hwndUserCount, WM_SETTEXT, 0, (LPARAM)UserCount.c_str());
+			std::wstring user_count(std::to_wstring(connlist_login_get_length()) + L" user(s) online:");
+			SendMessageW(gui.hwndUserCount, WM_SETTEXT, 0, reinterpret_cast<LPARAM>(user_count.c_str()));
 		}
 
 		static void guiAddText(const char *str, COLORREF clr)
 		{
-			int text_length;
-			CHARRANGE cr;
-			CHARRANGE ds;
-			CHARFORMAT fmt;
-			text_length = SendMessage(ghwndConsole, WM_GETTEXTLENGTH, 0, 0);
+			int text_length = SendMessageW(ghwndConsole, WM_GETTEXTLENGTH, 0, 0);
 
 			if (text_length > 30000)
 			{
+				CHARRANGE ds = {};
 				ds.cpMin = 0;
 				ds.cpMax = text_length - 30000;
-				SendMessage(ghwndConsole, EM_EXSETSEL, 0, (LPARAM)&ds);
-				SendMessage(ghwndConsole, EM_REPLACESEL, FALSE, 0);
+				SendMessageW(ghwndConsole, EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&ds));
+				SendMessageW(ghwndConsole, EM_REPLACESEL, FALSE, 0);
 			}
 
+			CHARRANGE cr = {};
 			cr.cpMin = text_length;
 			cr.cpMax = text_length;
+			SendMessageW(ghwndConsole, EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&cr));
 
-			SendMessage(ghwndConsole, EM_EXSETSEL, 0, (LPARAM)&cr);
-
-			fmt.cbSize = sizeof(CHARFORMAT);
+			CHARFORMATW fmt = {};
+			fmt.cbSize = sizeof(CHARFORMATW);
 			fmt.dwMask = CFM_COLOR | CFM_FACE | CFM_SIZE | CFM_BOLD | CFM_ITALIC | CFM_STRIKEOUT | CFM_UNDERLINE;
 			fmt.yHeight = 160;
 			fmt.dwEffects = 0;
 			fmt.crTextColor = clr;
-			std::strcpy(fmt.szFaceName, "Courier New");
+			std::swprintf(fmt.szFaceName, sizeof fmt.szFaceName / sizeof *fmt.szFaceName, L"%ls", L"Courier New");
 
-			SendMessage(ghwndConsole, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&fmt);
-			SendMessage(ghwndConsole, EM_REPLACESEL, FALSE, (LPARAM)str);
+			SendMessageW(ghwndConsole, EM_SETCHARFORMAT, SCF_SELECTION, reinterpret_cast<LPARAM>(&fmt));
+			SendMessageA(ghwndConsole, EM_REPLACESEL, FALSE, reinterpret_cast<LPARAM>(str));
 		}
 
-		static void guiDEAD(std::string message)
+		static void guiDEAD(const std::wstring& message)
 		{
-			char *msgLastError = nullptr;
+			wchar_t* error_message = nullptr;
 
-			FormatMessage(
+			FormatMessageW(
 				FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-				NULL,
+				nullptr,
 				GetLastError(),
 				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-				(LPTSTR)&msgLastError,
+				reinterpret_cast<LPWSTR>(&error_message),
 				0,
-				NULL);
+				nullptr);
 
-			char *nl = std::strchr(msgLastError, '\r');
+			wchar_t* nl = std::wcschr(error_message, '\r');
 			if (nl)
-				*nl = 0;
+				*nl = '0';
 
-			std::string errorStr(message + "\nGetLastError() = '" + std::string(msgLastError) + "'\n");
+			MessageBoxW(0, std::wstring(message + L"\nGetLastError() = " + error_message).c_str(), L"guiDEAD", MB_ICONSTOP | MB_OK);
 
-			LocalFree(msgLastError);
-
-			MessageBox(0, errorStr.c_str(), "guiDEAD", MB_ICONSTOP | MB_OK);
+			LocalFree(error_message);
 
 			std::exit(1);
-		}
-		static void guiDEAD(char *message)
-		{
-			guiDEAD(std::string(message));
 		}
 
 		static void guiMoveWindow(HWND hwnd, RECT* r)
@@ -651,20 +648,20 @@ namespace pvpgn
 			MoveWindow(hwnd, r->left, r->top, r->right - r->left, r->bottom - r->top, TRUE);
 		}
 
-		static void guiClearLogWindow(void)
+		static void guiClearLogWindow()
 		{
-			SendMessage(ghwndConsole, WM_SETTEXT, 0, 0);
+			SendMessageW(ghwndConsole, WM_SETTEXT, 0, 0);
 		}
 
-		static void guiKillTrayIcon(void)
+		static void guiKillTrayIcon()
 		{
-			NOTIFYICONDATA dta;
+			NOTIFYICONDATAW dta = {};
 
-			dta.cbSize = sizeof(NOTIFYICONDATA);
+			dta.cbSize = sizeof(NOTIFYICONDATAW);
 			dta.hWnd = gui.hwnd;
 			dta.uID = IDI_TRAY;
 			dta.uFlags = 0;
-			Shell_NotifyIcon(NIM_DELETE, &dta);
+			Shell_NotifyIconW(NIM_DELETE, &dta);
 		}
 
 		BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
@@ -700,26 +697,35 @@ namespace pvpgn
 				{
 				case IDOK:
 				{
-					int len = GetWindowTextLength(GetDlgItem(hwnd, IDC_EDIT1));
+					int len = GetWindowTextLengthW(GetDlgItem(hwnd, IDC_EDIT1));
 
 					if (len > 0)
 					{
-						char* buf = static_cast<char*>(GlobalAlloc(GPTR, len + 1));
-						GetDlgItemText(hwnd, IDC_EDIT1, buf, len + 1);
+						std::wstring buff(len, 0);
+						GetDlgItemTextW(hwnd, IDC_EDIT1, &buff[0], buff.size());
 
-						t_message *message = message_create(message_type_error, nullptr, buf);
+						auto utf8_encode = [](const std::wstring& wstr)
+						{
+							if (wstr.empty())
+								return std::string();
+							int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), nullptr, 0, nullptr, nullptr);
+							std::string strTo(size_needed, 0);
+							WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), &strTo[0], size_needed, nullptr, nullptr);
+							return strTo;
+						};
+
+						t_message* const message = message_create(message_type_error, nullptr, utf8_encode(buff).c_str());
 						if (message)
 						{
 							message_send_all(message);
 							message_destroy(message);
 						}
 
-						GlobalFree((HGLOBAL)buf);
-						SetDlgItemText(hwnd, IDC_EDIT1, "");
+						SetDlgItemTextW(hwnd, IDC_EDIT1, L"");
 					}
 					else
 					{
-						MessageBox(hwnd, "You didn't enter anything!", "Warning", MB_OK);
+						MessageBoxW(hwnd, L"You didn't enter anything!", L"Warning", MB_OK);
 					}
 					break;
 				}
@@ -741,23 +747,23 @@ namespace pvpgn
 			case WM_INITDIALOG:
 				if (selected_item[0] != 0)
 				{
-					SetDlgItemText(hwnd, IDC_EDITKICK, selected_item);
+					SetDlgItemTextA(hwnd, IDC_EDITKICK, selected_item);
 				}
 
 				return TRUE;
 			case WM_COMMAND:
-				switch (LOWORD(wParam)) {
+				switch (LOWORD(wParam))
+				{
 				case IDC_KICK_EXECUTE:
 				{
-					GetDlgItemText(hwnd, IDC_EDITKICK, selected_item, 32);
+					GetDlgItemTextA(hwnd, IDC_EDITKICK, selected_item, sizeof selected_item);
 
-					t_connection * conngui = connlist_find_connection_by_accountname(selected_item);
-					t_account * accountgui = accountlist_find_account(selected_item);
+					t_connection* const conngui = connlist_find_connection_by_accountname(selected_item);
+					t_account* const accountgui = accountlist_find_account(selected_item);
 
 					if (conngui == nullptr)
 					{
-						std::strcat(selected_item, " could not be found in Userlist!");
-						MessageBox(hwnd, selected_item, "Error", MB_OK);
+						MessageBoxA(hwnd, std::string(std::string(selected_item) + " could not be found in Userlist!").c_str(), "Error", MB_OK);
 					}
 					else
 					{
@@ -770,26 +776,26 @@ namespace pvpgn
 						BOOL messageq = FALSE;
 						BOOL kickq = FALSE;
 
-						if (SendMessage(hButton2, BM_GETCHECK, 0, 0) == BST_CHECKED)
+						if (SendMessageW(hButton2, BM_GETCHECK, 0, 0) == BST_CHECKED)
 						{
 							account_set_admin(accountgui);
 							account_set_command_groups(accountgui, 255);
 							messageq = TRUE;
 						}
 
-						if (SendMessage(hButton3, BM_GETCHECK, 0, 0) == BST_CHECKED)
+						if (SendMessageW(hButton3, BM_GETCHECK, 0, 0) == BST_CHECKED)
 						{
 							account_set_auth_operator(accountgui, nullptr, 1);
 							messageq = TRUE;
 						}
 
-						if (SendMessage(hButton4, BM_GETCHECK, 0, 0) == BST_CHECKED)
+						if (SendMessageW(hButton4, BM_GETCHECK, 0, 0) == BST_CHECKED)
 						{
 							account_set_strattr(accountgui, "BNET\\auth\\announce", "true");
 							messageq = TRUE;
 						}
 
-						if (SendMessage(hButton, BM_GETCHECK, 0, 0) == BST_CHECKED)
+						if (SendMessageW(hButton, BM_GETCHECK, 0, 0) == BST_CHECKED)
 						{
 							char temp[60];
 							char ipadr[110];
@@ -804,7 +810,7 @@ namespace pvpgn
 
 							std::strcpy(temp, " a ");
 							std::strcat(temp, ipadr);
-							handle_ipban_command(NULL, temp);
+							handle_ipban_command(nullptr, temp);
 
 							temp[0] = 0;
 							std::strcpy(temp, " has been added to IpBanList");
@@ -812,15 +818,15 @@ namespace pvpgn
 							if (messageq == TRUE)
 							{
 								std::strcat(ipadr, " and UserStatus changed");
-								MessageBox(hwnd, ipadr, "ipBan & StatusChange", MB_OK);
+								MessageBoxA(hwnd, ipadr, "ipBan & StatusChange", MB_OK);
 								messageq = FALSE;
 								kickq = FALSE;
 							}
 							else
-								MessageBox(hwnd, ipadr, "ipBan", MB_OK);
+								MessageBoxA(hwnd, ipadr, "ipBan", MB_OK);
 						}
 
-						if (SendMessage(hButton1, BM_GETCHECK, 0, 0) == BST_CHECKED)
+						if (SendMessageW(hButton1, BM_GETCHECK, 0, 0) == BST_CHECKED)
 						{
 							conn_set_state(conngui, conn_state_destroy);
 							kickq = TRUE;
@@ -829,19 +835,19 @@ namespace pvpgn
 						if ((messageq == TRUE) && (kickq == TRUE))
 						{
 							std::strcat(selected_item, "has been kicked and Status has changed");
-							MessageBox(hwnd, selected_item, "UserKick & StatusChange", MB_OK);
+							MessageBoxA(hwnd, selected_item, "UserKick & StatusChange", MB_OK);
 						}
 
 						if ((kickq == TRUE) && (messageq == FALSE))
 						{
 							std::strcat(selected_item, " has been kicked from the server");
-							MessageBox(hwnd, selected_item, "UserKick", MB_OK);
+							MessageBoxA(hwnd, selected_item, "UserKick", MB_OK);
 						}
 
 						if ((kickq == FALSE) && (messageq == TRUE))
 						{
 							std::strcat(selected_item, "'s Status has been changed");
-							MessageBox(hwnd, selected_item, "StatusChange", MB_OK);
+							MessageBoxA(hwnd, selected_item, "StatusChange", MB_OK);
 						}
 
 						selected_item[0] = 0;
@@ -866,28 +872,27 @@ namespace pvpgn
 #if _DEBUG
 void make_minidump(EXCEPTION_POINTERS* e)
 {
-	auto hDbgHelp = LoadLibraryA("dbghelp");
+	HMODULE hDbgHelp = LoadLibraryW(L"dbghelp.dll");
 	if (hDbgHelp == nullptr)
 		return;
-	auto pMiniDumpWriteDump = (decltype(&MiniDumpWriteDump))GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
+
+	auto pMiniDumpWriteDump = reinterpret_cast<decltype(&MiniDumpWriteDump)>(GetProcAddress(hDbgHelp, "MiniDumpWriteDump"));
 	if (pMiniDumpWriteDump == nullptr)
 		return;
 
-	char name[MAX_PATH];
+	wchar_t name[MAX_PATH] = {};
 	{
-		auto nameEnd = name + GetModuleFileNameA(GetModuleHandleA(0), name, MAX_PATH);
+		auto nameEnd = name + GetModuleFileNameW(GetModuleHandleW(nullptr), name, MAX_PATH);
 		SYSTEMTIME t;
 		GetSystemTime(&t);
-		wsprintfA(nameEnd - strlen(".exe"),
-			"_%4d%02d%02d_%02d%02d%02d.dmp",
-			t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
+		wsprintfW(nameEnd - std::wcslen(L".exe"), L"_%4d%02d%02d_%02d%02d%02d.dmp", t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
 	}
 
-	auto hFile = CreateFileA(name, GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+	auto hFile = CreateFileW(name, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	if (hFile == INVALID_HANDLE_VALUE)
 		return;
 
-	MINIDUMP_EXCEPTION_INFORMATION exceptionInfo;
+	MINIDUMP_EXCEPTION_INFORMATION exceptionInfo = {};
 	exceptionInfo.ThreadId = GetCurrentThreadId();
 	exceptionInfo.ExceptionPointers = e;
 	exceptionInfo.ClientPointers = FALSE;
@@ -902,6 +907,8 @@ void make_minidump(EXCEPTION_POINTERS* e)
 		nullptr);
 
 	CloseHandle(hFile);
+
+	FreeLibrary(hDbgHelp);
 
 	return;
 }
@@ -936,7 +943,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE reserved, LPSTR lpCmdLine, i
 	}
 
 	pvpgn::bnetd::gui.main_finished = FALSE;
-	pvpgn::bnetd::gui.event_ready = CreateEvent(NULL, FALSE, FALSE, NULL);
+	pvpgn::bnetd::gui.event_ready = CreateEventW(nullptr, FALSE, FALSE, nullptr);
 	_beginthread(pvpgn::bnetd::guiThread, 0, (void*)hInstance);
 	WaitForSingleObject(pvpgn::bnetd::gui.event_ready, INFINITE);
 
