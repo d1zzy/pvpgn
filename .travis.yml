@@ -1,25 +1,35 @@
 sudo: required
-
-branches:
-  only:
-    - master
+dist: trusty
 
 language: cpp
 os: linux
 compiler: gcc
+  
+branches:
+  only:
+    - master
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - sourceline: 'ppa:george-edison55/cmake-3.x'
+    packages:
+      - gcc-5
+      - g++-5
+      - zlib1g-dev
+      - build-essential
+      - libmysqlclient-dev
+      - liblua5.1-0-dev
+      - cmake
 
 before_install:
-  - sudo apt-get update --fix-missing
-  - sudo apt-get install build-essential zlib1g-dev libmysqlclient-dev liblua5.1-0-dev
-  - (cd /tmp && wget --no-check-certificate https://cmake.org/files/v3.4/cmake-3.4.0.tar.gz && tar zxf cmake-3.4.0.tar.gz)
-  - (cd /tmp/cmake-3.4.0 && cmake . && make && sudo make install) > /dev/null 2>&1
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  - sudo apt-get -qq update
-  - sudo apt-get -qq install g++-5
   - export CXX="g++-5" CC="gcc-5"
+  
+before_script:
   - mkdir build
   - cd build
-  
+
 script:
   - cmake -D WITH_MYSQL=true -D WITH_LUA=true ../
   - make
