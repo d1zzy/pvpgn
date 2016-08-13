@@ -22,6 +22,9 @@ addons:
       - libmysqlclient-dev
       - liblua5.1-0-dev
       - cmake
+
+before_install:
+  - export CXX="g++-5" CC="gcc-5"
   
 before_script:
   - mkdir build
