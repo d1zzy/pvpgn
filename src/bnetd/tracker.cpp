@@ -136,7 +136,7 @@ namespace pvpgn
 				bn_int_nset(&packet.total_games, gamelist_total_games());
 
 				static struct utsname utsbuf = {};
-				if (utsbuf.sysname[0] == '0')
+				if (utsbuf.sysname[0] == '\0')
 				{
 					if (uname(&utsbuf) != 0)
 					{
