@@ -26,8 +26,10 @@
 #endif
 #include "common/xalloc.h"
 #include "mmap.h"
+#ifdef HAVE_WINDOWS_H
+#include <Windows.h>
+#endif
 #ifdef WIN32
-# include <windows.h>
 # include <io.h>
 #endif
 #include "common/setup_after.h"

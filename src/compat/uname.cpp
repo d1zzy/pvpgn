@@ -13,28 +13,28 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * win32 part based on win32-uname.c from libguile
- *
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-#include "common/setup_before.h"
 #ifndef HAVE_UNAME
-
-#include <cstring>
-#include <cerrno>
-#ifdef WIN32
-# include <cstdio>
-# include <windows.h>
-#endif
+#include "common/setup_before.h"
 #include "uname.h"
+
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+#include <string>
+
+#ifdef HAVE_WINDOWS_H
+#include <Windows.h>
+#define STATUS_SUCCESS (0x00000000)
+#endif
+
 #include "common/setup_after.h"
 
 
 namespace pvpgn
 {
-
-	extern int uname(struct utsname * buf)
+	int uname(struct utsname* buf)
 	{
 		if (!buf)
 		{
@@ -42,155 +42,221 @@ namespace pvpgn
 			return -1;
 		}
 
-#ifdef WIN32
+#ifdef HAVE_WINDOWS_H
+		using RtlGetVersionProto = NTSTATUS(WINAPI*)(RTL_OSVERSIONINFOEXW* lpVersionInformation);
+
+		HMODULE hNtdll = nullptr;
+		if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, L"ntdll.dll", &hNtdll) != 0)
 		{
-			enum { WinNT, Win95, Win98, WinUnknown };
-			OSVERSIONINFOEX osver;
-			SYSTEM_INFO sysinfo;
-			DWORD sLength;
-			DWORD os = WinUnknown;
-
-
-			osver.dwOSVersionInfoSize = sizeof (OSVERSIONINFOEX);
-			GetVersionEx((OSVERSIONINFO*)&osver);
-			GetSystemInfo(&sysinfo); 
-
-			// http://msdn.microsoft.com/en-us/library/windows/desktop/ms724833(v=vs.85).aspx
-			switch (osver.dwPlatformId)
+			auto fnRtlGetVersion = reinterpret_cast<RtlGetVersionProto>(GetProcAddress(hNtdll, "RtlGetVersion"));
+			if (fnRtlGetVersion != NULL)
 			{
-			case VER_PLATFORM_WIN32_NT:
-				if (osver.dwMajorVersion == 4)
-					std::strcpy(buf->sysname, "Windows NT4x");
-				else if (osver.dwMajorVersion <= 3)
-					std::strcpy(buf->sysname, "Windows NT3x");
-				else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion < 1)
-					std::strcpy(buf->sysname, "Windows 2000");
-				else if (osver.dwMajorVersion == 5 && (osver.dwMinorVersion == 1 // x86
-					|| (osver.dwMinorVersion == 2 && (osver.wProductType == VER_NT_WORKSTATION) && (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64))) ) // x64
-					std::strcpy(buf->sysname, "Windows XP");
-				else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion == 2)
-					std::strcpy(buf->sysname, "Windows Server 2003");
-				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 0 && (osver.wProductType == VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows Vista");
-				else if (osver.dwMajorVersion == 6 && (osver.dwMinorVersion <= 1) && (osver.wProductType != VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows Server 2008");
-				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 1 && (osver.wProductType == VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows 7");
-				else if (osver.dwMajorVersion == 6 && (osver.dwMinorVersion >= 2) && (osver.wProductType != VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows Server 2012");
-				else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion >= 2 && (osver.wProductType == VER_NT_WORKSTATION))
-					std::strcpy(buf->sysname, "Windows 8.x");
-				// FIXME: dwMinorVersion returns "2" instead of "3" on Windows 8.1
-				//else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 3 && (osver.wProductType == VER_NT_WORKSTATION))
-				//	std::strcpy(buf->sysname, "Windows 8.1");
-				else if (osver.wProductType != VER_NT_WORKSTATION)
-					std::strcpy(buf->sysname, "Windows Server >2012");
-				else
-					std::strcpy(buf->sysname, "Windows >8");
-
-				os = WinNT;
-				break;
-
-			case VER_PLATFORM_WIN32_WINDOWS: /* Win95, Win98 or WinME */
-				if ((osver.dwMajorVersion > 4) ||
-					((osver.dwMajorVersion == 4) && (osver.dwMinorVersion > 0)))
+				RTL_OSVERSIONINFOEXW verinfo = {};
+				verinfo.dwOSVersionInfoSize = sizeof(RTL_OSVERSIONINFOEXW);
+				if (fnRtlGetVersion(&verinfo) == STATUS_SUCCESS)
 				{
-					if (osver.dwMinorVersion >= 90)
-						std::strcpy(buf->sysname, "Windows ME"); /* ME */
-					else
-						std::strcpy(buf->sysname, "Windows 98"); /* 98 */
-					os = Win98;
-				}
-				else{
-					std::strcpy(buf->sysname, "Windows 95"); /* 95 */
-					os = Win95;
-				}
+					std::string temp;
 
-				break;
+					SYSTEM_INFO sysinfo = {};
+					GetSystemInfo(&sysinfo);
 
-			case VER_PLATFORM_WIN32s: /* Windows 3.x */
-				std::strcpy(buf->sysname, "Windows");
-				break;
-
-			default:
-				std::strcpy(buf->sysname, "Win32");
-				break;
-			}
-
-			std::snprintf(buf->version, sizeof(buf->version), "%lu.%02lu", osver.dwMajorVersion, osver.dwMinorVersion);
-
-			if (osver.szCSDVersion[0] != '\0' &&
-				(std::strlen(osver.szCSDVersion) + std::strlen(buf->version) + 1) <
-				sizeof (buf->version))
-			{
-				std::strcat(buf->version, " ");
-				std::strcat(buf->version, osver.szCSDVersion);
-			}
-
-			std::sprintf(buf->release, "build %ld", osver.dwBuildNumber & 0xFFFF);
-
-			switch (sysinfo.wProcessorArchitecture)
-			{
-			case PROCESSOR_ARCHITECTURE_PPC:
-				std::strcpy(buf->machine, "ppc");
-				break;
-			case PROCESSOR_ARCHITECTURE_ALPHA:
-				std::strcpy(buf->machine, "alpha");
-				break;
-			case PROCESSOR_ARCHITECTURE_MIPS:
-				std::strcpy(buf->machine, "mips");
-				break;
-			case PROCESSOR_ARCHITECTURE_INTEL:
-				/*
-				 * dwProcessorType is only valid in Win95 and Win98 and WinME
-				 * wProcessorLevel is only valid in WinNT
-				 */
-				switch (os)
-				{
-				case Win95:
-				case Win98:
-					switch (sysinfo.dwProcessorType)
+					switch (verinfo.dwMajorVersion)
 					{
-					case PROCESSOR_INTEL_386:
-					case PROCESSOR_INTEL_486:
-					case PROCESSOR_INTEL_PENTIUM:
-						std::snprintf(buf->machine, sizeof(buf->machine), "i%lu", sysinfo.dwProcessorType);
-						break;
-					default:
-						std::strcpy(buf->machine, "i386");
+					case 10:
+					{
+						if (verinfo.wProductType == VER_NT_WORKSTATION)
+						{
+							temp.append("Windows 10");
+						}
+						else
+						{
+							temp.append("Windows Server 2016");
+						}
+
 						break;
 					}
-					break;
-				case WinNT:
-					std::sprintf(buf->machine, "i%d86", sysinfo.wProcessorLevel);
-					break;
-				default:
-					std::strcpy(buf->machine, "unknown");
-					break;
-				}
-				break;
-			default:
-				std::strcpy(buf->machine, "unknown");
-				break;
-			}
+					case 6:
+					{
+						switch (verinfo.dwMinorVersion)
+						{
+						case 3:
+						{
+							if (verinfo.wProductType == VER_NT_WORKSTATION)
+							{
+								temp.append("Windows 8.1");
+							}
+							else
+							{
+								temp.append("Windows Server 2012 R2");
+							}
 
-			sLength = sizeof (buf->nodename) - 1;
-			GetComputerName(buf->nodename, &sLength);
+							break;
+						}
+						case 2:
+						{
+							if (verinfo.wProductType == VER_NT_WORKSTATION)
+							{
+								temp.append("Windows 8");
+							}
+							else
+							{
+								temp.append("Windows Server 2012");
+							}
+
+							break;
+						}
+						case 1:
+						{
+							if (verinfo.wProductType == VER_NT_WORKSTATION)
+							{
+								temp.append("Windows 7");
+							}
+							else
+							{
+								temp.append("Windows Server 2008 R2");
+							}
+
+							break;
+						}
+						case 0:
+						{
+							if (verinfo.wProductType == VER_NT_WORKSTATION)
+							{
+								temp.append("Windows Vista");
+							}
+							else
+							{
+								temp.append("Windows Server 2008");
+							}
+
+							break;
+						}
+						default:
+						{
+							break;
+						}
+						}
+
+						break;
+					}
+					case 5:
+					{
+						switch (verinfo.dwMinorVersion)
+						{
+						case 2:
+						{
+							if (GetSystemMetrics(SM_SERVERR2) != 0)
+							{
+								temp.append("Windows Server 2003 R2");
+							}
+							else if (verinfo.wSuiteMask & VER_SUITE_WH_SERVER)
+							{
+								temp.append("Windows Home Server");
+							}
+							else if (GetSystemMetrics(SM_SERVERR2) == 0)
+							{
+								temp.append("Windows Server 2003");
+							}
+							else if ((verinfo.wProductType == VER_NT_WORKSTATION) && (sysinfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64))
+							{
+								temp.append("Windows XP Professional x64 Edition");
+							}
+
+							break;
+						}
+						case 1:
+						{
+							temp.append("Windows XP");
+							break;
+						}
+						case 0:
+						{
+							temp.append("Windows 2000");
+							break;
+						}
+						default:
+						{
+							break;
+						}
+						}
+
+						break;
+					}
+					default:
+					{
+						break;
+					}
+					}
+
+					if (temp.empty())
+					{
+						temp.append("Windows");
+					}
+
+					if (verinfo.wServicePackMajor != 0)
+					{
+						temp.append(" SP" + std::to_string(verinfo.wServicePackMajor));
+						if (verinfo.wServicePackMinor != 0)
+						{
+							temp.append("." + std::to_string(verinfo.wServicePackMinor));
+						}
+					}
+
+					std::snprintf(buf->sysname, sizeof buf->sysname, "%s", temp.c_str());
+
+					DWORD len = sizeof buf->nodename;
+					GetComputerNameA(buf->nodename, &len);
+
+					std::snprintf(buf->release, sizeof buf->release, "Build %lu", verinfo.dwBuildNumber);
+					
+					std::snprintf(buf->version, sizeof buf->version, "%lu.%lu", verinfo.dwMajorVersion, verinfo.dwMinorVersion);
+
+					std::string arch;
+					switch (sysinfo.wProcessorArchitecture)
+					{
+					case PROCESSOR_ARCHITECTURE_AMD64:
+					{
+						arch = "x64";
+						break;
+					}
+					case PROCESSOR_ARCHITECTURE_ARM:
+					{
+						arch = "ARM";
+						break;
+					}
+					case PROCESSOR_ARCHITECTURE_IA64:
+					{
+						arch = "Intel Itanium-based";
+						break;
+					}
+					case PROCESSOR_ARCHITECTURE_INTEL:
+					{
+						arch = "x86";
+						break;
+					}
+					case PROCESSOR_ARCHITECTURE_UNKNOWN:
+					default:
+						arch = "Unknown";
+					}
+
+					std::snprintf(buf->machine, sizeof buf->machine, "%s", arch.c_str());
+
+					// leave this empty for now
+					std::snprintf(buf->domainname, sizeof buf->domainname, "");
+				}
+			}
 		}
-#else
-		std::strcpy(buf->sysname, "unknown");
-		std::strcpy(buf->version, "unknown");
-		std::strcpy(buf->release, "unknown");
-		std::strcpy(buf->machine, "unknown");
-		std::strcpy(buf->nodename, "unknown");
-#endif
-		std::strcpy(buf->domainname, "");
+#else // !HAVE_WINDOWS_H
+		std::snprintf(buf->sysname, sizeof buf->sysname, "Unknown");
+		std::snprintf(buf->nodename, sizeof buf->nodename, "Unknown");
+		std::snprintf(buf->release, sizeof buf->release, "Unknown");
+		std::snprintf(buf->version, sizeof buf->version, "Unknown");
+		std::snprintf(buf->machine, sizeof buf->machine, "Unknown");
+		std::snprintf(buf->domainname, sizeof buf->domainname, "Unknown");
+#endif // HAVE_WINDOWS_H
 
 		return 0;
 	}
 
 }
-
-#else
-typedef int filenotempty; /* make ISO standard happy */
 #endif

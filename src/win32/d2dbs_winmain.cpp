@@ -18,7 +18,10 @@
 
 #ifdef WIN32_GUI 
 
-#include "common/setup_before.h" 
+#include "common/setup_before.h"
+
+#include <cwchar>
+
 #include <windows.h>
 #include <windowsx.h>
 #include <richedit.h>
@@ -136,7 +139,7 @@ namespace pvpgn
 				d2dbs_signal_quit_wrapper();
 				break;
 			case ID_EDITCONFIG_D2DBS:
-				ShellExecute(NULL, "open", "notepad.exe", "conf\\d2dbs.conf", NULL, SW_SHOW);
+				ShellExecuteW(nullptr, L"open", L"notepad.exe", L"conf\\d2dbs.conf", NULL, SW_SHOW);
 				break;
 			case ID_LOADCONFIG_D2DBS:
 				d2dbs::fprintf(stderr, "Sending Reload Config Signal To d2dbs\n");
@@ -181,20 +184,18 @@ namespace pvpgn
 
 		static void OnSize(HWND hwnd, UINT state, int cx, int cy)
 		{
-			NOTIFYICONDATA dta;
-
-			if (state == SIZE_MINIMIZED) {
-				dta.cbSize = sizeof(NOTIFYICONDATA);
+			if (state == SIZE_MINIMIZED)
+			{
+				NOTIFYICONDATAW dta = {};
+				dta.cbSize = sizeof(NOTIFYICONDATAW);
 				dta.hWnd = hwnd;
 				dta.uID = ID_TRAY;
 				dta.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
 				dta.uCallbackMessage = WM_SHELLNOTIFY;
-				dta.hIcon = LoadIcon(GetWindowInstance(hwnd), MAKEINTRESOURCE(ID_ICON1));
-				strcpy(dta.szTip, "D2DBS Version");
-				strcat(dta.szTip, " ");
-				strcat(dta.szTip, D2DBS_VERSION_NUMBER);
+				dta.hIcon = LoadIconW(GetWindowInstance(hwnd), MAKEINTRESOURCEW(ID_ICON1));
+				std::swprintf(dta.szTip, sizeof dta.szTip / sizeof *dta.szTip, L"D2DBS Version " D2DBS_VERSION_NUMBER);
 
-				Shell_NotifyIcon(NIM_ADD, &dta);
+				Shell_NotifyIconW(NIM_ADD, &dta);
 				ShowWindow(hwnd, SW_HIDE);
 				return;
 			}
@@ -250,7 +251,6 @@ using namespace pvpgn::d2dbs;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpszCmdLine, int nCmdShow)
 {
-	WNDCLASSEX	wc;
 	HWND		hwnd;
 	MSG			msg;
 
@@ -265,29 +265,33 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		return app_main(__argc, __argv);
 	}
 
-	LoadLibrary("RichEd20.dll");
+	if (LoadLibraryW(L"RichEd20.dll") == NULL)
+	{
+		return -1;
+	}
 
-	wc.cbSize = sizeof(WNDCLASSEX);
+	WNDCLASSEXW wc = {};
+	wc.cbSize = sizeof(WNDCLASSEXW);
 	wc.style = 0;
 	wc.lpfnWndProc = WndProc;
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = sizeof(LPVOID);
 	wc.hInstance = hInstance;
-	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(ID_ICON1));
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wc.hIcon = LoadIconW(hInstance, MAKEINTRESOURCEW(ID_ICON1));
+	wc.hCursor = LoadCursorW(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)COLOR_WINDOW;
-	wc.lpszMenuName = MAKEINTRESOURCE(ID_MENU);
-	wc.lpszClassName = "BnetWndClass";
+	wc.lpszMenuName = MAKEINTRESOURCEW(ID_MENU);
+	wc.lpszClassName = L"BnetWndClass";
 
-	if (!RegisterClassEx(&wc))
-		RegisterClass((LPWNDCLASS)&wc.style);
+	if (!RegisterClassExW(&wc))
+		RegisterClassW((LPWNDCLASS)&wc.style);
 
-	hwnd = CreateWindow(TEXT("BnetWndClass"), "Diablo II DataBase Server",
+	hwnd = CreateWindowExW(0L, L"BnetWndClass", L"Diablo II DataBase Server",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		NULL,
-		LoadMenu(hInstance, MAKEINTRESOURCE(ID_MENU)),
+		LoadMenuW(hInstance, MAKEINTRESOURCEW(ID_MENU)),
 		hInstance, NULL);
 
 	if (hwnd) {
@@ -295,11 +299,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		UpdateWindow(hwnd);
 	}
 
-	while (GetMessage(&msg, NULL, 0, 0)) {
+	while (GetMessageW(&msg, NULL, 0, 0))
+	{
 		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		DispatchMessageW(&msg);
 
-		if (!d2dbs_running && d2dbs_run && gui_run) {
+		if (!d2dbs_running && d2dbs_run && gui_run)
+		{
 			d2dbs_running = TRUE;
 			_beginthread(pvpgn::d2dbs::d2dbs, 0, NULL);
 		}

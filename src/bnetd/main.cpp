@@ -32,9 +32,6 @@
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #endif
-#ifdef HAVE_SYS_UTSNAME_H
-# include <sys/utsname.h>
-#endif
 #ifdef WIN32
 # include "win32/service.h"
 #endif
@@ -184,7 +181,7 @@ void post_server_shutdown(int status);
 int eventlog_startup(void);
 int fork_bnetd(int foreground);
 char * write_to_pidfile(void);
-void pvpgn_greeting(void);
+void pvpgn_greeting();
 
 int eventlog_startup(void)
 {
@@ -488,28 +485,28 @@ void post_server_shutdown(int status)
 	return;
 }
 
-void pvpgn_greeting(void)
+void pvpgn_greeting()
 {
-	struct utsname     utsbuf;
 #ifdef HAVE_GETPID
-	eventlog(eventlog_level_info, __FUNCTION__, PVPGN_SOFTWARE" version " PVPGN_VERSION " process %u", (unsigned int)getpid());
+	eventlog(eventlog_level_info, __FUNCTION__, PVPGN_SOFTWARE " " PVPGN_VERSION " process %d", static_cast<int>(getpid()));
 #else
 	eventlog(eventlog_level_info, __FUNCTION__, PVPGN_SOFTWARE" version "PVPGN_VERSION);
 #endif
 
-	if (!(uname(&utsbuf) < 0))
+	struct utsname utsbuf = {};
+	if (uname(&utsbuf) == 0)
 	{
 		eventlog(eventlog_level_info, __FUNCTION__, "running on %s (%s %s, %s)", utsbuf.sysname, utsbuf.version, utsbuf.release, utsbuf.machine);
 	}
+	else
+	{
+		eventlog(eventlog_level_info, __FUNCTION__, "uname() failed");
+	}
 
-	printf("You are currently Running " PVPGN_SOFTWARE " " PVPGN_VERSION "\n");
+	printf("You are currently running " PVPGN_SOFTWARE " " PVPGN_VERSION "\n");
 	printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 	printf("If you need support:\n");
-	printf(" * READ the documentation at http://pvpgndocs.berlios.de/\n");
-	printf(" * you can subscribe to the pvpgn-users mailing list at \n");
-	printf("   https://lists.berlios.de/mailman/listinfo/pvpgn-users\n");
-	printf(" * check out the forums at http://forums.pvpgn.org\n");
-	printf(" * visit us on IRC on irc.pvpgn.org channel #pvpgn\n");
+	printf(" * Create an issue at https://github.com/pvpgn/pvpgn-server\n");
 	printf("\nServer is now running.\n");
 	printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 
