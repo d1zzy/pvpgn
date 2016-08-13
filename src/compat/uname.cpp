@@ -26,6 +26,7 @@
 
 #ifdef HAVE_WINDOWS_H
 #include <Windows.h>
+#define STATUS_SUCCESS (0x00000000)
 #endif
 
 #include "common/setup_after.h"
@@ -33,9 +34,6 @@
 
 namespace pvpgn
 {
-	using RtlGetVersionProto = NTSTATUS(WINAPI*)(RTL_OSVERSIONINFOEXW* lpVersionInformation);
-#define STATUS_SUCCESS (0x00000000)
-
 	int uname(struct utsname* buf)
 	{
 		if (!buf)
@@ -45,6 +43,8 @@ namespace pvpgn
 		}
 
 #ifdef HAVE_WINDOWS_H
+		using RtlGetVersionProto = NTSTATUS(WINAPI*)(RTL_OSVERSIONINFOEXW* lpVersionInformation);
+
 		HMODULE hNtdll = nullptr;
 		if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, L"ntdll.dll", &hNtdll) != 0)
 		{
