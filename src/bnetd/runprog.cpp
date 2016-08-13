@@ -22,7 +22,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#ifdef HAVE_SYS_TYPES_h
+#ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
 #ifdef HAVE_UNISTD_H
