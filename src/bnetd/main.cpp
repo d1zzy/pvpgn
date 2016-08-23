@@ -37,7 +37,6 @@
 #endif
 #ifdef WIN32_GUI
 # include "common/gui_printf.h"
-# define printf gui_lvprintf
 #endif
 
 #include "compat/stdfileno.h"
@@ -503,12 +502,21 @@ void pvpgn_greeting()
 		eventlog(eventlog_level_info, __FUNCTION__, "uname() failed");
 	}
 
-	printf(eventlog_level_info, "You are currently running " PVPGN_SOFTWARE " " PVPGN_VERSION "\n");
-	printf(eventlog_level_info, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-	printf(eventlog_level_info, "If you need support:\n");
-	printf(eventlog_level_info, " * Create an issue at https://github.com/pvpgn/pvpgn-server\n");
-	printf(eventlog_level_info, "\nServer is now running.\n");
-	printf(eventlog_level_info, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+#ifdef WIN32_GUI
+	gui_lvprintf(eventlog_level_info, "You are currently running " PVPGN_SOFTWARE " " PVPGN_VERSION "\n");
+	gui_lvprintf(eventlog_level_info, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+	gui_lvprintf(eventlog_level_info, "If you need support:\n");
+	gui_lvprintf(eventlog_level_info, " * Create an issue at https://github.com/pvpgn/pvpgn-server\n");
+	gui_lvprintf(eventlog_level_info, "\nServer is now running.\n");
+	gui_lvprintf(eventlog_level_info, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+#else
+	std::printf("You are currently running " PVPGN_SOFTWARE " " PVPGN_VERSION "\n");
+	std::printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+	std::printf("If you need support:\n");
+	std::printf(" * Create an issue at https://github.com/pvpgn/pvpgn-server\n");
+	std::printf("\nServer is now running.\n");
+	std::printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+#endif
 
 	return;
 }
