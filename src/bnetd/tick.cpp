@@ -46,7 +46,7 @@ namespace pvpgn
 
 			if (gettimeofday(&tv, NULL) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not get std::time (gettimeofday: %s)", std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not get std::time (gettimeofday: {})", std::strerror(errno));
 				return 0;
 			}
 			if (first)

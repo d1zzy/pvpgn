@@ -68,11 +68,11 @@ namespace pvpgn
 			psock_errno() == PSOCK_ECONNRESET ||
 #endif
 			0) {
-			/*	    eventlog(eventlog_level_debug,__FUNCTION__,"[%d] remote host closed connection (psock_recv: %s)",sock,std::strerror(psock_errno())); */
+			/*	    eventlog(eventlog_level_debug,__FUNCTION__,"[{}] remote host closed connection (psock_recv: {})",sock,std::strerror(psock_errno())); */
 			return -1; /* common error: close connection, but no message */
 		}
 
-		eventlog(eventlog_level_debug, __FUNCTION__, "[%d] receive error (closing connection) (psock_recv: %s)", sock, std::strerror(psock_errno()));
+		eventlog(eventlog_level_debug, __FUNCTION__, "[{}] receive error (closing connection) (psock_recv: {})", sock, std::strerror(psock_errno()));
 		return -1;
 	}
 
@@ -83,22 +83,22 @@ namespace pvpgn
 		void *       temp;
 
 		if (!packet) {
-			eventlog(eventlog_level_error, __FUNCTION__, "[%d] got NULL packet (closing connection)", sock);
+			eventlog(eventlog_level_error, __FUNCTION__, "[{}] got NULL packet (closing connection)", sock);
 			return -1;
 		}
 
 		if (!currsize) {
-			eventlog(eventlog_level_error, __FUNCTION__, "[%d] got NULL currsize (closing connection)", sock);
+			eventlog(eventlog_level_error, __FUNCTION__, "[{}] got NULL currsize (closing connection)", sock);
 			return -1;
 		}
 
 		if ((header_size = packet_get_header_size(packet)) >= MAX_PACKET_SIZE) {
-			eventlog(eventlog_level_error, __FUNCTION__, "[%d] could not determine header size (closing connection)", sock);
+			eventlog(eventlog_level_error, __FUNCTION__, "[{}] could not determine header size (closing connection)", sock);
 			return -1;
 		}
 
 		if (!(temp = packet_get_raw_data_build(packet, *currsize))) {
-			eventlog(eventlog_level_error, __FUNCTION__, "[%d] could not obtain raw data pointer at offset %u (closing connection)", sock, *currsize);
+			eventlog(eventlog_level_error, __FUNCTION__, "[{}] could not obtain raw data pointer at offset {} (closing connection)", sock, *currsize);
 			return -1;
 		}
 
@@ -108,12 +108,12 @@ namespace pvpgn
 			unsigned int total_size = packet_get_size(packet);
 
 			if (total_size < header_size) {
-				eventlog(eventlog_level_warn, __FUNCTION__, "[%d] corrupted packet received (total_size=%u currsize=%u) (closing connection)", sock, total_size, *currsize);
+				eventlog(eventlog_level_warn, __FUNCTION__, "[{}] corrupted packet received (total_size={} currsize={}) (closing connection)", sock, total_size, *currsize);
 				return -1;
 			}
 
 			if (*currsize >= total_size) {
-				eventlog(eventlog_level_warn, __FUNCTION__, "[%d] more data requested for already complete packet (total_size=%u currsize=%u) (closing connection)", sock, total_size, *currsize);
+				eventlog(eventlog_level_warn, __FUNCTION__, "[{}] more data requested for already complete packet (total_size={} currsize={}) (closing connection)", sock, total_size, *currsize);
 				return -1;
 			}
 
@@ -165,7 +165,7 @@ namespace pvpgn
 #ifdef PSOCK_ECONNRESET
 			psock_errno() != PSOCK_ECONNRESET &&
 #endif
-			1) eventlog(eventlog_level_debug, __FUNCTION__, "[%d] could not send data (closing connection) (psock_send: %s)", sock, std::strerror(psock_errno()));
+			1) eventlog(eventlog_level_debug, __FUNCTION__, "[{}] could not send data (closing connection) (psock_send: {})", sock, std::strerror(psock_errno()));
 
 		return -1;
 	}
@@ -176,17 +176,17 @@ namespace pvpgn
 		int          addlen;
 
 		if (!packet) {
-			eventlog(eventlog_level_error, __FUNCTION__, "[%d] got NULL packet (closing connection)", sock);
+			eventlog(eventlog_level_error, __FUNCTION__, "[{}] got NULL packet (closing connection)", sock);
 			return -1;
 		}
 
 		if (!currsize) {
-			eventlog(eventlog_level_error, __FUNCTION__, "[%d] got NULL currsize (closing connection)", sock);
+			eventlog(eventlog_level_error, __FUNCTION__, "[{}] got NULL currsize (closing connection)", sock);
 			return -1;
 		}
 
 		if ((size = packet_get_size(packet)) < 1) {
-			eventlog(eventlog_level_error, __FUNCTION__, "[%d] packet to send is empty (skipping it)", sock);
+			eventlog(eventlog_level_error, __FUNCTION__, "[{}] packet to send is empty (skipping it)", sock);
 			*currsize = 0;
 			return 1;
 		}

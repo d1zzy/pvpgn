@@ -185,11 +185,11 @@ namespace pvpgn
 				return -1;
 			}
 			if (d2char_check_charname(charname) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad character name \"%s\"", charname);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad character name \"{}\"", charname);
 				return -1;
 			}
 			if (d2char_check_acctname(account) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad account name \"%s\"", account);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad account name \"{}\"", account);
 				return -1;
 			}
 
@@ -225,14 +225,14 @@ namespace pvpgn
 				return -1;
 			}
 			if (size >= sizeof(buffer)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "newbie save file \"%s\" is corrupt (length %lu, expected <%lu)", newbiefile, (unsigned long)size, (unsigned long)sizeof(buffer));
+				eventlog(eventlog_level_error, __FUNCTION__, "newbie save file \"{}\" is corrupt (length {}, expected <{})", newbiefile, (unsigned long)size, (unsigned long)sizeof(buffer));
 				return -1;
 			}
 
 			savefile = (char*)xmalloc(std::strlen(prefs_get_charsave_dir()) + 1 + std::strlen(charname) + 1);
 			d2char_get_savefile_name(savefile, charname);
 			if ((fp = std::fopen(savefile, "rb"))) {
-				eventlog(eventlog_level_warn, __FUNCTION__, "character save file \"%s\" for \"%s\" already exist", savefile, charname);
+				eventlog(eventlog_level_warn, __FUNCTION__, "character save file \"{}\" for \"{}\" already exist", savefile, charname);
 				std::fclose(fp);
 				xfree(savefile);
 				return -1;
@@ -256,7 +256,7 @@ namespace pvpgn
 			d2charinfo_init(&chardata, account, charname, chclass, status);
 
 			if (file_write(infofile, &chardata, sizeof(chardata)) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error writing info file \"%s\"", infofile);
+				eventlog(eventlog_level_error, __FUNCTION__, "error writing info file \"{}\"", infofile);
 				std::remove(infofile);
 				xfree(infofile);
 				xfree(savefile);
@@ -264,7 +264,7 @@ namespace pvpgn
 			}
 
 			if (file_write(savefile, buffer, size) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error writing save file \"%s\"", savefile);
+				eventlog(eventlog_level_error, __FUNCTION__, "error writing save file \"{}\"", savefile);
 				std::remove(infofile);
 				std::remove(savefile);
 				xfree(savefile);
@@ -273,7 +273,7 @@ namespace pvpgn
 			}
 			xfree(savefile);
 			xfree(infofile);
-			eventlog(eventlog_level_info, __FUNCTION__, "character %s(*%s) class %d status 0x%X created", charname, account, chclass, status);
+			eventlog(eventlog_level_info, __FUNCTION__, "character {}(*{}) class {} status 0x{:X} created", charname, account, chclass, status);
 			return 0;
 		}
 
@@ -329,23 +329,23 @@ namespace pvpgn
 				allow_convet = 0 in d2cs.conf */
 
 			if (d2char_check_charname(charname) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad character name \"%s\"", charname);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad character name \"{}\"", charname);
 				return -1;
 			}
 			if (d2char_check_acctname(account) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad account name \"%s\"", account);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad account name \"{}\"", account);
 				return -1;
 			}
 			file = (char*)xmalloc(std::strlen(prefs_get_charinfo_dir()) + 1 + std::strlen(account) + 1 + std::strlen(charname) + 1);
 			d2char_get_infofile_name(file, account, charname);
 			if (!(fp = std::fopen(file, "rb+"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "unable to open charinfo file \"%s\" for reading and writing (std::fopen: %s)", file, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "unable to open charinfo file \"{}\" for reading and writing (std::fopen: {})", file, std::strerror(errno));
 				xfree(file);
 				return -1;
 			}
 			xfree(file);
 			if (std::fread(&charinfo, 1, sizeof(charinfo), fp) != sizeof(charinfo)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error reading charinfo file for character \"%s\" (std::fread: %s)", charname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "error reading charinfo file for character \"{}\" (std::fread: {})", charname, std::strerror(errno));
 				std::fclose(fp);
 				return -1;
 			}
@@ -359,26 +359,26 @@ namespace pvpgn
 
 			std::fseek(fp, 0, SEEK_SET); /* FIXME: check return */
 			if (std::fwrite(&charinfo, 1, sizeof(charinfo), fp) != sizeof(charinfo)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error writing charinfo file for character \"%s\" (std::fwrite: %s)", charname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "error writing charinfo file for character \"{}\" (std::fwrite: {})", charname, std::strerror(errno));
 				std::fclose(fp);
 				return -1;
 			}
 			if (std::fclose(fp) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close charinfo file for character \"%s\" after writing (std::fclose: %s)", charname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close charinfo file for character \"{}\" after writing (std::fclose: {})", charname, std::strerror(errno));
 				return -1;
 			}
 
 			file = (char*)xmalloc(std::strlen(prefs_get_charsave_dir()) + 1 + std::strlen(charname) + 1);
 			d2char_get_savefile_name(file, charname);
 			if (!(fp = std::fopen(file, "rb+"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open charsave file \"%s\" for reading and writing (std::fopen: %s)", file, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open charsave file \"{}\" for reading and writing (std::fopen: {})", file, std::strerror(errno));
 				xfree(file);
 				return -1;
 			}
 			xfree(file);
 			size = std::fread(buffer, 1, sizeof(buffer), fp);
 			if (!std::feof(fp)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error reading charsave file for character \"%s\" (std::fread: %s)", charname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "error reading charsave file for character \"{}\" (std::fread: {})", charname, std::strerror(errno));
 				std::fclose(fp);
 				return -1;
 			}
@@ -398,15 +398,15 @@ namespace pvpgn
 			}
 			std::fseek(fp, 0, SEEK_SET); /* FIXME: check return */
 			if (std::fwrite(buffer, 1, size, fp) != size) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error writing charsave file for character %s (std::fwrite: %s)", charname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "error writing charsave file for character {} (std::fwrite: {})", charname, std::strerror(errno));
 				std::fclose(fp);
 				return -1;
 			}
 			if (std::fclose(fp) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close charsave file for character \"%s\" after writing (std::fclose: %s)", charname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close charsave file for character \"{}\" after writing (std::fclose: {})", charname, std::strerror(errno));
 				return -1;
 			}
-			eventlog(eventlog_level_info, __FUNCTION__, "character %s(*%s) converted to expansion", charname, account);
+			eventlog(eventlog_level_info, __FUNCTION__, "character {}(*{}) converted to expansion", charname, account);
 			return 0;
 		}
 
@@ -418,11 +418,11 @@ namespace pvpgn
 			ASSERT(account, -1);
 			ASSERT(charname, -1);
 			if (d2char_check_charname(charname) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad character name \"%s\"", charname);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad character name \"{}\"", charname);
 				return -1;
 			}
 			if (d2char_check_acctname(account) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad account name \"%s\"", account);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad account name \"{}\"", account);
 				return -1;
 			}
 
@@ -430,7 +430,7 @@ namespace pvpgn
 			file = (char*)xmalloc(std::strlen(prefs_get_charinfo_dir()) + 1 + std::strlen(account) + 1 + std::strlen(charname) + 1);
 			d2char_get_infofile_name(file, account, charname);
 			if (std::remove(file) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "failed to delete charinfo file \"%s\" (std::remove: %s)", file, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "failed to delete charinfo file \"{}\" (std::remove: {})", file, std::strerror(errno));
 				xfree(file);
 				return -1;
 			}
@@ -440,7 +440,7 @@ namespace pvpgn
 			file = (char*)xmalloc(std::strlen(prefs_get_charsave_dir()) + 1 + std::strlen(charname) + 1);
 			d2char_get_savefile_name(file, charname);
 			if (std::remove(file) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "failed to delete charsave file \"%s\" (std::remove: %s)", file, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "failed to delete charsave file \"{}\" (std::remove: {})", file, std::strerror(errno));
 			}
 			xfree(file);
 
@@ -449,7 +449,7 @@ namespace pvpgn
 			d2char_get_bak_infofile_name(file, account, charname);
 			if (access(file, F_OK) == 0) {
 				if (std::remove(file) < 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "failed to delete bak charinfo file \"%s\" (std::remove: %s)", file, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "failed to delete bak charinfo file \"{}\" (std::remove: {})", file, std::strerror(errno));
 				}
 			}
 			xfree(file);
@@ -459,12 +459,12 @@ namespace pvpgn
 			d2char_get_bak_savefile_name(file, charname);
 			if (access(file, F_OK) == 0) {
 				if (std::remove(file) < 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "failed to delete bak charsave file \"%s\" (std::remove: %s)", file, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "failed to delete bak charsave file \"{}\" (std::remove: {})", file, std::strerror(errno));
 				}
 			}
 			xfree(file);
 
-			eventlog(eventlog_level_info, __FUNCTION__, "character %s(*%s) deleted", charname, account);
+			eventlog(eventlog_level_info, __FUNCTION__, "character {}(*{}) deleted", charname, account);
 			return 0;
 		}
 
@@ -477,11 +477,11 @@ namespace pvpgn
 			ASSERT(charname, -1);
 			ASSERT(charinfo, -1);
 			if (d2charinfo_load(account, charname, &data) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error loading character %s(*%s)", charname, account);
+				eventlog(eventlog_level_error, __FUNCTION__, "error loading character {}(*{})", charname, account);
 				return -1;
 			}
 			std::memcpy(charinfo, &data.summary, sizeof(data.summary));
-			eventlog(eventlog_level_info, __FUNCTION__, "character %s difficulty %d expansion %d hardcore %d dead %d loaded", charname,
+			eventlog(eventlog_level_info, __FUNCTION__, "character {} difficulty {} expansion {} hardcore {} dead {} loaded", charname,
 				d2charinfo_get_difficulty(charinfo), d2charinfo_get_expansion(charinfo),
 				d2charinfo_get_hardcore(charinfo), d2charinfo_get_dead(charinfo));
 			return 0;
@@ -494,23 +494,23 @@ namespace pvpgn
 			int			size, ladder_time;
 
 			if (d2char_check_charname(charname) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad character name \"%s\"", charname);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad character name \"{}\"", charname);
 				return -1;
 			}
 			if (d2char_check_acctname(account) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad account name \"%s\"", account);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad account name \"{}\"", account);
 				return -1;
 			}
 			file = (char*)xmalloc(std::strlen(prefs_get_charinfo_dir()) + 1 + std::strlen(account) + 1 + std::strlen(charname) + 1);
 			d2char_get_infofile_name(file, account, charname);
 			size = sizeof(t_d2charinfo_file);
 			if (file_read(file, data, (unsigned int*)&size) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error loading character file %s", file);
+				eventlog(eventlog_level_error, __FUNCTION__, "error loading character file {}", file);
 				xfree(file);
 				return -1;
 			}
 			if (size != sizeof(t_d2charinfo_file)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad charinfo file %s (length %d)", charname, size);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad charinfo file {} (length {})", charname, size);
 				xfree(file);
 				return -1;
 			}
@@ -535,9 +535,9 @@ namespace pvpgn
 				unsigned int		checksum;
 				std::FILE			* fp;
 
-				eventlog(eventlog_level_info, __FUNCTION__, "%s(*%s) was created in old ladder season, set to non-ladder", charname, account);
+				eventlog(eventlog_level_info, __FUNCTION__, "{}(*{}) was created in old ladder season, set to non-ladder", charname, account);
 				if (!(fp = std::fopen(file, "wb"))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "charinfo file \"%s\" does not exist for account \"%s\"", file, account);
+					eventlog(eventlog_level_error, __FUNCTION__, "charinfo file \"{}\" does not exist for account \"{}\"", file, account);
 					xfree(file);
 					return 0;
 				}
@@ -552,7 +552,7 @@ namespace pvpgn
 				bn_byte_set(&data->portrait.ladder, D2CHARINFO_PORTRAIT_PADBYTE);
 
 				if (std::fwrite(data, 1, sizeof(*data), fp) != sizeof(*data)) {
-					eventlog(eventlog_level_error, __FUNCTION__, "error writing charinfo file for character \"%s\" (std::fwrite: %s)", charname, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "error writing charinfo file for character \"{}\" (std::fwrite: {})", charname, std::strerror(errno));
 					std::fclose(fp);
 					return 0;
 				}
@@ -562,14 +562,14 @@ namespace pvpgn
 				d2char_get_savefile_name(file, charname);
 
 				if (!(fp = std::fopen(file, "rb+"))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "could not open charsave file \"%s\" for reading and writing (std::fopen: %s)", file, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not open charsave file \"{}\" for reading and writing (std::fopen: {})", file, std::strerror(errno));
 					xfree(file);
 					return 0;
 				}
 				xfree(file);
 				size = std::fread(buffer, 1, sizeof(buffer), fp);
 				if (!std::feof(fp)) {
-					eventlog(eventlog_level_error, __FUNCTION__, "error reading charsave file for character \"%s\" (std::fread: %s)", charname, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "error reading charsave file for character \"{}\" (std::fread: {})", charname, std::strerror(errno));
 					std::fclose(fp);
 					return 0;
 				}
@@ -590,7 +590,7 @@ namespace pvpgn
 				}
 				std::fseek(fp, 0, SEEK_SET);
 				if (std::fwrite(buffer, 1, size, fp) != size) {
-					eventlog(eventlog_level_error, __FUNCTION__, "error writing charsave file for character %s (std::fwrite: %s)", charname, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "error writing charsave file for character {} (std::fwrite: {})", charname, std::strerror(errno));
 					std::fclose(fp);
 					return 0;
 				}
@@ -607,11 +607,11 @@ namespace pvpgn
 		{
 			ASSERT(data, -1);
 			if (bn_int_get(data->header.magicword) != D2CHARINFO_MAGICWORD) {
-				eventlog(eventlog_level_error, __FUNCTION__, "info data check failed (header 0x%08X)", bn_int_get(data->header.magicword));
+				eventlog(eventlog_level_error, __FUNCTION__, "info data check failed (header 0x{:08X})", bn_int_get(data->header.magicword));
 				return -1;
 			}
 			if (bn_int_get(data->header.version) != D2CHARINFO_VERSION) {
-				eventlog(eventlog_level_error, __FUNCTION__, "info data check failed (version 0x%08X)", bn_int_get(data->header.version));
+				eventlog(eventlog_level_error, __FUNCTION__, "info data check failed (version 0x{:08X})", bn_int_get(data->header.version));
 				return -1;
 			}
 			return 0;
@@ -640,7 +640,7 @@ namespace pvpgn
 			ASSERT(account, -1);
 			ASSERT(portrait, -1);
 			if (d2charinfo_load(account, charname, &data) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error loading character %s(*%s)", charname, account);
+				eventlog(eventlog_level_error, __FUNCTION__, "error loading character {}(*{})", charname, account);
 				return -1;
 			}
 			std::strcpy((char *)portrait, (char *)&data.portrait);
@@ -839,7 +839,7 @@ namespace pvpgn
 			ASSERT(data, -1);
 			ASSERT(size, -1);
 			if (!(fp = std::fopen(filename, "rb"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				return -1;
 			}
 
@@ -849,12 +849,12 @@ namespace pvpgn
 			std::rewind(fp); /* FIXME: check return value */
 
 			if (std::fread(data, 1, n, fp) != n) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error reading file \"%s\" (std::fread: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "error reading file \"{}\" (std::fread: {})", filename, std::strerror(errno));
 				std::fclose(fp);
 				return -1;
 			}
 			if (std::fclose(fp) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"%s\" after reading (std::fclose: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"{}\" after reading (std::fclose: {})", filename, std::strerror(errno));
 				return -1;
 			}
 			*size = n;
@@ -870,16 +870,16 @@ namespace pvpgn
 			ASSERT(data, -1);
 			ASSERT(size, -1);
 			if (!(fp = std::fopen(filename, "wb"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for writing (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for writing (std::fopen: {})", filename, std::strerror(errno));
 				return -1;
 			}
 			if (std::fwrite(data, 1, size, fp) != size) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error writing file \"%s\" (std::fwrite: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "error writing file \"{}\" (std::fwrite: {})", filename, std::strerror(errno));
 				std::fclose(fp);
 				return -1;
 			}
 			if (std::fclose(fp) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"%s\" after writing (std::fclose: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"{}\" after writing (std::fclose: {})", filename, std::strerror(errno));
 				return -1;
 			}
 			return 0;

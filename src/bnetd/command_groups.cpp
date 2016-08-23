@@ -54,7 +54,7 @@ namespace pvpgn
 				return -1;
 			}
 			if (!(fp = std::fopen(filename, "r"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				return -1;
 			}
 
@@ -75,15 +75,15 @@ namespace pvpgn
 					buff[endpos + 1] = '\0';
 				}
 				if (!(temp = std::strtok(buff, " \t"))) { /* std::strtok modifies the string it is passed */
-					eventlog(eventlog_level_error, __FUNCTION__, "missing group on line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing group on line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				if (str_to_uint(temp, &group)<0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "group '%s' not a valid group (1-8)", temp);
+					eventlog(eventlog_level_error, __FUNCTION__, "group '{}' not a valid group (1-8)", temp);
 					continue;
 				}
 				if (group == 0 || group > 8) {
-					eventlog(eventlog_level_error, __FUNCTION__, "group '%u' not within groups limits (1-8)", group);
+					eventlog(eventlog_level_error, __FUNCTION__, "group '{}' not within groups limits (1-8)", group);
 					continue;
 				}
 				while ((command = std::strtok(NULL, " \t"))) {
@@ -92,7 +92,7 @@ namespace pvpgn
 					entry->command = xstrdup(command);
 					list_append_data(command_groups_head, entry);
 #ifdef COMMANDGROUPSDEBUG
-					eventlog(eventlog_level_info, __FUNCTION__, "Added command: %s - with group %u", entry->command, entry->group);
+					eventlog(eventlog_level_info, __FUNCTION__, "Added command: {} - with group {}", entry->command, entry->group);
 #endif
 				}
 			}

@@ -49,7 +49,7 @@ namespace pvpgn
 		}
 		if (row >= hashtable->num_rows)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got bad row %u (max %u)", row, hashtable->num_rows - 1);
+			eventlog(eventlog_level_error, __FUNCTION__, "got bad row {} (max {})", row, hashtable->num_rows - 1);
 			return NULL;
 		}
 
@@ -324,7 +324,7 @@ namespace pvpgn
 			curr = curr->next;
 		}
 
-		eventlog(eventlog_level_error, __FUNCTION__, "requested position %u but len=%u", pos, len);
+		eventlog(eventlog_level_error, __FUNCTION__, "requested position {} but len={}", pos, len);
 		return NULL;
 	}
 
@@ -341,7 +341,7 @@ namespace pvpgn
 		if (!hashtable)
 		{
 #ifdef HASHTABLE_DEBUG
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL hashtable from %s:%u", fn, ln);
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL hashtable from {}:{}", fn, ln);
 #else
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL hashtable");
 #endif
@@ -404,7 +404,7 @@ namespace pvpgn
 		if (!hashtable)
 		{
 #ifdef HASHTABLE_DEBUG
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL hashtable from %s:%u", fn, ln);
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL hashtable from {}:{}", fn, ln);
 #else
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL hashtable");
 #endif
@@ -461,7 +461,7 @@ namespace pvpgn
 		}
 		if (entry->row >= entry->hashtable->num_rows)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "entry has bad row %u (max %u)", entry->row, entry->hashtable->num_rows - 1);
+			eventlog(eventlog_level_error, __FUNCTION__, "entry has bad row {} (max {})", entry->row, entry->hashtable->num_rows - 1);
 			return -1;
 		}
 

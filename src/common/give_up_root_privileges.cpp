@@ -64,7 +64,7 @@ namespace pvpgn
 			}
 			else
 			{
-				eventlog(eventlog_level_debug, __FUNCTION__, "should change to user = '%s' (%d)", user_name, user_id);
+				eventlog(eventlog_level_debug, __FUNCTION__, "should change to user = '{}' ({})", user_name, user_id);
 			}
 		}
 		if (group_name)
@@ -75,7 +75,7 @@ namespace pvpgn
 			}
 			else
 			{
-				eventlog(eventlog_level_debug, __FUNCTION__, "should change to group = '%s' (%d)", group_name, group_id);
+				eventlog(eventlog_level_debug, __FUNCTION__, "should change to group = '{}' ({})", group_name, group_id);
 			}
 		}
 
@@ -89,11 +89,11 @@ namespace pvpgn
 		{
 			if (-1 == setgid(group_id))
 			{
-				eventlog(eventlog_level_fatal, __FUNCTION__, "could not set gid to %d (setgid: %s)", group_id, std::strerror(errno));
+				eventlog(eventlog_level_fatal, __FUNCTION__, "could not set gid to {} (setgid: {})", group_id, std::strerror(errno));
 				return -1;
 			}
 # ifdef HAVE_GETUID
-			eventlog(eventlog_level_info, __FUNCTION__, "Changed privileges to gid = %d", getgid());
+			eventlog(eventlog_level_info, __FUNCTION__, "Changed privileges to gid = {}", getgid());
 # endif
 		}
 #endif
@@ -103,11 +103,11 @@ namespace pvpgn
 		{
 			if (-1 == setuid(user_id))
 			{
-				eventlog(eventlog_level_fatal, __FUNCTION__, "could not set uid to %d (setuid: %s)", user_id, std::strerror(errno));
+				eventlog(eventlog_level_fatal, __FUNCTION__, "could not set uid to {} (setuid: {})", user_id, std::strerror(errno));
 				return -1;
 			}
 # ifdef HAVE_GETGID
-			eventlog(eventlog_level_info, __FUNCTION__, "Changed privileges to uid = %d", getuid());
+			eventlog(eventlog_level_info, __FUNCTION__, "Changed privileges to uid = {}", getuid());
 # endif
 		}
 #endif
@@ -131,11 +131,11 @@ namespace pvpgn
 #ifdef HAVE_GETPWNAME
 				struct passwd * ent;
 
-				eventlog(eventlog_level_debug, __FUNCTION__, "about to getpwnam(%s)", name);
+				eventlog(eventlog_level_debug, __FUNCTION__, "about to getpwnam({})", name);
 
 				if (!(ent = getpwnam(name)))
 				{
-					eventlog(eventlog_level_fatal, __FUNCTION__, "cannot get password file entry for '%s' (getpwnam: %s)", name, std::strerror(errno));
+					eventlog(eventlog_level_fatal, __FUNCTION__, "cannot get password file entry for '{}' (getpwnam: {})", name, std::strerror(errno));
 					return id;
 				}
 				id = ent->pw_uid;
@@ -164,11 +164,11 @@ namespace pvpgn
 #ifdef HAVE_GETGRNAM
 				struct group * ent;
 
-				eventlog(eventlog_level_debug, __FUNCTION__, "about to getgrnam(%s)", name);
+				eventlog(eventlog_level_debug, __FUNCTION__, "about to getgrnam({})", name);
 
 				if (!(ent = getgrnam(name)))
 				{
-					eventlog(eventlog_level_fatal, __FUNCTION__, "cannot get group file entry for '%s' (getgrnam: %s)", name, std::strerror(errno));
+					eventlog(eventlog_level_fatal, __FUNCTION__, "cannot get group file entry for '{}' (getgrnam: {})", name, std::strerror(errno));
 					return id;
 				}
 				id = ent->gr_gid;

@@ -71,7 +71,7 @@ namespace pvpgn
 				case CLIENT_GAMELISTREQ_MAPSET:
 					return game_type_mapset;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft bnet game type \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), bngtype);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft bnet game type \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), bngtype);
 					return game_type_none;
 				}
 			}
@@ -83,7 +83,7 @@ namespace pvpgn
 				case CLIENT_GAMELISTREQ_ALL:
 					return game_type_diablo2open;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo II bnet game type \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), bngtype);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo II bnet game type \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), bngtype);
 					return game_type_none;
 				}
 			}
@@ -108,7 +108,7 @@ namespace pvpgn
 				case CLIENT_GAMETYPE_DIABLO_d:
 					return game_type_diablo;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo bnet game type \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), bngtype);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo bnet game type \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), bngtype);
 					return game_type_none;
 				}
 			}
@@ -149,7 +149,7 @@ namespace pvpgn
 				case CLIENT_GAMELISTREQ_TOPVBOT:
 					return game_type_topvbot;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game type \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), bngtype);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game type \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), bngtype);
 					return game_type_none;
 				}
 			}
@@ -160,7 +160,7 @@ namespace pvpgn
 			}
 			else
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "unknown game clienttag \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), bngtype);
+				eventlog(eventlog_level_error, __FUNCTION__, "unknown game clienttag \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), bngtype);
 				return game_type_none;
 			}
 		}
@@ -194,7 +194,7 @@ namespace pvpgn
 				case CLIENT_GAMELISTREQ_MAPSET:
 					return game_type_mapset;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft bnet game type \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), bngtype);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft bnet game type \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), bngtype);
 					return game_type_none;
 				}
 			}
@@ -210,7 +210,7 @@ namespace pvpgn
 				case CLIENT_GAMETYPE_DIABLO2_CLOSE:
 					return game_type_diablo2closed;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo II bnet game type \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), bngtype);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo II bnet game type \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), bngtype);
 					return game_type_none;
 				}
 			}
@@ -234,7 +234,7 @@ namespace pvpgn
 				case CLIENT_GAMETYPE_DIABLO_c:
 					return game_type_diablo;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo bnet game type \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), bngtype);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo bnet game type \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), bngtype);
 					return game_type_none;
 				}
 			}
@@ -275,7 +275,7 @@ namespace pvpgn
 				case CLIENT_GAMELISTREQ_TOPVBOT:
 					return game_type_topvbot;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game type \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), bngtype);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game type \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), bngtype);
 					return game_type_none;
 				}
 			}
@@ -286,7 +286,7 @@ namespace pvpgn
 			}
 			else
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "unknown game clienttag \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), bngtype);
+				eventlog(eventlog_level_error, __FUNCTION__, "unknown game clienttag \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), bngtype);
 				return game_type_none;
 			}
 		}
@@ -337,7 +337,7 @@ namespace pvpgn
 				return 0;
 			case game_type_none:
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "unknown game type %u", (unsigned int)gtype);
+				eventlog(eventlog_level_error, __FUNCTION__, "unknown game type {}", (unsigned int)gtype);
 				return 0xffff;
 			}
 		}
@@ -375,7 +375,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_TOPVBOT_7:
 						return game_option_topvbot_7;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_melee:
@@ -384,7 +384,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_MELEE_NORMAL:
 						return game_option_melee_normal;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_ffa:
@@ -393,7 +393,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_FFA_NORMAL:
 						return game_option_ffa_normal;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_oneonone:
@@ -402,7 +402,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_ONEONONE_NORMAL:
 						return game_option_oneonone_normal;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_ladder:
@@ -413,14 +413,14 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_LADDER_NOPENALTY:
 						return game_option_ladder_nopenalty;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_ironman:
 					switch (bngoption)
 					{
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_mapset:
@@ -429,11 +429,11 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_MAPSET_NORMAL:
 						return game_option_mapset_normal;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II game type \"%s\" %u", tag_uint_to_str(clienttag_str, clienttag), (unsigned int)gtype);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Warcraft II game type \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), (unsigned int)gtype);
 					return game_option_none;
 				}
 			}
@@ -448,7 +448,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_NONE: /* FIXME: really? */
 						return game_option_none;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo II bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo II bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_diablo2closed:
@@ -457,11 +457,11 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_NONE: /* FIXME: really? */
 						return game_option_none;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo II bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo II bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo II game type \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), (unsigned int)gtype);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo II game type \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), (unsigned int)gtype);
 					return game_option_none;
 				}
 			}
@@ -478,7 +478,7 @@ namespace pvpgn
 						return game_option_none;
 					}
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo game type \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), (unsigned int)gtype);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Diablo game type \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), (unsigned int)gtype);
 					return game_option_none;
 				}
 			}
@@ -494,7 +494,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_MELEE_NORMAL:
 						return game_option_melee_normal;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_ffa:
@@ -503,7 +503,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_FFA_NORMAL:
 						return game_option_ffa_normal;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_oneonone:
@@ -512,7 +512,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_ONEONONE_NORMAL:
 						return game_option_oneonone_normal;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_ctf:
@@ -521,7 +521,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_CTF_NORMAL:
 						return game_option_ctf_normal;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_greed:
@@ -536,7 +536,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_GREED_2500:
 						return game_option_greed_2500;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_slaughter:
@@ -551,7 +551,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_SLAUGHTER_15:
 						return game_option_slaughter_15;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_sdeath:
@@ -560,7 +560,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_SDEATH_NORMAL:
 						return game_option_sdeath_normal;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_ladder:
@@ -571,7 +571,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_LADDER_NOPENALTY:
 						return game_option_ladder_nopenalty;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_mapset:
@@ -580,7 +580,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_MAPSET_NORMAL:
 						return game_option_mapset_normal;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_teammelee:
@@ -593,7 +593,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_TEAMMELEE_2:
 						return game_option_teammelee_2;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_teamffa:
@@ -606,7 +606,7 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_TEAMFFA_2:
 						return game_option_teamffa_2;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_teamctf:
@@ -619,14 +619,14 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_TEAMCTF_2:
 						return game_option_teamctf_2;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_pgl:
 					switch (bngoption)
 					{
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_topvbot:
@@ -647,12 +647,12 @@ namespace pvpgn
 					case CLIENT_STARTGAME4_OPTION_TOPVBOT_7:
 						return game_option_topvbot_7;
 					default:
-						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"%s\" game \"%s\" %hu", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
+						eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft bnet game option for \"{}\" game \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), game_type_get_str(gtype), bngoption);
 						return game_option_none;
 					}
 				case game_type_none:
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft game type \"%s\" %u(%s)", tag_uint_to_str(clienttag_str, clienttag), (unsigned int)gtype, game_type_get_str(gtype));
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown Starcraft game type \"{}\" {}({})", tag_uint_to_str(clienttag_str, clienttag), (unsigned int)gtype, game_type_get_str(gtype));
 					return game_option_none;
 				}
 			}
@@ -663,7 +663,7 @@ namespace pvpgn
 			}
 			else
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "unknown game clienttag \"%s\" %u", tag_uint_to_str(clienttag_str, clienttag), (unsigned int)gtype);
+				eventlog(eventlog_level_error, __FUNCTION__, "unknown game clienttag \"{}\" {}", tag_uint_to_str(clienttag_str, clienttag), (unsigned int)gtype);
 				return game_option_none;
 			}
 		}
@@ -686,7 +686,7 @@ namespace pvpgn
 			case CLIENT_GAME_REPORT_RESULT_OBSERVER:
 				return game_result_observer;
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "unknown bnet game result %u", bngresult);
+				eventlog(eventlog_level_error, __FUNCTION__, "unknown bnet game result {}", bngresult);
 				return game_result_disconnect; /* bad packet? */
 			}
 		}
@@ -981,7 +981,7 @@ namespace pvpgn
 					difficulty[1] = '\0';
 					if (str_to_uint(difficulty, &bngdifficulty) < 0)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "bad gameinfo format (missing difficulty) \"%s\"", gameinfo);
+						eventlog(eventlog_level_error, __FUNCTION__, "bad gameinfo format (missing difficulty) \"{}\"", gameinfo);
 						return -1;
 					}
 					game_set_difficulty(game, bngdifficulty);
@@ -1053,13 +1053,13 @@ namespace pvpgn
 
 			if (!(line1 = std::strtok(save, "\r"))) /* actual game info fields */
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "bad gameinfo format (missing line1) \"%s\"", gameinfo);
+				eventlog(eventlog_level_error, __FUNCTION__, "bad gameinfo format (missing line1) \"{}\"", gameinfo);
 				xfree(save);
 				return -1;
 			}
 			if (!(line2 = std::strtok(NULL, "\r")))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "bad gameinfo format (missing player) \"%s\"", gameinfo);
+				eventlog(eventlog_level_error, __FUNCTION__, "bad gameinfo format (missing player) \"{}\"", gameinfo);
 				xfree(save);
 				return -1;
 			}
@@ -1136,7 +1136,7 @@ namespace pvpgn
 
 			mapname = line2; /* only one item on this line */
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "got info \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\" \"%s\"", mapsize, maxplayers, speed, maptype, gametype, option, checksum, tileset, player, mapname);
+			eventlog(eventlog_level_debug, __FUNCTION__, "got info \"{}\" \"{}\" \"{}\" \"{}\" \"{}\" \"{}\" \"{}\" \"{}\" \"{}\" \"{}\"", mapsize, maxplayers, speed, maptype, gametype, option, checksum, tileset, player, mapname);
 
 			/* The map size is determined by breaking the number into two pieces and
 			 * multiplying each piece by 32.

@@ -92,7 +92,7 @@ namespace pvpgn
 				{
 					if ((channel_get_clienttag(channel)) && (clienttag) && (channel_get_clienttag(channel) == clienttag))
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "could not create duplicate permanent channel (fullname \"%s\")", fullname);
+						eventlog(eventlog_level_error, __FUNCTION__, "could not create duplicate permanent channel (fullname \"{}\")", fullname);
 						return NULL;
 					}
 					else if (((channel->flags & channel_flags_allowbots) != (botflag ? channel_flags_allowbots : 0)) ||
@@ -101,7 +101,7 @@ namespace pvpgn
 						((channel->flags & channel_flags_moderated) != (moderated ? channel_flags_moderated : 0)) ||
 						(channel->logname && logflag == 0) || (!(channel->logname) && logflag == 1))
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "channel parameters do not match for \"%s\" and \"%s\"", fullname, channel->name);
+						eventlog(eventlog_level_error, __FUNCTION__, "channel parameters do not match for \"{}\" and \"{}\"", fullname, channel->name);
 						return NULL;
 					}
 				}
@@ -125,7 +125,7 @@ namespace pvpgn
 				|| !strcasecmp(shortname, CHANNEL_NAME_BANNED)))
 				channel->flags |= channel_flags_thevoid;
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "creating new channel \"%s\" shortname=%s%s%s clienttag=%s%s%s country=%s%s%s realm=%s%s%s", fullname,
+			eventlog(eventlog_level_debug, __FUNCTION__, "creating new channel \"{}\" shortname={}{}{} clienttag={}{}{} country={}{}{} realm={}{}{}", fullname,
 				shortname ? "\"" : "(", /* all this is doing is printing the name in quotes else "none" in parens */
 				shortname ? shortname : "none",
 				shortname ? "\"" : ")",
@@ -199,7 +199,7 @@ namespace pvpgn
 				std::sprintf(channel->logname, "%s/chanlog-%s-%06u", prefs_get_chanlogdir(), dstr, channel->id);
 
 				if (!(channel->log = std::fopen(channel->logname, "w")))
-					eventlog(eventlog_level_error, __FUNCTION__, "could not open channel log \"%s\" for writing (std::fopen: %s)", channel->logname, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not open channel log \"{}\" for writing (std::fopen: {})", channel->logname, std::strerror(errno));
 				else
 				{
 					std::fprintf(channel->log, "name=\"%s\"\n", channel->name);
@@ -270,7 +270,7 @@ namespace pvpgn
 				//        return -1;
 			}
 
-			eventlog(eventlog_level_info, __FUNCTION__, "destroying channel \"%s\"", channel->name);
+			eventlog(eventlog_level_info, __FUNCTION__, "destroying channel \"{}\"", channel->name);
 
 			if (channel->gameExtension)
 				xfree(channel->gameExtension);
@@ -302,7 +302,7 @@ namespace pvpgn
 				std::fprintf(channel->log, "\ndestroyed=\"%s\"\n", timetemp);
 
 				if (std::fclose(channel->log) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not close channel log \"%s\" after writing (std::fclose: %s)", channel->logname, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not close channel log \"{}\" after writing (std::fclose: {})", channel->logname, std::strerror(errno));
 			}
 
 			if (channel->logname)
@@ -539,7 +539,7 @@ namespace pvpgn
 				}
 				else
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] connection not in channel member list", conn_get_socket(connection));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] connection not in channel member list", conn_get_socket(connection));
 					return -1;
 				}
 			}
@@ -967,7 +967,7 @@ namespace pvpgn
 
 			if (!(fp = std::fopen(filename, "r")))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open channel file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open channel file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				return -1;
 			}
 
@@ -980,52 +980,52 @@ namespace pvpgn
 				pos = 0;
 				if (!(name = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing name in line %u in file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing name in line {} in file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(sname = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing sname in line %u in file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing sname in line {} in file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(tag = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing tag in line %u in file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing tag in line {} in file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(bot = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing bot in line %u in file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing bot in line {} in file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(oper = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing oper in line %u in file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing oper in line {} in file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(log = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing log in line %u in file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing log in line {} in file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(country = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing country in line %u in file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing country in line {} in file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(realmname = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing realmname in line %u in file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing realmname in line {} in file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(max = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing max in line %u in file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing max in line {} in file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(moderated = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing mod in line %u in file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing mod in line {} in file \"{}\"", line, filename);
 					continue;
 				}
 
@@ -1038,7 +1038,7 @@ namespace pvpgn
 					botflag = 0;
 					break;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "invalid boolean value \"%s\" for field 4 on line %u in file \"%s\"", bot, line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "invalid boolean value \"{}\" for field 4 on line {} in file \"{}\"", bot, line, filename);
 					continue;
 				}
 
@@ -1051,7 +1051,7 @@ namespace pvpgn
 					operflag = 0;
 					break;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "invalid boolean value \"%s\" for field 5 on line %u in file \"%s\"", oper, line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "invalid boolean value \"{}\" for field 5 on line {} in file \"{}\"", oper, line, filename);
 					continue;
 				}
 
@@ -1064,7 +1064,7 @@ namespace pvpgn
 					logflag = 0;
 					break;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "invalid boolean value \"%s\" for field 5 on line %u in file \"%s\"", log, line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "invalid boolean value \"{}\" for field 5 on line {} in file \"{}\"", log, line, filename);
 					continue;
 				}
 
@@ -1077,7 +1077,7 @@ namespace pvpgn
 					modflag = 0;
 					break;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "invalid boolean value \"%s\" for field 10 on line %u in file \"%s\"", moderated, line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "invalid boolean value \"{}\" for field 10 on line {} in file \"{}\"", moderated, line, filename);
 					continue;
 				}
 
@@ -1120,7 +1120,7 @@ namespace pvpgn
 
 			file_get_line(NULL); // clear file_get_line buffer
 			if (std::fclose(fp) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close channel file \"%s\" after reading (std::fclose: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close channel file \"{}\" after reading (std::fclose: {})", filename, std::strerror(errno));
 			return 0;
 		}
 
@@ -1488,7 +1488,7 @@ namespace pvpgn
 						{
 							if (channel->maxmembers == -1 || channel->currmembers < channel->maxmembers)
 							{
-								eventlog(eventlog_level_debug, __FUNCTION__, "found permanent channel \"%s\" for \"%s\"", channel->name, name);
+								eventlog(eventlog_level_debug, __FUNCTION__, "found permanent channel \"{}\" for \"{}\"", channel->name, name);
 								return channel;
 							}
 
@@ -1552,12 +1552,12 @@ namespace pvpgn
 				channel = channel_create(channelname, saveshortname, savetag, 1, savebotflag, saveoperflag, savelogflag, savecountry, saverealmname, savemaxmembers, savemoderated, 0, 1);
 				xfree(channelname);
 
-				eventlog(eventlog_level_debug, __FUNCTION__, "created copy \"%s\" of channel \"%s\"", (channel) ? (channel->name) : ("<failed>"), name);
+				eventlog(eventlog_level_debug, __FUNCTION__, "created copy \"{}\" of channel \"{}\"", (channel) ? (channel->name) : ("<failed>"), name);
 				return channel;
 			}
 
 			/* no match */
-			eventlog(eventlog_level_debug, __FUNCTION__, "could not find channel \"%s\"", name);
+			eventlog(eventlog_level_debug, __FUNCTION__, "could not find channel \"{}\"", name);
 			return NULL;
 		}
 

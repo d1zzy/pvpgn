@@ -118,7 +118,7 @@ namespace pvpgn
 
 		loopout:
 			if (fcount > 0)
-				eventlog(eventlog_level_debug, __FUNCTION__, "flushed %u user accounts", fcount);
+				eventlog(eventlog_level_debug, __FUNCTION__, "flushed {} user accounts", fcount);
 
 			if (!FLAG_ISSET(flags, FS_ALL) && curr != &loadedlist) return 1;
 
@@ -162,7 +162,7 @@ namespace pvpgn
 
 		loopout:
 			if (scount > 0)
-				eventlog(eventlog_level_debug, __FUNCTION__, "saved %u user accounts", scount);
+				eventlog(eventlog_level_debug, __FUNCTION__, "saved {} user accounts", scount);
 
 			if (!FLAG_ISSET(flags, FS_ALL) && curr != &dirtylist) return 1;
 

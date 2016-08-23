@@ -84,7 +84,7 @@ namespace pvpgn
 			realm->tcp_sock = 0;
 			rcm_init(&realm->rcm);
 
-			eventlog(eventlog_level_info, __FUNCTION__, "created realm \"%s\"", name);
+			eventlog(eventlog_level_info, __FUNCTION__, "created realm \"{}\"", name);
 			return realm;
 		}
 
@@ -135,7 +135,7 @@ namespace pvpgn
 					return 0;
 				else
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "realm %s does already exist in list", name);
+					eventlog(eventlog_level_error, __FUNCTION__, "realm {} does already exist in list", name);
 					return -1;
 				}
 			}
@@ -264,7 +264,7 @@ namespace pvpgn
 			}
 			if (realm->active)
 			{
-				eventlog(eventlog_level_debug, __FUNCTION__, "realm %s is already actived,destroy previous one", realm->name);
+				eventlog(eventlog_level_debug, __FUNCTION__, "realm {} is already actived,destroy previous one", realm->name);
 				realm_deactive(realm);
 			}
 			realm->active = 1;
@@ -272,7 +272,7 @@ namespace pvpgn
 			conn_set_realm(c, realm);
 			realm->sessionnum = conn_get_sessionnum(c);
 			realm->tcp_sock = conn_get_socket(c);
-			eventlog(eventlog_level_info, __FUNCTION__, "realm %s actived", realm->name);
+			eventlog(eventlog_level_info, __FUNCTION__, "realm {} actived", realm->name);
 			return 0;
 		}
 
@@ -287,7 +287,7 @@ namespace pvpgn
 			}
 			if (!realm->active)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "realm %s is not actived", realm->name);
+				eventlog(eventlog_level_error, __FUNCTION__, "realm {} is not actived", realm->name);
 				return -1;
 			}
 			if ((c = realm_get_conn(realm)))
@@ -300,7 +300,7 @@ namespace pvpgn
 			realm->player_number=0;
 			realm->game_number=0;
 			*/
-			eventlog(eventlog_level_info, __FUNCTION__, "realm %s deactived", realm->name);
+			eventlog(eventlog_level_info, __FUNCTION__, "realm {} deactived", realm->name);
 			return 0;
 		}
 
@@ -327,7 +327,7 @@ namespace pvpgn
 
 			if (!(fp = std::fopen(filename, "r")))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open realm file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open realm file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				return NULL;
 			}
 
@@ -353,7 +353,7 @@ namespace pvpgn
 				/* skip any separators */
 				for (temp = buff; *temp && (*temp == ' ' || *temp == '\t'); temp++);
 				if (*temp != '"') {
-					eventlog(eventlog_level_error, __FUNCTION__, "malformed line %u in file \"%s\" (no realmname)", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "malformed line {} in file \"{}\" (no realmname)", line, filename);
 					continue;
 				}
 
@@ -361,7 +361,7 @@ namespace pvpgn
 				/* find the next " */
 				for (temp = temp2; *temp && *temp != '"'; temp++);
 				if (*temp != '"' || temp == temp2) {
-					eventlog(eventlog_level_error, __FUNCTION__, "malformed line %u in file \"%s\" (no realmname)", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "malformed line {} in file \"{}\" (no realmname)", line, filename);
 					continue;
 				}
 
@@ -369,7 +369,7 @@ namespace pvpgn
 				*temp = '\0';
 				name = xstrdup(temp2);
 
-				/* eventlog(eventlog_level_trace, __FUNCTION__,"found realmname: %s",name); */
+				/* eventlog(eventlog_level_trace, __FUNCTION__,"found realmname: {}",name); */
 
 				/* skip any separators */
 				for (temp = temp + 1; *temp && (*temp == '\t' || *temp == ' '); temp++);
@@ -379,7 +379,7 @@ namespace pvpgn
 					/* find the next " */
 					for (temp = temp2; *temp && *temp != '"'; temp++);
 					if (*temp != '"' || temp == temp2) {
-						eventlog(eventlog_level_error, __FUNCTION__, "malformed line %u in file \"%s\" (no valid description)", line, filename);
+						eventlog(eventlog_level_error, __FUNCTION__, "malformed line {} in file \"{}\" (no valid description)", line, filename);
 						xfree(name);
 						continue;
 					}
@@ -388,7 +388,7 @@ namespace pvpgn
 					*temp = '\0';
 					desc = xstrdup(temp2);
 
-					/* eventlog(eventlog_level_trace, __FUNCTION__,"found realm desc: %s",desc); */
+					/* eventlog(eventlog_level_trace, __FUNCTION__,"found realm desc: {}",desc); */
 
 					/* skip any separators */
 					for (temp = temp + 1; *temp && (*temp == ' ' || *temp == '\t'); temp++);
@@ -401,10 +401,10 @@ namespace pvpgn
 
 				if (*temp) *temp++ = '\0'; /* if is not the end of the file, end addr and move forward */
 
-				/* eventlog(eventlog_level_trace, __FUNCTION__,"found realm ip: %s",temp2); */
+				/* eventlog(eventlog_level_trace, __FUNCTION__,"found realm ip: {}",temp2); */
 
 				if (!(raddr = addr_create_str(temp2, 0, BNETD_REALM_PORT))) /* 0 means "this computer" */ {
-					eventlog(eventlog_level_error, __FUNCTION__, "invalid address value for field 3 on line %u in file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "invalid address value for field 3 on line {} in file \"{}\"", line, filename);
 					xfree(name);
 					xfree(desc);
 					continue;
@@ -427,7 +427,7 @@ namespace pvpgn
 			}
 			file_get_line(NULL); // clear file_get_line buffer
 			if (std::fclose(fp) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close realm file \"%s\" after reading (std::fclose: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close realm file \"{}\" after reading (std::fclose: {})", filename, std::strerror(errno));
 			return list_head;
 		}
 

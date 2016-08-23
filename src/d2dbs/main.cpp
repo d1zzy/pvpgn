@@ -75,7 +75,7 @@ static int setup_daemon(void)
 	int pid;
 
 	if (chdir("/") < 0) {
-		eventlog(eventlog_level_error, __FUNCTION__, "can not change working directory to root directory (chdir: %s)", std::strerror(errno));
+		eventlog(eventlog_level_error, __FUNCTION__, "can not change working directory to root directory (chdir: {})", std::strerror(errno));
 		return -1;
 	}
 
@@ -89,7 +89,7 @@ static int setup_daemon(void)
 	case 0:
 		break;
 	case -1:
-		eventlog(eventlog_level_error, __FUNCTION__, "error create child process (fork: %s)", std::strerror(errno));
+		eventlog(eventlog_level_error, __FUNCTION__, "error create child process (fork: {})", std::strerror(errno));
 		return -1;
 	default:
 		return pid;
@@ -114,14 +114,14 @@ static char * write_to_pidfile(void)
 		std::FILE * fp;
 
 		if (!(fp = std::fopen(pidfile, "w"))) {
-			eventlog(eventlog_level_error, __FUNCTION__, "unable to open pid file \"%s\" for writing (std::fopen: %s)", pidfile, std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "unable to open pid file \"{}\" for writing (std::fopen: {})", pidfile, std::strerror(errno));
 			xfree((void *)pidfile); /* avoid warning */
 			return NULL;
 		}
 		else {
 			std::fprintf(fp, "%u", (unsigned int)getpid());
 			if (std::fclose(fp) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close pid file \"%s\" after writing (std::fclose: %s)", pidfile, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close pid file \"{}\" after writing (std::fclose: {})", pidfile, std::strerror(errno));
 		}
 
 #else
@@ -165,7 +165,7 @@ static int config_init(int argc, char * * argv)
 #endif
 
 	if (d2dbs_prefs_load(cmdline_get_preffile()) < 0) {
-		eventlog(eventlog_level_error, __FUNCTION__, "error loading configuration file %s", cmdline_get_preffile());
+		eventlog(eventlog_level_error, __FUNCTION__, "error loading configuration file {}", cmdline_get_preffile());
 		return -1;
 	}
 
@@ -178,7 +178,7 @@ static int config_init(int argc, char * * argv)
 		while (tok)
 		{
 			if (eventlog_add_level(tok) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::log level \"%s\"", tok);
+				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::log level \"{}\"", tok);
 			tok = std::strtok(NULL, ",");
 		}
 
@@ -200,13 +200,13 @@ static int config_init(int argc, char * * argv)
 	{
 		if (cmdline_get_logfile()) {
 			if (eventlog_open(cmdline_get_logfile()) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error open eventlog file %s", cmdline_get_logfile());
+				eventlog(eventlog_level_error, __FUNCTION__, "error open eventlog file {}", cmdline_get_logfile());
 				return -1;
 			}
 		}
 		else {
 			if (eventlog_open(d2dbs_prefs_get_logfile()) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error open eventlog file %s", d2dbs_prefs_get_logfile());
+				eventlog(eventlog_level_error, __FUNCTION__, "error open eventlog file {}", d2dbs_prefs_get_logfile());
 				return -1;
 			}
 		}
@@ -255,7 +255,7 @@ extern int main(int argc, char ** argv)
 	cleanup();
 	if (pidfile) {
 		if (std::remove(pidfile) < 0)
-			eventlog(eventlog_level_error, __FUNCTION__, "could not remove pid file \"%s\" (std::remove: %s)", pidfile, std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not remove pid file \"{}\" (std::remove: {})", pidfile, std::strerror(errno));
 		xfree((void *)pidfile); /* avoid warning */
 	}
 	config_cleanup();

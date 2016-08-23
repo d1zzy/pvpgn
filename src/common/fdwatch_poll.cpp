@@ -53,13 +53,13 @@ namespace pvpgn
 	{
 			int idxr;
 
-			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d rw: %d", fd, rw);
+			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: {} rw: {}", fd, rw);
 			if (ridx[idx] < 0) {
 				idxr = nofds++;
 				fds[idxr].fd = fdw_fd(fdw_fds + idx);
 				ridx[idx] = idxr;
 				rridx[idxr] = idx;
-				//	eventlog(eventlog_level_trace, __FUNCTION__, "adding new fd on %d", ridx);
+				//	eventlog(eventlog_level_trace, __FUNCTION__, "adding new fd on {}", ridx);
 			}
 			else {
 				if (fds[ridx[idx]].fd != fdw_fd(fdw_fds + idx)) {
@@ -67,7 +67,7 @@ namespace pvpgn
 					return -1;
 				}
 				idxr = ridx[idx];
-				//	eventlog(eventlog_level_trace, __FUNCTION__, "updating fd on %d", ridx);
+				//	eventlog(eventlog_level_trace, __FUNCTION__, "updating fd on {}", ridx);
 			}
 
 			fds[idxr].events = 0;
@@ -80,7 +80,7 @@ namespace pvpgn
 	int
 		FDWPollBackend::del(int idx)
 	{
-			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd);
+			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: {}", fd);
 			if (ridx[idx] < 0 || !nofds) return -1;
 			if (sr > 0)
 				ERROR0("BUG: called while still handling sockets");
@@ -88,7 +88,7 @@ namespace pvpgn
 			/* move the last entry to the deleted one and decrement nofds count */
 			nofds--;
 			if (ridx[idx] < nofds) {
-				//	eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", tfds[nofds].fd);
+				//	eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving {}", tfds[nofds].fd);
 				ridx[rridx[nofds]] = ridx[idx];
 				rridx[ridx[idx]] = rridx[nofds];
 				std::memcpy(fds.get() + ridx[idx], fds.get() + nofds, sizeof(struct pollfd));

@@ -145,7 +145,7 @@ namespace pvpgn
 			{
 				if (!game->currchar) {
 					if ((now - game->lastaccess_time) > timeout) {
-						eventlog(eventlog_level_info, __FUNCTION__, "game %s is empty too long std::time,destroying it", game->name);
+						eventlog(eventlog_level_info, __FUNCTION__, "game {} is empty too long std::time,destroying it", game->name);
 						game_destroy(game, &curr_elem_);
 					}
 				}
@@ -163,7 +163,7 @@ namespace pvpgn
 			ASSERT(gamepass, NULL);
 			ASSERT(gamedesc, NULL);
 			if (d2cs_gamelist_find_game(gamename)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "game %s already exist", gamename);
+				eventlog(eventlog_level_error, __FUNCTION__, "game {} already exist", gamename);
 				return NULL;
 			}
 			game = (t_game*)xmalloc(sizeof(t_game));
@@ -187,7 +187,7 @@ namespace pvpgn
 			game->currchar = 0;
 			list_prepend_data(gamelist_head, game);
 			total_game++;
-			eventlog(eventlog_level_info, __FUNCTION__, "game %s pass=%s desc=%s gameflag=0x%08X created (%d total)", gamename, gamepass,
+			eventlog(eventlog_level_info, __FUNCTION__, "game {} pass={} desc={}gameflag=0x{:08X} created ({} total)", gamename, gamepass,
 				gamedesc, gameflag, total_game);
 			return game;
 		}
@@ -202,11 +202,11 @@ namespace pvpgn
 				gamelist_curr_elem = elem_get_next_const(gamelist_head, gamelist_curr_elem);
 			}
 			if (list_remove_data(gamelist_head, game, elem) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error remove game %s on game list", game->name);
+				eventlog(eventlog_level_error, __FUNCTION__, "error remove game {} on game list", game->name);
 				return -1;
 			}
 			total_game--;
-			eventlog(eventlog_level_info, __FUNCTION__, "game %s removed from game list (%d left)", game->name, total_game);
+			eventlog(eventlog_level_info, __FUNCTION__, "game {} removed from game list ({} left)", game->name, total_game);
 			LIST_TRAVERSE(game->charlist, curr)
 			{
 				if ((charinfo = (t_game_charinfo*)elem_get_data(curr))) {
@@ -235,7 +235,7 @@ namespace pvpgn
 			ASSERT(game, NULL);
 			ASSERT(charname, NULL);
 			if (!game->charlist) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL character list in game %s", game->name);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL character list in game {}", game->name);
 				return NULL;
 			}
 			BEGIN_LIST_TRAVERSE_DATA(game->charlist, charinfo, t_game_charinfo)
@@ -256,7 +256,7 @@ namespace pvpgn
 			ASSERT(charname, -1);
 			charinfo = game_find_character(game, charname);
 			if (charinfo) {
-				eventlog(eventlog_level_info, __FUNCTION__, "updating character %s (game %s) status", charname, game->name);
+				eventlog(eventlog_level_info, __FUNCTION__, "updating character {} (game {}) status", charname, game->name);
 				charinfo->chclass = chclass;
 				charinfo->level = level;
 				return 0;
@@ -268,7 +268,7 @@ namespace pvpgn
 			list_append_data(game->charlist, charinfo);
 			game->currchar++;
 			game->lastaccess_time = std::time(NULL);
-			eventlog(eventlog_level_info, __FUNCTION__, "added character %s to game %s (%d total)", charname, game->name, game->currchar);
+			eventlog(eventlog_level_info, __FUNCTION__, "added character {} to game {} ({} total)", charname, game->name, game->currchar);
 			return 0;
 		}
 
@@ -280,18 +280,18 @@ namespace pvpgn
 			ASSERT(game, -1);
 			ASSERT(charname, -1);
 			if (!(charinfo = game_find_character(game, charname))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "character %s not found in game %s", charname, game->name);
+				eventlog(eventlog_level_error, __FUNCTION__, "character {} not found in game {}", charname, game->name);
 				return -1;
 			}
 			if (list_remove_data(game->charlist, charinfo, &elem)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error remove character %s from game %s", charname, game->name);
+				eventlog(eventlog_level_error, __FUNCTION__, "error remove character {} from game {}", charname, game->name);
 				return -1;
 			}
 			if (charinfo->charname) xfree((void *)charinfo->charname);
 			xfree(charinfo);
 			game->currchar--;
 			game->lastaccess_time = std::time(NULL);
-			eventlog(eventlog_level_info, __FUNCTION__, "removed character %s from game %s (%d left)", charname, game->name, game->currchar);
+			eventlog(eventlog_level_info, __FUNCTION__, "removed character {} from game {} ({} left)", charname, game->name, game->currchar);
 			return 0;
 		}
 

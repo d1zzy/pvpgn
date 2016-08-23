@@ -91,7 +91,7 @@ namespace pvpgn
 				{
 					eventlog(eventlog_level_info, __FUNCTION__, "extended item");
 					uid = bn_int_get((bn_basic*)&datap[14]);
-					eventlog(eventlog_level_info, __FUNCTION__, "unique ID: %lu", uid);
+					eventlog(eventlog_level_info, __FUNCTION__, "unique ID: {}", uid);
 					pointer = (char*)find_delimiter(datap, restlen);
 					restlen -= (pointer - datap);
 					datap = pointer;

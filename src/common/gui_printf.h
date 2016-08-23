@@ -16,21 +16,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#ifndef __GUI_PRINTF_H__
-#define __GUI_PRINTF_H__
+#ifndef INCLUDED_GUI_PRINTF_H
+#define INCLUDED_GUI_PRINTF_H
 
 #ifdef WIN32_GUI 
 
-#include <cstdarg>
 #include "common/eventlog.h"
+#include <common/format.h>
 
 namespace pvpgn
 {
-
-	extern int gui_lvprintf(t_eventlog_level l, const char *format, va_list arglist);
-	extern int gui_lprintf(t_eventlog_level l, const char *format, ...);
-	extern int gui_printf(const char *format, ...);
-
+	//template <typename... Args>
+	//void gui_lvprintf(t_eventlog_level l, const char* format, const Args& ... args);
+	void gui_lvprintf(t_eventlog_level l, const char* format, fmt::ArgList args);
+	FMT_VARIADIC(void, gui_lvprintf, t_eventlog_level, const char*);
 }
 #endif
 

@@ -97,7 +97,7 @@ namespace pvpgn
 				if (account_get_ladder_wins(account, clienttag, id) +
 					account_get_ladder_losses(account, clienttag, id) > 0) /* no ladder games so far... */
 				{
-					eventlog(eventlog_level_warn, __FUNCTION__, "account for \"%s\" (%s) has %u wins and %u losses but has zero rating", account_get_name(account), clienttag_uint_to_str(clienttag), account_get_ladder_wins(account, clienttag, id), account_get_ladder_losses(account, clienttag, id));
+					eventlog(eventlog_level_warn, __FUNCTION__, "account for \"{}\" ({}) has {} wins and {} losses but has zero rating", account_get_name(account), clienttag_uint_to_str(clienttag), account_get_ladder_wins(account, clienttag, id), account_get_ladder_losses(account, clienttag, id));
 					return -1;
 				}
 				account_adjust_ladder_rating(account, clienttag, id, prefs_get_ladder_init_rating());
@@ -115,7 +115,7 @@ namespace pvpgn
 				ladderlist_cg->updateEntry(uid, 0, rating, 0, reference);
 				ladderlist_cw->updateEntry(uid, 0, rating, 0, reference);
 
-				INFO2("initialized account for \"%s\" for \"%s\" ladder", account_get_name(account), clienttag_uint_to_str(clienttag));
+				INFO2("initialized account for \"{}\" for \"{}\" ladder", account_get_name(account), clienttag_uint_to_str(clienttag));
 			}
 
 			return 0;
@@ -147,7 +147,7 @@ namespace pvpgn
 
 				ladderlist->updateEntry(uid, 0, 0, 0, reference);
 
-				INFO2("initialized WOL account for \"%s\" for \"%s\" ladder", account_get_name(account), clienttag_uint_to_str(clienttag));
+				INFO2("initialized WOL account for \"{}\" for \"{}\" ladder", account_get_name(account), clienttag_uint_to_str(clienttag));
 			}
 
 			return 0;
@@ -164,7 +164,7 @@ namespace pvpgn
 
 			if (count<1 || count>8)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid player count %u", count);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid player count {}", count);
 				return -1;
 			}
 			if (!players)
@@ -275,12 +275,12 @@ namespace pvpgn
 				if (results[curr] == game_result_win) {
 					_cb_count_points(&points_win, &points_loss, mypoints, (mypoints == pl1_points ? pl2_points : pl1_points));
 					account_set_ladder_points(players[curr], clienttag, id, mypoints + points_win);
-					DEBUG3("Player %s WIN, had %u points and now have %u points", account_get_name(account), mypoints, mypoints + points_win);
+					DEBUG3("Player {} WIN, had {} points and now have {} points", account_get_name(account), mypoints, mypoints + points_win);
 				}
 				else {
 					_cb_count_points(&points_win, &points_loss, mypoints, (mypoints == pl1_points ? pl2_points : pl1_points));
 					account_set_ladder_points(players[curr], clienttag, id, mypoints - points_loss);
-					DEBUG3("Player %s LOSS, had %u points and now have %u points", account_get_name(account), mypoints, mypoints - points_loss);
+					DEBUG3("Player {} LOSS, had {} points and now have {} points", account_get_name(account), mypoints, mypoints - points_loss);
 				}
 
 				LadderReferencedObject reference(account);
@@ -309,7 +309,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "checking mapname \"%s\" maptype=%d", mapname, (int)maptype);
+			eventlog(eventlog_level_debug, __FUNCTION__, "checking mapname \"{}\" maptype={}", mapname, (int)maptype);
 			if (maptype == game_maptype_ladder) /* FIXME: what about Ironman? */
 				return 1;
 
@@ -338,12 +338,12 @@ namespace pvpgn
 
 			/* first lets open files */
 			if ((fd1 = std::fopen(xplevelfile, "rt")) == NULL) {
-				eventlog(eventlog_level_error, "ladder_createxptable", "could not open XP level file : \"%s\"", xplevelfile);
+				eventlog(eventlog_level_error, "ladder_createxptable", "could not open XP level file : \"{}\"", xplevelfile);
 				return -1;
 			}
 
 			if ((fd2 = std::fopen(xpcalcfile, "rt")) == NULL) {
-				eventlog(eventlog_level_error, "ladder_createxptable", "could not open XP calc file : \"%s\"", xpcalcfile);
+				eventlog(eventlog_level_error, "ladder_createxptable", "could not open XP calc file : \"{}\"", xpcalcfile);
 				std::fclose(fd1);
 				return -1;
 			}
@@ -371,7 +371,7 @@ namespace pvpgn
 					continue;
 
 				if (level < 1 || level > W3_XPCALC_MAXLEVEL) { /* invalid level */
-					eventlog(eventlog_level_error, "ladder_createxptable", "read INVALID player level : %d", level);
+					eventlog(eventlog_level_error, "ladder_createxptable", "read INVALID player level : {}", level);
 					continue;
 				}
 
@@ -380,7 +380,7 @@ namespace pvpgn
 				xplevels[level].neededxp = neededxp;
 				xplevels[level].lossfactor = (int)(lossfactor * 100); /* we store the loss factor as % */
 				xplevels[level].mingames = mingames;
-				eventlog(eventlog_level_trace, "ladder_createxptable", "inserting level XP info (level: %d, startxp: %d neededxp: %d lossfactor: %d mingames: %d)", level + 1, xplevels[level].startxp, xplevels[level].neededxp, xplevels[level].lossfactor, xplevels[level].mingames);
+				eventlog(eventlog_level_trace, "ladder_createxptable", "inserting level XP info (level: {}, startxp: {} neededxp: {} lossfactor: {} mingames: {})", level + 1, xplevels[level].startxp, xplevels[level].neededxp, xplevels[level].lossfactor, xplevels[level].mingames);
 			}
 			std::fclose(fd1);
 
@@ -396,15 +396,15 @@ namespace pvpgn
 				if (std::sscanf(buffer, " %d %d %d %d %d %d ", &minlevel, &leveldiff, &higher_xpgained, &higher_xplost, &lower_xpgained, &lower_xplost) != 6)
 					continue;
 
-				eventlog(eventlog_level_trace, "ladder_createxptable", "parsed xpcalc leveldiff : %d", leveldiff);
+				eventlog(eventlog_level_trace, "ladder_createxptable", "parsed xpcalc leveldiff : {}", leveldiff);
 
 				if (leveldiff <0) {
-					eventlog(eventlog_level_error, "ladder_createxptable", "got invalid level diff : %d", leveldiff);
+					eventlog(eventlog_level_error, "ladder_createxptable", "got invalid level diff : {}", leveldiff);
 					continue;
 				}
 
 				if (leveldiff>(w3_xpcalc_maxleveldiff + 1)) {
-					eventlog(eventlog_level_error, __FUNCTION__, "expected entry for leveldiff=%u but found %u", w3_xpcalc_maxleveldiff + 1, leveldiff);
+					eventlog(eventlog_level_error, __FUNCTION__, "expected entry for leveldiff={} but found {}", w3_xpcalc_maxleveldiff + 1, leveldiff);
 					continue;
 				}
 
@@ -431,7 +431,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			eventlog(eventlog_level_info, __FUNCTION__, "set war3 xpcalc maxleveldiff to %u", w3_xpcalc_maxleveldiff);
+			eventlog(eventlog_level_info, __FUNCTION__, "set war3 xpcalc maxleveldiff to {}", w3_xpcalc_maxleveldiff);
 
 			for (j = 0; j <= w3_xpcalc_maxleveldiff; j++)
 			if (xpcalc[j].higher_winxp == 0 || xpcalc[j].higher_lossxp == 0 ||
@@ -444,7 +444,7 @@ namespace pvpgn
 			for (i = 0; i<W3_XPCALC_MAXLEVEL; i++)
 			if ((i > 0 && xplevels[i].neededxp == 0) || xplevels[i].lossfactor == 0
 				|| (i > 0 && (xplevels[i].startxp <= xplevels[i - 1].startxp || xplevels[i].neededxp < xplevels[i - 1].neededxp))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "I found 0 for a level XP, please check your config file (level: %d neededxp: %d lossfactor: %d)", i + 1, xplevels[i].neededxp, xplevels[i].lossfactor);
+				eventlog(eventlog_level_error, __FUNCTION__, "I found 0 for a level XP, please check your config file (level: {} neededxp: {} lossfactor: {})", i + 1, xplevels[i].neededxp, xplevels[i].lossfactor);
 				ladder_destroyxptable();
 				return -1;
 			}
@@ -472,12 +472,12 @@ namespace pvpgn
 			absdiff = (diff < 0) ? (-diff) : diff;
 
 			if (absdiff > w3_xpcalc_maxleveldiff) {
-				eventlog(eventlog_level_error, "ladder_war3_xpdiff", "got invalid level difference : %d", absdiff);
+				eventlog(eventlog_level_error, "ladder_war3_xpdiff", "got invalid level difference : {}", absdiff);
 				return -1;
 			}
 
 			if (winnerlevel > W3_XPCALC_MAXLEVEL || looserlevel > W3_XPCALC_MAXLEVEL || winnerlevel < 1 || looserlevel < 1) {
-				eventlog(eventlog_level_error, "ladder_war3_xpdiff", "got invalid account levels (win: %d loss: %d)", winnerlevel, looserlevel);
+				eventlog(eventlog_level_error, "ladder_war3_xpdiff", "got invalid account levels (win: {} loss: {})", winnerlevel, looserlevel);
 				return -1;
 			}
 
@@ -508,7 +508,7 @@ namespace pvpgn
 			int i, mylevel;
 
 			if (oldlevel < 1 || oldlevel > W3_XPCALC_MAXLEVEL) {
-				eventlog(eventlog_level_error, "ladder_war3_updatelevel", "got invalid level: %d", oldlevel);
+				eventlog(eventlog_level_error, "ladder_war3_updatelevel", "got invalid level: {}", oldlevel);
 				return oldlevel;
 			}
 
@@ -529,7 +529,7 @@ namespace pvpgn
 		{
 			if (Level < 1 || Level > W3_XPCALC_MAXLEVEL)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid Level %d", Level);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid Level {}", Level);
 				return -1;
 			}
 			return xplevels[Level - 1].startxp;
@@ -1017,7 +1017,7 @@ namespace pvpgn
 					ladder.erase(endMarker, ladder.end());
 
 				if ((changed))
-					eventlog(eventlog_level_trace, __FUNCTION__, "adjusted rank for %u accounts", changed);
+					eventlog(eventlog_level_trace, __FUNCTION__, "adjusted rank for {} accounts", changed);
 				saved = false;
 				dirty = false;
 			}
@@ -1051,7 +1051,7 @@ namespace pvpgn
 
 				if (!(fp))
 				{
-					eventlog(eventlog_level_info, __FUNCTION__, "could not open ladder file \"%s\" - maybe ladder still empty (std::ifstream: %s)", filename.c_str(), std::strerror(errno));
+					eventlog(eventlog_level_info, __FUNCTION__, "could not open ladder file \"{}\" - maybe ladder still empty (std::ifstream: {})", filename.c_str(), std::strerror(errno));
 					return false;
 				}
 
@@ -1060,21 +1060,21 @@ namespace pvpgn
 
 				if (checksum != magick)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "%s not starting with magick", ladderFilename.c_str());
+					eventlog(eventlog_level_error, __FUNCTION__, "{} not starting with magick", ladderFilename.c_str());
 					return false;
 				}
 
 				struct stat sfile;
 				if (stat(filename.c_str(), &sfile) < 0)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "failed to retrieve size of %s", ladderFilename.c_str());
+					eventlog(eventlog_level_error, __FUNCTION__, "failed to retrieve size of {}", ladderFilename.c_str());
 					return false;
 				}
 
 				unsigned int filesize = sfile.st_size;
 				if (filesize%sizeof(unsigned int) != 0)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "%s has unexpected size of %u bytes (not multiple of sizeof(unsigned int)", ladderFilename.c_str(), filesize);
+					eventlog(eventlog_level_error, __FUNCTION__, "{} has unexpected size of {} bytes (not multiple of sizeof(unsigned int)", ladderFilename.c_str(), filesize);
 					return false;
 				}
 
@@ -1082,7 +1082,7 @@ namespace pvpgn
 
 				if (noe % 4 != 0)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "%s has unexpected count of entries (%u) ", ladderFilename.c_str(), noe);
+					eventlog(eventlog_level_error, __FUNCTION__, "{} has unexpected count of entries ({}) ", ladderFilename.c_str(), noe);
 					return false;
 				}
 
@@ -1106,7 +1106,7 @@ namespace pvpgn
 						addEntry(uid, primary, secondary, tertiary, reference);
 					}
 					else{
-						eventlog(eventlog_level_debug, __FUNCTION__, "no known entry for uid %u", values[0]);
+						eventlog(eventlog_level_debug, __FUNCTION__, "no known entry for uid {}", values[0]);
 					}
 					for (int count = 0; count < 4; count++) checksum += values[count];
 				}
@@ -1116,12 +1116,12 @@ namespace pvpgn
 
 				if (filechecksum != checksum)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "%s has invalid checksum... fall back to old loading mode", ladderFilename.c_str());
+					eventlog(eventlog_level_error, __FUNCTION__, "{} has invalid checksum... fall back to old loading mode", ladderFilename.c_str());
 					ladder.clear();
 					return false;
 				}
 
-				eventlog(eventlog_level_info, __FUNCTION__, "successfully loaded %s", filename.c_str());
+				eventlog(eventlog_level_info, __FUNCTION__, "successfully loaded {}", filename.c_str());
 				return true;
 			}
 
@@ -1162,7 +1162,7 @@ namespace pvpgn
 
 				if (!(fp))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for writing (std::ofstream: %s)", filename.c_str(), std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for writing (std::ofstream: {})", filename.c_str(), std::strerror(errno));
 					return false;
 				}
 
@@ -1186,7 +1186,7 @@ namespace pvpgn
 				writedata(fp, checksum); // add checksum at the en
 
 				saved = true;
-				eventlog(eventlog_level_info, __FUNCTION__, "successfully saved %s", filename.c_str());
+				eventlog(eventlog_level_info, __FUNCTION__, "successfully saved {}", filename.c_str());
 				return true;
 			}
 
@@ -1314,7 +1314,7 @@ namespace pvpgn
 
 				if (!(fp))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for writing (std::ofstream: %s)", filename.c_str(), std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for writing (std::ofstream: {})", filename.c_str(), std::strerror(errno));
 					return;
 				}
 

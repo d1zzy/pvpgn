@@ -217,7 +217,7 @@ namespace pvpgn
 
 			if (!(fp = std::fopen(status_filename, "w")))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for writing (std::fopen: %s)", status_filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for writing (std::fopen: {})", status_filename, std::strerror(errno));
 				return -1;
 			}
 

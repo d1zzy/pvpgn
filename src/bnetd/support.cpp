@@ -54,7 +54,7 @@ namespace pvpgn
 
 			if (!(fp = std::fopen(supportfile, "r")))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (std::fopen: %s)", supportfile, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for reading (std::fopen: {})", supportfile, std::strerror(errno));
 				eventlog(eventlog_level_error, __FUNCTION__, "can't guarantee that everything will run smooth");
 				return 0;
 			}
@@ -73,7 +73,7 @@ namespace pvpgn
 
 				if (access(namebuff, F_OK) < 0)
 				{
-					eventlog(eventlog_level_fatal, __FUNCTION__, "necessary file \"%s\" missing", namebuff);
+					eventlog(eventlog_level_fatal, __FUNCTION__, "necessary file \"{}\" missing", namebuff);
 					xfree((void *)namebuff);
 					std::fclose(fp);
 					return -1;

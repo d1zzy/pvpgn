@@ -634,7 +634,7 @@ namespace pvpgn
 			// get attribute field name from a storage
 			if (!(attr_key = _find_attr_key((char*)clienttag_str)))
 			{
-				eventlog(eventlog_level_trace, __FUNCTION__, "could not find attr_key in iconset for tag %s", clienttag_str);
+				eventlog(eventlog_level_trace, __FUNCTION__, "could not find attr_key in iconset for tag {}", clienttag_str);
 				return NULL;
 			}
 
@@ -702,7 +702,7 @@ namespace pvpgn
 			}
 
 			if (!(fp = std::fopen(filename, "r"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				return -1;
 			}
 
@@ -815,17 +815,17 @@ namespace pvpgn
 								pos = 0;
 								if (!(rating = next_token(buff, &pos)))
 								{
-									eventlog(eventlog_level_error, __FUNCTION__, "missing value in line %u in file \"%s\"", line, filename);
+									eventlog(eventlog_level_error, __FUNCTION__, "missing value in line {} in file \"{}\"", line, filename);
 									continue;
 								}
 								if (!(rank = next_token(buff, &pos)))
 								{
-									eventlog(eventlog_level_error, __FUNCTION__, "missing rank in line %u in file \"%s\"", line, filename);
+									eventlog(eventlog_level_error, __FUNCTION__, "missing rank in line {} in file \"{}\"", line, filename);
 									continue;
 								}
 								if (!(icon = next_token(buff, &pos)))
 								{
-									eventlog(eventlog_level_error, __FUNCTION__, "missing icon in line %u in file \"%s\"", line, filename);
+									eventlog(eventlog_level_error, __FUNCTION__, "missing icon in line {} in file \"{}\"", line, filename);
 									continue;
 								}
 								counter++;
@@ -891,12 +891,12 @@ namespace pvpgn
 
 					if (!icon_set->attr_key)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "attr_key is null for iconset %s", icon_set->clienttag);
+						eventlog(eventlog_level_error, __FUNCTION__, "attr_key is null for iconset {}", icon_set->clienttag);
 						continue;
 					}
 					list_append_data(icon_head, icon_set);
 
-					eventlog(eventlog_level_trace, __FUNCTION__, "loaded %u custom icons for %s", counter, icon_set->clienttag);
+					eventlog(eventlog_level_trace, __FUNCTION__, "loaded {} custom icons for {}", counter, icon_set->clienttag);
 				}
 			}
 
@@ -944,7 +944,7 @@ namespace pvpgn
 
 			str = str_skip_space(str + 1);
 			if (!*str) {
-				eventlog(eventlog_level_error, __FUNCTION__, "missing value at line %u", lineno);
+				eventlog(eventlog_level_error, __FUNCTION__, "missing value at line {}", lineno);
 				xfree((void*)icon_var);
 				return NULL;
 			}
@@ -968,7 +968,7 @@ namespace pvpgn
 				}
 
 				if (*cp != '"') {
-					eventlog(eventlog_level_error, __FUNCTION__, "missing end quota at line %u", lineno);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing end quota at line {}", lineno);
 					xfree((void*)icon_var);
 					return NULL;
 				}
@@ -976,7 +976,7 @@ namespace pvpgn
 				*cp = '\0';
 				cp = str_skip_space(cp + 1);
 				if (*cp) {
-					eventlog(eventlog_level_error, __FUNCTION__, "extra characters in value after ending quote at line %u", lineno);
+					eventlog(eventlog_level_error, __FUNCTION__, "extra characters in value after ending quote at line {}", lineno);
 					xfree((void*)icon_var);
 					return NULL;
 				}
@@ -987,7 +987,7 @@ namespace pvpgn
 					*cp = '\0';
 					cp = str_skip_space(cp + 1);
 					if (*cp) {
-						eventlog(eventlog_level_error, __FUNCTION__, "extra characters after the value at line %u", lineno);
+						eventlog(eventlog_level_error, __FUNCTION__, "extra characters after the value at line {}", lineno);
 						xfree((void*)icon_var);
 						return NULL;
 					}

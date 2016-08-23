@@ -71,7 +71,7 @@ namespace pvpgn
 					continue;
 				}
 
-				eventlog(eventlog_level_debug, __FUNCTION__, "version check entry archtag=%s, clienttag=%s",
+				eventlog(eventlog_level_debug, __FUNCTION__, "version check entry archtag={}, clienttag={}",
 					tag_uint_to_str(archtag_str, vi->archtag),
 					tag_uint_to_str(clienttag_str, vi->clienttag));
 
@@ -242,7 +242,7 @@ namespace pvpgn
 					if (std::sscanf(exeinfo, "%*s %*s %u", &size) != 1)
 					{
 
-						eventlog(eventlog_level_warn, __FUNCTION__, "parser error while parsing pattern \"%s\"", exeinfo);
+						eventlog(eventlog_level_warn, __FUNCTION__, "parser error while parsing pattern \"{}\"", exeinfo);
 						xfree((void *)parsed_exeinfo->exe);
 						xfree((void *)parsed_exeinfo);
 						return NULL; /* neq */
@@ -313,13 +313,13 @@ namespace pvpgn
 				}
 				if ((pattern->time != -1) && prefs_get_version_exeinfo_maxdiff() && (abs(pattern->time - match->time) > (signed)prefs_get_version_exeinfo_maxdiff()))
 				{
-					eventlog(eventlog_level_trace, __FUNCTION__, "time differs by %i", abs(pattern->time - match->time));
+					eventlog(eventlog_level_trace, __FUNCTION__, "time differs by {}", abs(pattern->time - match->time));
 					return 1;
 				}
 				return 0; /* ok */
 			}
 			else {
-				eventlog(eventlog_level_error, __FUNCTION__, "unknown version exeinfo match method \"%s\"", prefs_get_version_exeinfo_match());
+				eventlog(eventlog_level_error, __FUNCTION__, "unknown version exeinfo match method \"{}\"", prefs_get_version_exeinfo_match());
 				return -1; /* neq/fail */
 			}
 		}
@@ -406,26 +406,26 @@ namespace pvpgn
 
 				/* Ok, version and checksum matches or exeinfo/checksum are disabled
 				 * anyway we have found a complete match */
-				eventlog(eventlog_level_info, __FUNCTION__, "got a matching entry: %s", vc->versiontag);
+				eventlog(eventlog_level_info, __FUNCTION__, "got a matching entry: {}", vc->versiontag);
 				free_parsed_exeinfo(parsed_exeinfo);
 				return 1;
 			}
 
 			if (badcs) /* A match was found but the checksum was different */
 			{
-				eventlog(eventlog_level_info, __FUNCTION__, "bad checksum, closest match is: %s", vc->versiontag);
+				eventlog(eventlog_level_info, __FUNCTION__, "bad checksum, closest match is: {}", vc->versiontag);
 				free_parsed_exeinfo(parsed_exeinfo);
 				return -1;
 			}
 			if (badexe) /* A match was found but the exeinfo string was different */
 			{
-				eventlog(eventlog_level_info, __FUNCTION__, "bad exeinfo, closest match is: %s", vc->versiontag);
+				eventlog(eventlog_level_info, __FUNCTION__, "bad exeinfo, closest match is: {}", vc->versiontag);
 				free_parsed_exeinfo(parsed_exeinfo);
 				return -1;
 			}
 
 			/* No match in list */
-			eventlog(eventlog_level_info, __FUNCTION__, "no match in list, setting to: %s", vc->versiontag);
+			eventlog(eventlog_level_info, __FUNCTION__, "no match in list, setting to: {}", vc->versiontag);
 			free_parsed_exeinfo(parsed_exeinfo);
 			return 0;
 		}
@@ -461,7 +461,7 @@ namespace pvpgn
 			}
 			if (!(fp = std::fopen(filename, "r")))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				list_destroy(versioninfo_head);
 				versioninfo_head = NULL;
 				return -1;
@@ -488,49 +488,49 @@ namespace pvpgn
 
 				if (!(eqn = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing eqn near line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing eqn near line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				line++;
 				if (!(mpqfile = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing mpqfile near line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing mpqfile near line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				line++;
 				if (!(archtag = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing archtag near line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing archtag near line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				line++;
 				if (!(clienttag = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing clienttag near line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing clienttag near line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				line++;
 				if (!(exeinfo = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing exeinfo near line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing exeinfo near line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				line++;
 				if (!(versionid = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing versionid near line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing versionid near line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				line++;
 				if (!(gameversion = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing gameversion near line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing gameversion near line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				line++;
 				if (!(checksum = next_token(buff, &pos)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "missing checksum near line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing checksum near line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				line++;
@@ -544,7 +544,7 @@ namespace pvpgn
 				vi->mpqfile = xstrdup(mpqfile);
 				if (std::strlen(archtag) != 4)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "invalid arch tag on line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "invalid arch tag on line {} of file \"{}\"", line, filename);
 					xfree((void *)vi->mpqfile); /* avoid warning */
 					xfree((void *)vi->eqn); /* avoid warning */
 					xfree(vi);
@@ -552,7 +552,7 @@ namespace pvpgn
 				}
 				if (!tag_check_arch((vi->archtag = tag_str_to_uint(archtag))))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got unknown archtag \"%s\"", archtag);
+					eventlog(eventlog_level_error, __FUNCTION__, "got unknown archtag \"{}\"", archtag);
 					xfree((void *)vi->mpqfile); /* avoid warning */
 					xfree((void *)vi->eqn); /* avoid warning */
 					xfree(vi);
@@ -560,7 +560,7 @@ namespace pvpgn
 				}
 				if (std::strlen(clienttag) != 4)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "invalid client tag on line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "invalid client tag on line {} of file \"{}\"", line, filename);
 					xfree((void *)vi->mpqfile); /* avoid warning */
 					xfree((void *)vi->eqn); /* avoid warning */
 					xfree(vi);
@@ -568,7 +568,7 @@ namespace pvpgn
 				}
 				if (!tag_check_client((vi->clienttag = tag_str_to_uint(clienttag))))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got unknown clienttag\"%s\"", clienttag);
+					eventlog(eventlog_level_error, __FUNCTION__, "got unknown clienttag\"{}\"", clienttag);
 					xfree((void *)vi->mpqfile); /* avoid warning */
 					xfree((void *)vi->eqn); /* avoid warning */
 					xfree(vi);
@@ -591,7 +591,7 @@ namespace pvpgn
 				vi->versionid = std::strtoul(versionid, NULL, 0);
 				if (verstr_to_vernum(gameversion, &vi->gameversion) < 0)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "malformed version on line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "malformed version on line {} of file \"{}\"", line, filename);
 					xfree((void *)vi->parsed_exeinfo); /* avoid warning */
 					xfree((void *)vi->mpqfile); /* avoid warning */
 					xfree((void *)vi->eqn); /* avoid warning */
@@ -611,7 +611,7 @@ namespace pvpgn
 
 			file_get_line(NULL); // clear file_get_line buffer
 			if (std::fclose(fp) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close versioncheck file \"%s\" after reading (std::fclose: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close versioncheck file \"{}\" after reading (std::fclose: {})", filename, std::strerror(errno));
 
 			return 0;
 		}

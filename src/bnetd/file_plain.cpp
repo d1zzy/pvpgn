@@ -58,7 +58,7 @@ namespace pvpgn
 			char const *  val;
 
 			if (!(accountfile = std::fopen(filename, "w"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "unable to open file \"%s\" for writing (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "unable to open file \"{}\" for writing (std::fopen: {})", filename, std::strerror(errno));
 				return -1;
 			}
 
@@ -81,14 +81,14 @@ namespace pvpgn
 
 				if (key && val) {
 					if (std::strncmp("BNET\\CharacterDefault\\", key, 20) == 0) {
-						eventlog(eventlog_level_debug, __FUNCTION__, "skipping attribute key=\"%s\"", attr->key);
+						eventlog(eventlog_level_debug, __FUNCTION__, "skipping attribute key=\"{}\"", attr->key);
 					}
 					else {
-						eventlog(eventlog_level_debug, __FUNCTION__, "saving attribute key=\"%s\" val=\"%s\"", attr->key, attr->val);
+						eventlog(eventlog_level_debug, __FUNCTION__, "saving attribute key=\"{}\" val=\"{}\"", attr->key, attr->val);
 						std::fprintf(accountfile, "\"%s\"=\"%s\"\n", key, val);
 					}
 				}
-				else eventlog(eventlog_level_error, __FUNCTION__, "could not save attribute key=\"%s\"", attr->key);
+				else eventlog(eventlog_level_error, __FUNCTION__, "could not save attribute key=\"{}\"", attr->key);
 
 				if (key) xfree((void *)key); /* avoid warning */
 				if (val) xfree((void *)val); /* avoid warning */
@@ -97,7 +97,7 @@ namespace pvpgn
 			}
 
 			if (std::fclose(accountfile) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"%s\" after writing (std::fclose: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"{}\" after writing (std::fclose: {})", filename, std::strerror(errno));
 				return -1;
 			}
 
@@ -116,7 +116,7 @@ namespace pvpgn
 			char * val;
 
 			if (!(accountfile = std::fopen(filename, "r"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open account file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open account file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				return -1;
 			}
 
@@ -126,7 +126,7 @@ namespace pvpgn
 				}
 
 				if (std::strlen(buff) < 6) /* "?"="" */ {
-					eventlog(eventlog_level_error, __FUNCTION__, "malformed line %d of account file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "malformed line {} of account file \"{}\"", line, filename);
 					continue;
 				}
 
@@ -136,7 +136,7 @@ namespace pvpgn
 
 				if (std::sscanf(buff, "\"%[^\"]\" = \"%[^\"]\"", esckey, escval) != 2) {
 					if (std::sscanf(buff, "\"%[^\"]\" = \"\"", esckey) != 1) /* hack for an empty value field */ {
-						eventlog(eventlog_level_error, __FUNCTION__, "malformed entry on line %d of account file \"%s\"", line, filename);
+						eventlog(eventlog_level_error, __FUNCTION__, "malformed entry on line {} of account file \"{}\"", line, filename);
 						xfree(escval);
 						xfree(esckey);
 						continue;
@@ -152,7 +152,7 @@ namespace pvpgn
 				xfree(escval);
 
 				if (cb(key, val, data))
-					eventlog(eventlog_level_error, __FUNCTION__, "got error from callback (key: '%s' val:'%s')", key, val);
+					eventlog(eventlog_level_error, __FUNCTION__, "got error from callback (key: '{}' val:'{}')", key, val);
 
 				if (key) xfree((void *)key); /* avoid warning */
 				if (val) xfree((void *)val); /* avoid warning */
@@ -161,7 +161,7 @@ namespace pvpgn
 			file_get_line(NULL); // clear file_get_line buffer
 
 			if (std::fclose(accountfile) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"%s\" after reading (std::fclose: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close account file \"{}\" after reading (std::fclose: {})", filename, std::strerror(errno));
 
 			return 0;
 		}

@@ -224,7 +224,7 @@ namespace pvpgn
 					irc_send(conn, ERR_ALREADYREGISTRED, ":You are already registred");
 				}
 				else {
-					eventlog(eventlog_level_debug, __FUNCTION__, "[%d] got USER: user=\"%s\" realname=\"%s\"", conn_get_socket(conn), user, realname);
+					eventlog(eventlog_level_debug, __FUNCTION__, "[{}] got USER: user=\"{}\" realname=\"{}\"", conn_get_socket(conn), user, realname);
 					conn_set_user(conn, user);
 					conn_set_owner(conn, realname);
 					if (conn_get_loggeduser(conn))
@@ -297,7 +297,7 @@ namespace pvpgn
 														break;
 							}
 							default:;
-								eventlog(eventlog_level_trace, __FUNCTION__, "got /msg in unexpected connection state (%s)", conn_state_get_str(conn_get_state(conn)));
+								eventlog(eventlog_level_trace, __FUNCTION__, "got /msg in unexpected connection state ({})", conn_state_get_str(conn_get_state(conn)));
 							}
 						}
 						else if (strcasecmp(text, "register") == 0) {
@@ -329,13 +329,13 @@ namespace pvpgn
 							temp = accountlist_create_account(username, hash_get_str(passhash));
 							if (!temp) {
 								message_send_text(conn, message_type_error, conn, "Failed to create account!");
-								eventlog(eventlog_level_debug, __FUNCTION__, "[%d] account \"%s\" not created (failed)", conn_get_socket(conn), username);
+								eventlog(eventlog_level_debug, __FUNCTION__, "[{}] account \"{}\" not created (failed)", conn_get_socket(conn), username);
 								conn_unget_chatname(conn, username);
 								break;
 							}
 
 							message_send_text(conn, message_type_info, conn, std::string("Account #" + std::to_string(account_get_uid(temp)) + " created."));
-							eventlog(eventlog_level_debug, __FUNCTION__, "[%d] account \"%s\" created", conn_get_socket(conn), username);
+							eventlog(eventlog_level_debug, __FUNCTION__, "[{}] account \"{}\" created", conn_get_socket(conn), username);
 							conn_unget_chatname(conn, username);
 						}
 						else {

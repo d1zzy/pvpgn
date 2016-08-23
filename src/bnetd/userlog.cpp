@@ -150,7 +150,7 @@ namespace pvpgn
 			}
 			else
 			{
-				ERROR1("could not write into user log file \"%s\"", filename);
+				ERROR1("could not write into user log file \"{}\"", filename);
 			}
 		}
 
@@ -260,7 +260,7 @@ namespace pvpgn
 				// create inside user dir
 				if (stat(filepath, &statbuf) == -1) {
 					p_mkdir(filepath, S_IRWXU | S_IRWXG | S_IRWXO);
-					eventlog(eventlog_level_info, __FUNCTION__, "created user directory: %s", filepath);
+					eventlog(eventlog_level_info, __FUNCTION__, "created user directory: {}", filepath);
 				}
 			}
 

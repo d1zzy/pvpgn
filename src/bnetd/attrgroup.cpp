@@ -148,7 +148,7 @@ namespace pvpgn
 
 			stmp = storage->create_account(name);
 			if (!stmp) {
-				eventlog(eventlog_level_error, __FUNCTION__, "failed to add user '%s' to storage", name);
+				eventlog(eventlog_level_error, __FUNCTION__, "failed to add user '{}' to storage", name);
 				return NULL;
 			}
 

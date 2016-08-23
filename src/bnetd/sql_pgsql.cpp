@@ -158,7 +158,7 @@ namespace pvpgn
 			tmphost = host != NULL ? host : socket;
 #ifdef RUNTIME_LIBS
 			if (pgsql_load_dll()) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error loading library file \"%s\"", PGSQL_LIB);
+				eventlog(eventlog_level_error, __FUNCTION__, "error loading library file \"{}\"", PGSQL_LIB);
 				return -1;
 			}
 #endif
@@ -168,7 +168,7 @@ namespace pvpgn
 			}
 
 			if (p_PQstatus(pgsql) != CONNECTION_OK) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error connecting to database (db said: '%s')", p_PQerrorMessage(pgsql));
+				eventlog(eventlog_level_error, __FUNCTION__, "error connecting to database (db said: '{}')", p_PQerrorMessage(pgsql));
 				p_PQfinish(pgsql);
 				pgsql = NULL;
 				return -1;
@@ -208,12 +208,12 @@ namespace pvpgn
 			}
 
 			if ((pgres = p_PQexec(pgsql, query)) == NULL) {
-				eventlog(eventlog_level_error, __FUNCTION__, "not enough memory for query (%s)", query);
+				eventlog(eventlog_level_error, __FUNCTION__, "not enough memory for query ({})", query);
 				return NULL;
 			}
 
 			if (p_PQresultStatus(pgres) != PGRES_TUPLES_OK) {
-				/*        eventlog(eventlog_level_debug, __FUNCTION__, "got error from query (%s)", query); */
+				/*        eventlog(eventlog_level_debug, __FUNCTION__, "got error from query ({})", query); */
 				p_PQclear(pgres);
 				return NULL;
 			}
@@ -223,7 +223,7 @@ namespace pvpgn
 			res->pgres = pgres;
 			res->crow = 0;
 
-			/*    eventlog(eventlog_level_debug, __FUNCTION__, "res: %p res->rowbuf: %p res->crow: %d res->pgres: %p", res, res->rowbuf, res->crow, res->pgres); */
+			/*    eventlog(eventlog_level_debug, __FUNCTION__, "res: {:p} res->rowbuf: {:p} res->crow: {} res->pgres: {:p}", res, res->rowbuf, res->crow, res->pgres); */
 			return res;
 		}
 
@@ -287,7 +287,7 @@ namespace pvpgn
 
 			res->crow++;
 
-			/*    eventlog(eventlog_level_debug, __FUNCTION__, "res: %p res->rowbuf: %p res->crow: %d res->pgres: %p", res, res->rowbuf, res->crow, res->pgres); */
+			/*    eventlog(eventlog_level_debug, __FUNCTION__, "res: {:p} res->rowbuf: {:p} res->crow: {} res->pgres: {:p}", res, res->rowbuf, res->crow, res->pgres); */
 			return res->rowbuf;
 		}
 
@@ -296,7 +296,7 @@ namespace pvpgn
 			t_pgsql_res *res = (t_pgsql_res *)result;
 
 			if (res == NULL) return;
-			/*    eventlog(eventlog_level_debug, __FUNCTION__, "res: %p res->rowbuf: %p res->crow: %d res->pgres: %p", res, res->rowbuf, res->crow, res->pgres); */
+			/*    eventlog(eventlog_level_debug, __FUNCTION__, "res: {:p} res->rowbuf: {:p} res->crow: {} res->pgres: {:p}", res, res->rowbuf, res->crow, res->pgres); */
 
 			if (res->pgres) p_PQclear(res->pgres);
 			if (res->rowbuf) xfree((void*)res->rowbuf);

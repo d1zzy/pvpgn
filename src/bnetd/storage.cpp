@@ -60,7 +60,7 @@ namespace pvpgn
 #ifdef WITH_SQL
 			std::strcat(dstr, ", sql");
 #endif
-			eventlog(eventlog_level_info, __FUNCTION__, "initializing storage layer (available drivers: %s)", dstr);
+			eventlog(eventlog_level_info, __FUNCTION__, "initializing storage layer (available drivers: {})", dstr);
 
 			*p = '\0';
 			if (strcasecmp(spath, "file") == 0) {
@@ -78,7 +78,7 @@ namespace pvpgn
 			}
 #endif
 			else {
-				eventlog(eventlog_level_fatal, __FUNCTION__, "no known driver specified (%s)", spath);
+				eventlog(eventlog_level_fatal, __FUNCTION__, "no known driver specified ({})", spath);
 				res = -1;
 			}
 

@@ -147,11 +147,11 @@ namespace pvpgn
 
 			ASSERT(ipaddr, NULL);
 			if ((ip = net_inet_addr(ipaddr)) == ~0U) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad ip address %s", ipaddr);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad ip address {}", ipaddr);
 				return NULL;
 			}
 			if (d2gslist_find_gs_by_ip(ntohl(ip))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "game server %s already in list", ipaddr);
+				eventlog(eventlog_level_error, __FUNCTION__, "game server {} already in list", ipaddr);
 				return NULL;
 			}
 			gs = (t_d2gs*)xmalloc(sizeof(t_d2gs));
@@ -169,7 +169,7 @@ namespace pvpgn
 				xfree(gs);
 				return NULL;
 			}
-			eventlog(eventlog_level_info, __FUNCTION__, "added game server %s (id: %d) to list", ipaddr, gs->id);
+			eventlog(eventlog_level_info, __FUNCTION__, "added game server {} (id: {}) to list", ipaddr, gs->id);
 			return gs;
 		}
 
@@ -184,7 +184,7 @@ namespace pvpgn
 				d2cs_conn_set_state(gs->connection, conn_state_destroy);
 				d2gs_deactive(gs, gs->connection);
 			}
-			eventlog(eventlog_level_info, __FUNCTION__, "removed game server %s (id: %d) from list", addr_num_to_ip_str(gs->ip), gs->id);
+			eventlog(eventlog_level_info, __FUNCTION__, "removed game server {} (id: {}) from list", addr_num_to_ip_str(gs->ip), gs->id);
 			xfree(gs);
 			return 0;
 		}
@@ -300,11 +300,11 @@ namespace pvpgn
 			ASSERT(c, -1);
 
 			if (gs->active && gs->connection) {
-				eventlog(eventlog_level_warn, __FUNCTION__, "game server %d is already actived, deactive previous connection first", gs->id);
+				eventlog(eventlog_level_warn, __FUNCTION__, "game server {} is already actived, deactive previous connection first", gs->id);
 				d2gs_deactive(gs, gs->connection);
 			}
 			total_d2gs++;
-			eventlog(eventlog_level_info, __FUNCTION__, "game server %s (id: %d) actived (%d total)", addr_num_to_addr_str(d2cs_conn_get_addr(c),
+			eventlog(eventlog_level_info, __FUNCTION__, "game server {} (id: {}) actived ({} total)", addr_num_to_addr_str(d2cs_conn_get_addr(c),
 				d2cs_conn_get_port(c)), gs->id, total_d2gs);
 			gs->state = d2gs_state_authed;
 			gs->connection = c;
@@ -320,27 +320,27 @@ namespace pvpgn
 
 			ASSERT(gs, -1);
 			if (!gs->active || !gs->connection) {
-				eventlog(eventlog_level_warn, __FUNCTION__, "game server %d is not actived yet", gs->id);
+				eventlog(eventlog_level_warn, __FUNCTION__, "game server {} is not actived yet", gs->id);
 				return -1;
 			}
 			if (gs->connection != c) {
-				eventlog(eventlog_level_debug, __FUNCTION__, "game server %d connection mismatch,ignore it", gs->id);
+				eventlog(eventlog_level_debug, __FUNCTION__, "game server {} connection mismatch,ignore it", gs->id);
 				return 0;
 			}
 			total_d2gs--;
-			eventlog(eventlog_level_info, __FUNCTION__, "game server %s (id: %d) deactived (%d left)", addr_num_to_addr_str(d2cs_conn_get_addr(gs->connection), d2cs_conn_get_port(gs->connection)), gs->id, total_d2gs);
+			eventlog(eventlog_level_info, __FUNCTION__, "game server {} (id: {}) deactived ({} left)", addr_num_to_addr_str(d2cs_conn_get_addr(gs->connection), d2cs_conn_get_port(gs->connection)), gs->id, total_d2gs);
 			gs->state = d2gs_state_none;
 			gs->connection = NULL;
 			gs->active = 0;
 			gs->maxgame = 0;
-			eventlog(eventlog_level_info, __FUNCTION__, "destroying all games on game server %d", gs->id);
+			eventlog(eventlog_level_info, __FUNCTION__, "destroying all games on game server {}", gs->id);
 			BEGIN_LIST_TRAVERSE_DATA(d2cs_gamelist(), game, t_game)
 			{
 				if (game_get_d2gs(game) == gs) game_destroy(game, &curr_elem_);
 			}
 			END_LIST_TRAVERSE_DATA()
 			if (gs->gamenum != 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "game server %d deactived but still with games left", gs->id);
+				eventlog(eventlog_level_error, __FUNCTION__, "game server {} deactived but still with games left", gs->id);
 			}
 			gs->gamenum = 0;
 			return 0;

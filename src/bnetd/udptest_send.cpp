@@ -55,7 +55,7 @@ namespace pvpgn
 			{
 				if (!(upacket = packet_create(packet_class_udp)))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] could not allocate memory for packet", conn_get_socket(c));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] could not allocate memory for packet", conn_get_socket(c));
 					continue;
 				}
 				packet_set_size(upacket, sizeof(t_server_udptest));
@@ -80,7 +80,7 @@ namespace pvpgn
 				if (psock_sendto(conn_get_game_socket(c),
 					packet_get_raw_data_const(upacket, 0), packet_get_size(upacket),
 					0, (struct sockaddr *)&caddr, (psock_t_socklen)sizeof(caddr)) != (int)packet_get_size(upacket))
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] failed to send UDPTEST to %s (attempt %u) (psock_sendto: %s)", conn_get_socket(c), addr_num_to_addr_str(ntohl(caddr.sin_addr.s_addr), conn_get_game_port(c)), tries + 1, pstrerror(psock_errno()));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] failed to send UDPTEST to {} (attempt {}) (psock_sendto: {})", conn_get_socket(c), addr_num_to_addr_str(ntohl(caddr.sin_addr.s_addr), conn_get_game_port(c)), tries + 1, pstrerror(psock_errno()));
 				else
 					successes++;
 

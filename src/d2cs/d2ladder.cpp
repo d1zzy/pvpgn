@@ -70,7 +70,7 @@ namespace pvpgn
 				std::strlen(CLIENTTAG_DIABLO2DV) + 1);
 			std::sprintf(ladderfile, "%s/%s.%s", prefs_get_ladder_dir(), LADDER_FILE_PREFIX, CLIENTTAG_DIABLO2DV);
 			if (!(fp = std::fopen(ladderfile, "rb"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error opening ladder file \"%s\" for reading (std::fopen: %s)", ladderfile, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "error opening ladder file \"{}\" for reading (std::fopen: {})", ladderfile, std::strerror(errno));
 				xfree(ladderfile);
 				return -1;
 			}
@@ -98,7 +98,7 @@ namespace pvpgn
 				type = bn_int_get(ladderheader[i].type);
 				number = bn_int_get(ladderheader[i].number);
 				if (d2ladder_create(type, number) < 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "error create ladder %d", type);
+					eventlog(eventlog_level_error, __FUNCTION__, "error create ladder {}", type);
 					continue;
 				}
 				std::fseek(fp, bn_int_get(ladderheader[i].offset), SEEK_SET);
@@ -117,7 +117,7 @@ namespace pvpgn
 			}
 			xfree(ladderheader);
 			std::fclose(fp);
-			eventlog(eventlog_level_info, __FUNCTION__, "ladder file loaded successfully (%d types %d maxtype)", count, max_ladder_type);
+			eventlog(eventlog_level_info, __FUNCTION__, "ladder file loaded successfully ({} types {} maxtype)", count, max_ladder_type);
 			return 0;
 		}
 
@@ -137,7 +137,7 @@ namespace pvpgn
 		static int d2ladder_create(unsigned int type, unsigned int len)
 		{
 			if (type > max_ladder_type) {
-				eventlog(eventlog_level_error, __FUNCTION__, "ladder type %d exceed max ladder type %d", type, max_ladder_type);
+				eventlog(eventlog_level_error, __FUNCTION__, "ladder type {} exceed max ladder type {}", type, max_ladder_type);
 				return -1;
 			}
 			ladder_data[type].info = (t_d2cs_client_ladderinfo*)xmalloc(sizeof(t_d2cs_client_ladderinfo)* len);
@@ -159,7 +159,7 @@ namespace pvpgn
 				return -1;
 			}
 			if (type > max_ladder_type) {
-				eventlog(eventlog_level_error, __FUNCTION__, "ladder type %d exceed max ladder type %d", type, max_ladder_type);
+				eventlog(eventlog_level_error, __FUNCTION__, "ladder type {} exceed max ladder type {}", type, max_ladder_type);
 				return -1;
 			}
 			if (!ladder_data[type].info) {
@@ -167,7 +167,7 @@ namespace pvpgn
 				return -1;
 			}
 			if (ladder_data[type].curr_len >= ladder_data[type].len) {
-				eventlog(eventlog_level_error, __FUNCTION__, "ladder data overflow %d > %d", ladder_data[type].curr_len, ladder_data[type].len);
+				eventlog(eventlog_level_error, __FUNCTION__, "ladder data overflow {} > {}", ladder_data[type].curr_len, ladder_data[type].len);
 				return -1;
 			}
 			status = bn_short_get(info->status);
@@ -223,7 +223,7 @@ namespace pvpgn
 			if (!ladder_data) return -1;
 			ladder = ladder_data + type;
 			if (!ladder->curr_len || !ladder->info) {
-				eventlog(eventlog_level_warn, __FUNCTION__, "ladder type %d not found", type);
+				eventlog(eventlog_level_warn, __FUNCTION__, "ladder type {} not found", type);
 				return -1;
 			}
 			if (ladder->type != type) {
@@ -249,7 +249,7 @@ namespace pvpgn
 			if (!ladder_data) return -1;
 			ladder = ladder_data + type;
 			if (!ladder->curr_len || !ladder->info) {
-				eventlog(eventlog_level_warn, __FUNCTION__, "ladder type %d not found", type);
+				eventlog(eventlog_level_warn, __FUNCTION__, "ladder type {} not found", type);
 				return -1;
 			}
 			if (ladder->type != type) {

@@ -48,7 +48,7 @@ namespace pvpgn
 			pclass != packet_class_w3route &&
 			pclass != packet_class_wolgameres)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "invalid packet class %d", (int)pclass);
+			eventlog(eventlog_level_error, __FUNCTION__, "invalid packet class {}", (int)pclass);
 			return NULL;
 		}
 
@@ -137,7 +137,7 @@ namespace pvpgn
 		case packet_class_none:
 			return packet_class_none;
 		default:
-			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class %d", (int)packet->pclass);
+			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class {}", (int)packet->pclass);
 			return packet_class_none;
 		}
 	}
@@ -178,7 +178,7 @@ namespace pvpgn
 		case packet_class_none:
 			return "none";
 		default:
-			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class %d", (int)packet->pclass);
+			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class {}", (int)packet->pclass);
 			return "unknown";
 		}
 	}
@@ -208,7 +208,7 @@ namespace pvpgn
 			pclass != packet_class_w3route &&
 			pclass != packet_class_wolgameres)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "invalid packet class %d", (int)pclass);
+			eventlog(eventlog_level_error, __FUNCTION__, "invalid packet class {}", (int)pclass);
 			return -1;
 		}
 
@@ -233,7 +233,7 @@ namespace pvpgn
 		case packet_class_bnet:
 			if (packet_get_size(packet) < sizeof(t_bnet_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "bnet packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "bnet packet is shorter than header (len={})", packet_get_size(packet));
 				return 0;
 			}
 			return (unsigned int)bn_short_get(packet->u.bnet.h.type);
@@ -241,7 +241,7 @@ namespace pvpgn
 		case packet_class_file:
 			if (packet_get_size(packet) < sizeof(t_file_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "file packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "file packet is shorter than header (len={})", packet_get_size(packet));
 				return 0;
 			}
 			return (unsigned int)bn_short_get(packet->u.file.h.type);
@@ -249,7 +249,7 @@ namespace pvpgn
 		case packet_class_udp:
 			if (packet_get_size(packet) < sizeof(t_udp_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "udp packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "udp packet is shorter than header (len={})", packet_get_size(packet));
 				return 0;
 			}
 			return bn_int_get(packet->u.udp.h.type);
@@ -260,7 +260,7 @@ namespace pvpgn
 		case packet_class_d2game:
 			if (packet_get_size(packet) < sizeof(t_d2game_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "d2game packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "d2game packet is shorter than header (len={})", packet_get_size(packet));
 				return 0;
 			}
 			return bn_byte_get(packet->u.d2game.h.type);
@@ -268,13 +268,13 @@ namespace pvpgn
 		case packet_class_d2gs:
 			if (packet_get_size(packet) < sizeof(t_d2cs_d2gs_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "d2gs packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "d2gs packet is shorter than header (len={})", packet_get_size(packet));
 				return 0;
 			}
 			return bn_short_get(packet->u.d2cs_d2gs.h.type);
 		case packet_class_d2cs_bnetd:
 			if (packet_get_size(packet) < sizeof(t_d2cs_bnetd_header)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "d2cs_bnetd packet shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "d2cs_bnetd packet shorter than header (len={})", packet_get_size(packet));
 				return 0;
 			}
 			return bn_short_get(packet->u.d2cs_d2gs.h.type);
@@ -282,7 +282,7 @@ namespace pvpgn
 		case packet_class_d2cs:
 			if (packet_get_size(packet) < sizeof(t_d2cs_client_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "d2cs packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "d2cs packet is shorter than header (len={})", packet_get_size(packet));
 				return 0;
 			}
 			return bn_byte_get(packet->u.d2cs_client.h.type);
@@ -290,7 +290,7 @@ namespace pvpgn
 		case packet_class_w3route:
 			if (packet_get_size(packet) < sizeof(t_w3route_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "w3route packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "w3route packet is shorter than header (len={})", packet_get_size(packet));
 				return 0;
 			}
 			return bn_short_get(packet->u.w3route.h.type);
@@ -298,7 +298,7 @@ namespace pvpgn
 			return 0; /* wolgameres packets don't have a type */
 
 		default:
-			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class %d", (int)packet->pclass);
+			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class {}", (int)packet->pclass);
 			return 0;
 		}
 	}
@@ -322,7 +322,7 @@ namespace pvpgn
 			case packet_class_bnet:
 				if (packet_get_size(packet) < sizeof(t_bnet_header))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len=%u)", packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len={})", packet_get_size(packet));
 					return "unknown";
 				}
 				switch (bn_short_get(packet->u.bnet.h.type))
@@ -505,7 +505,7 @@ namespace pvpgn
 			case packet_class_file:
 				if (packet_get_size(packet) < sizeof(t_file_header))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len=%u)", packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len={})", packet_get_size(packet));
 					return "unknown";
 				}
 				switch (bn_short_get(packet->u.file.h.type))
@@ -518,7 +518,7 @@ namespace pvpgn
 			case packet_class_udp:
 				if (packet_get_size(packet) < sizeof(t_udp_header))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len=%u)", packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len={})", packet_get_size(packet));
 					return "unknown";
 				}
 				switch (bn_int_get(packet->u.udp.h.type))
@@ -540,7 +540,7 @@ namespace pvpgn
 			case packet_class_d2game:
 				if (packet_get_size(packet) < sizeof(t_d2game_header))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len=%u)", packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len={})", packet_get_size(packet));
 					return "unknown";
 				}
 				switch (bn_byte_get(packet->u.d2game.h.type))
@@ -560,7 +560,7 @@ namespace pvpgn
 			case packet_class_w3route:
 				if (packet_get_size(packet) < sizeof(t_w3route_header))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len=%u)", packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len={})", packet_get_size(packet));
 					return "unknown";
 				}
 				switch (bn_short_get(packet->u.bnet.h.type))
@@ -586,7 +586,7 @@ namespace pvpgn
 				return "unknown";
 			}
 
-			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class %d", (int)packet->pclass);
+			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class {}", (int)packet->pclass);
 			return "unknown";
 
 		case packet_dir_from_server:
@@ -597,7 +597,7 @@ namespace pvpgn
 			case packet_class_bnet:
 				if (packet_get_size(packet) < sizeof(t_bnet_header))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len=%u)", packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len={})", packet_get_size(packet));
 					return "unknown";
 				}
 				switch (bn_short_get(packet->u.bnet.h.type))
@@ -758,7 +758,7 @@ namespace pvpgn
 			case packet_class_file:
 				if (packet_get_size(packet) < sizeof(t_file_header))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len=%u)", packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len={})", packet_get_size(packet));
 					return "unknown";
 				}
 				switch (bn_short_get(packet->u.file.h.type))
@@ -771,7 +771,7 @@ namespace pvpgn
 			case packet_class_udp:
 				if (packet_get_size(packet) < sizeof(t_udp_header))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len=%u)", packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len={})", packet_get_size(packet));
 					return "unknown";
 				}
 				switch (bn_int_get(packet->u.udp.h.type))
@@ -787,7 +787,7 @@ namespace pvpgn
 			case packet_class_d2game:
 				if (packet_get_size(packet) < sizeof(t_d2game_header))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len=%u)", packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len={})", packet_get_size(packet));
 					return "unknown";
 				}
 				switch (bn_byte_get(packet->u.d2game.h.type))
@@ -807,7 +807,7 @@ namespace pvpgn
 			case packet_class_w3route:
 				if (packet_get_size(packet) < sizeof(t_w3route_header))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len=%u)", packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "packet is shorter than header (len={})", packet_get_size(packet));
 					return "unknown";
 				}
 				switch (bn_short_get(packet->u.bnet.h.type))
@@ -836,11 +836,11 @@ namespace pvpgn
 				return "unknown";
 			}
 
-			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class %d", (int)packet->pclass);
+			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class {}", (int)packet->pclass);
 			return "unknown";
 		}
 
-		eventlog(eventlog_level_error, __FUNCTION__, "got unknown direction %d", (int)dir);
+		eventlog(eventlog_level_error, __FUNCTION__, "got unknown direction {}", (int)dir);
 		return "unknown";
 	}
 
@@ -858,7 +858,7 @@ namespace pvpgn
 		case packet_class_init:
 			if (type != CLIENT_INITCONN)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "init packet type 0x%08x is not valid", type);
+				eventlog(eventlog_level_error, __FUNCTION__, "init packet type 0x{:08} is not valid", type);
 				return -1;
 			}
 			return 0;
@@ -866,12 +866,12 @@ namespace pvpgn
 		case packet_class_bnet:
 			if (packet_get_size(packet)<sizeof(t_bnet_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "bnet packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "bnet packet is shorter than header (len={})", packet_get_size(packet));
 				return -1;
 			}
 			if (type>MAX_NORMAL_TYPE)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "bnet packet type 0x%08x is too large", type);
+				eventlog(eventlog_level_error, __FUNCTION__, "bnet packet type 0x{:08} is too large", type);
 				return -1;
 			}
 			bn_short_set(&packet->u.bnet.h.type, (unsigned short)type);
@@ -880,12 +880,12 @@ namespace pvpgn
 		case packet_class_file:
 			if (packet_get_size(packet)<sizeof(t_file_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "file packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "file packet is shorter than header (len={})", packet_get_size(packet));
 				return -1;
 			}
 			if (type>MAX_FILE_TYPE)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "file packet type 0x%08x is too large", type);
+				eventlog(eventlog_level_error, __FUNCTION__, "file packet type 0x{:08} is too large", type);
 				return -1;
 			}
 			bn_short_set(&packet->u.file.h.type, (unsigned short)type);
@@ -894,7 +894,7 @@ namespace pvpgn
 		case packet_class_udp:
 			if (packet_get_size(packet) < sizeof(t_udp_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "udp packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "udp packet is shorter than header (len={})", packet_get_size(packet));
 				return -1;
 			}
 			bn_int_set(&packet->u.udp.h.type, type);
@@ -903,7 +903,7 @@ namespace pvpgn
 		case packet_class_d2game:
 			if (packet_get_size(packet) < sizeof(t_d2game_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "d2game packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "d2game packet is shorter than header (len={})", packet_get_size(packet));
 				return -1;
 			}
 			bn_byte_set(&packet->u.d2game.h.type, type);
@@ -912,7 +912,7 @@ namespace pvpgn
 		case packet_class_d2gs:
 			if (packet_get_size(packet) < sizeof(t_d2cs_d2gs_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "d2gs packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "d2gs packet is shorter than header (len={})", packet_get_size(packet));
 				return -1;
 			}
 			bn_short_set(&packet->u.d2cs_d2gs.h.type, type);
@@ -921,7 +921,7 @@ namespace pvpgn
 		case packet_class_d2cs_bnetd:
 			if (packet_get_size(packet) < sizeof(t_d2cs_bnetd_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "d2cs_bnetd packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "d2cs_bnetd packet is shorter than header (len={})", packet_get_size(packet));
 				return -1;
 			}
 			bn_short_set(&packet->u.d2cs_bnetd.h.type, type);
@@ -930,7 +930,7 @@ namespace pvpgn
 		case packet_class_d2cs:
 			if (packet_get_size(packet) < sizeof(t_d2cs_client_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "d2cs packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "d2cs packet is shorter than header (len={})", packet_get_size(packet));
 				return -1;
 			}
 			bn_byte_set(&packet->u.d2cs_client.h.type, type);
@@ -939,7 +939,7 @@ namespace pvpgn
 		case packet_class_w3route:
 			if (packet_get_size(packet) < sizeof(t_w3route_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "w3route packet is shorter than header (len=%u)", packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "w3route packet is shorter than header (len={})", packet_get_size(packet));
 				return -1;
 			}
 			bn_short_set(&packet->u.w3route.h.type, (unsigned short)type);
@@ -954,7 +954,7 @@ namespace pvpgn
 			return 0;
 
 		default:
-			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class %d", (int)packet->pclass);
+			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class {}", (int)packet->pclass);
 			return -1;
 		}
 	}
@@ -1012,19 +1012,19 @@ namespace pvpgn
 											size = (unsigned int)bn_short_nget(packet->u.wolgameres.h.rngd_size);
 										//            if (size>MAX_WOL_GAMERES_PACKET_SIZE) { /* PELISH: Fix for bug but also disable WOL gameres */
 										if (size > MAX_PACKET_SIZE) {
-											// eventlog(eventlog_level_error,__FUNCTION__,"packet has bad size %u",size);
+											// eventlog(eventlog_level_error,__FUNCTION__,"packet has bad size {}",size);
 											return 0;
 										}
 		}
 			return size;
 		default:
-			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class %d", (int)packet->pclass);
+			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class {}", (int)packet->pclass);
 			return 0;
 		}
 
 		if (size > MAX_PACKET_SIZE)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "packet has bad size %u", size);
+			eventlog(eventlog_level_error, __FUNCTION__, "packet has bad size {}", size);
 			return 0;
 		}
 		return size;
@@ -1040,7 +1040,7 @@ namespace pvpgn
 		}
 		if (size > MAX_PACKET_SIZE)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got bad size %u", size);
+			eventlog(eventlog_level_error, __FUNCTION__, "got bad size {}", size);
 			return -1;
 		}
 
@@ -1049,7 +1049,7 @@ namespace pvpgn
 		case packet_class_init:
 			if (size != 0 && size != sizeof(t_client_initconn))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "invalid size %u for init packet", size);
+				eventlog(eventlog_level_error, __FUNCTION__, "invalid size {} for init packet", size);
 				return -1;
 			}
 			packet->len = size;
@@ -1057,7 +1057,7 @@ namespace pvpgn
 		case packet_class_bnet:
 			if (size != 0 && size < sizeof(t_bnet_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "invalid size %u for bnet packet", size);
+				eventlog(eventlog_level_error, __FUNCTION__, "invalid size {} for bnet packet", size);
 				return -1;
 			}
 			bn_short_set(&packet->u.bnet.h.size, size);
@@ -1065,7 +1065,7 @@ namespace pvpgn
 		case packet_class_file:
 			if (size != 0 && size < sizeof(t_file_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "invalid size %u for file packet", size);
+				eventlog(eventlog_level_error, __FUNCTION__, "invalid size {} for file packet", size);
 				return -1;
 			}
 			bn_short_set(&packet->u.file.h.size, size);
@@ -1073,7 +1073,7 @@ namespace pvpgn
 		case packet_class_udp:
 			if (size != 0 && size < sizeof(t_udp_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "invalid size %u for udp packet", size);
+				eventlog(eventlog_level_error, __FUNCTION__, "invalid size {} for udp packet", size);
 				return -1;
 			}
 			packet->len = size;
@@ -1096,7 +1096,7 @@ namespace pvpgn
 		case packet_class_w3route:
 			if (size != 0 && size < sizeof(t_w3route_header))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "invalid size %u for w3route packet", size);
+				eventlog(eventlog_level_error, __FUNCTION__, "invalid size {} for w3route packet", size);
 				return -1;
 			}
 			bn_short_set(&packet->u.w3route.h.size, size);
@@ -1106,7 +1106,7 @@ namespace pvpgn
 			packet->len = size;
 			return 0;
 		default:
-			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class %d", (int)packet->pclass);
+			eventlog(eventlog_level_error, __FUNCTION__, "packet has invalid class {}", (int)packet->pclass);
 			return -1;
 		}
 	}
@@ -1145,7 +1145,7 @@ namespace pvpgn
 		case packet_class_wolgameres:
 			return sizeof(t_wolgameres_header);
 		default:
-			eventlog(eventlog_level_error, __FUNCTION__, "packet has bad class %d", (int)packet_get_class(packet));
+			eventlog(eventlog_level_error, __FUNCTION__, "packet has bad class {}", (int)packet_get_class(packet));
 			return MAX_PACKET_SIZE;
 		}
 	}
@@ -1330,7 +1330,7 @@ namespace pvpgn
 		size = (unsigned int)packet_get_size(packet);
 		if (offset >= size || (((offset >= MAX_PACKET_SIZE) && (packet->pclass != packet_class_wolgameres)) || (offset >= MAX_WOL_GAMERES_PACKET_SIZE)))
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got bad offset %u for packet size %u", offset, size);
+			eventlog(eventlog_level_error, __FUNCTION__, "got bad offset {} for packet size {}", offset, size);
 			return NULL;
 		}
 
@@ -1350,7 +1350,7 @@ namespace pvpgn
 		size = (unsigned int)packet_get_size(packet);
 		if (offset >= size || (((offset >= MAX_PACKET_SIZE) && (packet->pclass != packet_class_wolgameres)) || (offset >= MAX_WOL_GAMERES_PACKET_SIZE)))
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got bad offset %u for packet size %u", offset, size);
+			eventlog(eventlog_level_error, __FUNCTION__, "got bad offset {} for packet size {}", offset, size);
 			return NULL;
 		}
 
@@ -1368,7 +1368,7 @@ namespace pvpgn
 
 		if (((offset >= MAX_PACKET_SIZE) && (packet->pclass != packet_class_wolgameres)) || (offset >= MAX_WOL_GAMERES_PACKET_SIZE))
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got bad offset %u for packet", offset);
+			eventlog(eventlog_level_error, __FUNCTION__, "got bad offset {} for packet", offset);
 			return NULL;
 		}
 
@@ -1390,7 +1390,7 @@ namespace pvpgn
 		size = (unsigned int)packet_get_size(packet);
 		if (offset >= size)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got bad offset %u for packet size %u", offset, size);
+			eventlog(eventlog_level_error, __FUNCTION__, "got bad offset {} for packet size {}", offset, size);
 			return NULL;
 		}
 
@@ -1420,7 +1420,7 @@ namespace pvpgn
 		size = (unsigned int)packet_get_size(packet);
 		if (offset + len>size)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got bad offset %u and length %u for packet size %u", offset, len, size);
+			eventlog(eventlog_level_error, __FUNCTION__, "got bad offset {} and length {} for packet size {}", offset, len, size);
 			return NULL;
 		}
 

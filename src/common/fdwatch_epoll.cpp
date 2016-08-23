@@ -52,7 +52,7 @@ namespace pvpgn
 	int
 		FDWEpollBackend::add(int idx, unsigned rw)
 	{
-			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d rw: %d", fd, rw);
+			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: {} rw: {}", fd, rw);
 
 			struct epoll_event tmpev;
 			std::memset(&tmpev, 0, sizeof(tmpev));
@@ -76,7 +76,7 @@ namespace pvpgn
 	int
 		FDWEpollBackend::del(int idx)
 	{
-			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd);
+			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: {}", fd);
 			if (sr > 0)
 				ERROR0("BUG: called while still handling sockets");
 
@@ -106,7 +106,7 @@ namespace pvpgn
 			//    eventlog(eventlog_level_trace, __FUNCTION__, "called");
 			for (struct epoll_event *ev = epevents.get(); sr; sr--, ev++)
 			{
-				//      eventlog(eventlog_level_trace, __FUNCTION__, "checking %d ident: %d read: %d write: %d", i, kqevents[i].ident, kqevents[i].filter & EVFILT_READ, kqevents[i].filter & EVFILT_WRITE);
+				//      eventlog(eventlog_level_trace, __FUNCTION__, "checking {} ident: {} read: {} write: {}", i, kqevents[i].ident, kqevents[i].filter & EVFILT_READ, kqevents[i].filter & EVFILT_WRITE);
 				t_fdwatch_fd *cfd = fdw_fds + ev->data.fd;
 
 				if (fdw_rw(cfd) & fdwatch_type_read && ev->events & (EPOLLIN | EPOLLERR | EPOLLHUP))

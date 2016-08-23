@@ -94,17 +94,17 @@ namespace pvpgn
 					vm.load_file(files[i].c_str());
 
 					std::snprintf(_msgtemp, sizeof(_msgtemp), "%s", files[i].c_str());
-					eventlog(eventlog_level_info, __FUNCTION__, "%s", _msgtemp);
+					eventlog(eventlog_level_info, __FUNCTION__, "{}", _msgtemp);
 				}
 
 				_register_functions();
 
 				std::snprintf(_msgtemp, sizeof(_msgtemp), "Lua sripts were successfully loaded (%zu files)", files.size());
-				eventlog(eventlog_level_info, __FUNCTION__, "%s", _msgtemp);
+				eventlog(eventlog_level_info, __FUNCTION__, "{}", _msgtemp);
 			}
 			catch (const std::exception& e)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+				eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 			}
 			catch (...)
 			{
@@ -340,7 +340,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+				eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 			}
 			catch (...)
 			{
@@ -401,7 +401,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+				eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 			}
 			catch (...)
 			{
@@ -447,7 +447,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+				eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 			}
 			catch (...)
 			{
@@ -493,7 +493,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+				eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 			}
 			catch (...)
 			{
@@ -544,7 +544,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+				eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 			}
 			catch (...)
 			{
@@ -567,7 +567,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+				eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 			}
 			catch (...)
 			{
@@ -601,7 +601,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+				eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 			}
 			catch (...)
 			{
@@ -623,7 +623,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+				eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 			}
 			catch (...)
 			{
@@ -645,7 +645,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+				eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 			}
 			catch (...)
 			{

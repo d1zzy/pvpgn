@@ -76,7 +76,7 @@ namespace pvpgn
 				_filename = i18n_filename(filename, languages[i]);
 				if (!(hfd_list[languages[i]] = std::fopen(_filename, "r")))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "could not open help file \"%s\" for reading (std::fopen: %s)", _filename, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not open help file \"{}\" for reading (std::fopen: {})", _filename, std::strerror(errno));
 					xfree((void*)_filename);
 					return -1;
 				}
@@ -95,7 +95,7 @@ namespace pvpgn
 				if (it->second != NULL)
 				{
 					if (std::fclose(it->second) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not close help file after reading (std::fclose: %s)", std::strerror(errno));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not close help file after reading (std::fclose: {})", std::strerror(errno));
 					it->second = NULL;
 				}
 			}

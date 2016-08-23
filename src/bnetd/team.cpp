@@ -73,7 +73,7 @@ namespace pvpgn
 			{
 				if (!(team->members[i] = accountlist_find_account_by_uid(team->teammembers[i])))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "at least one non-existant member (id %d) in team %u - discarding team", team->teammembers[i], team->teamid);
+					eventlog(eventlog_level_error, __FUNCTION__, "at least one non-existant member (id {}) in team {} - discarding team", team->teammembers[i], team->teamid);
 					//FIXME: delete team file now???
 					return team->teamid; //we return teamid even though we have an error, we don't want unintentional overwriting
 				}
@@ -455,7 +455,7 @@ namespace pvpgn
 
 			mylevel = team->level; //get teams level
 			if (mylevel > W3_XPCALC_MAXLEVEL) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid level: %d", mylevel);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid level: {}", mylevel);
 				return -1;
 			}
 
@@ -471,7 +471,7 @@ namespace pvpgn
 			case W3_GAMERESULT_LOSS:
 				ladder_war3_xpdiff(opponlevel, mylevel, &placeholder, &xpdiff); break;
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid game result: %d", gameresult);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid game result: {}", gameresult);
 				return -1;
 			}
 
@@ -495,7 +495,7 @@ namespace pvpgn
 			if (mylevel < 1) mylevel = 1;
 
 			if (mylevel > W3_XPCALC_MAXLEVEL) {
-				eventlog(eventlog_level_error, "account_set_sololevel", "got invalid level: %d", mylevel);
+				eventlog(eventlog_level_error, "account_set_sololevel", "got invalid level: {}", mylevel);
 				return -1;
 			}
 
@@ -520,7 +520,7 @@ namespace pvpgn
 			}
 
 			//added for better tracking down of problems with gameresults
-			eventlog(eventlog_level_trace, __FUNCTION__, "parsing game result for team: %u result: %s", team_get_teamid(team), (result == W3_GAMERESULT_WIN) ? "WIN" : "LOSS");
+			eventlog(eventlog_level_trace, __FUNCTION__, "parsing game result for team: {} result: {}", team_get_teamid(team), (result == W3_GAMERESULT_WIN) ? "WIN" : "LOSS");
 
 
 			if (result == W3_GAMERESULT_WIN)

@@ -186,7 +186,7 @@ namespace pvpgn
 					}
 				}
 
-				if (cnt) DEBUG2("notified %d friends about %s", cnt, myusername);
+				if (cnt) DEBUG2("notified {} friends about {}", cnt, myusername);
 
 				/* watchlist handling */
 				switch (event)
@@ -230,7 +230,7 @@ namespace pvpgn
 				case Watch::ET_leavegame:
 					return dispatch_whisper(who, gamename, clienttag, event);
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "got unknown event %u", (unsigned int)event);
+					eventlog(eventlog_level_error, __FUNCTION__, "got unknown event {}", (unsigned int)event);
 					return -1;
 				}
 				return 0;

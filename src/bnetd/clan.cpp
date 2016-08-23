@@ -428,7 +428,7 @@ namespace pvpgn
 				return -1;
 			offset = sizeof(packet->u.client_clan_motdchg);
 			motd = packet_get_str_const(packet, offset, CLAN_MOTD_MAX);
-			eventlog(eventlog_level_trace, __FUNCTION__, "[%d] got W3XP_CLAN_MOTDCHG packet : %s", conn_get_socket(c), motd);
+			eventlog(eventlog_level_trace, __FUNCTION__, "[{}] got W3XP_CLAN_MOTDCHG packet : {}", conn_get_socket(c), motd);
 			if (clan_set_motd(clan, motd) != 0)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "Failed to set clan motd.");
@@ -831,7 +831,7 @@ namespace pvpgn
 						eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 						continue;
 					}
-					eventlog(eventlog_level_trace, __FUNCTION__, "trace %d", clan->clanid);
+					eventlog(eventlog_level_trace, __FUNCTION__, "trace {}", clan->clanid);
 					if (clan->created && (clan->clanid == cid))
 						return clan;
 				}

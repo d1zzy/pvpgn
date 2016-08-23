@@ -58,7 +58,7 @@ namespace pvpgn
 			struct cdb_make cdbm;
 
 			if ((cdbfile = std::fopen(filename, "w+b")) == NULL) {
-				eventlog(eventlog_level_error, __FUNCTION__, "unable to open file \"%s\" for writing ", filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "unable to open file \"{}\" for writing ", filename);
 				return -1;
 			}
 
@@ -69,20 +69,20 @@ namespace pvpgn
 
 				if (attr_get_key(attr) && attr_get_val(attr)) {
 					if (std::strncmp("BNET\\CharacterDefault\\", attr_get_key(attr), 20) == 0) {
-						eventlog(eventlog_level_debug, __FUNCTION__, "skipping attribute key=\"%s\"", attr_get_key(attr));
+						eventlog(eventlog_level_debug, __FUNCTION__, "skipping attribute key=\"{}\"", attr_get_key(attr));
 					}
 					else {
-						eventlog(eventlog_level_debug, __FUNCTION__, "saving attribute key=\"%s\" val=\"%s\"", attr_get_key(attr), attr_get_val(attr));
+						eventlog(eventlog_level_debug, __FUNCTION__, "saving attribute key=\"{}\" val=\"{}\"", attr_get_key(attr), attr_get_val(attr));
 						if (cdb_make_add(&cdbm, attr_get_key(attr), std::strlen(attr_get_key(attr)), attr_get_val(attr), std::strlen(attr_get_val(attr))) < 0)
 						{
-							eventlog(eventlog_level_error, __FUNCTION__, "got error on cdb_make_add ('%s' = '%s')", attr_get_key(attr), attr_get_val(attr));
+							eventlog(eventlog_level_error, __FUNCTION__, "got error on cdb_make_add ('{}' = '{}')", attr_get_key(attr), attr_get_val(attr));
 							cdb_make_finish(&cdbm); /* try to bail out nicely */
 							std::fclose(cdbfile);
 							return -1;
 						}
 					}
 				}
-				else eventlog(eventlog_level_error, __FUNCTION__, "could not save attribute key=\"%s\"", attr_get_key(attr));
+				else eventlog(eventlog_level_error, __FUNCTION__, "could not save attribute key=\"{}\"", attr_get_key(attr));
 
 				attr_clear_dirty(attr);
 			}
@@ -167,7 +167,7 @@ namespace pvpgn
 			std::FILE *f;
 
 			if ((f = std::fopen(filename, "rb")) == NULL) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got error opening file '%s'", filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "got error opening file '{}'", filename);
 				return -1;
 			}
 
@@ -191,7 +191,7 @@ namespace pvpgn
 
 				//	eventlog(eventlog_level_trace, __FUNCTION__, "read atribute : '%s' -> '%s'", key, val);
 				if (cb(key, val, data))
-					eventlog(eventlog_level_error, __FUNCTION__, "got error from callback on account file '%s'", filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "got error from callback on account file '{}'", filename);
 				xfree((void *)key);
 			}
 
@@ -220,14 +220,14 @@ namespace pvpgn
 			char	*val;
 			unsigned	vlen = 1;
 
-			//    eventlog(eventlog_level_trace, __FUNCTION__, "reading key '%s'", key);
+			//    eventlog(eventlog_level_trace, __FUNCTION__, "reading key '{}'", key);
 			if ((cdbfile = std::fopen(filename, "rb")) == NULL) {
-				//	eventlog(eventlog_level_debug, __FUNCTION__, "unable to open file \"%s\" for reading ",filename);
+				//	eventlog(eventlog_level_debug, __FUNCTION__, "unable to open file \"{}\" for reading ",filename);
 				return NULL;
 			}
 
 			if (cdb_seek(cdbfile, key, std::strlen(key), &vlen) <= 0) {
-				//	eventlog(eventlog_level_debug, __FUNCTION__, "could not find key '%s'", key);
+				//	eventlog(eventlog_level_debug, __FUNCTION__, "could not find key '{}'", key);
 			std:; std::fclose(cdbfile);
 				return NULL;
 			}
@@ -244,7 +244,7 @@ namespace pvpgn
 
 			attr->val = val;
 			attr->dirty = 0;
-			//    eventlog(eventlog_level_trace, __FUNCTION__, "read key '%s' value '%s'", attr->key, attr->val);
+			//    eventlog(eventlog_level_trace, __FUNCTION__, "read key '{}' value '{}'", attr->key, attr->val);
 			return attr;
 #else
 			return NULL;

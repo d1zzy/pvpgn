@@ -54,7 +54,7 @@ namespace pvpgn
 
 			date->tm_mon = std::atoi(buff) - 1;
 			if ((date->tm_mon<0) || (date->tm_mon>11)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "found invalid month (%i) in news date. (format: {MM/DD/YYYY}) on line %u", date->tm_mon, line);
+				eventlog(eventlog_level_error, __FUNCTION__, "found invalid month ({}) in news date. (format: {MM/DD/YYYY}) on line {}", date->tm_mon, line);
 			}
 
 			buff = p + 1;
@@ -63,7 +63,7 @@ namespace pvpgn
 
 			date->tm_mday = std::atoi(buff);
 			if ((date->tm_mday<1) || (date->tm_mday>31)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "found invalid month day (%i) in news date. (format: {MM/DD/YYYY}) on line %u", date->tm_mday, line);
+				eventlog(eventlog_level_error, __FUNCTION__, "found invalid month day ({}) in news date. (format: {MM/DD/YYYY}) on line {}", date->tm_mday, line);
 				return -1;
 			}
 
@@ -74,7 +74,7 @@ namespace pvpgn
 			date->tm_year = std::atoi(buff) - 1900;
 			if (date->tm_year > 137) //limited due to 32bit t_time
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "found invalid year (%i) (>2037) in news date.  on line %u", date->tm_year + 1900, line);
+				eventlog(eventlog_level_error, __FUNCTION__, "found invalid year ({}) (>2037) in news date.  on line {}", date->tm_year + 1900, line);
 				return -1;
 			}
 
@@ -162,7 +162,7 @@ namespace pvpgn
 
 				if (buff[0] == '{') {
 					if (_news_parsetime(buff + 1, &date, line)) {
-						eventlog(eventlog_level_error, __FUNCTION__, "error parsing news date on line %u", line);
+						eventlog(eventlog_level_error, __FUNCTION__, "error parsing news date on line {}", line);
 						xfree((void*)ENfilename);
 						return -1;
 					}
@@ -174,7 +174,7 @@ namespace pvpgn
 						ni->date = std::mktime(&date);
 					else {
 						ni->date = std::time(NULL);
-						eventlog(eventlog_level_warn, __FUNCTION__, "(first) news entry seems to be missing a timestamp, please check your news file on line %u", line);
+						eventlog(eventlog_level_warn, __FUNCTION__, "(first) news entry seems to be missing a timestamp, please check your news file on line {}", line);
 					}
 					_news_insert_index(ni, buff, len, date_set);
 					date_set = 2;

@@ -105,7 +105,7 @@ namespace pvpgn
 				return -1;
 
 			if ((user = tournament_get_user(account))) {
-				eventlog(eventlog_level_info, __FUNCTION__, "user \"%s\" already signed up in tournament", account_get_name(account));
+				eventlog(eventlog_level_info, __FUNCTION__, "user \"{}\" already signed up in tournament", account_get_name(account));
 				return 0;
 			}
 
@@ -119,7 +119,7 @@ namespace pvpgn
 
 			list_prepend_data(tournament_head, user);
 
-			eventlog(eventlog_level_info, __FUNCTION__, "added user \"%s\" to tournament", account_get_name(account));
+			eventlog(eventlog_level_info, __FUNCTION__, "added user \"{}\" to tournament", account_get_name(account));
 			return 0;
 		}
 
@@ -263,27 +263,27 @@ namespace pvpgn
 		{
 			if (*mon > 12)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid month (%u) in %s", *mon, caller);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid month ({}) in {}", *mon, caller);
 				*mon = 12;
 			}
 			if (*mday > 31)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid mday (%u) in %s", *mday, caller);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid mday ({}) in {}", *mday, caller);
 				*mday = 31;
 			}
 			if (*hour > 23)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid hour (%u) from %s", *hour, caller);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid hour ({}) from {}", *hour, caller);
 				*hour = 23;
 			}
 			if (*min > 59)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid min (%u) from %s", *min, caller);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid min ({}) from {}", *min, caller);
 				*min = 59;
 			}
 			if (*sec > 59)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid sec (%u) from %s", *sec, caller);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid sec ({}) from {}", *sec, caller);
 				*sec = 59;
 			}
 			return;
@@ -330,7 +330,7 @@ namespace pvpgn
 			}
 
 			if (!(fp = std::fopen(filename, "r"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				xfree((void *)timestamp);
 				return -1;
 			}
@@ -387,7 +387,7 @@ namespace pvpgn
 						mname = xstrdup(mapname);
 
 						anongame_add_tournament_map(ctag, mname);
-						eventlog(eventlog_level_trace, __FUNCTION__, "added tournament map \"%s\" for %s", mname, clienttag);
+						eventlog(eventlog_level_trace, __FUNCTION__, "added tournament map \"{}\" for {}", mname, clienttag);
 						xfree(mname);
 					}
 				}
@@ -637,7 +637,7 @@ namespace pvpgn
 						tournament_info->thumbs_down = std::atoi(pointer);
 					}
 					else
-						eventlog(eventlog_level_error, __FUNCTION__, "bad option \"%s\" in \"%s\"", variable, filename);
+						eventlog(eventlog_level_error, __FUNCTION__, "bad option \"{}\" in \"{}\"", variable, filename);
 
 					if (have_sponsor && have_icon) {
 						sponsor = (char*)xmalloc(std::strlen(have_sponsor) + 6);

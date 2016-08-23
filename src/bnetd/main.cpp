@@ -37,7 +37,7 @@
 #endif
 #ifdef WIN32_GUI
 # include "common/gui_printf.h"
-# define printf gui_printf
+# define printf gui_lvprintf
 #endif
 
 #include "compat/stdfileno.h"
@@ -195,7 +195,7 @@ int eventlog_startup(void)
 		tok = std::strtok(temp, ","); /* std::strtok modifies the string it is passed */
 		while (tok) {
 			if (eventlog_add_level(tok) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::log level \"%s\"", tok);
+				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::log level \"{}\"", tok);
 			tok = std::strtok(NULL, ",");
 		}
 		xfree(temp);
@@ -209,14 +209,14 @@ int eventlog_startup(void)
 
 	if (eventlog_open(prefs_get_logfile()) < 0) {
 		if (prefs_get_logfile()) {
-			eventlog(eventlog_level_fatal, __FUNCTION__, "could not use file \"%s\" for the eventlog (exiting)", prefs_get_logfile());
+			eventlog(eventlog_level_fatal, __FUNCTION__, "could not use file \"{}\" for the eventlog (exiting)", prefs_get_logfile());
 		}
 		else {
-			eventlog(eventlog_level_fatal, __FUNCTION__, "no logfile specified in configuration file \"%s\" (exiting)", cmdline_get_preffile());
+			eventlog(eventlog_level_fatal, __FUNCTION__, "no logfile specified in configuration file \"{}\" (exiting)", cmdline_get_preffile());
 		}
 		return -1;
 	}
-	eventlog(eventlog_level_info, __FUNCTION__, "logging event levels: %s", prefs_get_loglevels());
+	eventlog(eventlog_level_info, __FUNCTION__, "logging event levels: {}", prefs_get_loglevels());
 	return 0;
 }
 
@@ -227,13 +227,13 @@ int fork_bnetd(int foreground)
 
 	if (!foreground) {
 		if (chdir("/") < 0) {
-			eventlog(eventlog_level_error, __FUNCTION__, "could not change working directory to / (chdir: %s)", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not change working directory to / (chdir: {})", std::strerror(errno));
 			return -1;
 		}
 
 		switch ((pid = fork())) {
 		case -1:
-			eventlog(eventlog_level_error, __FUNCTION__, "could not fork (fork: %s)", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not fork (fork: {})", std::strerror(errno));
 			return -1;
 		case 0: /* child */
 			break;
@@ -247,26 +247,26 @@ int fork_bnetd(int foreground)
 #endif
 # ifdef HAVE_SETPGID
 		if (setpgid(0, 0) < 0) {
-			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgid: %s)", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgid: {})", std::strerror(errno));
 			return -1;
 		}
 # else
 #  ifdef HAVE_SETPGRP
 #   ifdef SETPGRP_VOID
 		if (setpgrp() < 0) {
-			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgrp: %s)", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgrp: {})", std::strerror(errno));
 			return -1;
 		}
 #   else
 		if (setpgrp(0, 0) < 0) {
-			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgrp: %s)", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgrp: {})", std::strerror(errno));
 			return -1;
 		}
 #   endif
 #  else
 #   ifdef HAVE_SETSID
 		if (setsid() < 0) {
-			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setsid: %s)", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setsid: {})", std::strerror(errno));
 			return -1;
 		}
 #   else
@@ -295,14 +295,14 @@ char * write_to_pidfile(void)
 		std::FILE * fp;
 
 		if (!(fp = std::fopen(pidfile, "w"))) {
-			eventlog(eventlog_level_error, __FUNCTION__, "unable to open pid file \"%s\" for writing (std::fopen: %s)", pidfile, std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "unable to open pid file \"{}\" for writing (std::fopen: {})", pidfile, std::strerror(errno));
 			xfree((void *)pidfile); /* avoid warning */
 			return NULL;
 		}
 		else {
 			std::fprintf(fp, "%u", (unsigned int)getpid());
 			if (std::fclose(fp) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close pid file \"%s\" after writing (std::fclose: %s)", pidfile, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close pid file \"{}\" after writing (std::fclose: {})", pidfile, std::strerror(errno));
 		}
 #else
 		eventlog(eventlog_level_warn, __FUNCTION__, "no getpid() std::system call, disable pid file in bnetd.conf");
@@ -335,7 +335,7 @@ int pre_server_startup(void)
 	}
 	if (support_check_files(prefs_get_supportfile()) < 0) {
 		eventlog(eventlog_level_error, "pre_server_startup", "some needed files are missing");
-		eventlog(eventlog_level_error, "pre_server_startup", "please make sure you installed the supportfiles in %s", prefs_get_filedir());
+		eventlog(eventlog_level_error, "pre_server_startup", "please make sure you installed the supportfiles in {}", prefs_get_filedir());
 		return STATUS_SUPPORT_FAILURE;
 	}
 	if (anongame_maplists_create() < 0) {
@@ -376,7 +376,7 @@ int pre_server_startup(void)
 	}
 	catch (const std::exception& e)
 	{
-		eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+		eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 	}
 
 	if (autoupdate_load(prefs_get_mpqfile()) < 0)
@@ -480,7 +480,7 @@ void post_server_shutdown(int status)
 	case -1:
 		break;
 	default:
-		eventlog(eventlog_level_error, __FUNCTION__, "got bad status \"%d\" during shutdown", status);
+		eventlog(eventlog_level_error, __FUNCTION__, "got bad status \"{}\" during shutdown", status);
 	}
 	return;
 }
@@ -488,7 +488,7 @@ void post_server_shutdown(int status)
 void pvpgn_greeting()
 {
 #ifdef HAVE_GETPID
-	eventlog(eventlog_level_info, __FUNCTION__, PVPGN_SOFTWARE " " PVPGN_VERSION " process %d", static_cast<int>(getpid()));
+	eventlog(eventlog_level_info, __FUNCTION__, PVPGN_SOFTWARE " " PVPGN_VERSION " process {}", getpid());
 #else
 	eventlog(eventlog_level_info, __FUNCTION__, PVPGN_SOFTWARE" version "PVPGN_VERSION);
 #endif
@@ -496,19 +496,19 @@ void pvpgn_greeting()
 	struct utsname utsbuf = {};
 	if (uname(&utsbuf) == 0)
 	{
-		eventlog(eventlog_level_info, __FUNCTION__, "running on %s (%s %s, %s)", utsbuf.sysname, utsbuf.version, utsbuf.release, utsbuf.machine);
+		eventlog(eventlog_level_info, __FUNCTION__, "running on {} ({} {}, {})", utsbuf.sysname, utsbuf.version, utsbuf.release, utsbuf.machine);
 	}
 	else
 	{
 		eventlog(eventlog_level_info, __FUNCTION__, "uname() failed");
 	}
 
-	printf("You are currently running " PVPGN_SOFTWARE " " PVPGN_VERSION "\n");
-	printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
-	printf("If you need support:\n");
-	printf(" * Create an issue at https://github.com/pvpgn/pvpgn-server\n");
-	printf("\nServer is now running.\n");
-	printf("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+	printf(eventlog_level_info, "You are currently running " PVPGN_SOFTWARE " " PVPGN_VERSION "\n");
+	printf(eventlog_level_info, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
+	printf(eventlog_level_info, "If you need support:\n");
+	printf(eventlog_level_info, " * Create an issue at https://github.com/pvpgn/pvpgn-server\n");
+	printf(eventlog_level_info, "\nServer is now running.\n");
+	printf(eventlog_level_info, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n");
 
 	return;
 }
@@ -556,7 +556,7 @@ extern int main(int argc, char ** argv)
 
 		if (cmdline_get_hexfile()) {
 			if (!(hexstrm = std::fopen(cmdline_get_hexfile(), "w")))
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for writing the hexdump (std::fopen: %s)", cmdline_get_hexfile(), std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for writing the hexdump (std::fopen: {})", cmdline_get_hexfile(), std::strerror(errno));
 			else
 				std::fprintf(hexstrm, "# dump generated by " PVPGN_SOFTWARE " version " PVPGN_VERSION "\n");
 		}
@@ -577,13 +577,13 @@ extern int main(int argc, char ** argv)
 		if (hexstrm) {
 			std::fprintf(hexstrm, "# end of dump\n");
 			if (std::fclose(hexstrm) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close hexdump file \"%s\" after writing (std::fclose: %s)", cmdline_get_hexfile(), std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close hexdump file \"{}\" after writing (std::fclose: {})", cmdline_get_hexfile(), std::strerror(errno));
 		}
 
 		// Delete pidfile
 		if (pidfile) {
 			if (std::remove(pidfile) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not remove pid file \"%s\" (std::remove: %s)", pidfile, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not remove pid file \"{}\" (std::remove: {})", pidfile, std::strerror(errno));
 			xfree((void *)pidfile); /* avoid warning */
 		}
 

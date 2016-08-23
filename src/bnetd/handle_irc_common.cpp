@@ -239,7 +239,7 @@ namespace pvpgn
 				first = 0;
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "[%d] got \"%s\" \"%s\" [%s] \"%s\"", conn_get_socket(conn), ((prefix) ? (prefix) : ("")), command, paramtemp, ((text) ? (text) : ("")));
+			eventlog(eventlog_level_debug, __FUNCTION__, "[{}] got \"{}\" \"{}\" [{}] \"{}\"", conn_get_socket(conn), ((prefix) ? (prefix) : ("")), command, paramtemp, ((text) ? (text) : ("")));
 
 			if (conn_get_class(conn) == conn_class_ircinit) {
 				handle_irc_common_set_class(conn, command, numparams, params, text);
@@ -331,10 +331,10 @@ namespace pvpgn
 						ircline[ircpos++] = data[i];
 					else {
 						ircpos++; /* for the statistic :) */
-						eventlog(eventlog_level_warn, __FUNCTION__, "[%d] client exceeded maximum allowed message length by %d characters", conn_get_socket(conn), ircpos - MAX_IRC_MESSAGE_LEN);
+						eventlog(eventlog_level_warn, __FUNCTION__, "[{}] client exceeded maximum allowed message length by {} characters", conn_get_socket(conn), ircpos - MAX_IRC_MESSAGE_LEN);
 						if (ircpos > 100 + MAX_IRC_MESSAGE_LEN) {
 							/* automatic flood protection */
-							eventlog(eventlog_level_error, __FUNCTION__, "[%d] excess flood", conn_get_socket(conn));
+							eventlog(eventlog_level_error, __FUNCTION__, "[{}] excess flood", conn_get_socket(conn));
 							return -1;
 						}
 					}

@@ -58,7 +58,7 @@ namespace pvpgn
 	int
 		FDWSelectBackend::add(int idx, unsigned rw)
 	{
-			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d rw: %d", fd, rw);
+			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: {} rw: {}", fd, rw);
 			int fd = fdw_fd(fdw_fds + idx);
 
 			/* select() interface is limited by FD_SETSIZE max socket value */
@@ -77,7 +77,7 @@ namespace pvpgn
 		FDWSelectBackend::del(int idx)
 	{
 			int fd = fdw_fd(fdw_fds + idx);
-			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd);
+			//    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: {}", fd);
 			if (sr > 0)
 				ERROR0("BUG: called while still handling sockets");
 			PSOCK_FD_CLR(fd, trfds.get());
@@ -116,7 +116,7 @@ namespace pvpgn
 	int
 		FDWSelectBackend::cb(t_fdwatch_fd* cfd)
 	{
-			//    eventlog(eventlog_level_trace, __FUNCTION__, "idx: %d fd: %d", idx, fdw_fd->fd);
+			//    eventlog(eventlog_level_trace, __FUNCTION__, "idx: {} fd: {}", idx, fdw_fd->fd);
 			if (fdw_rw(cfd) & fdwatch_type_read && PSOCK_FD_ISSET(fdw_fd(cfd), rfds.get())
 				&& fdw_hnd(cfd)(fdw_data(cfd), fdwatch_type_read) == -2) return 0;
 			if (fdw_rw(cfd) & fdwatch_type_write && PSOCK_FD_ISSET(fdw_fd(cfd), wfds.get()))
@@ -128,7 +128,7 @@ namespace pvpgn
 	void
 		FDWSelectBackend::handle()
 	{
-			//    eventlog(eventlog_level_trace, __FUNCTION__, "called nofds: %d", fdw_nofds);
+			//    eventlog(eventlog_level_trace, __FUNCTION__, "called nofds: {}", fdw_nofds);
 			fdwatch_traverse(fdw_select_cb, this);
 			sr = 0;
 		}

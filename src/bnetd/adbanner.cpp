@@ -127,7 +127,7 @@ namespace pvpgn
 				}
 				catch (const std::runtime_error& e)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "Could not load ad: %s", e.what());
+					eventlog(eventlog_level_error, __FUNCTION__, "Could not load ad: {}", e.what());
 					continue;
 				}
 			}
@@ -205,7 +205,7 @@ namespace pvpgn
 			m_language(language)
 		{
 			char lang[5] = {};
-			eventlog(eventlog_level_info, __FUNCTION__, "Created ad id=0x%08zu filename=\"%s\" link=\"%s\" client=\"%s\" lang=\"%s\"", 
+			eventlog(eventlog_level_info, __FUNCTION__, "Created ad id=0x{:08} filename=\"{}\" link=\"{}\" client=\"{}\" lang=\"{}\"", 
 				id, filename.c_str(), url.c_str(), clienttag ? clienttag_uint_to_str(clienttag) : "NULL", 
 				language ? tag_uint_to_str(lang, language) : "NULL");
 		}

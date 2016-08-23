@@ -103,7 +103,7 @@ namespace pvpgn
 
 			list_append_data(anongame_wol_matchlist_head, player);
 
-			DEBUG1("[** WOL **] annongame player created: %s", conn_get_chatname(conn));
+			DEBUG1("[** WOL **] annongame player created: {}", conn_get_chatname(conn));
 
 			return player;
 		}
@@ -319,7 +319,7 @@ namespace pvpgn
 			std::string data(":matchbot!u@h " + std::string(command) + " " + std::string(nick) + " " + std::string(text));
 			data.erase(MAX_IRC_MESSAGE_LEN, std::string::npos);
 
-			DEBUG2("[%d] sent \"%s\"", conn_get_socket(conn), data.c_str());
+			DEBUG2("[{}] sent \"{}\"", conn_get_socket(conn), data.c_str());
 			data.append("\r\n");
 			packet_set_size(p, 0);
 			packet_append_data(p, data.c_str(), data.length());
@@ -424,7 +424,7 @@ namespace pvpgn
 							_send_msg(conn_pl2, "PRIVMSG", temp);
 						}
 						else
-							ERROR1("undefined channel type for %s channel", channelname);
+							ERROR1("undefined channel type for {} channel", channelname);
 					}
 						return 0;
 					case CLIENTTAG_YURISREV_UINT: {
@@ -488,7 +488,7 @@ namespace pvpgn
 														  _send_msg(conn_pl2, "PRIVMSG", temp);
 													  }
 													  else
-														  ERROR1("undefined channel type for %s channel", channelname);
+														  ERROR1("undefined channel type for {} channel", channelname);
 					}
 						return 0;
 					default:
@@ -562,7 +562,7 @@ namespace pvpgn
 						if (param)
 							*param++ = '\0';
 						if (anongame_wol_set_playersetting(player, tag, param) == -1)
-							WARN2("[** WOL **] got unknown tag %s param %s", tag, param);
+							WARN2("[** WOL **] got unknown tag {} param {}", tag, param);
 						temp = p;
 					}
 				}
@@ -570,7 +570,7 @@ namespace pvpgn
 				anongame_wol_trystart(player);
 			}
 			else {
-				DEBUG1("[** WOL **] got line /%s/", text);
+				DEBUG1("[** WOL **] got line /{}/", text);
 			}
 
 			if (line)

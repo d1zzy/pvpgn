@@ -124,7 +124,7 @@ namespace pvpgn
 
 		if (gettimeofday(&tv, NULL) < 0)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "could not get time (gettimeofday: %s)", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not get time (gettimeofday: {})", std::strerror(errno));
 			return time_to_bnettime(std::time(NULL), 0);
 		}
 		return time_to_bnettime((std::time_t)tv.tv_sec, tv.tv_usec);

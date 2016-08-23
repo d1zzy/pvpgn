@@ -71,7 +71,12 @@ namespace pvpgn
 			va_start(args, format);
 
 			if (stream == stderr || stream == stdout)
-				temp = gui_lvprintf(eventlog_level_error, format, args);
+			{
+				char buf[1024] = {};
+				std::vsnprintf(buf, sizeof buf, format, args);
+				gui_lvprintf(eventlog_level_error, "{}", buf);
+				temp = 1;
+			}
 			else
 				temp = vfprintf(stream, format, args);
 			

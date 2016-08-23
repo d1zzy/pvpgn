@@ -154,7 +154,7 @@ namespace pvpgn
 			}
 #ifdef RUNTIME_LIBS
 			if (mysql_load_dll()) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error loading library file \"%s\"", MYSQL_LIB);
+				eventlog(eventlog_level_error, __FUNCTION__, "error loading library file \"{}\"", MYSQL_LIB);
 				return -1;
 			}
 #endif
@@ -183,7 +183,7 @@ namespace pvpgn
 #endif
 
 			if (p_mysql_real_connect(mysql, host, user, pass, name, port ? atoi(port) : 0, socket, CLIENT_FOUND_ROWS) == NULL) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error connecting to database (db said: '%s')", p_mysql_error(mysql));
+				eventlog(eventlog_level_error, __FUNCTION__, "error connecting to database (db said: '{}')", p_mysql_error(mysql));
 				p_mysql_close(mysql);
 				return -1;
 			}
@@ -236,7 +236,7 @@ namespace pvpgn
 			}
 
 			if (p_mysql_query(mysql, query)) {
-				//        eventlog(eventlog_level_debug, __FUNCTION__, "got error from query (%s)", query);
+				//        eventlog(eventlog_level_debug, __FUNCTION__, "got error from query ({})", query);
 				return NULL;
 			}
 

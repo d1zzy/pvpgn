@@ -75,7 +75,7 @@ namespace pvpgn
 				else {
 					signal_data.exit_time -= d2dbs_prefs_get_shutdown_decr();
 				}
-				eventlog(eventlog_level_info, __FUNCTION__, "the server is going to shutdown in %lu minutes", (signal_data.exit_time - now) / 60);
+				eventlog(eventlog_level_info, __FUNCTION__, "the server is going to shutdown in {} minutes", (signal_data.exit_time - now) / 60);
 			}
 			if (signal_data.exit_time) {
 				now = std::time(NULL);
@@ -101,7 +101,7 @@ namespace pvpgn
 					while (tok)
 					{
 						if (eventlog_add_level(tok) < 0)
-							eventlog(eventlog_level_error, __FUNCTION__, "could not add std::log level \"%s\"", tok);
+							eventlog(eventlog_level_error, __FUNCTION__, "could not add std::log level \"{}\"", tok);
 						tok = std::strtok(NULL, ",");
 					}
 					xfree(temp);

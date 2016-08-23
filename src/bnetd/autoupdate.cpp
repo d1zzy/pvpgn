@@ -74,7 +74,7 @@ namespace pvpgn
 			}
 
 			if (!(fp = std::fopen(filename, "r"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				return -1;
 			}
 
@@ -99,23 +99,23 @@ namespace pvpgn
 
 				/* FIXME: use next_token instead of std::strtok */
 				if (!(archtag = std::strtok(buff, " \t"))) { /* std::strtok modifies the string it is passed */
-					eventlog(eventlog_level_error, __FUNCTION__, "missing archtag on line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing archtag on line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(clienttag = std::strtok(NULL, " \t"))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "missing clienttag on line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing clienttag on line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(versiontag = std::strtok(NULL, " \t"))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "missing versiontag on line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing versiontag on line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				if (!(updatefile = std::strtok(NULL, " \t"))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "missing updatefile on line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing updatefile on line {} of file \"{}\"", line, filename);
 					continue;
 				}
 				if ((!(path = std::strtok(NULL, " \t"))) && tag_check_wolv1(tag_str_to_uint(clienttag)) && tag_check_wolv2(tag_str_to_uint(clienttag))) { /* Only in WOL is needed to have path */
-					eventlog(eventlog_level_error, __FUNCTION__, "missing path on line %u of file \"%s\"", line, filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "missing path on line {} of file \"{}\"", line, filename);
 				}
 
 				entry = (t_autoupdate*)xmalloc(sizeof(t_autoupdate));
@@ -137,7 +137,7 @@ namespace pvpgn
 				else
 					entry->path = NULL;
 
-				eventlog(eventlog_level_debug, __FUNCTION__, "update '%s' version '%s' with file %s", clienttag, versiontag, updatefile);
+				eventlog(eventlog_level_debug, __FUNCTION__, "update '{}' version '{}' with file {}", clienttag, versiontag, updatefile);
 
 				list_append_data(autoupdate_head, entry);
 			}

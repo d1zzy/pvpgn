@@ -97,12 +97,12 @@ static int server_listen(void)
 		addr_set_data(curr_laddr,laddr_data);
 
 		if (fdwatch_add_fd(sock, fdwatch_type_read, d2cs_server_handle_accept, curr_laddr)<0) {
-		    eventlog(eventlog_level_error,__FUNCTION__,"error adding socket %d to fdwatch pool (max sockets?)",sock);
+		    eventlog(eventlog_level_error,__FUNCTION__,"error adding socket {} to fdwatch pool (max sockets?)",sock);
 		    psock_close(sock);
 		    return -1;
 		}
 
-		eventlog(eventlog_level_info,__FUNCTION__,"listen on %s", addr_num_to_addr_str(addr_get_ip(curr_laddr),addr_get_port(curr_laddr)));
+		eventlog(eventlog_level_info,__FUNCTION__,"listen on {}", addr_num_to_addr_str(addr_get_ip(curr_laddr),addr_get_port(curr_laddr)));
 	}
 	END_LIST_TRAVERSE_DATA()
 	return 0;
@@ -129,7 +129,7 @@ static int server_accept(int sock)
 	{
 		char addrstr[INET_ADDRSTRLEN] = { 0 };
 		inet_ntop(AF_INET, &(caddr.sin_addr), addrstr, sizeof(addrstr));
-		eventlog(eventlog_level_info, __FUNCTION__, "accept connection from %s", addrstr);
+		eventlog(eventlog_level_info, __FUNCTION__, "accept connection from {}", addrstr);
 	}
 
 	val=1;
@@ -149,7 +149,7 @@ static int server_accept(int sock)
 		eventlog(eventlog_level_warn,__FUNCTION__,"unable to get local socket info");
 	} else {
 		if (raddr.sin_family!=PSOCK_AF_INET) {
-			eventlog(eventlog_level_warn,__FUNCTION__,"got bad socket family %d",raddr.sin_family);
+			eventlog(eventlog_level_warn,__FUNCTION__,"got bad socket family {}",raddr.sin_family);
 		} else {
 			ip=ntohl(raddr.sin_addr.s_addr);
 			port=ntohs(raddr.sin_port);
@@ -161,7 +161,7 @@ static int server_accept(int sock)
 		return -1;
 	}
 	if (conn_add_fd(cc, fdwatch_type_read, d2cs_server_handle_tcp)<0) {
-		eventlog(eventlog_level_error,__FUNCTION__,"error adding socket %d to fdwatch pool (max sockets?)",csock);
+		eventlog(eventlog_level_error,__FUNCTION__,"error adding socket {} to fdwatch pool (max sockets?)",csock);
 		d2cs_conn_set_state(cc,conn_state_destroy);
 		return -1;
 	}
@@ -243,7 +243,7 @@ static int server_handle_socket(void)
 			    psock_errno()!=PSOCK_EINTR &&
 #endif
 			    1) {
-				eventlog(eventlog_level_error,__FUNCTION__,"select failed (select: %s)",pstrerror(psock_errno()));
+				eventlog(eventlog_level_error,__FUNCTION__,"select failed (select: {})",pstrerror(psock_errno()));
 				return -1;
 			}
 			/* fall through */

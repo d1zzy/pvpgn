@@ -36,7 +36,7 @@ namespace pvpgn
 		t_queue *  temp;
 		t_packet * packet;
 
-		//    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue %p", queue);
+		//    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue {:p}", queue);
 		if (!queue)
 		{
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL queue pointer");
@@ -48,12 +48,12 @@ namespace pvpgn
 		if (!temp || !temp->ulen)
 			return NULL;
 
-		//    eventlog(eventlog_level_debug, __FUNCTION__, "getting element from tail (%d/%d head/tail %d/%d)", temp->alen, temp->ulen, temp->head, temp->tail);
+		//    eventlog(eventlog_level_debug, __FUNCTION__, "getting element from tail ({}/{} head/tail {}/{})", temp->alen, temp->ulen, temp->head, temp->tail);
 		/* getting entry from tail and updating queue */
 		packet = temp->ring[temp->tail];
 		temp->tail = (temp->tail + 1) % temp->alen;
 		temp->ulen--;
-		//    eventlog(eventlog_level_debug, __FUNCTION__, "read %p element from tail (%d/%d head/tail %d/%d)", packet, temp->alen, temp->ulen, temp->head, temp->tail);
+		//    eventlog(eventlog_level_debug, __FUNCTION__, "read {:p} element from tail ({}/{} head/tail {}/{})", packet, temp->alen, temp->ulen, temp->head, temp->tail);
 
 		if (!packet)
 		{
@@ -69,7 +69,7 @@ namespace pvpgn
 	{
 		t_packet * packet;
 
-		//    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue %p", queue);
+		//    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue {:p}", queue);
 		if (!queue)
 		{
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL queue pointer");
@@ -95,7 +95,7 @@ namespace pvpgn
 		t_queue * temp;
 		void *ptr;
 
-		//    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue %p packet %p", queue, packet);
+		//    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue {:p} packet {:p}", queue, packet);
 		if (!queue)
 		{
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL queue pointer");
@@ -122,14 +122,14 @@ namespace pvpgn
 		if (temp->ulen == temp->alen) { /* ring queue is full, need to allocate some memory */
 			/* FIXME: find a solution
 				if (temp->alen)
-				eventlog(eventlog_level_error, __FUNCTION__, "queue is full (resizing) (oldsize: %u)", temp->alen);
+				eventlog(eventlog_level_error, __FUNCTION__, "queue is full (resizing) (oldsize: {})", temp->alen);
 				*/
 
 			ptr = xrealloc(temp->ring, sizeof(t_packet *)* (temp->alen + QUEUE_QUANTUM));
 			temp->ring = (t_packet **)ptr;
 			temp->alen += QUEUE_QUANTUM;
 
-			//	eventlog(eventlog_level_debug, __FUNCTION__, "queue new size %d/%d head/tail %d/%d", temp->alen, temp->ulen, temp->head, temp->tail);
+			//	eventlog(eventlog_level_debug, __FUNCTION__, "queue new size {}/{} head/tail {}/{}", temp->alen, temp->ulen, temp->head, temp->tail);
 			if (temp->head) {
 				unsigned moved;
 
@@ -151,13 +151,13 @@ namespace pvpgn
 
 		temp->head = (temp->head + 1) % temp->alen;
 		temp->ulen++;
-		//    eventlog(eventlog_level_debug, __FUNCTION__, "packet added (%d/%d head/tail %d/%d)", temp->alen, temp->ulen, temp->head, temp->tail);
+		//    eventlog(eventlog_level_debug, __FUNCTION__, "packet added ({}/{} head/tail {}/{})", temp->alen, temp->ulen, temp->head, temp->tail);
 	}
 
 
 	extern int queue_get_length(t_queue const * const * queue)
 	{
-		//    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue %p", queue);
+		//    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue {:p}", queue);
 		if (!queue)
 		{
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL queue pointer");
@@ -174,7 +174,7 @@ namespace pvpgn
 	{
 		t_packet * temp;
 
-		//    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue %p", queue);
+		//    eventlog(eventlog_level_debug, __FUNCTION__, "entered: queue {:p}", queue);
 		if (!queue)
 		{
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL queue pointer");

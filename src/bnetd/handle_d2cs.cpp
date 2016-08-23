@@ -58,7 +58,7 @@ namespace pvpgn
 				return -1;
 			}
 			if (packet_get_class(packet) != packet_class_d2cs_bnetd) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad packet class %d",
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad packet class {}",
 					packet_get_class(packet));
 				return -1;
 			}
@@ -70,7 +70,7 @@ namespace pvpgn
 					break;
 				default:
 					eventlog(eventlog_level_error, __FUNCTION__,
-						"got unknown packet type %d", packet_get_type(packet));
+						"got unknown packet type {}", packet_get_type(packet));
 					break;
 				}
 				break;
@@ -87,13 +87,13 @@ namespace pvpgn
 					break;
 				default:
 					eventlog(eventlog_level_error, __FUNCTION__,
-						"got unknown packet type %d", packet_get_type(packet));
+						"got unknown packet type {}", packet_get_type(packet));
 					break;
 				}
 				break;
 			default:
 				eventlog(eventlog_level_error, __FUNCTION__,
-					"got unknown connection state %d", conn_get_state(c));
+					"got unknown connection state {}", conn_get_state(c));
 				break;
 			}
 			return 0;
@@ -118,13 +118,13 @@ namespace pvpgn
 			}
 			if (!(realm = realmlist_find_realm(realmname))) {
 				realm = realmlist_find_realm_by_ip(conn_get_addr(c)); /* should not fail - checked in handle_init_packet() handle_init.c */
-				eventlog(eventlog_level_warn, __FUNCTION__, "warn: realm name mismatch %s %s", realm_get_name(realm), realmname);
+				eventlog(eventlog_level_warn, __FUNCTION__, "warn: realm name mismatch {} {}", realm_get_name(realm), realmname);
 				if (!(prefs_allow_d2cs_setname())) { /* fail if allow_d2cs_setname = false */
 					eventlog(eventlog_level_error, __FUNCTION__, "d2cs not allowed to set realm name");
 					return -1;
 				}
 				if (realm_get_active(realm)) { /* fail if realm already active */
-					eventlog(eventlog_level_error, __FUNCTION__, "cannot set realm name to %s (realm already active)", realmname);
+					eventlog(eventlog_level_error, __FUNCTION__, "cannot set realm name to {} (realm already active)", realmname);
 					return -1;
 				}
 				realm_set_name(realm, realmname);
@@ -132,7 +132,7 @@ namespace pvpgn
 			version = prefs_get_d2cs_version();
 			try_version = bn_int_get(packet->u.d2cs_bnetd_authreply.version);
 			if (version && version != try_version) {
-				eventlog(eventlog_level_error, __FUNCTION__, "d2cs version mismatch 0x%X - 0x%X",
+				eventlog(eventlog_level_error, __FUNCTION__, "d2cs version mismatch 0x{:X} - 0x{:X}",
 					try_version, version);
 				reply = BNETD_D2CS_AUTHREPLY_BAD_VERSION;
 			}
@@ -141,13 +141,13 @@ namespace pvpgn
 			}
 
 			if (reply == BNETD_D2CS_AUTHREPLY_SUCCEED) {
-				eventlog(eventlog_level_info, __FUNCTION__, "d2cs %s authed",
+				eventlog(eventlog_level_info, __FUNCTION__, "d2cs {} authed",
 					addr_num_to_ip_str(conn_get_addr(c)));
 				conn_set_state(c, conn_state_loggedin);
 				realm_active(realm, c);
 			}
 			else {
-				eventlog(eventlog_level_error, __FUNCTION__, "failed to auth d2cs %s",
+				eventlog(eventlog_level_error, __FUNCTION__, "failed to auth d2cs {}",
 					addr_num_to_ip_str(conn_get_addr(c)));
 			}
 			if ((rpacket = packet_create(packet_class_d2cs_bnetd))) {
@@ -196,11 +196,11 @@ namespace pvpgn
 			sessionnum = bn_int_get(packet->u.d2cs_bnetd_accountloginreq.sessionnum);
 			salt = bn_int_get(packet->u.d2cs_bnetd_accountloginreq.seqno);
 			if (!(client = connlist_find_connection_by_sessionnum(sessionnum))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "sessionnum %d not found", sessionnum);
+				eventlog(eventlog_level_error, __FUNCTION__, "sessionnum {} not found", sessionnum);
 				reply = BNETD_D2CS_ACCOUNTLOGINREPLY_FAILED;
 			}
 			else if (sessionkey != conn_get_sessionkey(client)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "sessionkey %d not match", sessionkey);
+				eventlog(eventlog_level_error, __FUNCTION__, "sessionkey {} not match", sessionkey);
 				reply = BNETD_D2CS_ACCOUNTLOGINREPLY_FAILED;
 			}
 			else if (!(tname = conn_get_username(client))) {
@@ -208,7 +208,7 @@ namespace pvpgn
 				reply = BNETD_D2CS_ACCOUNTLOGINREPLY_FAILED;
 			}
 			else if (strcasecmp(account, tname)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "username %s not match", account);
+				eventlog(eventlog_level_error, __FUNCTION__, "username {} not match", account);
 				reply = BNETD_D2CS_ACCOUNTLOGINREPLY_FAILED;
 			}
 			else {
@@ -225,12 +225,12 @@ namespace pvpgn
 					bnet_hash(&secret_hash, sizeof(temp), &temp);
 					bnhash_to_hash(packet->u.d2cs_bnetd_accountloginreq.secret_hash, &try_hash);
 					if (hash_eq(try_hash, secret_hash) == 1) {
-						eventlog(eventlog_level_debug, __FUNCTION__, "user %s loggedin on d2cs",
+						eventlog(eventlog_level_debug, __FUNCTION__, "user {} loggedin on d2cs",
 							account);
 						reply = BNETD_D2CS_ACCOUNTLOGINREPLY_SUCCEED;
 					}
 					else {
-						eventlog(eventlog_level_error, __FUNCTION__, "user %s hash not match",
+						eventlog(eventlog_level_error, __FUNCTION__, "user {} hash not match",
 							account);
 						reply = BNETD_D2CS_ACCOUNTLOGINREPLY_FAILED;
 					}
@@ -278,7 +278,7 @@ namespace pvpgn
 				return -1;
 			}
 			if (!(client = connlist_find_connection_by_sessionnum(sessionnum))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "user %d not found", sessionnum);
+				eventlog(eventlog_level_error, __FUNCTION__, "user {} not found", sessionnum);
 				reply = BNETD_D2CS_CHARLOGINREPLY_FAILED;
 			}
 			else if (!(clienttag = clienttag_uint_to_str(conn_get_clienttag(client)))) {
@@ -303,7 +303,7 @@ namespace pvpgn
 				conn_set_realminfo(client, temp);
 				xfree(temp);
 				eventlog(eventlog_level_debug, __FUNCTION__,
-					"loaded portrait for character %s", charname);
+					"loaded portrait for character {}", charname);
 			}
 			if ((rpacket = packet_create(packet_class_d2cs_bnetd))) {
 				packet_set_size(rpacket, sizeof(t_bnetd_d2cs_charloginreply));
@@ -329,7 +329,7 @@ namespace pvpgn
 				conn_push_outqueue(c, packet);
 				packet_del_ref(packet);
 			}
-			eventlog(eventlog_level_info, __FUNCTION__, "sent init packet to d2cs (sessionnum=%d)",
+			eventlog(eventlog_level_info, __FUNCTION__, "sent init packet to d2cs (sessionnum={})",
 				conn_get_sessionnum(c));
 			return 0;
 		}
@@ -391,7 +391,7 @@ namespace pvpgn
 			if (!(game = gamelist_find_game(gamename, CLIENTTAG_DIABLO2DV_UINT, game_type_diablo2closed))
 				&& !(game = gamelist_find_game(gamename, CLIENTTAG_DIABLO2XP_UINT, game_type_diablo2closed)))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "reply for unknown game \"%s\"", gamename);
+				eventlog(eventlog_level_error, __FUNCTION__, "reply for unknown game \"{}\"", gamename);
 				return -1;
 			}
 

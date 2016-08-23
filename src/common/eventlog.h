@@ -47,6 +47,7 @@ namespace pvpgn
 #define INCLUDED_EVENTLOG_PROTOS
 
 #include <cstdio>
+#include <common/format.h>
 
 namespace pvpgn
 {
@@ -61,13 +62,13 @@ namespace pvpgn
 	extern int eventlog_del_level(char const * levelname);
 	extern char const * eventlog_get_levelname_str(t_eventlog_level level);
 	extern void eventlog_hexdump_data(void const * data, unsigned int len);
-	extern void eventlog(t_eventlog_level level, char const * module, char const * fmt, ...) PRINTF_ATTR(3, 4);
-	extern void eventlog_step(char const * filename, t_eventlog_level level, char const * module, char const * fmt, ...) PRINTF_ATTR(4, 5);
 
-#define FATAL0(fmt) eventlog(eventlog_level_fatal,__FUNCTION__,fmt)
-#define FATAL1(fmt,arg1) eventlog(eventlog_level_fatal,__FUNCTION__,fmt,arg1)
-#define FATAL2(fmt,arg1,arg2) eventlog(eventlog_level_fatal,__FUNCTION__,fmt,arg1,arg2)
-#define FATAL3(fmt,arg1,arg2,arg3) eventlog(eventlog_level_fatal,__FUNCTION__,fmt,arg1,arg2,arg3)
+	void eventlog(t_eventlog_level level, const char* module, const char* format, fmt::ArgList args);
+	FMT_VARIADIC(void, eventlog, t_eventlog_level, const char*, const char*)
+	//template <typename... Args>
+	// extern void eventlog2(t_eventlog_level level, const char* module, const char* format, const Args& ... args);
+
+	extern void eventlog_step(char const * filename, t_eventlog_level level, char const * module, char const * fmt, ...) PRINTF_ATTR(4, 5);
 
 #define ERROR0(fmt) eventlog(eventlog_level_error,__FUNCTION__,fmt)
 #define ERROR1(fmt,arg1) eventlog(eventlog_level_error,__FUNCTION__,fmt,arg1)
