@@ -348,11 +348,13 @@ namespace pvpgn
 				std::fflush(stdout);
 			}
 		}
-		catch (fmt::FormatError& e)
+		catch (const fmt::FormatError& e)
 		{
-			fmt::print(eventstrm, "Failed to format string\n");
-			gui_lvprintf(eventlog_level_error, "Failed to format string\n");
-
+			fmt::print(eventstrm, "Failed to format string ({})\n", e.what());
+#ifdef WIN32_GUI
+			if (eventlog_level_gui & currlevel)
+				gui_lvprintf(eventlog_level_error, "Failed to format string ({})\n", e.what());
+#endif
 		}
 
 		std::fflush(eventstrm);
