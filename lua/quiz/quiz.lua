@@ -117,7 +117,7 @@ function quiz:stop(username)
 				q_records_total[idx].points = t.points
 			else
 				-- update diff if it was changed to negative
-				if q_records_diff[tusername] < 0 then
+				if tonumber(q_records_diff[tusername]) < 0 then
 					q_records_diff[tusername] = q_records_diff[tusername] + t.points
 				end
 				q_records_total[idx].points = q_records_total[idx].points + t.points
