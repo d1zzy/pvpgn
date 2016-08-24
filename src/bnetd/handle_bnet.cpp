@@ -4961,9 +4961,9 @@ namespace pvpgn
 				return -1;
 			}
 
-			if ((rpacket = packet_create(packet_class_bnet)) != NULL) {
+			if ((rpacket = packet_create(packet_class_bnet)) != NULL)
+			{
 				int offset = sizeof(t_client_clanmember_rankupdate_req);
-				const char *username;
 				char status;
 				t_clan *clan;
 				t_clanmember *dest_member;
@@ -4974,7 +4974,14 @@ namespace pvpgn
 				packet_set_type(rpacket, SERVER_CLANMEMBER_RANKUPDATE_REPLY);
 				bn_int_set(&rpacket->u.server_clanmember_rankupdate_reply.count,
 					bn_int_get(packet->u.client_clanmember_rankupdate_req.count));
-				username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
+				const char* const username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
+				if (!username)
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] Could not retrieve username from CLANMEMBER_RANKUPDATE_REQ packet", conn_get_socket(c));
+					packet_del_ref(rpacket);
+					return -1;
+				}
+
 				offset += (std::strlen(username) + 1);
 				if (packet_get_size(packet) < offset + 1)
 				{
