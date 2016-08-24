@@ -432,7 +432,7 @@ namespace pvpgn
 				dta.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
 				dta.uCallbackMessage = WM_SHELLNOTIFY;
 				dta.hIcon = LoadIconW(GetWindowInstance(hwnd), MAKEINTRESOURCE(IDI_ICON1));
-				std::swprintf(dta.szTip, sizeof dta.szTip / sizeof *dta.szTip, L"%ls %ls", PVPGN_SOFTWAREW, PVPGN_VERSION);
+				std::swprintf(dta.szTip, sizeof dta.szTip / sizeof *dta.szTip, L"%ls %ls", PVPGN_SOFTWAREW, PVPGN_VERSIONW);
 				Shell_NotifyIconW(NIM_ADD, &dta);
 				ShowWindow(hwnd, SW_HIDE);
 				return;
