@@ -889,7 +889,10 @@ namespace pvpgn
 					t_apiregmember * apiregmemberlist = (t_apiregmember*)elem_get_data(curr);
 
 					if (conn == apiregmember_get_conn(apiregmemberlist))
+					{
 						apiregmember_destroy(apiregmember, &curr);
+						break;
+					}
 				}
 
 				conn_set_state(conn, conn_state_destroy);
