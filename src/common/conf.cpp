@@ -89,7 +89,9 @@ namespace pvpgn
 
 	extern const char* conf_get_int(unsigned ival)
 	{
-		return std::to_string(ival).c_str();
+		static char buffer[128] = {};
+		std::snprintf(buffer, sizeof buffer, "%u", ival);
+		return buffer;
 	}
 
 	extern const char* conf_get_bool(unsigned ival)
