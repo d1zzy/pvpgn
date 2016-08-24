@@ -1112,7 +1112,7 @@ namespace pvpgn
 				break;
 			default:
 				WARN1("got unknown gameres type {} for CRAT", static_cast<int>(type));
-				break;
+				return -1;
 			}
 
 			if (crates)
