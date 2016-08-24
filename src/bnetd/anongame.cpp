@@ -2057,6 +2057,11 @@ namespace pvpgn
 				res_maps[j++] = maplists_get_map(queue, clienttag, i + 1);
 			}
 
+			if (j == 0)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "j == 0; returning \"eb2.map\"");
+				return "eb2.map";
+			}
 			i = std::rand() % j;
 			if (res_maps[i])
 				selected = res_maps[i];
