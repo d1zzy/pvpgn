@@ -253,6 +253,7 @@ namespace pvpgn
 					pktlen = 0;
 				}
 				std::fprintf(stderr, "RLE_compress: wrote %u bytes (%u uncompressed)\n", actual, perceived);
+				xfree((void*)pktdata);
 				return 0;
 			}
 
