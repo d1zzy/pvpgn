@@ -672,7 +672,6 @@ namespace pvpgn
 			t_packet *rpacket;
 			char const *username;
 			char const *plainpass;
-			char lpass[20];
 			t_hash sc_hash;
 			unsigned int i;
 			const char *account_salt;
@@ -737,10 +736,11 @@ namespace pvpgn
 				goto out;
 			}
 
-			if (plainpass) {
+			char lpass[20] = {};
+			if (plainpass)
+			{
 				/* convert plaintext password to lowercase for sc etc. */
-				std::strncpy(lpass, plainpass, 16);
-				lpass[16] = 0;
+				std::snprintf(lpass, sizeof lpass, "%s", plainpass);
 				strtolower(lpass);
 			}
 
