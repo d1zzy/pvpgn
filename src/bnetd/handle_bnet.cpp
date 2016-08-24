@@ -5398,8 +5398,8 @@ namespace pvpgn
 				const char * data;
 				std::string data_s;
 
-				gametype = bn_int_get(packet->u.client_extrawork.gametype);
-				length = bn_int_get(packet->u.client_extrawork.length);
+				gametype = bn_short_get(packet->u.client_extrawork.gametype);
+				length = bn_short_get(packet->u.client_extrawork.length);
 
 				if (!(data = (const char *)packet_get_raw_data_const(packet, sizeof(t_client_extrawork)))) {
 					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad EXTRAWORK packet (missing or too long data)", conn_get_socket(c));
