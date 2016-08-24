@@ -212,7 +212,7 @@ namespace pvpgn
 				CASE(conn_class_d2gs, packet = packet_create(packet_class_d2gs));
 				CASE(conn_class_bnetd, packet = packet_create(packet_class_d2cs_bnetd));
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad connection class %d", c->cclass);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad connection class {}", c->cclass);
 				return NULL;
 			}
 			if (!packet) {
@@ -228,10 +228,10 @@ namespace pvpgn
 			int	retval;
 
 			if (net_check_connected(c->sock) < 0) {
-				eventlog(eventlog_level_warn, __FUNCTION__, "can not connect to %s", addr_num_to_addr_str(c->addr, c->port));
+				eventlog(eventlog_level_warn, __FUNCTION__, "can not connect to {}", addr_num_to_addr_str(c->addr, c->port));
 				return -1;
 			}
-			eventlog(eventlog_level_info, __FUNCTION__, "connected to %s", addr_num_to_addr_str(c->addr, c->port));
+			eventlog(eventlog_level_info, __FUNCTION__, "connected to {}", addr_num_to_addr_str(c->addr, c->port));
 			c->state = conn_state_init;
 			/* this is a kind of hack to not update fd but updating breaks kqueue
 			 * and the clean fix would require a cache a userland copy of the kernel
@@ -243,7 +243,7 @@ namespace pvpgn
 				retval = handle_bnetd_init(c);
 				break;
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad connection class %d", c->cclass);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad connection class {}", c->cclass);
 				return -1;
 			}
 			return retval;
@@ -259,7 +259,7 @@ namespace pvpgn
 				CASE(conn_class_d2gs, retval = handle_d2gs_packet(c, packet));
 				CASE(conn_class_bnetd, retval = handle_bnetd_packet(c, packet));
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad connection class %d (close connection)", c->cclass);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad connection class {} (close connection)", c->cclass);
 				retval = -1;
 				break;
 			}
@@ -357,13 +357,13 @@ namespace pvpgn
 				switch (c->cclass) {
 				case conn_class_d2cs:
 					if (prefs_get_idletime() && (now - c->last_active > prefs_get_idletime())) {
-						eventlog(eventlog_level_info, __FUNCTION__, "client %d idled too long std::time, destroy it", c->sessionnum);
+						eventlog(eventlog_level_info, __FUNCTION__, "client {} idled too long std::time, destroy it", c->sessionnum);
 						d2cs_conn_set_state(c, conn_state_destroy);
 					}
 					break;
 				case conn_class_d2gs:
 					if (prefs_get_s2s_idletime() && now - c->last_active > prefs_get_s2s_idletime()) {
-						eventlog(eventlog_level_info, __FUNCTION__, "server %d timed out", c->sessionnum);
+						eventlog(eventlog_level_info, __FUNCTION__, "server {} timed out", c->sessionnum);
 						d2cs_conn_set_state(c, conn_state_destroy);
 					}
 					break;
@@ -418,7 +418,7 @@ namespace pvpgn
 				return NULL;
 			}
 			total_connection++;
-			eventlog(eventlog_level_info, __FUNCTION__, "created session=%d socket=%d (%d current connections)", c->sessionnum, sock, total_connection);
+			eventlog(eventlog_level_info, __FUNCTION__, "created session={} socket={} ({} current connections)", c->sessionnum, sock, total_connection);
 			return c;
 		}
 
@@ -454,7 +454,7 @@ namespace pvpgn
 			psock_close(c->sock);
 
 			total_connection--;
-			eventlog(eventlog_level_info, __FUNCTION__, "[%d] closed connection %d (%d left)", c->sock, c->sessionnum, total_connection);
+			eventlog(eventlog_level_info, __FUNCTION__, "[{}] closed connection {} ({} left)", c->sock, c->sessionnum, total_connection);
 			xfree(c);
 			return 0;
 		}
@@ -602,20 +602,20 @@ namespace pvpgn
 			size = packet_get_size(packet);
 
 			if (type >= table_size || !table[type].size) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad packet type %d (class %d)", type, packet_get_class(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad packet type {} (class {})", type, packet_get_class(packet));
 				return -1;
 			}
 			if (size < table[type].size) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad packet size %d (type %d class %d)", size, type, packet_get_class(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad packet size {} (type {} class {})", size, type, packet_get_class(packet));
 				return -1;
 			}
 			if (!(c->state & table[type].state)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "connection %d state mismatch for packet type %d (class %d)", c->sessionnum,
+				eventlog(eventlog_level_error, __FUNCTION__, "connection {} state mismatch for packet type {} (class {})", c->sessionnum,
 					type, packet_get_class(packet));
 				return -1;
 			}
 			if (!table[type].handler) {
-				eventlog(eventlog_level_error, __FUNCTION__, "missing handler for packet type %d (class %d)", type, packet_get_class(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "missing handler for packet type {} (class {})", type, packet_get_class(packet));
 				return -1;
 			}
 			return table[type].handler(c, packet);
@@ -649,7 +649,7 @@ namespace pvpgn
 			if (charname) temp = xstrdup(charname);
 			if (c->charname) {
 				if (hashtable_remove_data(conn_charname_list_head, c, c->charname_hash) < 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "error remove charname %s from list", charname);
+					eventlog(eventlog_level_error, __FUNCTION__, "error remove charname {} from list", charname);
 					if (temp) xfree((void *)temp);
 					return -1;
 				}
@@ -660,7 +660,7 @@ namespace pvpgn
 				c->charname = temp;
 				c->charname_hash = conn_charname_hash(charname);
 				if (hashtable_insert_data(conn_charname_list_head, c, c->charname_hash) < 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "error insert charname %s to list", charname);
+					eventlog(eventlog_level_error, __FUNCTION__, "error insert charname {} to list", charname);
 					xfree((void *)c->charname);
 					c->charname = NULL;
 					return -1;

@@ -41,24 +41,24 @@ namespace pvpgn
 		{
 			if (!c)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got NULL connection", conn_get_socket(c));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got NULL connection", conn_get_socket(c));
 				return -1;
 			}
 			if (!packet)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got NULL packet", conn_get_socket(c));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got NULL packet", conn_get_socket(c));
 				return -1;
 			}
 			if (packet_get_class(packet) != packet_class_init)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad packet (class %d)", conn_get_socket(c), (int)packet_get_class(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad packet (class {})", conn_get_socket(c), (int)packet_get_class(packet));
 				return -1;
 			}
 			if ((prefs_get_max_conns_per_IP() != 0) &&
 				bn_byte_get(packet->u.client_initconn.cclass) != CLIENT_INITCONN_CLASS_D2CS_BNETD &&
 				(connlist_count_connections(conn_get_addr(c)) > prefs_get_max_conns_per_IP()))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] too many connections from address %s (closing connection)", conn_get_socket(c), addr_num_to_addr_str(conn_get_addr(c), conn_get_port(c)));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] too many connections from address {} (closing connection)", conn_get_socket(c), addr_num_to_addr_str(conn_get_addr(c), conn_get_port(c)));
 				return -1;
 			}
 
@@ -68,28 +68,28 @@ namespace pvpgn
 				switch (bn_byte_get(packet->u.client_initconn.cclass))
 				{
 				case CLIENT_INITCONN_CLASS_BNET:
-					eventlog(eventlog_level_info, __FUNCTION__, "[%d] client initiated bnet connection", conn_get_socket(c));
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] client initiated bnet connection", conn_get_socket(c));
 					conn_set_state(c, conn_state_connected);
 					conn_set_class(c, conn_class_bnet);
 
 					break;
 
 				case CLIENT_INITCONN_CLASS_FILE:
-					eventlog(eventlog_level_info, __FUNCTION__, "[%d] client initiated file download connection", conn_get_socket(c));
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] client initiated file download connection", conn_get_socket(c));
 					conn_set_state(c, conn_state_connected);
 					conn_set_class(c, conn_class_file);
 
 					break;
 
 				case CLIENT_INITCONN_CLASS_BOT:
-					eventlog(eventlog_level_info, __FUNCTION__, "[%d] client initiated chat bot connection", conn_get_socket(c));
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] client initiated chat bot connection", conn_get_socket(c));
 					conn_set_state(c, conn_state_connected);
 					conn_set_class(c, conn_class_bot);
 
 					break;
 
 				case CLIENT_INITCONN_CLASS_TELNET:
-					eventlog(eventlog_level_info, __FUNCTION__, "[%d] client initiated telnet connection", conn_get_socket(c));
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] client initiated telnet connection", conn_get_socket(c));
 					conn_set_state(c, conn_state_connected);
 					conn_set_class(c, conn_class_telnet);
 
@@ -97,11 +97,11 @@ namespace pvpgn
 
 				case CLIENT_INITCONN_CLASS_D2CS_BNETD:
 				{
-					eventlog(eventlog_level_info, __FUNCTION__, "[%d] client initiated d2cs_bnetd connection", conn_get_socket(c));
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] client initiated d2cs_bnetd connection", conn_get_socket(c));
 					
 					if (!(realmlist_find_realm_by_ip(conn_get_addr(c))))
 					{
-						eventlog(eventlog_level_info, __FUNCTION__, "[%d] d2cs connection from unknown ip address %s", conn_get_socket(c), addr_num_to_addr_str(conn_get_addr(c), conn_get_port(c)));
+						eventlog(eventlog_level_info, __FUNCTION__, "[{}] d2cs connection from unknown ip address {}", conn_get_socket(c), addr_num_to_addr_str(conn_get_addr(c), conn_get_port(c)));
 						return -1;
 					}
 					
@@ -116,12 +116,12 @@ namespace pvpgn
 					break;
 
 				case CLIENT_INITCONN_CLASS_ENC:
-					eventlog(eventlog_level_info, __FUNCTION__, "[%d] client initiated encrypted connection (not supported)", conn_get_socket(c));
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] client initiated encrypted connection (not supported)", conn_get_socket(c));
 					return -1;
 					break;
 				
 				case CLIENT_INITCONN_CLASS_LOCALMACHINE:
-					eventlog(eventlog_level_info, __FUNCTION__, "[%d] client initiated connection from local computer to 127.0.0.1", conn_get_socket(c));
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] client initiated connection from local computer to 127.0.0.1", conn_get_socket(c));
 					/*
 					conn_set_state(c, conn_state_connected);
 					conn_set_class(c, conn_class_localmachine;
@@ -130,12 +130,12 @@ namespace pvpgn
 					break;
 
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] client requested unknown class 0x%02x (length %d) (closing connection)", conn_get_socket(c), (unsigned int)bn_byte_get(packet->u.client_initconn.cclass), packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] client requested unknown class 0x{:02x} (length {}) (closing connection)", conn_get_socket(c), (unsigned int)bn_byte_get(packet->u.client_initconn.cclass), packet_get_size(packet));
 					return -1;
 				}
 				break;
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] unknown init packet type 0x%04x, len %u", conn_get_socket(c), packet_get_type(packet), packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] unknown init packet type 0x{:04x}, len {}", conn_get_socket(c), packet_get_type(packet), packet_get_size(packet));
 				return -1;
 			}
 

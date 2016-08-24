@@ -136,7 +136,7 @@ namespace pvpgn
 				 * indexed storage types check themselves if the username exists already
 				 * in the storage (see storage_sql.c) */
 				if (accountlist_find_account(username)) {
-					eventlog(eventlog_level_debug, __FUNCTION__, "user \"%s\" already has an account", username);
+					eventlog(eventlog_level_debug, __FUNCTION__, "user \"{}\" already has an account", username);
 					goto err;
 				}
 
@@ -194,7 +194,7 @@ namespace pvpgn
 		extern unsigned int account_get_uid_real(t_account const * account, char const * fn, unsigned int ln)
 		{
 			if (!account) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from {}:{})", fn, ln);
 				return 0;
 			}
 
@@ -269,12 +269,12 @@ namespace pvpgn
 		extern char const * account_get_strattr_real(t_account * account, char const * key, char const * fn, unsigned int ln)
 		{
 			if (!account) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from {}:{})", fn, ln);
 				return NULL;
 			}
 
 			if (!key) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL key (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL key (from {}:{})", fn, ln);
 				return NULL;
 			}
 
@@ -392,7 +392,7 @@ namespace pvpgn
 				break;
 			case 0:
 				loaded = 1;
-				eventlog(eventlog_level_info, __FUNCTION__, "loaded %u user accounts in %ld seconds", count, std::time(NULL) - starttime);
+				eventlog(eventlog_level_info, __FUNCTION__, "loaded {} user accounts in {} seconds", count, std::time(nullptr) - starttime);
 				break;
 			default:
 				break;
@@ -613,13 +613,13 @@ namespace pvpgn
 				return NULL;
 			}
 			if (uid < 1) {
-				ERROR2("got bad account (bad uid: %u) for \"%s\", fix it!", uid, username);
+				ERROR2("got bad account (bad uid: {}) for \"{}\", fix it!", uid, username);
 				return NULL;
 			}
 
 			/* check whether the account limit was reached */
 			if (!accountlist_allow_add()) {
-				eventlog(eventlog_level_warn, __FUNCTION__, "account limit reached (current is %u, storing %u)", prefs_get_max_accounts(), hashtable_get_length(accountlist_head));
+				eventlog(eventlog_level_warn, __FUNCTION__, "account limit reached (current is {}, storing {})", prefs_get_max_accounts(), hashtable_get_length(accountlist_head));
 				return NULL;
 			}
 
@@ -643,7 +643,7 @@ namespace pvpgn
 						curraccount = (t_account*)entry_get_data(curr);
 						if (curraccount->uid == uid)
 						{
-							eventlog(eventlog_level_debug, __FUNCTION__, "BUG: user \"%s\":" UID_FORMAT " already has an account (\"%s\":" UID_FORMAT ")", username, uid, account_get_name(curraccount), curraccount->uid);
+							eventlog(eventlog_level_debug, __FUNCTION__, "BUG: user \"{}\":" UID_FORMAT " already has an account (\"{}\":" UID_FORMAT ")", username, uid, account_get_name(curraccount), curraccount->uid);
 							hashtable_entry_release(curr);
 							return NULL;
 						}
@@ -656,7 +656,7 @@ namespace pvpgn
 					{
 						if (strcasecmp(tname, username) == 0)
 						{
-							eventlog(eventlog_level_debug, __FUNCTION__, "BUG: user \"%s\":" UID_FORMAT " already has an account (\"%s\":" UID_FORMAT ")", username, uid, tname, curraccount->uid);
+							eventlog(eventlog_level_debug, __FUNCTION__, "BUG: user \"{}\":" UID_FORMAT " already has an account (\"{}\":" UID_FORMAT ")", username, uid, tname, curraccount->uid);
 							hashtable_entry_release(curr);
 							return NULL;
 						}
@@ -738,7 +738,7 @@ namespace pvpgn
 
 			if (!account)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from {}:{})", fn, ln);
 				return NULL; /* FIXME: places assume this can't fail */
 			}
 

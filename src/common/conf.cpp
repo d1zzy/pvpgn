@@ -38,7 +38,7 @@ namespace pvpgn
 			unsigned temp;
 
 			if (str_to_uint(valstr, &temp) < 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "invalid integer value '%s'", valstr);
+				eventlog(eventlog_level_error, __FUNCTION__, "invalid integer value '{}'", valstr);
 				return -1;
 			}
 			else *pint = temp;
@@ -59,7 +59,7 @@ namespace pvpgn
 				*pbool = 0;
 				break;
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "invalid boolean value '%s'", valstr);
+				eventlog(eventlog_level_error, __FUNCTION__, "invalid boolean value '{}'", valstr);
 				return -1;
 			}
 		}
@@ -80,7 +80,7 @@ namespace pvpgn
 	{
 		if (!valstr) *ptime = def;
 		else if (timestr_to_time(valstr, ptime) < 0) {
-			eventlog(eventlog_level_error, __FUNCTION__, "invalid timestr value '%s'", valstr);
+			eventlog(eventlog_level_error, __FUNCTION__, "invalid timestr value '{}'", valstr);
 			return -1;
 		}
 
@@ -129,14 +129,14 @@ namespace pvpgn
 			}
 
 			if (*cp != '"') {
-				eventlog(eventlog_level_error, __FUNCTION__, "missing end quota at line %u", lineno);
+				eventlog(eventlog_level_error, __FUNCTION__, "missing end quota at line {}", lineno);
 				return NULL;
 			}
 
 			*cp = '\0';
 			cp = str_skip_space(cp + 1);
 			if (*cp) {
-				eventlog(eventlog_level_error, __FUNCTION__, "extra characters in value after ending quote at line %u", lineno);
+				eventlog(eventlog_level_error, __FUNCTION__, "extra characters in value after ending quote at line {}", lineno);
 				return NULL;
 			}
 		}
@@ -146,7 +146,7 @@ namespace pvpgn
 				*cp = '\0';
 				cp = str_skip_space(cp + 1);
 				if (*cp) {
-					eventlog(eventlog_level_error, __FUNCTION__, "extra characters after the value at line %u", lineno);
+					eventlog(eventlog_level_error, __FUNCTION__, "extra characters after the value at line {}", lineno);
 					return NULL;
 				}
 			}
@@ -165,7 +165,7 @@ namespace pvpgn
 			return;
 		}
 
-		eventlog(eventlog_level_error, __FUNCTION__, "option '%s' unknown", key);
+		eventlog(eventlog_level_error, __FUNCTION__, "option '{}' unknown", key);
 	}
 
 	extern int conf_load_file(std::FILE *fd, t_conf_entry *conftab)
@@ -216,13 +216,13 @@ namespace pvpgn
 
 			cp = str_skip_space(cp);
 			if (*cp != '=') {
-				eventlog(eventlog_level_error, __FUNCTION__, "missing = on line %u", lineno);
+				eventlog(eventlog_level_error, __FUNCTION__, "missing = on line {}", lineno);
 				continue;
 			}
 
 			cp = str_skip_space(cp + 1);
 			if (!*cp) {
-				eventlog(eventlog_level_error, __FUNCTION__, "missing value at line %u", lineno);
+				eventlog(eventlog_level_error, __FUNCTION__, "missing value at line {}", lineno);
 				continue;
 			}
 

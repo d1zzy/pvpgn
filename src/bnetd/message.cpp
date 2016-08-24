@@ -188,7 +188,7 @@ namespace pvpgn
 					case 'h':
 						if (gethostname(&out[outpos], MAX_INC) < 0)
 						{
-							eventlog(eventlog_level_error, __FUNCTION__, "could not get hostname (gethostname: %s)", std::strerror(errno));
+							eventlog(eventlog_level_error, __FUNCTION__, "could not get hostname (gethostname: {})", std::strerror(errno));
 							std::strcpy(&out[outpos], "localhost"); /* not much else you can do */
 						}
 						outpos += std::strlen(&out[outpos]);
@@ -295,7 +295,7 @@ namespace pvpgn
 						break;
 
 					default:
-						eventlog(eventlog_level_warn, __FUNCTION__, "bad formatter \"%%%c\"", in[inpos - 1]);
+						eventlog(eventlog_level_warn, __FUNCTION__, "bad formatter \"%{}\"", in[inpos - 1]);
 				}
 
 				if ((outpos + MAX_INC) >= outlen)
@@ -328,7 +328,7 @@ namespace pvpgn
 			case message_type_uniqueid:
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				msgtemp = (char*)xmalloc(std::strlen(text) + 32);
@@ -337,7 +337,7 @@ namespace pvpgn
 			case message_type_adduser:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				{
@@ -352,7 +352,7 @@ namespace pvpgn
 			case message_type_join:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (me == dst)
@@ -370,7 +370,7 @@ namespace pvpgn
 			case message_type_part:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				{
@@ -385,7 +385,7 @@ namespace pvpgn
 			case message_type_kick:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				{
@@ -400,7 +400,7 @@ namespace pvpgn
 			case message_type_quit:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				{
@@ -417,7 +417,7 @@ namespace pvpgn
 			case message_type_page:
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (dstflags&MF_X)
@@ -449,7 +449,7 @@ namespace pvpgn
 			case message_type_talk:
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (dstflags&MF_X)
@@ -481,7 +481,7 @@ namespace pvpgn
 			case message_type_broadcast:
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (dstflags&MF_X)
@@ -505,7 +505,7 @@ namespace pvpgn
 			case message_type_channel:
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				msgtemp = (char*)xmalloc(std::strlen(text) + 32);
@@ -514,7 +514,7 @@ namespace pvpgn
 			case message_type_userflags:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				msgtemp = xstrdup("");
@@ -522,12 +522,12 @@ namespace pvpgn
 			case message_type_whisperack:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				{
@@ -552,12 +552,12 @@ namespace pvpgn
 			case message_type_friendwhisperack:   // [zap-zero] 20020518
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				{
@@ -592,7 +592,7 @@ namespace pvpgn
 			case message_type_info:
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				{
@@ -614,7 +614,7 @@ namespace pvpgn
 			case message_type_error:
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				{
@@ -636,12 +636,12 @@ namespace pvpgn
 			case message_type_emote:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (dstflags&MF_X)
@@ -668,7 +668,7 @@ namespace pvpgn
 			case message_type_mode:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				{
@@ -680,7 +680,7 @@ namespace pvpgn
 					conn_unget_chatcharname(me, tname);
 				}
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad message type %d", (int)type);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad message type {}", (int)type);
 				return -1;
 			}
 
@@ -736,7 +736,7 @@ namespace pvpgn
 				case message_type_uniqueid: /* FIXME: need to send this for some bots, also needed to support guest accounts */
 					if (!text)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 						return -1;
 					}
 					msgtemp = (char*)xmalloc(std::strlen(text) + 32);
@@ -745,7 +745,7 @@ namespace pvpgn
 				case message_type_adduser:
 					if (!me)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 						return -1;
 					}
 					{
@@ -760,7 +760,7 @@ namespace pvpgn
 				case message_type_join:
 					if (!me)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 						return -1;
 					}
 					if (me == dst)
@@ -780,7 +780,7 @@ namespace pvpgn
 				case message_type_quit:
 					if (!me)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 						return -1;
 					}
 					{
@@ -797,7 +797,7 @@ namespace pvpgn
 				case message_type_page:
 					if (!text)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 						return -1;
 					}
 					if (dstflags&MF_X)
@@ -819,12 +819,12 @@ namespace pvpgn
 				case message_type_talk:
 					if (!me)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 						return -1;
 					}
 					if (!text)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 						return -1;
 					}
 					if (dstflags&MF_X)
@@ -841,7 +841,7 @@ namespace pvpgn
 				case message_type_broadcast:
 					if (!text)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 						return -1;
 					}
 					if (dstflags&MF_X)
@@ -852,7 +852,7 @@ namespace pvpgn
 				case message_type_channel:
 					if (!text)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 						return -1;
 					}
 					msgtemp = (char*)xmalloc(32 + std::strlen(text));
@@ -861,7 +861,7 @@ namespace pvpgn
 				case message_type_userflags:
 					if (!me)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 						return -1;
 					}
 					{
@@ -876,12 +876,12 @@ namespace pvpgn
 				case message_type_whisperack:
 					if (!me)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 						return -1;
 					}
 					if (!text)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 						return -1;
 					}
 					{
@@ -896,12 +896,12 @@ namespace pvpgn
 				case message_type_friendwhisperack: // [zap-zero] 20020518
 					if (!me)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 						return -1;
 					}
 					if (!text)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 						return -1;
 					}
 					{
@@ -925,7 +925,7 @@ namespace pvpgn
 				case message_type_info:
 					if (!text)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 						return -1;
 					}
 					msgtemp = (char*)xmalloc(32 + 16 + std::strlen(text));
@@ -934,7 +934,7 @@ namespace pvpgn
 				case message_type_error:
 					if (!text)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 						return -1;
 					}
 					msgtemp = (char*)xmalloc(32 + 16 + std::strlen(text));
@@ -943,12 +943,12 @@ namespace pvpgn
 				case message_type_emote:
 					if (!me)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 						return -1;
 					}
 					if (!text)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+						eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 						return -1;
 					}
 					if (dstflags&MF_X)
@@ -963,7 +963,7 @@ namespace pvpgn
 					}
 					break;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "got bad message type %d", (int)type);
+					eventlog(eventlog_level_error, __FUNCTION__, "got bad message type {}", (int)type);
 					return -1;
 			}
 
@@ -1011,7 +1011,7 @@ namespace pvpgn
 			case message_type_adduser:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				bn_int_set(&packet->u.server_message.type, SERVER_MESSAGE_TYPE_ADDUSER);
@@ -1035,7 +1035,7 @@ namespace pvpgn
 			case message_type_join:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				bn_int_set(&packet->u.server_message.type, SERVER_MESSAGE_TYPE_JOIN);
@@ -1065,7 +1065,7 @@ namespace pvpgn
 			case message_type_quit:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				bn_int_set(&packet->u.server_message.type, SERVER_MESSAGE_TYPE_PART);
@@ -1085,7 +1085,7 @@ namespace pvpgn
 			case message_type_page:
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (dstflags&MF_X)
@@ -1111,12 +1111,12 @@ namespace pvpgn
 			case message_type_talk:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (dstflags&MF_X)
@@ -1136,7 +1136,7 @@ namespace pvpgn
 			case message_type_broadcast:
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (dstflags&MF_X)
@@ -1156,12 +1156,12 @@ namespace pvpgn
 			case message_type_channel:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				bn_int_set(&packet->u.server_message.type, SERVER_MESSAGE_TYPE_CHANNEL);
@@ -1186,7 +1186,7 @@ namespace pvpgn
 			case message_type_userflags:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				bn_int_set(&packet->u.server_message.type, SERVER_MESSAGE_TYPE_USERFLAGS);
@@ -1211,12 +1211,12 @@ namespace pvpgn
 			case message_type_whisperack:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				bn_int_set(&packet->u.server_message.type, SERVER_MESSAGE_TYPE_WHISPERACK);
@@ -1234,12 +1234,12 @@ namespace pvpgn
 			case message_type_friendwhisperack:  // [zap-zero] 20020518
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				bn_int_set(&packet->u.server_message.type, SERVER_MESSAGE_TYPE_WHISPERACK);
@@ -1262,12 +1262,12 @@ namespace pvpgn
 			case message_type_channeldoesnotexist:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				bn_int_set(&packet->u.server_message.type, SERVER_MESSAGE_TYPE_CHANNELDOESNOTEXIST);
@@ -1292,7 +1292,7 @@ namespace pvpgn
 			case message_type_info:
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				bn_int_set(&packet->u.server_message.type, SERVER_MESSAGE_TYPE_INFO);
@@ -1304,7 +1304,7 @@ namespace pvpgn
 			case message_type_error:
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				bn_int_set(&packet->u.server_message.type, SERVER_MESSAGE_TYPE_ERROR);
@@ -1316,12 +1316,12 @@ namespace pvpgn
 			case message_type_emote:
 				if (!me)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (!text)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for %s", message_type_get_str(type));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL text for {}", message_type_get_str(type));
 					return -1;
 				}
 				if (dstflags&MF_X)
@@ -1339,7 +1339,7 @@ namespace pvpgn
 				}
 				break;
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad message type %d", (int)type);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad message type {}", (int)type);
 				return -1;
 			}
 
@@ -1515,7 +1515,7 @@ namespace pvpgn
 				break; /* cache the NULL but dont send any error,
 						* this are normal connections */
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "unsupported connection class %d", (int)cclass);
+				eventlog(eventlog_level_error, __FUNCTION__, "unsupported connection class {}", (int)cclass);
 				packet = NULL; /* we can cache the NULL too */
 			}
 
@@ -1664,7 +1664,7 @@ namespace pvpgn
 
 			if (!(line = message_format_line(dst, text)))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not format input text \"%s\"", text);
+				eventlog(eventlog_level_error, __FUNCTION__, "could not format input text \"{}\"", text);
 				return -1;
 			}
 
@@ -1697,7 +1697,7 @@ namespace pvpgn
 				message_send_text(dst, message_type_info, dst, &line[1]);
 				break;
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "unknown message type '%c'", line[0]);
+				eventlog(eventlog_level_error, __FUNCTION__, "unknown message type '{}'", line[0]);
 				xfree(line);
 				return -1;
 			}

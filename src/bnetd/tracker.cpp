@@ -75,7 +75,7 @@ namespace pvpgn
 				addr = (t_addr*)elem_get_data(curr);
 				if (!addr_get_addr_str(addr, temp, sizeof(temp)))
 					std::strcpy(temp, "x.x.x.x:x");
-				eventlog(eventlog_level_info, __FUNCTION__, "tracking packets will be sent to %s", temp);
+				eventlog(eventlog_level_info, __FUNCTION__, "tracking packets will be sent to {}", temp);
 			}
 
 			return 0;
@@ -140,7 +140,7 @@ namespace pvpgn
 				{
 					if (uname(&utsbuf) != 0)
 					{
-						eventlog(eventlog_level_warn, __FUNCTION__, "could not get platform info (uname: %s)", pstrerror(errno));
+						eventlog(eventlog_level_warn, __FUNCTION__, "could not get platform info (uname: {})", pstrerror(errno));
 						std::snprintf(reinterpret_cast<char*>(packet.platform), sizeof packet.platform, "");
 					}
 				}
@@ -173,10 +173,10 @@ namespace pvpgn
 							std::strcpy(tempa, "x.x.x.x:x");
 						if (!addr_get_addr_str(addrt, tempb, sizeof(tempb)))
 							std::strcpy(tempa, "x.x.x.x:x");
-						/* eventlog(eventlog_level_debug,__FUNCTION__,"sending tracking info from %s to %s",tempa,tempb); */
+						/* eventlog(eventlog_level_debug,__FUNCTION__,"sending tracking info from {} to {}",tempa,tempb); */
 
 						if (psock_sendto(laddr_info->usocket, &packet, sizeof(packet), 0, (struct sockaddr *)&tempaddr, (psock_t_socklen)sizeof(tempaddr)) < 0)
-							eventlog(eventlog_level_warn, __FUNCTION__, "could not send tracking information from %s to %s (psock_sendto: %s)", tempa, tempb, pstrerror(errno));
+							eventlog(eventlog_level_warn, __FUNCTION__, "could not send tracking information from {} to {} (psock_sendto: {})", tempa, tempb, pstrerror(errno));
 					}
 				}
 			}

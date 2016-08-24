@@ -58,12 +58,12 @@ namespace pvpgn
 		{
 			if (account == nullptr)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from {}:{})", fn, ln);
 				return 0;
 			}
 			if (key == nullptr)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL key (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL key (from {}:{})", fn, ln);
 				return 0;
 			}
 			char const * temp = account_get_strattr(account, key);
@@ -73,7 +73,7 @@ namespace pvpgn
 			unsigned int val;
 			if (str_to_uint(temp, &val) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "not a numeric string \"%s\" for key \"%s\"", temp, key);
+				eventlog(eventlog_level_error, __FUNCTION__, "not a numeric string \"{}\" for key \"{}\"", temp, key);
 				return 0;
 			}
 
@@ -102,12 +102,12 @@ namespace pvpgn
 		{
 			if (account == nullptr)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from {}:{})", fn, ln);
 				return -1;
 			}
 			if (key == nullptr)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL key (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL key (from {}:{})", fn, ln);
 				return -1;
 			}
 
@@ -122,7 +122,7 @@ namespace pvpgn
 			case 0:
 				return 0;
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "bad boolean value \"%s\" for key \"%s\"", temp, key);
+				eventlog(eventlog_level_error, __FUNCTION__, "bad boolean value \"{}\" for key \"{}\"", temp, key);
 				return -1;
 			}
 		}
@@ -148,12 +148,12 @@ namespace pvpgn
 		{
 			if (account == nullptr)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from {}:{})", fn, ln);
 				return nullptr;
 			}
 			if (key == nullptr)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL key (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL key (from {}:{})", fn, ln);
 				return nullptr;
 			}
 
@@ -1671,11 +1671,11 @@ namespace pvpgn
 			char const * charlist = account_get_closed_characterlist(account, clienttag, realmname);
 			if (charlist == nullptr)
 			{
-				eventlog(eventlog_level_debug, __FUNCTION__, "no characters in Realm %s", realmname);
+				eventlog(eventlog_level_debug, __FUNCTION__, "no characters in Realm {}", realmname);
 				return 0;
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "got characterlist \"%s\" for Realm %s", charlist, realmname);
+			eventlog(eventlog_level_debug, __FUNCTION__, "got characterlist \"{}\" for Realm {}", charlist, realmname);
 
 			size_t list_len = std::strlen(charlist);
 			char const * start = charlist;
@@ -1694,7 +1694,7 @@ namespace pvpgn
 					std::strncpy(tempname, start, name_len);
 					tempname[name_len] = '\0';
 
-					eventlog(eventlog_level_debug, __FUNCTION__, "found character \"%s\"", tempname);
+					eventlog(eventlog_level_debug, __FUNCTION__, "found character \"{}\"", tempname);
 
 					if (std::strcmp(tempname, charname) == 0)
 						return 1;
@@ -1708,7 +1708,7 @@ namespace pvpgn
 			std::strncpy(tempname, start, name_len);
 			tempname[name_len] = '\0';
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "found tail character \"%s\"", tempname);
+			eventlog(eventlog_level_debug, __FUNCTION__, "found tail character \"{}\"", tempname);
 
 			if (std::strcmp(tempname, charname) == 0)
 				return 1;
@@ -1739,7 +1739,7 @@ namespace pvpgn
 
 			std::string realmkey("BNET\\CharacterList\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(realmname) + "\\0");
 			
-			eventlog(eventlog_level_trace, __FUNCTION__, "looking for '%s'", realmkey.c_str());
+			eventlog(eventlog_level_trace, __FUNCTION__, "looking for '{}'", realmkey.c_str());
 
 			return account_get_strattr(account, realmkey.c_str());
 		}
@@ -1765,7 +1765,7 @@ namespace pvpgn
 
 			std::string realmkey("BNET\\CharacterList\\" + tag_uint_to_str2(clienttag) + "\\" + realmname + "\\0");
 
-			eventlog(eventlog_level_trace, __FUNCTION__, "looking for '%s'", realmkey.c_str());
+			eventlog(eventlog_level_trace, __FUNCTION__, "looking for '{}'", realmkey.c_str());
 
 			return account_get_strattr(account, realmkey.c_str());
 		}
@@ -1779,7 +1779,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "clienttag='%s', charlist='%s'", tag_uint_to_str2(clienttag).c_str(), charlist);
+			eventlog(eventlog_level_debug, __FUNCTION__, "clienttag='{}', charlist='{}'", tag_uint_to_str2(clienttag).c_str(), charlist);
 			std::string key("BNET\\Characters\\" + tag_uint_to_str2(clienttag) + "\\0");
 
 			return account_set_strattr(account, key.c_str(), charlist);
@@ -1792,7 +1792,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "clienttag='%s', charlist='%s'", tag_uint_to_str2(clienttag).c_str(), charlist.c_str());
+			eventlog(eventlog_level_debug, __FUNCTION__, "clienttag='{}', charlist='{}'", tag_uint_to_str2(clienttag).c_str(), charlist.c_str());
 			std::string key("BNET\\Characters\\" + tag_uint_to_str2(clienttag) + "\\0");
 
 			return account_set_strattr(account, key.c_str(), charlist.c_str());
@@ -1812,7 +1812,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "clienttag=\"%s\", realm=\"%s\", name=\"%s\"", tag_uint_to_str2(clienttag).c_str(), ch->realmname, ch->name);
+			eventlog(eventlog_level_debug, __FUNCTION__, "clienttag=\"{}\", realm=\"{}\", name=\"{}\"", tag_uint_to_str2(clienttag).c_str(), ch->realmname, ch->name);
 			std::string key("BNET\\CharacterList\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ch->realmname) + "\\0");
 			
 			std::string chars_in_realm;
@@ -1822,7 +1822,7 @@ namespace pvpgn
 			else
 				chars_in_realm = std::string(ch->name);
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "new character list for realm \"%s\" is \"%s\"", ch->realmname, chars_in_realm.c_str());
+			eventlog(eventlog_level_debug, __FUNCTION__, "new character list for realm \"{}\" is \"{}\"", ch->realmname, chars_in_realm.c_str());
 			account_set_strattr(account, key.c_str(), chars_in_realm.c_str());
 
 			key = "BNET\\Characters\\" + tag_uint_to_str2(clienttag) + "\\" + std::string(ch->realmname) + "\\" + std::string(ch->name) + "\\0";
@@ -1853,7 +1853,7 @@ namespace pvpgn
 			if (friendnum < 0 || friendnum >= prefs_get_max_friends())
 			{
 				// bogus name (user himself) instead of NULL, otherwise clients might crash
-				eventlog(eventlog_level_error, __FUNCTION__, "invalid friendnum %d (max: %d)", friendnum, prefs_get_max_friends());
+				eventlog(eventlog_level_error, __FUNCTION__, "invalid friendnum {} (max: {})", friendnum, prefs_get_max_friends());
 				return 0;
 			}
 
@@ -1868,7 +1868,7 @@ namespace pvpgn
 				char const * name = account_get_strattr(account, key.c_str());
 				if (!name)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "could not find friend (friendno: %d of '%s')", friendnum, account_get_name(account));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not find friend (friendno: {} of '{}')", friendnum, account_get_name(account));
 					return 0;
 				}
 
@@ -1882,7 +1882,7 @@ namespace pvpgn
 					return tmp;
 				}
 				account_set_strattr(account, key.c_str(), nullptr); //remove old username-based friend now
-				eventlog(eventlog_level_warn, __FUNCTION__, "unexistant friend name ('%s') in old storage format", name);
+				eventlog(eventlog_level_warn, __FUNCTION__, "unexistant friend name ('{}') in old storage format", name);
 				return 0;
 			}
 
@@ -1948,7 +1948,7 @@ namespace pvpgn
 			int n = account_get_friendcount(account);
 			if (friendnum < 0 || friendnum >= n)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid friendnum (friendnum: %d max: %d)", friendnum, n);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid friendnum (friendnum: {} max: {})", friendnum, n);
 				return -1;
 			}
 
@@ -2046,7 +2046,7 @@ namespace pvpgn
 			case W3_ICON_DEMONS:
 				return "demons";
 			default:
-				eventlog(eventlog_level_warn, __FUNCTION__, "unknown race: %x", race);
+				eventlog(eventlog_level_warn, __FUNCTION__, "unknown race: {}", race);
 				return std::string();
 			}
 		}
@@ -2112,7 +2112,7 @@ namespace pvpgn
 			int mylevel = account_get_ladder_level(account, clienttag, id); //get accounts level
 			if (mylevel > W3_XPCALC_MAXLEVEL)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid level: %d", mylevel);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid level: {}", mylevel);
 				return -1;
 			}
 
@@ -2130,7 +2130,7 @@ namespace pvpgn
 			case game_result_loss:
 				ladder_war3_xpdiff(opponlevel, mylevel, &placeholder, &xpdiff); break;
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid game result: %d", gameresult);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid game result: {}", gameresult);
 				return -1;
 			}
 
@@ -2180,7 +2180,7 @@ namespace pvpgn
 
 			if (mylevel > W3_XPCALC_MAXLEVEL)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid level: %d", mylevel);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid level: {}", mylevel);
 				return -1;
 			}
 
@@ -2265,7 +2265,7 @@ namespace pvpgn
 			}
 
 			//added for better tracking down of problems with gameresults
-			eventlog(eventlog_level_trace, __FUNCTION__, "parsing game result for player: %s result: %s", account_get_name(account), (result == game_result_win) ? "WIN" : "LOSS");
+			eventlog(eventlog_level_trace, __FUNCTION__, "parsing game result for player: {} result: {}", account_get_name(account), (result == game_result_win) ? "WIN" : "LOSS");
 
 			unsigned int intrace = account_get_w3pgrace(account, clienttag);
 			unsigned int uid = account_get_uid(account);
@@ -2299,7 +2299,7 @@ namespace pvpgn
 				break;
 			}
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "Invalid Gametype? %u", gametype);
+				eventlog(eventlog_level_error, __FUNCTION__, "Invalid Gametype? {}", gametype);
 				return -1;
 			}
 
@@ -2382,7 +2382,7 @@ namespace pvpgn
 			}
 
 			eventlog(eventlog_level_debug, __FUNCTION__, "Checking for highest level in Solo,Team,FFA,AT Ladder Stats");
-			eventlog(eventlog_level_debug, __FUNCTION__, "Solo Level: %d, Team Level %d, FFA Level %d, Highest AT Team Level: %d", sololevel, teamlevel, ffalevel, atlevel);
+			eventlog(eventlog_level_debug, __FUNCTION__, "Solo Level: {}, Team Level {}, FFA Level {}, Highest AT Team Level: {}", sololevel, teamlevel, ffalevel, atlevel);
 
 			if (sololevel >= teamlevel && sololevel >= atlevel && sololevel >= ffalevel)
 				return sololevel;
@@ -2525,7 +2525,7 @@ namespace pvpgn
 			if (clienttag == CLIENTTAG_WAR3XP_UINT)
 				number_ctag = 6;
 
-			eventlog(eventlog_level_info, __FUNCTION__, "race -> %u; level -> %u; wins -> %u; profileicon -> %s", race, level, wins, profile_code[race + number_ctag][level]);
+			eventlog(eventlog_level_info, __FUNCTION__, "race -> {}; level -> {}; wins -> {}; profileicon -> {}", race, level, wins, profile_code[race + number_ctag][level]);
 
 			return char_icon_to_uint(profile_code[race + number_ctag][level]);
 		}
@@ -2563,19 +2563,19 @@ namespace pvpgn
 						result = profile_code[5 + number_ctag][tmp_icon[0] - 1];
 					else
 					{
-						eventlog(eventlog_level_warn, __FUNCTION__, "got unrecognized race on [%s] icon ", icon);
+						eventlog(eventlog_level_warn, __FUNCTION__, "got unrecognized race on [{}] icon ", icon);
 						result = profile_code[2][0];
 					} /* "opeo" */
 				}
 				else
 				{
-					eventlog(eventlog_level_warn, __FUNCTION__, "got race_level<1 on [%s] icon ", icon);
+					eventlog(eventlog_level_warn, __FUNCTION__, "got race_level<1 on [{}] icon ", icon);
 					result = nullptr;
 				}
 			}
 			else
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid icon length [%s] icon ", icon);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid icon length [{}] icon ", icon);
 				result = nullptr;
 			}
 
@@ -2693,7 +2693,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "[** WOL **] WOL\\auth\\apgar = %s", apgar);
+			eventlog(eventlog_level_debug, __FUNCTION__, "[** WOL **] WOL\\auth\\apgar = {}", apgar);
 			return account_set_strattr(account, "WOL\\auth\\apgar", apgar);
 		}
 		extern int account_set_wol_apgar(t_account * account, std::string apgar)
@@ -2709,7 +2709,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "[** WOL **] WOL\\auth\\apgar = %s", apgar.c_str());
+			eventlog(eventlog_level_debug, __FUNCTION__, "[** WOL **] WOL\\auth\\apgar = {}", apgar.c_str());
 			return account_set_strattr(account, "WOL\\auth\\apgar", apgar.c_str());
 		}
 
@@ -2732,7 +2732,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "[** WOL **] WOL\\acct\\locale = %u", locale);
+			eventlog(eventlog_level_debug, __FUNCTION__, "[** WOL **] WOL\\acct\\locale = {}", locale);
 			return account_set_numattr(account, "WOL\\acct\\locale", locale);
 		}
 

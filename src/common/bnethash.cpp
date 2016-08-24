@@ -197,7 +197,7 @@ namespace pvpgn
 		}
 		if (size > 0 && !datain)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL datain with size=%u", size);
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL datain with size={}", size);
 			return -1;
 		}
 
@@ -256,7 +256,7 @@ namespace pvpgn
 		}
 		if (size > 0 && !datain)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL datain with size=%u", size);
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL datain with size={}", size);
 			return -1;
 		}
 
@@ -382,7 +382,7 @@ namespace pvpgn
 		}
 		if (std::strlen(str) != 5 * 8)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got string with length %lu (should be %u)", std::strlen(str), 5 * 8);
+			eventlog(eventlog_level_error, __FUNCTION__, "got string with length {} (should be {})", std::strlen(str), 5 * 8);
 			return -1;
 		}
 

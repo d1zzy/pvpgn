@@ -70,14 +70,14 @@ namespace pvpgn
 
 				if (!std::regex_search(strLine, match, rgx))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "Invalid line in topic file (%s)", strLine.c_str());
+					eventlog(eventlog_level_error, __FUNCTION__, "Invalid line in topic file ({})", strLine.c_str());
 					continue;
 				}
 
 				//check if current line in file already exists in Head
 				if (this->topiclist.get(match[1].str()) != nullptr)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "Duplicate line for channel %s in topic file", match[1].str().c_str());
+					eventlog(eventlog_level_error, __FUNCTION__, "Duplicate line for channel {} in topic file", match[1].str().c_str());
 					continue;
 				}
 
@@ -123,12 +123,12 @@ namespace pvpgn
 
 			if (topic != nullptr)
 			{
-				eventlog(eventlog_level_trace, __FUNCTION__, "Setting <%s>'s topic to <%s>", channel_name.c_str(), topic_text.c_str());
+				eventlog(eventlog_level_trace, __FUNCTION__, "Setting <{}>'s topic to <{}>", channel_name.c_str(), topic_text.c_str());
 				topic->topicstr = topic_text;
 			}
 			else
 			{
-				eventlog(eventlog_level_trace, __FUNCTION__, "Adding <%s:%s> to topiclist", channel_name.c_str(), topic_text.c_str());
+				eventlog(eventlog_level_trace, __FUNCTION__, "Adding <{}:{}> to topiclist", channel_name.c_str(), topic_text.c_str());
 				this->topiclist.add(channel_name, topic_text, do_save);
 			}
 
@@ -215,7 +215,7 @@ namespace pvpgn
 			{
 				if (!std::regex_search(strLine, match, rgx))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "Invalid line in topic file (%s)", strLine.c_str());
+					eventlog(eventlog_level_error, __FUNCTION__, "Invalid line in topic file ({})", strLine.c_str());
 					continue;
 				}
 

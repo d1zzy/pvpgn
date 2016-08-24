@@ -156,7 +156,7 @@ namespace pvpgn
 				else if (strcasecmp(tok, "mode") == 0)
 					driver = p + 1;
 				else
-					eventlog(eventlog_level_warn, __FUNCTION__, "unknown token in storage_path : '%s'", tok);
+					eventlog(eventlog_level_warn, __FUNCTION__, "unknown token in storage_path : '{}'", tok);
 			}
 
 			if (def == NULL || clan == NULL || team == NULL || dir == NULL || driver == NULL)
@@ -172,7 +172,7 @@ namespace pvpgn
 				file = &file_cdb;
 			else
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "unknown mode '%s' must be either plain or cdb", driver);
+				eventlog(eventlog_level_error, __FUNCTION__, "unknown mode '{}' must be either plain or cdb", driver);
 				xfree((void *)copy);
 				return -1;
 			}
@@ -285,7 +285,7 @@ namespace pvpgn
 
 			if (p_rename(tempname, (const char *)info) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not std::rename account file to \"%s\" (std::rename: %s)", (char *)info, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not std::rename account file to \"{}\" (std::rename: {})", (char *)info, std::strerror(errno));
 				xfree(tempname);
 				return -1;
 			}
@@ -315,7 +315,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "loading \"%s\"", reinterpret_cast<const char*>(info));
+			eventlog(eventlog_level_debug, __FUNCTION__, "loading \"{}\"", reinterpret_cast<const char*>(info));
 
 			if (file->read_attrs((const char *)info, cb, data))
 			{
@@ -395,7 +395,7 @@ namespace pvpgn
 				}
 			}
 			catch (const Directory::OpenError& ex) {
-				ERROR2("unable to open user directory \"%s\" for reading (error: %s)", accountsdir, ex.what());
+				ERROR2("unable to open user directory \"{}\" for reading (error: {})", accountsdir, ex.what());
 				return -1;
 			}
 
@@ -469,7 +469,7 @@ namespace pvpgn
 				{
 					if (std::strlen(dentry) > 4)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "found too long clan filename in clandir \"%s\"", dentry);
+						eventlog(eventlog_level_error, __FUNCTION__, "found too long clan filename in clandir \"{}\"", dentry);
 						continue;
 					}
 
@@ -479,7 +479,7 @@ namespace pvpgn
 
 					if ((fp = std::fopen(pathname, "r")) == NULL)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "can't open clanfile \"%s\"", pathname);
+						eventlog(eventlog_level_error, __FUNCTION__, "can't open clanfile \"{}\"", pathname);
 						continue;
 					}
 
@@ -554,7 +554,7 @@ namespace pvpgn
 					clan->modified = 0;
 					clan->channel_type = prefs_get_clan_channel_default_private();
 
-					eventlog(eventlog_level_trace, __FUNCTION__, "name: %s motd: %s clanid: %i time: %i", clanname, motd, cid, creation_time);
+					eventlog(eventlog_level_trace, __FUNCTION__, "name: {} motd: {} clanid: {} time: {}", clanname, motd, cid, creation_time);
 
 					clan->members = list_create();
 
@@ -563,7 +563,7 @@ namespace pvpgn
 						member = (t_clanmember*)xmalloc(sizeof(t_clanmember));
 						if (!(member->memberacc = accountlist_find_account_by_uid(member_uid)))
 						{
-							eventlog(eventlog_level_error, __FUNCTION__, "cannot find uid %u", member_uid);
+							eventlog(eventlog_level_error, __FUNCTION__, "cannot find uid {}", member_uid);
 							xfree((void *)member);
 							continue;
 						}
@@ -581,7 +581,7 @@ namespace pvpgn
 						list_append_data(clan->members, member);
 
 						account_set_clanmember((t_account*)member->memberacc, member);
-						eventlog(eventlog_level_trace, __FUNCTION__, "added member: uid: %i status: %c join_time: %i", member_uid, member_status + '0', member_join_time);
+						eventlog(eventlog_level_trace, __FUNCTION__, "added member: uid: {} status: {} join_time: {}", member_uid, member_status + '0', member_join_time);
 					}
 
 					std::fclose(fp);
@@ -594,7 +594,7 @@ namespace pvpgn
 
 			}
 			catch (const Directory::OpenError& ex) {
-				ERROR2("unable to open clan directory \"%s\" for reading (error: %s)", clansdir, ex.what());
+				ERROR2("unable to open clan directory \"{}\" for reading (error: {})", clansdir, ex.what());
 				return -1;
 			}
 
@@ -616,7 +616,7 @@ namespace pvpgn
 
 			if ((fp = std::fopen(clanfile, "w")) == NULL)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "can't open clanfile \"%s\"", clanfile);
+				eventlog(eventlog_level_error, __FUNCTION__, "can't open clanfile \"{}\"", clanfile);
 				xfree((void *)clanfile);
 				return -1;
 			}
@@ -649,7 +649,7 @@ namespace pvpgn
 			std::sprintf(tempname, "%s/%s", clansdir, clantag_to_str(clantag));
 			if (std::remove((const char *)tempname) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not delete clan file \"%s\" (std::remove: %s)", (char *)tempname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not delete clan file \"{}\" (std::remove: {})", (char *)tempname, std::strerror(errno));
 				xfree(tempname);
 				return -1;
 			}
@@ -691,7 +691,7 @@ namespace pvpgn
 				{
 					if (std::strlen(dentry) != 8)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "found invalid team filename in teamdir \"%s\"", dentry);
+						eventlog(eventlog_level_error, __FUNCTION__, "found invalid team filename in teamdir \"{}\"", dentry);
 						continue;
 					}
 
@@ -701,7 +701,7 @@ namespace pvpgn
 
 					if ((fp = std::fopen(pathname, "r")) == NULL)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "can't open teamfile \"%s\"", pathname);
+						eventlog(eventlog_level_error, __FUNCTION__, "can't open teamfile \"{}\"", pathname);
 						continue;
 					}
 
@@ -787,13 +787,13 @@ namespace pvpgn
 						goto load_team_failure;
 					}
 
-					eventlog(eventlog_level_trace, __FUNCTION__, "succesfully loaded team %s", dentry);
+					eventlog(eventlog_level_trace, __FUNCTION__, "succesfully loaded team {}", dentry);
 					cb(team);
 
 					goto load_team_success;
 				load_team_failure:
 					xfree((void*)team);
-					eventlog(eventlog_level_error, __FUNCTION__, "error while reading file \"%s\"", dentry);
+					eventlog(eventlog_level_error, __FUNCTION__, "error while reading file \"{}\"", dentry);
 
 				load_team_success:
 
@@ -807,7 +807,7 @@ namespace pvpgn
 
 			}
 			catch (const Directory::OpenError& ex) {
-				ERROR2("unable to open team directory \"%s\" for reading (error: %s)", teamsdir, ex.what());
+				ERROR2("unable to open team directory \"{}\" for reading (error: {})", teamsdir, ex.what());
 				return -1;
 			}
 
@@ -827,7 +827,7 @@ namespace pvpgn
 
 			if ((fp = std::fopen(teamfile, "w")) == NULL)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "can't open teamfile \"%s\"", teamfile);
+				eventlog(eventlog_level_error, __FUNCTION__, "can't open teamfile \"{}\"", teamfile);
 				xfree((void *)teamfile);
 				return -1;
 			}
@@ -851,7 +851,7 @@ namespace pvpgn
 			std::sprintf(tempname, "%s/%08x", clansdir, teamid);
 			if (std::remove((const char *)tempname) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not delete team file \"%s\" (std::remove: %s)", (char *)tempname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not delete team file \"{}\" (std::remove: {})", (char *)tempname, std::strerror(errno));
 				xfree(tempname);
 				return -1;
 			}

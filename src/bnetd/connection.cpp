@@ -133,11 +133,11 @@ namespace pvpgn
 				if (fp = std::fopen(lang_filename, "r")) {
 					message_send_file(c, fp);
 					if (std::fclose(fp) < 0) {
-						eventlog(eventlog_level_error, __FUNCTION__, "could not close MOTD file \"%s\" after reading (std::fopen: %s)", lang_filename, std::strerror(errno));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not close MOTD file \"{}\" after reading (std::fopen: {})", lang_filename, std::strerror(errno));
 					}
 				}
 				else {
-					eventlog(eventlog_level_error, __FUNCTION__, "could not open MOTD file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not open MOTD file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				}
 
 				xfree((void*)lang_filename);
@@ -162,10 +162,10 @@ namespace pvpgn
 			{
 				message_send_file(c, fp);
 				if (std::fclose(fp) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not close issue file \"%s\" after reading (std::fopen: %s)", filename, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not close issue file \"{}\" after reading (std::fopen: {})", filename, std::strerror(errno));
 			}
 			else
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open issue file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open issue file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 			else
 				eventlog(eventlog_level_debug, __FUNCTION__, "no issue file");
 		}
@@ -181,11 +181,11 @@ namespace pvpgn
 
 			if (now == (std::time_t)0) /* zero means user logged out before expiration */
 			{
-				eventlog(eventlog_level_trace, __FUNCTION__, "[%d] connection already closed", conn_get_socket(c));
+				eventlog(eventlog_level_trace, __FUNCTION__, "[{}] connection already closed", conn_get_socket(c));
 				return;
 			}
 
-			eventlog(eventlog_level_trace, __FUNCTION__, "[%d] closing connection", conn_get_socket(c));
+			eventlog(eventlog_level_trace, __FUNCTION__, "[{}] closing connection", conn_get_socket(c));
 
 			conn_set_state(c, conn_state_destroy);
 		}
@@ -216,7 +216,7 @@ namespace pvpgn
 				 * connection. In other words we just don't care :)
 				 */
 				if (conn_get_ircping(c) != 0) {
-					eventlog(eventlog_level_warn, __FUNCTION__, "[%d] ping timeout (closing connection)", conn_get_socket(c));
+					eventlog(eventlog_level_warn, __FUNCTION__, "[{}] ping timeout (closing connection)", conn_get_socket(c));
 					conn_set_latency(c, 0);
 					conn_set_state(c, conn_state_destroy);
 				}
@@ -224,7 +224,7 @@ namespace pvpgn
 			}
 			else if (conn_get_class(c) == conn_class_w3route) {
 				if (!(packet = packet_create(packet_class_w3route))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] packet_create failed", conn_get_socket(c));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] packet_create failed", conn_get_socket(c));
 				}
 				else {
 					packet_set_size(packet, sizeof(t_server_w3route_echoreq));
@@ -351,12 +351,12 @@ namespace pvpgn
 
 			if (tsock < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad TCP socket %d", tsock);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad TCP socket {}", tsock);
 				return NULL;
 			}
 			if (usock < -1) /* -1 is allowed for some connection classes like bot, irc, and telnet */
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad UDP socket %d", usock);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad UDP socket {}", usock);
 				return NULL;
 			}
 
@@ -448,7 +448,7 @@ namespace pvpgn
 
 			list_prepend_data(conn_head, temp);
 
-			eventlog(eventlog_level_info, __FUNCTION__, "[%d][%d] sessionkey=0x%08x sessionnum=0x%08x", temp->socket.tcp_sock, temp->socket.udp_sock, temp->protocol.sessionkey, temp->protocol.sessionnum);
+			eventlog(eventlog_level_info, __FUNCTION__, "[{}][{}] sessionkey=0x{:08} sessionnum=0x{:08}", temp->socket.tcp_sock, temp->socket.udp_sock, temp->protocol.sessionkey, temp->protocol.sessionnum);
 
 			return temp;
 		}
@@ -675,7 +675,7 @@ namespace pvpgn
 			{
 				if (!c->protocol.chat.ignore_list)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "found NULL ignore_list with ignore_count=%u", c->protocol.chat.ignore_count);
+					eventlog(eventlog_level_error, __FUNCTION__, "found NULL ignore_list with ignore_count={}", c->protocol.chat.ignore_count);
 				}
 				else
 				{
@@ -685,7 +685,7 @@ namespace pvpgn
 
 			if (c->protocol.account)
 			{
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] \"%s\" logged out", c->socket.tcp_sock, conn_get_loggeduser(c));
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] \"{}\" logged out", c->socket.tcp_sock, conn_get_loggeduser(c));
 				//amadeo
 #ifdef WIN32_GUI
 				guiOnUpdateUserList();
@@ -732,7 +732,7 @@ namespace pvpgn
 			if (conn_dead) list_remove_data(conn_dead, c, (conn_or_dead_list) ? elem : &curr);
 			connarray_del_conn(c->protocol.sessionnum);
 
-			eventlog(eventlog_level_info, __FUNCTION__, "[%d] closed %s connection", c->socket.tcp_sock, classstr);
+			eventlog(eventlog_level_info, __FUNCTION__, "[{}] closed {} connection", c->socket.tcp_sock, classstr);
 
 			xfree(c);
 		}
@@ -1232,7 +1232,7 @@ namespace pvpgn
 				return;
 			}
 			if (c->protocol.client.archtag != archtag)
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] setting client arch to \"%s\"", conn_get_socket(c), tag_uint_to_str(archtag_str, archtag));
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] setting client arch to \"{}\"", conn_get_socket(c), tag_uint_to_str(archtag_str, archtag));
 
 			c->protocol.client.archtag = archtag;
 		}
@@ -1266,7 +1266,7 @@ namespace pvpgn
 				return;
 			}
 			if (c->protocol.client.gamelang != gamelang)
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] setting client gamelang to \"%s\"", conn_get_socket(c), tag_uint_to_str(gamelang_str, gamelang));
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] setting client gamelang to \"{}\"", conn_get_socket(c), tag_uint_to_str(gamelang_str, gamelang));
 
 			c->protocol.client.gamelang = gamelang;
 		}
@@ -1314,11 +1314,11 @@ namespace pvpgn
 				return;
 			}
 			if (!tag_check_client(clienttag)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got UNKNOWN clienttag \"%s\"", tag_uint_to_str(clienttag_str, clienttag));
+				eventlog(eventlog_level_error, __FUNCTION__, "got UNKNOWN clienttag \"{}\"", tag_uint_to_str(clienttag_str, clienttag));
 				return;
 			}
 			if (c->protocol.client.clienttag != clienttag) {
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] setting client type to \"%s\"", conn_get_socket(c), tag_uint_to_str(clienttag_str, clienttag));
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] setting client type to \"{}\"", conn_get_socket(c), tag_uint_to_str(clienttag_str, clienttag));
 				c->protocol.client.clienttag = clienttag;
 				if (c->protocol.chat.channel)
 					channel_update_userflags(c);
@@ -1444,7 +1444,7 @@ namespace pvpgn
 
 			if ((other = connlist_find_connection_by_accountname((tname = account_get_name(account)))))
 			{
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] forcing logout of previous login for \"%s\"", conn_get_socket(c), tname);
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] forcing logout of previous login for \"{}\"", conn_get_socket(c), tname);
 				conn_set_state(other, conn_state_destroy);
 			}
 
@@ -1547,7 +1547,7 @@ namespace pvpgn
 				}
 				else
 				{  //theoretically this should never happen...
-					eventlog(eventlog_level_error, __FUNCTION__, "got invalid numeric uid \"%s\"", username);
+					eventlog(eventlog_level_error, __FUNCTION__, "got invalid numeric uid \"{}\"", username);
 					// set value that would have been set prior to this bugfix...
 					temp = xstrdup(username);
 				}
@@ -2004,7 +2004,7 @@ namespace pvpgn
 					channel = channel_create(channelname, channelname, 0, 0, 1, 1, prefs_get_chanlog(), NULL, NULL, (prefs_get_maxusers_per_channel() > 0) ? prefs_get_maxusers_per_channel() : -1, 0, 0, 0);
 				if (!channel)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] could not create channel on join \"%s\"", conn_get_socket(c), channelname);
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] could not create channel on join \"{}\"", conn_get_socket(c), channelname);
 					return -1;
 				}
 				created = 1;
@@ -2020,7 +2020,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			eventlog(eventlog_level_info, __FUNCTION__, "[%d] joined channel \"%s\"", conn_get_socket(c), channel_get_name(c->protocol.chat.channel));
+			eventlog(eventlog_level_info, __FUNCTION__, "[{}] joined channel \"{}\"", conn_get_socket(c), channel_get_name(c->protocol.chat.channel));
 			conn_send_welcome(c);
 
 			if (c->protocol.chat.channel && (channel_get_flags(c->protocol.chat.channel) & channel_flags_thevoid))
@@ -2134,7 +2134,7 @@ namespace pvpgn
 			if (c->protocol.game) {
 				if (gamename) {
 					if (strcasecmp(gamename, game_get_name(c->protocol.game)))
-						eventlog(eventlog_level_error, __FUNCTION__, "[%d] tried to join a new game \"%s\" while already in a game \"%s\"!", conn_get_socket(c), gamename, game_get_name(c->protocol.game));
+						eventlog(eventlog_level_error, __FUNCTION__, "[{}] tried to join a new game \"{}\" while already in a game \"{}\"!", conn_get_socket(c), gamename, game_get_name(c->protocol.game));
 					else return 0;
 				}
 				game_del_player(conn_get_game(c), c);
@@ -2333,18 +2333,18 @@ namespace pvpgn
 
 			if (!c)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection (from {}:{})", fn, ln);
 				return NULL;
 			}
 
 			if (!c->protocol.account)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from %s:%u)", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL account (from {}:{})", fn, ln);
 				return NULL;
 			}
 			result = account_get_name(c->protocol.account);
 			if (result == NULL)
-				eventlog(eventlog_level_error, __FUNCTION__, "returned previous error after being called by %s:%u", fn, ln);
+				eventlog(eventlog_level_error, __FUNCTION__, "returned previous error after being called by {}:{}", fn, ln);
 
 			return result;
 		}
@@ -2364,7 +2364,7 @@ namespace pvpgn
 					return character_get_name(c->protocol.d2.character);
 				if (c->protocol.bound->protocol.d2.character)
 					return character_get_name(c->protocol.bound->protocol.d2.character);
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got connection class %s bound to class %d without a character", conn_get_socket(c), conn_class_get_str(c->protocol.cclass), c->protocol.bound->protocol.cclass);
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got connection class {} bound to class {} without a character", conn_get_socket(c), conn_class_get_str(c->protocol.cclass), c->protocol.bound->protocol.cclass);
 			}
 			if (!c->protocol.account)
 				return NULL; /* no name yet */
@@ -2740,16 +2740,16 @@ namespace pvpgn
 			else if (clienttag == CLIENTTAG_DIABLO2DV_UINT)
 			{
 				/* not much to do */ /* FIXME: get char name here? */
-				eventlog(eventlog_level_trace, __FUNCTION__, "[%d] playerinfo request for client \"%s\" playerinfo=\"%s\"", conn_get_socket(c), tag_uint_to_str(clienttag_str, clienttag), playerinfo);
+				eventlog(eventlog_level_trace, __FUNCTION__, "[{}] playerinfo request for client \"{}\" playerinfo=\"{}\"", conn_get_socket(c), tag_uint_to_str(clienttag_str, clienttag), playerinfo);
 			}
 			else if (clienttag == CLIENTTAG_DIABLO2XP_UINT)
 			{
 				/* in playerinfo we get strings of the form "Realmname,charname" */
-				eventlog(eventlog_level_trace, __FUNCTION__, "[%d] playerinfo request for client \"%s\" playerinfo=\"%s\"", conn_get_socket(c), tag_uint_to_str(clienttag_str, clienttag), playerinfo);
+				eventlog(eventlog_level_trace, __FUNCTION__, "[{}] playerinfo request for client \"{}\" playerinfo=\"{}\"", conn_get_socket(c), tag_uint_to_str(clienttag_str, clienttag), playerinfo);
 			}
 			else
 			{
-				eventlog(eventlog_level_warn, __FUNCTION__, "setting playerinfo for client \"%s\" not supported (playerinfo=\"%s\")", tag_uint_to_str(clienttag_str, clienttag), playerinfo);
+				eventlog(eventlog_level_warn, __FUNCTION__, "setting playerinfo for client \"{}\" not supported (playerinfo=\"{}\")", tag_uint_to_str(clienttag_str, clienttag), playerinfo);
 				return -1;
 			}
 
@@ -2876,7 +2876,7 @@ namespace pvpgn
 			else
 			{
 				c->protocol.d2.realm = realm_get(realm, &c->protocol.d2.realm_regref);
-				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] set to \"%s\"", conn_get_socket(c), realm_get_name(realm));
+				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] set to \"{}\"", conn_get_socket(c), realm_get_name(realm));
 			}
 
 			return 0;
@@ -3130,7 +3130,7 @@ namespace pvpgn
 					/* these lines are at least quota_time old */
 					list_remove_elem(con->protocol.chat.quota.list, &curr);
 					if (qline->count > con->protocol.chat.quota.totcount)
-						eventlog(eventlog_level_error, __FUNCTION__, "qline->count=%u but con->protocol.chat.quota.totcount=%u", qline->count, con->protocol.chat.quota.totcount);
+						eventlog(eventlog_level_error, __FUNCTION__, "qline->count={} but con->protocol.chat.quota.totcount={}", qline->count, con->protocol.chat.quota.totcount);
 					con->protocol.chat.quota.totcount -= qline->count;
 					xfree(qline);
 				}
@@ -3561,7 +3561,7 @@ namespace pvpgn
 				n = temp - name;
 				if (n >= MAX_CHARNAME_LEN)
 				{
-					eventlog(eventlog_level_info, __FUNCTION__, "character name too long in \"%s\" (charname@otherrealm format)", name);
+					eventlog(eventlog_level_info, __FUNCTION__, "character name too long in \"{}\" (charname@otherrealm format)", name);
 					return NULL;
 				}
 				std::strncpy(charname, name, n);
@@ -3577,7 +3577,7 @@ namespace pvpgn
 				n = temp - name;
 				if (n >= MAX_CHARNAME_LEN)
 				{
-					eventlog(eventlog_level_info, __FUNCTION__, "character name too long in \"%s\" (charname*username format)", name);
+					eventlog(eventlog_level_info, __FUNCTION__, "character name too long in \"{}\" (charname*username format)", name);
 					return NULL;
 				}
 				name = temp + 1;
@@ -3756,7 +3756,7 @@ namespace pvpgn
 					std::sprintf(tempplayerinfo, "%s %s 0 %s", revtag, revtag, clantag_str);
 				else
 					std::strcpy(tempplayerinfo, revtag);
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] %s", conn_get_socket(c), revtag);
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] {}", conn_get_socket(c), revtag);
 			}
 			// display race icon with a level number
 			else 
@@ -3766,14 +3766,14 @@ namespace pvpgn
 						std::sprintf(tempplayerinfo, "%s %1u%c3W %u %s", revtag, raceiconnumber, raceicon, acctlevel, clantag_str);
 					else
 						std::sprintf(tempplayerinfo, "%s %1u%c3W %u", revtag, raceiconnumber, raceicon, acctlevel);
-					eventlog(eventlog_level_info, __FUNCTION__, "[%d] %s using generated icon [%1u%c3W]", conn_get_socket(c), revtag, raceiconnumber, raceicon);
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] {} using generated icon [{}{}3W]", conn_get_socket(c), revtag, raceiconnumber, raceicon);
 				}
 				else {
 					if (clantag)
 						std::sprintf(tempplayerinfo, "%s %s %u %s", revtag, usericon, acctlevel, clantag_str);
 					else
 						std::sprintf(tempplayerinfo, "%s %s %u", revtag, usericon, acctlevel);
-					eventlog(eventlog_level_info, __FUNCTION__, "[%d] %s using user-selected icon [%s]", conn_get_socket(c), revtag, usericon);
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] {} using user-selected icon [{}]", conn_get_socket(c), revtag, usericon);
 				}
 			}
 #ifdef WITH_LUA
@@ -3822,7 +3822,7 @@ namespace pvpgn
 				if (count == prefs_get_passfail_count())
 				{
 					ipbanlist_add(NULL, addr_num_to_ip_str(conn_get_addr(c)), now + (std::time_t)prefs_get_passfail_bantime());
-					eventlog(eventlog_level_info, __FUNCTION__, "[%d] failed password tries: %d (banned ip)", conn_get_socket(c), count);
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] failed password tries: {} (banned ip)", conn_get_socket(c), count);
 					conn_set_state(c, conn_state_destroy);
 					return -1;
 				}

@@ -81,18 +81,18 @@ extern t_connection * s2s_create(char const * server, unsigned short def_port, t
 	addr.sin_addr.s_addr= net_inet_addr(tserver);
 	xfree(tserver);
 
-	eventlog(eventlog_level_info,__FUNCTION__,"try make s2s connection to %s",server);
+	eventlog(eventlog_level_info,__FUNCTION__,"try make s2s connection to {}",server);
 	if (psock_connect(sock,(struct sockaddr *)&addr,sizeof(addr))<0) {
 		if (psock_errno()!=PSOCK_EWOULDBLOCK && psock_errno() != PSOCK_EINPROGRESS) {
-			eventlog(eventlog_level_error,__FUNCTION__,"error connecting to %s (psock_connect: %s)",server,pstrerror(psock_errno()));
+			eventlog(eventlog_level_error,__FUNCTION__,"error connecting to {} (psock_connect: {})",server,pstrerror(psock_errno()));
 			psock_close(sock);
 			return NULL;
 		}
 		connected=0;
-		eventlog(eventlog_level_info,__FUNCTION__,"connection to s2s server %s is in progress",server);
+		eventlog(eventlog_level_info,__FUNCTION__,"connection to s2s server {} is in progress",server);
 	} else {
 		connected=1;
-		eventlog(eventlog_level_info,__FUNCTION__,"connected to s2s server %s",server);
+		eventlog(eventlog_level_info,__FUNCTION__,"connected to s2s server {}",server);
 	}
 	laddr_len=sizeof(laddr);
 	std::memset(&laddr,0,sizeof(laddr));
@@ -101,7 +101,7 @@ extern t_connection * s2s_create(char const * server, unsigned short def_port, t
 		eventlog(eventlog_level_error,__FUNCTION__,"unable to get local socket info");
 	} else {
 		if (laddr.sin_family != PSOCK_AF_INET) {
-			eventlog(eventlog_level_error,__FUNCTION__,"got bad socket family %d",laddr.sin_family);
+			eventlog(eventlog_level_error,__FUNCTION__,"got bad socket family {}",laddr.sin_family);
 		} else {
 			ip=ntohl(laddr.sin_addr.s_addr);
 			port=ntohs(laddr.sin_port);
@@ -114,14 +114,14 @@ extern t_connection * s2s_create(char const * server, unsigned short def_port, t
 	}
 	if (connected) {
 		if (conn_add_fd(c,fdwatch_type_read, d2cs_server_handle_tcp)<0) {
-		    eventlog(eventlog_level_error, __FUNCTION__, "error adding socket %d to fdwatch pool (max sockets?)",sock);
+		    eventlog(eventlog_level_error, __FUNCTION__, "error adding socket {} to fdwatch pool (max sockets?)",sock);
 		    d2cs_conn_set_state(c,conn_state_destroy);
 		    return NULL;
 		}
 		d2cs_conn_set_state(c,conn_state_init);
 	} else {
 		if (conn_add_fd(c, fdwatch_type_write, d2cs_server_handle_tcp)<0) {
-		    eventlog(eventlog_level_error, __FUNCTION__, "error adding socket %d to fdwatch pool (max sockets?)",sock);
+		    eventlog(eventlog_level_error, __FUNCTION__, "error adding socket {} to fdwatch pool (max sockets?)",sock);
 		    d2cs_conn_set_state(c,conn_state_destroy);
 		    return NULL;
 		}
@@ -139,7 +139,7 @@ extern int s2s_destroy(t_connection * c)
 			bnetd_destroy(c);
 			break;
 		default:
-			eventlog(eventlog_level_error,__FUNCTION__,"got bad s2s connection class %d",d2cs_conn_get_class(c));
+			eventlog(eventlog_level_error,__FUNCTION__,"got bad s2s connection class {}",d2cs_conn_get_class(c));
 			return -1;
 	}
 	return 0;

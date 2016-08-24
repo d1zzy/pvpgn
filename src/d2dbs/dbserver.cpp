@@ -133,14 +133,14 @@ namespace pvpgn
 			sd = psock_socket(PSOCK_PF_INET, PSOCK_SOCK_STREAM, PSOCK_IPPROTO_TCP);
 			if (sd == -1)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "psock_socket() failed : %s", pstrerror(psock_errno()));
+				eventlog(eventlog_level_error, __FUNCTION__, "psock_socket() failed : {}", pstrerror(psock_errno()));
 				return -1;
 			}
 
 			val = 1;
 			if (psock_setsockopt(sd, PSOCK_SOL_SOCKET, PSOCK_SO_REUSEADDR, &val, sizeof(val)) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "psock_setsockopt() failed : %s", pstrerror(psock_errno()));
+				eventlog(eventlog_level_error, __FUNCTION__, "psock_setsockopt() failed : {}", pstrerror(psock_errno()));
 			}
 
 			if (!(servaddr = addr_create_str(d2dbs_prefs_get_servaddrs(), INADDR_ANY, DEFAULT_LISTEN_PORT)))
@@ -154,12 +154,12 @@ namespace pvpgn
 			sinInterface.sin_port = htons(addr_get_port(servaddr));
 			if (psock_bind(sd, (struct sockaddr*)&sinInterface, (psock_t_socklen)sizeof(struct sockaddr_in)) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "psock_bind() failed : %s", pstrerror(psock_errno()));
+				eventlog(eventlog_level_error, __FUNCTION__, "psock_bind() failed : {}", pstrerror(psock_errno()));
 				return -1;
 			}
 			if (psock_listen(sd, LISTEN_QUEUE) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "psock_listen() failed : %s", pstrerror(psock_errno()));
+				eventlog(eventlog_level_error, __FUNCTION__, "psock_listen() failed : {}", pstrerror(psock_errno()));
 				return -1;
 			}
 			addr_destroy(servaddr);
@@ -325,7 +325,7 @@ namespace pvpgn
 				tv.tv_usec = SELECT_TIME_OUT;
 				switch (psock_select(highest_fd + 1, &ReadFDs, &WriteFDs, &ExceptFDs, &tv)) {
 				case -1:
-					eventlog(eventlog_level_error, __FUNCTION__, "psock_select() failed : %s", pstrerror(psock_errno()));
+					eventlog(eventlog_level_error, __FUNCTION__, "psock_select() failed : {}", pstrerror(psock_errno()));
 					continue;
 				case 0:
 					continue;
@@ -336,20 +336,20 @@ namespace pvpgn
 				if (PSOCK_FD_ISSET(lsocket, &ReadFDs)) {
 					sd = psock_accept(lsocket, (struct sockaddr*)&sinRemote, &nAddrSize);
 					if (sd == -1) {
-						eventlog(eventlog_level_error, __FUNCTION__, "psock_accept() failed : %s", pstrerror(psock_errno()));
+						eventlog(eventlog_level_error, __FUNCTION__, "psock_accept() failed : {}", pstrerror(psock_errno()));
 						return;
 					}
 
 					char addrstr[INET_ADDRSTRLEN] = { 0 };
 					inet_ntop(AF_INET, &(sinRemote.sin_addr), addrstr, sizeof(addrstr));
-					eventlog(eventlog_level_info, __FUNCTION__, "accepted connection from %s:%d , socket %d .",
+					eventlog(eventlog_level_info, __FUNCTION__, "accepted connection from {}:{} , socket {} .",
 						addrstr, ntohs(sinRemote.sin_port), sd);
 					eventlog_step(prefs_get_logfile_gs(), eventlog_level_info, __FUNCTION__, "accepted connection from %s:%d , socket %d .",
 						addrstr, ntohs(sinRemote.sin_port), sd);
 					setsockopt_keepalive(sd);
 					dbs_server_list_add_socket(sd, ntohl(sinRemote.sin_addr.s_addr));
 					if (psock_ctl(sd, PSOCK_NONBLOCK) < 0) {
-						eventlog(eventlog_level_error, __FUNCTION__, "could not set TCP socket [%d] to non-blocking mode (closing connection) (psock_ctl: %s)", sd, pstrerror(psock_errno()));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not set TCP socket [{}] to non-blocking mode (closing connection) (psock_ctl: {})", sd, pstrerror(psock_errno()));
 						psock_close(sd);
 					}
 				}
@@ -396,7 +396,7 @@ namespace pvpgn
 						if (psock_getsockopt(it->sd, PSOCK_SOL_SOCKET, PSOCK_SO_ERROR, &err, &errlen) == 0) {
 							if (errlen && err != 0) {
 								err = err ? err : errno2;
-								eventlog(eventlog_level_error, __FUNCTION__, "data socket error : %s(%d)", pstrerror(err), err);
+								eventlog(eventlog_level_error, __FUNCTION__, "data socket error : {}({})", pstrerror(err), err);
 							}
 						}
 						dbs_server_shutdown_connection(it);
@@ -450,7 +450,7 @@ namespace pvpgn
 			psock_shutdown(conn->sd, PSOCK_SHUT_RDWR);
 			psock_close(conn->sd);
 			if (conn->verified && conn->type == CONNECT_CLASS_D2GS_TO_D2DBS) {
-				eventlog(eventlog_level_info, __FUNCTION__, "unlock all characters on gs %s(%d)", conn->serverip, conn->serverid);
+				eventlog(eventlog_level_info, __FUNCTION__, "unlock all characters on gs {}({})", conn->serverip, conn->serverid);
 				eventlog_step(prefs_get_logfile_gs(), eventlog_level_info, __FUNCTION__, "unlock all characters on gs %s(%d)", conn->serverip, conn->serverid);
 				eventlog_step(prefs_get_logfile_gs(), eventlog_level_info, __FUNCTION__, "close connection to gs on socket %d", conn->sd);
 				cl_unlock_all_char_by_gsid(conn->serverid);
@@ -467,11 +467,11 @@ namespace pvpgn
 			optval = 1;
 			optlen = sizeof(optval);
 			if (psock_setsockopt(sock, PSOCK_SOL_SOCKET, PSOCK_SO_KEEPALIVE, &optval, optlen)) {
-				eventlog(eventlog_level_info, __FUNCTION__, "failed set KEEPALIVE for socket %d, errno=%d", sock, psock_errno());
+				eventlog(eventlog_level_info, __FUNCTION__, "failed set KEEPALIVE for socket {}, errno={}", sock, psock_errno());
 				return -1;
 			}
 			else {
-				eventlog(eventlog_level_info, __FUNCTION__, "set KEEPALIVE option for socket %d", sock);
+				eventlog(eventlog_level_info, __FUNCTION__, "set KEEPALIVE option for socket {}", sock);
 				return 0;
 			}
 		}

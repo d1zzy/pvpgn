@@ -402,7 +402,7 @@ namespace pvpgn
 
 			if (gamelist_find_game_available(name, clienttag, game_type_all))
 			{
-				eventlog(eventlog_level_info, __FUNCTION__, "game \"%s\" not created because it already exists", name);
+				eventlog(eventlog_level_info, __FUNCTION__, "game \"{}\" not created because it already exists", name);
 				return NULL; /* already have a game by that name */
 			}
 
@@ -459,7 +459,7 @@ namespace pvpgn
 			elist_add(&gamelist_head, &game->glist_link);
 			glist_length++;
 
-			eventlog(eventlog_level_info, __FUNCTION__, "game \"%s\" (pass \"%s\") type %hu(%s) startver %d created", name, pass, (unsigned short)type, game_type_get_str(game->type), startver);
+			eventlog(eventlog_level_info, __FUNCTION__, "game \"{}\" (pass \"{}\") type {}({}) startver {} created", name, pass, (unsigned short)type, game_type_get_str(game->type), startver);
 
 			return game;
 		}
@@ -487,7 +487,7 @@ namespace pvpgn
 				realm_add_game_number(realmlist_find_realm(game->realmname), -1);
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "game \"%s\" (count=%u ref=%u) removed from list...", game_get_name(game), game->count, game->ref);
+			eventlog(eventlog_level_debug, __FUNCTION__, "game \"{}\" (count={} ref={}) removed from list...", game_get_name(game), game->count, game->ref);
 
 			for (i = 0; i < game->count; i++)
 			{
@@ -582,41 +582,41 @@ namespace pvpgn
 						}
 					}
 				}
-				eventlog(eventlog_level_debug, __FUNCTION__, "wins: %u losses: %u draws: %u disconnects: %u", wins, losses, draws, disconnects);
+				eventlog(eventlog_level_debug, __FUNCTION__, "wins: {} losses: {} draws: {} disconnects: {}", wins, losses, draws, disconnects);
 
 				//now decide what result we give
 				if (!(reports)) // no results at all - game canceled before starting
 				{
 					game->results[i] = game_result_none;
-					eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"none\" to player %d", i);
+					eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"none\" to player {}", i);
 				}
 				else if ((disconnects >= draws) && (disconnects >= losses) && (disconnects >= wins))
 				{
 					if (discisloss)
 					{
 						game->results[i] = game_result_loss;         //losses are also bad...
-						eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"loss\" to player %d (due to discisloss)", i);
+						eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"loss\" to player {} (due to discisloss)", i);
 					}
 					else
 					{
 						game->results[i] = game_result_disconnect; //consider disconnects the worst case...
-						eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"disconnect\" to player %d", i);
+						eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"disconnect\" to player {}", i);
 					}
 				}
 				else if ((losses >= wins) && (losses >= draws))
 				{
 					game->results[i] = game_result_loss;         //losses are also bad...
-					eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"loss\" to player %d", i);
+					eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"loss\" to player {}", i);
 				}
 				else if ((draws >= wins))
 				{
 					game->results[i] = game_result_draw;
-					eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"draw\" to player %d", i);
+					eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"draw\" to player {}", i);
 				}
 				else if (wins)
 				{
 					game->results[i] = game_result_win;
-					eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"win\" to player %d", i);
+					eventlog(eventlog_level_debug, __FUNCTION__, "deciding to give \"win\" to player {}", i);
 				}
 			}
 			return 0;
@@ -664,7 +664,7 @@ namespace pvpgn
 			{
 				if (!players[curr])
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL player[%u] (of %u)", curr, count);
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL player[{}] (of {})", curr, count);
 					return -1;
 				}
 
@@ -683,7 +683,7 @@ namespace pvpgn
 					discs++;
 					break;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "bad results[%u]=%u", curr, (unsigned int)results[curr]);
+					eventlog(eventlog_level_error, __FUNCTION__, "bad results[{}]={}", curr, (unsigned int)results[curr]);
 					return -1;
 				}
 			}
@@ -692,7 +692,7 @@ namespace pvpgn
 			{
 				if (draws != count)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "some, but not all players had a draw count=%u (winners=%u losers=%u draws=%u)", count, winners, losers, draws);
+					eventlog(eventlog_level_error, __FUNCTION__, "some, but not all players had a draw count={} (winners={} losers={} draws={})", count, winners, losers, draws);
 					return -1;
 				}
 				return 0;
@@ -700,7 +700,7 @@ namespace pvpgn
 
 			if ((discisloss) && ((losers < 1) || (winners<1) || (winners>1 && (winners != losers))))
 			{
-				eventlog(eventlog_level_info, __FUNCTION__, "missing winner or loser for count=%u (winners=%u losers=%u)", count, winners, losers);
+				eventlog(eventlog_level_info, __FUNCTION__, "missing winner or loser for count={} (winners={} losers={})", count, winners, losers);
 				return -1;
 			}
 
@@ -783,7 +783,7 @@ namespace pvpgn
 				{
 					if (!game->players[i])
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "player slot %u has NULL account", i);
+						eventlog(eventlog_level_error, __FUNCTION__, "player slot {} has NULL account", i);
 						continue;
 					}
 
@@ -826,7 +826,7 @@ namespace pvpgn
 				}
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "realcount=%d count=%u", realcount, game->count);
+			eventlog(eventlog_level_debug, __FUNCTION__, "realcount={} count={}", realcount, game->count);
 
 			if (realcount >= 1 && !game->bad)
 			{
@@ -841,7 +841,7 @@ namespace pvpgn
 
 					for (i = 0; i < realcount; i++)
 					{
-						eventlog(eventlog_level_debug, __FUNCTION__, "realplayer %u result=%u", i + 1, (unsigned int)game->results[i]);
+						eventlog(eventlog_level_debug, __FUNCTION__, "realplayer {} result={}", i + 1, (unsigned int)game->results[i]);
 
 						if ((tag_check_wolv1(game->clienttag)) || (tag_check_wolv2(game->clienttag))) {
 							id = ladder_id_solo;
@@ -858,7 +858,7 @@ namespace pvpgn
 								account_inc_ladder_disconnects(game->players[i], game->clienttag, id);
 								break;
 							default:
-								eventlog(eventlog_level_error, __FUNCTION__, "bad ladder game realplayer results[%u] = %u", i, game->results[i]);
+								eventlog(eventlog_level_error, __FUNCTION__, "bad ladder game realplayer results[{}] = {}", i, game->results[i]);
 								account_inc_ladder_disconnects(game->players[i], game->clienttag, id);
 							}
 						}
@@ -883,7 +883,7 @@ namespace pvpgn
 								account_set_ladder_last_result(game->players[i], game->clienttag, id, game_result_get_str(game_result_disconnect));
 								break;
 							default:
-								eventlog(eventlog_level_error, __FUNCTION__, "bad ladder game realplayer results[%u] = %u", i, game->results[i]);
+								eventlog(eventlog_level_error, __FUNCTION__, "bad ladder game realplayer results[{}] = {}", i, game->results[i]);
 								account_inc_ladder_disconnects(game->players[i], game->clienttag, id);
 								account_set_ladder_last_result(game->players[i], game->clienttag, id, game_result_get_str(game_result_disconnect));
 							}
@@ -930,7 +930,7 @@ namespace pvpgn
 								account_set_normal_last_result(game->players[i], game->clienttag, game_result_get_str(game_result_disconnect));
 								break;
 							default:
-								eventlog(eventlog_level_error, __FUNCTION__, "bad normal game realplayer results[%u] = %u", i, game->results[i]);
+								eventlog(eventlog_level_error, __FUNCTION__, "bad normal game realplayer results[{}] = {}", i, game->results[i]);
 								account_inc_normal_disconnects(game->players[i], game->clienttag);
 								account_set_normal_last_result(game->players[i], game->clienttag, game_result_get_str(game_result_disconnect));
 							}
@@ -969,7 +969,7 @@ namespace pvpgn
 
 			if (!(fp = std::fopen(tempname, "w")))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open report file \"%s\" for writing (std::fopen: %s)", tempname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open report file \"{}\" for writing (std::fopen: {})", tempname, std::strerror(errno));
 				if (ladder_info)
 					xfree(ladder_info);
 				xfree(realname);
@@ -1116,7 +1116,7 @@ namespace pvpgn
 
 			if (std::fclose(fp) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close report file \"%s\" after writing (std::fclose: %s)", tempname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close report file \"{}\" after writing (std::fclose: {})", tempname, std::strerror(errno));
 				xfree(realname);
 				xfree(tempname);
 				return -1;
@@ -1124,13 +1124,13 @@ namespace pvpgn
 
 			if (p_rename(tempname, realname) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not std::rename report file to \"%s\" (std::rename: %s)", realname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not std::rename report file to \"{}\" (std::rename: {})", realname, std::strerror(errno));
 				xfree(realname);
 				xfree(tempname);
 				return -1;
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "game report saved as \"%s\"", realname);
+			eventlog(eventlog_level_debug, __FUNCTION__, "game report saved as \"{}\"", realname);
 			xfree(realname);
 			xfree(tempname);
 			return 0;
@@ -1439,13 +1439,13 @@ namespace pvpgn
 			if (game->status == game_status_started &&
 				(status == game_status_open || status == game_status_full || status == game_status_loaded)) {
 				eventlog(eventlog_level_error, "game_set_status",
-					"attempting to set status '%s' (%d) to started game", game_status_get_str(status), status);
+					"attempting to set status '{}' ({}) to started game", game_status_get_str(status), status);
 				return;
 			}
 
 			if (game->status == game_status_done && status != game_status_done) {
 				eventlog(eventlog_level_error, "game_set_status",
-					"attempting to set status '%s' (%d) to done game", game_status_get_str(status), status);
+					"attempting to set status '{}' ({}) to done game", game_status_get_str(status), status);
 				return;
 			}
 
@@ -1503,17 +1503,17 @@ namespace pvpgn
 			}
 			if (game->ref < 1)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "game \"%s\" has no players", game_get_name(game));
+				eventlog(eventlog_level_error, __FUNCTION__, "game \"{}\" has no players", game_get_name(game));
 				return 0;
 			}
 			if (!game->players)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "game \"%s\" has NULL players array (ref=%u)", game_get_name(game), game->ref);
+				eventlog(eventlog_level_error, __FUNCTION__, "game \"{}\" has NULL players array (ref={})", game_get_name(game), game->ref);
 				return 0;
 			}
 			if (!game->players[0])
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "game \"%s\" has NULL players[0] entry (ref=%u)", game_get_name(game), game->ref);
+				eventlog(eventlog_level_error, __FUNCTION__, "game \"{}\" has NULL players[0] entry (ref={})", game_get_name(game), game->ref);
 				return 0;
 			}
 
@@ -1529,17 +1529,17 @@ namespace pvpgn
 			}
 			if (game->ref < 1)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "game \"%s\" has no players", game_get_name(game));
+				eventlog(eventlog_level_error, __FUNCTION__, "game \"{}\" has no players", game_get_name(game));
 				return NULL;
 			}
 			if (!game->players)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "game \"%s\" has NULL player array (ref=%u)", game_get_name(game), game->ref);
+				eventlog(eventlog_level_error, __FUNCTION__, "game \"{}\" has NULL player array (ref={})", game_get_name(game), game->ref);
 				return NULL;
 			}
 			if (!game->players[i])
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "game \"%s\" has NULL players[i] entry (ref=%u)", game_get_name(game), game->ref);
+				eventlog(eventlog_level_error, __FUNCTION__, "game \"{}\" has NULL players[i] entry (ref={})", game_get_name(game), game->ref);
 				return NULL;
 			}
 			return game->connections[i];
@@ -1578,7 +1578,7 @@ namespace pvpgn
 			}
 			if (startver != STARTVER_UNKNOWN && startver != STARTVER_GW1 && startver != STARTVER_GW3 && startver != STARTVER_GW4 && startver != STARTVER_REALM1)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got bad game startver %d", startver);
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad game startver {}", startver);
 				return -1;
 			}
 			if (!c)
@@ -1605,7 +1605,7 @@ namespace pvpgn
 
 			if (game->pass[0] != '\0' && strcasecmp(game->pass, pass) != 0)
 			{
-				eventlog(eventlog_level_debug, __FUNCTION__, "game \"%s\" password mismatch \"%s\"!=\"%s\"", game_get_name(game), game->pass, pass);
+				eventlog(eventlog_level_debug, __FUNCTION__, "game \"{}\" password mismatch \"{}\"!=\"{}\"", game_get_name(game), game->pass, pass);
 				return -1;
 			}
 
@@ -1683,7 +1683,7 @@ namespace pvpgn
 			} // end of "if ((i == game->count) || (game->count == 0))"
 
 			if (game->startver != startver && startver != STARTVER_UNKNOWN) /* with join startver ALWAYS unknown [KWS] */
-				eventlog(eventlog_level_error, __FUNCTION__, "player \"%s\" client \"%s\" startver %u joining game startver %u (count=%u ref=%u)", account_get_name(conn_get_account(c)), clienttag_uint_to_str(conn_get_clienttag(c)), startver, game->startver, game->count, game->ref);
+				eventlog(eventlog_level_error, __FUNCTION__, "player \"{}\" client \"{}\" startver {} joining game startver {} (count={} ref={})", account_get_name(conn_get_account(c)), clienttag_uint_to_str(conn_get_clienttag(c)), startver, game->startver, game->count, game->ref);
 
 			game_choose_host(game);
 
@@ -1724,17 +1724,17 @@ namespace pvpgn
 				conn_set_leavegamewhisper_ack(c, 1); //1 = already whispered. We reset this each std::time user joins a channel
 			}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "game \"%s\" has ref=%u, count=%u; trying to remove player \"%s\"", game_get_name(game), game->ref, game->count, account_get_name(account));
+			eventlog(eventlog_level_debug, __FUNCTION__, "game \"{}\" has ref={}, count={}; trying to remove player \"{}\"", game_get_name(game), game->ref, game->count, account_get_name(account));
 
 			for (i = 0; i < game->count; i++)
 			if (game->players[i] == account && game->connections[i])
 			{
-				eventlog(eventlog_level_debug, __FUNCTION__, "removing player #%u \"%s\" from \"%s\", %u players left", i, (tname = account_get_name(account)), game_get_name(game), game->ref - 1);
+				eventlog(eventlog_level_debug, __FUNCTION__, "removing player #{} \"{}\" from \"{}\", {} players left", i, (tname = account_get_name(account)), game_get_name(game), game->ref - 1);
 				game->connections[i] = NULL;
 				if (!(game->reported_results[i]))
-					eventlog(eventlog_level_debug, __FUNCTION__, "player \"%s\" left without reporting (valid) results", tname);
+					eventlog(eventlog_level_debug, __FUNCTION__, "player \"{}\" left without reporting (valid) results", tname);
 
-				eventlog(eventlog_level_debug, __FUNCTION__, "player deleted... (ref=%u)", game->ref);
+				eventlog(eventlog_level_debug, __FUNCTION__, "player deleted... (ref={})", game->ref);
 
 				if (game->ref < 2)
 				{
@@ -1756,7 +1756,7 @@ namespace pvpgn
 				return 0;
 			}
 
-			eventlog(eventlog_level_error, __FUNCTION__, "player \"%s\" was not in the game", account_get_name(account));
+			eventlog(eventlog_level_error, __FUNCTION__, "player \"{}\" was not in the game", account_get_name(account));
 			return -1;
 		}
 
@@ -1770,7 +1770,7 @@ namespace pvpgn
 
 			if (!(i < game->count))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "requested illegal player id %u", i);
+				eventlog(eventlog_level_error, __FUNCTION__, "requested illegal player id {}", i);
 				return NULL;
 			}
 
@@ -1827,7 +1827,7 @@ namespace pvpgn
 			}
 			if (pos == game->count)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not find player \"%s\" to set result", account_get_name(account));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not find player \"{}\" to set result", account_get_name(account));
 				return -1;
 			}
 
@@ -1879,13 +1879,13 @@ namespace pvpgn
 
 			if (i == game->count)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not find player \"%s\" to set reported results", account_get_name(account));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not find player \"{}\" to set reported results", account_get_name(account));
 				return -1;
 			}
 
 			if (game->reported_results[i])
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "player \"%s\" already reported results - skipping this report", account_get_name(account));
+				eventlog(eventlog_level_error, __FUNCTION__, "player \"{}\" already reported results - skipping this report", account_get_name(account));
 				return -1;
 			}
 
@@ -1906,11 +1906,11 @@ namespace pvpgn
 				default: /* result is invalid */
 					if (i != j)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "ignoring bad reported result %u for player \"%s\"", (unsigned int)result, account_get_name(game->players[j]));
+						eventlog(eventlog_level_error, __FUNCTION__, "ignoring bad reported result {} for player \"{}\"", (unsigned int)result, account_get_name(game->players[j]));
 						results[i] = game_result_none;
 					}
 					else {
-						eventlog(eventlog_level_error, __FUNCTION__, "got bad reported result %u for self - skipping results", (unsigned int)result);
+						eventlog(eventlog_level_error, __FUNCTION__, "got bad reported result {} for self - skipping results", (unsigned int)result);
 						return -1;
 					}
 				}
@@ -2001,13 +2001,13 @@ namespace pvpgn
 
 			if (i == game->count)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not find player \"%s\" to set reported results", account_get_name(account));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not find player \"{}\" to set reported results", account_get_name(account));
 				return NULL;
 			}
 
 			if (!(game->reported_results[i]))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "player \"%s\" has not reported any results", account_get_name(account));
+				eventlog(eventlog_level_error, __FUNCTION__, "player \"{}\" has not reported any results", account_get_name(account));
 				return NULL;
 			}
 

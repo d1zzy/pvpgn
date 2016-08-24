@@ -57,7 +57,7 @@ namespace pvpgn
 		maxsys = get_socket_limit();
 		if (maxsys > 0) maxcons = (maxcons < maxsys) ? maxcons : maxsys;
 		if (maxcons < 32) {
-			eventlog(eventlog_level_fatal, __FUNCTION__, "too few sockets available (%d)", maxcons);
+			eventlog(eventlog_level_fatal, __FUNCTION__, "too few sockets available ({})", maxcons);
 			return -1;
 		}
 		fdw_maxcons = maxcons;
@@ -100,7 +100,7 @@ namespace pvpgn
 		}
 #endif
 
-		FATAL0("Found no working fdwatch layer");
+		eventlog(eventlog_level_fatal, __FUNCTION__, "Found no working fdwatch layer");
 		fdw = NULL;
 		fdwatch_close();
 		return -1;

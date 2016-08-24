@@ -78,7 +78,7 @@ namespace pvpgn
 
 			if (packet_get_size(packet) < sizeof(t_client_findanongame_profile_clan))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad ANONGAME_PROFILE_CLAN packet (expected %lu bytes, got %u)", conn_get_socket(c), sizeof(t_client_findanongame_profile_clan), packet_get_size(packet));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad ANONGAME_PROFILE_CLAN packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_findanongame_profile_clan), packet_get_size(packet));
 				return -1;
 			}
 
@@ -155,11 +155,11 @@ namespace pvpgn
 
 
 			Count = bn_int_get(packet->u.client_findanongame.count);
-			eventlog(eventlog_level_info, __FUNCTION__, "[%d] got a FINDANONGAME PROFILE packet", conn_get_socket(c));
+			eventlog(eventlog_level_info, __FUNCTION__, "[{}] got a FINDANONGAME PROFILE packet", conn_get_socket(c));
 
 			if (!(username = packet_get_str_const(packet, sizeof(t_client_findanongame_profile), MAX_USERNAME_LEN)))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad FINDANONGAME_PROFILE (missing or too long username)", conn_get_socket(c));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad FINDANONGAME_PROFILE (missing or too long username)", conn_get_socket(c));
 				return -1;
 			}
 
@@ -177,14 +177,14 @@ namespace pvpgn
 			else
 				ctag = conn_get_clienttag(dest_c);
 
-			eventlog(eventlog_level_info, __FUNCTION__, "Looking up %s's %s Stats.", username, tag_uint_to_str(clienttag_str, ctag));
+			eventlog(eventlog_level_info, __FUNCTION__, "Looking up {}'s {} Stats.", username, tag_uint_to_str(clienttag_str, ctag));
 
 			if (account_get_ladder_level(account, ctag, ladder_id_solo) <= 0 &&
 				account_get_ladder_level(account, ctag, ladder_id_team) <= 0 &&
 				account_get_ladder_level(account, ctag, ladder_id_ffa) <= 0 &&
 				account_get_teams(account) == NULL)
 			{
-				eventlog(eventlog_level_info, __FUNCTION__, "%s does not have WAR3 Stats.", username);
+				eventlog(eventlog_level_info, __FUNCTION__, "{} does not have WAR3 Stats.", username);
 				if (!(rpacket = packet_create(packet_class_bnet)))
 					return -1;
 				packet_set_size(rpacket, sizeof(t_server_findanongame_profile2));
@@ -398,7 +398,7 @@ namespace pvpgn
 				conn_push_outqueue(c, rpacket);
 				packet_del_ref(rpacket);
 
-				eventlog(eventlog_level_info, __FUNCTION__, "Sent %s's WAR3 Stats (including %d teams) to requestor.", username, teamcount);
+				eventlog(eventlog_level_info, __FUNCTION__, "Sent {}'s WAR3 Stats (including {} teams) to requestor.", username, teamcount);
 			}
 			return 0;
 		}
@@ -412,7 +412,7 @@ namespace pvpgn
 			t_anongame *a = conn_get_anongame(c);
 			int a_count, i;
 
-			eventlog(eventlog_level_info, __FUNCTION__, "[%d] got FINDANONGAME CANCEL packet", conn_get_socket(c));
+			eventlog(eventlog_level_info, __FUNCTION__, "[{}] got FINDANONGAME CANCEL packet", conn_get_socket(c));
 
 			if (!a)
 				return -1;
@@ -485,7 +485,7 @@ namespace pvpgn
 					table_height = 4;
 				}
 
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] got FINDANONGAME Get Icons packet", conn_get_socket(c));
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] got FINDANONGAME Get Icons packet", conn_get_socket(c));
 
 				if ((rpacket = packet_create(packet_class_bnet)) == NULL) {
 					eventlog(eventlog_level_error, __FUNCTION__, "could not create new packet");
@@ -586,11 +586,11 @@ namespace pvpgn
 			//user_icon[4]=0;
 			if (desired_icon == 0){
 				std::strcpy(user_icon, "1O3W"); // 103W is equal to Default Icon
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] Set icon packet to DEFAULT ICON [%4.4s]", conn_get_socket(c), user_icon);
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] Set icon packet to DEFAULT ICON [{}]", conn_get_socket(c), user_icon);
 			}
 			else{
 				std::memcpy(user_icon, &desired_icon, 4);
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] Set icon packet to ICON [%s]", conn_get_socket(c), user_icon);
+				eventlog(eventlog_level_info, __FUNCTION__, "[%d] Set icon packet to ICON [{}]", conn_get_socket(c), user_icon);
 			}
 
 			account = conn_get_account(c);
@@ -599,7 +599,7 @@ namespace pvpgn
 			if (check_user_icon(account, user_icon) == 0)
 			{
 				std::strcpy(user_icon, "1O3W"); // set icon to default
-				eventlog(eventlog_level_info, __FUNCTION__, "[%s] \"%s\" ICON SWITCH hack attempt, icon set to default ", conn_get_username(c), user_icon);
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] \"{}\" ICON SWITCH hack attempt, icon set to default ", conn_get_username(c), user_icon);
 				//conn_set_state(c,conn_state_destroy); // dont kill user session
 			}
 
@@ -625,7 +625,7 @@ namespace pvpgn
 
 			len = std::strlen(user_icon);
 			if (len != 4)
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid user icon '%s'", user_icon);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid user icon '{}'", user_icon);
 
 			for (i = 0; i < len && i < 2; i++)
 				temp_str[i] = user_icon[i];
@@ -754,7 +754,7 @@ namespace pvpgn
 						packet_append_data(rpacket, tmpdata, tmplen);
 						noitems++;
 						server_tag_count++;
-						eventlog(eventlog_level_debug, __FUNCTION__, "client_tag request tagid=(0x%01x) tag=(%s)  tag_unk=(0x%04x)", i, "CLIENT_FINDANONGAME_INFOTAG_URL", client_tag_unk);
+						eventlog(eventlog_level_debug, __FUNCTION__, "client_tag request tagid=(0x{:01x}) tag=({})  tag_unk=(0x{:04x})", i, "CLIENT_FINDANONGAME_INFOTAG_URL", client_tag_unk);
 						break;
 					case CLIENT_FINDANONGAME_INFOTAG_MAP:
 						bn_int_set((bn_int*)&server_tag_unk, 0x70E2E0D5);
@@ -764,7 +764,7 @@ namespace pvpgn
 						packet_append_data(rpacket, tmpdata, tmplen);
 						noitems++;
 						server_tag_count++;
-						eventlog(eventlog_level_debug, __FUNCTION__, "client_tag request tagid=(0x%01x) tag=(%s)  tag_unk=(0x%04x)", i, "CLIENT_FINDANONGAME_INFOTAG_MAP", client_tag_unk);
+						eventlog(eventlog_level_debug, __FUNCTION__, "client_tag request tagid=(0x{:01x}) tag=({})  tag_unk=(0x{:04x})", i, "CLIENT_FINDANONGAME_INFOTAG_MAP", client_tag_unk);
 						break;
 					case CLIENT_FINDANONGAME_INFOTAG_TYPE:
 						bn_int_set((bn_int*)&server_tag_unk, 0x7C87DEEE);
@@ -774,7 +774,7 @@ namespace pvpgn
 						packet_append_data(rpacket, tmpdata, tmplen);
 						noitems++;
 						server_tag_count++;
-						eventlog(eventlog_level_debug, __FUNCTION__, "client_tag request tagid=(0x%01x) tag=(%s) tag_unk=(0x%04x)", i, "CLIENT_FINDANONGAME_INFOTAG_TYPE", client_tag_unk);
+						eventlog(eventlog_level_debug, __FUNCTION__, "client_tag request tagid=(0x{:01x}) tag=({}) tag_unk=(0x{:04x})", i, "CLIENT_FINDANONGAME_INFOTAG_TYPE", client_tag_unk);
 						break;
 					case CLIENT_FINDANONGAME_INFOTAG_DESC:
 						bn_int_set((bn_int*)&server_tag_unk, 0xA4F0A22F);
@@ -782,7 +782,7 @@ namespace pvpgn
 						packet_append_data(rpacket, &server_tag_unk, 4);
 						tmpdata = anongame_infos_data_get_desc(langstr, clienttag, conn_get_versionid(c), &tmplen);
 						packet_append_data(rpacket, tmpdata, tmplen);
-						eventlog(eventlog_level_debug, __FUNCTION__, "client_tag request tagid=(0x%01x) tag=(%s) tag_unk=(0x%04x)", i, "CLIENT_FINDANONGAME_INFOTAG_DESC", client_tag_unk);
+						eventlog(eventlog_level_debug, __FUNCTION__, "client_tag request tagid=(0x{:01x}) tag=({}) tag_unk=(0x{:04x})", i, "CLIENT_FINDANONGAME_INFOTAG_DESC", client_tag_unk);
 						noitems++;
 						server_tag_count++;
 						break;
@@ -794,10 +794,10 @@ namespace pvpgn
 						packet_append_data(rpacket, tmpdata, tmplen);
 						noitems++;
 						server_tag_count++;
-						eventlog(eventlog_level_debug, __FUNCTION__, "client_tag request tagid=(0x%01x) tag=(%s) tag_unk=(0x%04x)", i, "CLIENT_FINDANONGAME_INFOTAG_LADR", client_tag_unk);
+						eventlog(eventlog_level_debug, __FUNCTION__, "client_tag request tagid=(0x{:01x}) tag=({}) tag_unk=(0x{:04x})", i, "CLIENT_FINDANONGAME_INFOTAG_LADR", client_tag_unk);
 						break;
 					default:
-						eventlog(eventlog_level_debug, __FUNCTION__, "unrec client_tag request tagid=(0x%01x) tag=(0x%04x)", i, client_tag);
+						eventlog(eventlog_level_debug, __FUNCTION__, "unrec client_tag request tagid=(0x{:01x}) tag=(0x{:04x})", i, client_tag);
 
 					}
 					//Adding a last padding null-byte
@@ -1028,7 +1028,7 @@ namespace pvpgn
 				return _client_anongame_profile_clan(c, packet);
 
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "got unhandled option %d", bn_byte_get(packet->u.client_findanongame.option));
+				eventlog(eventlog_level_error, __FUNCTION__, "got unhandled option {}", bn_byte_get(packet->u.client_findanongame.option));
 				return -1;
 			}
 		}

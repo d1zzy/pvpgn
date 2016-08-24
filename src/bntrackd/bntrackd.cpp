@@ -115,7 +115,7 @@ extern int main(int argc, char * argv[])
 		eventlog_set(stderr);
 		if (eventlog_open(prefs.logfile) < 0)
 		{
-			eventlog(eventlog_level_fatal, __FUNCTION__, "could not use file \"%s\" for the eventlog (exiting)", prefs.logfile);
+			eventlog(eventlog_level_fatal, __FUNCTION__, "could not use file \"{}\" for the eventlog (exiting)", prefs.logfile);
 			return EXIT_FAILURE;
 		}
 	}
@@ -126,7 +126,7 @@ extern int main(int argc, char * argv[])
 		switch (fork())
 		{
 		case -1:
-			eventlog(eventlog_level_error, __FUNCTION__, "could not fork (fork: %s)\n", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not fork (fork: {})", std::strerror(errno));
 			return EXIT_FAILURE;
 		case 0: /* child */
 			break;
@@ -141,7 +141,7 @@ extern int main(int argc, char * argv[])
 # ifdef HAVE_SETPGID
 		if (setpgid(0, 0) < 0)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgid: %s)\n", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgid: {})\n", std::strerror(errno));
 			return EXIT_FAILURE;
 		}
 # else
@@ -149,13 +149,13 @@ extern int main(int argc, char * argv[])
 #   ifdef SETPGRP_VOID
 		if (setpgrp() < 0)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgrp: %s)\n", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgrp: {})\n", std::strerror(errno));
 			return EXIT_FAILURE;
 		}
 #   else
 		if (setpgrp(0, 0) < 0)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgrp: %s)\n", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setpgrp: {})\n", std::strerror(errno));
 			return EXIT_FAILURE;
 		}
 #   endif
@@ -163,7 +163,7 @@ extern int main(int argc, char * argv[])
 #   ifdef HAVE_SETSID
 		if (setsid() < 0)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setsid: %s)\n", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not create new process group (setsid: {})\n", std::strerror(errno));
 			return EXIT_FAILURE;
 		}
 #   else
@@ -181,14 +181,14 @@ extern int main(int argc, char * argv[])
 
 		if (!(fp = std::fopen(prefs.pidfile, "w")))
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "unable to open pid file \"%s\" for writing (std::fopen: %s)", prefs.pidfile, std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "unable to open pid file \"{}\" for writing (std::fopen: {})", prefs.pidfile, std::strerror(errno));
 			prefs.pidfile = NULL;
 		}
 		else
 		{
 			std::fprintf(fp, "%u", (unsigned int)getpid());
 			if (std::fclose(fp) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close pid file \"%s\" after writing (std::fclose: %s)", prefs.pidfile, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close pid file \"{}\" after writing (std::fclose: {})", prefs.pidfile, std::strerror(errno));
 		}
 #else
 		eventlog(eventlog_level_warn, __FUNCTION__, "no getpid() system call, do not use the -P or the --pidfile option");
@@ -197,9 +197,9 @@ extern int main(int argc, char * argv[])
 	}
 
 #ifdef HAVE_GETPID
-	eventlog(eventlog_level_info, __FUNCTION__, "bntrackd version " PVPGN_VERSION " process %u", (unsigned int)getpid());
+	eventlog(eventlog_level_info, __FUNCTION__, "bntrackd version " PVPGN_VERSION " process {}", getpid());
 #else
-	eventlog(eventlog_level_info, __FUNCTION__, "bntrackd version "PVPGN_VERSION);
+	eventlog(eventlog_level_info, __FUNCTION__, "bntrackd version " PVPGN_VERSION);
 #endif
 
 	if (psock_init() < 0)
@@ -211,7 +211,7 @@ extern int main(int argc, char * argv[])
 	/* create the socket */
 	if ((sockfd = psock_socket(PSOCK_PF_INET, PSOCK_SOCK_DGRAM, PSOCK_IPPROTO_UDP)) < 0)
 	{
-		eventlog(eventlog_level_error, __FUNCTION__, "could not create UDP listen socket (psock_socket: %s)\n", std::strerror(psock_errno()));
+		eventlog(eventlog_level_error, __FUNCTION__, "could not create UDP listen socket (psock_socket: {})\n", std::strerror(psock_errno()));
 		return EXIT_FAILURE;
 	}
 
@@ -225,7 +225,7 @@ extern int main(int argc, char * argv[])
 		servaddr.sin_port = htons(prefs.port);
 		if (psock_bind(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "could not bind to UDP port %hu (psock_bind: %s)\n", prefs.port, std::strerror(psock_errno()));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not bind to UDP port {} (psock_bind: {})\n", prefs.port, std::strerror(psock_errno()));
 			return EXIT_FAILURE;
 		}
 	}
@@ -276,7 +276,7 @@ namespace {
 
 				if (!(outfile = std::fopen(prefs.outfile, "w")))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "unable to open file \"%s\" for writing (std::fopen: %s)", prefs.outfile, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "unable to open file \"{}\" for writing (std::fopen: {})", prefs.outfile, std::strerror(errno));
 					continue;
 				}
 
@@ -336,7 +336,7 @@ namespace {
 					}
 				}
 				if (std::fclose(outfile) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not close output file \"%s\" after writing (std::fclose: %s)", prefs.outfile, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not close output file \"{}\" after writing (std::fclose: {})", prefs.outfile, std::strerror(errno));
 
 				if (prefs.process[0] != '\0')
 					std::system(prefs.process);
@@ -355,7 +355,7 @@ namespace {
 					errno != PSOCK_EINTR &&
 #endif
 					1)
-					eventlog(eventlog_level_error, __FUNCTION__, "select failed (select: %s)", std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "select failed (select: {})", std::strerror(errno));
 			case 0: /* timeout and no sockets ready */
 				continue;
 			}
@@ -424,21 +424,21 @@ namespace {
 						inet_ntop(AF_INET, &(cliaddr.sin_addr), addrstr2, sizeof(addrstr2));
 
 						eventlog(eventlog_level_debug, __FUNCTION__,
-							"Packet received from %s:"
-							" packet_version=%" PRIu16
-							" flags=0x%08" PRIu32 "x"
-							" port=%" PRIu16
-							" software=\"%s\""
-							" version=\"%s\""
-							" platform=\"%s\""
-							" server_desc=\"%s\""
-							" server_location=\"%s\""
-							" server_url=\"%s\""
-							" contact_name=\"%s\""
-							" contact_email=\"%s\""
-							" uptime=%" PRIu32
-							" total_games=%" PRIu32
-							" total_logins=%" PRIu32,
+							"Packet received from {}:"
+							" packet_version={}"
+							" flags=0x{:08}"
+							" port={}"
+							" software=\"{}\""
+							" version=\"{}\""
+							" platform=\"{}\""
+							" server_desc=\"{}\""
+							" server_location=\"{}\""
+							" server_url=\"{}\""
+							" contact_name=\"{}\""
+							" contact_email=\"{}\""
+							" uptime={}"
+							" total_games={}"
+							" total_logins={}",
 							addrstr2,
 							bn_short_nget(packet.packet_version),
 							bn_int_nget(packet.flags),

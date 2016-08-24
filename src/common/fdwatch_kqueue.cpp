@@ -65,19 +65,19 @@ namespace pvpgn
 			int idxr;
 			t_fdwatch_fd *cfd = fdw_fds + idx;
 
-			/*    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d rw: %d", fd, rw); */
+			/*    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: {} rw: {}", fd, rw); */
 			/* adding read event filter */
 			if (!(fdw_rw(cfd) & fdwatch_type_read) && rw & fdwatch_type_read)
 			{
 				if (rridx[idx] >= 0 && rridx[idx] < nochanges && kqchanges[rridx[idx]].ident == fdw_fd(cfd))
 				{
 					idxr = rridx[idx];
-					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (read) fd on %d", ridx); */
+					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (read) fd on {}", ridx); */
 				}
 				else {
 					idxr = nochanges++;
 					rridx[idx] = idxr;
-					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (read) fd on %d", ridx); */
+					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (read) fd on {}", ridx); */
 				}
 				EV_SET(kqchanges.get() + idxr, fdw_fd(cfd), EVFILT_READ, EV_ADD, 0, 0, (void*)idx);
 			}
@@ -86,12 +86,12 @@ namespace pvpgn
 				if (rridx[idx] >= 0 && rridx[idx] < nochanges && kqchanges[rridx[idx]].ident == fdw_fd(cfd))
 				{
 					idxr = rridx[idx];
-					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (read) fd on %d", ridx); */
+					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (read) fd on {}", ridx); */
 				}
 				else {
 					idxr = nochanges++;
 					rridx[idx] = idxr;
-					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (read) fd on %d", ridx); */
+					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (read) fd on {}", ridx); */
 				}
 				EV_SET(kqchanges.get() + idxr, fdw_fd(cfd), EVFILT_READ, EV_DELETE, 0, 0, (void*)idx);
 			}
@@ -102,12 +102,12 @@ namespace pvpgn
 				if (wridx[idx] >= 0 && wridx[idx] < nochanges && kqchanges[wridx[idx]].ident == fdw_fd(cfd))
 				{
 					idxr = wridx[idx];
-					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (write) fd on %d", ridx); */
+					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (write) fd on {}", ridx); */
 				}
 				else {
 					idxr = nochanges++;
 					wridx[idx] = idxr;
-					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (write) fd on %d", ridx); */
+					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (write) fd on {}", ridx); */
 				}
 				EV_SET(kqchanges.get() + idxr, fdw_fd(cfd), EVFILT_WRITE, EV_ADD, 0, 0, (void*)idx);
 			}
@@ -116,12 +116,12 @@ namespace pvpgn
 				if (wridx[idx] >= 0 && wridx[idx] < nochanges && kqchanges[wridx[idx]].ident == fdw_fd(cfd))
 				{
 					idxr = wridx[idx];
-					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (write) fd on %d", ridx); */
+					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "updating change event (write) fd on {}", ridx); */
 				}
 				else {
 					idxr = nochanges++;
 					wridx[idx] = idxr;
-					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (write) fd on %d", ridx); */
+					/*	    eventlog(eventlog_level_trace, __FUNCTION__, "adding new change event (write) fd on {}", ridx); */
 				}
 				EV_SET(kqchanges.get() + idxr, fdw_fd(cfd), EVFILT_WRITE, EV_DELETE, 0, 0, (void*)idx);
 			}
@@ -132,7 +132,7 @@ namespace pvpgn
 	int
 		FDWKqueueBackend::del(int idx)
 	{
-			/*    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: %d", fd); */
+			/*    eventlog(eventlog_level_trace, __FUNCTION__, "called fd: {}", fd); */
 			if (sr > 0)
 				eventlog(eventlog_level_error, __FUNCTION__, "BUG: called while still handling sockets");
 
@@ -151,7 +151,7 @@ namespace pvpgn
 					if (kqchanges[nochanges].filter == EVFILT_READ &&
 						rridx[oidx] == nochanges)
 					{
-						/*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", kqchanges[rnfds].ident); */
+						/*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving {}", kqchanges[rnfds].ident); */
 						rridx[oidx] = rridx[idx];
 						std::memcpy(kqchanges.get() + rridx[idx], kqchanges.get() + nochanges, sizeof(struct kevent));
 					}
@@ -159,7 +159,7 @@ namespace pvpgn
 					if (kqchanges[nochanges].filter == EVFILT_WRITE &&
 						wridx[oidx] == nochanges)
 					{
-						/*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", kqchanges[rnfds].ident); */
+						/*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving {}", kqchanges[rnfds].ident); */
 						wridx[oidx] = rridx[idx];
 						std::memcpy(kqchanges.get() + rridx[idx], kqchanges.get() + nochanges, sizeof(struct kevent));
 					}
@@ -180,7 +180,7 @@ namespace pvpgn
 					if (kqchanges[nochanges].filter == EVFILT_READ &&
 						rridx[oidx] == nochanges)
 					{
-						/*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", kqchanges[rnfds].ident); */
+						/*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving {}", kqchanges[rnfds].ident); */
 						rridx[oidx] = wridx[idx];
 						std::memcpy(kqchanges.get() + wridx[idx], kqchanges.get() + nochanges, sizeof(struct kevent));
 					}
@@ -188,7 +188,7 @@ namespace pvpgn
 					if (kqchanges[nochanges].filter == EVFILT_WRITE &&
 						wridx[oidx] == nochanges)
 					{
-						/*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving %d", kqchanges[rnfds].ident); */
+						/*	    eventlog(eventlog_level_trace, __FUNCTION__, "not last, moving {}, kqchanges[rnfds].ident); */
 						wridx[oidx] = wridx[idx];
 						std::memcpy(kqchanges.get() + wridx[idx], kqchanges.get() + nochanges, sizeof(struct kevent));
 					}
@@ -220,7 +220,7 @@ namespace pvpgn
 			/*    eventlog(eventlog_level_trace, __FUNCTION__, "called"); */
 			for (unsigned i = 0; i < sr; i++)
 			{
-				/*      eventlog(eventlog_level_trace, __FUNCTION__, "checking %d ident: %d read: %d write: %d", i, kqevents[i].ident, kqevents[i].filter & EVFILT_READ, kqevents[i].filter & EVFILT_WRITE); */
+				/*      eventlog(eventlog_level_trace, __FUNCTION__, "checking {} ident: {} read: {} write: {}", i, kqevents[i].ident, kqevents[i].filter & EVFILT_READ, kqevents[i].filter & EVFILT_WRITE); */
 				t_fdwatch_fd *cfd = fdw_fds + (intptr_t)kqevents[i].udata;
 				if (fdw_rw(cfd) & fdwatch_type_read && kqevents[i].filter == EVFILT_READ)
 				if (fdw_hnd(cfd) (fdw_data(cfd), fdwatch_type_read) == -2)

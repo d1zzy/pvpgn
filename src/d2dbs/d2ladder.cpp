@@ -162,7 +162,7 @@ namespace pvpgn
 				d2ladder_checksum_set();
 			}
 			else {
-				eventlog(eventlog_level_error, __FUNCTION__, "error open ladder file %s", d2ladder_ladder_file);
+				eventlog(eventlog_level_error, __FUNCTION__, "error open ladder file {}", d2ladder_ladder_file);
 				return -1;
 			}
 			return 0;
@@ -266,7 +266,7 @@ namespace pvpgn
 			if (d2ladder_checksum_check() != 1) {
 				eventlog(eventlog_level_error, __FUNCTION__, "ladder file checksum error,try to use backup file");
 				if (p_rename(d2ladder_backup_file, d2ladder_ladder_file) == -1) {
-					eventlog(eventlog_level_error, __FUNCTION__, "error std::rename %s to %s", d2ladder_backup_file, d2ladder_ladder_file);
+					eventlog(eventlog_level_error, __FUNCTION__, "error std::rename {} to {}", d2ladder_backup_file, d2ladder_ladder_file);
 				}
 				if (d2ladder_checksum_check() != 1) {
 					eventlog(eventlog_level_error, __FUNCTION__, "ladder backup file checksum error,rebuild ladder");
@@ -296,7 +296,7 @@ namespace pvpgn
 				if (!(d2ladder = (t_d2ladder*)elem_get_data(elem))) continue;
 				if (d2ladder->type == type) return d2ladder;
 			}
-			eventlog(eventlog_level_error, __FUNCTION__, "could not find type %d in d2ladder_list", type);
+			eventlog(eventlog_level_error, __FUNCTION__, "could not find type {} in d2ladder_list", type);
 			return NULL;
 		}
 
@@ -383,7 +383,7 @@ namespace pvpgn
 
 			readlen = std::fread(&fileheader, 1, sizeof(fileheader), fdladder);
 			if (readlen <= 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "file %s read error(read:%s)", d2ladder_ladder_file, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "file {} read error(read:{})", d2ladder_ladder_file, std::strerror(errno));
 				std::fclose(fdladder);
 				return -1;
 			}
@@ -407,7 +407,7 @@ namespace pvpgn
 			lhead = (t_d2ladderfile_ladderindex*)xmalloc(blocksize);
 			readlen = std::fread(lhead, 1, d2ladder_maxtype*sizeof(*lhead), fdladder);
 			if (readlen <= 0) {
-				eventlog(eventlog_level_error, __FUNCTION__, "file %s read error(read:%s)", d2ladder_ladder_file, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "file {} read error(read:{})", d2ladder_ladder_file, std::strerror(errno));
 				xfree(lhead);
 				std::fclose(fdladder);
 				return -1;
@@ -430,7 +430,7 @@ namespace pvpgn
 				if (number <= 0) continue;
 				d2ladder = d2ladderlist_find_type(laddertype);
 				if (!d2ladder) {
-					eventlog(eventlog_level_error, __FUNCTION__, "could not find ladder type %d", laddertype);
+					eventlog(eventlog_level_error, __FUNCTION__, "could not find ladder type {}", laddertype);
 					continue;
 				}
 				ldata = (t_d2ladderfile_ladderinfo*)xmalloc(number*sizeof(*ldata));
@@ -439,7 +439,7 @@ namespace pvpgn
 				std::fseek(fdladder, bn_int_get(lhead[laddertype].offset), SEEK_SET);
 				readlen = std::fread(ldata, 1, number*sizeof(*ldata), fdladder);
 				if (readlen <= 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "file %s read error(read:%s)", d2ladder_ladder_file, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "file {} read error(read:{})", d2ladder_ladder_file, std::strerror(errno));
 					xfree(ldata);
 					xfree(info);
 					continue;
@@ -655,13 +655,13 @@ namespace pvpgn
 			if (d2ladder_checksum_check() == 1) {
 				eventlog(eventlog_level_info, __FUNCTION__, "backup ladder file");
 				if (p_rename(d2ladder_ladder_file, d2ladder_backup_file) == -1) {
-					eventlog(eventlog_level_warn, __FUNCTION__, "error std::rename %s to %s", d2ladder_ladder_file, d2ladder_backup_file);
+					eventlog(eventlog_level_warn, __FUNCTION__, "error std::rename {} to {}", d2ladder_ladder_file, d2ladder_backup_file);
 				}
 			}
 
 			fdladder = std::fopen(d2ladder_ladder_file, "wb");
 			if (!fdladder) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error open ladder file %s", d2ladder_ladder_file);
+				eventlog(eventlog_level_error, __FUNCTION__, "error open ladder file {}", d2ladder_ladder_file);
 				return -1;
 			}
 
@@ -706,7 +706,7 @@ namespace pvpgn
 			}
 			std::fclose(fdladder);
 			d2ladder_checksum_set();
-			eventlog(eventlog_level_info, __FUNCTION__, "ladder file saved (%d changes)", d2ladder_change_count);
+			eventlog(eventlog_level_info, __FUNCTION__, "ladder file saved ({} changes)", d2ladder_change_count);
 			d2ladder_change_count = 0;
 			return 0;
 		}
@@ -801,19 +801,19 @@ namespace pvpgn
 			if (!d2ladder_ladder_file) return -1;
 			fdladder = std::fopen(d2ladder_ladder_file, "r+b");
 			if (!fdladder) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error open ladder file %s", d2ladder_ladder_file);
+				eventlog(eventlog_level_error, __FUNCTION__, "error open ladder file {}", d2ladder_ladder_file);
 				return -1;
 			}
 			std::fseek(fdladder, 0, SEEK_END);
 			filesize = std::ftell(fdladder);
 			std::rewind(fdladder);
 			if (filesize == -1) {
-				eventlog(eventlog_level_error, __FUNCTION__, "lseek() error in ladder file %s", d2ladder_ladder_file);
+				eventlog(eventlog_level_error, __FUNCTION__, "lseek() error in ladder file {}", d2ladder_ladder_file);
 				std::fclose(fdladder);
 				return -1;
 			}
 			if (filesize < (signed)sizeof(t_d2ladderfile_header)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "ladder file size error :%s", d2ladder_ladder_file);
+				eventlog(eventlog_level_error, __FUNCTION__, "ladder file size error :{}", d2ladder_ladder_file);
 				std::fclose(fdladder);
 				return -1;
 			}
@@ -829,7 +829,7 @@ namespace pvpgn
 				if (readlen <= 0) {
 					xfree(buffer);
 					std::fclose(fdladder);
-					eventlog(eventlog_level_error, __FUNCTION__, "got bad save file or read error(read:%s)", std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "got bad save file or read error(read:{})", std::strerror(errno));
 					return -1;
 				}
 				curlen += readlen;
@@ -855,19 +855,19 @@ namespace pvpgn
 			if (!d2ladder_ladder_file) return -1;
 			fdladder = std::fopen(d2ladder_ladder_file, "rb");
 			if (!fdladder) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error open ladder file %s", d2ladder_ladder_file);
+				eventlog(eventlog_level_error, __FUNCTION__, "error open ladder file {}", d2ladder_ladder_file);
 				return -1;
 			}
 			std::fseek(fdladder, 0, SEEK_END);
 			filesize = std::ftell(fdladder);
 			std::rewind(fdladder);
 			if (filesize == -1) {
-				eventlog(eventlog_level_error, __FUNCTION__, "lseek() error in  ladder file %s", d2ladder_ladder_file);
+				eventlog(eventlog_level_error, __FUNCTION__, "lseek() error in  ladder file {}", d2ladder_ladder_file);
 				std::fclose(fdladder);
 				return -1;
 			}
 			if (filesize < (signed)sizeof(t_d2ladderfile_header)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "ladder file size error :%s", d2ladder_ladder_file);
+				eventlog(eventlog_level_error, __FUNCTION__, "ladder file size error :{}", d2ladder_ladder_file);
 				std::fclose(fdladder);
 				return -1;
 			}
@@ -883,7 +883,7 @@ namespace pvpgn
 				if (readlen <= 0) {
 					xfree(buffer);
 					std::fclose(fdladder);
-					eventlog(eventlog_level_error, __FUNCTION__, "got bad save file or read error(read:%s)", std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "got bad save file or read error(read:{})", std::strerror(errno));
 					return -1;
 				}
 				curlen += readlen;
@@ -895,11 +895,11 @@ namespace pvpgn
 			xfree(buffer);
 
 			if (oldchecksum == checksum) {
-				eventlog(eventlog_level_info, __FUNCTION__, "ladder file check pass (checksum=0x%X)", checksum);
+				eventlog(eventlog_level_info, __FUNCTION__, "ladder file check pass (checksum=0x{:X})", checksum);
 				return 1;
 			}
 			else {
-				eventlog(eventlog_level_debug, __FUNCTION__, "ladder file checksum mismatch 0x%X - 0x%X", oldchecksum, checksum);
+				eventlog(eventlog_level_debug, __FUNCTION__, "ladder file checksum mismatch 0x{:X} - 0x{:X}", oldchecksum, checksum);
 				return 0;
 			}
 		}

@@ -413,7 +413,7 @@ namespace pvpgn
 
 			if (!(src))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL %s", errstr);
+				eventlog(eventlog_level_error, __FUNCTION__, "got NULL {}", errstr);
 				return -1;
 			}
 
@@ -579,7 +579,7 @@ namespace pvpgn
 			case ANONGAME_TYPE_TY:
 				return tournament_get_format();
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "invalid queue (%d)", queue);
+				eventlog(eventlog_level_error, __FUNCTION__, "invalid queue ({})", queue);
 				return NULL;
 			}
 			return anongame_infos_DESC_get_DESC(langID, member);
@@ -645,7 +645,7 @@ namespace pvpgn
 			case ANONGAME_TYPE_TY:
 				return tournament_get_sponsor();;
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "invalid queue (%d)", queue);
+				eventlog(eventlog_level_error, __FUNCTION__, "invalid queue ({})", queue);
 				return NULL;
 			}
 			return anongame_infos_DESC_get_DESC(langID, member);
@@ -725,7 +725,7 @@ namespace pvpgn
 			case ANONGAME_TYPE_TY:
 				return tournament_get_thumbs_down();
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "invalid queue (%d)", queue);
+				eventlog(eventlog_level_error, __FUNCTION__, "invalid queue ({})", queue);
 				return 1;
 			}
 			return anongame_infos->anongame_infos_THUMBSDOWN[member];
@@ -1281,7 +1281,7 @@ namespace pvpgn
 				return parse_DESC;
 			}
 			else
-				eventlog(eventlog_level_error, __FUNCTION__, "got invalid section name: %s", text);
+				eventlog(eventlog_level_error, __FUNCTION__, "got invalid section name: {}", text);
 			return parse_UNKNOWN;
 		}
 
@@ -1323,7 +1323,7 @@ namespace pvpgn
 
 			if (!(fp = std::fopen(filename, "r")))
 			{
-				eventlog(eventlog_level_error, "anongameinfo_load", "could not open file \"%s\" for reading (std::fopen: %s), using default values", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, "anongameinfo_load", "could not open file \"{}\" for reading (std::fopen: {}), using default values", filename, std::strerror(errno));
 				goto anongame_infos_loading_failure;
 			}
 
@@ -1374,7 +1374,7 @@ namespace pvpgn
 					{
 										  if ((buff[0] != '[') || (buff[std::strlen(buff) - 1] != ']'))
 										  {
-											  eventlog(eventlog_level_error, __FUNCTION__, "expected [] section start, but found %s on line %u", buff, line);
+											  eventlog(eventlog_level_error, __FUNCTION__, "expected [] section start, but found {} on line {}", buff, line);
 										  }
 										  else
 										  {
@@ -1413,7 +1413,7 @@ namespace pvpgn
 									   {
 										   anongame_infos_DESC = anongame_infos_DESC_init();
 										   parse_state = unchanged;
-										   eventlog(eventlog_level_info, __FUNCTION__, "got langID: [%s]", langID);
+										   eventlog(eventlog_level_info, __FUNCTION__, "got langID: [{}]", langID);
 										   if (langID[0] != '\0')
 											   anongame_infos_DESC->langID = xstrdup(langID);
 									   }

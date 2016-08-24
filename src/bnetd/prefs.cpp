@@ -880,12 +880,12 @@ namespace pvpgn
 
 			fd = std::fopen(filename, "rt");
 			if (!fd) {
-				eventlog(eventlog_level_error, __FUNCTION__, "could not open file '%s'", filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "could not open file '{}'", filename);
 				return -1;
 			}
 
 			if (conf_load_file(fd, conf_table)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error loading config file '%s'", filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "error loading config file '{}'", filename);
 				std::fclose(fd);
 				return -1;
 			}
@@ -3232,11 +3232,11 @@ namespace pvpgn
 
 			if (!rez && valstr) {
 				if (prefs_runtime_config.clan_max_members < CLAN_MIN_MEMBERS) {
-					WARN1("Cannot set clan max members to %u lower than 10, setting to 10.", prefs_runtime_config.clan_max_members);
+					WARN1("Cannot set clan max members to {} lower than 10, setting to 10.", prefs_runtime_config.clan_max_members);
 					prefs_runtime_config.clan_max_members = CLAN_MIN_MEMBERS;
 				}
 				else if (prefs_runtime_config.clan_max_members > CLAN_MAX_MEMBERS) {
-					WARN1("Cannot set clan max members to %u higher than 100, setting to 100.", prefs_runtime_config.clan_max_members);
+					WARN1("Cannot set clan max members to {} higher than 100, setting to 100.", prefs_runtime_config.clan_max_members);
 					prefs_runtime_config.clan_max_members = CLAN_MAX_MEMBERS;
 				}
 			}

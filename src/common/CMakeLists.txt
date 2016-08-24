@@ -20,7 +20,7 @@ set(COMMON_SOURCES
 	xstring.cpp xstring.h gui_printf.h gui_printf.cpp 
 	bigint.cpp bigint.h bnetsrp3.cpp bnetsrp3.h peerchat.cpp peerchat.h
     wol_gameres_protocol.h
-	format.cpp format.h pugiconfig.h pugixml.cpp pugixml.h)
+	format.cc format.h pugiconfig.h pugixml.cpp pugixml.h)
 add_library(common
   ${COMMON_SOURCES}
 )

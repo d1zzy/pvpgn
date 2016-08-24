@@ -77,7 +77,7 @@ extern int sqlist_check_timeout(void)
 	BEGIN_LIST_TRAVERSE_DATA(sqlist_head, sq, t_sq)
 	{
 		if (now - sq->ctime > prefs_get_sq_timeout()) {
-			eventlog(eventlog_level_info,__FUNCTION__,"destroying expired server queue %d",sq->seqno);
+			eventlog(eventlog_level_info,__FUNCTION__,"destroying expired server queue {}",sq->seqno);
 			sq_destroy(sq,&curr_elem_);
 		}
 	}

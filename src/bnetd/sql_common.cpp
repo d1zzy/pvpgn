@@ -118,7 +118,7 @@ namespace pvpgn
 				else if (strcasecmp(tok, "prefix") == 0)
 					pref = p + 1;
 				else
-					eventlog(eventlog_level_warn, __FUNCTION__, "unknown token in storage_path : '%s'", tok);
+					eventlog(eventlog_level_warn, __FUNCTION__, "unknown token in storage_path : '{}'", tok);
 			}
 
 			if (driver == NULL)
@@ -196,7 +196,7 @@ namespace pvpgn
 					break;
 				}
 #endif				/* WITH_SQL_ODBC */
-				eventlog(eventlog_level_error, __FUNCTION__, "no driver found for '%s'", driver);
+				eventlog(eventlog_level_error, __FUNCTION__, "no driver found for '{}'", driver);
 				xfree((void *)path);
 				return -1;
 			} while (0);
@@ -239,9 +239,9 @@ namespace pvpgn
 			}
 
 			std::snprintf(query, sizeof(query), "SELECT max(" SQL_UID_FIELD ") FROM %sBNET", tab_prefix);
-			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+			eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 			if ((result = sql->query_res(query)) == NULL) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"SELECT max(" SQL_UID_FIELD ") FROM %sBNET\"", tab_prefix);
+				eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"SELECT max(" SQL_UID_FIELD ") FROM {}BNET\"", tab_prefix);
 				return 0;
 			}
 
@@ -286,7 +286,7 @@ namespace pvpgn
 			if (!FLAG_ISSET(flag, ST_FORCE)) return 1;
 
 			std::snprintf(query, sizeof(query), "SELECT DISTINCT(" SQL_UID_FIELD ") FROM %sBNET", tab_prefix);
-			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+			eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 			if ((result = sql->query_res(query)) != NULL)
 			{
 				if (sql->num_rows(result) <= 1)
@@ -314,7 +314,7 @@ namespace pvpgn
 			}
 			else
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "error query db (query:\"%s\")", query);
+				eventlog(eventlog_level_error, __FUNCTION__, "error query db (query:\"{}\")", query);
 				return -1;
 			}
 
@@ -367,7 +367,7 @@ namespace pvpgn
 			}
 
 			std::snprintf(query, sizeof(query), "SELECT cid, short, name, motd, creation_time FROM %sclan WHERE cid > 0", tab_prefix);
-			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+			eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 			if ((result = sql->query_res(query)) != NULL)
 			{
 				if (sql->num_rows(result) < 1)
@@ -404,7 +404,7 @@ namespace pvpgn
 					clan->members = list_create();
 
 					std::snprintf(query, sizeof(query), "SELECT " SQL_UID_FIELD ", status, join_time FROM %sclanmember WHERE cid='%u'", tab_prefix, clan->clanid);
-					eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+					eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 					if ((result2 = sql->query_res(query)) != NULL)
 					{
 						if (sql->num_rows(result2) >= 1)
@@ -420,7 +420,7 @@ namespace pvpgn
 								continue;
 							if (!(member->memberacc = accountlist_find_account_by_uid(member_uid)))
 							{
-								eventlog(eventlog_level_error, __FUNCTION__, "cannot find uid %u", member_uid);
+								eventlog(eventlog_level_error, __FUNCTION__, "cannot find uid {}", member_uid);
 								xfree((void *)member);
 								continue;
 							}
@@ -439,20 +439,20 @@ namespace pvpgn
 							list_append_data(clan->members, member);
 
 							account_set_clanmember(member->memberacc, member);
-							eventlog(eventlog_level_trace, __FUNCTION__, "added member: uid: %i status: %c join_time: %u", member_uid, member->status + '0', (unsigned)member->join_time);
+							eventlog(eventlog_level_trace, __FUNCTION__, "added member: uid: {} status: {} join_time: {}", member_uid, member->status + '0', (unsigned)member->join_time);
 						}
 						sql->free_result(result2);
 						cb(clan);
 					}
 					else
-						eventlog(eventlog_level_error, __FUNCTION__, "error query db (query:\"%s\")", query);
+						eventlog(eventlog_level_error, __FUNCTION__, "error query db (query:\"{}\")", query);
 				}
 
 				sql->free_result(result);
 			}
 			else
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "error query db (query:\"%s\")", query);
+				eventlog(eventlog_level_error, __FUNCTION__, "error query db (query:\"{}\")", query);
 				return -1;
 			}
 			return 0;
@@ -475,7 +475,7 @@ namespace pvpgn
 			}
 
 			std::snprintf(query, sizeof(query), "SELECT count(*) FROM %sclan WHERE cid='%u'", tab_prefix, clan->clanid);
-			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+			eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 			if ((result = sql->query_res(query)) != NULL)
 			{
 				row = sql->fetch_row(result);
@@ -492,11 +492,11 @@ namespace pvpgn
 					std::snprintf(query, sizeof(query), "INSERT INTO %sclan (cid, short, name, motd, creation_time) VALUES('%u', '%d', '%s', '%s', '%u')", tab_prefix, clan->clanid, clan->tag, clan->clanname, esc_motd, (unsigned)clan->creation_time);
 				else
 					std::snprintf(query, sizeof(query), "UPDATE %sclan SET short='%d', name='%s', motd='%s', creation_time='%u' WHERE cid='%u'", tab_prefix, clan->tag, clan->clanname, esc_motd, (unsigned)clan->creation_time, clan->clanid);
-				eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+				eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 				
 				if (sql->query(query) < 0)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"%s\"", query);
+					eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"{}\"", query);
 					return -1;
 				}
 				LIST_TRAVERSE(clan->members, curr)
@@ -519,7 +519,7 @@ namespace pvpgn
 					{
 						uid = account_get_uid(member->memberacc);
 						std::snprintf(query, sizeof(query), "SELECT count(*) FROM %sclanmember WHERE " SQL_UID_FIELD "='%u'", tab_prefix, uid);
-						eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+						eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 						if ((result = sql->query_res(query)) != NULL)
 						{
 							row = sql->fetch_row(result);
@@ -535,16 +535,16 @@ namespace pvpgn
 								std::snprintf(query, sizeof(query), "INSERT INTO %sclanmember (cid, " SQL_UID_FIELD ", status, join_time) VALUES('%u', '%u', '%d', '%u')", tab_prefix, clan->clanid, uid, member->status, (unsigned)member->join_time);
 							else
 								std::snprintf(query, sizeof(query), "UPDATE %sclanmember SET cid='%u', status='%d', join_time='%u' WHERE " SQL_UID_FIELD "='%u'", tab_prefix, clan->clanid, member->status, (unsigned)member->join_time, uid);
-							eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+							eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 							if (sql->query(query) < 0)
 							{
-								eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"%s\"", query);
+								eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"{}\"", query);
 								return -1;
 							}
 						}
 						else
 						{
-							eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"%s\"", query);
+							eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"{}\"", query);
 							return -1;
 						}
 						member->modified = 0;
@@ -553,7 +553,7 @@ namespace pvpgn
 			}
 			else
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"%s\"", query);
+				eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"{}\"", query);
 				return -1;
 			}
 
@@ -572,11 +572,11 @@ namespace pvpgn
 			}
 
 			std::snprintf(query, sizeof(query), "SELECT cid FROM %sclan WHERE short = '%d'", tab_prefix, clantag);
-			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+			eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 
 			if (!(result = sql->query_res(query)))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "error query db (query:\"%s\")", query);
+				eventlog(eventlog_level_error, __FUNCTION__, "error query db (query:\"{}\")", query);
 				return -1;
 			}
 
@@ -590,11 +590,11 @@ namespace pvpgn
 			{
 				unsigned int cid = std::atoi(row[0]);
 				std::snprintf(query, sizeof(query), "DELETE FROM %sclanmember WHERE cid='%u'", tab_prefix, cid);
-				eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+				eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 				if (sql->query(query) != 0)
 					return -1;
 				std::snprintf(query, sizeof(query), "DELETE FROM %sclan WHERE cid='%u'", tab_prefix, cid);
-				eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+				eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 				if (sql->query(query) != 0)
 					return -1;
 			}
@@ -613,10 +613,10 @@ namespace pvpgn
 			}
 
 			std::snprintf(query, sizeof(query), "DELETE FROM %sclanmember WHERE " SQL_UID_FIELD "='%u'", tab_prefix, uid);
-			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+			eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 			if (sql->query(query) != 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"%s\"", query);
+				eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"{}\"", query);
 				return -1;
 			}
 
@@ -643,7 +643,7 @@ namespace pvpgn
 			}
 
 			std::snprintf(query, sizeof(query), "SELECT teamid, size, clienttag, lastgame, member1, member2, member3, member4, wins,losses, xp, level, rank FROM %sarrangedteam WHERE teamid > 0", tab_prefix);
-			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+			eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 			if ((result = sql->query_res(query)) != NULL)
 			{
 				if (sql->num_rows(result) < 1)
@@ -707,7 +707,7 @@ namespace pvpgn
 					team->level = std::atoi(row[11]);
 					team->rank = std::atoi(row[12]);
 
-					eventlog(eventlog_level_trace, __FUNCTION__, "succesfully loaded team %u", team->teamid);
+					eventlog(eventlog_level_trace, __FUNCTION__, "succesfully loaded team {}", team->teamid);
 					cb(team);
 				load_team_failure:
 					;
@@ -717,7 +717,7 @@ namespace pvpgn
 			}
 			else
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "error query db (query:\"%s\")", query);
+				eventlog(eventlog_level_error, __FUNCTION__, "error query db (query:\"{}\")", query);
 				return -1;
 			}
 			return 0;
@@ -737,7 +737,7 @@ namespace pvpgn
 			}
 
 			std::snprintf(query, sizeof(query), "SELECT count(*) FROM %sarrangedteam WHERE teamid='%u'", tab_prefix, team->teamid);
-			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+			eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 			if ((result = sql->query_res(query)) != NULL)
 			{
 				row = sql->fetch_row(result);
@@ -753,16 +753,16 @@ namespace pvpgn
 					std::snprintf(query, sizeof(query), "INSERT INTO %sarrangedteam (teamid, size, clienttag, lastgame, member1, member2, member3, member4, wins,losses, xp, level, rank) VALUES('%u', '%c', '%s', '%u', '%u', '%u', '%u', '%u', '%d', '%d', '%d', '%d', '%d')", tab_prefix, team->teamid, team->size + '0', clienttag_uint_to_str(team->clienttag), (unsigned int)team->lastgame, team->teammembers[0], team->teammembers[1], team->teammembers[2], team->teammembers[3], team->wins, team->losses, team->xp, team->level, team->rank);
 				else
 					std::snprintf(query, sizeof(query), "UPDATE %sarrangedteam SET size='%c', clienttag='%s', lastgame='%u', member1='%u', member2='%u', member3='%u', member4='%u', wins='%d', losses='%d', xp='%d', level='%d', rank='%d' WHERE teamid='%u'", tab_prefix, team->size + '0', clienttag_uint_to_str(team->clienttag), (unsigned int)team->lastgame, team->teammembers[0], team->teammembers[1], team->teammembers[2], team->teammembers[3], team->wins, team->losses, team->xp, team->level, team->rank, team->teamid);
-				eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+				eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 				if (sql->query(query) < 0)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"%s\"", query);
+					eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"{}\"", query);
 					return -1;
 				}
 			}
 			else
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"%s\"", query);
+				eventlog(eventlog_level_error, __FUNCTION__, "error trying query: \"{}\"", query);
 				return -1;
 			}
 
@@ -778,7 +778,7 @@ namespace pvpgn
 			}
 
 			std::snprintf(query, sizeof(query), "DELETE FROM %sarrangedteam WHERE teamid='%u'", tab_prefix, teamid);
-			eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+			eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 			if (sql->query(query) != 0)
 				return -1;
 

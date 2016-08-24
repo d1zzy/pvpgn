@@ -185,7 +185,7 @@ namespace pvpgn
 		{
 			char const * data_in_hex;
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "Initial Data for %s, %s %s",
+			eventlog(eventlog_level_debug, __FUNCTION__, "Initial Data for {}, {} {}",
 				character->name,
 				character_expansion_to_expansionname(expansion),
 				character_class_to_classname(chclass));
@@ -287,7 +287,7 @@ namespace pvpgn
 
 			if (account_check_closed_character(account, clienttag, realmname, name))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "a character with the name \"%s\" does already exist in realm \"%s\"", name, realmname);
+				eventlog(eventlog_level_error, __FUNCTION__, "a character with the name \"{}\" does already exist in realm \"{}\"", name, realmname);
 				xfree((void *)ch->realmname); /* avoid warning */
 				xfree((void *)ch->name); /* avoid warning */
 				xfree(ch);
@@ -432,7 +432,7 @@ namespace pvpgn
 			{
 				if (!tok2)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "bad character list \"%s\"", temp);
+					eventlog(eventlog_level_error, __FUNCTION__, "bad character list \"{}\"", temp);
 					break;
 				}
 

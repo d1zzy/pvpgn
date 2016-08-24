@@ -622,7 +622,7 @@ namespace pvpgn
 			case DATA_TYPE_BIGINT:
 				return wol_gameres_type_bigint;
 			default:
-				WARN1("type %d is not defined", type);
+				WARN1("type {} is not defined", type);
 				return wol_gameres_type_unknown;
 			}
 		}
@@ -696,7 +696,7 @@ namespace pvpgn
 			wol_gameres_type type;
 			t_wol_gameres_result * gameres_result;
 
-			DEBUG2("[%d] got WOL Gameres packet length %u", conn_get_socket(c), packet_get_size(packet));
+			DEBUG2("[{}] got WOL Gameres packet length {}", conn_get_socket(c), packet_get_size(packet));
 			offset = sizeof(t_wolgameres_header);
 
 			if ((unsigned int)bn_int_nget(*((bn_int *)packet_get_data_const(packet, offset, 4))) == 0)
@@ -706,28 +706,28 @@ namespace pvpgn
 
 			while (offset < packet_get_size(packet)) {
 				if (packet_get_size(packet) < offset + 4) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad WOL Gameres packet (missing tag)", conn_get_socket(c));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad WOL Gameres packet (missing tag)", conn_get_socket(c));
 					return -1;
 				}
 				wgtag = (unsigned int)bn_int_nget(*((bn_int *)packet_get_data_const(packet, offset, 4)));
 				offset += 4;
 
 				if (packet_get_size(packet) < offset + 2) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad WOL Gameres packet (missing datatype)", conn_get_socket(c));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad WOL Gameres packet (missing datatype)", conn_get_socket(c));
 					return -1;
 				}
 				datatype = (unsigned int)bn_short_nget(*((bn_short *)packet_get_data_const(packet, offset, 2)));
 				offset += 2;
 
 				if (packet_get_size(packet) < offset + 2) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad WOL Gameres packet (missing datalen)", conn_get_socket(c));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad WOL Gameres packet (missing datalen)", conn_get_socket(c));
 					return -1;
 				}
 				datalen = (unsigned int)bn_short_nget(*((bn_short *)packet_get_data_const(packet, offset, 2)));
 				offset += 2;
 
 				if (packet_get_size(packet) < offset + 1) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad WOL Gameres packet (missing data)", conn_get_socket(c));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad WOL Gameres packet (missing data)", conn_get_socket(c));
 					return -1;
 				}
 				data = packet_get_data_const(packet, offset, 1);
@@ -757,7 +757,7 @@ namespace pvpgn
 						std::snprintf(ch_data, sizeof(ch_data), "UNKNOWN");
 						break;
 					}
-					eventlog(eventlog_level_warn, __FUNCTION__, "[%d] got unknown WOL Gameres tag: %s, data type %u, data lent %u, data %s", conn_get_socket(c), wgtag_str, datatype, datalen, ch_data);
+					eventlog(eventlog_level_warn, __FUNCTION__, "[{}] got unknown WOL Gameres tag: {}, data type {}, data lent {}, data {}", conn_get_socket(c), wgtag_str, datatype, datalen, ch_data);
 
 				}
 
@@ -809,7 +809,7 @@ namespace pvpgn
 				sdfx = (unsigned int)bn_byte_get(*((bn_byte *)data));
 				break;
 			default:
-				WARN1("got unknown gameres type %u for SDFX", type);
+				WARN1("got unknown gameres type {} for SDFX", static_cast<int>(type));
 				break;
 			}
 
@@ -832,12 +832,12 @@ namespace pvpgn
 				gameidnumber = (unsigned int)bn_int_nget(*((bn_int *)data));
 				break;
 			default:
-				WARN1("got unknown gameres type %d for IDNO", static_cast<int>(type));
+				WARN1("got unknown gameres type {} for IDNO", static_cast<int>(type));
 				break;
 			}
 
 			if ((gameidnumber) && (game = gamelist_find_game_byid(gameidnumber))) { //&& (game_get_status(game) & game_status_started)) {
-				DEBUG2("found started game \"%s\" for gameid %u", game_get_name(game), gameidnumber);
+				DEBUG2("found started game \"{}\" for gameid {}", game_get_name(game), gameidnumber);
 				game_result->game = game;
 				game_result->results = (t_game_result*)xmalloc(sizeof(t_game_result)* game_get_count(game));
 			}
@@ -855,12 +855,12 @@ namespace pvpgn
 				sku = (unsigned int)bn_int_nget(*((bn_int *)data));
 				break;
 			default:
-				WARN1("got unknown gameres type %u for GSKU", type);
+				WARN1("got unknown gameres type {} for GSKU", static_cast<int>(type));
 				break;
 			}
 
 			if ((sku) && (game) && (game_get_clienttag(game) == tag_sku_to_uint(sku))) {
-				DEBUG1("got proper WOL game resolution of %s", clienttag_get_title(tag_sku_to_uint(sku)));
+				DEBUG1("got proper WOL game resolution of {}", clienttag_get_title(tag_sku_to_uint(sku)));
 			}
 
 
@@ -874,10 +874,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				dcon = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("DCON is: %u", dcon);
+				DEBUG1("DCON is: {}", dcon);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for DCON", type);
+				WARN1("got unknown gameres type {} for DCON", static_cast<int>(type));
 				break;
 			}
 
@@ -891,10 +891,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				lcon = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("LCON is: %u", lcon);
+				DEBUG1("LCON is: {}", lcon);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for LCON", type);
+				WARN1("got unknown gameres type {} for LCON", static_cast<int>(type));
 				break;
 			}
 
@@ -908,10 +908,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_bool:
 				gametype = (unsigned int)bn_byte_get(*((bn_byte *)data));
-				DEBUG1("TYPE is: %u", gametype);
+				DEBUG1("TYPE is: {}", gametype);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for TYPE", type);
+				WARN1("got unknown gameres type {} for TYPE", static_cast<int>(type));
 				break;
 			}
 
@@ -935,12 +935,12 @@ namespace pvpgn
 				else if (std::strcmp("TN  ", (const char *)data) == 0) /* for RNGD */
 					tournament = false;
 				else {
-					WARN1("got unknown string for TRNY: %s", (char *)data);
+					WARN1("got unknown string for TRNY: {}", (char *)data);
 					tournament = false;
 				}
 				break;
 			default:
-				WARN1("got unknown gameres type %u for TRNY", type);
+				WARN1("got unknown gameres type {} for TRNY", static_cast<int>(type));
 				break;
 			}
 
@@ -961,7 +961,7 @@ namespace pvpgn
 				outofsync = (bool)bn_byte_get(*((bn_byte *)data));
 				break;
 			default:
-				WARN1("got unknown gameres type %u for OOSY", type);
+				WARN1("got unknown gameres type {} for OOSY", static_cast<int>(type));
 				break;
 			}
 
@@ -992,10 +992,10 @@ namespace pvpgn
 			case wol_gameres_type_int:
 			case wol_gameres_type_time:
 				duration = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Game duration %u seconds", duration);
+				DEBUG1("Game duration {} seconds", duration);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for DURA", type);
+				WARN1("got unknown gameres type {} for DURA", static_cast<int>(type));
 				break;
 			}
 
@@ -1009,10 +1009,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				credits = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Game was start with %u credits", credits);
+				DEBUG1("Game was start with {} credits", credits);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for CRED", type);
+				WARN1("got unknown gameres type {} for CRED", static_cast<int>(type));
 				break;
 			}
 
@@ -1031,7 +1031,7 @@ namespace pvpgn
 				shortgame = (bool)bn_int_nget(*((bn_int *)data));
 				break;
 			default:
-				WARN1("got unknown gameres type %u for SHRT", type);
+				WARN1("got unknown gameres type {} for SHRT", static_cast<int>(type));
 				break;
 			}
 
@@ -1055,7 +1055,7 @@ namespace pvpgn
 				superweapons = (bool)bn_int_nget(*((bn_int *)data));
 				break;
 			default:
-				WARN1("got unknown gameres type %u for SUPR", type);
+				WARN1("got unknown gameres type {} for SUPR", static_cast<int>(type));
 				break;
 			}
 
@@ -1073,10 +1073,10 @@ namespace pvpgn
 
 			switch (type) {
 			case wol_gameres_type_string:
-				DEBUG1("Game mode: %s", (char *)data); /* For RNGD */
+				DEBUG1("Game mode: {}", (char *)data); /* For RNGD */
 				break;
 			default:
-				WARN1("got unknown gameres type %u for MODE", type);
+				WARN1("got unknown gameres type {} for MODE", static_cast<int>(type));
 				break;
 			}
 
@@ -1106,12 +1106,12 @@ namespace pvpgn
 				else if (std::strcmp("OFF", (const char *)data) == 0)
 					crates = false;
 				else {
-					WARN1("got unknown string for CRAT: %s", (char *)data);
+					WARN1("got unknown string for CRAT: {}", (char *)data);
 					crates = false;
 				}
 				break;
 			default:
-				WARN1("got unknown gameres type %u for CRAT", type);
+				WARN1("got unknown gameres type {} for CRAT", static_cast<int>(type));
 				break;
 			}
 
@@ -1129,10 +1129,10 @@ namespace pvpgn
 
 			if (type == wol_gameres_type_int) {
 				aicount = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Game has %u AI players", aicount);
+				DEBUG1("Game has {} AI players", aicount);
 			}
 			else {
-				WARN1("got unknown gameres type %u for AIPL", type);
+				WARN1("got unknown gameres type {} for AIPL", static_cast<int>(type));
 				return 0;
 			}
 
@@ -1146,10 +1146,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				units = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Game was started with %u units", units);
+				DEBUG1("Game was started with {} units", units);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for UNIT", type);
+				WARN1("got unknown gameres type {} for UNIT", static_cast<int>(type));
 				break;
 			}
 
@@ -1160,13 +1160,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_string:
-				DEBUG1("Secnario %s", (char *)data);
+				DEBUG1("Secnario {}", (char *)data);
 				break;
 			case wol_gameres_type_int:
-				DEBUG1("Secnario num %u", (unsigned int)bn_int_nget(*((bn_int *)data)));
+				DEBUG1("Secnario num {}", (unsigned int)bn_int_nget(*((bn_int *)data)));
 				break;
 			default:
-				WARN1("got unknown gameres type %u for SCEN", type);
+				WARN1("got unknown gameres type {} for SCEN", static_cast<int>(type));
 				break;
 			}
 
@@ -1180,10 +1180,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_byte:
 				cmpl = (unsigned int)bn_byte_get(*((bn_byte *)data));
-				DEBUG1("CMPL is: %u", cmpl);
+				DEBUG1("CMPL is: {}", cmpl);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for CMPL", type);
+				WARN1("got unknown gameres type {} for CMPL", static_cast<int>(type));
 				break;
 			}
 
@@ -1197,10 +1197,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				pngs = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("PNGS %u ", pngs);
+				DEBUG1("PNGS {} ", pngs);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PNGS", type);
+				WARN1("got unknown gameres type {} for PNGS", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1213,10 +1213,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				pngr = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("PNGR %u ", pngr);
+				DEBUG1("PNGR {} ", pngr);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PNGR", type);
+				WARN1("got unknown gameres type {} for PNGR", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1230,10 +1230,10 @@ namespace pvpgn
 			case wol_gameres_type_int:
 			case wol_gameres_type_time:
 				playercount = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Player count %u ", playercount);
+				DEBUG1("Player count {} ", playercount);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PLRS", type);
+				WARN1("got unknown gameres type {} for PLRS", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1248,12 +1248,12 @@ namespace pvpgn
 				spid = (int)bn_int_nget(*((bn_int *)data));
 				break;
 			default:
-				WARN1("got unknown gameres type %u for SPID", type);
+				WARN1("got unknown gameres type {} for SPID", static_cast<int>(type));
 				break;
 			}
 
 			if (spid != -1) {
-				DEBUG1("Setting sender ID to %u", spid);
+				DEBUG1("Setting sender ID to {}", spid);
 				game_result->senderid = spid;
 			}
 
@@ -1267,14 +1267,14 @@ namespace pvpgn
 
 			switch (type) {
 			case wol_gameres_type_string:
-				DEBUG1("Game was start at %s ", (char *)data);
+				DEBUG1("Game was start at {} ", (char *)data);
 				break;
 			case wol_gameres_type_time:
 				time = (std::time_t) bn_int_nget(*((bn_int *)data));
-				DEBUG1("Game was start at %s ", ctime(&time));
+				DEBUG1("Game was start at {} ", ctime(&time));
 				break;
 			default:
-				WARN1("got unknown gameres type %u for TIME", type);
+				WARN1("got unknown gameres type {} for TIME", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1287,10 +1287,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				afps = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Average Frames per Second %u ", afps);
+				DEBUG1("Average Frames per Second {} ", afps);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for AFPS", type);
+				WARN1("got unknown gameres type {} for AFPS", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1300,10 +1300,10 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_string:
-				DEBUG1("Procesor %s", (char *)data);
+				DEBUG1("Procesor {}", (char *)data);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PROC", type);
+				WARN1("got unknown gameres type {} for PROC", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1334,11 +1334,11 @@ namespace pvpgn
 				speed = (unsigned int)bn_int_nget(*((bn_int *)data));
 			}
 			else {
-				WARN1("got unknown gameres type %u for SPED", type);
+				WARN1("got unknown gameres type {} for SPED", static_cast<int>(type));
 				return 0;
 			}
 
-			DEBUG1("Game speed %u", speed);
+			DEBUG1("Game speed {}", speed);
 			return 0;
 		}
 
@@ -1347,14 +1347,14 @@ namespace pvpgn
 			unsigned int version;
 
 			if (type == wol_gameres_type_string) {
-				DEBUG1("Version of client %s", (char *)data);
+				DEBUG1("Version of client {}", (char *)data);
 			}
 			else if (type == wol_gameres_type_int) {
 				version = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Version of client %u", version);
+				DEBUG1("Version of client {}", version);
 			}
 			else
-				WARN1("got unknown gameres type %u for VERS", type);
+				WARN1("got unknown gameres type {} for VERS", static_cast<int>(type));
 
 			return 0;
 		}
@@ -1365,10 +1365,10 @@ namespace pvpgn
 
 			switch (type) {
 			case wol_gameres_type_string:
-				DEBUG1("Date %s", (char *)data);
+				DEBUG1("Date {}", (char *)data);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for DATE", type);
+				WARN1("got unknown gameres type {} for DATE", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1390,12 +1390,12 @@ namespace pvpgn
 				else if (std::strcmp("OFF", (const char *)data) == 0)
 					bases = false;
 				else {
-					WARN1("got unknown string for BASE: %s", (char *)data);
+					WARN1("got unknown string for BASE: {}", (char *)data);
 					bases = false;
 				}
 				break;
 			default:
-				WARN1("got unknown gameres type %u for BASE", type);
+				WARN1("got unknown gameres type {} for BASE", static_cast<int>(type));
 				break;
 			}
 
@@ -1419,10 +1419,10 @@ namespace pvpgn
 					DEBUG0("Game has tiberium OFF");
 			}
 			else if (type == wol_gameres_type_string) {
-				DEBUG1("Game has tiberium %s", (char *)data);
+				DEBUG1("Game has tiberium {}", (char *)data);
 			}
 			else
-				WARN1("got unknown gameres type %u for TIBR", type);
+				WARN1("got unknown gameres type {} for TIBR", static_cast<int>(type));
 
 			return 0;
 		}
@@ -1441,12 +1441,12 @@ namespace pvpgn
 				else if (std::strcmp("OFF", (const char *)data) == 0)
 					shadows = false;
 				else {
-					WARN1("got unknown string for SHAD: %s", (char *)data);
+					WARN1("got unknown string for SHAD: {}", (char *)data);
 					shadows = false;
 				}
 				break;
 			default:
-				WARN1("got unknown gameres type %u for SHAD", type);
+				WARN1("got unknown gameres type {} for SHAD", static_cast<int>(type));
 				break;
 			}
 
@@ -1472,12 +1472,12 @@ namespace pvpgn
 				else if (std::strcmp("OFF", (const char *)data) == 0)
 					captureflag = false;
 				else {
-					WARN1("got unknown string for FLAG: %s", (char *)data);
+					WARN1("got unknown string for FLAG: {}", (char *)data);
 					captureflag = false;
 				}
 				break;
 			default:
-				WARN1("got unknown gameres type %u for FLAG", type);
+				WARN1("got unknown gameres type {} for FLAG", static_cast<int>(type));
 				break;
 			}
 
@@ -1496,10 +1496,10 @@ namespace pvpgn
 
 			if (type == wol_gameres_type_int) {
 				techlevel = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Game has techlevel %u", techlevel);
+				DEBUG1("Game has techlevel {}", techlevel);
 			}
 			else
-				WARN1("got unknown gameres type %u for TECH", type);
+				WARN1("got unknown gameres type {} for TECH", static_cast<int>(type));
 
 			return 0;
 		}
@@ -1513,10 +1513,10 @@ namespace pvpgn
 
 			if (type == wol_gameres_type_int) {
 				brok = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Game has BROK %u", brok);
+				DEBUG1("Game has BROK {}", brok);
 			}
 			else
-				WARN1("got unknown gameres type %u for BROK", type);
+				WARN1("got unknown gameres type {} for BROK", static_cast<int>(type));
 
 			return 0;
 		}
@@ -1530,10 +1530,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				acco = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Game has ACCO %u", acco);
+				DEBUG1("Game has ACCO {}", acco);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for ACCO", type);
+				WARN1("got unknown gameres type {} for ACCO", static_cast<int>(type));
 				break;
 			}
 
@@ -1557,10 +1557,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				procesorspeed = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Server have processor speed: %u MHz", procesorspeed);
+				DEBUG1("Server have processor speed: {} MHz", procesorspeed);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PSPD", type);
+				WARN1("got unknown gameres type {} for PSPD", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1574,10 +1574,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				servermemory = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Server have %u memory", servermemory);
+				DEBUG1("Server have {} memory", servermemory);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for SMEM", type);
+				WARN1("got unknown gameres type {} for SMEM", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1598,10 +1598,10 @@ namespace pvpgn
 
 			switch (type) {
 			case wol_gameres_type_string:
-				DEBUG1("Server name: %s", (char *)data);
+				DEBUG1("Server name: {}", (char *)data);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for SNAM", type);
+				WARN1("got unknown gameres type {} for SNAM", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1613,10 +1613,10 @@ namespace pvpgn
 
 			switch (type) {
 			case wol_gameres_type_string:
-				DEBUG1("Game map: %s", (char *)data);
+				DEBUG1("Game map: {}", (char *)data);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for GMAP", type);
+				WARN1("got unknown gameres type {} for GMAP", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1630,10 +1630,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_byte:
 				dsvr = (unsigned int)bn_byte_get(*((bn_byte *)data));
-				DEBUG1("DSVR: %u", dsvr);
+				DEBUG1("DSVR: {}", dsvr);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for SCEN", type);
+				WARN1("got unknown gameres type {} for SCEN", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1645,10 +1645,10 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_string:
-				DEBUG1("Player name: %s", (char *)data);
+				DEBUG1("Player name: {}", (char *)data);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PNAM", type);
+				WARN1("got unknown gameres type {} for PNAM", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1661,10 +1661,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				playerloc = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Player locale: %u", playerloc);
+				DEBUG1("Player locale: {}", playerloc);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PLOC", type);
+				WARN1("got unknown gameres type {} for PLOC", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1677,10 +1677,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				team = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Team: %u", team);
+				DEBUG1("Team: {}", team);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for TEAM", type);
+				WARN1("got unknown gameres type {} for TEAM", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1693,10 +1693,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				score = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Players score: %u", score);
+				DEBUG1("Players score: {}", score);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PSCR", type);
+				WARN1("got unknown gameres type {} for PSCR", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1709,10 +1709,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_time: /* PELISH: THIS is not a BUG! This is Renegade developers bug */
 				points = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Points %u", points);
+				DEBUG1("Points {}", points);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PPTS", type);
+				WARN1("got unknown gameres type {} for PPTS", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1725,10 +1725,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				playertime = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Player game time %u", playertime);
+				DEBUG1("Player game time {}", playertime);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PTIM", type);
+				WARN1("got unknown gameres type {} for PTIM", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1741,10 +1741,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				health = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Health: %u", health);
+				DEBUG1("Health: {}", health);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PHLT", type);
+				WARN1("got unknown gameres type {} for PHLT", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1757,10 +1757,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				kills = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Kills: %u", kills);
+				DEBUG1("Kills: {}", kills);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PKIL", type);
+				WARN1("got unknown gameres type {} for PKIL", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1773,10 +1773,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				enemy_kills = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Enemy kills: %u", enemy_kills);
+				DEBUG1("Enemy kills: {}", enemy_kills);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for EKIL", type);
+				WARN1("got unknown gameres type {} for EKIL", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1789,10 +1789,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				ally_kills = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Ally kills %u", ally_kills);
+				DEBUG1("Ally kills {}", ally_kills);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for AKIL", type);
+				WARN1("got unknown gameres type {} for AKIL", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1805,10 +1805,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				shots = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Shots %u", shots);
+				DEBUG1("Shots {}", shots);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for SHOT", type);
+				WARN1("got unknown gameres type {} for SHOT", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1821,10 +1821,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				hedf = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("hedf %u", hedf);
+				DEBUG1("hedf {}", hedf);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for HEDF", type);
+				WARN1("got unknown gameres type {} for HEDF", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1837,10 +1837,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				torf = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("torf %u", torf);
+				DEBUG1("torf {}", torf);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for TORF", type);
+				WARN1("got unknown gameres type {} for TORF", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1853,10 +1853,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				armf = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("armf %u", armf);
+				DEBUG1("armf {}", armf);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for ARMF", type);
+				WARN1("got unknown gameres type {} for ARMF", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1869,10 +1869,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				legf = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("legf %u", legf);
+				DEBUG1("legf {}", legf);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for LEGF", type);
+				WARN1("got unknown gameres type {} for LEGF", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1885,10 +1885,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				crtf = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("crtf %u", crtf);
+				DEBUG1("crtf {}", crtf);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for CRTF", type);
+				WARN1("got unknown gameres type {} for CRTF", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1901,10 +1901,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				pups = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("pups %u", pups);
+				DEBUG1("pups {}", pups);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PUPS", type);
+				WARN1("got unknown gameres type {} for PUPS", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1917,10 +1917,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				victory_kills = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Victory kills %u", victory_kills);
+				DEBUG1("Victory kills {}", victory_kills);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for VKIL", type);
+				WARN1("got unknown gameres type {} for VKIL", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1933,10 +1933,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				victory_time = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("Victory time %u", victory_time);
+				DEBUG1("Victory time {}", victory_time);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for VTIM", type);
+				WARN1("got unknown gameres type {} for VTIM", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1949,10 +1949,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				nkfv = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("nkfv %u", nkfv);
+				DEBUG1("nkfv {}", nkfv);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for NKFV", type);
+				WARN1("got unknown gameres type {} for NKFV", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1965,10 +1965,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				squi = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("squi %u", squi);
+				DEBUG1("squi {}", squi);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for SQUI", type);
+				WARN1("got unknown gameres type {} for SQUI", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1981,10 +1981,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				pcrd = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("pcrd %u", pcrd);
+				DEBUG1("pcrd {}", pcrd);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for PCRD", type);
+				WARN1("got unknown gameres type {} for PCRD", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -1997,10 +1997,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				bkil = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("bkil %u", bkil);
+				DEBUG1("bkil {}", bkil);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for BKIL", type);
+				WARN1("got unknown gameres type {} for BKIL", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -2013,10 +2013,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				hedr = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("hedr %u", hedr);
+				DEBUG1("hedr {}", hedr);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for HEDR", type);
+				WARN1("got unknown gameres type {} for HEDR", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -2029,10 +2029,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				torr = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("torr %u", torr);
+				DEBUG1("torr {}", torr);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for TORR", type);
+				WARN1("got unknown gameres type {} for TORR", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -2045,10 +2045,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				armr = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("armr %u", armr);
+				DEBUG1("armr {}", armr);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for ARMR", type);
+				WARN1("got unknown gameres type {} for ARMR", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -2061,10 +2061,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				legr = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("legr %u", legr);
+				DEBUG1("legr {}", legr);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for LEGR", type);
+				WARN1("got unknown gameres type {} for LEGR", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -2077,10 +2077,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				crtr = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("crtr %u", crtr);
+				DEBUG1("crtr {}", crtr);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for CRTR", type);
+				WARN1("got unknown gameres type {} for CRTR", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -2093,10 +2093,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				flgc = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG1("flgc %u", flgc);
+				DEBUG1("flgc {}", flgc);
 				break;
 			default:
-				WARN1("got unknown gameres type %u for FLGC", type);
+				WARN1("got unknown gameres type {} for FLGC", static_cast<int>(type));
 				break;
 			}
 			return 0;
@@ -2111,12 +2111,12 @@ namespace pvpgn
 			int senderid = game_result->senderid;
 			t_account * account = accountlist_find_account((char const *)data);
 
-			DEBUG2("Name of player %d: %s", num, static_cast<const char*>(data));
+			DEBUG2("Name of player {}: {}", num, static_cast<const char*>(data));
 
 			game_result->otheraccount = account;
 
 			if (senderid == num) {
-				DEBUG1("Packet was sent by %s", (char *)data);
+				DEBUG1("Packet was sent by {}", (char *)data);
 				game_result->myaccount = account;
 			}
 
@@ -2170,10 +2170,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				ipaddress = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG2("IP address of player%u: %u", num, ipaddress);
+				DEBUG2("IP address of player{}: {}", num, ipaddress);
 				break;
 			default:
-				WARN2("got unknown gameres type %u for IPA%u", type, num);
+				WARN2("got unknown gameres type {} for IPA{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2226,10 +2226,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				clanid = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG2("Clan ID of player%u: %u", num, clanid);
+				DEBUG2("Clan ID of player{}: {}", num, clanid);
 				break;
 			default:
-				WARN2("got unknown gameres type %u for CID%u", type, num);
+				WARN2("got unknown gameres type {} for CID{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2282,10 +2282,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				sideid = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG2("Side ID of player%u: %u", num, sideid);
+				DEBUG2("Side ID of player{}: {}", num, sideid);
 				break;
 			default:
-				WARN2("got unknown gameres type %u for SID%u", type, num);
+				WARN2("got unknown gameres type {} for SID{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2338,10 +2338,10 @@ namespace pvpgn
 			switch (type) {
 			case wol_gameres_type_int:
 				teamid = (unsigned int)bn_int_nget(*((bn_int *)data));
-				DEBUG2("Team ID of player%u: %u", num, teamid);
+				DEBUG2("Team ID of player{}: {}", num, teamid);
 				break;
 			default:
-				WARN2("got unknown gameres type %u for TID%u", type, num);
+				WARN2("got unknown gameres type {} for TID{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2405,11 +2405,11 @@ namespace pvpgn
 				resultnum = (unsigned int)bn_int_nget(*((bn_int *)data));
 				break;
 			default:
-				WARN2("got unknown gameres type %u for CMP%u", type, num);
+				WARN2("got unknown gameres type {} for CMP{}", static_cast<int>(type), num);
 				return 0;
 			}
 
-			DEBUG2("Got %u player resultnum %u", num, resultnum);
+			DEBUG2("Got %u player resultnum {}", num, resultnum);
 
 			resultnum &= 0x0000FF00;
 			resultnum = resultnum >> 8;
@@ -2437,7 +2437,7 @@ namespace pvpgn
 				result = game_result_disconnect;
 				break;
 			default:
-				DEBUG2("Got wrong %u player resultnum %u", num, resultnum);
+				DEBUG2("Got wrong {} player resultnum {}", num, resultnum);
 				result = game_result_disconnect;
 				break;
 			}
@@ -2495,10 +2495,10 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_int:
-				DEBUG2("Player %u colour num: %u", num, (unsigned int)bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} colour num: {}", num, (unsigned int)bn_int_nget(*((bn_int *)data)));
 				break;
 			default:
-				WARN2("got unknown gameres type %u for COL%u", type, num);
+				WARN2("got unknown gameres type {} for COL{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2548,10 +2548,10 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %u had %u credits on end of game", num, (unsigned int)bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} had {} credits on end of game", num, (unsigned int)bn_int_nget(*((bn_int *)data)));
 				break;
 			default:
-				WARN2("got unknown gameres type %u for CRD%u", type, num);
+				WARN2("got unknown gameres type {} for CRD{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2601,13 +2601,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d build %" PRIu32 " infantry", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} build {} infantry", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d build %lu infantry", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} build {} infantry", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for INB%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for INB{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2663,13 +2663,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d build %" PRIu32 " units", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} build {} units", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d build %lu units", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} build {} units", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for UNB%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for UNB{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2720,13 +2720,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d build %" PRIu32 " planes", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} build {} planes", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d build %lu planes", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} build {} planes", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for PLB%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for PLB{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2776,13 +2776,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d build %" PRIu32 " buildings", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} build {} buildings", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d build %lu buildings", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} build {} buildings", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for BLB%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for BLB{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2832,13 +2832,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d lost %" PRIu32 " infantry", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} lost {} infantry", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d lost %lu infantry", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} lost {} infantry", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for INL%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for INL{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2888,13 +2888,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d lost %" PRIu32 " units", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} lost {} units", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d lost %lu units", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} lost {} units", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for UNL%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for UNL{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -2944,13 +2944,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d lost %" PRIu32 " planes", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} lost {} planes", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d lost %lu planes", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} lost {} planes", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for PLL%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for PLL{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -3000,13 +3000,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d lost %" PRIu32 " buildings", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} lost {} buildings", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d lost %lu buildings", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} lost {} buildings", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for BLL%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for BLL{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -3056,13 +3056,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d killed %" PRIu32 " infantry", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} killed {} infantry", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d killed %lu infantry", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} killed {} infantry", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for INK%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for INK{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -3112,13 +3112,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d killed %" PRIu32 " units", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} killed {} units", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d killed %lu units", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} killed {} units", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %du for UNK%du", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for UNK{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -3168,13 +3168,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d killed %" PRIu32 " planes", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} killed {} planes", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d killed %lu planes", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} killed {} planes", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for PLK%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for PLK{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -3224,13 +3224,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_time:
-				DEBUG2("Player %d killed %" PRIu32 " buildings", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} killed {} buildings", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d killed %lu buildings", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} killed {} buildings", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for BLK%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for BLK{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;
@@ -3280,13 +3280,13 @@ namespace pvpgn
 		{
 			switch (type) {
 			case wol_gameres_type_int:
-				DEBUG2("Player %d captured %" PRIu32 " buildings", num, bn_int_nget(*((bn_int *)data)));
+				DEBUG2("Player {} captured {} buildings", num, bn_int_nget(*((bn_int *)data)));
 				break;
 			case wol_gameres_type_bigint:
-				DEBUG2("Player %d captured %lu buildings", num, wol_gameres_get_long_from_data(size, data));
+				DEBUG2("Player {} captured {} buildings", num, wol_gameres_get_long_from_data(size, data));
 				break;
 			default:
-				WARN2("got unknown gameres type %d for BLC%d", static_cast<int>(type), num);
+				WARN2("got unknown gameres type {} for BLC{}", static_cast<int>(type), num);
 				break;
 			}
 			return 0;

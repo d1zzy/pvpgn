@@ -606,7 +606,7 @@ namespace pvpgn
 					prob = eight_player(sorted);
 					break;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "sorry, unsupported number of ladder opponents (%u)", opponent_count);
+					eventlog(eventlog_level_error, __FUNCTION__, "sorry, unsupported number of ladder opponents ({})", opponent_count);
 					xfree((void *)rating);
 					xfree((void *)sorted);
 					return -1;
@@ -617,7 +617,7 @@ namespace pvpgn
 				else
 					delta = -std::fabs(k * prob); /* better the chance of winning -> more points subtracted */
 
-				eventlog(eventlog_level_debug, __FUNCTION__, "computed probability=%g, k=%g, deltar=%+g", prob, k, delta);
+				eventlog(eventlog_level_debug, __FUNCTION__, "computed probability={}, k={}, deltar={:+g}", prob, k, delta);
 
 				info[curr].prob = prob;
 				info[curr].k = (unsigned int)k;

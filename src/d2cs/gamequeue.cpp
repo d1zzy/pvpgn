@@ -110,17 +110,17 @@ namespace pvpgn
 			{
 				c = d2cs_connlist_find_connection_by_sessionnum(gq->clientid);
 				if (!c) {
-					eventlog(eventlog_level_error, __FUNCTION__, "client %d not found (gamename: %s)", gq->clientid, gq->gamename);
+					eventlog(eventlog_level_error, __FUNCTION__, "client {} not found (gamename: {})", gq->clientid, gq->gamename);
 					gq_destroy(gq, &curr_elem_);
 					continue;
 				}
 				else if (!conn_get_gamequeue(c)) {
-					eventlog(eventlog_level_error, __FUNCTION__, "got NULL game queue for client %s", d2cs_conn_get_account(c));
+					eventlog(eventlog_level_error, __FUNCTION__, "got NULL game queue for client {}", d2cs_conn_get_account(c));
 					gq_destroy(gq, &curr_elem_);
 					continue;
 				}
 				else {
-					eventlog(eventlog_level_info, __FUNCTION__, "try create game %s for account %s", gq->gamename, d2cs_conn_get_account(c));
+					eventlog(eventlog_level_info, __FUNCTION__, "try create game {} for account {}", gq->gamename, d2cs_conn_get_account(c));
 					d2cs_handle_client_creategame(c, gq->packet);
 					conn_set_gamequeue(c, NULL);
 					gq_destroy(gq, &curr_elem_);
@@ -143,18 +143,18 @@ namespace pvpgn
 			{
 				c = d2cs_connlist_find_connection_by_sessionnum(gq->clientid);
 				if (!c) {
-					eventlog(eventlog_level_error, __FUNCTION__, "client %d not found (gamename: %s)", gq->clientid, gq->gamename);
+					eventlog(eventlog_level_error, __FUNCTION__, "client {} not found (gamename: {})", gq->clientid, gq->gamename);
 					gq_destroy(gq, &curr_elem_);
 					continue;
 				}
 				else {
 					n++;
-					eventlog(eventlog_level_debug, __FUNCTION__, "update client %s position to %d", d2cs_conn_get_account(c), n);
+					eventlog(eventlog_level_debug, __FUNCTION__, "update client {} position to {}", d2cs_conn_get_account(c), n);
 					d2cs_send_client_creategamewait(c, n);
 				}
 			}
 			END_LIST_TRAVERSE_DATA()
-			if (n) eventlog(eventlog_level_info, __FUNCTION__, "total %d game queues", n);
+			if (n) eventlog(eventlog_level_info, __FUNCTION__, "total {} game queues", n);
 			return 0;
 		}
 

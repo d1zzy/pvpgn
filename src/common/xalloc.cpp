@@ -37,7 +37,7 @@ namespace pvpgn
 
 		res = malloc(size);
 		if (!res) {
-			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)", fn, ln);
+			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from {}:{})", fn, ln);
 			if (oom_cb && oom_cb() && (res = malloc(size))) return res;
 			std::abort();
 		}
@@ -51,7 +51,7 @@ namespace pvpgn
 
 		res = calloc(nmemb, size);
 		if (!res) {
-			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)", fn, ln);
+			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from {}:{})", fn, ln);
 			if (oom_cb && oom_cb() && (res = calloc(nmemb, size))) return res;
 			std::abort();
 		}
@@ -65,7 +65,7 @@ namespace pvpgn
 
 		res = std::realloc(ptr, size);
 		if (!res) {
-			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)", fn, ln);
+			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from {}:{})", fn, ln);
 			if (oom_cb && oom_cb() && (res = std::realloc(ptr, size))) return res;
 			std::abort();
 		}
@@ -79,7 +79,7 @@ namespace pvpgn
 
 		res = strdup(str);
 		if (!res) {
-			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from %s:%u)", fn, ln);
+			eventlog(eventlog_level_fatal, __FUNCTION__, "out of memory (from {}:{})", fn, ln);
 			if (oom_cb && oom_cb() && (res = strdup(str))) return res;
 			std::abort();
 		}
@@ -90,7 +90,7 @@ namespace pvpgn
 	void xfree_real(void *ptr, const char *fn, unsigned ln)
 	{
 		if (!ptr) {
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL ptr (from %s:%u)", fn, ln);
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL ptr (from {}:{})", fn, ln);
 			return;
 		}
 

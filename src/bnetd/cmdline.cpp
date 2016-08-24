@@ -28,7 +28,6 @@
 #endif
 #ifdef WIN32_GUI
 # include "common/gui_printf.h"
-# define printf gui_printf
 #endif
 #include "compat/strcasecmp.h"
 #include "common/eventlog.h"
@@ -255,7 +254,11 @@ namespace pvpgn
 
 			conf_set_bool(&tmp, valstr, 0);
 			if (tmp) {
-				printf(PVPGN_SOFTWARE" version " PVPGN_VERSION "\n");
+#ifdef WIN32_GUI
+				gui_lvprintf(eventlog_level_info, PVPGN_SOFTWARE" version " PVPGN_VERSION "\n");
+#else
+				std::printf(PVPGN_SOFTWARE" version " PVPGN_VERSION "\n");
+#endif
 				exitflag = 1;
 			}
 

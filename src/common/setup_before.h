@@ -80,10 +80,10 @@
 const int LISTEN_QUEUE = 10;
 
 /* the format for account numbers */
-#define UID_FORMAT "#%08u"
+#define UID_FORMAT "{:08}"
 
 /* the format for game ids */
-#define GAMEID_FORMAT "#%06u"
+#define GAMEID_FORMAT "{:06}"
 
 /* the format of timestamps in the userlogfile */
 #define USEREVENT_TIME_FORMAT "%b %d %H:%M"

@@ -484,7 +484,7 @@ namespace pvpgn
 					table = &line[1];
 					if (!(tmp = std::strchr(table, ']')))
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "missing ']' in line %i", lineno);
+						eventlog(eventlog_level_error, __FUNCTION__, "missing ']' in line {}", lineno);
 						continue;
 					}
 					tmp[0] = '\0';
@@ -496,26 +496,26 @@ namespace pvpgn
 				case '"':
 					if (!(_table))
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "found a column without previous table in line %i", lineno);
+						eventlog(eventlog_level_error, __FUNCTION__, "found a column without previous table in line {}", lineno);
 						continue;
 					}
 					column = &line[1];
 					if (!(tmp = std::strchr(column, '"')))
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "missing '\"' at the end of column definition in line %i", lineno);
+						eventlog(eventlog_level_error, __FUNCTION__, "missing '\"' at the end of column definition in line {}", lineno);
 						continue;
 					}
 					tmp[0] = '\0';
 					tmp++;
 					if (!(tmp = std::strchr(tmp, '"')))
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "missing default value in line %i", lineno);
+						eventlog(eventlog_level_error, __FUNCTION__, "missing default value in line {}", lineno);
 						continue;
 					}
 					value = ++tmp;
 					if (!(tmp = std::strchr(value, '"')))
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "missing '\"' at the end of default value in line %i", lineno);
+						eventlog(eventlog_level_error, __FUNCTION__, "missing '\"' at the end of default value in line {}", lineno);
 						continue;
 					}
 					tmp[0] = '\0';
@@ -531,20 +531,20 @@ namespace pvpgn
 							tmp = mode + 3;
 							if (!(tmp = std::strchr(tmp, '"')))
 							{
-								eventlog(eventlog_level_error, __FUNCTION__, "missing starting '\"' in extra sql_command on line %i", lineno);
+								eventlog(eventlog_level_error, __FUNCTION__, "missing starting '\"' in extra sql_command on line {}", lineno);
 								continue;
 							}
 							extra_cmd = ++tmp;
 							if (!(tmp = std::strchr(extra_cmd, '"')))
 							{
-								eventlog(eventlog_level_error, __FUNCTION__, "missing ending '\"' in extra sql_command on line %i", lineno);
+								eventlog(eventlog_level_error, __FUNCTION__, "missing ending '\"' in extra sql_command on line {}", lineno);
 								continue;
 							}
 							tmp[0] = '\0';
 						}
 						else
 						{
-							eventlog(eventlog_level_error, __FUNCTION__, "missing or non-matching secondary character in combination logic on line %i", lineno);
+							eventlog(eventlog_level_error, __FUNCTION__, "missing or non-matching secondary character in combination logic on line {}", lineno);
 							continue;
 						}
 					}
@@ -561,18 +561,18 @@ namespace pvpgn
 				case ':':
 					if (!(_table))
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "found a sql_command without previous table in line %i", lineno);
+						eventlog(eventlog_level_error, __FUNCTION__, "found a sql_command without previous table in line {}", lineno);
 						continue;
 					}
 					if (line[1] != '"')
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "missing starting '\"' in sql_command definition on line %i", lineno);
+						eventlog(eventlog_level_error, __FUNCTION__, "missing starting '\"' in sql_command definition on line {}", lineno);
 						continue;
 					}
 					sqlcmd = &line[2];
 					if (!(tmp = std::strchr(sqlcmd, '"')))
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "missing ending '\"' in sql_command definition on line %i", lineno);
+						eventlog(eventlog_level_error, __FUNCTION__, "missing ending '\"' in sql_command definition on line {}", lineno);
 						continue;
 					}
 					tmp[0] = '\0';
@@ -588,20 +588,20 @@ namespace pvpgn
 							tmp = mode + 3;
 							if (!(tmp = std::strchr(tmp, '"')))
 							{
-								eventlog(eventlog_level_error, __FUNCTION__, "missing starting '\"' in extra sql_command on line %i", lineno);
+								eventlog(eventlog_level_error, __FUNCTION__, "missing starting '\"' in extra sql_command on line {}", lineno);
 								continue;
 							}
 							extra_cmd = ++tmp;
 							if (!(tmp = std::strchr(extra_cmd, '"')))
 							{
-								eventlog(eventlog_level_error, __FUNCTION__, "missing ending '\"' in extra sql_command on line %i", lineno);
+								eventlog(eventlog_level_error, __FUNCTION__, "missing ending '\"' in extra sql_command on line {}", lineno);
 								continue;
 							}
 							tmp[0] = '\0';
 						}
 						else
 						{
-							eventlog(eventlog_level_error, __FUNCTION__, "missing or non-matching secondary character in combination logic on line %i", lineno);
+							eventlog(eventlog_level_error, __FUNCTION__, "missing or non-matching secondary character in combination logic on line {}", lineno);
 							continue;
 						}
 					}
@@ -622,7 +622,7 @@ namespace pvpgn
 				case '#':
 					break;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "illegal starting symbol at line %i", lineno);
+					eventlog(eventlog_level_error, __FUNCTION__, "illegal starting symbol at line {}", lineno);
 				}
 			}
 			if (_table) db_layout_add_table(db_layout, _table);
@@ -652,8 +652,8 @@ namespace pvpgn
 				//create table if missing
 				if (!(sql->query(query)))
 				{
-					eventlog(eventlog_level_info, __FUNCTION__, "added missing table %s to DB", table->name);
-					eventlog(eventlog_level_info, __FUNCTION__, "added missing column %s to table %s", column->name, table->name);
+					eventlog(eventlog_level_info, __FUNCTION__, "added missing table {} to DB", table->name);
+					eventlog(eventlog_level_info, __FUNCTION__, "added missing column {} to table {}", column->name, table->name);
 				}
 
 				for (; column; column = table_get_next_column(table))
@@ -661,12 +661,12 @@ namespace pvpgn
 					std::sprintf(query, "ALTER TABLE %s ADD %s DEFAULT %s", table->name, column->name, column->value);
 					if (!(sql->query(query)))
 					{
-						eventlog(eventlog_level_info, __FUNCTION__, "added missing column %s to table %s", column->name, table->name);
+						eventlog(eventlog_level_info, __FUNCTION__, "added missing column {} to table {}", column->name, table->name);
 						if ((column->mode != NULL) && (std::strcmp(column->mode, "&&") == 0))
 						{
 							if (!(sql->query(column->extra_cmd)))
 							{
-								eventlog(eventlog_level_info, __FUNCTION__, "sucessfully issued: %s %s", column->mode, column->extra_cmd);
+								eventlog(eventlog_level_info, __FUNCTION__, "sucessfully issued: {} {}", column->mode, column->extra_cmd);
 							}
 						}
 						/*
@@ -687,7 +687,7 @@ namespace pvpgn
 						{
 							if (!(sql->query(column->extra_cmd)))
 							{
-								eventlog(eventlog_level_info, __FUNCTION__, "sucessfully issued: %s %s", column->mode, column->extra_cmd);
+								eventlog(eventlog_level_info, __FUNCTION__, "sucessfully issued: {} {}", column->mode, column->extra_cmd);
 							}
 						}
 
@@ -698,12 +698,12 @@ namespace pvpgn
 				{
 					if (!(sql->query(sqlcmd->sql_command)))
 					{
-						eventlog(eventlog_level_info, __FUNCTION__, "sucessfully issued: %s", sqlcmd->sql_command);
+						eventlog(eventlog_level_info, __FUNCTION__, "sucessfully issued: {}", sqlcmd->sql_command);
 						if ((sqlcmd->mode != NULL) && (std::strcmp(sqlcmd->mode, "&&") == 0))
 						{
 							if (!(sql->query(sqlcmd->extra_cmd)))
 							{
-								eventlog(eventlog_level_info, __FUNCTION__, "sucessfully issued: %s %s", sqlcmd->mode, sqlcmd->extra_cmd);
+								eventlog(eventlog_level_info, __FUNCTION__, "sucessfully issued: {} {}", sqlcmd->mode, sqlcmd->extra_cmd);
 							}
 						}
 					}
@@ -713,7 +713,7 @@ namespace pvpgn
 						{
 							if (!(sql->query(sqlcmd->extra_cmd)))
 							{
-								eventlog(eventlog_level_info, __FUNCTION__, "sucessfully issued: %s %s", sqlcmd->mode, sqlcmd->extra_cmd);
+								eventlog(eventlog_level_info, __FUNCTION__, "sucessfully issued: {} {}", sqlcmd->mode, sqlcmd->extra_cmd);
 							}
 						}
 
@@ -725,7 +725,7 @@ namespace pvpgn
 				std::sprintf(query, "INSERT INTO %s (%s) VALUES (%s)", table->name, _column, column->value);
 				if (!(sql->query(query)))
 				{
-					eventlog(eventlog_level_info, __FUNCTION__, "added missing default account to table %s", table->name);
+					eventlog(eventlog_level_info, __FUNCTION__, "added missing default account to table {}", table->name);
 				}
 
 			}
@@ -746,7 +746,7 @@ namespace pvpgn
 				char * tmp4 = (char *)xmalloc(std::strlen(tmp1) * 2);	/* escaped string */
 				unsigned int i, j;
 
-				/*		eventlog(eventlog_level_trace,__FUNCTION__,"COMMAND: %s",tmp1); */
+				/*		eventlog(eventlog_level_trace,__FUNCTION__,"COMMAND: {}",tmp1); */
 
 				for (i = 0; tmp1[i] && i < len; i++, tmp2++)
 				{
@@ -759,10 +759,10 @@ namespace pvpgn
 						for (; tmp1[i] && tmp1[i] != '\'' && i < len; i++); /* find the end of the string to be escaped */
 
 						tmp1[i] = '\0'; /* set end of string with null terminator */
-						/*				eventlog(eventlog_level_trace,__FUNCTION__,"STRING: %s",tmp3); */
+						/*				eventlog(eventlog_level_trace,__FUNCTION__,"STRING: {}",tmp3); */
 
 						sql->escape_string(tmp4, tmp3, std::strlen(tmp3)); /* escape the string */
-						/*				eventlog(eventlog_level_trace,__FUNCTION__,"ESCAPE STRING: %s",tmp4); */
+						/*				eventlog(eventlog_level_trace,__FUNCTION__,"ESCAPE STRING: {}",tmp4); */
 
 						for (j = 0, tmp2++; tmp4[j]; j++, tmp2++) *tmp2 = tmp4[j]; /* add 'escaped string' to 'escape' */
 
@@ -770,7 +770,7 @@ namespace pvpgn
 					}
 				}
 				*tmp2 = '\0';
-				/*		eventlog(eventlog_level_trace,__FUNCTION__,"ESCAPED COMMAND: %s",escape); */
+				/*		eventlog(eventlog_level_trace,__FUNCTION__,"ESCAPED COMMAND: {}",escape); */
 
 				xfree(tmp1);
 				xfree(tmp4);

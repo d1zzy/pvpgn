@@ -115,7 +115,7 @@ namespace pvpgn
 				}
 				else {
 					eventlog(eventlog_level_error, __FUNCTION__,
-						"cannot add map \"%s\" for gametype: %s (maxmaps per qametype: %d)",
+						"cannot add map \"{}\" for gametype: {} (maxmaps per qametype: {})",
 						mapname, _maplists_queue_get_type(queue), MAXMAPS_PER_QUEUE);
 				}
 			}
@@ -137,7 +137,7 @@ namespace pvpgn
 				}
 				else {
 					eventlog(eventlog_level_error, __FUNCTION__,
-						"cannot add map \"%s\" for gametype: %s (maxmaps per qametype: %d)",
+						"cannot add map \"{}\" for gametype: {} (maxmaps per qametype: {})",
 						mapname, _maplists_queue_get_type(queue), MAXMAPS_PER_QUEUE);
 				}
 			}
@@ -159,7 +159,7 @@ namespace pvpgn
 				}
 				else {
 					eventlog(eventlog_level_error, __FUNCTION__,
-						"cannot add map \"%s\" for gametype: %s (maxmaps per qametype: %d)",
+						"cannot add map \"{}\" for gametype: {} (maxmaps per qametype: {})",
 						mapname, _maplists_queue_get_type(queue), MAXMAPS_PER_QUEUE);
 				}
 			}
@@ -181,12 +181,12 @@ namespace pvpgn
 				}
 				else {
 					eventlog(eventlog_level_error, __FUNCTION__,
-						"cannot add map \"%s\" for gametype: %s (maxmaps per qametype: %d)",
+						"cannot add map \"{}\" for gametype: {} (maxmaps per qametype: {})",
 						mapname, _maplists_queue_get_type(queue), MAXMAPS_PER_QUEUE);
 				}
 			}
 
-			else eventlog(eventlog_level_error, __FUNCTION__, "invalid clienttag: %s", tag_uint_to_str(clienttag_str, clienttag));
+			else eventlog(eventlog_level_error, __FUNCTION__, "invalid clienttag: {}", tag_uint_to_str(clienttag_str, clienttag));
 		}
 
 		/**********************************************************************************/
@@ -203,7 +203,7 @@ namespace pvpgn
 			}
 
 			if ((mapfd = std::fopen(prefs_get_mapsfile(), "rt")) == NULL) {
-				eventlog(eventlog_level_error, "anongame_maplists_create", "could not open mapsfile : \"%s\"", prefs_get_mapsfile());
+				eventlog(eventlog_level_error, "anongame_maplists_create", "could not open mapsfile : \"{}\"", prefs_get_mapsfile());
 				return -1;
 			}
 

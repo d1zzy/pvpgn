@@ -39,12 +39,12 @@ namespace pvpgn
 		{
 			if (!c)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got NULL connection", conn_get_socket(c));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got NULL connection", conn_get_socket(c));
 				return -1;
 			}
 			if (!packet)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] got NULL packet", conn_get_socket(c));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got NULL packet", conn_get_socket(c));
 				return -1;
 			}
 			/* REMOVED BY UNDYING SOULZZ 4/3/02 */
@@ -66,7 +66,7 @@ namespace pvpgn
 
 										if (!(rawname = packet_get_str_const(packet, sizeof(t_client_file_req), MAX_FILENAME_STR)))
 										{
-											eventlog(eventlog_level_error, __FUNCTION__, "[%d] got bad FILE_REQ (missing or too long filename)", conn_get_socket(c));
+											eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad FILE_REQ (missing or too long filename)", conn_get_socket(c));
 
 											return -1;
 										}
@@ -93,7 +93,7 @@ namespace pvpgn
 				}
 
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] unknown file packet type 0x%04x, len %u", conn_get_socket(c), packet_get_type(packet), packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] unknown file packet type 0x{:04x}, len {}", conn_get_socket(c), packet_get_type(packet), packet_get_size(packet));
 
 					break;
 				}
@@ -112,14 +112,14 @@ namespace pvpgn
 					break;
 
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] unknown file packet type 0x%04x, len %u", conn_get_socket(c), packet_get_type(packet), packet_get_size(packet));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] unknown file packet type 0x{:04x}, len {}", conn_get_socket(c), packet_get_type(packet), packet_get_size(packet));
 
 					break;
 				}
 				break;
 
 			default:
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] unknown file connection state %d", conn_get_socket(c), (int)conn_get_state(c));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] unknown file connection state {}", conn_get_socket(c), (int)conn_get_state(c));
 			}
 
 			return 0;

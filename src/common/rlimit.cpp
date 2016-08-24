@@ -50,7 +50,7 @@ namespace pvpgn
 #ifdef HAVE_GETRLIMIT
 		struct rlimit rlim;
 		if (getrlimit(RLIM_NUMFILES, &rlim) < 0)
-			eventlog(eventlog_level_error, __FUNCTION__, "getrlimit returned error: %s", std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "getrlimit returned error: {}", std::strerror(errno));
 		socklimit = rlim.rlim_cur;
 #else
 		/* FIXME: WIN32: somehow get WSAData win32 socket limit here */

@@ -64,7 +64,7 @@ namespace pvpgn
 
 			if (pipe(fds) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not create pipe (pipe: %s)", std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not create pipe (pipe: {})", std::strerror(errno));
 				return NULL;
 			}
 
@@ -89,12 +89,12 @@ namespace pvpgn
 					close(fds[1]);
 
 				if (execlp(command, command, (char *)NULL) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not execute \"%s\" (execlp: %s)", command, std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not execute \"{}\" (execlp: {})", command, std::strerror(errno));
 
 				std::exit(127); /* popen exec failure code */
 
 			case -1:
-				eventlog(eventlog_level_error, __FUNCTION__, "could not fork (fork: %s)", std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not fork (fork: {})", std::strerror(errno));
 				close(fds[0]);
 				close(fds[1]);
 				return NULL;
@@ -104,7 +104,7 @@ namespace pvpgn
 
 				if (!(pp = fdopen(fds[0], "r")))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "could not streamify output (fdopen: %s)", std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not streamify output (fdopen: {})", std::strerror(errno));
 					close(fds[0]);
 					return NULL;
 				}
@@ -131,7 +131,7 @@ namespace pvpgn
 
 			if (std::fclose(pp) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close process (std::fclose: %s)", std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close process (std::fclose: {})", std::strerror(errno));
 				return -1;
 			}
 

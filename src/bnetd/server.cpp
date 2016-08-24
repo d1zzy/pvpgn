@@ -265,14 +265,14 @@ namespace pvpgn
 					psock_errno() == PSOCK_EPROTO ||
 #endif
 					0)
-					eventlog(eventlog_level_error, __FUNCTION__, "client aborted connection on %s (psock_accept: %s)", tempa, pstrerror(psock_errno()));
+					eventlog(eventlog_level_error, __FUNCTION__, "client aborted connection on {} (psock_accept: {})", tempa, pstrerror(psock_errno()));
 				else /* EAGAIN can mean out of resources _or_ connection aborted :( */
 				if (
 #ifdef PSOCK_EINTR
 					psock_errno() != PSOCK_EINTR &&
 #endif
 					1)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not accept new connection on %s (psock_accept: %s)", tempa, pstrerror(psock_errno()));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not accept new connection on {} (psock_accept: {})", tempa, pstrerror(psock_errno()));
 				return -1;
 			}
 
@@ -286,19 +286,19 @@ namespace pvpgn
 			char addrstr[INET_ADDRSTRLEN] = { 0 };
 			if (ipbanlist_check(inet_ntop(AF_INET, &(caddr.sin_addr), addrstr, sizeof(addrstr))) != 0)
 			{
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] connection from banned address %s denied (closing connection)", csocket, addrstr);
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] connection from banned address {} denied (closing connection)", csocket, addrstr);
 				psock_close(csocket);
 				return -1;
 			}
 
-			eventlog(eventlog_level_info, __FUNCTION__, "[%d] accepted connection from %s on %s", csocket, addr_num_to_addr_str(ntohl(caddr.sin_addr.s_addr), ntohs(caddr.sin_port)), tempa);
+			eventlog(eventlog_level_info, __FUNCTION__, "[{}] accepted connection from {} on {}", csocket, addr_num_to_addr_str(ntohl(caddr.sin_addr.s_addr), ntohs(caddr.sin_port)), tempa);
 
 			if (prefs_get_use_keepalive())
 			{
 				int val = 1;
 
 				if (psock_setsockopt(csocket, PSOCK_SOL_SOCKET, PSOCK_SO_KEEPALIVE, &val, (psock_t_socklen)sizeof(val)) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] could not set socket option SO_KEEPALIVE (psock_setsockopt: %s)", csocket, pstrerror(psock_errno()));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] could not set socket option SO_KEEPALIVE (psock_setsockopt: {})", csocket, pstrerror(psock_errno()));
 				/* not a fatal error */
 			}
 
@@ -310,7 +310,7 @@ namespace pvpgn
 				rlen = sizeof(rsaddr);
 				if (psock_getsockname(csocket, (struct sockaddr *)&rsaddr, &rlen) < 0)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] unable to determine real local port (psock_getsockname: %s)", csocket, pstrerror(psock_errno()));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] unable to determine real local port (psock_getsockname: {})", csocket, pstrerror(psock_errno()));
 					/* not a fatal error */
 					raddr = addr_get_ip(curr_laddr);
 					rport = addr_get_port(curr_laddr);
@@ -319,7 +319,7 @@ namespace pvpgn
 				{
 					if (rsaddr.sin_family != PSOCK_AF_INET)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "local address returned with bad address family %d", (int)rsaddr.sin_family);
+						eventlog(eventlog_level_error, __FUNCTION__, "local address returned with bad address family {}", (int)rsaddr.sin_family);
 						/* not a fatal error */
 						raddr = addr_get_ip(curr_laddr);
 						rport = addr_get_port(curr_laddr);
@@ -334,7 +334,7 @@ namespace pvpgn
 
 			if (psock_ctl(csocket, PSOCK_NONBLOCK) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] could not set TCP socket to non-blocking mode (closing connection) (psock_ctl: %s)", csocket, pstrerror(psock_errno()));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] could not set TCP socket to non-blocking mode (closing connection) (psock_ctl: {})", csocket, pstrerror(psock_errno()));
 				psock_close(csocket);
 				return -1;
 			}
@@ -344,18 +344,18 @@ namespace pvpgn
 
 				if (!(c = conn_create(csocket, usocket, raddr, rport, addr_get_ip(curr_laddr), addr_get_port(curr_laddr), ntohl(caddr.sin_addr.s_addr), ntohs(caddr.sin_port))))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] unable to create new connection (closing connection)", csocket);
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] unable to create new connection (closing connection)", csocket);
 					psock_close(csocket);
 					return -1;
 				}
 
 				if (conn_add_fdwatch(c, handle_tcp) < 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] unable to add socket to fdwatch pool (max connections?)", csocket);
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] unable to add socket to fdwatch pool (max connections?)", csocket);
 					conn_set_state(c, conn_state_destroy);
 					return -1;
 				}
 
-				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] client connected to a %s listening address", csocket, laddr_type_get_str(laddr_info->type));
+				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] client connected to a {} listening address", csocket, laddr_type_get_str(laddr_info->type));
 				switch (laddr_info->type)
 				{
 				case laddr_type_irc:
@@ -411,12 +411,12 @@ namespace pvpgn
 			errlen = sizeof(err);
 			if (psock_getsockopt(usocket, PSOCK_SOL_SOCKET, PSOCK_SO_ERROR, &err, &errlen) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] unable to read socket error (psock_getsockopt: %s)", usocket, pstrerror(psock_errno()));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] unable to read socket error (psock_getsockopt: {})", usocket, pstrerror(psock_errno()));
 				return -1;
 			}
 			if (errlen && err) /* if it was an error, there is no packet to read */
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "[%d] async UDP socket error notification (psock_getsockopt: %s)", usocket, pstrerror(err));
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] async UDP socket error notification (psock_getsockopt: {})", usocket, pstrerror(err));
 				return -1;
 			}
 			if (!(upacket = packet_create(packet_class_udp)))
@@ -450,14 +450,14 @@ namespace pvpgn
 											 */
 #endif
 											 1)
-											 eventlog(eventlog_level_error, __FUNCTION__, "could not recv UDP datagram (psock_recvfrom: %s)", pstrerror(psock_errno()));
+											 eventlog(eventlog_level_error, __FUNCTION__, "could not recv UDP datagram (psock_recvfrom: {})", pstrerror(psock_errno()));
 					packet_del_ref(upacket);
 					return -1;
 				}
 
 				if (fromaddr.sin_family != PSOCK_AF_INET)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "got UDP datagram with bad address family %d", (int)fromaddr.sin_family);
+					eventlog(eventlog_level_error, __FUNCTION__, "got UDP datagram with bad address family {}", (int)fromaddr.sin_family);
 					packet_del_ref(upacket);
 					return -1;
 				}
@@ -571,7 +571,7 @@ namespace pvpgn
 					}
 					break;
 				default:
-					eventlog(eventlog_level_error, __FUNCTION__, "[%d] connection has bad class (closing connection)", conn_get_socket(c));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] connection has bad class (closing connection)", conn_get_socket(c));
 					conn_close_read(c);
 					return -2;
 				}
@@ -583,12 +583,12 @@ namespace pvpgn
 			switch (net_recv_packet(csocket, packet, &currsize))
 			{
 			case -1:
-				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] read returned -1 (closing connection)", conn_get_socket(c));
+				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] read returned -1 (closing connection)", conn_get_socket(c));
 				conn_close_read(c);
 				return -2;
 
 			case 0: /* still working on it */
-				/* eventlog(eventlog_level_debug,__FUNCTION__,"[%d] still reading \"%s\" packet (%u of %u bytes so far)",conn_get_socket(c),packet_get_class_str(packet),conn_get_in_size(c),packet_get_size(packet)); */
+				/* eventlog(eventlog_level_debug,__FUNCTION__,"[{}] still reading \"{}\" packet ({} of {} bytes so far)",conn_get_socket(c),packet_get_class_str(packet),conn_get_in_size(c),packet_get_size(packet)); */
 				conn_set_in_size(c, currsize);
 				break;
 
@@ -718,7 +718,7 @@ namespace pvpgn
 							ret = handle_wol_gameres_packet(c, packet);
 							break;
 						default:
-							eventlog(eventlog_level_error, __FUNCTION__, "[%d] bad packet class %d (closing connection)", conn_get_socket(c), (int)packet_get_class(packet));
+							eventlog(eventlog_level_error, __FUNCTION__, "[{}] bad packet class {} (closing connection)", conn_get_socket(c), (int)packet_get_class(packet));
 							ret = -1;
 						}
 						packet_del_ref(packet);
@@ -839,7 +839,7 @@ namespace pvpgn
 #ifdef WIN32
 					std::sprintf(temp, "localhost");
 #else
-					eventlog(eventlog_level_error, __FUNCTION__, "could not get hostname: %s", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not get hostname: {}", pstrerror(errno));
 					return;
 #endif
 				}
@@ -872,7 +872,7 @@ namespace pvpgn
 				server_hostname = xstrdup(hn);
 			}
 			server_check_and_fix_hostname(server_hostname);
-			eventlog(eventlog_level_info, __FUNCTION__, "set hostname to \"%s\"", server_hostname);
+			eventlog(eventlog_level_info, __FUNCTION__, "set hostname to \"{}\"", server_hostname);
 		}
 
 		extern char const * server_get_hostname(void)
@@ -1005,61 +1005,61 @@ namespace pvpgn
 				laddr_info->ssocket = psock_socket(PSOCK_PF_INET, PSOCK_SOCK_STREAM, PSOCK_IPPROTO_TCP);
 				if (laddr_info->ssocket < 0)
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "could not create a %s listening socket (psock_socket: %s)", laddr_type_get_str(laddr_info->type), pstrerror(psock_errno()));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not create a {} listening socket (psock_socket: {})", laddr_type_get_str(laddr_info->type), pstrerror(psock_errno()));
 					goto err;
 				}
 
 				if (_set_reuseaddr(laddr_info->ssocket) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not set option SO_REUSEADDR on %s socket %d (psock_setsockopt: %s)", laddr_type_get_str(laddr_info->type), laddr_info->ssocket, pstrerror(psock_errno()));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not set option SO_REUSEADDR on {} socket {} (psock_setsockopt: {})", laddr_type_get_str(laddr_info->type), laddr_info->ssocket, pstrerror(psock_errno()));
 				/* not a fatal error... */
 
 				if (_bind_socket(laddr_info->ssocket, addr_get_ip(curr_laddr), addr_get_port(curr_laddr)) < 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "could not bind %s socket to address %s TCP (psock_bind: %s)", laddr_type_get_str(laddr_info->type), tempa, pstrerror(psock_errno()));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not bind {} socket to address {} TCP (psock_bind: {})", laddr_type_get_str(laddr_info->type), tempa, pstrerror(psock_errno()));
 					goto errsock;
 				}
 
 				/* tell socket to listen for connections */
 				if (psock_listen(laddr_info->ssocket, LISTEN_QUEUE) < 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "could not set %s socket %d to listen (psock_listen: %s)", laddr_type_get_str(laddr_info->type), laddr_info->ssocket, pstrerror(psock_errno()));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not set {} socket {} to listen (psock_listen: {})", laddr_type_get_str(laddr_info->type), laddr_info->ssocket, pstrerror(psock_errno()));
 					goto errsock;
 				}
 
 				if (psock_ctl(laddr_info->ssocket, PSOCK_NONBLOCK) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not set %s TCP listen socket to non-blocking mode (psock_ctl: %s)", laddr_type_get_str(laddr_info->type), pstrerror(psock_errno()));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not set {} TCP listen socket to non-blocking mode (psock_ctl: {})", laddr_type_get_str(laddr_info->type), pstrerror(psock_errno()));
 
 				/* index not stored persisently because we dont need to refer to it later */
 				fidx = fdwatch_add_fd(laddr_info->ssocket, fdwatch_type_read, handle_accept, curr_laddr);
 				if (fidx < 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "could not add listening socket %d to fdwatch pool (max sockets?)", laddr_info->ssocket);
+					eventlog(eventlog_level_error, __FUNCTION__, "could not add listening socket {} to fdwatch pool (max sockets?)", laddr_info->ssocket);
 					goto errsock;
 				}
 
-				eventlog(eventlog_level_info, __FUNCTION__, "listening for %s connections on %s TCP", laddr_type_get_str(laddr_info->type), tempa);
+				eventlog(eventlog_level_info, __FUNCTION__, "listening for {} connections on {} TCP", laddr_type_get_str(laddr_info->type), tempa);
 
 				if (laddr_info->type == laddr_type_bnet)
 				{
 					laddr_info->usocket = psock_socket(PSOCK_PF_INET, PSOCK_SOCK_DGRAM, PSOCK_IPPROTO_UDP);
 					if (laddr_info->usocket < 0)
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "could not create UDP socket (psock_socket: %s)", pstrerror(psock_errno()));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not create UDP socket (psock_socket: {})", pstrerror(psock_errno()));
 						goto errfdw;
 					}
 
 					if (_set_reuseaddr(laddr_info->usocket) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not set option SO_REUSEADDR on %s socket %d (psock_setsockopt: %s)", laddr_type_get_str(laddr_info->type), laddr_info->usocket, pstrerror(psock_errno()));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not set option SO_REUSEADDR on {} socket {} (psock_setsockopt: {})", laddr_type_get_str(laddr_info->type), laddr_info->usocket, pstrerror(psock_errno()));
 					/* not a fatal error... */
 
 					if (_bind_socket(laddr_info->usocket, addr_get_ip(curr_laddr), addr_get_port(curr_laddr)) < 0) {
-						eventlog(eventlog_level_error, __FUNCTION__, "could not bind %s socket to address %s UDP (psock_bind: %s)", laddr_type_get_str(laddr_info->type), tempa, pstrerror(psock_errno()));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not bind {} socket to address {} UDP (psock_bind: {})", laddr_type_get_str(laddr_info->type), tempa, pstrerror(psock_errno()));
 						goto errusock;
 					}
 
 					if (psock_ctl(laddr_info->usocket, PSOCK_NONBLOCK) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not set %s UDP socket to non-blocking mode (psock_ctl: %s)", laddr_type_get_str(laddr_info->type), pstrerror(psock_errno()));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not set {} UDP socket to non-blocking mode (psock_ctl: {})", laddr_type_get_str(laddr_info->type), pstrerror(psock_errno()));
 
 					/* index ignored because we never need it after this */
 					if (fdwatch_add_fd(laddr_info->usocket, fdwatch_type_read, handle_udp, curr_laddr) < 0) {
-						eventlog(eventlog_level_error, __FUNCTION__, "could not add listening socket %d to fdwatch pool (max sockets?)", laddr_info->usocket);
+						eventlog(eventlog_level_error, __FUNCTION__, "could not add listening socket {} to fdwatch pool (max sockets?)", laddr_info->usocket);
 						goto errusock;
 					}
 				}
@@ -1090,42 +1090,42 @@ namespace pvpgn
 		{
 			if (sigemptyset(&save_set) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: %s)", pstrerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: {})", pstrerror(errno));
 				return -1;
 			}
 			if (sigemptyset(&block_set) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: %s)", pstrerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: {})", pstrerror(errno));
 				return -1;
 			}
 			if (sigaddset(&block_set, SIGINT) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: %s)", pstrerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: {})", pstrerror(errno));
 				return -1;
 			}
 			if (sigaddset(&block_set, SIGHUP) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: %s)", pstrerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: {})", pstrerror(errno));
 				return -1;
 			}
 			if (sigaddset(&block_set, SIGTERM) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: %s)", pstrerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: {})", pstrerror(errno));
 				return -1;
 			}
 			if (sigaddset(&block_set, SIGUSR1) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: %s)", pstrerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: {})", pstrerror(errno));
 				return -1;
 			}
 			if (sigaddset(&block_set, SIGUSR2) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: %s)", pstrerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: {})", pstrerror(errno));
 				return -1;
 			}
 			if (sigaddset(&block_set, SIGALRM) < 0)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: %s)", pstrerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not add std::signal to set (sigemptyset: {})", pstrerror(errno));
 				return -1;
 			}
 
@@ -1141,48 +1141,48 @@ namespace pvpgn
 
 				quit_action.sa_handler = quit_sig_handle;
 				if (sigemptyset(&quit_action.sa_mask) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: {})", pstrerror(errno));
 				quit_action.sa_flags = SA_RESTART;
 
 				restart_action.sa_handler = restart_sig_handle;
 				if (sigemptyset(&restart_action.sa_mask) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: {})", pstrerror(errno));
 				restart_action.sa_flags = SA_RESTART;
 
 				save_action.sa_handler = save_sig_handle;
 				if (sigemptyset(&save_action.sa_mask) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: {})", pstrerror(errno));
 				save_action.sa_flags = SA_RESTART;
 
 				pipe_action.sa_handler = pipe_sig_handle;
 				if (sigemptyset(&pipe_action.sa_mask) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: {})", pstrerror(errno));
 				pipe_action.sa_flags = SA_RESTART;
 #ifdef HAVE_SETITIMER
 				timer_action.sa_handler = timer_sig_handle;
 				if (sigemptyset(&timer_action.sa_mask) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: {})", pstrerror(errno));
 				timer_action.sa_flags = SA_RESTART;
 #endif /* HAVE_SETITIMER */
 				forced_quit_action.sa_handler = forced_quit_sig_handle;
 				if (sigemptyset(&forced_quit_action.sa_mask) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not initialize std::signal set (sigemptyset: {})", pstrerror(errno));
 				forced_quit_action.sa_flags = SA_RESTART;
 
 				if (sigaction(SIGINT, &quit_action, NULL) < 0) /* control-c */
-					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGINT std::signal handler (sigaction: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGINT std::signal handler (sigaction: {})", pstrerror(errno));
 				if (sigaction(SIGHUP, &restart_action, NULL) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGHUP std::signal handler (sigaction: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGHUP std::signal handler (sigaction: {})", pstrerror(errno));
 				if (sigaction(SIGTERM, &quit_action, NULL) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGTERM std::signal handler (sigaction: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGTERM std::signal handler (sigaction: {})", pstrerror(errno));
 				if (sigaction(SIGUSR1, &save_action, NULL) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGUSR1 std::signal handler (sigaction: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGUSR1 std::signal handler (sigaction: {})", pstrerror(errno));
 				if (sigaction(SIGPIPE, &pipe_action, NULL) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGPIPE std::signal handler (sigaction: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGPIPE std::signal handler (sigaction: {})", pstrerror(errno));
 #ifdef HAVE_SETITIMER
 				/* setup asynchronus timestamp update timer */
 				if (sigaction(SIGALRM, &timer_action, NULL) < 0)
-					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGALRM std::signal handler (sigaction: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGALRM std::signal handler (sigaction: {})", pstrerror(errno));
 
 				{
 					struct itimerval it;
@@ -1193,13 +1193,13 @@ namespace pvpgn
 					it.it_value.tv_usec = BNETD_JIFFIES % 1000;
 
 					if (setitimer(ITIMER_REAL, &it, NULL)) {
-						eventlog(eventlog_level_fatal, __FUNCTION__, "failed to set timers (setitimer(): %s)", pstrerror(errno));
+						eventlog(eventlog_level_fatal, __FUNCTION__, "failed to set timers (setitimer(): {})", pstrerror(errno));
 						return -1;
 					}
 				}
 #endif
 				if (sigaction(SIGQUIT, &forced_quit_action, NULL) < 0) /* immediate shutdown */
-					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGQUIT std::signal handler (sigaction: %s)", pstrerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "could not set SIGQUIT std::signal handler (sigaction: {})", pstrerror(errno));
 			}
 
 			return 0;
@@ -1284,7 +1284,7 @@ namespace pvpgn
 				curr_exittime = sigexittime;
 				if (curr_exittime && (curr_exittime <= now || connlist_login_get_length() < 1))
 				{
-					eventlog(eventlog_level_info, __FUNCTION__, "the server is shutting down (%d connections left)", connlist_get_length());
+					eventlog(eventlog_level_info, __FUNCTION__, "the server is shutting down ({} connections left)", connlist_get_length());
 					clanlist_save();
 					/* no need for accountlist_save() when using "force" */
 					accountlist_save(FS_FORCE | FS_ALL);
@@ -1307,7 +1307,7 @@ namespace pvpgn
 							message_send_all(message);
 							message_destroy(message);
 						}
-						eventlog(eventlog_level_info, __FUNCTION__, "the server will shut down in %s (%d connections remaining)", tstr, connlist_get_length());
+						eventlog(eventlog_level_info, __FUNCTION__, "the server will shut down in {} ({} connections remaining)", tstr, connlist_get_length());
 					}
 					else
 					{
@@ -1373,7 +1373,7 @@ namespace pvpgn
 							eventlog(eventlog_level_error, __FUNCTION__, "using default configuration");
 
 						if (eventlog_open(prefs_get_logfile()) < 0)
-							eventlog(eventlog_level_error, __FUNCTION__, "could not use the file \"%s\" for the eventlog", prefs_get_logfile());
+							eventlog(eventlog_level_error, __FUNCTION__, "could not use the file \"{}\" for the eventlog", prefs_get_logfile());
 
 						/* FIXME: load new network settings */
 
@@ -1449,7 +1449,7 @@ namespace pvpgn
 						}
 						catch (const std::exception& e)
 						{
-							eventlog(eventlog_level_error, __FUNCTION__, "%s", e.what());
+							eventlog(eventlog_level_error, __FUNCTION__, "{}", e.what());
 						}
 					}
 
@@ -1531,7 +1531,7 @@ namespace pvpgn
 						psock_errno() != PSOCK_EINTR &&
 #endif
 						1)
-						eventlog(eventlog_level_error, __FUNCTION__, "fdwatch() failed (errno: %s)", pstrerror(psock_errno()));
+						eventlog(eventlog_level_error, __FUNCTION__, "fdwatch() failed (errno: {})", pstrerror(psock_errno()));
 				case 0: /* timeout... no sockets need checking */
 					continue;
 				}
@@ -1588,14 +1588,14 @@ namespace pvpgn
 			/* Start with the Battle.net address list */
 			if (_setup_add_addrs(&laddrs, prefs_get_bnetdserv_addrs(), INADDR_ANY, BNETD_SERV_PORT, laddr_type_bnet))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not create %s server address list from \"%s\"", laddr_type_get_str(laddr_type_bnet), prefs_get_bnetdserv_addrs());
+				eventlog(eventlog_level_error, __FUNCTION__, "could not create {} server address list from \"{}\"", laddr_type_get_str(laddr_type_bnet), prefs_get_bnetdserv_addrs());
 				return -1;
 			}
 
 			/* Append list of addresses to listen for IRC connections */
 			if (_setup_add_addrs(&laddrs, prefs_get_irc_addrs(), INADDR_ANY, BNETD_IRC_PORT, laddr_type_irc))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not create %s server address list from \"%s\"", laddr_type_get_str(laddr_type_irc), prefs_get_irc_addrs());
+				eventlog(eventlog_level_error, __FUNCTION__, "could not create {} server address list from \"{}\"", laddr_type_get_str(laddr_type_irc), prefs_get_irc_addrs());
 				_shutdown_addrs(laddrs);
 				return -1;
 			}
@@ -1603,7 +1603,7 @@ namespace pvpgn
 			/* Append list of addresses to listen for WOLv1 connections */
 			if (_setup_add_addrs(&laddrs, prefs_get_wolv1_addrs(), INADDR_ANY, BNETD_WOLV1_PORT, laddr_type_wolv1))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not create %s server address list from \"%s\"", laddr_type_get_str(laddr_type_wolv1), prefs_get_wolv1_addrs());
+				eventlog(eventlog_level_error, __FUNCTION__, "could not create {} server address list from \"{}\"", laddr_type_get_str(laddr_type_wolv1), prefs_get_wolv1_addrs());
 				_shutdown_addrs(laddrs);
 				return -1;
 			}
@@ -1611,7 +1611,7 @@ namespace pvpgn
 			/* Append list of addresses to listen for WOLv2 connections */
 			if (_setup_add_addrs(&laddrs, prefs_get_wolv2_addrs(), INADDR_ANY, BNETD_WOLV2_PORT, laddr_type_wolv2))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not create %s server address list from \"%s\"", laddr_type_get_str(laddr_type_wolv2), prefs_get_wolv2_addrs());
+				eventlog(eventlog_level_error, __FUNCTION__, "could not create {} server address list from \"{}\"", laddr_type_get_str(laddr_type_wolv2), prefs_get_wolv2_addrs());
 				_shutdown_addrs(laddrs);
 				return -1;
 			}
@@ -1619,7 +1619,7 @@ namespace pvpgn
 			/* Append list of addresses to listen for APIREGISER connections */
 			if (_setup_add_addrs(&laddrs, prefs_get_apireg_addrs(), INADDR_ANY, BNETD_APIREG_PORT, laddr_type_apireg))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not create %s server address list from \"%s\"", laddr_type_get_str(laddr_type_apireg), prefs_get_apireg_addrs());
+				eventlog(eventlog_level_error, __FUNCTION__, "could not create {} server address list from \"{}\"", laddr_type_get_str(laddr_type_apireg), prefs_get_apireg_addrs());
 				_shutdown_addrs(laddrs);
 				return -1;
 			}
@@ -1627,7 +1627,7 @@ namespace pvpgn
 			/* Append list of addresses to listen for WGAMERES connections */
 			if (_setup_add_addrs(&laddrs, prefs_get_wgameres_addrs(), INADDR_ANY, BNETD_WGAMERES_PORT, laddr_type_wgameres))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not create %s server address list from \"%s\"", laddr_type_get_str(laddr_type_wgameres), prefs_get_wgameres_addrs());
+				eventlog(eventlog_level_error, __FUNCTION__, "could not create {} server address list from \"{}\"", laddr_type_get_str(laddr_type_wgameres), prefs_get_wgameres_addrs());
 				_shutdown_addrs(laddrs);
 				return -1;
 			}
@@ -1635,7 +1635,7 @@ namespace pvpgn
 			/* Append list of addresses to listen for W3ROUTE connections */
 			if (_setup_add_addrs(&laddrs, prefs_get_w3route_addr(), INADDR_ANY, BNETD_W3ROUTE_PORT, laddr_type_w3route))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not create %s server address list from \"%s\"", laddr_type_get_str(laddr_type_w3route), prefs_get_w3route_addr());
+				eventlog(eventlog_level_error, __FUNCTION__, "could not create {} server address list from \"{}\"", laddr_type_get_str(laddr_type_w3route), prefs_get_w3route_addr());
 				_shutdown_addrs(laddrs);
 				return -1;
 			}
@@ -1643,7 +1643,7 @@ namespace pvpgn
 			/* Append list of addresses to listen for telnet connections */
 			if (_setup_add_addrs(&laddrs, prefs_get_telnet_addrs(), INADDR_ANY, BNETD_TELNET_PORT, laddr_type_telnet))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "could not create %s server address list from \"%s\"", laddr_type_get_str(laddr_type_telnet), prefs_get_telnet_addrs());
+				eventlog(eventlog_level_error, __FUNCTION__, "could not create {} server address list from \"{}\"", laddr_type_get_str(laddr_type_telnet), prefs_get_telnet_addrs());
 				_shutdown_addrs(laddrs);
 				return -1;
 			}

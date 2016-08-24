@@ -60,7 +60,7 @@ namespace pvpgn
 			return -1;
 		}
 		if (!(fp = std::fopen(filename, "r"))) {
-			eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+			eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 			return -1;
 		}
 		trans_head = list_create();
@@ -79,39 +79,39 @@ namespace pvpgn
 				buff[endpos + 1] = '\0';
 			}
 			if (!(input = std::strtok(buff, " \t"))) { /* std::strtok modifies the string it is passed */
-				eventlog(eventlog_level_error, __FUNCTION__, "missing input line %u of file \"%s\"", line, filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "missing input line {} of file \"{}\"", line, filename);
 				continue;
 			}
 			/* check for port number - this tells us what programs will use this entry */
 			if (!(temp = std::strrchr(input, ':'))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "missing port # on input line %u of file \"%s\"", line, filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "missing port # on input line {} of file \"{}\"", line, filename);
 				continue;
 			}
 			temp++;
 			/* bnetd doesn't want the port 4000 entries */
 			if (program == TRANS_BNETD  && std::strcmp(temp, "4000") == 0) {
 #ifdef DEBUG_TRANS
-				eventlog(eventlog_level_debug, __FUNCTION__, "d2gs input (ignoring) \"%s\"", input);
+				eventlog(eventlog_level_debug, __FUNCTION__, "d2gs input (ignoring) \"{}\"", input);
 #endif
 				continue;
 			}
 			/* d2cs only wants the port 4000 entries */
 			if (program == TRANS_D2CS && std::strcmp(temp, "4000") != 0) {
 #ifdef DEBUG_TRANS
-				eventlog(eventlog_level_debug, __FUNCTION__, "non d2gs input (ignoring) \"%s\"", input);
+				eventlog(eventlog_level_debug, __FUNCTION__, "non d2gs input (ignoring) \"{}\"", input);
 #endif
 				continue;
 			}
 			if (!(output = std::strtok(NULL, " \t"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "missing output on line %u of file \"%s\"", line, filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "missing output on line {} of file \"{}\"", line, filename);
 				continue;
 			}
 			if (!(exclude = std::strtok(NULL, " \t"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "missing exclude on line %u of file \"%s\"", line, filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "missing exclude on line {} of file \"{}\"", line, filename);
 				continue;
 			}
 			if (!(include = std::strtok(NULL, " \t"))) {
-				eventlog(eventlog_level_error, __FUNCTION__, "missing include on line %u of file \"%s\"", line, filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "missing include on line {} of file \"{}\"", line, filename);
 				continue;
 			}
 			/* add exlude networks */
@@ -164,7 +164,7 @@ namespace pvpgn
 				}
 #ifdef DEBUG_TRANS
 				eventlog(eventlog_level_debug, __FUNCTION__,
-					"Adding Host -> %s, Output -> %s, Network %s - (exclude)",
+					"Adding Host -> {}, Output -> {}, Network {} - (exclude)",
 					addr_get_addr_str(entry->input, tmp1, sizeof(tmp1)),
 					addr_get_addr_str(entry->output, tmp2, sizeof(tmp2)),
 					netaddr_get_addr_str(entry->network, tmp3, sizeof(tmp3)));
@@ -223,7 +223,7 @@ namespace pvpgn
 				}
 #ifdef DEBUG_TRANS
 				eventlog(eventlog_level_debug, __FUNCTION__,
-					"Adding Host -> %s, Output -> %s, Network %s - (include)",
+					"Adding Host -> {}, Output -> {}, Network {} - (include)",
 					addr_get_addr_str(entry->input, tmp1, sizeof(tmp1)),
 					addr_get_addr_str(entry->output, tmp2, sizeof(tmp2)),
 					netaddr_get_addr_str(entry->network, tmp3, sizeof(tmp3)));
@@ -281,7 +281,7 @@ namespace pvpgn
 		char	 temp4[32];
 
 #ifdef DEBUG_TRANS
-		eventlog(eventlog_level_debug, __FUNCTION__, "checking %s for client %s ...",
+		eventlog(eventlog_level_debug, __FUNCTION__, "checking {} for client {} ...",
 			addr_num_to_addr_str(*addr, *port),
 			addr_num_to_ip_str(clientaddr));
 #endif
@@ -295,7 +295,7 @@ namespace pvpgn
 				}
 
 #ifdef DEBUG_TRANS
-				eventlog(eventlog_level_debug, __FUNCTION__, "against entry -> %s output %s network %s",
+				eventlog(eventlog_level_debug, __FUNCTION__, "against entry -> {} output {} network {}",
 					addr_get_addr_str(entry->input, temp1, sizeof(temp1)),
 					addr_get_addr_str(entry->output, temp2, sizeof(temp2)),
 					netaddr_get_addr_str(entry->network, temp3, sizeof(temp3)));
@@ -313,7 +313,7 @@ namespace pvpgn
 					continue;
 				}
 #ifdef DEBUG_TRANS
-				eventlog(eventlog_level_debug, __FUNCTION__, "%s translated to %s",
+				eventlog(eventlog_level_debug, __FUNCTION__, "{} translated to {}",
 					addr_num_to_addr_str(*addr, *port),
 					addr_get_addr_str(entry->output, temp4, sizeof(temp4)));
 #endif
@@ -323,7 +323,7 @@ namespace pvpgn
 			}
 		}
 #ifdef DEBUG_TRANS
-		eventlog(eventlog_level_debug, __FUNCTION__, "no match found for %s (not translated)",
+		eventlog(eventlog_level_debug, __FUNCTION__, "no match found for {} (not translated)",
 			addr_num_to_addr_str(*addr, *port));
 #endif
 		return 0; /* no match found in list */

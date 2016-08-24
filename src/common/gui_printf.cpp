@@ -28,12 +28,13 @@
 #include <richedit.h>
 
 #include "common/eventlog.h"
+#include <common/format.h>
 #include "common/setup_after.h"
 
 namespace pvpgn
 {
 
-	HWND		ghwndConsole;
+	HWND ghwndConsole;
 
 	static void guiAddText(const char *str, COLORREF clr)
 	{
@@ -65,13 +66,11 @@ namespace pvpgn
 		SendMessageA(ghwndConsole, EM_REPLACESEL, FALSE, (LPARAM)str);
 	}
 
-	extern int gui_lvprintf(t_eventlog_level l, const char *format, va_list arglist)
+	//template <typename... Args>
+	//void gui_lvprintf(t_eventlog_level l, const char* format, const Args& ... args)
+	void gui_lvprintf(t_eventlog_level l, const char* format, fmt::ArgList args)
 	{
-		char buff[8192];
-		int result;
 		COLORREF clr;
-
-		result = vsprintf(buff, format, arglist);
 
 		switch (l)
 		{
@@ -99,24 +98,8 @@ namespace pvpgn
 		default:
 			clr = RGB(0, 0, 0);
 		}
-		guiAddText(buff, clr);
-		return result;
+
+		guiAddText(fmt::format(format, args).c_str(), clr);
 	}
-
-	extern int gui_lprintf(t_eventlog_level l, const char *format, ...)
-	{
-		va_list arglist;
-		va_start(arglist, format);
-
-		return gui_lvprintf(l, format, arglist);
-	}
-
-	extern int gui_printf(const char *format, ...)
-	{
-		va_list arglist;
-		va_start(arglist, format);
-		return gui_lvprintf(eventlog_level_error, format, arglist);
-	}
-
 }
 #endif

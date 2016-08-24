@@ -140,7 +140,7 @@ namespace pvpgn
 					createOpenDir();
 				}
 				catch (const Directory::OpenError&) {
-					ERROR1("could not (re)open directory: '%s'", path.c_str());
+					ERROR1("could not (re)open directory: '{}'", path.c_str());
 					throw DeliverError("could not (re)open directory: " + path);
 				}
 
@@ -149,7 +149,7 @@ namespace pvpgn
 
 				std::ofstream fd(ostr.str().c_str());
 				if (!fd) {
-					ERROR1("error opening mail file. check permissions: '%s'", path.c_str());
+					ERROR1("error opening mail file. check permissions: '{}'", path.c_str());
 					throw DeliverError("error opening mail file. check permissions: " + path);
 				}
 
@@ -161,7 +161,7 @@ namespace pvpgn
 		{
 				std::ifstream fd(fname.c_str());
 				if (!fd) {
-					ERROR1("error opening mail file: %s", fname.c_str());
+					ERROR1("error opening mail file: {}", fname.c_str());
 					throw ReadError("error opening mail file: " + fname);
 				}
 
@@ -232,7 +232,7 @@ namespace pvpgn
 				fname += dentry;
 
 				if (std::remove(fname.c_str()) < 0)
-					INFO2("could not remove file \"%s\" (std::remove: %s)", fname.c_str(), std::strerror(errno));
+					INFO2("could not remove file \"{}\" (std::remove: {})", fname.c_str(), std::strerror(errno));
 			}
 
 		void

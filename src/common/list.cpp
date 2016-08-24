@@ -258,7 +258,7 @@ namespace pvpgn
 		if (len++ == pos)
 			return curr->data;
 
-		eventlog(eventlog_level_error, __FUNCTION__, "requested position %u but len=%u", pos, len);
+		eventlog(eventlog_level_error, __FUNCTION__, "requested position {} but len={}", pos, len);
 		return NULL;
 	}
 
@@ -272,7 +272,7 @@ namespace pvpgn
 		if (!list)
 		{
 #ifdef LIST_DEBUG
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL list from %s:%u", fn, ln);
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL list from {}:{}", fn, ln);
 #else
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL list");
 #endif
@@ -293,7 +293,7 @@ namespace pvpgn
 		if (!list)
 		{
 #ifdef LIST_DEBUG
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL list from %s:%u", fn, ln);
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL list from {}:{}", fn, ln);
 #else
 			eventlog(eventlog_level_error, __FUNCTION__, "got NULL list");
 #endif
@@ -308,7 +308,7 @@ namespace pvpgn
 	{
 		if (!elem)
 		{
-			eventlog(eventlog_level_error, __FUNCTION__, "got NULL elem from %s:%u", fn, ln);
+			eventlog(eventlog_level_error, __FUNCTION__, "got NULL elem from {}:{}", fn, ln);
 			return NULL;
 		}
 

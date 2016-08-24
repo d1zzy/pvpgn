@@ -139,7 +139,12 @@ namespace pvpgn
 			va_list args;
 			va_start(args, format);
 			if (stream == stderr || stream == stdout)
-				return gui_lvprintf(eventlog_level_error, format, args);
+			{
+				char buf[1024] = {};
+				std::vsnprintf(buf, sizeof buf, format, args);
+				gui_lvprintf(eventlog_level_error, "{}", buf);
+				return 1;
+			}
 			else
 				return vfprintf(stream, format, args);
 		}
@@ -950,7 +955,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE reserved, LPSTR lpCmdLine, i
 	auto result = app_main(__argc, __argv);
 
 	pvpgn::bnetd::gui.main_finished = TRUE;
-	eventlog(pvpgn::eventlog_level_debug, __FUNCTION__, "server exited ( return : %i )", result);
+	eventlog(pvpgn::eventlog_level_debug, __FUNCTION__, "server exited ( return : {} )", result);
 	WaitForSingleObject(pvpgn::bnetd::gui.event_ready, INFINITE);
 
 	return 0;

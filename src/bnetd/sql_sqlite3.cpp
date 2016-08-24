@@ -130,13 +130,13 @@ namespace pvpgn
 		{
 #ifdef RUNTIME_LIBS
 			if (sqlite_load_library()) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error loading library file \"%s\"", SQLITE3_LIB);
+				eventlog(eventlog_level_error, __FUNCTION__, "error loading library file \"{}\"", SQLITE3_LIB);
 				return -1;
 			}
 #endif
 			/* SQLite3 has no host, port, socket, user or password and the database name is the path to the db file */
 			if (p_sqlite3_open(name, &db) != SQLITE_OK) {
-				eventlog(eventlog_level_error, __FUNCTION__, "got error from sqlite3_open (%s)", p_sqlite3_errmsg(db));
+				eventlog(eventlog_level_error, __FUNCTION__, "got error from sqlite3_open ({})", p_sqlite3_errmsg(db));
 				p_sqlite3_close(db);
 				return -1;
 			}
@@ -148,7 +148,7 @@ namespace pvpgn
 		{
 			if (db) {
 				if (p_sqlite3_close(db) != SQLITE_OK) {
-					eventlog(eventlog_level_error, __FUNCTION__, "got error from sqlite3_close (%s)", p_sqlite3_errmsg(db));
+					eventlog(eventlog_level_error, __FUNCTION__, "got error from sqlite3_close ({})", p_sqlite3_errmsg(db));
 					return -1;
 				}
 				db = NULL;
@@ -179,7 +179,7 @@ namespace pvpgn
 			res = (t_sqlite3_res *)xmalloc(sizeof(t_sqlite3_res));
 
 			if (p_sqlite3_get_table(db, query, &res->results, &res->rows, &res->columns, NULL) != SQLITE_OK) {
-				/*        eventlog(eventlog_level_debug, __FUNCTION__, "got error (%s) from query (%s)", p_sqlite3_errmsg(db), query); */
+				/*        eventlog(eventlog_level_debug, __FUNCTION__, "got error ({}) from query ({})", p_sqlite3_errmsg(db), query); */
 				xfree((void*)res);
 				return NULL;
 			}

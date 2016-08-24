@@ -129,7 +129,7 @@ namespace pvpgn
 			}
 
 			if (std::strchr(rawname, '/') || std::strchr(rawname, '\\')) {
-				eventlog(eventlog_level_warn, __FUNCTION__, "got rawname containing '/' or '\\' \"%s\"", rawname);
+				eventlog(eventlog_level_warn, __FUNCTION__, "got rawname containing '/' or '\\' \"{}\"", rawname);
 				return nullptr;
 			}
 
@@ -225,7 +225,7 @@ namespace pvpgn
 			if (!(fp = std::fopen(filenamestk, "rb")))
 			{
 				/* FIXME: check for lower-case version of filename */
-				eventlog(eventlog_level_error, __FUNCTION__, "stat() succeeded yet could not open file \"%s\" for reading (std::fopen: %s)", filenamestk, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "stat() succeeded yet could not open file \"{}\" for reading (std::fopen: {})", filenamestk, std::strerror(errno));
 				filelen = 0;
 			}
 
@@ -235,7 +235,7 @@ namespace pvpgn
 					std::fseek(fp, startoffset, SEEK_SET);
 				}
 				else {
-					eventlog(eventlog_level_warn, __FUNCTION__, "[%d] startoffset is beyond end of file (%u>%u)", conn_get_socket(c), startoffset, filelen);
+					eventlog(eventlog_level_warn, __FUNCTION__, "[{}] startoffset is beyond end of file ({}>{})", conn_get_socket(c), startoffset, filelen);
 					/* Keep the real filesize. Battle.net does it the same way ... */
 					std::fclose(fp);
 					fp = NULL;
@@ -259,18 +259,18 @@ namespace pvpgn
 			 */
 			if (!fp)
 			{
-				eventlog(eventlog_level_warn, __FUNCTION__, "[%d] sending no data for file \"%s\" (\"%s\")", conn_get_socket(c), rawname, filenamestk);
+				eventlog(eventlog_level_warn, __FUNCTION__, "[{}] sending no data for file \"{}\" (\"{}\")", conn_get_socket(c), rawname, filenamestk);
 				return -1;
 			}
 
-			eventlog(eventlog_level_info, __FUNCTION__, "[%d] sending file \"%s\" (\"%s\") of length %d", conn_get_socket(c), rawname, filenamestk, filelen);
+			eventlog(eventlog_level_info, __FUNCTION__, "[{}] sending file \"{}\" (\"{}\") of length {}", conn_get_socket(c), rawname, filenamestk, filelen);
 			for (;;)
 			{
 				if (!(rpacket = packet_create(packet_class_raw)))
 				{
 					eventlog(eventlog_level_error, __FUNCTION__, "could not create raw packet");
 					if (std::fclose(fp) < 0)
-						eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"%s\" after reading (std::fclose: %s)", filenamestk, std::strerror(errno));
+						eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"{}\" after reading (std::fclose: {})", filenamestk, std::strerror(errno));
 					return -1;
 				}
 				if ((nbytes = std::fread(packet_get_raw_data_build(rpacket, 0), 1, MAX_PACKET_SIZE, fp))<(int)MAX_PACKET_SIZE)
@@ -282,7 +282,7 @@ namespace pvpgn
 					}
 					packet_del_ref(rpacket);
 					if (std::ferror(fp))
-						eventlog(eventlog_level_error, __FUNCTION__, "read failed before EOF on file \"%s\" (std::fread: %s)", rawname, std::strerror(errno));
+						eventlog(eventlog_level_error, __FUNCTION__, "read failed before EOF on file \"{}\" (std::fread: {})", rawname, std::strerror(errno));
 					break;
 				}
 				packet_set_size(rpacket, nbytes);
@@ -291,7 +291,7 @@ namespace pvpgn
 			}
 
 			if (std::fclose(fp) < 0)
-				eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"%s\" after reading (std::fclose: %s)", rawname, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "could not close file \"{}\" after reading (std::fclose: {})", rawname, std::strerror(errno));
 			return 0;
 		}
 

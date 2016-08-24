@@ -173,7 +173,7 @@ namespace pvpgn
 		{
 #ifdef RUNTIME_LIBS
 			if (odbc_load_dll()) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error loading library file \"%s\"", ODBC_LIB);
+				eventlog(eventlog_level_error, __FUNCTION__, "error loading library file \"{}\"", ODBC_LIB);
 				return -1;
 			}
 #endif
@@ -186,10 +186,10 @@ namespace pvpgn
 				return odbc_Fail();
 			}
 			if (odbc_Result(p_SQLConnect(con, (SQLCHAR*)name, SQL_NTS, (SQLCHAR*)user, SQL_NTS, (SQLCHAR*)pass, SQL_NTS))) {
-				eventlog(eventlog_level_debug, __FUNCTION__, "Connected to ODBC datasource \"%s\".", name);
+				eventlog(eventlog_level_debug, __FUNCTION__, "Connected to ODBC datasource \"{}\".", name);
 			}
 			else {
-				eventlog(eventlog_level_error, __FUNCTION__, "Unable to connect to ODBC datasource \"%s\".", name);
+				eventlog(eventlog_level_error, __FUNCTION__, "Unable to connect to ODBC datasource \"{}\".", name);
 				odbc_Error(SQL_HANDLE_DBC, con, eventlog_level_error, __FUNCTION__);
 				return odbc_Fail();
 			}
@@ -230,7 +230,7 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "Got a NULL query!");
 				return NULL;
 			}
-			//	eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+			//	eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 
 			/* Run query and check for success. */
 			p_SQLAllocStmt(con, &stmt);
@@ -274,7 +274,7 @@ namespace pvpgn
 				return res;
 			}
 			else if (!odbc_Result(result)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "Unable to fetch row - ODBC error %i.", result);
+				eventlog(eventlog_level_error, __FUNCTION__, "Unable to fetch row - ODBC error {}.", result);
 				odbc_Error(SQL_HANDLE_STMT, stmt, eventlog_level_error, __FUNCTION__);
 				sql_odbc_free_result(res);
 				return NULL;
@@ -292,7 +292,7 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "Got a NULL query!");
 				return -1;
 			}
-			//	eventlog(eventlog_level_trace, __FUNCTION__, "%s", query);
+			//	eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 
 			p_SQLAllocStmt(con, &stmt);
 			result = odbc_Result(p_SQLExecDirect(stmt, (SQLCHAR*)query, SQL_NTS));
@@ -487,7 +487,7 @@ namespace pvpgn
 			while (p_SQLGetDiagRec(type, obj, ++i, NULL, NULL, NULL, 0, &mTextLen) != SQL_NO_DATA) {
 				SQLCHAR *mText = (SQLCHAR *)xcalloc(sizeof *mText, ++mTextLen);
 				p_SQLGetDiagRec(type, obj, i, mState, &native, mText, mTextLen, NULL);
-				eventlog(level, function, "ODBC Error: State %s, Native %i: %s", mState, native, mText);
+				eventlog(level, function, "ODBC Error: State {}, Native {}: {}", mState, native, mText);
 				xfree(mText);
 			}
 		}

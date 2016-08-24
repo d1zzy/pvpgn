@@ -345,7 +345,7 @@ namespace pvpgn
 			}
 			if (!(afp = std::fopen(filename, "r")))
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "unable to open alias file \"%s\" for reading (std::fopen: %s)", filename, std::strerror(errno));
+				eventlog(eventlog_level_error, __FUNCTION__, "unable to open alias file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				return -1;
 			}
 
@@ -377,7 +377,7 @@ namespace pvpgn
 				case 0:
 					if (buff[pos] != '@') /* not start of alias */
 					{
-						eventlog(eventlog_level_error, __FUNCTION__, "expected start of alias stanza on line %u of alias file \"%s\" but found \"%s\"", line, filename, &buff[pos]);
+						eventlog(eventlog_level_error, __FUNCTION__, "expected start of alias stanza on line {} of alias file \"{}\" but found \"{}\"", line, filename, &buff[pos]);
 						break;
 					}
 					inalias = 1;
@@ -404,7 +404,7 @@ namespace pvpgn
 						  min = max = 0;
 						  if (buff[pos] != '[')
 						  {
-							  eventlog(eventlog_level_error, __FUNCTION__, "expected output entry on line %u of alias file \"%s\" but found \"%s\"", line, filename, &buff[pos]);
+							  eventlog(eventlog_level_error, __FUNCTION__, "expected output entry on line {} of alias file \"{}\" but found \"{}\"", line, filename, &buff[pos]);
 							  break;
 						  }
 
@@ -499,7 +499,7 @@ namespace pvpgn
 							  }
 						  }
 						  else
-							  eventlog(eventlog_level_error, __FUNCTION__, "expected output entry or next alias stanza on line %u of file \"%s\"i but found \"%s\"", line, filename, &buff[pos]);
+							  eventlog(eventlog_level_error, __FUNCTION__, "expected output entry or next alias stanza on line {} of file \"{}\"i but found \"{}\"", line, filename, &buff[pos]);
 						  break;
 				}
 				}

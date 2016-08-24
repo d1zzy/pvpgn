@@ -90,7 +90,7 @@ namespace pvpgn
 
 			if (checksum_header != checksum_calc)
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "received (%x) and calculated(%x) checksum do not match - discarding charsave", checksum_header, checksum_calc);
+				eventlog(eventlog_level_error, __FUNCTION__, "received ({}) and calculated({}) checksum do not match - discarding charsave", checksum_header, checksum_calc);
 				return 0;
 			}
 
@@ -98,7 +98,7 @@ namespace pvpgn
 			std::sprintf(filename, "%s/.%s.tmp", d2dbs_prefs_get_charsave_dir(), CharName);
 			fd = std::fopen(filename, "wb");
 			if (!fd) {
-				eventlog(eventlog_level_error, __FUNCTION__, "open() failed : %s", filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "open() failed : {}", filename);
 				return 0;
 			}
 			curlen = 0;
@@ -109,7 +109,7 @@ namespace pvpgn
 				readlen = std::fwrite(data + curlen, 1, writelen, fd);
 				if (readlen <= 0) {
 					std::fclose(fd);
-					eventlog(eventlog_level_error, __FUNCTION__, "write() failed error : %s", std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "write() failed error : {}", std::strerror(errno));
 					return 0;
 				}
 				curlen += readlen;
@@ -120,13 +120,13 @@ namespace pvpgn
 			std::sprintf(bakfile, "%s/%s", prefs_get_charsave_bak_dir(), CharName);
 			std::sprintf(savefile, "%s/%s", d2dbs_prefs_get_charsave_dir(), CharName);
 			if (p_rename(savefile, bakfile) == -1) {
-				eventlog(eventlog_level_warn, __FUNCTION__, "error std::rename %s to %s", savefile, bakfile);
+				eventlog(eventlog_level_warn, __FUNCTION__, "error std::rename {} to {}", savefile, bakfile);
 			}
 			if (p_rename(filename, savefile) == -1) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error std::rename %s to %s", filename, savefile);
+				eventlog(eventlog_level_error, __FUNCTION__, "error std::rename {} to {}", filename, savefile);
 				return 0;
 			}
-			eventlog(eventlog_level_info, __FUNCTION__, "saved charsave %s(*%s) for gs %s(%d)", CharName, AccountName, conn->serverip, conn->serverid);
+			eventlog(eventlog_level_info, __FUNCTION__, "saved charsave {}(*{}) for gs {}({})", CharName, AccountName, conn->serverip, conn->serverid);
 			return datalen;
 		}
 
@@ -146,13 +146,13 @@ namespace pvpgn
 			std::sprintf(filepath, "%s/%s", prefs_get_charinfo_bak_dir(), AccountName);
 			if (stat(filepath, &statbuf) == -1) {
 				p_mkdir(filepath, S_IRWXU | S_IRWXG | S_IRWXO);
-				eventlog(eventlog_level_info, __FUNCTION__, "created charinfo directory: %s", filepath);
+				eventlog(eventlog_level_info, __FUNCTION__, "created charinfo directory: {}", filepath);
 			}
 
 			std::sprintf(filename, "%s/%s/.%s.tmp", d2dbs_prefs_get_charinfo_dir(), AccountName, CharName);
 			fd = std::fopen(filename, "wb");
 			if (!fd) {
-				eventlog(eventlog_level_error, __FUNCTION__, "open() failed : %s", filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "open() failed : {}", filename);
 				return 0;
 			}
 
@@ -164,7 +164,7 @@ namespace pvpgn
 				readlen = std::fwrite(data + curlen, 1, writelen, fd);
 				if (readlen <= 0) {
 					std::fclose(fd);
-					eventlog(eventlog_level_error, __FUNCTION__, "write() failed error : %s", std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "write() failed error : {}", std::strerror(errno));
 					return 0;
 				}
 				curlen += readlen;
@@ -175,13 +175,13 @@ namespace pvpgn
 			std::sprintf(bakfile, "%s/%s/%s", prefs_get_charinfo_bak_dir(), AccountName, CharName);
 			std::sprintf(savefile, "%s/%s/%s", d2dbs_prefs_get_charinfo_dir(), AccountName, CharName);
 			if (p_rename(savefile, bakfile) == -1) {
-				eventlog(eventlog_level_info, __FUNCTION__, "error std::rename %s to %s", savefile, bakfile);
+				eventlog(eventlog_level_info, __FUNCTION__, "error std::rename {} to {}", savefile, bakfile);
 			}
 			if (p_rename(filename, savefile) == -1) {
-				eventlog(eventlog_level_error, __FUNCTION__, "error std::rename %s to %s", filename, savefile);
+				eventlog(eventlog_level_error, __FUNCTION__, "error std::rename {} to {}", filename, savefile);
 				return 0;
 			}
-			eventlog(eventlog_level_info, __FUNCTION__, "saved charinfo %s(*%s) for gs %s(%d)", CharName, AccountName, conn->serverip, conn->serverid);
+			eventlog(eventlog_level_info, __FUNCTION__, "saved charinfo {}(*{}) for gs {}({})", CharName, AccountName, conn->serverip, conn->serverid);
 			return datalen;
 		}
 
@@ -204,7 +204,7 @@ namespace pvpgn
 			}
 			fd = std::fopen(filename, "rb");
 			if (!fd) {
-				eventlog(eventlog_level_error, __FUNCTION__, "open() failed : %s", filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "open() failed : {}", filename);
 				return 0;
 			}
 			std::fseek(fd, 0, SEEK_END);
@@ -229,14 +229,14 @@ namespace pvpgn
 				readlen = std::fread(data + curlen, 1, writelen, fd);
 				if (readlen <= 0) {
 					std::fclose(fd);
-					eventlog(eventlog_level_error, __FUNCTION__, "read() failed error : %s", std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "read() failed error : {}", std::strerror(errno));
 					return 0;
 				}
 				leftlen -= readlen;
 				curlen += readlen;
 			}
 			std::fclose(fd);
-			eventlog(eventlog_level_info, __FUNCTION__, "loaded charsave %s(*%s) for gs %s(%d)", CharName, AccountName, conn->serverip, conn->serverid);
+			eventlog(eventlog_level_info, __FUNCTION__, "loaded charsave {}(*{}) for gs {}({})", CharName, AccountName, conn->serverip, conn->serverid);
 			return filesize;
 		}
 
@@ -253,7 +253,7 @@ namespace pvpgn
 			std::sprintf(filename, "%s/%s/%s", d2dbs_prefs_get_charinfo_dir(), AccountName, CharName);
 			fd = std::fopen(filename, "rb");
 			if (!fd) {
-				eventlog(eventlog_level_error, __FUNCTION__, "open() failed : %s", filename);
+				eventlog(eventlog_level_error, __FUNCTION__, "open() failed : {}", filename);
 				return 0;
 			}
 			std::fseek(fd, 0, SEEK_END);
@@ -281,14 +281,14 @@ namespace pvpgn
 				if (readlen <= 0)
 				{
 					std::fclose(fd);
-					eventlog(eventlog_level_error, __FUNCTION__, "read() failed error : %s", std::strerror(errno));
+					eventlog(eventlog_level_error, __FUNCTION__, "read() failed error : {}", std::strerror(errno));
 					return 0;
 				}
 				leftlen -= readlen;
 				curlen += readlen;
 			}
 			std::fclose(fd);
-			eventlog(eventlog_level_info, __FUNCTION__, "loaded charinfo %s(*%s) for gs %s(%d)", CharName, AccountName, conn->serverip, conn->serverid);
+			eventlog(eventlog_level_info, __FUNCTION__, "loaded charinfo {}(*{}) for gs {}({})", CharName, AccountName, conn->serverip, conn->serverid);
 			return filesize;
 		}
 
@@ -361,7 +361,7 @@ namespace pvpgn
 				}
 			}
 			else {
-				eventlog(eventlog_level_error, __FUNCTION__, "unknown data type %d", datatype);
+				eventlog(eventlog_level_error, __FUNCTION__, "unknown data type {}", datatype);
 				return -1;
 			}
 			writelen = sizeof(*saveret) + std::strlen(CharName) + 1;
@@ -439,15 +439,15 @@ namespace pvpgn
 			datalen = 0;
 			if (datatype == D2GS_DATA_CHARSAVE) {
 				if (cl_query_charlock_status((unsigned char*)CharName, (unsigned char*)RealmName, &gsid) != 0) {
-					eventlog(eventlog_level_warn, __FUNCTION__, "char %s(*%s)@%s is already locked on gs %u", CharName, AccountName, RealmName, gsid);
+					eventlog(eventlog_level_warn, __FUNCTION__, "char {}(*{})@{} is already locked on gs {}", CharName, AccountName, RealmName, gsid);
 					result = D2DBS_GET_DATA_CHARLOCKED;
 				}
 				else if (cl_lock_char((unsigned char*)CharName, (unsigned char*)RealmName, conn->serverid) != 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "failed to lock char %s(*%s)@%s for gs %s(%d)", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
+					eventlog(eventlog_level_error, __FUNCTION__, "failed to lock char {}(*{})@{} for gs {}({})", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
 					result = D2DBS_GET_DATA_CHARLOCKED;
 				}
 				else {
-					eventlog(eventlog_level_info, __FUNCTION__, "lock char %s(*%s)@%s for gs %s(%d)", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
+					eventlog(eventlog_level_info, __FUNCTION__, "lock char {}(*{})@{} for gs {}({})", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
 					datalen = dbs_packet_getdata_charsave(conn, AccountName, CharName, databuf, kBufferSize);
 					if (datalen > 0) {
 						result = D2DBS_GET_DATA_SUCCESS;
@@ -458,11 +458,11 @@ namespace pvpgn
 						else {
 							result = D2DBS_GET_DATA_FAILED;
 							if (cl_unlock_char((unsigned char*)CharName, (unsigned char*)RealmName, gsid) != 0) {
-								eventlog(eventlog_level_error, __FUNCTION__, "failed to unlock char %s(*%s)@%s for gs %s(%d)", CharName, \
+								eventlog(eventlog_level_error, __FUNCTION__, "failed to unlock char {}(*{})@{} for gs {}({})", CharName, \
 									AccountName, RealmName, conn->serverip, conn->serverid);
 							}
 							else {
-								eventlog(eventlog_level_info, __FUNCTION__, "unlock char %s(*%s)@%s for gs %s(%d)", CharName, \
+								eventlog(eventlog_level_info, __FUNCTION__, "unlock char {}(*{})@{} for gs {}({})", CharName, \
 									AccountName, RealmName, conn->serverip, conn->serverid);
 							}
 						}
@@ -471,11 +471,11 @@ namespace pvpgn
 						datalen = 0;
 						result = D2DBS_GET_DATA_FAILED;
 						if (cl_unlock_char((unsigned char*)CharName, (unsigned char*)RealmName, gsid) != 0) {
-							eventlog(eventlog_level_error, __FUNCTION__, "faled to unlock char %s(*%s)@%s for gs %s(%d)", CharName, \
+							eventlog(eventlog_level_error, __FUNCTION__, "faled to unlock char {}(*{})@{} for gs {}({})", CharName, \
 								AccountName, RealmName, conn->serverip, conn->serverid);
 						}
 						else {
-							eventlog(eventlog_level_info, __FUNCTION__, "unlock char %s(*%s)@%s for gs %s(%d)", CharName, \
+							eventlog(eventlog_level_info, __FUNCTION__, "unlock char {}(*{})@{} for gs {}({})", CharName, \
 								AccountName, RealmName, conn->serverip, conn->serverid);
 						}
 
@@ -505,7 +505,7 @@ namespace pvpgn
 				}
 			}
 			else {
-				eventlog(eventlog_level_error, __FUNCTION__, "unknown data type %d", datatype);
+				eventlog(eventlog_level_error, __FUNCTION__, "unknown data type {}", datatype);
 				return -1;
 			}
 			writelen = datalen + sizeof(*getret) + std::strlen(CharName) + 1;
@@ -560,7 +560,7 @@ namespace pvpgn
 			charladderinfo.level = bn_int_get(updateladder->charlevel);
 			charladderinfo.status = bn_short_get(updateladder->charstatus);
 			charladderinfo.chclass = bn_short_get(updateladder->charclass);
-			eventlog(eventlog_level_info, __FUNCTION__, "update ladder for %s@%s for gs %s(%d)", CharName, RealmName, conn->serverip, conn->serverid);
+			eventlog(eventlog_level_info, __FUNCTION__, "update ladder for {}@{} for gs {}({})", CharName, RealmName, conn->serverip, conn->serverid);
 			d2ladder_update(&charladderinfo);
 			return 1;
 		}
@@ -606,18 +606,18 @@ namespace pvpgn
 
 			if (bn_int_get(charlock->lockstatus)) {
 				if (cl_lock_char((unsigned char*)CharName, (unsigned char*)RealmName, conn->serverid) != 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "failed to lock character %s(*%s)@%s for gs %s(%d)", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
+					eventlog(eventlog_level_error, __FUNCTION__, "failed to lock character {}(*{})@{} for gs {}({})", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
 				}
 				else {
-					eventlog(eventlog_level_info, __FUNCTION__, "lock character %s(*%s)@%s for gs %s(%d)", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
+					eventlog(eventlog_level_info, __FUNCTION__, "lock character {}(*{})@{} for gs {}({})", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
 				}
 			}
 			else {
 				if (cl_unlock_char((unsigned char*)CharName, (unsigned char*)RealmName, conn->serverid) != 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "failed to unlock character %s(*%s)@%s for gs %s(%d)", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
+					eventlog(eventlog_level_error, __FUNCTION__, "failed to unlock character {}(*{})@{} for gs {}({})", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
 				}
 				else {
-					eventlog(eventlog_level_info, __FUNCTION__, "unlock character %s(*%s)@%s for gs %s(%d)", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
+					eventlog(eventlog_level_info, __FUNCTION__, "unlock character {}(*{})@{} for gs {}({})", CharName, AccountName, RealmName, conn->serverip, conn->serverid);
 				}
 			}
 			return 1;
@@ -649,7 +649,7 @@ namespace pvpgn
 					}
 					readlen = 1;
 					writelen = 0;
-					eventlog(eventlog_level_info, __FUNCTION__, "set connection type for gs %s(%d) on socket %d", conn->serverip, conn->serverid, conn->sd);
+					eventlog(eventlog_level_info, __FUNCTION__, "set connection type for gs {}({}) on socket {}", conn->serverip, conn->serverid, conn->sd);
 					eventlog_step(prefs_get_logfile_gs(), eventlog_level_info, __FUNCTION__, "set connection type for gs %s(%d) on socket %d", conn->serverip, conn->serverid, conn->sd);
 				}
 				else {
@@ -682,7 +682,7 @@ namespace pvpgn
 							retval = dbs_packet_echoreply(conn);
 							break;
 						default:
-							eventlog(eventlog_level_error, __FUNCTION__, "unknown request type %d", \
+							eventlog(eventlog_level_error, __FUNCTION__, "unknown request type {}", \
 								bn_short_get(readhead->type));
 							retval = -1;
 						}
@@ -692,7 +692,7 @@ namespace pvpgn
 					}
 				}
 				else {
-					eventlog(eventlog_level_error, __FUNCTION__, "unknown connection type %d", conn->type);
+					eventlog(eventlog_level_error, __FUNCTION__, "unknown connection type {}", conn->type);
 					return -1;
 				}
 			}
@@ -727,12 +727,12 @@ namespace pvpgn
 			}
 			xfree(adlist);
 			if (valid) {
-				eventlog(eventlog_level_info, __FUNCTION__, "ip address %s is valid", addr_num_to_ip_str(c->ipaddr));
+				eventlog(eventlog_level_info, __FUNCTION__, "ip address {} is valid", addr_num_to_ip_str(c->ipaddr));
 				LIST_TRAVERSE(dbs_server_connection_list, elem)
 				{
 					if (!(tempc = (t_d2dbs_connection*)elem_get_data(elem))) continue;
 					if (tempc != c && tempc->ipaddr == c->ipaddr) {
-						eventlog(eventlog_level_info, __FUNCTION__, "destroying previous connection %d", tempc->serverid);
+						eventlog(eventlog_level_info, __FUNCTION__, "destroying previous connection {}", tempc->serverid);
 						dbs_server_shutdown_connection(tempc);
 						list_remove_elem(dbs_server_connection_list, &elem);
 					}
@@ -741,7 +741,7 @@ namespace pvpgn
 				return 0;
 			}
 			else {
-				eventlog(eventlog_level_info, __FUNCTION__, "ip address %s is invalid", addr_num_to_ip_str(c->ipaddr));
+				eventlog(eventlog_level_info, __FUNCTION__, "ip address {} is invalid", addr_num_to_ip_str(c->ipaddr));
 			}
 			return -1;
 		}
@@ -759,7 +759,7 @@ namespace pvpgn
 			{
 				if (!(tempc = (t_d2dbs_connection*)elem_get_data(elem))) continue;
 				if (now - tempc->last_active > timeout) {
-					eventlog(eventlog_level_debug, __FUNCTION__, "connection %d timed out", tempc->serverid);
+					eventlog(eventlog_level_debug, __FUNCTION__, "connection {} timed out", tempc->serverid);
 					dbs_server_shutdown_connection(tempc);
 					list_remove_elem(dbs_server_connection_list, &elem);
 					continue;
@@ -819,7 +819,7 @@ namespace pvpgn
 
 				/* levels 257 thru 355 */
 				if (level != plevel) {
-					eventlog(eventlog_level_info, __FUNCTION__, "level mis-match for %s ( %u != %u ) setting to 255", CharName, level, plevel);
+					eventlog(eventlog_level_info, __FUNCTION__, "level mis-match for {} ( {} != {} ) setting to 255", CharName, level, plevel);
 					bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET], 255);
 					bn_int_set((bn_int *)&charinfo[CHARINFO_SUMMARY_LEVEL_OFFSET], 255);
 				}
@@ -849,10 +849,10 @@ namespace pvpgn
 				if (level < 100)
 					return 1; /* d2gs will send charinfo - level will be set to 255 at that std::time if needed */
 
-				eventlog(eventlog_level_info, __FUNCTION__, "level %u > 99 for %s", level, CharName);
+				eventlog(eventlog_level_info, __FUNCTION__, "level {} > 99 for {}", level, CharName);
 
 				if (!(dbs_packet_getdata_charinfo(conn, AccountName, CharName, (char*)charinfo, CHARINFO_SIZE))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "unable to get charinfo for %s", CharName);
+					eventlog(eventlog_level_error, __FUNCTION__, "unable to get charinfo for {}", CharName);
 					return 0;
 				}
 
@@ -865,7 +865,7 @@ namespace pvpgn
 				if (bn_byte_get(&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET]) == 255)
 					level = 255;
 
-				eventlog(eventlog_level_info, __FUNCTION__, "updating charinfo for %s -> level = %u , status = 0x%04X , pstatus = 0x%04X", CharName, level, status, pstatus);
+				eventlog(eventlog_level_info, __FUNCTION__, "updating charinfo for {} -> level = {} , status = 0x{:04X} , pstatus = 0x{:04X}", CharName, level, status, pstatus);
 				bn_byte_set((bn_byte *)&charinfo[CHARINFO_PORTRAIT_LEVEL_OFFSET], level);
 				bn_int_set((bn_int *)&charinfo[CHARINFO_SUMMARY_LEVEL_OFFSET], level);
 				bn_short_set((bn_short *)&charinfo[CHARINFO_PORTRAIT_STATUS_OFFSET], pstatus);
@@ -877,7 +877,7 @@ namespace pvpgn
 				}
 
 				if (!(dbs_packet_savedata_charinfo(conn, AccountName, CharName, (char*)charinfo, CHARINFO_SIZE))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "unable to save charinfo for %s", CharName);
+					eventlog(eventlog_level_error, __FUNCTION__, "unable to save charinfo for {}", CharName);
 					return 0;
 				}
 
