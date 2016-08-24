@@ -162,7 +162,12 @@ namespace pvpgn
 			if (!username)
 				throw std::runtime_error("username is a nullptr");
 
-			FILE* fp = std::fopen(userlog_filename(username), "r");
+			FILE* fp = nullptr;
+			{
+				const char* const filename = userlog_filename(username);
+				fp = std::fopen(filename, "r");
+				xfree((void*)filename);
+			}
 			if (!fp)
 				throw std::runtime_error("Could not open userlog");
 
