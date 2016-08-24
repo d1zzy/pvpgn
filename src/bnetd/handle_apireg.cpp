@@ -455,12 +455,9 @@ namespace pvpgn
 
 		static int apireg_send(t_connection * conn, char const * command)
 		{
-			t_packet * p;
 			char data[MAX_IRC_MESSAGE_LEN + 1];
 			unsigned len = 0;
 			t_elem * curr;
-
-			p = packet_create(packet_class_raw);
 
 			if (command)
 				len = (std::strlen(command));
@@ -473,11 +470,14 @@ namespace pvpgn
 				std::sprintf(data, "%s", command);
 			}
 
-			packet_set_size(p, 0);
-			packet_append_data(p, data, len);
-			DEBUG2("[{}] sent \"{}\"", conn_get_socket(conn), data);
-			conn_push_outqueue(conn, p);
-			packet_del_ref(p);
+			{
+				t_packet* const p = packet_create(packet_class_raw);
+				packet_set_size(p, 0);
+				packet_append_data(p, data, len);
+				DEBUG2("[{}] sent \"{}\"", conn_get_socket(conn), data);
+				conn_push_outqueue(conn, p);
+				packet_del_ref(p);
+			}
 
 			/* In apiregister server we must destroy apiregmember and connection after send packet */
 
