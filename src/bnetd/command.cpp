@@ -4667,10 +4667,9 @@ namespace pvpgn
 
 		static int _handle_motd_command(t_connection * c, char const *text)
 		{
-			char const * filename;
 			std::FILE *       fp;
 
-			filename = i18n_filename(prefs_get_motdfile(), conn_get_gamelang_localized(c));
+			const char* const filename = i18n_filename(prefs_get_motdfile(), conn_get_gamelang_localized(c));
 
 			if (fp = std::fopen(filename, "r"))
 			{
@@ -4683,6 +4682,9 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "could not open motd file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				message_send_text(c, message_type_error, c, localize(c, "Unable to open motd."));
 			}
+
+			xfree((void*)filename);
+
 			return 0;
 		}
 
