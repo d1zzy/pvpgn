@@ -2791,11 +2791,10 @@ namespace pvpgn
 
 
 			// read text from bnmotd_w3.txt
-			char const * filename;
 			char * buff, *line;
 			std::FILE *       fp;
 
-			filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang_localized(c));
+			const char* const filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang_localized(c));
 
 			if (fp = std::fopen(filename, "r"))
 			{
@@ -2813,6 +2812,7 @@ namespace pvpgn
 
 			conn_push_outqueue(c, rpacket);
 			packet_del_ref(rpacket);
+			xfree((void*)filename);
 
 			return 0;
 		}
