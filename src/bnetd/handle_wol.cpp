@@ -1573,6 +1573,9 @@ namespace pvpgn
 						message_send_text(user, message_type_invmsg, conn, temp);
 					}
 				}
+
+				if (e)
+					irc_unget_listelems(e);
 			}
 			else {
 				irc_send(conn, ERR_NEEDMOREPARAMS, "INVMSG :Not enough parameters");
