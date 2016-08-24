@@ -160,15 +160,19 @@ namespace pvpgn
 				if (!len) continue; /* empty line */
 				buff[len] = '\0';
 
-				if (buff[0] == '{') {
-					if (_news_parsetime(buff + 1, &date, line)) {
+				if (buff[0] == '{')
+				{
+					if (_news_parsetime(buff + 1, &date, line))
+					{
 						eventlog(eventlog_level_error, __FUNCTION__, "error parsing news date on line {}", line);
 						xfree((void*)ENfilename);
+						std::fclose(fp);
 						return -1;
 					}
 					date_set = 1;
 				}
-				else {
+				else
+				{
 					ni = (t_news_index*)xmalloc(sizeof(t_news_index));
 					if (date_set)
 						ni->date = std::mktime(&date);
