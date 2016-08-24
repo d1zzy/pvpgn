@@ -4976,8 +4976,10 @@ namespace pvpgn
 					bn_int_get(packet->u.client_clanmember_rankupdate_req.count));
 				username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
 				offset += (std::strlen(username) + 1);
-				if (packet_get_size(packet) < offset + 1) {
+				if (packet_get_size(packet) < offset + 1)
+				{
 					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLANMEMBER_RANKUPDATE_REQ packet (mising status)", conn_get_socket(c));
+					packet_del_ref(rpacket);
 					return -1;
 				}
 				status = *((char *)packet_get_data_const(packet, offset, 1));
