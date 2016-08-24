@@ -140,7 +140,7 @@ namespace pvpgn
 				std::strftime(time_string, USEREVENT_TIME_MAXLEN, USEREVENT_TIME_FORMAT, tmnow);
 
 
-			char * filename = userlog_filename(account_get_name(account), true);
+			const char* const filename = userlog_filename(account_get_name(account), true);
 
 			if (FILE *fp = fopen(filename, "a"))
 			{
@@ -152,6 +152,8 @@ namespace pvpgn
 			{
 				ERROR1("could not write into user log file \"{}\"", filename);
 			}
+
+			xfree((void*)filename);
 		}
 
 		// read "count" lines from the end starting from "startline"
