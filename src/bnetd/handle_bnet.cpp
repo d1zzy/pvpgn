@@ -4847,6 +4847,7 @@ namespace pvpgn
 					char membercount;
 					if (packet_get_size(packet) < offset + 1) {
 						eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLAN_CREATEINVITEREQ packet (missing membercount)", conn_get_socket(c));
+						packet_del_ref(rpacket);
 						return -1;
 					}
 					membercount = *((char *)packet_get_data_const(packet, offset, 1));
