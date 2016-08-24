@@ -1668,6 +1668,8 @@ namespace pvpgn
 						else {
 							bn_int_set(&rpacket->u.server_loginreply2.message, SERVER_LOGINREPLY2_MESSAGE_BADPASS);
 						}
+
+						packet_del_ref(rpacket);
 						return -1;
 					}
 				}
@@ -1766,6 +1768,7 @@ namespace pvpgn
 					{
 						// feature to break login from Lua
 						conn_set_state(c, conn_state_destroy);
+						packet_del_ref(rpacket);
 						return -1;
 					}
 #endif
