@@ -727,13 +727,15 @@ namespace pvpgn
 			if (prefs_get_allow_new_accounts() == 0) {
 				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] account not created (disabled)", conn_get_socket(c));
 				bn_int_set(&rpacket->u.server_createaccount_w3.result, SERVER_CREATEACCOUNT_W3_RESULT_EXIST);
-				goto out;
+				conn_push_outqueue(c, rpacket);
+				packet_del_ref(rpacket);
 			}
 
 			if (account_check_name(username) < 0) {
 				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] account not created (invalid symbols)", conn_get_socket(c));
 				bn_int_set(&rpacket->u.server_createaccount_w3.result, SERVER_CREATEACCOUNT_W3_RESULT_INVALID);
-				goto out;
+				conn_push_outqueue(c, rpacket);
+				packet_del_ref(rpacket);
 			}
 
 			char lpass[20] = {};
@@ -765,7 +767,6 @@ namespace pvpgn
 				bn_int_set(&rpacket->u.server_createaccount_w3.result, SERVER_CREATEACCOUNT_W3_RESULT_OK);
 			}
 
-		out:
 			conn_push_outqueue(c, rpacket);
 			packet_del_ref(rpacket);
 
