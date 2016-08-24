@@ -810,7 +810,7 @@ namespace pvpgn
 				break;
 			default:
 				WARN1("got unknown gameres type {} for SDFX", static_cast<int>(type));
-				break;
+				return -1;
 			}
 
 			if (sdfx)
