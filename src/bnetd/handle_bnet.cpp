@@ -2255,7 +2255,10 @@ namespace pvpgn
 				packet_set_type(rpacket, SERVER_FRIENDSLISTREPLY);
 
 				if ((flist = account_get_friends(account)) == NULL)
+				{
+					packet_del_ref(rpacket);
 					return -1;
+				}
 
 				for (i = 0; i < n; i++) {
 					frienduid = account_get_friend(account, i);
