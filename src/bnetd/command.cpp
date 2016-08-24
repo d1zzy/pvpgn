@@ -2734,6 +2734,9 @@ namespace pvpgn
 					}
 				}
 			}
+
+			message_destroy(message);
+
 			return 0;
 		}
 
