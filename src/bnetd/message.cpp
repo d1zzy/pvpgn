@@ -679,6 +679,7 @@ namespace pvpgn
 					std::sprintf(msgtemp, "%s change mode: %s\r\n", tname, text);
 					conn_unget_chatcharname(me, tname);
 				}
+				break;
 			default:
 				eventlog(eventlog_level_error, __FUNCTION__, "got bad message type {}", (int)type);
 				return -1;
