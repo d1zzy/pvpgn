@@ -584,6 +584,7 @@ namespace pvpgn
 					if (!entry)
 					{
 						eventlog(eventlog_level_error, __FUNCTION__, "ipbanlist contains NULL item");
+						ipban_unload_entry(to_delete);
 						return -1;
 					}
 					if (ipban_identical_entry(to_delete, entry))
