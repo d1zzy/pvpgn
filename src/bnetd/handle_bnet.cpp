@@ -2761,7 +2761,6 @@ namespace pvpgn
 		static int _client_motdw3(t_connection * c, t_packet const *const packet)
 		{
 			t_packet *rpacket;
-			char serverinfo[512];
 			t_clienttag ctag;
 			t_motd_data motdd;
 
@@ -2805,14 +2804,13 @@ namespace pvpgn
 
 			const char* const filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang_localized(c));
 
+			char serverinfo[512] = {};
 			if (fp = std::fopen(filename, "r"))
 			{
-				strcpy(serverinfo, ""); // init
 				while ((buff = file_get_line(fp)))
 				{
 					line = message_format_line(c, buff);
-					strcat(serverinfo, &line[1]);
-					strcat(serverinfo, "\n");
+					std::snprintf(serverinfo, sizeof serverinfo, "%s\n", &line[1]);
 				}
 				if (std::fclose(fp) < 0)
 					eventlog(eventlog_level_error, __FUNCTION__, "could not close motdw3 file \"{}\" after reading (std::fopen: {})", filename, std::strerror(errno));
