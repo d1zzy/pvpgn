@@ -856,7 +856,7 @@ namespace pvpgn
 				break;
 			default:
 				WARN1("got unknown gameres type {} for GSKU", static_cast<int>(type));
-				break;
+				return -1;
 			}
 
 			if ((sku) && (game) && (game_get_clienttag(game) == tag_sku_to_uint(sku))) {
