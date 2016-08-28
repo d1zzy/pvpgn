@@ -1287,15 +1287,15 @@ namespace pvpgn
 
 			if ((numparams >= 2) && (params[1])) {
 				int i;
-				char ** e;
 
 				std::memset(temp, 0, sizeof(temp));
 
-				e = irc_get_listelems(params[1]);
+				char ** e = irc_get_listelems(params[1]);
 				/* FIXME: support wildcards! */
 
 				if (!(game = conn_get_game(conn))) {
 					ERROR0("conn has not game");
+					irc_unget_listelems(e);
 					return 0;
 				}
 
