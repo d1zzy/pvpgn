@@ -22,6 +22,7 @@
 #include <cstring>
 #include <cctype>
 #include <cstdlib>
+#include <string>
 
 #include "compat/strcasecmp.h"
 #include "common/eventlog.h"
@@ -154,12 +155,9 @@ namespace pvpgn
 			char * bnet_command = NULL;  /* amadeo: used for battle.net.commands */
 			int unrecognized_before = 0;
 			int linelen; /* amadeo: counter for stringlenghts */
-
 			int numparams = 0;
 			char * tempparams;
 			int i;
-			char paramtemp[MAX_IRC_MESSAGE_LEN * 2];
-			int first = 1;
 
 			if (!conn) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection");
@@ -229,17 +227,25 @@ namespace pvpgn
 				for (numparams = 0; params[numparams]; numparams++);
 			}
 
-			std::memset(paramtemp, 0, sizeof(paramtemp));
-			for (i = 0; ((numparams > 0) && (params[i])); i++) {
-				if (!first)
-					std::strcat(paramtemp, " ");
-				std::strcat(paramtemp, "\"");
-				std::strcat(paramtemp, params[i]);
-				std::strcat(paramtemp, "\"");
-				first = 0;
-			}
+			{
+				std::string paramtemp;
+				bool first = true;
+				for (i = 0; ((numparams > 0) && (params[i])); i++)
+				{
+					if (first)
+					{
+						first = false;
+					}
+					else
+					{
+						paramtemp.append(" ");
+					}
 
-			eventlog(eventlog_level_debug, __FUNCTION__, "[{}] got \"{}\" \"{}\" [{}] \"{}\"", conn_get_socket(conn), ((prefix) ? (prefix) : ("")), command, paramtemp, ((text) ? (text) : ("")));
+					paramtemp.append("\"" + std::string(params[i]) + "\"");
+				}
+
+				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] got \"{}\" \"{}\" [{}] \"{}\"", conn_get_socket(conn), ((prefix) ? (prefix) : ("")), command, paramtemp, ((text) ? (text) : ("")));
+			}
 
 			if (conn_get_class(conn) == conn_class_ircinit) {
 				handle_irc_common_set_class(conn, command, numparams, params, text);
