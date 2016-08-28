@@ -252,23 +252,26 @@ extern int main(int argc, char ** argv)
 #endif
 {
 	int pid;
-	char * pidfile;
 
 	eventlog_set(stderr);
 	if (!((pid = config_init(argc, argv)) == 0)) {
 //		if (pid==1) pid=0;
 		return pid;
 	}
-	pidfile = write_to_pidfile();
+	const char* const pidfile = write_to_pidfile();
 	eventlog(eventlog_level_info,__FUNCTION__,D2CS_VERSION);
 	if (init()<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"failed to init");
+		if (pidfile)
+			xfree((void*)pidfile);
 		return -1;
 	} else {
 		eventlog(eventlog_level_info,__FUNCTION__,"server initialized");
 	}
 	if (d2cs_server_process()<0) {
 		eventlog(eventlog_level_error,__FUNCTION__,"failed to run server");
+		if (pidfile)
+			xfree((void*)pidfile);
 		return -1;
 	}
 	cleanup();
