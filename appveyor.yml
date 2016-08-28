@@ -50,8 +50,10 @@ build_script:
   # plain (debug)
   - cmd: build_pvpgn.bat auto 7 2 1 y Debug
   - cmd: move debug\*.exe
+  - cmd: move debug\*.pdb
   - cmd: build_pvpgn.bat auto 7 1 1 y Debug
   - cmd: move /Y *.exe debug
+  - cmd: move /Y *.pdb debug
   - cmd: 7z.exe a %PVPGN_PLAIN_ZIP_DEBUG% .\debug\*
 
   # mysql
@@ -63,8 +65,10 @@ build_script:
   # mysql (debug)
   - cmd: build_pvpgn.bat auto 7 2 2 y Debug
   - cmd: move debug\*.exe
+  - cmd: move debug\*.pdb
   - cmd: build_pvpgn.bat auto 7 1 2 y Debug
   - cmd: move /Y *.exe debug
+  - cmd: move /Y *.pdb debug
   - cmd: 7z.exe a %PVPGN_MYSQL_ZIP_DEBUG% .\debug\*
 
   # pgsql
@@ -76,8 +80,10 @@ build_script:
   # pgsql (debug)
   - cmd: build_pvpgn.bat auto 7 2 3 y Debug
   - cmd: move debug\*.exe
+  - cmd: move debug\*.pdb
   - cmd: build_pvpgn.bat auto 7 1 3 y Debug
   - cmd: move /Y *.exe debug
+  - cmd: move /Y *.pdb debug
   - cmd: 7z.exe a %PVPGN_PGSQL_ZIP_DEBUG% .\debug\*
 
   # sqlite
@@ -89,8 +95,10 @@ build_script:
   # sqlite (debug)
   - cmd: build_pvpgn.bat auto 7 2 4 y Debug
   - cmd: move debug\*.exe
+  - cmd: move debug\*.pdb
   - cmd: build_pvpgn.bat auto 7 1 4 y Debug
   - cmd: move /Y *.exe debug
+  - cmd: move /Y *.pdb debug
   - cmd: 7z.exe a %PVPGN_SQLITE_ZIP_DEBUG% .\debug\*
 
   # odbc
@@ -102,8 +110,10 @@ build_script:
   # odbc (debug)
   - cmd: build_pvpgn.bat auto 7 2 5 y Debug
   - cmd: move debug\*.exe
+  - cmd: move debug\*.pdb
   - cmd: build_pvpgn.bat auto 7 1 5 y Debug
   - cmd: move /Y *.exe debug
+  - cmd: move /Y *.pdb debug
   - cmd: 7z.exe a %PVPGN_ODBC_ZIP_DEBUG% .\debug\*
 
 after_build:
