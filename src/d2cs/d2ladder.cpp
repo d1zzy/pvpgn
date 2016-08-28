@@ -190,7 +190,7 @@ namespace pvpgn
 			bn_int_set(&ladderinfo->explow, bn_int_get(info->experience));
 			bn_int_set(&ladderinfo->exphigh, 0);
 			bn_short_set(&ladderinfo->status, ladderstatus);
-			bn_byte_set(&ladderinfo->level, bn_int_get(info->level));
+			bn_byte_set(&ladderinfo->level, bn_byte_get(info->level));
 			bn_byte_set(&ladderinfo->u1, 0);
 			std::strncpy(ladderinfo->charname, info->charname, MAX_CHARNAME_LEN);
 			ladder_data[type].curr_len++;

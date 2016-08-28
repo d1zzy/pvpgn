@@ -60,7 +60,7 @@ namespace pvpgn
 		fmt.yHeight = 160;
 		fmt.dwEffects = 0;
 		fmt.crTextColor = clr;
-		std::swprintf(fmt.szFaceName, sizeof fmt.szFaceName, L"%ls", L"Courier New");
+		std::swprintf(fmt.szFaceName, sizeof fmt.szFaceName / sizeof *fmt.szFaceName, L"%ls", L"Courier New");
 
 		SendMessageW(ghwndConsole, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&fmt);
 		SendMessageA(ghwndConsole, EM_REPLACESEL, FALSE, (LPARAM)str);

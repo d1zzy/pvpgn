@@ -432,7 +432,7 @@ namespace pvpgn
 				dta.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
 				dta.uCallbackMessage = WM_SHELLNOTIFY;
 				dta.hIcon = LoadIconW(GetWindowInstance(hwnd), MAKEINTRESOURCE(IDI_ICON1));
-				std::swprintf(dta.szTip, sizeof dta.szTip / sizeof *dta.szTip, L"%ls %ls", PVPGN_SOFTWAREW, PVPGN_VERSION);
+				std::swprintf(dta.szTip, sizeof dta.szTip / sizeof *dta.szTip, L"%ls %ls", PVPGN_SOFTWAREW, PVPGN_VERSIONW);
 				Shell_NotifyIconW(NIM_ADD, &dta);
 				ShowWindow(hwnd, SW_HIDE);
 				return;
@@ -883,7 +883,10 @@ void make_minidump(EXCEPTION_POINTERS* e)
 
 	auto pMiniDumpWriteDump = reinterpret_cast<decltype(&MiniDumpWriteDump)>(GetProcAddress(hDbgHelp, "MiniDumpWriteDump"));
 	if (pMiniDumpWriteDump == nullptr)
+	{
+		FreeLibrary(hDbgHelp);
 		return;
+	}
 
 	wchar_t name[MAX_PATH] = {};
 	{
@@ -895,7 +898,10 @@ void make_minidump(EXCEPTION_POINTERS* e)
 
 	auto hFile = CreateFileW(name, GENERIC_WRITE, FILE_SHARE_READ, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		FreeLibrary(hDbgHelp);
 		return;
+	}
 
 	MINIDUMP_EXCEPTION_INFORMATION exceptionInfo = {};
 	exceptionInfo.ThreadId = GetCurrentThreadId();

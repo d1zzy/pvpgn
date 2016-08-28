@@ -341,6 +341,7 @@ namespace pvpgn
 					strtolower(pass);
 
 					bnet_hash(&pass_hash, std::strlen(pass), pass);
+					xfree((void *)pass);
 
 					tempacct = accountlist_create_account(user, hash_get_str(pass_hash));
 					if (!tempacct) {
@@ -348,8 +349,6 @@ namespace pvpgn
 						irc_send(conn, RPL_BAD_LOGIN, ":Account creating failed");
 						return 0;
 					}
-					if (pass)
-						xfree((void *)pass);
 
 					conn_set_user(conn, user);
 					conn_set_owner(conn, user);
@@ -1287,15 +1286,15 @@ namespace pvpgn
 
 			if ((numparams >= 2) && (params[1])) {
 				int i;
-				char ** e;
 
 				std::memset(temp, 0, sizeof(temp));
 
-				e = irc_get_listelems(params[1]);
+				char ** e = irc_get_listelems(params[1]);
 				/* FIXME: support wildcards! */
 
 				if (!(game = conn_get_game(conn))) {
 					ERROR0("conn has not game");
+					irc_unget_listelems(e);
 					return 0;
 				}
 
@@ -1573,6 +1572,9 @@ namespace pvpgn
 						message_send_text(user, message_type_invmsg, conn, temp);
 					}
 				}
+
+				if (e)
+					irc_unget_listelems(e);
 			}
 			else {
 				irc_send(conn, ERR_NEEDMOREPARAMS, "INVMSG :Not enough parameters");

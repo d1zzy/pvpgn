@@ -88,7 +88,6 @@ namespace pvpgn
 		{
 			char temp[MAX_IRC_MESSAGE_LEN];
 			t_clienttag clienttag;
-			char *filestring;
 			char const *ftphostname;
 			char const *ftpusername;
 			char const *ftppassword;
@@ -104,22 +103,28 @@ namespace pvpgn
 			 *  :[servername] 606 [username] :[ftpserveraddr] [ftpusername] [ftppaswd] [path] [file.rtp] [newversion] [SKU] REQ
 			 */
 
-			if (numparams >= 2) {
+			if (numparams >= 2)
+			{
 				clienttag = tag_sku_to_uint(std::atoi(params[0]));
 
 				if (clienttag != CLIENTTAG_WWOL_UINT)
 					conn_set_clienttag(conn, clienttag);
 
-				if (filestring = autoupdate_check(ARCHTAG_WINX86_UINT, clienttag, TAG_UNKNOWN_UINT, params[1], params[0])) {
+				const char* const filestring = autoupdate_check(ARCHTAG_WINX86_UINT, clienttag, TAG_UNKNOWN_UINT, params[1], params[0]);
+				if (filestring)
+				{
 					//:westwood-patch.ea.com update world96 lore3/1.003 65539_65536_6400.rtp 65539 6400 REQ
 					ftphostname = prefs_get_wol_autoupdate_serverhost();
 					ftpusername = prefs_get_wol_autoupdate_username();
 					ftppassword = prefs_get_wol_autoupdate_password();
 					std::snprintf(temp, sizeof(temp), ":%s %s %s %s 131075 %s REQ", ftphostname, ftpusername, ftppassword, filestring, params[0]);
 					irc_send(conn, RPL_UPDATE_FTP, temp);
+					xfree((void*)filestring);
 				}
 				else
+				{
 					irc_send(conn, RPL_UPDATE_NONEX, ":Update record non-existant");
+				}
 			}
 			else
 				irc_send(conn, ERR_NEEDMOREPARAMS, "VERCHK :Not enough parameters");

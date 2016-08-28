@@ -810,7 +810,7 @@ namespace pvpgn
 				break;
 			default:
 				WARN1("got unknown gameres type {} for SDFX", static_cast<int>(type));
-				break;
+				return -1;
 			}
 
 			if (sdfx)
@@ -856,7 +856,7 @@ namespace pvpgn
 				break;
 			default:
 				WARN1("got unknown gameres type {} for GSKU", static_cast<int>(type));
-				break;
+				return -1;
 			}
 
 			if ((sku) && (game) && (game_get_clienttag(game) == tag_sku_to_uint(sku))) {
@@ -1032,7 +1032,7 @@ namespace pvpgn
 				break;
 			default:
 				WARN1("got unknown gameres type {} for SHRT", static_cast<int>(type));
-				break;
+				return -1;
 			}
 
 			if (shortgame)
@@ -1112,7 +1112,7 @@ namespace pvpgn
 				break;
 			default:
 				WARN1("got unknown gameres type {} for CRAT", static_cast<int>(type));
-				break;
+				return -1;
 			}
 
 			if (crates)
@@ -1478,7 +1478,7 @@ namespace pvpgn
 				break;
 			default:
 				WARN1("got unknown gameres type {} for FLAG", static_cast<int>(type));
-				break;
+				return -1;
 			}
 
 			if (captureflag)

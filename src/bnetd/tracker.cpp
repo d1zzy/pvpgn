@@ -88,46 +88,24 @@ namespace pvpgn
 			t_elem const *     currl;
 			t_addr const *     addrt;
 			t_elem const *     currt;
-			t_trackpacket      packet;
 			struct sockaddr_in tempaddr;
 			t_laddr_info *     laddr_info;
 			char               tempa[64];
 			char               tempb[64];
 
+			t_trackpacket packet = {};
 			if (addrlist_get_length(track_servers) > 0)
 			{
-				std::memset(&packet, 0, sizeof(packet));
-				bn_short_nset(&packet.packet_version, (unsigned short)TRACK_VERSION);
+				bn_short_nset(&packet.packet_version, static_cast<unsigned short>(TRACK_VERSION));
 				/* packet.port is set below */
 				bn_int_nset(&packet.flags, 0);
-				std::strncpy((char *)packet.server_location,
-					prefs_get_location(),
-					sizeof(packet.server_location));
-				bn_byte_set(&packet.server_location[sizeof(packet.server_location) - 1], '\0');
-				std::strncpy((char *)packet.software,
-					PVPGN_SOFTWARE,
-					sizeof(packet.software));
-				bn_byte_set(&packet.software[sizeof(packet.software) - 1], '\0');
-				std::strncpy((char *)packet.version,
-					PVPGN_VERSION,
-					sizeof(packet.version));
-				bn_byte_set(&packet.version[sizeof(packet.version) - 1], '\0');
-				std::strncpy((char *)packet.server_desc,
-					prefs_get_description(),
-					sizeof(packet.server_desc));
-				bn_byte_set(&packet.server_desc[sizeof(packet.server_desc) - 1], '\0');
-				std::strncpy((char *)packet.server_url,
-					prefs_get_url(),
-					sizeof(packet.server_url));
-				bn_byte_set(&packet.server_url[sizeof(packet.server_url) - 1], '\0');
-				std::strncpy((char *)packet.contact_name,
-					prefs_get_contact_name(),
-					sizeof(packet.contact_name));
-				bn_byte_set(&packet.contact_name[sizeof(packet.contact_name) - 1], '\0');
-				std::strncpy((char *)packet.contact_email,
-					prefs_get_contact_email(),
-					sizeof(packet.contact_email));
-				bn_byte_set(&packet.contact_email[sizeof(packet.contact_email) - 1], '\0');
+				std::snprintf(reinterpret_cast<char*>(packet.server_location), sizeof packet.server_location, "%s", prefs_get_location());
+				std::snprintf(reinterpret_cast<char*>(packet.software), sizeof packet.software, PVPGN_SOFTWARE);
+				std::snprintf(reinterpret_cast<char*>(packet.version), sizeof packet.version, PVPGN_VERSION);
+				std::snprintf(reinterpret_cast<char*>(packet.server_desc), sizeof packet.server_desc, "%s", prefs_get_description());
+				std::snprintf(reinterpret_cast<char*>(packet.server_url), sizeof packet.server_url, "%s", prefs_get_url());
+				std::snprintf(reinterpret_cast<char*>(packet.contact_name), sizeof packet.contact_name, "%s", prefs_get_contact_name());
+				std::snprintf(reinterpret_cast<char*>(packet.contact_email), sizeof packet.contact_email, "%s", prefs_get_contact_email());
 				bn_int_nset(&packet.users, connlist_login_get_length());
 				bn_int_nset(&packet.channels, channellist_get_length());
 				bn_int_nset(&packet.games, gamelist_get_length());

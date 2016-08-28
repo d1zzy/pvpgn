@@ -140,7 +140,7 @@ namespace pvpgn
 				std::strftime(time_string, USEREVENT_TIME_MAXLEN, USEREVENT_TIME_FORMAT, tmnow);
 
 
-			char * filename = userlog_filename(account_get_name(account), true);
+			const char* const filename = userlog_filename(account_get_name(account), true);
 
 			if (FILE *fp = fopen(filename, "a"))
 			{
@@ -152,6 +152,8 @@ namespace pvpgn
 			{
 				ERROR1("could not write into user log file \"{}\"", filename);
 			}
+
+			xfree((void*)filename);
 		}
 
 		// read "count" lines from the end starting from "startline"
@@ -160,7 +162,12 @@ namespace pvpgn
 			if (!username)
 				throw std::runtime_error("username is a nullptr");
 
-			FILE* fp = std::fopen(userlog_filename(username), "r");
+			FILE* fp = nullptr;
+			{
+				const char* const filename = userlog_filename(username);
+				fp = std::fopen(filename, "r");
+				xfree((void*)filename);
+			}
 			if (!fp)
 				throw std::runtime_error("Could not open userlog");
 
@@ -168,7 +175,7 @@ namespace pvpgn
 			std::fseek(fp, 0, SEEK_END);
 
 			long pos = std::ftell(fp);
-			char c = {}, prev_c = {};
+			int c = {}, prev_c = {};
 			std::map<long, char*> lines;
 			long linecount = 0;
 			char line[MAX_MESSAGE_LEN + 1] = {};

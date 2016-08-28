@@ -669,10 +669,8 @@ namespace pvpgn
 
 		static int _client_createaccountw3(t_connection * c, t_packet const *const packet)
 		{
-			t_packet *rpacket;
 			char const *username;
 			char const *plainpass;
-			char lpass[20];
 			t_hash sc_hash;
 			unsigned int i;
 			const char *account_salt;
@@ -717,39 +715,51 @@ namespace pvpgn
 				return -1;
 			}
 
-			rpacket = packet_create(packet_class_bnet);
+			t_packet* const rpacket = packet_create(packet_class_bnet);
 			if (!rpacket)
 				return -1;
+
 			packet_set_size(rpacket, sizeof(t_server_createaccount_w3));
 			packet_set_type(rpacket, SERVER_CREATEACCOUNT_W3);
 
 			eventlog(eventlog_level_debug, __FUNCTION__, "[{}] new account requested for \"{}\"", conn_get_socket(c), username);
 
-			if (prefs_get_allow_new_accounts() == 0) {
+			if (prefs_get_allow_new_accounts() == 0)
+			{
 				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] account not created (disabled)", conn_get_socket(c));
 				bn_int_set(&rpacket->u.server_createaccount_w3.result, SERVER_CREATEACCOUNT_W3_RESULT_EXIST);
-				goto out;
+				conn_push_outqueue(c, rpacket);
+				packet_del_ref(rpacket);
+				return 0;
 			}
 
-			if (account_check_name(username) < 0) {
+			if (account_check_name(username) < 0)
+			{
 				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] account not created (invalid symbols)", conn_get_socket(c));
 				bn_int_set(&rpacket->u.server_createaccount_w3.result, SERVER_CREATEACCOUNT_W3_RESULT_INVALID);
-				goto out;
+				conn_push_outqueue(c, rpacket);
+				packet_del_ref(rpacket);
+				return 0;
 			}
 
-			if (plainpass) {
+			char lpass[20] = {};
+			if (plainpass)
+			{
 				/* convert plaintext password to lowercase for sc etc. */
-				std::strncpy(lpass, plainpass, 16);
-				lpass[16] = 0;
+				std::snprintf(lpass, sizeof lpass, "%s", plainpass);
 				strtolower(lpass);
 			}
 
 			//set password hash for sc etc.
 			bnet_hash(&sc_hash, std::strlen(lpass), lpass);
 			if (!(account = accountlist_create_account(username, hash_get_str(sc_hash))))
+			{
 				bn_int_set(&rpacket->u.server_createaccount_w3.result, SERVER_CREATEACCOUNT_W3_RESULT_EXIST);
-			else {
-				if (presume_plainpass) {
+			}
+			else
+			{
+				if (presume_plainpass)
+				{
 					BigInt salt = BigInt((unsigned char*)account_salt, 32, 4, false);
 					BnetSRP3 srp3 = BnetSRP3(username, plainpass);
 					srp3.setSalt(salt);
@@ -765,7 +775,6 @@ namespace pvpgn
 				bn_int_set(&rpacket->u.server_createaccount_w3.result, SERVER_CREATEACCOUNT_W3_RESULT_OK);
 			}
 
-		out:
 			conn_push_outqueue(c, rpacket);
 			packet_del_ref(rpacket);
 
@@ -1668,6 +1677,8 @@ namespace pvpgn
 						else {
 							bn_int_set(&rpacket->u.server_loginreply2.message, SERVER_LOGINREPLY2_MESSAGE_BADPASS);
 						}
+
+						packet_del_ref(rpacket);
 						return -1;
 					}
 				}
@@ -1766,6 +1777,7 @@ namespace pvpgn
 					{
 						// feature to break login from Lua
 						conn_set_state(c, conn_state_destroy);
+						packet_del_ref(rpacket);
 						return -1;
 					}
 #endif
@@ -2255,7 +2267,10 @@ namespace pvpgn
 				packet_set_type(rpacket, SERVER_FRIENDSLISTREPLY);
 
 				if ((flist = account_get_friends(account)) == NULL)
+				{
+					packet_del_ref(rpacket);
 					return -1;
+				}
 
 				for (i = 0; i < n; i++) {
 					frienduid = account_get_friend(account, i);
@@ -2746,7 +2761,6 @@ namespace pvpgn
 		static int _client_motdw3(t_connection * c, t_packet const *const packet)
 		{
 			t_packet *rpacket;
-			char serverinfo[512];
 			t_clienttag ctag;
 			t_motd_data motdd;
 
@@ -2785,20 +2799,19 @@ namespace pvpgn
 
 
 			// read text from bnmotd_w3.txt
-			char const * filename;
-			char * buff, *line;
+			char * buff;
 			std::FILE *       fp;
 
-			filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang_localized(c));
+			const char* const filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang_localized(c));
 
+			char serverinfo[512] = {};
 			if (fp = std::fopen(filename, "r"))
 			{
-				strcpy(serverinfo, ""); // init
 				while ((buff = file_get_line(fp)))
 				{
-					line = message_format_line(c, buff);
-					strcat(serverinfo, &line[1]);
-					strcat(serverinfo, "\n");
+					char* line = message_format_line(c, buff);
+					std::snprintf(serverinfo, sizeof serverinfo, "%s\n", &line[1]);
+					xfree((void*)line);
 				}
 				if (std::fclose(fp) < 0)
 					eventlog(eventlog_level_error, __FUNCTION__, "could not close motdw3 file \"{}\" after reading (std::fopen: {})", filename, std::strerror(errno));
@@ -2807,6 +2820,7 @@ namespace pvpgn
 
 			conn_push_outqueue(c, rpacket);
 			packet_del_ref(rpacket);
+			xfree((void*)filename);
 
 			return 0;
 		}
@@ -4841,6 +4855,7 @@ namespace pvpgn
 					char membercount;
 					if (packet_get_size(packet) < offset + 1) {
 						eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLAN_CREATEINVITEREQ packet (missing membercount)", conn_get_socket(c));
+						packet_del_ref(rpacket);
 						return -1;
 					}
 					membercount = *((char *)packet_get_data_const(packet, offset, 1));
@@ -4900,6 +4915,11 @@ namespace pvpgn
 			}
 			offset = sizeof(t_client_clan_createinvitereply);
 			username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
+			if (!username)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLAN_CREATEINVITEREPLY packet (bad username)", conn_get_socket(c));
+				return -1;
+			}
 			offset += (std::strlen(username) + 1);
 			if (packet_get_size(packet) < offset + 1) {
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLAN_CREATEINVITEREPLY packet (mising status)", conn_get_socket(c));
@@ -4958,9 +4978,9 @@ namespace pvpgn
 				return -1;
 			}
 
-			if ((rpacket = packet_create(packet_class_bnet)) != NULL) {
+			if ((rpacket = packet_create(packet_class_bnet)) != NULL)
+			{
 				int offset = sizeof(t_client_clanmember_rankupdate_req);
-				const char *username;
 				char status;
 				t_clan *clan;
 				t_clanmember *dest_member;
@@ -4971,10 +4991,19 @@ namespace pvpgn
 				packet_set_type(rpacket, SERVER_CLANMEMBER_RANKUPDATE_REPLY);
 				bn_int_set(&rpacket->u.server_clanmember_rankupdate_reply.count,
 					bn_int_get(packet->u.client_clanmember_rankupdate_req.count));
-				username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
+				const char* const username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
+				if (!username)
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] Could not retrieve username from CLANMEMBER_RANKUPDATE_REQ packet", conn_get_socket(c));
+					packet_del_ref(rpacket);
+					return -1;
+				}
+
 				offset += (std::strlen(username) + 1);
-				if (packet_get_size(packet) < offset + 1) {
+				if (packet_get_size(packet) < offset + 1)
+				{
 					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLANMEMBER_RANKUPDATE_REQ packet (mising status)", conn_get_socket(c));
+					packet_del_ref(rpacket);
 					return -1;
 				}
 				status = *((char *)packet_get_data_const(packet, offset, 1));
@@ -5395,8 +5424,8 @@ namespace pvpgn
 				const char * data;
 				std::string data_s;
 
-				gametype = bn_int_get(packet->u.client_extrawork.gametype);
-				length = bn_int_get(packet->u.client_extrawork.length);
+				gametype = bn_short_get(packet->u.client_extrawork.gametype);
+				length = bn_short_get(packet->u.client_extrawork.length);
 
 				if (!(data = (const char *)packet_get_raw_data_const(packet, sizeof(t_client_extrawork)))) {
 					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad EXTRAWORK packet (missing or too long data)", conn_get_socket(c));

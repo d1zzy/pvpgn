@@ -234,14 +234,17 @@ namespace pvpgn
 		else
 			port = defport;
 
+		char addrstr[INET_ADDRSTRLEN] = {};
+
 		if (tstr[0] != '\0')
+		{
 			hoststr = tstr;
+		}
 		else
 		{
-			struct sockaddr_in tsa;
-
+			struct sockaddr_in tsa {};
 			tsa.sin_addr.s_addr = htonl(defipaddr);
-			char addrstr[INET_ADDRSTRLEN] = { 0 };
+			
 			hoststr = inet_ntop(AF_INET, &(tsa.sin_addr), addrstr, sizeof(addrstr));
 		}
 

@@ -3692,7 +3692,6 @@ namespace pvpgn
 			char		raceicon; /* appeared in 1.03 */
 			unsigned int	raceiconnumber;
 			unsigned int    	wins;
-			char const *	usericon;
 			char 		clantag_str_tmp[5];
 			const char * 	clantag_str = NULL;
 			char        	revtag[5];
@@ -3733,22 +3732,31 @@ namespace pvpgn
 			}
 
 			// allow set icon to a user directly from the database (override default icon always if not null)
-			usericon = account_get_user_icon(account, clienttag);
+			const char* usericon = account_get_user_icon(account, clienttag);
 
 			// if custom stats is enabled then set a custom client icon by player rating
 			if (prefs_get_custom_icons() == 1)
 			{
 				t_icon_info * icon;
+				bool to_free = false;
 
 				// do not override userselectedicon if it's not null
 				if (!usericon && (icon = customicons_get_icon_by_account(account, clienttag)))
+				{
 					usericon = xstrdup(icon->icon_code);
+					to_free = true;
+				}
 
 				acctlevel = 0;
 				if (clantag)
 					std::sprintf(tempplayerinfo, "%s %s %u %s", revtag, usericon, acctlevel, clantag_str);
 				else
 					std::sprintf(tempplayerinfo, "%s %s %u", revtag, usericon, acctlevel);
+
+				if (to_free == true)
+				{
+					xfree((void*)usericon);
+				}
 			}
 			// default icon "WAR3" or "W3XP"
 			else if (acctlevel == 0 && !usericon) {

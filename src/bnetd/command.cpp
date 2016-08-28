@@ -2734,6 +2734,9 @@ namespace pvpgn
 					}
 				}
 			}
+
+			message_destroy(message);
+
 			return 0;
 		}
 
@@ -2902,8 +2905,11 @@ namespace pvpgn
 			t_connection *c = (t_connection*)data;
 
 			tm = std::localtime(&date);
-			if (tm) std::strftime(strdate, 64, "%B %d, %Y", tm);
-			else std::strcpy(strdate, localize(c, "(invalid date)").c_str());
+			if (tm)
+				std::strftime(strdate, 64, "%B %d, %Y", tm);
+			else
+				std::snprintf(strdate, sizeof strdate, "%s", localize(c, "(invalid date)").c_str());
+
 			message_send_text(c, message_type_info, c, strdate);
 
 			for (p = lstr_get_str(lstr); *p;) {
@@ -4667,10 +4673,9 @@ namespace pvpgn
 
 		static int _handle_motd_command(t_connection * c, char const *text)
 		{
-			char const * filename;
 			std::FILE *       fp;
 
-			filename = i18n_filename(prefs_get_motdfile(), conn_get_gamelang_localized(c));
+			const char* const filename = i18n_filename(prefs_get_motdfile(), conn_get_gamelang_localized(c));
 
 			if (fp = std::fopen(filename, "r"))
 			{
@@ -4683,6 +4688,9 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "could not open motd file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				message_send_text(c, message_type_error, c, localize(c, "Unable to open motd."));
 			}
+
+			xfree((void*)filename);
+
 			return 0;
 		}
 
@@ -4690,10 +4698,8 @@ namespace pvpgn
 		{
 			/* handle /tos - shows terms of service by user request -raistlinthewiz */
 
-			const char * filename = NULL;
+			const char* const filename = i18n_filename(prefs_get_tosfile(), conn_get_gamelang_localized(c));
 			std::FILE * fp;
-
-			filename = i18n_filename(prefs_get_tosfile(), conn_get_gamelang_localized(c));
 
 			/* FIXME: if user enters relative path to tos file in config,
 			   above routine will fail */
@@ -4744,6 +4750,9 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "could not open tos file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				message_send_text(c, message_type_error, c, localize(c, "Unable to send TOS (Terms of Service)."));
 			}
+
+			xfree((void*)filename);
+
 			return 0;
 
 		}
@@ -5148,9 +5157,6 @@ namespace pvpgn
 		/* Send message to all clients (similar to announce, but in messagebox) */
 		static int _handle_alert_command(t_connection * c, char const * text)
 		{
-
-			return 0;
-			/*********************************************************************/
 			t_clienttag  clienttag;
 			t_clienttag  clienttag_dest;
 

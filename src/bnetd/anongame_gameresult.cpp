@@ -120,7 +120,7 @@ namespace pvpgn
 				{
 					hero = (t_client_w3route_gameresult_hero *)packet_get_raw_data_const(packet, offset);
 
-					gameresult->heroes[counter].level = bn_int_get(hero->level);
+					gameresult->heroes[counter].level = bn_short_get(hero->level);
 					gameresult->heroes[counter].race_and_name = bn_int_get(hero->race_and_name);
 					gameresult->heroes[counter].hero_xp = bn_int_get(hero->hero_xp);
 

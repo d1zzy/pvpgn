@@ -104,10 +104,10 @@ namespace pvpgn
 				{
 				case CLIENT_FILE_REQ3:
 				{
-										 char rawname[MAX_FILENAME_STR];
+					char rawname[MAX_FILENAME_STR] = {};
 
-										 psock_recv(conn_get_socket(c), rawname, MAX_FILENAME_STR, 0);
-										 file_send(c, rawname, 0, 0, 0, 1);
+					psock_recv(conn_get_socket(c), rawname, MAX_FILENAME_STR, 0);
+					file_send(c, rawname, 0, 0, 0, 1);
 				}
 					break;
 
