@@ -1444,10 +1444,15 @@ namespace pvpgn
 					std::snprintf(temp, sizeof(temp), "%s :You're not on that channel", e[0]);
 					irc_send(conn, ERR_NOTONCHANNEL, temp);
 				}
-				irc_unget_listelems(e);
 			}
 			else
 				irc_send(conn, ERR_NEEDMOREPARAMS, "TOPIC :Not enough parameters");
+
+			if (e)
+			{
+				irc_unget_listelems(e);
+			}
+
 			return 0;
 		}
 
