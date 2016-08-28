@@ -2905,8 +2905,11 @@ namespace pvpgn
 			t_connection *c = (t_connection*)data;
 
 			tm = std::localtime(&date);
-			if (tm) std::strftime(strdate, 64, "%B %d, %Y", tm);
-			else std::strcpy(strdate, localize(c, "(invalid date)").c_str());
+			if (tm)
+				std::strftime(strdate, 64, "%B %d, %Y", tm);
+			else
+				std::snprintf(strdate, sizeof strdate, "%s", localize(c, "(invalid date)").c_str());
+
 			message_send_text(c, message_type_info, c, strdate);
 
 			for (p = lstr_get_str(lstr); *p;) {
