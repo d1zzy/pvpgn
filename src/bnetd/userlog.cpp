@@ -175,7 +175,7 @@ namespace pvpgn
 			std::fseek(fp, 0, SEEK_END);
 
 			long pos = std::ftell(fp);
-			char c = {}, prev_c = {};
+			int c = {}, prev_c = {};
 			std::map<long, char*> lines;
 			long linecount = 0;
 			char line[MAX_MESSAGE_LEN + 1] = {};
