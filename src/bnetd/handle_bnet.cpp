@@ -4916,6 +4916,11 @@ namespace pvpgn
 			}
 			offset = sizeof(t_client_clan_createinvitereply);
 			username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
+			if (!username)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLAN_CREATEINVITEREPLY packet (bad username)", conn_get_socket(c));
+				return -1;
+			}
 			offset += (std::strlen(username) + 1);
 			if (packet_get_size(packet) < offset + 1) {
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLAN_CREATEINVITEREPLY packet (mising status)", conn_get_socket(c));
