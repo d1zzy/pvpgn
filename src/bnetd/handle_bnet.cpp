@@ -2799,7 +2799,7 @@ namespace pvpgn
 
 
 			// read text from bnmotd_w3.txt
-			char * buff, *line;
+			char * buff;
 			std::FILE *       fp;
 
 			const char* const filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang_localized(c));
@@ -2809,8 +2809,9 @@ namespace pvpgn
 			{
 				while ((buff = file_get_line(fp)))
 				{
-					line = message_format_line(c, buff);
+					char* line = message_format_line(c, buff);
 					std::snprintf(serverinfo, sizeof serverinfo, "%s\n", &line[1]);
+					xfree((void*)line);
 				}
 				if (std::fclose(fp) < 0)
 					eventlog(eventlog_level_error, __FUNCTION__, "could not close motdw3 file \"{}\" after reading (std::fopen: {})", filename, std::strerror(errno));
