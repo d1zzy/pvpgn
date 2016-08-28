@@ -4695,10 +4695,8 @@ namespace pvpgn
 		{
 			/* handle /tos - shows terms of service by user request -raistlinthewiz */
 
-			const char * filename = NULL;
+			const char* const filename = i18n_filename(prefs_get_tosfile(), conn_get_gamelang_localized(c));
 			std::FILE * fp;
-
-			filename = i18n_filename(prefs_get_tosfile(), conn_get_gamelang_localized(c));
 
 			/* FIXME: if user enters relative path to tos file in config,
 			   above routine will fail */
@@ -4749,6 +4747,9 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "could not open tos file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				message_send_text(c, message_type_error, c, localize(c, "Unable to send TOS (Terms of Service)."));
 			}
+
+			xfree((void*)filename);
+
 			return 0;
 
 		}
