@@ -669,7 +669,6 @@ namespace pvpgn
 
 		static int _client_createaccountw3(t_connection * c, t_packet const *const packet)
 		{
-			t_packet *rpacket;
 			char const *username;
 			char const *plainpass;
 			t_hash sc_hash;
@@ -716,26 +715,31 @@ namespace pvpgn
 				return -1;
 			}
 
-			rpacket = packet_create(packet_class_bnet);
+			t_packet* const rpacket = packet_create(packet_class_bnet);
 			if (!rpacket)
 				return -1;
+
 			packet_set_size(rpacket, sizeof(t_server_createaccount_w3));
 			packet_set_type(rpacket, SERVER_CREATEACCOUNT_W3);
 
 			eventlog(eventlog_level_debug, __FUNCTION__, "[{}] new account requested for \"{}\"", conn_get_socket(c), username);
 
-			if (prefs_get_allow_new_accounts() == 0) {
+			if (prefs_get_allow_new_accounts() == 0)
+			{
 				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] account not created (disabled)", conn_get_socket(c));
 				bn_int_set(&rpacket->u.server_createaccount_w3.result, SERVER_CREATEACCOUNT_W3_RESULT_EXIST);
 				conn_push_outqueue(c, rpacket);
 				packet_del_ref(rpacket);
+				return 0;
 			}
 
-			if (account_check_name(username) < 0) {
+			if (account_check_name(username) < 0)
+			{
 				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] account not created (invalid symbols)", conn_get_socket(c));
 				bn_int_set(&rpacket->u.server_createaccount_w3.result, SERVER_CREATEACCOUNT_W3_RESULT_INVALID);
 				conn_push_outqueue(c, rpacket);
 				packet_del_ref(rpacket);
+				return 0;
 			}
 
 			char lpass[20] = {};
@@ -749,9 +753,13 @@ namespace pvpgn
 			//set password hash for sc etc.
 			bnet_hash(&sc_hash, std::strlen(lpass), lpass);
 			if (!(account = accountlist_create_account(username, hash_get_str(sc_hash))))
+			{
 				bn_int_set(&rpacket->u.server_createaccount_w3.result, SERVER_CREATEACCOUNT_W3_RESULT_EXIST);
-			else {
-				if (presume_plainpass) {
+			}
+			else
+			{
+				if (presume_plainpass)
+				{
 					BigInt salt = BigInt((unsigned char*)account_salt, 32, 4, false);
 					BnetSRP3 srp3 = BnetSRP3(username, plainpass);
 					srp3.setSalt(salt);
