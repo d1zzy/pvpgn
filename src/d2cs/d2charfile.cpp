@@ -82,6 +82,7 @@ namespace pvpgn
 			// charname
 			std::memset(buffer + D2CHARSAVE_CHARNAME_OFFSET_109, '\0', MAX_CHARNAME_LEN); // clear first
 			std::strncpy((char *)buffer + D2CHARSAVE_CHARNAME_OFFSET_109, charname, MAX_CHARNAME_LEN);
+			std::memset(buffer + D2CHARSAVE_CHARNAME_OFFSET_109 + MAX_CHARNAME_LEN - 1, '\0', 1);
 
 			// checksum
 			checksum = d2charsave_checksum((unsigned char *)buffer, size, D2CHARSAVE_CHECKSUM_OFFSET);
