@@ -341,6 +341,7 @@ namespace pvpgn
 					strtolower(pass);
 
 					bnet_hash(&pass_hash, std::strlen(pass), pass);
+					xfree((void *)pass);
 
 					tempacct = accountlist_create_account(user, hash_get_str(pass_hash));
 					if (!tempacct) {
@@ -348,8 +349,6 @@ namespace pvpgn
 						irc_send(conn, RPL_BAD_LOGIN, ":Account creating failed");
 						return 0;
 					}
-					if (pass)
-						xfree((void *)pass);
 
 					conn_set_user(conn, user);
 					conn_set_owner(conn, user);
