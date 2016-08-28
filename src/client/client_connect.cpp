@@ -554,6 +554,10 @@ namespace pvpgn
 			}
 
 			packet_destroy(rpacket);
+
+			if (lsock >= 0)
+				psock_close(lsock);
+
 			return sd;
 		}
 
