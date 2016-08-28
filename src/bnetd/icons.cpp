@@ -536,13 +536,11 @@ namespace pvpgn
 						}
 
 
-						char const * val = (return_alias) 
-							? xstrdup(var->key)
-							: xstrdup(var->value);
+						std::string val = (return_alias) ? var->key: var->value;
 
 						if (!output.empty())
 							output += ", ";
-						output += std::string(val);
+						output += val;
 					}
 					break;
 				}
