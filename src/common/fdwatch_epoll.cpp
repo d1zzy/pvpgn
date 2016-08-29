@@ -43,7 +43,7 @@ namespace pvpgn
 
 		std::memset(epevents.get(), 0, sizeof(struct epoll_event) * nfds);
 
-		INFO1("fdwatch epoll() based layer initialized (max %d sockets)", nfds);
+		INFO1("fdwatch epoll() based layer initialized (max {} sockets)", nfds);
 	}
 
 	FDWEpollBackend::~FDWEpollBackend() throw()

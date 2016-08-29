@@ -42,7 +42,7 @@ namespace pvpgn
 		/* I would use a memset with 255 but that is dirty and doesnt gain us anything */
 		for (int i = 0; i < nfds; i++) ridx[i] = -1;
 
-		INFO1("fdwatch poll() based layer initialized (max %d sockets)", nfds);
+		INFO1("fdwatch poll() based layer initialized (max {} sockets)", nfds);
 	}
 
 	FDWPollBackend::~FDWPollBackend() throw()

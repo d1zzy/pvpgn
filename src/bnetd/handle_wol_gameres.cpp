@@ -2409,7 +2409,7 @@ namespace pvpgn
 				return 0;
 			}
 
-			DEBUG2("Got %u player resultnum {}", num, resultnum);
+			DEBUG2("Got {} player resultnum {}", num, resultnum);
 
 			resultnum &= 0x0000FF00;
 			resultnum = resultnum >> 8;
