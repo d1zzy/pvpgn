@@ -914,7 +914,6 @@ namespace pvpgn
 		static int _anongame_search_found(int queue)
 		{
 			t_packet *rpacket;
-			t_anongameinfo *info;
 			t_anongame *a;
 			int i, j;
 			t_saf_pt2 *pt2;
@@ -938,9 +937,9 @@ namespace pvpgn
 				addr_destroy(routeraddr);
 			}
 
-			info = anongameinfo_create(_anongame_totalplayers(queue));
-
-			if (!info) {
+			t_anongameinfo* const info = anongameinfo_create(_anongame_totalplayers(queue));
+			if (!info)
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "anongameinfo_create failed");
 				return -1;
 			}
@@ -956,10 +955,13 @@ namespace pvpgn
 			bn_byte_set(&pt2->unknown3, 2);
 
 			/* send found packet to each of the players */
-			for (i = 0; i < players[queue]; i++) {
-				if (!(a = conn_get_anongame(player[queue][i]))) {
+			for (i = 0; i < players[queue]; i++)
+			{
+				if (!(a = conn_get_anongame(player[queue][i])))
+				{
 					eventlog(eventlog_level_error, __FUNCTION__, "no anongame struct for queued player");
 					xfree(pt2);
+					anongameinfo_destroy(info);
 					return -1;
 				}
 
@@ -973,6 +975,7 @@ namespace pvpgn
 
 				if (!(rpacket = packet_create(packet_class_bnet))) {
 					xfree(pt2);
+					anongameinfo_destroy(info);
 					return -1;
 				}
 
@@ -1012,6 +1015,8 @@ namespace pvpgn
 			/* clear queue */
 			players[queue] = 0;
 			xfree(pt2);
+			anongameinfo_destroy(info);
+
 			return 0;
 		}
 
