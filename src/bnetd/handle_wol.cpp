@@ -1618,23 +1618,27 @@ namespace pvpgn
 		 */
 		static int _ladder_send(t_connection * conn, char const * command)
 		{
-			t_packet * p;
 			char data[MAX_IRC_MESSAGE_LEN + 1];
 			unsigned len = 0;
 
-			p = packet_create(packet_class_raw);
+			t_packet* const p = packet_create(packet_class_raw);
+			if (!p)
+			{
+				return -1;
+			}
 
 			if (command)
 				len = (std::strlen(command) + 6);
 
-			if (len > MAX_IRC_MESSAGE_LEN) {
+			if (len > MAX_IRC_MESSAGE_LEN)
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "message to send is too large ({} bytes)", len);
+				packet_del_ref(p);
 				return -1;
 			}
-			else {
-				std::sprintf(data, "\r\n\r\n\r\n%s", command);
-				//std::sprintf(data,"%s",command);
-			}
+			
+
+			std::sprintf(data, "\r\n\r\n\r\n%s", command);
 
 			packet_set_size(p, 0);
 			packet_append_data(p, data, len);
