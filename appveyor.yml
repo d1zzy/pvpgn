@@ -17,11 +17,18 @@ install:
   - cmd: appveyor DownloadFile https://www.dropbox.com/s/bij8kmxp4wm41jx/magic.ps1?dl=1
 
 before_build:
-  - cmd: set PVPGN_PLAIN_ZIP=pvpgn_%APPVEYOR_BUILD_VERSION%_plain.zip
-  - cmd: set PVPGN_MYSQL_ZIP=pvpgn_%APPVEYOR_BUILD_VERSION%_mysql.zip
-  - cmd: set PVPGN_PGSQL_ZIP=pvpgn_%APPVEYOR_BUILD_VERSION%_pgsql.zip
-  - cmd: set PVPGN_SQLITE_ZIP=pvpgn_%APPVEYOR_BUILD_VERSION%_sqlite.zip
-  - cmd: set PVPGN_ODBC_ZIP=pvpgn_%APPVEYOR_BUILD_VERSION%_odbc.zip
+  - cmd: set APPVEYOR_REPO_COMMIT_SHORT=%APPVEYOR_REPO_COMMIT:~0,7%
+  - cmd: set COMPLETE_BUILD_VERSION=pvpgn-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_REPO_COMMIT_SHORT%
+  - cmd: set PVPGN_PLAIN_ZIP=%COMPLETE_BUILD_VERSION%_plain.zip
+  - cmd: set PVPGN_PLAIN_ZIP_DEBUG=%COMPLETE_BUILD_VERSION%_plain_debug.zip
+  - cmd: set PVPGN_MYSQL_ZIP=%COMPLETE_BUILD_VERSION%_mysql.zip
+  - cmd: set PVPGN_MYSQL_ZIP_DEBUG=%COMPLETE_BUILD_VERSION%_mysql_debug.zip
+  - cmd: set PVPGN_PGSQL_ZIP=%COMPLETE_BUILD_VERSION%_pgsql.zip
+  - cmd: set PVPGN_PGSQL_ZIP_DEBUG=%COMPLETE_BUILD_VERSION%_pgsql_debug.zip
+  - cmd: set PVPGN_SQLITE_ZIP=%COMPLETE_BUILD_VERSION%_sqlite.zip
+  - cmd: set PVPGN_SQLITE_ZIP_DEBUG=%COMPLETE_BUILD_VERSION%_sqlite_debug.zip
+  - cmd: set PVPGN_ODBC_ZIP=%COMPLETE_BUILD_VERSION%_odbc.zip
+  - cmd: set PVPGN_ODBC_ZIP_DEBUG=%COMPLETE_BUILD_VERSION%_odbc_debug.zip
 
 build_script:
 
@@ -32,20 +39,37 @@ build_script:
   #  3. console or gui
   #  4. storage type
   #  5. with or without lua
-
+  #  6. Release or Debug
+  
   # plain
   - cmd: build_pvpgn.bat auto 7 2 1 y
   - cmd: move release\*.exe
   - cmd: build_pvpgn.bat auto 7 1 1 y
   - cmd: move /Y *.exe release
   - cmd: 7z.exe a %PVPGN_PLAIN_ZIP% .\release\*
-  
+  # plain (debug)
+  - cmd: build_pvpgn.bat auto 7 2 1 y Debug
+  - cmd: move debug\*.exe
+  - cmd: move debug\*.pdb
+  - cmd: build_pvpgn.bat auto 7 1 1 y Debug
+  - cmd: move /Y *.exe debug
+  - cmd: move /Y *.pdb debug
+  - cmd: 7z.exe a %PVPGN_PLAIN_ZIP_DEBUG% .\debug\*
+
   # mysql
   - cmd: build_pvpgn.bat auto 7 2 2 y
   - cmd: move release\*.exe
   - cmd: build_pvpgn.bat auto 7 1 2 y
   - cmd: move /Y *.exe release
   - cmd: 7z.exe a %PVPGN_MYSQL_ZIP% .\release\*
+  # mysql (debug)
+  - cmd: build_pvpgn.bat auto 7 2 2 y Debug
+  - cmd: move debug\*.exe
+  - cmd: move debug\*.pdb
+  - cmd: build_pvpgn.bat auto 7 1 2 y Debug
+  - cmd: move /Y *.exe debug
+  - cmd: move /Y *.pdb debug
+  - cmd: 7z.exe a %PVPGN_MYSQL_ZIP_DEBUG% .\debug\*
 
   # pgsql
   - cmd: build_pvpgn.bat auto 7 2 3 y
@@ -53,6 +77,14 @@ build_script:
   - cmd: build_pvpgn.bat auto 7 1 3 y
   - cmd: move /Y *.exe release
   - cmd: 7z.exe a %PVPGN_PGSQL_ZIP% .\release\*
+  # pgsql (debug)
+  - cmd: build_pvpgn.bat auto 7 2 3 y Debug
+  - cmd: move debug\*.exe
+  - cmd: move debug\*.pdb
+  - cmd: build_pvpgn.bat auto 7 1 3 y Debug
+  - cmd: move /Y *.exe debug
+  - cmd: move /Y *.pdb debug
+  - cmd: 7z.exe a %PVPGN_PGSQL_ZIP_DEBUG% .\debug\*
 
   # sqlite
   - cmd: build_pvpgn.bat auto 7 2 4 y
@@ -60,6 +92,14 @@ build_script:
   - cmd: build_pvpgn.bat auto 7 1 4 y
   - cmd: move /Y *.exe release
   - cmd: 7z.exe a %PVPGN_SQLITE_ZIP% .\release\*
+  # sqlite (debug)
+  - cmd: build_pvpgn.bat auto 7 2 4 y Debug
+  - cmd: move debug\*.exe
+  - cmd: move debug\*.pdb
+  - cmd: build_pvpgn.bat auto 7 1 4 y Debug
+  - cmd: move /Y *.exe debug
+  - cmd: move /Y *.pdb debug
+  - cmd: 7z.exe a %PVPGN_SQLITE_ZIP_DEBUG% .\debug\*
 
   # odbc
   - cmd: build_pvpgn.bat auto 7 2 5 y
@@ -67,13 +107,26 @@ build_script:
   - cmd: build_pvpgn.bat auto 7 1 5 y
   - cmd: move /Y *.exe release
   - cmd: 7z.exe a %PVPGN_ODBC_ZIP% .\release\*
+  # odbc (debug)
+  - cmd: build_pvpgn.bat auto 7 2 5 y Debug
+  - cmd: move debug\*.exe
+  - cmd: move debug\*.pdb
+  - cmd: build_pvpgn.bat auto 7 1 5 y Debug
+  - cmd: move /Y *.exe debug
+  - cmd: move /Y *.pdb debug
+  - cmd: 7z.exe a %PVPGN_ODBC_ZIP_DEBUG% .\debug\*
 
 after_build:
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_PLAIN_ZIP%"
+    - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_PLAIN_ZIP_DEBUG%"
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_MYSQL_ZIP%"
+    - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_MYSQL_ZIP_DEBUG%"
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_PGSQL_ZIP%"
+    - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_PGSQL_ZIP_DEBUG%"
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_SQLITE_ZIP%"
+    - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_SQLITE_ZIP_DEBUG%"
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_ODBC_ZIP%"
+    - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_ODBC_ZIP_DEBUG%"
   
 test:
   assemblies:
