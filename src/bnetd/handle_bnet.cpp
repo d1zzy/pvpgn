@@ -1497,8 +1497,6 @@ namespace pvpgn
 
 		static int _client_loginreq1(t_connection * c, t_packet const *const packet)
 		{
-			t_packet *rpacket;
-
 			if (packet_get_size(packet) < sizeof(t_client_loginreq1)) {
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad LOGINREQ1 packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_loginreq1), packet_get_size(packet));
 				return -1;
@@ -1513,16 +1511,24 @@ namespace pvpgn
 					return -1;
 				}
 
-				if (!(rpacket = packet_create(packet_class_bnet)))
+				t_packet* const rpacket = packet_create(packet_class_bnet);
+				if (!rpacket)
+				{
 					return -1;
+				}
+
 				packet_set_size(rpacket, sizeof(t_server_loginreply1));
 				packet_set_type(rpacket, SERVER_LOGINREPLY1);
 
 				// too many logins? [added by NonReal]
-				if (prefs_get_max_concurrent_logins() > 0) {
-					if (prefs_get_max_concurrent_logins() <= connlist_login_get_length()) {
+				if (prefs_get_max_concurrent_logins() > 0)
+				{
+					if (prefs_get_max_concurrent_logins() <= connlist_login_get_length())
+					{
 						eventlog(eventlog_level_error, __FUNCTION__, "[{}] login denied, too many concurrent logins. max: {}. current: {}.", conn_get_socket(c), prefs_get_max_concurrent_logins(), connlist_login_get_length());
 						bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY1_MESSAGE_FAIL);
+						conn_push_outqueue(c, rpacket);
+						packet_del_ref(rpacket);
 						return -1;
 					}
 				}
