@@ -151,7 +151,6 @@ namespace pvpgn
 			unsigned char			buffer[MAX_SAVEFILE_SIZE];
 			unsigned int		size;
 			unsigned int	version;
-			int			ladder_time, now;
 			std::FILE			* fp;
 
 
@@ -242,8 +241,8 @@ namespace pvpgn
 			infofile = (char*)xmalloc(std::strlen(prefs_get_charinfo_dir()) + 1 + std::strlen(account) + 1 + std::strlen(charname) + 1);
 			d2char_get_infofile_name(infofile, account, charname);
 
-			now = std::time(NULL);
-			ladder_time = prefs_get_ladder_start_time();
+			std::time_t now = std::time(nullptr);
+			std::time_t ladder_time = prefs_get_ladder_start_time();
 			if ((ladder_time > 0) && (now < ladder_time))
 				charstatus_set_ladder(status, 0);
 
@@ -492,7 +491,7 @@ namespace pvpgn
 		extern int d2charinfo_load(char const * account, char const * charname, t_d2charinfo_file * data)
 		{
 			char			* file;
-			int			size, ladder_time;
+			int			size;
 
 			if (d2char_check_charname(charname) < 0) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got bad character name \"{}\"", charname);
@@ -525,7 +524,7 @@ namespace pvpgn
 				xfree(file);
 				return 0;
 			}
-			ladder_time = prefs_get_ladder_start_time();
+			unsigned int ladder_time = prefs_get_ladder_start_time();
 			if ((ladder_time > 0) && bn_int_get(data->header.create_time) < ladder_time) {
 				char			buffer[MAX_SAVEFILE_SIZE];
 				unsigned int		status_offset;

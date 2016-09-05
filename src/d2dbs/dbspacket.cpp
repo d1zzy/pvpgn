@@ -59,7 +59,7 @@ namespace pvpgn
 
 		static unsigned int dbs_packet_savedata_charsave(t_d2dbs_connection* conn, char * AccountName, char * CharName, char * data, unsigned int datalen);
 		static unsigned int dbs_packet_savedata_charinfo(t_d2dbs_connection* conn, char * AccountName, char * CharName, char * data, unsigned int datalen);
-		static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn, char * AccountName, char * CharName, char * data, unsigned int bufsize);
+		static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn, char * AccountName, char * CharName, char * data, long bufsize);
 		static unsigned int dbs_packet_getdata_charinfo(t_d2dbs_connection* conn, char * AccountName, char * CharName, char * data, unsigned int bufsize);
 		static unsigned int dbs_packet_echoreply(t_d2dbs_connection* conn);
 		static int dbs_packet_getdata(t_d2dbs_connection* conn);
@@ -76,7 +76,6 @@ namespace pvpgn
 			char filename[MAX_PATH];
 			char savefile[MAX_PATH];
 			char bakfile[MAX_PATH];
-			unsigned short curlen, readlen, leftlen, writelen;
 			std::FILE * fd;
 			int checksum_header;
 			int checksum_calc;
@@ -101,12 +100,14 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "open() failed : {}", filename);
 				return 0;
 			}
-			curlen = 0;
-			leftlen = datalen;
-			while (curlen<datalen) {
-				if (leftlen>2000) writelen = 2000;
-				else writelen = leftlen;
-				readlen = std::fwrite(data + curlen, 1, writelen, fd);
+
+			std::size_t curlen = 0;
+			std::size_t leftlen = datalen;
+			while (curlen<datalen)
+			{
+				std::size_t writelen = leftlen > 2000 ? 2000 : leftlen;
+
+				std::size_t readlen = std::fwrite(data + curlen, 1, writelen, fd);
 				if (readlen <= 0) {
 					std::fclose(fd);
 					eventlog(eventlog_level_error, __FUNCTION__, "write() failed error : {}", std::strerror(errno));
@@ -137,7 +138,6 @@ namespace pvpgn
 			char filepath[MAX_PATH];
 			char filename[MAX_PATH];
 			std::FILE * fd;
-			unsigned short curlen, readlen, leftlen, writelen;
 			struct stat statbuf;
 
 			strtolower(AccountName);
@@ -156,12 +156,13 @@ namespace pvpgn
 				return 0;
 			}
 
-			curlen = 0;
-			leftlen = datalen;
-			while (curlen<datalen) {
-				if (leftlen>2000) writelen = 2000;
-				else writelen = leftlen;
-				readlen = std::fwrite(data + curlen, 1, writelen, fd);
+			std::size_t curlen = 0;
+			std::size_t leftlen = datalen;
+			while (curlen < datalen)
+			{
+				std::size_t writelen = leftlen > 2000 ? 2000 : leftlen;
+
+				std::size_t readlen = std::fwrite(data + curlen, 1, writelen, fd);
 				if (readlen <= 0) {
 					std::fclose(fd);
 					eventlog(eventlog_level_error, __FUNCTION__, "write() failed error : {}", std::strerror(errno));
@@ -185,13 +186,11 @@ namespace pvpgn
 			return datalen;
 		}
 
-		static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn, char * AccountName, char * CharName, char * data, unsigned int bufsize)
+		static unsigned int dbs_packet_getdata_charsave(t_d2dbs_connection* conn, char * AccountName, char * CharName, char * data, long bufsize)
 		{
 			char filename[MAX_PATH];
 			char filename_d2closed[MAX_PATH];
 			std::FILE * fd;
-			unsigned short curlen, readlen, leftlen, writelen;
-			long filesize;
 
 			strtolower(AccountName);
 			strtolower(CharName);
@@ -208,25 +207,28 @@ namespace pvpgn
 				return 0;
 			}
 			std::fseek(fd, 0, SEEK_END);
-			filesize = std::ftell(fd);
-			std::rewind(fd);
-			if (filesize == -1) {
+			long filesize = std::ftell(fd);
+			if (filesize == -1L)
+			{
 				std::fclose(fd);
-				eventlog(eventlog_level_error, __FUNCTION__, "lseek() failed");
+				eventlog(eventlog_level_error, __FUNCTION__, "ftell() failed");
 				return 0;
 			}
-			if ((signed)bufsize < filesize) {
+			std::rewind(fd);
+
+			if (bufsize < filesize) {
 				std::fclose(fd);
 				eventlog(eventlog_level_error, __FUNCTION__, "not enough buffer");
 				return 0;
 			}
 
-			curlen = 0;
-			leftlen = filesize;
-			while (curlen < filesize) {
-				if (leftlen>2000) writelen = 2000;
-				else writelen = leftlen;
-				readlen = std::fread(data + curlen, 1, writelen, fd);
+			long curlen = 0;
+			std::size_t leftlen = filesize;
+			while (curlen < filesize)
+			{
+				std::size_t writelen = leftlen > 2000 ? 2000 : leftlen;
+
+				std::size_t readlen = std::fread(data + curlen, 1, writelen, fd);
 				if (readlen <= 0) {
 					std::fclose(fd);
 					eventlog(eventlog_level_error, __FUNCTION__, "read() failed error : {}", std::strerror(errno));
@@ -244,8 +246,6 @@ namespace pvpgn
 		{
 			char filename[MAX_PATH];
 			std::FILE * fd;
-			unsigned short curlen, readlen, leftlen, writelen;
-			long filesize;
 
 			strtolower(AccountName);
 			strtolower(CharName);
@@ -257,7 +257,7 @@ namespace pvpgn
 				return 0;
 			}
 			std::fseek(fd, 0, SEEK_END);
-			filesize = std::ftell(fd);
+			long filesize = std::ftell(fd);
 			std::rewind(fd);
 			if (filesize == -1) {
 				std::fclose(fd);
@@ -270,14 +270,13 @@ namespace pvpgn
 				return 0;
 			}
 
-			curlen = 0;
-			leftlen = filesize;
-			while (curlen < filesize) {
-				if (leftlen>2000)
-					writelen = 2000;
-				else
-					writelen = leftlen;
-				readlen = std::fread(data + curlen, 1, writelen, fd);
+			std::size_t curlen = 0;
+			std::size_t leftlen = filesize;
+			while (curlen < filesize)
+			{
+				std::size_t writelen = leftlen > 2000 ? 2000 : leftlen;
+
+				std::size_t readlen = std::fread(data + curlen, 1, writelen, fd);
 				if (readlen <= 0)
 				{
 					std::fclose(fd);
@@ -294,7 +293,6 @@ namespace pvpgn
 
 		static int dbs_packet_savedata(t_d2dbs_connection * conn)
 		{
-			unsigned short writelen;
 			unsigned short      datatype;
 			unsigned short      datalen;
 			unsigned int        result;
@@ -364,8 +362,10 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "unknown data type {}", datatype);
 				return -1;
 			}
-			writelen = sizeof(*saveret) + std::strlen(CharName) + 1;
-			if (writelen > kBufferSize - conn->nCharsInWriteBuffer) return 0;
+			std::size_t writelen = sizeof(*saveret) + std::strlen(CharName) + 1;
+			if (writelen > kBufferSize - conn->nCharsInWriteBuffer)
+				return 0;
+
 			writepos = (unsigned char*)(conn->WriteBuf + conn->nCharsInWriteBuffer);
 			saveret = (t_d2dbs_d2gs_save_data_reply *)writepos;
 			bn_short_set(&saveret->h.type, D2DBS_D2GS_SAVE_DATA_REPLY);

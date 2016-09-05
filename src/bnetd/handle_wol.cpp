@@ -1769,7 +1769,6 @@ namespace pvpgn
 				}
 				else {
 					/* Standard RUNG search */
-					int i;
 					unsigned start = std::atoi(params[0]);
 					unsigned count = std::atoi(params[1]);
 
@@ -1778,7 +1777,7 @@ namespace pvpgn
 					LadderList* ladderList = NULL;
 
 					ladderList = ladders.getLadderList(LadderKey(id, cl_tag, ladder_sort_default, ladder_time_default));
-					for (i = start; i < start + count; i++) {
+					for (unsigned int i = start; i < start + count; i++) {
 						const LadderReferencedObject* referencedObject = NULL;
 						cl_account = NULL;
 						if (((referencedObject = ladderList->getReferencedObject(i))) && (cl_account = referencedObject->getAccount())) {

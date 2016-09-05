@@ -21,6 +21,7 @@
 #include "prefs.h"
 
 #include <cstdio>
+#include <ctime>
 
 #include "common/conf.h"
 #include "common/eventlog.h"
@@ -1132,7 +1133,7 @@ static int conf_setdef_account_allowed_symbols(void)
 }
 
 
-extern unsigned int prefs_get_ladder_start_time(void)
+extern std::time_t prefs_get_ladder_start_time()
 {
 	return prefs_conf.ladder_start_time;
 }

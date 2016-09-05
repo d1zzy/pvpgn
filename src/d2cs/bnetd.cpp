@@ -42,11 +42,11 @@ namespace pvpgn
 
 		extern int bnetd_check(void)
 		{
-			static unsigned int	prev_connecting_checktime = 0;
+			static std::time_t prev_connecting_checktime = 0;
 
 			if (bnetd_connection) {
 				if (d2cs_conn_get_state(bnetd_connection) == conn_state_connecting) {
-					if (std::time(NULL) - prev_connecting_checktime > prefs_get_s2s_timeout()) {
+					if (std::time(nullptr) - prev_connecting_checktime > prefs_get_s2s_timeout()) {
 						eventlog(eventlog_level_warn, __FUNCTION__, "connection to bnetd s2s timeout");
 						d2cs_conn_set_state(bnetd_connection, conn_state_destroy);
 						return -1;
@@ -61,7 +61,7 @@ namespace pvpgn
 				handle_bnetd_init(bnetd_connection);
 			}
 			else {
-				prev_connecting_checktime = std::time(NULL);
+				prev_connecting_checktime = std::time(nullptr);
 			}
 			return 0;
 		}

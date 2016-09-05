@@ -21,6 +21,8 @@
 #ifndef INCLUDED_VERSIONCHECK_TYPES
 #define INCLUDED_VERSIONCHECK_TYPES
 
+#include <ctime>
+
 #include "common/tag.h"
 
 namespace pvpgn
@@ -33,7 +35,7 @@ namespace pvpgn
 		typedef struct
 		{
 			char const * exe;
-			int          time;
+			std::time_t time;
 			int		 size;
 		} t_parsed_exeinfo;
 #endif
