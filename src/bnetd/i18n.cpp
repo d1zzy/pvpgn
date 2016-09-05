@@ -257,7 +257,7 @@ namespace pvpgn
 					translations[original][languages[i]] = translate;
 				}
 
-				INFO1("localization file loaded \"%s\"", lang_filename);
+				INFO1("localization file loaded \"{}\"", lang_filename);
 				xfree((void*)lang_filename);
 			}
 

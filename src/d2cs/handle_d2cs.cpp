@@ -179,7 +179,7 @@ static int on_client_createcharreq(t_connection * c, t_packet * packet)
 	try {
 		Directory dir(path);
 	} catch (const Directory::OpenError&) {
-		INFO1("(*%s) charinfo directory do not exist, building it",account);
+		INFO1("(*{}) charinfo directory do not exist, building it",account);
 		p_mkdir(path,S_IRWXU);
 	}
 	xfree(path);
@@ -751,7 +751,7 @@ static int on_client_motdreq(t_connection * c, t_packet * packet)
 	motd = xstrdup(prefs_get_motd());
 	motd_len = std::strlen(motd);
 	if (motd_len > MAX_MOTD_LENGTH) {
-		WARN2("motd length (%i) exceeds maximun value (%i)",motd_len,MAX_MOTD_LENGTH);
+		WARN2("motd length ({}) exceeds maximun value ({})",motd_len,MAX_MOTD_LENGTH);
 		motd[MAX_MOTD_LENGTH]='\0';
 	}
 	if ((rpacket=packet_create(packet_class_d2cs))) {
@@ -903,7 +903,7 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 			    }
 			}
 		} catch(const Directory::OpenError&) {
-			INFO1("(*%s) charinfo directory do not exist, building it",account);
+			INFO1("(*{}) charinfo directory do not exist, building it",account);
 			p_mkdir(path,S_IRWXU);
 		}
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar,n);
@@ -1014,7 +1014,7 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 			    }
 			}
 		} catch (const Directory::OpenError&) {
-			INFO1("(*%s) charinfo directory do not exist, building it",account);
+			INFO1("(*{}) charinfo directory do not exist, building it",account);
 			p_mkdir(path,S_IRWXU);
 		}
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar,n);

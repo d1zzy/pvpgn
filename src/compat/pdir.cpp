@@ -160,7 +160,7 @@ namespace pvpgn
 		const char* _ext;
 
 		DIR *dir;
-		class dirent *ent;
+		struct dirent* ent;
 
 		dir = opendir(directory);
 		if (!dir)
@@ -181,7 +181,7 @@ namespace pvpgn
 				{
 					std::vector<std::string> subfiles = dir_getfiles(full_file_name.c_str(), ext, recursive);
 
-					for (int i = 0; i < subfiles.size(); ++i)
+					for (std::size_t i = 0; i < subfiles.size(); ++i)
 						dfiles.push_back(subfiles[i]);
 				}
 				continue;

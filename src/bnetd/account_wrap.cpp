@@ -1685,7 +1685,7 @@ namespace pvpgn
 			char tempname[32];
 			int name_len;
 
-			for (auto i = 0; i < list_len; i++, next_char++)
+			for (std::size_t i = 0; i < list_len; i++, next_char++)
 			{
 				if (*next_char == ',')
 				{

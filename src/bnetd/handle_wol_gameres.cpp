@@ -2398,7 +2398,6 @@ namespace pvpgn
 			t_game_result result;
 			t_game_result * results = game_result->results;
 			int resultnum;
-			int i;
 
 			switch (type) {
 			case wol_gameres_type_int:
@@ -2409,7 +2408,7 @@ namespace pvpgn
 				return 0;
 			}
 
-			DEBUG2("Got %u player resultnum {}", num, resultnum);
+			DEBUG2("Got {} player resultnum {}", num, resultnum);
 
 			resultnum &= 0x0000FF00;
 			resultnum = resultnum >> 8;
@@ -2419,7 +2418,8 @@ namespace pvpgn
 				return 0;
 			}
 
-			for (i = 0; i < game_get_count(game); i++) {
+			unsigned int i = 0;
+			for (; i < game_get_count(game); i++) {
 				if (game_get_player(game, i) == other_account) break;
 			}
 

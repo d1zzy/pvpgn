@@ -89,7 +89,7 @@ namespace pvpgn
 			size_t cglistlen = std::strlen(cglist);
 
 			// convert string groups from config to integer
-			for (int i = 0; i < cglistlen; i++)
+			for (std::size_t i = 0; i < cglistlen; i++)
 			{
 				if (cglist[i] == '1') groups |= 1;
 				else if (cglist[i] == '2') groups |= 2;
@@ -320,7 +320,7 @@ namespace pvpgn
 				{
 					lines = userlog_read(username, startline);
 				}
-				catch (const std::exception& e)
+				catch (...)
 				{
 					message_send_text(c, message_type_error, c, "Could not read user log");
 					return 0;

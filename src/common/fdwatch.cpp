@@ -140,7 +140,7 @@ namespace pvpgn
 	extern int fdwatch_update_fd(int idx, unsigned rw)
 	{
 		if (idx < 0 || idx >= fdw_maxcons) {
-			ERROR2("out of bounds idx [%d] (max: %d)", idx, fdw_maxcons);
+			ERROR2("out of bounds idx [{}] (max: {})", idx, fdw_maxcons);
 			return -1;
 		}
 		/* do not allow completly reset the access because then backend codes
@@ -164,7 +164,7 @@ namespace pvpgn
 	extern int fdwatch_del_fd(int idx)
 	{
 		if (idx < 0 || idx >= fdw_maxcons) {
-			ERROR2("out of bounds idx [%d] (max: %d)", idx, fdw_maxcons);
+			ERROR2("out of bounds idx [{}] (max: {})", idx, fdw_maxcons);
 			return -1;
 		}
 

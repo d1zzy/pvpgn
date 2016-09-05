@@ -195,7 +195,7 @@ namespace pvpgn
 						break;
 
 					case 'i':
-						std::sprintf(&out[outpos], UID_FORMAT, conn_get_userid(c));
+						std::sprintf(&out[outpos], UID_FORMATF, conn_get_userid(c));
 						outpos += std::strlen(&out[outpos]);
 						break;
 

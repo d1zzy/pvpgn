@@ -53,7 +53,7 @@ namespace pvpgn
 			wridx[i] = -1;
 		}
 
-		INFO1("fdwatch kqueue() based layer initialized (max %d sockets)", nfds);
+		INFO1("fdwatch kqueue() based layer initialized (max {} sockets)", nfds);
 	}
 
 	FDWKqueueBackend::~FDWKqueueBackend() throw()

@@ -258,7 +258,7 @@ namespace pvpgn
 					t1.tm_year = t1.tm_year + 100;
 
 				if (time_invalid)
-					parsed_exeinfo->time = -1;
+					parsed_exeinfo->time = static_cast<std::time_t>(-1);
 				else
 					parsed_exeinfo->time = std::mktime(&t1);
 				parsed_exeinfo->size = size;

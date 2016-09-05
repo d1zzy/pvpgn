@@ -1497,8 +1497,6 @@ namespace pvpgn
 
 		static int _client_loginreq1(t_connection * c, t_packet const *const packet)
 		{
-			t_packet *rpacket;
-
 			if (packet_get_size(packet) < sizeof(t_client_loginreq1)) {
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad LOGINREQ1 packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_loginreq1), packet_get_size(packet));
 				return -1;
@@ -1513,16 +1511,24 @@ namespace pvpgn
 					return -1;
 				}
 
-				if (!(rpacket = packet_create(packet_class_bnet)))
+				t_packet* const rpacket = packet_create(packet_class_bnet);
+				if (!rpacket)
+				{
 					return -1;
+				}
+
 				packet_set_size(rpacket, sizeof(t_server_loginreply1));
 				packet_set_type(rpacket, SERVER_LOGINREPLY1);
 
 				// too many logins? [added by NonReal]
-				if (prefs_get_max_concurrent_logins() > 0) {
-					if (prefs_get_max_concurrent_logins() <= connlist_login_get_length()) {
+				if (prefs_get_max_concurrent_logins() > 0)
+				{
+					if (prefs_get_max_concurrent_logins() <= connlist_login_get_length())
+					{
 						eventlog(eventlog_level_error, __FUNCTION__, "[{}] login denied, too many concurrent logins. max: {}. current: {}.", conn_get_socket(c), prefs_get_max_concurrent_logins(), connlist_login_get_length());
 						bn_int_set(&rpacket->u.server_loginreply1.message, SERVER_LOGINREPLY1_MESSAGE_FAIL);
+						conn_push_outqueue(c, rpacket);
+						packet_del_ref(rpacket);
 						return -1;
 					}
 				}
@@ -2944,16 +2950,15 @@ namespace pvpgn
 				packet_set_type(rpacket, SERVER_CLANINFOREPLY);
 				bn_int_set(&rpacket->u.server_profilereply.count, count);
 				if (clantag1 == clantag2) {
-					int temp;
 					t_bnettime bn_time;
 					bn_long ltime;
 
 					bn_byte_set(&rpacket->u.server_claninforeply.fail, 0);
 
 					packet_append_string(rpacket, clan_get_name(clan));
-					temp = clanmember_get_status(clanmember);
-					packet_append_data(rpacket, &temp, 1);
-					temp = clanmember_get_join_time(clanmember);
+					char status = clanmember_get_status(clanmember);
+					packet_append_data(rpacket, &status, 1);
+					std::time_t temp = clanmember_get_join_time(clanmember);
 					bn_time = time_to_bnettime(temp, 0);
 					bn_time = bnettime_add_tzbias(bn_time, -conn_get_tzbias(c));
 					bnettime_to_bn_long(bn_time, &ltime);
@@ -4906,14 +4911,13 @@ namespace pvpgn
 			t_connection *conn;
 			t_clan *clan;
 			const char *username;
-			int offset;
 			char status;
 
 			if (packet_get_size(packet) < sizeof(t_client_clan_createinvitereply)) {
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLAN_CREATEINVITEREPLY packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_clan_createinvitereq), packet_get_size(packet));
 				return -1;
 			}
-			offset = sizeof(t_client_clan_createinvitereply);
+			std::size_t offset = sizeof(t_client_clan_createinvitereply);
 			username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN);
 			if (!username)
 			{
@@ -4980,7 +4984,7 @@ namespace pvpgn
 
 			if ((rpacket = packet_create(packet_class_bnet)) != NULL)
 			{
-				int offset = sizeof(t_client_clanmember_rankupdate_req);
+				std::size_t offset = sizeof(t_client_clanmember_rankupdate_req);
 				char status;
 				t_clan *clan;
 				t_clanmember *dest_member;
@@ -5218,14 +5222,13 @@ namespace pvpgn
 			t_account *conn_account;
 			t_clan *conn_clan;
 			t_clanmember *conn_member;
-			int offset;
 			char status;
 
 			if (packet_get_size(packet) < sizeof(t_client_clan_invitereply)) {
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLAN_INVITEREPLY packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_clan_createreq), packet_get_size(packet));
 				return -1;
 			}
-			offset = sizeof(t_client_clan_invitereply);
+			std::size_t offset = sizeof(t_client_clan_invitereply);
 			if (!(username = packet_get_str_const(packet, offset, MAX_USERNAME_LEN))) {
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLAN_INVITEREPLY packet (missing username)", conn_get_socket(c));
 				return -1;

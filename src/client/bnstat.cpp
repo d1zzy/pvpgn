@@ -685,7 +685,7 @@ extern int main(int argc, char * argv[])
 					if (str_to_uint(temp, &uid) < 0 || uid < 1)
 						std::printf("                         Account: UNKNOWN\n");
 					else
-						std::printf("                         Account: " UID_FORMAT "\n", uid);
+						std::printf("                         Account: " UID_FORMATF "\n", uid);
 
 					if (j < keys && (temp = packet_get_str_const(rpacket, strpos, 256)))
 						strpos += std::strlen(temp) + 1;

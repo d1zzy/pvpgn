@@ -642,7 +642,7 @@ namespace pvpgn
 			/*        case tag_wol_locale_turkey:
 						return trTR*/
 		default:
-			WARN1("%d is not defined", locale);
+			WARN1("{} is not defined", locale);
 			return GAMELANG_ENGLISH_UINT;
 		}
 	}

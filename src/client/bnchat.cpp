@@ -1849,9 +1849,8 @@ extern int main(int argc, char * argv[])
 							char const * clan;
 							char const * inviter;
 							char invited_count;
-							int offset;
+							std::size_t offset = sizeof(t_server_clan_createinvitereq);
 
-							offset = sizeof(t_server_clan_createinvitereq);
 							if (!(clan = packet_get_str_const(rpacket, offset, CLAN_NAME_MAX)))
 							{
 								munge(&client);

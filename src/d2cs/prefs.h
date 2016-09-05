@@ -19,6 +19,8 @@
 #ifndef INCLUDED_PREFS_H
 #define INCLUDED_PREFS_H
 
+#include <ctime>
+
 namespace pvpgn
 {
 
@@ -80,7 +82,7 @@ namespace pvpgn
 		extern unsigned int prefs_get_allow_convert(void);
 		extern char const * prefs_get_d2cs_account_allowed_symbols(void);
 		extern unsigned int prefs_get_d2gs_restart_delay(void);
-		extern unsigned int prefs_get_ladder_start_time(void);
+		extern std::time_t prefs_get_ladder_start_time();
 		extern unsigned int prefs_get_char_expire_time(void);
 		extern char const * prefs_get_d2gsconffile(void);
 		extern char const * prefs_get_charlist_sort(void);

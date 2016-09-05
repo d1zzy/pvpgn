@@ -49,7 +49,7 @@ namespace pvpgn
 
 		PSOCK_FD_ZERO(trfds.get()); PSOCK_FD_ZERO(twfds.get());
 
-		INFO1("fdwatch select() based layer initialized (max %d sockets)", nfds);
+		INFO1("fdwatch select() based layer initialized (max {} sockets)", nfds);
 	}
 
 	FDWSelectBackend::~FDWSelectBackend() throw()

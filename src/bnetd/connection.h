@@ -208,7 +208,7 @@ namespace pvpgn
 					char const * apgar;			    /* WOL User Password (encrypted) */
 					t_anongame_wol_player * anongame_player;
 				} wol;
-				int			cr_time;
+				std::time_t			cr_time;
 				/* Pass fail count for bruteforce protection */
 				unsigned int		passfail_count;
 				/* connection flag substituting some other values */

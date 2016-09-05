@@ -1618,23 +1618,27 @@ namespace pvpgn
 		 */
 		static int _ladder_send(t_connection * conn, char const * command)
 		{
-			t_packet * p;
 			char data[MAX_IRC_MESSAGE_LEN + 1];
 			unsigned len = 0;
 
-			p = packet_create(packet_class_raw);
+			t_packet* const p = packet_create(packet_class_raw);
+			if (!p)
+			{
+				return -1;
+			}
 
 			if (command)
 				len = (std::strlen(command) + 6);
 
-			if (len > MAX_IRC_MESSAGE_LEN) {
+			if (len > MAX_IRC_MESSAGE_LEN)
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "message to send is too large ({} bytes)", len);
+				packet_del_ref(p);
 				return -1;
 			}
-			else {
-				std::sprintf(data, "\r\n\r\n\r\n%s", command);
-				//std::sprintf(data,"%s",command);
-			}
+			
+
+			std::sprintf(data, "\r\n\r\n\r\n%s", command);
 
 			packet_set_size(p, 0);
 			packet_append_data(p, data, len);
@@ -1765,7 +1769,6 @@ namespace pvpgn
 				}
 				else {
 					/* Standard RUNG search */
-					int i;
 					unsigned start = std::atoi(params[0]);
 					unsigned count = std::atoi(params[1]);
 
@@ -1774,7 +1777,7 @@ namespace pvpgn
 					LadderList* ladderList = NULL;
 
 					ladderList = ladders.getLadderList(LadderKey(id, cl_tag, ladder_sort_default, ladder_time_default));
-					for (i = start; i < start + count; i++) {
+					for (unsigned int i = start; i < start + count; i++) {
 						const LadderReferencedObject* referencedObject = NULL;
 						cl_account = NULL;
 						if (((referencedObject = ladderList->getReferencedObject(i))) && (cl_account = referencedObject->getAccount())) {

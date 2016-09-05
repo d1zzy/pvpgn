@@ -16,6 +16,8 @@
 #ifndef INCLUDED_TOURNAMENT_TYPES
 #define INCLUDED_TOURNAMENT_TYPES
 
+#include <ctime>
+
 namespace pvpgn
 {
 
@@ -24,14 +26,14 @@ namespace pvpgn
 
 		typedef struct
 		{
-			unsigned int start_preliminary;
-			unsigned int end_signup;
-			unsigned int end_preliminary;
-			unsigned int start_round_1;
-			unsigned int start_round_2;
-			unsigned int start_round_3;
-			unsigned int start_round_4;
-			unsigned int tournament_end;
+			std::time_t start_preliminary;
+			std::time_t end_signup;
+			std::time_t end_preliminary;
+			std::time_t start_round_1;
+			std::time_t start_round_2;
+			std::time_t start_round_3;
+			std::time_t start_round_4;
+			std::time_t tournament_end;
 			unsigned int game_selection;
 			unsigned int game_type;
 			unsigned int game_client;

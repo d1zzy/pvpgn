@@ -24,7 +24,7 @@
 
 #define tf(a)			((a)?1:0)
 #define SELECT_TIME_OUT		20000
-#define kBufferSize		(1024*20)
+constexpr long kBufferSize = 1024L * 20L;
 #define kMaxPacketLength	(1024*5)
 
 #define DEFAULT_LOG_FILE		"/usr/local/var/d2dbs.std::log"

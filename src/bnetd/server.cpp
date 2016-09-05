@@ -1248,7 +1248,7 @@ namespace pvpgn
 			std::time_t          next_savetime, track_time;
 			std::time_t          war3_ladder_updatetime;
 			std::time_t          output_updatetime;
-			unsigned int    prev_time = 0;
+			std::time_t prev_time = 0;
 
 			starttime = std::time(NULL);
 			track_time = starttime - prefs_get_track();
