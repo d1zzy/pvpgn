@@ -218,7 +218,7 @@ namespace pvpgn
 
 			{
 				char const *filename = file_get_info(c, rawname, &filelen, &rpacket->u.server_file_reply.timestamp);
-				std::strcpy(filenamestk, filename);
+				std::snprintf(filenamestk, sizeof filenamestk, "%s", filename);
 				xfree((void*)filename);
 			} //let filename go out of scope
 

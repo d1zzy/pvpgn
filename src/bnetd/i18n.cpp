@@ -283,7 +283,7 @@ namespace pvpgn
 				output = fmt::format(format, args);
 
 				char tmp[MAX_MESSAGE_LEN];
-				strcpy(tmp, output.c_str());
+				std::snprintf(tmp, sizeof tmp, "%s", output.c_str());
 
 				i18n_convert(c, tmp);
 				output = tmp;

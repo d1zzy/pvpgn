@@ -546,17 +546,16 @@ namespace pvpgn
 			char temp[MAX_IRC_MESSAGE_LEN];
 			char first = 1;
 
-			if (numparams >= 1) {
+			if (numparams >= 1)
+			{
 				int i;
 
 				temp[0] = '\0';
-				for (i = 0; (i < numparams && (params) && (params[i])); i++) {
-					if (connlist_find_connection_by_accountname(params[i])) {
-						if (first)
-							std::strcat(temp, ":");
-						else
-							std::strcat(temp, " ");
-						std::strcat(temp, params[i]);
+				for (i = 0; (i < numparams && (params) && (params[i])); i++)
+				{
+					if (connlist_find_connection_by_accountname(params[i]))
+					{
+						std::snprintf(temp, sizeof temp, "%s%s", first ? ":" : " ", params[i]);
 						first = 0;
 					}
 				}

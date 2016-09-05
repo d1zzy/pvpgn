@@ -1917,7 +1917,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::strcpy(msgtemp0, localize(c, "Users in channel {}:", cname).c_str());
+			std::snprintf(msgtemp0, sizeof msgtemp0, "%s", localize(c, "Users in channel {}:", cname).c_str());
 			i = std::strlen(msgtemp0);
 			for (conn = channel_get_first(channel); conn; conn = channel_get_next())
 			{
@@ -2878,7 +2878,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::strcpy(msgtemp0, localize(c, "Banned users:").c_str());
+			std::snprintf(msgtemp0, sizeof msgtemp0, "%s", localize(c, "Banned users:").c_str());
 			i = std::strlen(msgtemp0);
 			LIST_TRAVERSE_CONST(channel_get_banlist(channel), curr)
 			{
@@ -3301,10 +3301,7 @@ namespace pvpgn
 			LIST_TRAVERSE_CONST(connlist(), curr)
 			{
 				conn = (t_connection*)elem_get_data(curr);
-				if (conn_get_account(conn))
-					std::sprintf(name, "\"%.16s\"", conn_get_username(conn));
-				else
-					std::strcpy(name, localize(c, "(none)").c_str());
+				std::snprintf(name, sizeof name, "%s", conn_get_account(conn) ? conn_get_username(conn) : "(none)");
 
 				if (conn_get_channel(conn) != NULL)
 					channel_name = channel_get_name(conn_get_channel(conn));
@@ -3521,7 +3518,7 @@ namespace pvpgn
 			t_connection *  tc;
 			char const *    nick;
 
-			std::strcpy(msgtemp0, localize(c, "Currently logged on Administrators:").c_str());
+			std::snprintf(msgtemp0, sizeof msgtemp0, "%s", localize(c, "Currently logged on Administrators:").c_str());
 			i = std::strlen(msgtemp0);
 			LIST_TRAVERSE_CONST(connlist(), curr)
 			{

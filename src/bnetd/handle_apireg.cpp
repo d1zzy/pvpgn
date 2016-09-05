@@ -420,7 +420,9 @@ namespace pvpgn
 
 			data = conn_get_ircline(conn); /* fetch current status */
 			if (data)
-				std::strcpy(apiregline, data);
+			{
+				std::snprintf(apiregline, sizeof apiregline, "%s", data);
+			}
 
 			unsigned apiregpos = std::strlen(apiregline);
 			data = (const char *)packet_get_raw_data_const(packet, 0);
