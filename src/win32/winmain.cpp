@@ -802,11 +802,11 @@ namespace pvpgn
 
 						if (SendMessageW(hButton, BM_GETCHECK, 0, 0) == BST_CHECKED)
 						{
-							char temp[60];
+							char temp[64];
+							std::snprintf(temp, sizeof temp, "%s", addr_num_to_addr_str(conn_get_addr(conngui), 0));
+
 							char ipadr[110];
 							unsigned int	i_GUI;
-
-							std::strcpy(temp, addr_num_to_addr_str(conn_get_addr(conngui), 0));
 
 							for (i_GUI = 0; temp[i_GUI] != ':'; i_GUI++)
 								ipadr[i_GUI] = temp[i_GUI];
