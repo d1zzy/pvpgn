@@ -393,12 +393,11 @@ namespace pvpgn
 					bn_int_set(&packet->u.client_authreq_109.ticks, std::time(NULL));
 
 					{
-						t_cdkey_info cdkey_info;
+						t_cdkey_info cdkey_info = {};
 
 						bn_int_set(&packet->u.client_authreq_109.gameversion, gameversion);
 
 						bn_int_set(&packet->u.client_authreq_109.cdkey_number, 1); /* only one */
-						std::memset(&cdkey_info, '0', sizeof(cdkey_info));
 						/* FIXME: put the input cdkey here */
 						packet_append_data(packet, &cdkey_info, sizeof(cdkey_info));
 						packet_append_string(packet, exeinfo);
