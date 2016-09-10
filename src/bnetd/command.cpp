@@ -3359,7 +3359,6 @@ namespace pvpgn
 			char const * dest;
 			t_account *    account;
 			t_connection * conn;
-			char const *   ip;
 			char *         tok;
 			t_clanmember * clanmemb;
 			std::time_t      then;
@@ -3453,9 +3452,11 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
-			if (!(ip = account_get_ll_ip(account)) ||
+			const char* const ip_tmp = account_get_ll_ip(account);
+			std::string ip(ip_tmp ? ip_tmp : "");
+			if (ip.empty() == true ||
 				!(account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr"))) /* default to false */
-				ip = localize(c, "unknown").c_str();
+				ip = localize(c, "unknown");
 
 			{
 
