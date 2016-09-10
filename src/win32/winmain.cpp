@@ -151,7 +151,8 @@ namespace pvpgn
 
 		static void guiThread(void *param)
 		{
-			if (LoadLibraryW(L"RichEd20.dll") == nullptr)
+			HMODULE hRichEd = LoadLibraryW(L"RichEd20.dll");
+			if (hRichEd == nullptr)
 				guiDEAD(L"Could not load RichEd20.dll");
 
 			WNDCLASSEXW wc = {};
@@ -169,7 +170,10 @@ namespace pvpgn
 			wc.hIconSm = nullptr;
 
 			if (!RegisterClassExW(&wc))
+			{
+				FreeLibrary(hRichEd);
 				guiDEAD(L"cant register WNDCLASS");
+			}
 
 			gui.hwnd = CreateWindowExW(
 				0,
@@ -186,7 +190,10 @@ namespace pvpgn
 				nullptr);
 
 			if (!gui.hwnd)
+			{
+				FreeLibrary(hRichEd);
 				guiDEAD(L"cant create window");
+			}
 
 			ShowWindow(gui.hwnd, SW_SHOW);
 			SetEvent(gui.event_ready);
@@ -197,6 +204,8 @@ namespace pvpgn
 				TranslateMessage(&msg);
 				DispatchMessageW(&msg);
 			}
+
+			FreeLibrary(hRichEd);
 		}
 
 		long PASCAL guiWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
