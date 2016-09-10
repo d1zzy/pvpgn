@@ -1921,6 +1921,7 @@ namespace pvpgn
 
 						if (!(oa = conn_get_anongame(o))) {
 							eventlog(eventlog_level_error, __FUNCTION__, "[{}] no anongame struct of player {}", conn_get_socket(c), i);
+							packet_del_ref(rpacket);
 							return -1;
 						}
 
