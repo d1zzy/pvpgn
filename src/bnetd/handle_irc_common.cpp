@@ -321,7 +321,7 @@ namespace pvpgn
 			std::memset(ircline, 0, sizeof(ircline));
 			data = conn_get_ircline(conn); /* fetch current status */
 			if (data)
-				std::strcpy(ircline, data);
+				std::snprintf(ircline, sizeof ircline, "%s", data);
 			unsigned ircpos = std::strlen(ircline);
 			data = (const char *)packet_get_raw_data_const(packet, 0);
 

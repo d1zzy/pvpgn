@@ -2539,7 +2539,7 @@ namespace pvpgn
 
 				// do not override userselectedicon if it's not null
 				if (!usericon && (icon = customicons_get_icon_by_account(account, clienttag)))
-					strcpy(revtag, icon->icon_code);
+					std::snprintf(revtag, sizeof revtag, "%s", icon->icon_code);
 
 				// FIXME: it replaces tag with icon on a client side for all clients (HarpyWar)
 				std::strcpy(playerinfo, revtag);

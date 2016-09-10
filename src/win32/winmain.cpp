@@ -151,7 +151,8 @@ namespace pvpgn
 
 		static void guiThread(void *param)
 		{
-			if (LoadLibraryW(L"RichEd20.dll") == nullptr)
+			HMODULE hRichEd = LoadLibraryW(L"RichEd20.dll");
+			if (hRichEd == nullptr)
 				guiDEAD(L"Could not load RichEd20.dll");
 
 			WNDCLASSEXW wc = {};
@@ -169,7 +170,10 @@ namespace pvpgn
 			wc.hIconSm = nullptr;
 
 			if (!RegisterClassExW(&wc))
+			{
+				FreeLibrary(hRichEd);
 				guiDEAD(L"cant register WNDCLASS");
+			}
 
 			gui.hwnd = CreateWindowExW(
 				0,
@@ -186,7 +190,10 @@ namespace pvpgn
 				nullptr);
 
 			if (!gui.hwnd)
+			{
+				FreeLibrary(hRichEd);
 				guiDEAD(L"cant create window");
+			}
 
 			ShowWindow(gui.hwnd, SW_SHOW);
 			SetEvent(gui.event_ready);
@@ -197,6 +204,8 @@ namespace pvpgn
 				TranslateMessage(&msg);
 				DispatchMessageW(&msg);
 			}
+
+			FreeLibrary(hRichEd);
 		}
 
 		long PASCAL guiWndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -802,11 +811,11 @@ namespace pvpgn
 
 						if (SendMessageW(hButton, BM_GETCHECK, 0, 0) == BST_CHECKED)
 						{
-							char temp[60];
+							char temp[64];
+							std::snprintf(temp, sizeof temp, "%s", addr_num_to_addr_str(conn_get_addr(conngui), 0));
+
 							char ipadr[110];
 							unsigned int	i_GUI;
-
-							std::strcpy(temp, addr_num_to_addr_str(conn_get_addr(conngui), 0));
 
 							for (i_GUI = 0; temp[i_GUI] != ':'; i_GUI++)
 								ipadr[i_GUI] = temp[i_GUI];

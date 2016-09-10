@@ -1089,8 +1089,9 @@ namespace pvpgn
 						gametype = game_type_ffa;
 					//    		    gametype = game_type_none;
 
-					if ((numparams >= 8) && (params[8])) {
-						strcpy(gamepass, params[8]);
+					if ((numparams >= 8) && (params[8]))
+					{
+						std::snprintf(gamepass, sizeof gamepass, "%s", params[8]);
 					}
 
 					if ((!(gamename)) || ((conn_set_game(conn, gamename, gamepass, "", gametype, 0))<0)) {
@@ -1389,12 +1390,15 @@ namespace pvpgn
 			*  :[servername] CHANCHK [channel]
 			*/
 
-			if ((numparams >= 1) && (params[0])) {
-				if ((channel = channellist_find_channel_by_name(irc_convert_ircname(params[0]), NULL, NULL))) {
-					std::strcat(temp, params[0]);
+			if ((numparams >= 1) && (params[0]))
+			{
+				if ((channel = channellist_find_channel_by_name(irc_convert_ircname(params[0]), NULL, NULL)))
+				{
+					std::snprintf(temp, sizeof temp, "%s", params[0]);
 					message_send_text(conn, message_wol_chanchk, conn, temp);
 				}
-				else {
+				else
+				{
 					/* FIXME: This is not dumped from original servers... this is probably wrong */
 					std::snprintf(temp, sizeof(temp), "%s :No such channel", params[0]);
 					irc_send(conn, ERR_NOSUCHCHANNEL, temp);

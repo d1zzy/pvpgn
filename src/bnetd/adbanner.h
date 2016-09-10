@@ -54,7 +54,7 @@ namespace pvpgn
 			const AdBanner* const find(t_clienttag client_tag, t_gamelang client_lang, std::size_t ad_id);
 
 		private:
-			bool m_loaded;
+			bool m_loaded = false;
 			std::vector<AdBanner> m_banners;
 		};
 		extern AdBannerSelector AdBannerList;

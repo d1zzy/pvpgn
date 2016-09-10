@@ -1917,7 +1917,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::strcpy(msgtemp0, localize(c, "Users in channel {}:", cname).c_str());
+			std::snprintf(msgtemp0, sizeof msgtemp0, "%s", localize(c, "Users in channel {}:", cname).c_str());
 			i = std::strlen(msgtemp0);
 			for (conn = channel_get_first(channel); conn; conn = channel_get_next())
 			{
@@ -2878,7 +2878,7 @@ namespace pvpgn
 				return -1;
 			}
 
-			std::strcpy(msgtemp0, localize(c, "Banned users:").c_str());
+			std::snprintf(msgtemp0, sizeof msgtemp0, "%s", localize(c, "Banned users:").c_str());
 			i = std::strlen(msgtemp0);
 			LIST_TRAVERSE_CONST(channel_get_banlist(channel), curr)
 			{
@@ -3264,7 +3264,6 @@ namespace pvpgn
 			t_connection * conn;
 			char           name[19];
 			char const *   channel_name;
-			char const *   game_name;
 			char           clienttag_str[5];
 
 			if (!prefs_get_enable_conn_all() && !(account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-con"))) /* default to false */
@@ -3301,17 +3300,18 @@ namespace pvpgn
 			LIST_TRAVERSE_CONST(connlist(), curr)
 			{
 				conn = (t_connection*)elem_get_data(curr);
-				if (conn_get_account(conn))
-					std::sprintf(name, "\"%.16s\"", conn_get_username(conn));
-				else
-					std::strcpy(name, localize(c, "(none)").c_str());
+				std::snprintf(name, sizeof name, "%s", conn_get_account(conn) ? conn_get_username(conn) : "(none)");
 
 				if (conn_get_channel(conn) != NULL)
 					channel_name = channel_get_name(conn_get_channel(conn));
-				else channel_name = localize(c, "none").c_str();
+				else
+					channel_name = localize(c, "none").c_str();
+
+				std::string game_name;
 				if (conn_get_game(conn) != NULL)
 					game_name = game_get_name(conn_get_game(conn));
-				else game_name = localize(c, "none").c_str();
+				else
+					game_name = localize(c, "none");
 
 				if (text[0] == '\0')
 					std::snprintf(msgtemp0, sizeof(msgtemp0), " %-6.6s %4.4s %-15.15s %9u %-16.16s %-8.8s",
@@ -3320,7 +3320,7 @@ namespace pvpgn
 					name,
 					conn_get_latency(conn),
 					channel_name,
-					game_name);
+					game_name.c_str());
 				else
 				if (prefs_get_hide_addr() && !(account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr"))) /* default to false */
 					std::snprintf(msgtemp0, sizeof(msgtemp0), " %3d %-6.6s %-12.12s %4.4s %-15.15s 0x%08x 0x%04x %9u %-16.16s %-8.8s",
@@ -3333,7 +3333,7 @@ namespace pvpgn
 					conn_get_flags(conn),
 					conn_get_latency(conn),
 					channel_name,
-					game_name);
+					game_name.c_str());
 				else
 					std::snprintf(msgtemp0, sizeof(msgtemp0), " %3d %-6.6s %-12.12s %4.4s %-15.15s 0x%08x 0x%04x %9u %-16.16s %-8.8s %.16s",
 					conn_get_socket(conn),
@@ -3345,7 +3345,7 @@ namespace pvpgn
 					conn_get_flags(conn),
 					conn_get_latency(conn),
 					channel_name,
-					game_name,
+					game_name.c_str(),
 					addr_num_to_addr_str(conn_get_addr(conn), conn_get_port(conn)));
 
 				message_send_text(c, message_type_info, c, msgtemp0);
@@ -3359,7 +3359,6 @@ namespace pvpgn
 			char const * dest;
 			t_account *    account;
 			t_connection * conn;
-			char const *   ip;
 			char *         tok;
 			t_clanmember * clanmemb;
 			std::time_t      then;
@@ -3453,9 +3452,11 @@ namespace pvpgn
 				message_send_text(c, message_type_info, c, msgtemp);
 			}
 
-			if (!(ip = account_get_ll_ip(account)) ||
+			const char* const ip_tmp = account_get_ll_ip(account);
+			std::string ip(ip_tmp ? ip_tmp : "");
+			if (ip.empty() == true ||
 				!(account_get_command_groups(conn_get_account(c)) & command_get_group("/admin-addr"))) /* default to false */
-				ip = localize(c, "unknown").c_str();
+				ip = localize(c, "unknown");
 
 			{
 
@@ -3521,7 +3522,7 @@ namespace pvpgn
 			t_connection *  tc;
 			char const *    nick;
 
-			std::strcpy(msgtemp0, localize(c, "Currently logged on Administrators:").c_str());
+			std::snprintf(msgtemp0, sizeof msgtemp0, "%s", localize(c, "Currently logged on Administrators:").c_str());
 			i = std::strlen(msgtemp0);
 			LIST_TRAVERSE_CONST(connlist(), curr)
 			{
