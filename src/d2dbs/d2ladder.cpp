@@ -630,7 +630,6 @@ namespace pvpgn
 			unsigned int			i, j, number;
 			t_d2ladder			* d2ladder;
 			t_d2ladderfile_ladderinfo	* ldata;
-			char                            * XMLfilename;
 			std::FILE                            * XMLfile;
 
 			/*
@@ -668,17 +667,16 @@ namespace pvpgn
 			// aaron: add extra output for XML ladder here --->
 			if (d2dbs_prefs_get_XML_output_ladder())
 			{
-				XMLfilename = (char*)xmalloc(std::strlen(d2dbs_prefs_get_ladder_dir()) + 1 + std::strlen(XMLname) + 1);
-				std::sprintf(XMLfilename, "%s/%s", d2dbs_prefs_get_ladder_dir(), XMLname);
-				if (!(XMLfile = std::fopen(XMLfilename, "w")))
-				{
-					eventlog(eventlog_level_error, __FUNCTION__, "could not open XML ladder file for output");
-				}
-				else
+				std::string xml_filename(d2dbs_prefs_get_ladder_dir() + std::string("/") + XMLname);
+				XMLfile = std::fopen(xml_filename.c_str(), "w");
+				if (XMLfile)
 				{
 					d2ladder_print_XML(XMLfile);
 					std::fclose(XMLfile);
-					xfree(XMLfilename);
+				}
+				else
+				{
+					eventlog(eventlog_level_error, __FUNCTION__, "could not open XML ladder file \"%s\" for output", xml_filename);
 				}
 			}
 
