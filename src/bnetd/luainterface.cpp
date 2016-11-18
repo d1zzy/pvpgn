@@ -268,6 +268,7 @@ namespace pvpgn
 				config.update("contact_email", prefs_get_contact_email());
 				config.update("servername", prefs_get_servername());
 				config.update("max_connections", prefs_get_max_connections());
+				config.update("packet_limit", prefs_get_packet_limit());
 				config.update("max_concurrent_logins", prefs_get_max_concurrent_logins());
 				config.update("use_keepalive", prefs_get_use_keepalive());
 				config.update("max_conns_per_IP", prefs_get_max_conns_per_IP());
