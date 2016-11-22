@@ -161,6 +161,7 @@ namespace pvpgn
 			char const * ladder_games;
 			char const * ladder_prefix;
 			unsigned int max_connections;
+			unsigned int packet_limit;
 			unsigned int sync_on_logoff;
 			char const * irc_network_name;
 			unsigned int localize_by_country;
@@ -656,6 +657,10 @@ namespace pvpgn
 		static const char *conf_get_max_connections(void);
 		static int conf_setdef_max_connections(void);
 
+		static int conf_set_packet_limit(const char *valstr);
+		static const char *conf_get_packet_limit(void);
+		static int conf_setdef_packet_limit(void);
+
 		static int conf_set_sync_on_logoff(const char *valstr);
 		static const char *conf_get_sync_on_logoff(void);
 		static int conf_setdef_sync_on_logoff(void);
@@ -847,6 +852,7 @@ namespace pvpgn
 			{ "allowed_clients", conf_set_allowed_clients, conf_get_allowed_clients, conf_setdef_allowed_clients },
 			{ "ladder_games", conf_set_ladder_games, conf_get_ladder_games, conf_setdef_ladder_games },
 			{ "max_connections", conf_set_max_connections, conf_get_max_connections, conf_setdef_max_connections },
+			{ "packet_limit", conf_set_packet_limit, conf_get_packet_limit, conf_setdef_packet_limit },
 			{ "sync_on_logoff", conf_set_sync_on_logoff, conf_get_sync_on_logoff, conf_setdef_sync_on_logoff },
 			{ "ladder_prefix", conf_set_ladder_prefix, conf_get_ladder_prefix, conf_setdef_ladder_prefix },
 			{ "irc_network_name", conf_set_irc_network_name, conf_get_irc_network_name, conf_setdef_irc_network_name },
@@ -3460,6 +3466,27 @@ namespace pvpgn
 		static const char* conf_get_max_connections(void)
 		{
 			return conf_get_int(prefs_runtime_config.max_connections);
+		}
+
+
+		extern unsigned int prefs_get_packet_limit(void)
+		{
+			return prefs_runtime_config.packet_limit;
+		}
+
+		static int conf_set_packet_limit(const char *valstr)
+		{
+			return conf_set_int(&prefs_runtime_config.packet_limit, valstr, 0);
+		}
+
+		static int conf_setdef_packet_limit(void)
+		{
+			return conf_set_int(&prefs_runtime_config.packet_limit, NULL, BNETD_PACKET_LIMIT);
+		}
+
+		static const char* conf_get_packet_limit(void)
+		{
+			return conf_get_int(prefs_runtime_config.packet_limit);
 		}
 
 

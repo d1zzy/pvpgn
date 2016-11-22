@@ -477,6 +477,11 @@ contact_email = "unknown"
 # limit, NOT the concurrent user limit (for that see next option)
 max_connections = 1000
 
+# Set maximum amount of packets in client packet queue
+# If limit is reached, client connection will be dropped
+# Set to 0 to disable
+packet_limit = 1000
+
 # Maximum number of concurrent users (0 means unlimited).
 max_concurrent_logins = 0
 
