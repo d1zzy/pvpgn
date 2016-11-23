@@ -134,4 +134,4 @@ test:
     - '**\src\bnetd\Release\bnetd.exe'
 
 artifacts:
-  - path: 'c:\builder\%COMPLETE_BUILD_VERSION%*.zip'
+  - path: '..\builder\%COMPLETE_BUILD_VERSION%*.zip'
