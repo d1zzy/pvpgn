@@ -127,12 +127,18 @@ after_build:
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_SQLITE_ZIP_DEBUG%"
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_ODBC_ZIP%"
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_ODBC_ZIP_DEBUG%"
+    - PowerShell Push-AppveyorArtifact "%PVPGN_PLAIN_ZIP%"
+    - PowerShell Push-AppveyorArtifact "%PVPGN_PLAIN_ZIP_DEBUG%"
+    - PowerShell Push-AppveyorArtifact "%PVPGN_MYSQL_ZIP%"
+    - PowerShell Push-AppveyorArtifact "%PVPGN_MYSQL_ZIP_DEBUG%"
+    - PowerShell Push-AppveyorArtifact "%PVPGN_PGSQL_ZIP%"
+    - PowerShell Push-AppveyorArtifact "%PVPGN_PGSQL_ZIP_DEBUG%"
+    - PowerShell Push-AppveyorArtifact "%PVPGN_SQLITE_ZIP%"
+    - PowerShell Push-AppveyorArtifact "%PVPGN_SQLITE_ZIP_DEBUG%"
+    - PowerShell Push-AppveyorArtifact "%PVPGN_ODBC_ZIP%"
     - PowerShell Push-AppveyorArtifact "%PVPGN_ODBC_ZIP_DEBUG%"
-  
+
 # check the latest build executable for exists
 test:
   assemblies:
     - '**\src\bnetd\Release\bnetd.exe'
-
-artifacts:
-  - path: '..\builder\*.zip'
