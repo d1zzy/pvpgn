@@ -127,7 +127,7 @@ after_build:
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_SQLITE_ZIP_DEBUG%"
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_ODBC_ZIP%"
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_ODBC_ZIP_DEBUG%"
-    - ps: appveyor PushArtifact "%PVPGN_ODBC_ZIP_DEBUG%"
+    - ps: Push-AppveyorArtifact "%PVPGN_ODBC_ZIP_DEBUG%"
   
 # check the latest build executable for exists
 test:
