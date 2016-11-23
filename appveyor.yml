@@ -33,7 +33,7 @@ before_build:
 build_script:
 
   # build gui and console for each storage type
-  # params:
+  # build_pvpgn.bat params:
   #  1. automatic build flag
   #  2. visual studio version
   #  3. console or gui
@@ -128,6 +128,10 @@ after_build:
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_ODBC_ZIP%"
     - PowerShell .\magic.ps1 -dir "%APPVEYOR_BUILD_VERSION%" -file "%PVPGN_ODBC_ZIP_DEBUG%"
   
+# check the latest build executable for exists
 test:
   assemblies:
     - '**\src\bnetd\Release\bnetd.exe'
+
+artifacts:
+  - path: %COMPLETE_BUILD_VERSION%*.zip
