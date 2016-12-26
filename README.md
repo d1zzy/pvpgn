@@ -31,11 +31,18 @@ Submit pull requests to contribute to this project. Utilize C++11 features and a
 See [docs/ports.md](https://github.com/pvpgn/pvpgn-server/blob/master/docs/ports.md) for operating systems and compilers that have been confirmed to work with PvPGN. Any operating system that supports WinAPI or POSIX, and any C++11 compliant compiler should be able to build PvPGN.
 
 #### Windows
-Use [Magic Builder](https://github.com/pvpgn/pvpgn-server-magic-builder). 
+Use [Magic Builder](https://github.com/pvpgn/pvpgn-server-magic-builder).
 
-#### Linux
+Alternatively, use cmake to generate the .sln project and build it from Visual Studio.
+```
+cmake -g "Visual Studio 14 2015" -H./ -B./build
+```
+This will generate .sln in `build` directory.
 
-````
+#### Linux in general
+Do not blindly run these commands. The main problem with older distributions is installing CMake 3.2.x and GCC 5, so external repositories are used in the examples.
+
+```
 apt-get install git install cmake make build-essential zlib1g-dev
 apt-get install liblua5.1-0-dev #Lua support
 apt-get install mysql-server mysql-client libmysqlclient-dev #MySQL support
@@ -44,7 +51,70 @@ git clone https://github.com/pvpgn/pvpgn-server.git
 cmake -D CMAKE_INSTALL_PREFIX=/usr/local/pvpgn -D WITH_MYSQL=true -D WITH_LUA=true ../
 make
 make install
-````
+```
+
+#### Ubuntu 16.04
+```
+sudo apt-get -y install build-essential git cmake zlib1g-dev
+git clone https://github.com/pvpgn/pvpgn-server.git
+cd pvpgn-server && cmake -G "Unix Makefiles" -H./ -B./build
+cd build && make
+```
+
+#### Ubuntu 14.04
+```
+sudo apt-get -y install build-essential zlib1g-dev git
+sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+sudo apt-get -y update
+sudo apt-get -y install gcc-5 g++-5
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
+sudo add-apt-repository -y ppa:george-edison55/cmake-3.x
+sudo apt-get update
+sudo apt-get -y install cmake
+git clone https://github.com/pvpgn/pvpgn-server.git
+cd pvpgn-server && cmake -G "Unix Makefiles" -H./ -B./build
+cd build && make
+```
+
+#### Debian 8
+```
+sudo apt-get -y install build-essential zlib1g-dev clang libc++-dev git
+wget https://cmake.org/files/v3.7/cmake-3.7.1-Linux-x86_64.tar.gz
+tar xvfz cmake-3.7.1-Linux-x86_64.tar.gz
+git clone https://github.com/pvpgn/pvpgn-server.git
+cd pvpgn-server && CC=/usr/bin/clang CXX=/usr/bin/clang++ ../cmake-3.7.1-Linux-x86_64/bin/cmake -G "Unix Makefiles" -H./ -B./build
+cd build && make
+```
+
+#### Centos 7
+```
+sudo yum -y install yum-utils epel-release git
+sudo yum-config-manager --add-repo https://copr.fedorainfracloud.org/coprs/g/kdesig/cmake3_EPEL/repo/epel-7/group_kdesig-cmake3_EPEL-epel-7.repo
+sudo yum -y install cmake3 centos-release-scl devtoolset-4-gcc* zlib-devel
+sudo ln -s /usr/bin/cmake3 /usr/bin/cmake
+git clone https://github.com/pvpgn/pvpgn-server.git
+cd pvpgn-server
+CC=/opt/rh/devtoolset-4/root/usr/bin/gcc CXX=/opt/rh/devtoolset-4/root/usr/bin/g++ cmake -G "Unix Makefiles" -H./ -B./build
+cd build && make
+```
+
+#### Fedora 25
+```
+sudo dnf -y install gcc-c++ gcc make zlib-devel cmake git
+git clone https://github.com/pvpgn/pvpgn-server.git
+cd pvpgn-server
+cmake -G "Unix Makefiles" -H./ -B./build
+cd build && make
+```
+
+#### FreeBSD 11
+```
+sudo pkg install -y git cmake
+git clone https://github.com/pvpgn/pvpgn-server.git
+cd pvpgn-server
+cmake -G "Unix Makefiles" -H./ -B./build
+cd build && make
+```
 
 Full instructions: [Русский](http://harpywar.com/?a=articles&b=2&c=1&d=74) | [English](http://harpywar.com/?a=articles&b=2&c=1&d=74&lang=en)
 
