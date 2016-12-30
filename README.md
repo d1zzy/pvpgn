@@ -90,7 +90,8 @@ cd build && make
 ```
 sudo yum -y install yum-utils epel-release git
 sudo yum-config-manager --add-repo https://copr.fedorainfracloud.org/coprs/g/kdesig/cmake3_EPEL/repo/epel-7/group_kdesig-cmake3_EPEL-epel-7.repo
-sudo yum -y install cmake3 centos-release-scl devtoolset-4-gcc* zlib-devel
+sudo yum -y install cmake3 centos-release-scl zlib-devel
+sudo yum install devtoolset-4-gcc*
 sudo ln -s /usr/bin/cmake3 /usr/bin/cmake
 git clone https://github.com/pvpgn/pvpgn-server.git
 cd pvpgn-server
