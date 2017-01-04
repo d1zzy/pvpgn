@@ -3114,7 +3114,7 @@ namespace pvpgn
 						}
 					}
 
-					message_send_text(c, message_type_info, c, msgtemp);
+					message_send_text(c, message_type_info, c, msgtemp0);
 				}
 			}
 
