@@ -88,9 +88,8 @@ cd build && make
 
 #### CentOS 7
 ```
-sudo yum -y install yum-utils epel-release git
-sudo yum -y install cmake3 centos-release-scl zlib-devel
-sudo yum -y install devtoolset-4-gcc*
+sudo yum -y install epel-release centos-release-scl
+sudo yum -y install git zlib-devel cmake3 devtoolset-4-gcc*
 sudo ln -s /usr/bin/cmake3 /usr/bin/cmake
 git clone https://github.com/pvpgn/pvpgn-server.git
 cd pvpgn-server
