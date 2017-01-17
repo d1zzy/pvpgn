@@ -596,7 +596,7 @@ namespace pvpgn
 				if (!(acc = conn_get_account(c)))
 					continue;
 
-				SendMessageW(gui.hwndUsers, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(account_get_name(acc)));
+				SendMessageA(gui.hwndUsers, LB_ADDSTRING, 0, reinterpret_cast<LPARAM>(account_get_name(acc)));
 			}
 
 			std::wstring user_count(std::to_wstring(connlist_login_get_length()) + L" user(s) online:");
