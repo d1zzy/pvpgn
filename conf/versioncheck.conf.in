@@ -83,27 +83,27 @@
  0x4026b5b0 \
  WAR3_127B
 
-# Diablo II - LoD (Expansion) 1.13c
+# Diablo II - LoD (Expansion) 1.14d
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
+ ver-IX86-1.mpq \
  IX86 \
  D2XP \
- "Game.exe 03/09/10 04:10:51 61440" \
- 0x0000000d \
- 1.0.13.0 \
- 0x7686beca \
- D2XP_113C
-
-# Diablo II 1.13c
+ "Game.exe 05/31/16 19:02:24 3618792" \
+ 0x0000000e \
+ 1.14.3.0 \
+ 0x43f51a83 \
+ D2XP_114D
+ 
+# Diablo II 1.14d
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- IX86ver1.mpq \
+ ver-IX86-1.mpq \
  IX86 \
  D2DV \
- "Game.exe 03/09/10 04:11:00 57344" \
- 0x0000000d \
- 1.0.13.0 \
- 0xfc04b9f6 \
- D2DV_113C
+ "Game.exe 05/31/16 19:02:32 3614696" \
+ 0x0000000e \
+ 1.14.3.0 \
+ 0x6b6a21b5 \
+ D2DV_114D
 
 # Starcraft - Broodwar (Expansion) 1.16.1 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
@@ -1022,6 +1022,50 @@
 
 # ====================== Diablo II LOD entries ===========================
 
+# Diablo II - LoD (Expansion) 1.14c
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ ver-IX86-1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 05/06/16 18:15:44 3586024" \
+ 0x0000000e \
+ 1.14.2.0 \
+ 0x6123b0f2 \
+ D2XP_114C
+
+# Diablo II - LoD (Expansion) 1.14b
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ ver-IX86-1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 03/31/16 01:09:01 3590120" \
+ 0x0000000e \
+ 1.14.1.0 \
+ 0x1373c295 \
+ D2XP_114B
+
+# Diablo II - LoD (Expansion) 1.14a
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ ver-IX86-1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 02/29/16 17:34:46 3590120" \
+ 0x0000000e \
+ 1.14.0.0 \
+ 0xbcb5b3bb \
+ D2XP_114A
+
+# Diablo II - LoD (Expansion) 1.13c
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2XP \
+ "Game.exe 03/09/10 04:10:51 61440" \
+ 0x0000000d \
+ 1.0.13.0 \
+ 0x7686beca \
+ D2XP_113C
+
 # Diablo II - LoD (Expansion) 1.12a
 
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
@@ -1127,6 +1171,50 @@
  D2XP_107
 
 # ==================== Diablo 2 (original) entries =====================
+
+# Diablo II 1.14c
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 05/06/16 18:15:49 3581928" \
+ 0x0000000e \
+ 1.14.2.0 \
+ 0x7d54f650 \
+ D2DV_114C
+
+# Diablo II 1.14b
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 06/13/16 02:02:21 3586024" \
+ 0x0000000e \
+ 1.14.1.0 \
+ 0x77f3db54 \
+ D2DV_114B
+
+# Diablo II 1.14a
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ ver-IX86-1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 02/29/16 17:34:50 3586024" \
+ 0x0000000e \
+ 1.14.0.0 \
+ 0xd9e9368a \
+ D2DV_114A
+
+# Diablo II 1.13c
+"A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
+ IX86ver1.mpq \
+ IX86 \
+ D2DV \
+ "Game.exe 03/09/10 04:11:00 57344" \
+ 0x0000000d \
+ 1.0.13.0 \
+ 0xfc04b9f6 \
+ D2DV_113C
 
 # Diablo II 1.12a
 
