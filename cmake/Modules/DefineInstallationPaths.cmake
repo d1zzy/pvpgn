@@ -9,6 +9,12 @@ SET(EXEC_INSTALL_PREFIX
   FORCE
 )
 
+SET(SHARE_INSTALL_PREFIX
+  "${CMAKE_INSTALL_PREFIX}/share"
+  CACHE PATH "Base directory for files which go to share/"
+  FORCE
+)
+
 SET(DATA_INSTALL_PREFIX
   "${SHARE_INSTALL_PREFIX}/${APPLICATION_NAME}"
   CACHE PATH "The parent directory where applications can install their data"
@@ -56,12 +62,6 @@ else()
 	  FORCE
 	)
 endif()
-
-SET(SHARE_INSTALL_PREFIX
-  "${CMAKE_INSTALL_PREFIX}/share"
-  CACHE PATH "Base directory for files which go to share/"
-  FORCE
-)
 
 if(WIN32)
   SET(SYSCONF_INSTALL_DIR 
