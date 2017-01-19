@@ -2372,7 +2372,7 @@ namespace pvpgn
 
 				frienduid = account_get_friend(account, bn_byte_get(packet->u.client_friendinforeq.friendnum));
 				if (frienduid < 0) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[{}] friend number %d not found", conn_get_socket(c), (int)bn_byte_get(packet->u.client_friendinforeq.friendnum));
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] friend number {} not found", conn_get_socket(c), (int)bn_byte_get(packet->u.client_friendinforeq.friendnum));
 					return -1;
 				}
 
@@ -4124,7 +4124,7 @@ namespace pvpgn
 				status = bn_int_get(packet->u.client_startgame4.status);
 				flag = bn_short_get(packet->u.client_startgame4.flag);
 
-				eventlog(eventlog_level_debug, __FUNCTION__, "[%d] got startgame4 status for game \"{}\" is 0x{:08x} (gametype=0x{:04x} option=0x{:04x}, flag=0x{:04x})", conn_get_socket(c), gamename, status, bngtype, option, flag);
+				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] got startgame4 status for game \"{}\" is 0x{:08x} (gametype=0x{:04x} option=0x{:04x}, flag=0x{:04x})", conn_get_socket(c), gamename, status, bngtype, option, flag);
 
 				if ((currgame = conn_get_game(c))) {
 					if ((status & CLIENT_STARTGAME4_STATUSMASK_OPEN_VALID) == status) {

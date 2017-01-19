@@ -188,7 +188,7 @@ namespace pvpgn
 				std::sprintf(data, ":%s PONG %s :%s", server_get_hostname(), server_get_hostname(), params);
 			else
 				std::sprintf(data, ":%s PONG %s", server_get_hostname(), server_get_hostname());
-			eventlog(eventlog_level_debug, __FUNCTION__, "[%d] sent \"{}\"", conn_get_socket(conn), data);
+			eventlog(eventlog_level_debug, __FUNCTION__, "[{}] sent \"{}\"", conn_get_socket(conn), data);
 			std::strcat(data, "\r\n");
 			packet_set_size(p, 0);
 			packet_append_data(p, data, std::strlen(data));

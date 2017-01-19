@@ -590,7 +590,7 @@ namespace pvpgn
 			}
 			else{
 				std::memcpy(user_icon, &desired_icon, 4);
-				eventlog(eventlog_level_info, __FUNCTION__, "[%d] Set icon packet to ICON [{}]", conn_get_socket(c), user_icon);
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] Set icon packet to ICON [{}]", conn_get_socket(c), user_icon);
 			}
 
 			account = conn_get_account(c);
