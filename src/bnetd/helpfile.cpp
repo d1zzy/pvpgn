@@ -57,7 +57,7 @@ namespace pvpgn
 				return it->second;
 			}
 			// return enUS if language is not specified in language list
-			return hfd_list[languages[0]];
+			return hfd_list[languages[0].gamelang];
 		}
 
 		extern int helpfile_init(char const *filename)
@@ -70,11 +70,11 @@ namespace pvpgn
 			const char * _filename = nullptr;
 
 			// iterate language list
-			for (int i = 0; i < (sizeof(languages) / sizeof(*languages)); i++)
+			for (int i = 0; i < languages.size(); i++)
 			{
 				// get hfd of all localized help files
-				_filename = i18n_filename(filename, languages[i]);
-				if (!(hfd_list[languages[i]] = std::fopen(_filename, "r")))
+				_filename = i18n_filename(filename, languages[i].gamelang);
+				if (!(hfd_list[languages[i].gamelang] = std::fopen(_filename, "r")))
 				{
 					eventlog(eventlog_level_error, __FUNCTION__, "could not open help file \"{}\" for reading (std::fopen: {})", _filename, std::strerror(errno));
 					xfree((void*)_filename);

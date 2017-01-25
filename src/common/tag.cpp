@@ -246,28 +246,6 @@ namespace pvpgn
 		}
 	}
 
-	extern int tag_check_gamelang(t_tag gamelang)
-	{
-		switch (gamelang)
-		{
-		case GAMELANG_ENGLISH_UINT:	/* enUS */
-		case GAMELANG_GERMAN_UINT:	/* deDE */
-		case GAMELANG_CZECH_UINT:	/* csCZ */
-		case GAMELANG_SPANISH_UINT:	/* esES */
-		case GAMELANG_FRENCH_UINT:	/* frFR */
-		case GAMELANG_ITALIAN_UINT:	/* itIT */
-		case GAMELANG_JAPANESE_UINT:	/* jaJA */
-		case GAMELANG_KOREAN_UINT:	/* koKR */
-		case GAMELANG_POLISH_UINT:	/* plPL */
-		case GAMELANG_RUSSIAN_UINT:	/* ruRU */
-		case GAMELANG_CHINESE_S_UINT:	/* zhCN */
-		case GAMELANG_CHINESE_T_UINT:	/* zhTW */
-			return 1;
-		default:
-			return 0;
-		}
-	}
-
 	extern int tag_check_wolv1(t_tag tag_uint)
 	{
 		switch (tag_uint) {

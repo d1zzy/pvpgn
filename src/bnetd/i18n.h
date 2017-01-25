@@ -22,8 +22,14 @@ namespace pvpgn
 {
 	namespace bnetd
 	{
-		extern const t_gamelang languages[12];
 
+		typedef struct {
+			t_gamelang gamelang;
+			const char* name;
+			std::vector<std::string> countries;
+		} t_language;
+
+		extern std::vector<t_language> languages;
 	}
 }
 
@@ -48,11 +54,17 @@ namespace pvpgn
 		extern int i18n_reload(void);
 
 		extern const char * i18n_filename(const char * filename, t_tag gamelang);
-		extern t_gamelang lang_find_by_country(const char * code);
+		extern t_language language_find_by_country(const char * code, bool &found);
+		extern t_language language_find_by_tag(t_gamelang gamelang, bool &found);
+		extern t_language language_get_by_country(const char * code);
+		extern t_gamelang gamelang_get_by_country(const char * code);
+		extern t_language language_get_by_tag(t_gamelang gamelang);
+
 		extern t_gamelang conn_get_gamelang_localized(t_connection * c);
 
 		extern int handle_language_command(t_connection * c, char const *text);
 		extern char * i18n_convert(t_connection * c, char * buf);
+		extern int tag_check_gamelang_real(t_tag gamelang);
 
 
 		extern std::string _localize(t_connection * c, const char * func, const char *fmt, const fmt::ArgList &args);

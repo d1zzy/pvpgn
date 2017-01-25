@@ -2,6 +2,7 @@
 <root xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <meta>
     <language tag="enUS">English</language>
+    <countries></countries>
     <authors>
       <author name="nomad" email="nomad@example.com" />
     </authors>

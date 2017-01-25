@@ -74,9 +74,9 @@ namespace pvpgn
 				// Check if there is an alias file available for this kind of file
 				if (!std::strncmp(rawname, *pattern, std::strlen(*pattern)))
 				{
-					t_gamelang lang;
-					if (lang = conn_get_gamelang_localized(c))
-						return i18n_filename(*alias, lang);
+					t_gamelang gamelang;
+					if (gamelang = conn_get_gamelang_localized(c))
+						return i18n_filename(*alias, gamelang);
 
 					// FIXME: when file is transferring by bnftp protofol client doesn't provide a language
 					// but we can extract it from the filename, so do it in next code
@@ -90,17 +90,19 @@ namespace pvpgn
 					char langstr[5];
 					strncpy(langstr, rawname + std::strlen(*pattern), 4);
 					langstr[4] = 0;
-					lang = tag_str_to_uint(langstr);
+					gamelang = tag_str_to_uint(langstr);
 
 					// if language is invalid then try find it by country (like "tos_USA.txt")
 					// (it used in D1, SC, War2)
-					if (!tag_check_gamelang(lang))
+					bool found;
+					language_find_by_tag(gamelang, found);
+					if (!found)
 					{
 						strncpy(langstr, rawname + std::strlen(*pattern), 3);
 						langstr[3] = 0;
-						lang = lang_find_by_country(langstr);
+						gamelang = gamelang_get_by_country(langstr);
 					}
-					return i18n_filename(*alias, lang);
+					return i18n_filename(*alias, gamelang);
 				}
 			}
 			// if not found return source file

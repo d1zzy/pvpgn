@@ -2,6 +2,12 @@
 <root xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <meta>
     <language tag="deDE">German</language>
+    <countries>
+      <country>DEU</country>
+      <country>AUT</country>
+      <country>LIE</country>
+      <country>LUX</country>
+    </countries>
     <authors>
       <author name="GeckoVOD" />
       <author name="Celetuiw" email="celetuiw@gmx.de" />

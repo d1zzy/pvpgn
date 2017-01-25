@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<root xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <meta>
+    <language tag="ruRU">Russian</language>
+    <countries>
+      <country>RUS</country>
+      <country>UZB</country>
+      <country>TTT</country>
+      <country>UKR</country>
+      <country>AZE</country>
+      <country>ARM</country>
+    </countries>
+  </meta>
+</root>

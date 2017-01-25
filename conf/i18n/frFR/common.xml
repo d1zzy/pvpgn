@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<root xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <meta>
+    <language tag="frFR">French</language>
+    <countries>
+      <country>FRA</country>
+      <country>BEL</country>
+      <country>CAN</country>
+      <country>FRA</country>
+      <country>LUX</country>
+      <country>MCO</country>
+      <country>CHE</country>
+    </countries>
+  </meta>
+</root>

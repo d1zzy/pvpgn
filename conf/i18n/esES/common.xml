@@ -2,6 +2,27 @@
 <root xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <meta>
     <language tag="esES">Spanish</language>
+    <countries>
+      <country>ESP</country>
+      <country>ARG</country>
+      <country>BOL</country>
+      <country>CHL</country>
+      <country>COL</country>
+      <country>CRI</country>
+      <country>DOM</country>
+      <country>ECU</country>
+      <country>SLV</country>
+      <country>GTM</country>
+      <country>HND</country>
+      <country>MEX</country>
+      <country>NIC</country>
+      <country>PAN</country>
+      <country>PRY</country>
+      <country>PER</country>
+      <country>PRI</country>
+      <country>URY</country>
+      <country>VEN</country>
+    </countries>
     <authors>
       <author name="plissken2097" email="formato_ahorro@hotmail.com" />
     </authors>

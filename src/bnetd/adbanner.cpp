@@ -28,6 +28,7 @@
 #include <string>
 #include <vector>
 
+#include "i18n.h"
 #include "json/json.hpp"
 
 #include "common/bn_type.h"
@@ -118,7 +119,9 @@ namespace pvpgn
 					{
 						ltag = tag_str_to_uint(ad["lang"].get<std::string>().c_str());
 
-						if (!tag_check_gamelang(ltag))
+						bool found;
+						language_find_by_tag(ltag, found);
+						if (!found)
 							throw std::runtime_error("Unknown language (" + ad["lang"].get<std::string>() + ")");
 					}
 

@@ -199,7 +199,6 @@ namespace pvpgn
 	extern const char * tag_uint_to_revstr(char * tag_str, t_tag tag_uint);
 	extern int	tag_check_arch(t_tag tag_uint);
 	extern int	tag_check_client(t_tag tag_uint);
-	extern int	tag_check_gamelang(t_tag tag_uint);
 	extern int	tag_check_wolv1(t_tag tag_uint);
 	extern int	tag_check_wolv2(t_tag tag_uint);
 	extern int	tag_check_in_list(t_clienttag clienttag, const char * list);

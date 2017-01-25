@@ -1262,7 +1262,10 @@ namespace pvpgn
 			if (!gamelang)
 				return; /* only war3 & w3xp have gamelang */
 
-			if (!tag_check_gamelang(gamelang)) {
+			bool found;
+			language_find_by_tag(gamelang, found);
+			if (!found)
+			{
 				eventlog(eventlog_level_warn, __FUNCTION__, "got UNKNOWN gamelang");
 				return;
 			}
