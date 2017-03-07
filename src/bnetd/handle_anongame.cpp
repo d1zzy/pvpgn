@@ -496,16 +496,8 @@ namespace pvpgn
 				packet_set_type(rpacket, SERVER_FINDANONGAME_ICONREPLY);
 				bn_int_set(&rpacket->u.server_findanongame_iconreply.count, bn_int_get(packet->u.client_findanongame_inforeq.count));
 				bn_byte_set(&rpacket->u.server_findanongame_iconreply.option, CLIENT_FINDANONGAME_GET_ICON);
-				
-				
-				if (prefs_get_custom_icons() == 1)
-				{
-					// get current custom icon
-					t_icon_info * icon;
-					if (icon = customicons_get_icon_by_account(acc, clienttag))
-						std::memcpy(&rpacket->u.server_findanongame_iconreply.curricon, icon->icon_code, 4);
-				}
-				else if ((uicon = account_get_user_icon(acc, clienttag)))
+
+				if (uicon = account_get_user_icon(acc, clienttag))
 				{
 					std::memcpy(&rpacket->u.server_findanongame_iconreply.curricon, uicon, 4);
 				}
@@ -514,6 +506,18 @@ namespace pvpgn
 					account_get_raceicon(acc, &rico, &rlvl, &rwins, clienttag);
 					std::sprintf(user_icon, "%1d%c3W", rlvl, rico);
 					std::memcpy(&rpacket->u.server_findanongame_iconreply.curricon, user_icon, 4);
+				}
+
+				// if custom stats is enabled then set a custom client icon by player rating
+				// do not override user selected icon if any
+				bool assignedCustomIcon = false;
+				if (!uicon && prefs_get_custom_icons() == 1 && customicons_allowed_by_client(clienttag))
+				{
+					if (t_icon_info * icon = customicons_get_icon_by_account(acc, clienttag))
+					{
+						assignedCustomIcon = true;
+						std::memcpy(&rpacket->u.server_findanongame_iconreply.curricon, icon->icon_code, 4);
+					}
 				}
 
 				bn_byte_set(&rpacket->u.server_findanongame_iconreply.table_width, table_width);
@@ -527,32 +531,24 @@ namespace pvpgn
 						tempicon.icon_code[2] = '3';
 						tempicon.icon_code[3] = 'W';
 						tempicon.portrait_code = (account_icon_to_profile_icon(tempicon.icon_code, acc, clienttag));
-						if (i <= 4){
+						if (i <= 4)
+						{
 							//Building the icon for the races
 							bn_short_set(&tempicon.required_wins, icon_req_race_wins);
-							if (account_get_racewins(acc, race[i], clienttag) >= icon_req_race_wins) {
-								if (prefs_get_custom_icons() == 1)
-									tempicon.client_enabled = 0;
-								else
-									tempicon.client_enabled = 1;
-							}
-							else{
+							if (assignedCustomIcon || account_get_racewins(acc, race[i], clienttag) < icon_req_race_wins)
 								tempicon.client_enabled = 0;
-							}
+							else
+								tempicon.client_enabled = 1;
 						}
-						else{
+						else
+						{
 							//Building the icon for the tourney
 							icon_req_tourney_wins = anongame_infos_get_ICON_REQ_TOURNEY(j + 1);
 							bn_short_set(&tempicon.required_wins, icon_req_tourney_wins);
-							if (account_get_racewins(acc, race[i], clienttag) >= icon_req_tourney_wins) {
-								if (prefs_get_custom_icons() == 1)
-									tempicon.client_enabled = 0;
-								else
-									tempicon.client_enabled = 1;
-							}
-							else{
+							if (assignedCustomIcon || account_get_racewins(acc, race[i], clienttag) < icon_req_tourney_wins)
 								tempicon.client_enabled = 0;
-							}
+							else
+								tempicon.client_enabled = 1;
 						}
 						packet_append_data(rpacket, &tempicon, sizeof(tempicon));
 					}
@@ -571,13 +567,13 @@ namespace pvpgn
 			// Modified by aancw 16/12/2014
 			unsigned int desired_icon;
 			char user_icon[5];
-			t_account * account;
 
-			// disable with custom icons
-			if (prefs_get_custom_icons() == 1)
-			{
+			t_account * account = conn_get_account(c);
+			t_clienttag clienttag = conn_get_clienttag(c);
+
+			// do nothing when custom icon enabled and exists
+			if (prefs_get_custom_icons() == 1 && customicons_allowed_by_client(clienttag) && customicons_get_icon_by_account(account, clienttag))
 				return 0;
-			}
 
 			/*FIXME: In this case we do not get a 'count' but insted of it we get the icon
 			that the client wants to set.'W3H2' for an example. For now it is ok, since they share
@@ -593,8 +589,6 @@ namespace pvpgn
 				eventlog(eventlog_level_info, __FUNCTION__, "[{}] Set icon packet to ICON [{}]", conn_get_socket(c), user_icon);
 			}
 
-			account = conn_get_account(c);
-			
 			// ICON SWITCH HACK PROTECTION
 			if (check_user_icon(account, user_icon) == 0)
 			{
@@ -603,7 +597,7 @@ namespace pvpgn
 				//conn_set_state(c,conn_state_destroy); // dont kill user session
 			}
 
-			account_set_user_icon(conn_get_account(c), conn_get_clienttag(c), user_icon);
+			account_set_user_icon(account, clienttag, user_icon);
 			//FIXME: Still need a way to 'refresh the user/channel'
 			//_handle_rejoin_command(conn_get_account(c),"");
 			/* ??? channel_update_userflags() */

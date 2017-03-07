@@ -71,6 +71,7 @@ namespace pvpgn
 		extern std::string customicons_stash_get_list(t_clienttag clienttag, bool return_alias = false);
 
 		extern int prefs_get_custom_icons();
+		extern bool customicons_allowed_by_client(t_clienttag clienttag);
 		extern t_icon_info * customicons_get_icon_by_account(t_account * account, t_clienttag clienttag);
 		extern const char * customicons_get_stats_text(t_account * account, t_clienttag clienttag);
 		extern t_icon_info * customicons_get_icon_by_rating(int rating, char * clienttag);

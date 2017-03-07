@@ -555,6 +555,32 @@ namespace pvpgn
 		}
 
 
+		extern bool customicons_allowed_by_client(t_clienttag clienttag)
+		{
+			switch (clienttag)
+			{
+				// Starcraft variations
+				case CLIENTTAG_STARCRAFT_UINT:
+				case CLIENTTAG_BROODWARS_UINT:
+				case CLIENTTAG_SHAREWARE_UINT:
+				case CLIENTTAG_STARJAPAN_UINT:
+				// Diablo
+				case CLIENTTAG_DIABLORTL_UINT:
+				case CLIENTTAG_DIABLOSHR_UINT:
+				// Warcraft 2
+				case CLIENTTAG_WARCIIBNE_UINT:
+				// Warcraft 3
+				case CLIENTTAG_WARCRAFT3_UINT:
+				case CLIENTTAG_WAR3XP_UINT:
+					return true;
+				default:
+					break;
+			}
+
+			return false;
+		}
+
+
 		/* Format stats text, with attributes from a storage, and output text to a user */
 		extern const char * customicons_get_stats_text(t_account * account, t_clienttag clienttag)
 		{
@@ -632,7 +658,7 @@ namespace pvpgn
 			// get attribute field name from a storage
 			if (!(attr_key = _find_attr_key((char*)clienttag_str)))
 			{
-				eventlog(eventlog_level_trace, __FUNCTION__, "could not find attr_key in iconset for tag {}", clienttag_str);
+				eventlog(eventlog_level_trace, __FUNCTION__, "no custom iconset defined for client tag {}", clienttag_str);
 				return NULL;
 			}
 
