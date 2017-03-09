@@ -2075,9 +2075,8 @@ namespace pvpgn
 
 			clienttag_uint = tag_case_str_to_uint(clienttag);
 
-			
 			// custom stats
-			if (prefs_get_custom_icons() == 1)
+			if (prefs_get_custom_icons() == 1 && customicons_allowed_by_client(clienttag_uint))
 			{
 				const char *text;
 

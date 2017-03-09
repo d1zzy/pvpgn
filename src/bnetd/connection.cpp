@@ -2535,19 +2535,6 @@ namespace pvpgn
 			// allow set icon to a user directly from the database (override default tag always if not null)
 			if (usericon = account_get_user_icon(account, clienttag))
 				std::sprintf(revtag, "%s", usericon);
-
-			// if custom_icons is enabled then set a custom client tag by player rating
-			if (prefs_get_custom_icons() == 1)
-			{
-				t_icon_info * icon;
-
-				// do not override userselectedicon if it's not null
-				if (!usericon && (icon = customicons_get_icon_by_account(account, clienttag)))
-					std::snprintf(revtag, sizeof revtag, "%s", icon->icon_code);
-
-				// FIXME: it replaces tag with icon on a client side for all clients (HarpyWar)
-				std::strcpy(playerinfo, revtag);
-			}
 			else if (clienttag == CLIENTTAG_BNCHATBOT_UINT)
 			{
 				std::strcpy(playerinfo, revtag); /* FIXME: what to return here? */
@@ -2645,6 +2632,14 @@ namespace pvpgn
 			}
 			else
 				std::strcpy(playerinfo, revtag); /* open char */
+
+			// if custom_icons is enabled then set a custom client tag by player rating
+			// do not override user selected icon if it's not null
+			if (!usericon && prefs_get_custom_icons() == 1 && customicons_allowed_by_client(clienttag))
+			{
+				if (t_icon_info * icon = customicons_get_icon_by_account(account, clienttag))
+					std::snprintf(playerinfo, sizeof playerinfo, "%s", icon->icon_code);
+			}
 
 #ifdef WITH_LUA
 			// change icon info from Lua
@@ -3735,35 +3730,19 @@ namespace pvpgn
 				while ((*clantag_str) == 0) clantag_str++;
 			}
 
-			// allow set icon to a user directly from the database (override default icon always if not null)
 			const char* usericon = account_get_user_icon(account, clienttag);
-
-			// if custom stats is enabled then set a custom client icon by player rating
-			if (prefs_get_custom_icons() == 1)
+			// allow set icon to a user directly from the database (override default icon always if not null)
+			if (usericon)
 			{
-				t_icon_info * icon;
-				bool to_free = false;
-
-				// do not override userselectedicon if it's not null
-				if (!usericon && (icon = customicons_get_icon_by_account(account, clienttag)))
-				{
-					usericon = xstrdup(icon->icon_code);
-					to_free = true;
-				}
-
-				acctlevel = 0;
 				if (clantag)
 					std::sprintf(tempplayerinfo, "%s %s %u %s", revtag, usericon, acctlevel, clantag_str);
 				else
 					std::sprintf(tempplayerinfo, "%s %s %u", revtag, usericon, acctlevel);
-
-				if (to_free == true)
-				{
-					xfree((void*)usericon);
-				}
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] {} using user-selected icon [{}]", conn_get_socket(c), revtag, usericon);
 			}
 			// default icon "WAR3" or "W3XP"
-			else if (acctlevel == 0 && !usericon) {
+			else if (acctlevel == 0)
+			{
 				if (clantag)
 					std::sprintf(tempplayerinfo, "%s %s 0 %s", revtag, revtag, clantag_str);
 				else
@@ -3773,21 +3752,26 @@ namespace pvpgn
 			// display race icon with a level number
 			else 
 			{
-				if (!usericon) {
+				if (clantag)
+					std::sprintf(tempplayerinfo, "%s %1u%c3W %u %s", revtag, raceiconnumber, raceicon, acctlevel, clantag_str);
+				else
+					std::sprintf(tempplayerinfo, "%s %1u%c3W %u", revtag, raceiconnumber, raceicon, acctlevel);
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] {} using generated icon [{}{}3W]", conn_get_socket(c), revtag, raceiconnumber, raceicon);
+			}
+
+			// if custom stats is enabled then set a custom client icon by player rating
+			// do not override user selected icon if any
+			if (!usericon && prefs_get_custom_icons() == 1 && customicons_allowed_by_client(clienttag))
+			{
+				if (t_icon_info* icon = customicons_get_icon_by_account(account, clienttag))
+				{
 					if (clantag)
-						std::sprintf(tempplayerinfo, "%s %1u%c3W %u %s", revtag, raceiconnumber, raceicon, acctlevel, clantag_str);
+						std::sprintf(tempplayerinfo, "%s %s %u %s", revtag, icon->icon_code, 0, clantag_str);
 					else
-						std::sprintf(tempplayerinfo, "%s %1u%c3W %u", revtag, raceiconnumber, raceicon, acctlevel);
-					eventlog(eventlog_level_info, __FUNCTION__, "[{}] {} using generated icon [{}{}3W]", conn_get_socket(c), revtag, raceiconnumber, raceicon);
-				}
-				else {
-					if (clantag)
-						std::sprintf(tempplayerinfo, "%s %s %u %s", revtag, usericon, acctlevel, clantag_str);
-					else
-						std::sprintf(tempplayerinfo, "%s %s %u", revtag, usericon, acctlevel);
-					eventlog(eventlog_level_info, __FUNCTION__, "[{}] {} using user-selected icon [{}]", conn_get_socket(c), revtag, usericon);
+						std::sprintf(tempplayerinfo, "%s %s %u", revtag, icon->icon_code, 0);
 				}
 			}
+
 #ifdef WITH_LUA
 			// change icon info from Lua
 			if (const char * iconinfo = lua_handle_user_icon(c, tempplayerinfo))
