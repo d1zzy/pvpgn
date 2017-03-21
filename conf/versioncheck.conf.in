@@ -107,7 +107,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.16.1 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "StarCraft.exe 01/09/09 22:57:43 1220608" \
@@ -118,7 +118,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.16.1 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "StarCraft.exe 01/09/09 22:57:43 1220608" \
@@ -129,7 +129,7 @@
 
 # Starcraft (Standalone) 1.16.1
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "StarCraft.exe 01/08/09 05:23:44 1220608" \
@@ -1414,7 +1414,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.16 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "StarCraft.exe 11/06/08 01:10:59 1220608" \
@@ -1425,7 +1425,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.16 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "StarCraft.exe 11/06/08 01:10:59 1220608" \
@@ -1436,7 +1436,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.15.3 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "StarCraft.exe 07/25/08 23:34:58 1220608" \
@@ -1447,7 +1447,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.15.3 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "StarCraft.exe 07/25/08 23:34:58 1220608" \
@@ -1458,7 +1458,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.15.2 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "StarCraft.exe 01/10/08 20:23:42 1220608" \
@@ -1469,7 +1469,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.15.2 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "StarCraft.exe 01/10/08 20:23:42 1220608" \
@@ -1480,7 +1480,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.15.1 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 07/19/07 02:30:05 1220608" \
@@ -1491,7 +1491,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.15.1 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 07/19/07 02:30:05 1220608" \
@@ -1502,7 +1502,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.15 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 05/08/07 19:13:26 1220608" \
@@ -1513,7 +1513,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.15 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 05/08/07 19:13:26 1220608" \
@@ -1524,7 +1524,7 @@
 
 # Starcraft Broodwar (Expansion) 1.14 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 05/10/06 00:13:58 1216512" \
@@ -1535,7 +1535,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.14 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 05/10/06 00:13:58 1216512" \
@@ -1546,7 +1546,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13f - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 01/13/06 05:42:48 1146939" \
@@ -1557,7 +1557,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13f - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 01/13/06 05:42:48 1146939" \
@@ -1568,7 +1568,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13e - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 09/07/05 19:06:42 1093632" \
@@ -1579,7 +1579,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13e - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 09/07/05 19:06:42 1093632" \
@@ -1590,7 +1590,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13d - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 08/25/05 22:23:54 1093632" \
@@ -1601,7 +1601,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13d - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 08/25/05 22:23:54 1093632" \
@@ -1612,7 +1612,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13c - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 08/18/05 23:42:08 1093632" \
@@ -1623,7 +1623,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13c - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 08/18/05 23:42:08 1093632" \
@@ -1634,7 +1634,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13b - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 08/10/05 22:19:41 1093632" \
@@ -1645,7 +1645,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13b - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 08/10/05 22:19:41 1093632" \
@@ -1656,7 +1656,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 06/24/05 17:19:30 1093632" \
@@ -1667,7 +1667,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.13 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
   IX86 \
   STAR \
   "starcraft.exe 06/24/05 17:19:30 1093632" \
@@ -1678,7 +1678,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.12b - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 02/18/05 02:14:10 1093632" \
@@ -1689,7 +1689,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.12b - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 02/10/05 02:14:10 1093632" \
@@ -1700,7 +1700,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.12 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 02/10/05 05:36:14 1093632" \
@@ -1711,7 +1711,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.12 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 02/10/05 05:36:14 1093632" \
@@ -1722,7 +1722,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.11b - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 05/26/04 00:46:00 1048576" \
@@ -1733,7 +1733,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.11b - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 05/26/04 00:46:00 1048576" \
@@ -1744,7 +1744,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.11 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 04/27/04 05:12:02 1048576" \
@@ -1755,7 +1755,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.11 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 04/27/04 05:12:02 1048576" \
@@ -1766,7 +1766,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.10 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 03/28/03 04:21:58 1064960" \
@@ -1777,7 +1777,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.10 - (Starcraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 03/28/03 04:21:58 1064960" \
@@ -1788,7 +1788,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.09b - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 02/21/02 20:54:04 1083392" \
@@ -1799,7 +1799,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.09b - (Starcraft mode)
 #"A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 02/21/02 20:54:04 1083392" \
@@ -1810,7 +1810,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.09 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 02/05/02 07:17:26 1083392" \
@@ -1821,7 +1821,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.09 - (StarCraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 02/05/02 07:17:26 1083392" \
@@ -1832,7 +1832,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.08b - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 05/19/01 02:28:22 1082880" \
@@ -1843,7 +1843,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.08b - (StarCraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 05/19/01 02:28:22 1082880" \
@@ -1854,7 +1854,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.08 - (Broodwar mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  SEXP \
  "starcraft.exe 05/17/01 03:51:08 1082880" \
@@ -1865,7 +1865,7 @@
 
 # Starcraft - Broodwar (Expansion) 1.08 - (StarCraft mode)
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 05/17/01 03:51:08 1082880" \
@@ -1970,7 +1970,7 @@
 
 # Starcraft (Standalone) 1.16
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "StarCraft.exe 11/06/08 01:14:14 1220608" \
@@ -1981,7 +1981,7 @@
 
 # Starcraft (Standalone) 1.15.3
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "StarCraft.exe 07/25/08 23:36:39 1220608" \
@@ -1992,7 +1992,7 @@
 
 # Starcraft (Standalone) 1.15.2
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "StarCraft.exe 01/08/08 23:45:36 1220608" \
@@ -2003,7 +2003,7 @@
 
 # Starcraft (Standalone) 1.15.1
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 07/19/07 02:30:53 1220608" \
@@ -2014,7 +2014,7 @@
 
 # Starcraft (Standalone) 1.15
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 05/08/07 19:14:08 1220608" \
@@ -2025,7 +2025,7 @@
 
 # Starcraft (Standalone) 1.14
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 05/19/06 00:05:06 1216512" \
@@ -2036,7 +2036,7 @@
 
 # Starcraft (Standalone) 1.13f
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 01/13/06 05:46:36 1146939" \
@@ -2047,7 +2047,7 @@
 
 # Starcraft (Standalone) 1.13e
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 09/07/05 19:31:20 1093632" \
@@ -2058,7 +2058,7 @@
 
 # Starcraft (Standalone) 1.13d
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 08/25/05 22:36:16 1093632" \
@@ -2069,7 +2069,7 @@
 
 # Starcraft (Standalone) 1.13c
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 08/18/05 23:52:34 1093632" \
@@ -2080,7 +2080,7 @@
 
 # Starcraft (Standalone) 1.13b
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 08/10/05 22:24:39 1093632" \
@@ -2091,7 +2091,7 @@
 
 # Starcraft (Standalone) 1.13
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 06/24/05 17:26:11 1093632" \
@@ -2102,7 +2102,7 @@
 
 # Starcraft (Standalone) 1.12b
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 02/18/05 02:18:55 1093632" \
@@ -2113,7 +2113,7 @@
 
 # Starcraft (Standalone) 1.12
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 02/10/05 05:37:38 1093632" \
@@ -2124,7 +2124,7 @@
 
 # Starcraft 1.11b
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 05/26/04 01:25:14 1048576" \
@@ -2135,7 +2135,7 @@
 
 # Starcraft 1.11
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 04/27/04 05:46:02 1048576" \
@@ -2146,7 +2146,7 @@
 
 # Starcraft 1.10
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 03/27/03 04:30:39 1064960" \
@@ -2157,7 +2157,7 @@
 
 # Starcraft 1.09b
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 02/21/02 21:48:41 1083392" \
@@ -2168,7 +2168,7 @@
 
 # Starcraft 1.09
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 02/05/02 07:37:20 1083392" \
@@ -2179,7 +2179,7 @@
 
 # Starcraft 1.08b
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 05/19/01 02:01:50 1082880" \
@@ -2190,7 +2190,7 @@
 
 # Starcraft 1.08
 "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  STAR \
  "starcraft.exe 05/17/01 04:12:40 1082880" \
@@ -2258,7 +2258,7 @@
 
 # Diablo 109b
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  DRTL \
  "Diablo.exe 05/18/01 23:10:57 757760" \
@@ -2269,7 +2269,7 @@
 
 # Diablo 109
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  DRTL \
  "Diablo.exe 05/12/01 00:53:17 757760" \
@@ -2293,7 +2293,7 @@
 
 # Warcraft II BNE 2.02b
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  W2BN \
  "Warcraft II BNE.exe 05/21/01 21:52:22 712704" \
@@ -2304,7 +2304,7 @@
 
 # Warcraft II BNE 2.02a
 "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B" \
- "ver-ix86-1.mpq" \
+ "ver-IX86-1.mpq" \
  IX86 \
  W2BN \
  "Warcraft II BNE.exe 05/15/01 20:53:19 712704" \
