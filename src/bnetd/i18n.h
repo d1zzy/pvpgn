@@ -53,7 +53,7 @@ namespace pvpgn
 		extern int i18n_load(void);
 		extern int i18n_reload(void);
 
-		extern const char * i18n_filename(const char * filename, t_tag gamelang);
+		extern std::string i18n_filename(const char * filename, t_tag gamelang);
 		extern t_language language_find_by_country(const char * code, bool &found);
 		extern t_language language_find_by_tag(t_gamelang gamelang, bool &found);
 		extern t_language language_get_by_country(const char * code);

@@ -20,6 +20,7 @@
 #include <cstdio>
 #include <cerrno>
 #include <cstring>
+#include <string>
 
 #include "common/eventlog.h"
 #include "common/xalloc.h"
@@ -41,7 +42,7 @@ namespace pvpgn
 	namespace bnetd
 	{
 
-		char * status_filename;
+		std::string status_filename;
 
 		int output_standard_writer(std::FILE * fp);
 
@@ -49,14 +50,14 @@ namespace pvpgn
 		 * Initialisation Output *
 		 */
 
-		extern void output_init(void)
+		extern void output_init()
 		{
 			eventlog(eventlog_level_info, __FUNCTION__, "initializing output file");
 
 			if (prefs_get_XML_status_output())
-				status_filename = buildpath(prefs_get_outputdir(), "server.xml");
+				status_filename = fmt::format("{}/{}", prefs_get_outputdir(), "server.xml");
 			else
-				status_filename = buildpath(prefs_get_outputdir(), "server.dat");
+				status_filename = fmt::format("{}/{}", prefs_get_outputdir(), "server.dat");
 
 			return;
 		}
@@ -205,17 +206,16 @@ namespace pvpgn
 			}
 		}
 
-		extern int output_write_to_file(void)
+		extern int output_write_to_file()
 		{
-			std::FILE * fp;
-
-			if (!status_filename)
+			if (status_filename.empty())
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL filename");
+				eventlog(eventlog_level_error, __FUNCTION__, "got empty filename");
 				return -1;
 			}
 
-			if (!(fp = std::fopen(status_filename, "w")))
+			std::FILE* fp = std::fopen(status_filename.c_str(), "w");
+			if (!fp)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "could not open file \"{}\" for writing (std::fopen: {})", status_filename, std::strerror(errno));
 				return -1;
@@ -223,12 +223,8 @@ namespace pvpgn
 
 			output_standard_writer(fp);
 			std::fclose(fp);
-			return 0;
-		}
 
-		extern void output_dispose_filename(void)
-		{
-			if (status_filename) xfree(status_filename);
+			return 0;
 		}
 
 	}

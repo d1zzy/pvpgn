@@ -169,6 +169,7 @@ allow_d2cs_setname = true
 # the "filedir" directory specified above.
 iconfile = "icons.bni"
 war3_iconfile = "icons-WAR3.bni"
+star_iconfile = "icons_STAR.bni"
 
 #                                                                            #
 ##############################################################################

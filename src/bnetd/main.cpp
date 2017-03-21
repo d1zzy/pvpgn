@@ -445,7 +445,6 @@ void post_server_shutdown(int status)
 
 	case STATUS_LADDERLIST_FAILURE:
 		ladders.save();
-		output_dispose_filename();
 		accountlist_destroy();
 		attrlayer_cleanup();
 		watchlist.reset();

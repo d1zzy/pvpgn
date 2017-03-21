@@ -210,6 +210,7 @@ namespace pvpgn
 				config.update("allow_d2cs_setname", prefs_allow_d2cs_setname());
 				config.update("iconfile", prefs_get_iconfile());
 				config.update("war3_iconfile", prefs_get_war3_iconfile());
+				config.update("star_iconfile", prefs_get_star_iconfile());
 				config.update("tosfile", prefs_get_tosfile());
 				config.update("allowed_clients", prefs_get_allowed_clients());
 				config.update("skip_versioncheck", prefs_get_skip_versioncheck());

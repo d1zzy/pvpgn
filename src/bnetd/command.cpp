@@ -4550,7 +4550,6 @@ namespace pvpgn
 
 			t_account * account;
 			t_connection * conn;
-			char const * ip;
 
 			std::vector<std::string> args = split_command(text, 1);
 			if (args[1].empty())
@@ -4560,27 +4559,32 @@ namespace pvpgn
 			}
 			text = args[1].c_str(); // ip or username
 
-
-			if (account = accountlist_find_account(text)) {
+			std::string ip;
+			if (account = accountlist_find_account(text))
+			{
 				conn = account_get_conn(account);
-				if (conn) {
+				if (conn)
+				{
 					// conn_get_addr returns int, so there can never be a NULL string construct
 					ip = addr_num_to_ip_str(conn_get_addr(conn));
 				}
-				else {
+				else
+				{
 					message_send_text(c, message_type_info, c, localize(c, "Warning: That user is not online, using last known address."));
-					if (!(ip = account_get_ll_ip(account))) {
+					ip = account_get_ll_ip(account);
+					if (ip.empty())
+					{
 						message_send_text(c, message_type_error, c, localize(c, "Sorry, no IP address could be retrieved."));
 						return 0;
 					}
 				}
 			}
-			else {
+			else
+			{
 				ip = text;
 			}
 
-			msgtemp = localize(c, "Scanning online users for IP {}...", ip);
-			message_send_text(c, message_type_error, c, msgtemp);
+			message_send_text(c, message_type_info, c, localize(c, "Scanning online users for IP {}...", ip));
 
 			t_elem const * curr;
 			int count = 0;
@@ -4591,7 +4595,8 @@ namespace pvpgn
 					continue;
 				}
 
-				if (std::strcmp(ip, addr_num_to_ip_str(conn_get_addr(conn))) == 0) {
+				if (ip.compare(addr_num_to_ip_str(conn_get_addr(conn))) == 0)
+				{
 					std::snprintf(msgtemp0, sizeof(msgtemp0), "   %s", conn_get_loggeduser(conn));
 					message_send_text(c, message_type_info, c, msgtemp0);
 					count++;
@@ -4670,11 +4675,10 @@ namespace pvpgn
 
 		static int _handle_motd_command(t_connection * c, char const *text)
 		{
-			std::FILE *       fp;
+			std::string filename = i18n_filename(prefs_get_motdfile(), conn_get_gamelang_localized(c));
 
-			const char* const filename = i18n_filename(prefs_get_motdfile(), conn_get_gamelang_localized(c));
-
-			if (fp = std::fopen(filename, "r"))
+			std::FILE* fp = std::fopen(filename.c_str(), "r");
+			if (fp)
 			{
 				message_send_file(c, fp);
 				if (std::fclose(fp) < 0)
@@ -4686,8 +4690,6 @@ namespace pvpgn
 				message_send_text(c, message_type_error, c, localize(c, "Unable to open motd."));
 			}
 
-			xfree((void*)filename);
-
 			return 0;
 		}
 
@@ -4695,15 +4697,12 @@ namespace pvpgn
 		{
 			/* handle /tos - shows terms of service by user request -raistlinthewiz */
 
-			const char* const filename = i18n_filename(prefs_get_tosfile(), conn_get_gamelang_localized(c));
-			std::FILE * fp;
-
+			std::string filename = i18n_filename(prefs_get_tosfile(), conn_get_gamelang_localized(c));
 			/* FIXME: if user enters relative path to tos file in config,
 			   above routine will fail */
-
-			if ((fp = std::fopen(filename, "r")))
+			std::FILE* fp = std::fopen(filename.c_str(), "r");
+			if (fp)
 			{
-
 				char * buff;
 				unsigned len;
 
@@ -4747,8 +4746,6 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "could not open tos file \"{}\" for reading (std::fopen: {})", filename, std::strerror(errno));
 				message_send_text(c, message_type_error, c, localize(c, "Unable to send TOS (Terms of Service)."));
 			}
-
-			xfree((void*)filename);
 
 			return 0;
 

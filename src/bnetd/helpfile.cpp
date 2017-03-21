@@ -67,20 +67,17 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL filename");
 				return -1;
 			}
-			const char * _filename = nullptr;
 
 			// iterate language list
-			for (int i = 0; i < languages.size(); i++)
+			for (std::size_t i = 0; i < languages.size(); i++)
 			{
 				// get hfd of all localized help files
-				_filename = i18n_filename(filename, languages[i].gamelang);
-				if (!(hfd_list[languages[i].gamelang] = std::fopen(_filename, "r")))
+				std::string helpfile = i18n_filename(filename, languages[i].gamelang);
+				if (!(hfd_list[languages[i].gamelang] = std::fopen(helpfile.c_str(), "r")))
 				{
-					eventlog(eventlog_level_error, __FUNCTION__, "could not open help file \"{}\" for reading (std::fopen: {})", _filename, std::strerror(errno));
-					xfree((void*)_filename);
+					eventlog(eventlog_level_error, __FUNCTION__, "could not open help file \"{}\" for reading (std::fopen: {})", helpfile, std::strerror(errno));
 					return -1;
 				}
-				xfree((void*)_filename);
 			}
 
 			return 0;

@@ -247,24 +247,19 @@ namespace pvpgn
 
 		/* Add a locale tag into filename
 		example: motd.txt -> motd-ruRU.txt */
-		extern const char * i18n_filename(const char * filename, t_tag gamelang)
+		extern std::string i18n_filename(const char * filename, t_tag gamelang)
 		{
-			struct stat sfile;
-			const char * tmpfilename = buildpath(prefs_get_i18ndir(), tag_uint_to_str2(gamelang).c_str());
-			const char * _filename = buildpath(tmpfilename, filename);
-			xfree((void*)tmpfilename);
+			std::string path = fmt::format("{}/{}/{}", prefs_get_i18ndir(), tag_uint_to_str2(gamelang), filename);
 
 			// if localized file not found
-			if (stat(_filename, &sfile) < 0)
+			struct stat sfile = {};
+			if (stat(path.c_str(), &sfile) < 0)
 			{
-				// free previously allocated memory first
-				xfree((void*)_filename);
-
 				// use default file
-				_filename = buildpath(prefs_get_i18ndir(), filename);
+				path = fmt::format("{}/{}", prefs_get_i18ndir(), filename);
 			}
 
-			return _filename;
+			return path;
 		}
 
 

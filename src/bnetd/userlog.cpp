@@ -140,9 +140,9 @@ namespace pvpgn
 				std::strftime(time_string, USEREVENT_TIME_MAXLEN, USEREVENT_TIME_FORMAT, tmnow);
 
 
-			const char* const filename = userlog_filename(account_get_name(account), true);
+			std::string filename = userlog_filename(account_get_name(account), true);
 
-			if (FILE *fp = fopen(filename, "a"))
+			if (FILE *fp = fopen(filename.c_str(), "a"))
 			{
 				// append date and text
 				std::fprintf(fp, "[%s] %s\n", time_string, text);
@@ -152,8 +152,6 @@ namespace pvpgn
 			{
 				ERROR1("could not write into user log file \"{}\"", filename);
 			}
-
-			xfree((void*)filename);
 		}
 
 		// read "count" lines from the end starting from "startline"
@@ -162,12 +160,7 @@ namespace pvpgn
 			if (!username)
 				throw std::runtime_error("username is a nullptr");
 
-			FILE* fp = nullptr;
-			{
-				const char* const filename = userlog_filename(username);
-				fp = std::fopen(filename, "r");
-				xfree((void*)filename);
-			}
+			FILE* fp = std::fopen(userlog_filename(username).c_str(), "r");
 			if (!fp)
 				throw std::runtime_error("Could not open userlog");
 
@@ -248,10 +241,8 @@ namespace pvpgn
 
 		// return full path for user log filename
 		// if (force_create_path == true) then create dirs in path if not exist
-		extern char * userlog_filename(const char * username, bool force_create_path)
+		extern std::string userlog_filename(const char * username, bool force_create_path)
 		{
-			char * filepath;
-
 			// lowercase username
 			std::string lusername = std::string(username); 
 			std::transform(lusername.begin(), lusername.end(), lusername.begin(), ::tolower);
@@ -259,26 +250,20 @@ namespace pvpgn
 			// it will improve performance with large count of files
 			std::string dir_prefix = lusername.substr(0, 3);
 
-			filepath = buildpath(prefs_get_userlogdir(), dir_prefix.c_str());
+			std::string filepath = fmt::format("{}/{}", prefs_get_userlogdir(), dir_prefix);
 			// create directories in path
 			if (force_create_path)
 			{
 				struct stat statbuf;
 				// create inside user dir
-				if (stat(filepath, &statbuf) == -1) {
-					p_mkdir(filepath, S_IRWXU | S_IRWXG | S_IRWXO);
+				if (stat(filepath.c_str(), &statbuf) == -1)
+				{
+					p_mkdir(filepath.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
 					eventlog(eventlog_level_info, __FUNCTION__, "created user directory: {}", filepath);
 				}
 			}
 
-			char *tmp = new char[std::strlen(filepath) + 1];
-			strcpy(tmp, filepath);
-			xfree(filepath);
-
-			filepath = buildpath(tmp, lusername.c_str());
-			delete[] tmp;
-
-			std::strcat(filepath, ".log");
+			filepath += fmt::format("/{}.log", lusername.c_str());
 
 			return filepath;
 		}

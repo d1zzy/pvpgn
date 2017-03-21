@@ -146,15 +146,15 @@ namespace pvpgn
 			}
 
 			// FIXME: (HarpyWar) change news loading when user log on to send a localized version
-			const char *ENfilename = i18n_filename(filename, GAMELANG_ENGLISH_UINT);
-			if ((fp = std::fopen(ENfilename, "rt")) == NULL) {
+			if ((fp = std::fopen(i18n_filename(filename, GAMELANG_ENGLISH_UINT).c_str(), "rt")) == NULL)
+			{
 				eventlog(eventlog_level_warn, __FUNCTION__, "can't open news file");
 				_news_insert_default();
-				xfree((void*)ENfilename);
 				return 0;
 			}
 
-			for (line = 1; std::fgets(buff, sizeof(buff), fp); line++) {
+			for (line = 1; std::fgets(buff, sizeof(buff), fp); line++)
+			{
 				len = std::strlen(buff);
 				while (len && (buff[len - 1] == '\n' || buff[len - 1] == '\r')) len--;
 				if (!len) continue; /* empty line */
@@ -165,7 +165,6 @@ namespace pvpgn
 					if (_news_parsetime(buff + 1, &date, line))
 					{
 						eventlog(eventlog_level_error, __FUNCTION__, "error parsing news date on line {}", line);
-						xfree((void*)ENfilename);
 						std::fclose(fp);
 						return -1;
 					}
@@ -175,8 +174,11 @@ namespace pvpgn
 				{
 					ni = (t_news_index*)xmalloc(sizeof(t_news_index));
 					if (date_set)
+					{
 						ni->date = std::mktime(&date);
-					else {
+					}
+					else
+					{
 						ni->date = std::time(NULL);
 						eventlog(eventlog_level_warn, __FUNCTION__, "(first) news entry seems to be missing a timestamp, please check your news file on line {}", line);
 					}
@@ -186,12 +188,12 @@ namespace pvpgn
 			}
 			std::fclose(fp);
 
-			if (elist_empty(&news_head)) {
+			if (elist_empty(&news_head))
+			{
 				eventlog(eventlog_level_warn, __FUNCTION__, "no news configured");
 				_news_insert_default();
 			}
 
-			xfree((void*)ENfilename);
 			return 0;
 		}
 

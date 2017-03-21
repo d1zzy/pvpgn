@@ -2808,14 +2808,11 @@ namespace pvpgn
 			{
 				fmt::MemoryWriter serverinfo;
 
-				const char* const filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang_localized(c));
-				std::FILE* fp = std::fopen(filename, "r");
-				xfree((void*)filename);
-
+				std::string filename = i18n_filename(prefs_get_motdw3file(), conn_get_gamelang_localized(c));
+				std::FILE* fp = std::fopen(filename.c_str(), "r");
 				if (fp)
 				{
-					char* buff;
-					while (buff = file_get_line(fp))
+					while (char* buff = file_get_line(fp))
 					{
 						char* line = message_format_line(c, buff);
 						serverinfo << (line + 1) << '\n';

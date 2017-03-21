@@ -23,9 +23,8 @@ namespace pvpgn
 	namespace bnetd
 	{
 
-		extern void output_init(void);
-		extern void output_dispose_filename(void);
-		extern int output_write_to_file(void);
+		extern void output_init();
+		extern int output_write_to_file();
 
 	}
 

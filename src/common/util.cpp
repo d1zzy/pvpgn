@@ -562,16 +562,6 @@ namespace pvpgn
 		return i;
 	}
 
-	extern char * buildpath(char const *root, const char *suffix)
-	{
-		char *result;
-
-		result = (char*)xmalloc(std::strlen(root) + 1 + std::strlen(suffix) + 1);
-
-		std::strcpy(result, root); std::strcat(result, "/"); std::strcat(result, suffix);
-		return result;
-	}
-
 	/* convert a time string to time_t
 	time string format is:
 	yyyy/mm/dd or yyyy-mm-dd or yyyy.mm.dd

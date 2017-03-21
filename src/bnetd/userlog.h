@@ -37,7 +37,7 @@ namespace pvpgn
 		extern void userlog_append(t_account * account, const char * text);
 		extern std::map<long, char*> userlog_read(const char* username, long startline, const char* search_substr = nullptr);
 		extern std::map<long, char*> userlog_find_text(const char * username, const char * search_substr, long startline);
-		extern char * userlog_filename(const char * username, bool force_create_path = false);
+		extern std::string userlog_filename(const char * username, bool force_create_path = false);
 
 		extern int handle_log_command(t_connection * c, char const *text);
 

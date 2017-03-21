@@ -85,6 +85,7 @@ namespace pvpgn
 			unsigned int report_diablo_games;
 			char const * iconfile;
 			char const * war3_iconfile;
+			char const * star_iconfile;
 			char const * tosfile;
 			char const * mpqfile;
 			char const * trackaddrs;
@@ -360,6 +361,10 @@ namespace pvpgn
 		static int conf_set_war3_iconfile(const char *valstr);
 		static const char *conf_get_war3_iconfile(void);
 		static int conf_setdef_war3_iconfile(void);
+
+		static int conf_set_star_iconfile(const char *valstr);
+		static const char *conf_get_star_iconfile(void);
+		static int conf_setdef_star_iconfile(void);
 
 		static int conf_set_tosfile(const char *valstr);
 		static const char *conf_get_tosfile(void);
@@ -778,6 +783,7 @@ namespace pvpgn
 			{ "report_diablo_games", conf_set_report_diablo_games, conf_get_report_diablo_games, conf_setdef_report_diablo_games },
 			{ "iconfile", conf_set_iconfile, conf_get_iconfile, conf_setdef_iconfile },
 			{ "war3_iconfile", conf_set_war3_iconfile, conf_get_war3_iconfile, conf_setdef_war3_iconfile },
+			{ "star_iconfile", conf_set_star_iconfile, conf_get_star_iconfile, conf_setdef_star_iconfile },
 			{ "tosfile", conf_set_tosfile, conf_get_tosfile, conf_setdef_tosfile },
 			{ "mpqfile", conf_set_mpqfile, conf_get_mpqfile, conf_setdef_mpqfile },
 			{ "trackaddrs", conf_set_trackaddrs, conf_get_trackaddrs, conf_setdef_trackaddrs },
@@ -1832,6 +1838,27 @@ namespace pvpgn
 		static const char* conf_get_war3_iconfile(void)
 		{
 			return prefs_runtime_config.war3_iconfile;
+		}
+
+
+		extern char const * prefs_get_star_iconfile(void)
+		{
+			return prefs_runtime_config.star_iconfile;
+		}
+
+		static int conf_set_star_iconfile(const char *valstr)
+		{
+			return conf_set_str(&prefs_runtime_config.star_iconfile, valstr, NULL);
+		}
+
+		static int conf_setdef_star_iconfile(void)
+		{
+			return conf_set_str(&prefs_runtime_config.star_iconfile, NULL, BNETD_STAR_ICON_FILE);
+		}
+
+		static const char* conf_get_star_iconfile(void)
+		{
+			return prefs_runtime_config.star_iconfile;
 		}
 
 

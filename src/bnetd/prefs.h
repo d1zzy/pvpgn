@@ -80,6 +80,7 @@ namespace pvpgn
 		extern char const * prefs_get_pidfile(void);
 		extern char const * prefs_get_iconfile(void);
 		extern char const * prefs_get_war3_iconfile(void);
+		extern char const * prefs_get_star_iconfile(void);
 		extern char const * prefs_get_tosfile(void);
 		extern char const * prefs_get_mpqauthfile(void);
 		extern char const * prefs_get_mpqfile(void);
