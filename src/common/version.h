@@ -20,7 +20,7 @@
 #define WIDEN2(quote) L##quote
 
 #ifndef PVPGN_VERSION
-#define PVPGN_VERSION "1.99.7.1-PRO"
+#define PVPGN_VERSION "1.99.7.1.1-PRO"
 #define PVPGN_VERSIONW WIDEN(PVPGN_VERSION)
 #endif
 
