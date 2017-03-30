@@ -115,17 +115,18 @@ build_script:
   - cmd: move /Y *.pdb debug
   - cmd: 7z.exe a %PVPGN_ODBC_ZIP_DEBUG% .\debug\*
 
-after_build:
-    - PowerShell Push-AppveyorArtifact "%PVPGN_PLAIN_ZIP%"
-    - PowerShell Push-AppveyorArtifact "%PVPGN_PLAIN_ZIP_DEBUG%"
-    - PowerShell Push-AppveyorArtifact "%PVPGN_MYSQL_ZIP%"
-    - PowerShell Push-AppveyorArtifact "%PVPGN_MYSQL_ZIP_DEBUG%"
-    - PowerShell Push-AppveyorArtifact "%PVPGN_PGSQL_ZIP%"
-    - PowerShell Push-AppveyorArtifact "%PVPGN_PGSQL_ZIP_DEBUG%"
-    - PowerShell Push-AppveyorArtifact "%PVPGN_SQLITE_ZIP%"
-    - PowerShell Push-AppveyorArtifact "%PVPGN_SQLITE_ZIP_DEBUG%"
-    - PowerShell Push-AppveyorArtifact "%PVPGN_ODBC_ZIP%"
-    - PowerShell Push-AppveyorArtifact "%PVPGN_ODBC_ZIP_DEBUG%"
+deploy_script:
+  - ps: |
+      Push-AppveyorArtifact $Env:PVPGN_PLAIN_ZIP
+      Push-AppveyorArtifact $Env:PVPGN_PLAIN_ZIP_DEBUG
+      Push-AppveyorArtifact $Env:PVPGN_MYSQL_ZIP
+      Push-AppveyorArtifact $Env:PVPGN_MYSQL_ZIP_DEBUG
+      Push-AppveyorArtifact $Env:PVPGN_PGSQL_ZIP
+      Push-AppveyorArtifact $Env:PVPGN_PGSQL_ZIP_DEBUG
+      Push-AppveyorArtifact $Env:PVPGN_SQLITE_ZIP
+      Push-AppveyorArtifact $Env:PVPGN_SQLITE_ZIP_DEBUG
+      Push-AppveyorArtifact $Env:PVPGN_ODBC_ZIP
+      Push-AppveyorArtifact $Env:PVPGN_ODBC_ZIP_DEBUG
 
 # check the latest build executable for exists
 test:
