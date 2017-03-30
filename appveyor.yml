@@ -17,7 +17,9 @@ install:
 
 before_build:
   - cmd: set APPVEYOR_REPO_COMMIT_SHORT=%APPVEYOR_REPO_COMMIT:~0,7%
-  - cmd: set COMPLETE_BUILD_VERSION=pvpgn-%APPVEYOR_REPO_BRANCH%-%APPVEYOR_REPO_COMMIT_SHORT%
+  # read version string from version.h to %PVPGN_VERSION% and append commit string inside that file
+  - cmd: module\tools\pvpgn_version.bat %APPVEYOR_REPO_COMMIT_SHORT%
+  - cmd: set COMPLETE_BUILD_VERSION=pvpgn-%APPVEYOR_REPO_BRANCH%-%PVPGN_VERSION%-%APPVEYOR_REPO_COMMIT_SHORT%
   - cmd: set PVPGN_PLAIN_ZIP=%COMPLETE_BUILD_VERSION%_plain.zip
   - cmd: set PVPGN_PLAIN_ZIP_DEBUG=%COMPLETE_BUILD_VERSION%_plain_debug.zip
   - cmd: set PVPGN_MYSQL_ZIP=%COMPLETE_BUILD_VERSION%_mysql.zip
