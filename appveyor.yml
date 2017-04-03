@@ -20,8 +20,6 @@ before_build:
   # read version string from version.h to %PVPGN_VERSION% and append commit string inside that file
   - cmd: module\tools\pvpgn_version.bat %APPVEYOR_REPO_COMMIT_SHORT%
   - cmd: set COMPLETE_BUILD_VERSION=pvpgn-%APPVEYOR_REPO_BRANCH%-%PVPGN_VERSION%-%APPVEYOR_REPO_COMMIT_SHORT%
-  - cmd: set PVPGN_PLAIN_ZIP=%COMPLETE_BUILD_VERSION%_plain.zip
-  - cmd: set PVPGN_PLAIN_ZIP_DEBUG=%COMPLETE_BUILD_VERSION%_plain_debug.zip
   - cmd: set PVPGN_MYSQL_ZIP=%COMPLETE_BUILD_VERSION%_mysql.zip
   - cmd: set PVPGN_MYSQL_ZIP_DEBUG=%COMPLETE_BUILD_VERSION%_mysql_debug.zip
   - cmd: set PVPGN_PGSQL_ZIP=%COMPLETE_BUILD_VERSION%_pgsql.zip
@@ -41,21 +39,21 @@ build_script:
   #  4. storage type
   #  5. with or without lua
   #  6. Release or Debug
-  
-  # plain
-  - cmd: build_pvpgn.bat auto auto 2 1 y
+
+  # sqlite
+  - cmd: build_pvpgn.bat auto auto 2 4 y
   - cmd: move release\*.exe
-  - cmd: build_pvpgn.bat auto auto 1 1 y
+  - cmd: build_pvpgn.bat auto auto 1 4 y
   - cmd: move /Y *.exe release
-  - cmd: 7z.exe a %PVPGN_PLAIN_ZIP% .\release\*
-  # plain (debug)
-  - cmd: build_pvpgn.bat auto auto 2 1 y Debug
+  - cmd: 7z.exe a %PVPGN_SQLITE_ZIP% .\release\*
+  # sqlite (debug)
+  - cmd: build_pvpgn.bat auto auto 2 4 y Debug
   - cmd: move debug\*.exe
   - cmd: move debug\*.pdb
-  - cmd: build_pvpgn.bat auto auto 1 1 y Debug
+  - cmd: build_pvpgn.bat auto auto 1 4 y Debug
   - cmd: move /Y *.exe debug
   - cmd: move /Y *.pdb debug
-  - cmd: 7z.exe a %PVPGN_PLAIN_ZIP_DEBUG% .\debug\*
+  - cmd: 7z.exe a %PVPGN_SQLITE_ZIP_DEBUG% .\debug\*
 
   # mysql
   - cmd: build_pvpgn.bat auto auto 2 2 y
@@ -87,21 +85,6 @@ build_script:
   - cmd: move /Y *.pdb debug
   - cmd: 7z.exe a %PVPGN_PGSQL_ZIP_DEBUG% .\debug\*
 
-  # sqlite
-  - cmd: build_pvpgn.bat auto auto 2 4 y
-  - cmd: move release\*.exe
-  - cmd: build_pvpgn.bat auto auto 1 4 y
-  - cmd: move /Y *.exe release
-  - cmd: 7z.exe a %PVPGN_SQLITE_ZIP% .\release\*
-  # sqlite (debug)
-  - cmd: build_pvpgn.bat auto auto 2 4 y Debug
-  - cmd: move debug\*.exe
-  - cmd: move debug\*.pdb
-  - cmd: build_pvpgn.bat auto auto 1 4 y Debug
-  - cmd: move /Y *.exe debug
-  - cmd: move /Y *.pdb debug
-  - cmd: 7z.exe a %PVPGN_SQLITE_ZIP_DEBUG% .\debug\*
-
   # odbc
   - cmd: build_pvpgn.bat auto auto 2 5 y
   - cmd: move release\*.exe
@@ -119,14 +102,12 @@ build_script:
 
 deploy_script:
   - ps: |
-      Push-AppveyorArtifact $Env:PVPGN_PLAIN_ZIP
-      Push-AppveyorArtifact $Env:PVPGN_PLAIN_ZIP_DEBUG
+      Push-AppveyorArtifact $Env:PVPGN_SQLITE_ZIP
+      Push-AppveyorArtifact $Env:PVPGN_SQLITE_ZIP_DEBUG
       Push-AppveyorArtifact $Env:PVPGN_MYSQL_ZIP
       Push-AppveyorArtifact $Env:PVPGN_MYSQL_ZIP_DEBUG
       Push-AppveyorArtifact $Env:PVPGN_PGSQL_ZIP
       Push-AppveyorArtifact $Env:PVPGN_PGSQL_ZIP_DEBUG
-      Push-AppveyorArtifact $Env:PVPGN_SQLITE_ZIP
-      Push-AppveyorArtifact $Env:PVPGN_SQLITE_ZIP_DEBUG
       Push-AppveyorArtifact $Env:PVPGN_ODBC_ZIP
       Push-AppveyorArtifact $Env:PVPGN_ODBC_ZIP_DEBUG
 
