@@ -61,6 +61,28 @@
 
 # -=-=-=-=-=-=- Latest Versions -=-=-=-=-=-=- No Update Required -=-=-=-=-=-=-
 
+# Warcraft III - TFT (Expansion) 1.28.1.
+"A=1239576727 C=1604096186 B=4198521212 4 A=A+S B=B-C C=C^A A=A+B" \
+ ver-IX86-1.mpq \
+ IX86 \
+ W3XP \
+ "War3.exe 04/28/17 19:10:24 558568" \
+ 0x0000001c \
+ 1.28.1.197 \
+ 0x1fbde0fd \
+ W3XP_1281
+ 
+# Warcraft III - ROC 1.28.1.
+"C=2765988015 A=1961381685 B=3183936986 4 A=A-S B=B+C C=C-A A=A^B" \
+ ver-IX86-1.mpq \
+ IX86 \
+ WAR3 \
+ "War3.exe 04/17/17 12:06:57 536040" \
+ 0x0000001c \
+ 1.28.1.197 \
+ 0x1fbde0fd \
+ WAR3_1281
+
 # Warcraft III - TFT (Expansion) 1.28.
 "A=4159479319 C=1286227868 B=2524979557 4 A=A+S B=B^C C=C+A A=A+B" \
  ver-IX86-1.mpq \
