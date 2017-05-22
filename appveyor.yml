@@ -38,13 +38,14 @@ install:
   - cmd: mkdir c:\builder\source\
   - cmd: xcopy /E /R /K /Y /Q "c:\pvpgn" "c:\builder\source\"
   - cmd: cd c:\builder\
+  - cmd: mkdir bkp
 
 before_build:
   - cmd: set APPVEYOR_REPO_COMMIT_SHORT=%APPVEYOR_REPO_COMMIT:~0,7%
   # read version string from version.h to %PVPGN_VERSION% and append commit string inside that file
   - cmd: module\tools\pvpgn_version.bat %APPVEYOR_REPO_COMMIT_SHORT%
   - cmd: set COMPLETE_BUILD_VERSION=pvpgn-%APPVEYOR_REPO_BRANCH%-%PVPGN_VERSION%-%APPVEYOR_REPO_COMMIT_SHORT%
-  - ps: $env:PVPGN_ZIP=$env:COMPLETE_BUILD_VERSION + $env:DB + $(If ($env:CONFIGURATION -eq "Debug") {"_debug"} Else {""}) + ".zip"
+  - ps: $env:PVPGN_ZIP=$env:COMPLETE_BUILD_VERSION + "_" + $env:DB + $(If ($env:CONFIGURATION -eq "Debug") {"_debug"} Else {""}) + ".zip"
 
 build_script:
 
@@ -58,11 +59,9 @@ build_script:
   #  6. Release or Debug
 
   - cmd: build_pvpgn.bat auto auto 2 %DB_ID% y %CONFIGURATION%
-  - cmd: copy %CONFIGURATION%\*.exe
-  - cmd: copy %CONFIGURATION%\*.pdb
+  - cmd: move /Y %CONFIGURATION%\* bkp\* # backup gui exe/pdb files
   - cmd: build_pvpgn.bat auto auto 1 %DB_ID% y %CONFIGURATION%
-  - cmd: move /Y *.exe %CONFIGURATION%
-  - cmd: move /Y *.pdb %CONFIGURATION%
+  - cmd: move /Y bkp\* %CONFIGURATION% # move back after build console versions
   - cmd: 7z.exe a %PVPGN_ZIP% .\%CONFIGURATION%\*
 
 deploy_script:
