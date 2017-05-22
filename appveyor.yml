@@ -59,7 +59,7 @@ build_script:
   #  6. Release or Debug
 
   - cmd: build_pvpgn.bat auto auto 2 %DB_ID% y %CONFIGURATION%
-  - cmd: move /Y %CONFIGURATION%\* bkp\* # backup gui exe/pdb files
+  - cmd: copy /Y %CONFIGURATION%\* bkp\* # backup gui exe/pdb files
   - cmd: build_pvpgn.bat auto auto 1 %DB_ID% y %CONFIGURATION%
   - cmd: move /Y bkp\* %CONFIGURATION% # move back after build console versions
   - cmd: 7z.exe a %PVPGN_ZIP% .\%CONFIGURATION%\*
