@@ -58,8 +58,8 @@ build_script:
   #  6. Release or Debug
 
   - cmd: build_pvpgn.bat auto auto 2 %DB_ID% y %CONFIGURATION%
-  - cmd: move %CONFIGURATION%\*.exe
-  - cmd: move %CONFIGURATION%\*.pdb
+  - cmd: copy %CONFIGURATION%\*.exe
+  - cmd: copy %CONFIGURATION%\*.pdb
   - cmd: build_pvpgn.bat auto auto 1 %DB_ID% y %CONFIGURATION%
   - cmd: move /Y *.exe %CONFIGURATION%
   - cmd: move /Y *.pdb %CONFIGURATION%
