@@ -4,6 +4,9 @@ branches:
 
 image: Visual Studio 2017
 
+platform:
+  - x86
+
 environment:
   matrix:
     - db: plain
@@ -41,7 +44,7 @@ before_build:
   # read version string from version.h to %PVPGN_VERSION% and append commit string inside that file
   - cmd: module\tools\pvpgn_version.bat %APPVEYOR_REPO_COMMIT_SHORT%
   - cmd: set COMPLETE_BUILD_VERSION=pvpgn-%APPVEYOR_REPO_BRANCH%-%PVPGN_VERSION%-%APPVEYOR_REPO_COMMIT_SHORT%
-  - ps: $PVPGN_ZIP=$env:COMPLETE_BUILD + "_VERSION_" + $env:DB + $(If ($env:CONFIGURATION -eq "Debug") {"_debug"} Else {""}) + ".zip"
+  - ps: $env:PVPGN_ZIP=$env:COMPLETE_BUILD + "_VERSION_" + $env:DB + $(If ($env:CONFIGURATION -eq "Debug") {"_debug"} Else {""}) + ".zip"
 
 build_script:
 
@@ -54,19 +57,19 @@ build_script:
   #  5. with or without lua
   #  6. Release or Debug
 
-  - ps: .\build_pvpgn.bat auto auto 2 $env:DB_ID y $env:CONFIGURATION
-  - ps: move $env:CONFIGURATION + "\*.exe"
-  - ps: move $env:CONFIGURATION + "\*.pdb"
-  - ps: .\build_pvpgn.bat auto auto 1 $env:DB_ID y $env:CONFIGURATION
-  - ps: move /Y *.exe $env:CONFIGURATION
-  - ps: move /Y *.pdb $env:CONFIGURATION
-  - ps: .\7z.exe a $PVPGN_ZIP (".\" + $env:CONFIGURATION + "\*")
+  - cmd: build_pvpgn.bat auto auto 2 %DB_ID% y %CONFIGURATION%
+  - cmd: move %CONFIGURATION%\*.exe
+  - cmd: move %CONFIGURATION%\*.pdb
+  - cmd: build_pvpgn.bat auto auto 1 $env:DB_ID y %CONFIGURATION%
+  - cmd: move /Y *.exe %CONFIGURATION%
+  - cmd: move /Y *.pdb %CONFIGURATION%
+  - cmd: 7z.exe a %PVPGN_ZIP% .\%CONFIGURATION%\*
 
 deploy_script:
   - ps: |
-      Push-AppveyorArtifact $PVPGN_ZIP
+      Push-AppveyorArtifact $env:PVPGN_ZIP
 
 # check the latest build executable for exists
 test:
   assemblies:
-    - '**\src\bnetd\$(configuration)\bnetd.exe'
+    - '**\src\bnetd\%CONFIGURATION%\bnetd.exe'
