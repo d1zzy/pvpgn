@@ -41,7 +41,7 @@ before_build:
   # read version string from version.h to %PVPGN_VERSION% and append commit string inside that file
   - cmd: module\tools\pvpgn_version.bat %APPVEYOR_REPO_COMMIT_SHORT%
   - cmd: set COMPLETE_BUILD_VERSION=pvpgn-%APPVEYOR_REPO_BRANCH%-%PVPGN_VERSION%-%APPVEYOR_REPO_COMMIT_SHORT%
-  - cmd: set PVPGN_ZIP=%COMPLETE_BUILD_VERSION%_$(db).zip
+  - ps: $PVPGN_ZIP=$env:COMPLETE_BUILD + "_VERSION_" + $env:DB + $(If ($env:CONFIGURATION -eq "Debug") {"_debug"} Else {""}) + ".zip"
 
 build_script:
 
@@ -54,17 +54,17 @@ build_script:
   #  5. with or without lua
   #  6. Release or Debug
 
-  - cmd: build_pvpgn.bat auto auto 2 $(db_id) y $(configuration)
-  - cmd: move $(configuration)\*.exe
-  - cmd: move $(configuration)\*.pdb
-  - cmd: build_pvpgn.bat auto auto 1 $(db_id) y $(configuration)
-  - cmd: move /Y *.exe $(configuration)
-  - cmd: move /Y *.pdb $(configuration)
-  - cmd: 7z.exe a %PVPGN_ZIP% .\$(configuration)\*
+  - ps: .\build_pvpgn.bat auto auto 2 $env:DB_ID y $env:CONFIGURATION
+  - ps: move $env:CONFIGURATION + "\*.exe"
+  - ps: move $env:CONFIGURATION + "\*.pdb"
+  - ps: .\build_pvpgn.bat auto auto 1 $env:DB_ID y $env:CONFIGURATION
+  - ps: move /Y *.exe $env:CONFIGURATION
+  - ps: move /Y *.pdb $env:CONFIGURATION
+  - ps: .\7z.exe a $PVPGN_ZIP (".\" + $env:CONFIGURATION + "\*")
 
 deploy_script:
   - ps: |
-      Push-AppveyorArtifact $Env:PVPGN_ZIP
+      Push-AppveyorArtifact $PVPGN_ZIP
 
 # check the latest build executable for exists
 test:
