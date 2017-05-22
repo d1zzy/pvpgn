@@ -44,7 +44,7 @@ before_build:
   # read version string from version.h to %PVPGN_VERSION% and append commit string inside that file
   - cmd: module\tools\pvpgn_version.bat %APPVEYOR_REPO_COMMIT_SHORT%
   - cmd: set COMPLETE_BUILD_VERSION=pvpgn-%APPVEYOR_REPO_BRANCH%-%PVPGN_VERSION%-%APPVEYOR_REPO_COMMIT_SHORT%
-  - ps: $env:PVPGN_ZIP=$env:COMPLETE_BUILD + "_VERSION_" + $env:DB + $(If ($env:CONFIGURATION -eq "Debug") {"_debug"} Else {""}) + ".zip"
+  - ps: $env:PVPGN_ZIP=$env:COMPLETE_BUILD_VERSION + $env:DB + $(If ($env:CONFIGURATION -eq "Debug") {"_debug"} Else {""}) + ".zip"
 
 build_script:
 
@@ -60,7 +60,7 @@ build_script:
   - cmd: build_pvpgn.bat auto auto 2 %DB_ID% y %CONFIGURATION%
   - cmd: move %CONFIGURATION%\*.exe
   - cmd: move %CONFIGURATION%\*.pdb
-  - cmd: build_pvpgn.bat auto auto 1 $env:DB_ID y %CONFIGURATION%
+  - cmd: build_pvpgn.bat auto auto 1 %DB_ID% y %CONFIGURATION%
   - cmd: move /Y *.exe %CONFIGURATION%
   - cmd: move /Y *.pdb %CONFIGURATION%
   - cmd: 7z.exe a %PVPGN_ZIP% .\%CONFIGURATION%\*
