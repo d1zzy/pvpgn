@@ -227,6 +227,7 @@ namespace pvpgn
 			t_sql_row *row;
 			char **tab;
 			unsigned int uid;
+			unsigned int num_fields;
 
 			if (!sql)
 			{
@@ -257,7 +258,7 @@ namespace pvpgn
 				std::snprintf(query, sizeof(query), "SELECT * FROM %s%s WHERE " SQL_UID_FIELD "='%u'", tab_prefix, *tab, uid);
 				eventlog(eventlog_level_trace, __FUNCTION__, "{}", query);
 
-				if ((result = sql->query_res(query)) != NULL && sql->num_rows(result) == 1 && sql->num_fields(result) > 1)
+				if ((result = sql->query_res(query)) != NULL && sql->num_rows(result) == 1 && (num_fields = sql->num_fields(result)) > 1)
 				{
 					unsigned int i;
 					t_sql_field *fields, *fentry;
@@ -278,8 +279,15 @@ namespace pvpgn
 					}
 
 					for (i = 0, fentry = fields; *fentry; fentry++, i++)
-					{			/* we have to skip "uid" */
+					{
 						char *output;
+
+						// (HarpyWar) fix for sqlite3, cause it return columns+rows in "fields", unlike only columns in other databases
+						//            and this row[i] goes beyond the bounds of the array. This restriction handles it.
+						if (i >= num_fields)
+							break;
+						
+						/* we have to skip "uid" */
 						/* we ignore the field used internally by sql */
 						if (std::strcmp(*fentry, SQL_UID_FIELD) == 0)
 							continue;
