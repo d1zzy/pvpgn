@@ -75,8 +75,9 @@ namespace pvpgn
 				if (attr_get_val(attr))
 					val = escape_chars(attr_get_val(attr), std::strlen(attr_get_val(attr)));
 				else {
-					eventlog(eventlog_level_error, __FUNCTION__, "attribute with NULL val in list");
-					val = NULL;
+					// (HarpyWar) NULL value is not error (unlike NULL key), so just update it to empty string
+					eventlog(eventlog_level_debug, __FUNCTION__, "attribute with NULL val in list key=\"{}\"", attr->key);
+					val = "";
 				}
 
 				if (key && val) {
