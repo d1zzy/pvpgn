@@ -2685,6 +2685,9 @@ namespace pvpgn
 #define CLIENT_GAMETYPE_DIABLO2_OPEN_NORMAL	0X00000008 /* open, normal difficulty */
 #define CLIENT_GAMETYPE_DIABLO2_OPEN_NIGHTMARE	0X00000009 /* open, nightmare difficulty */
 #define CLIENT_GAMETYPE_DIABLO2_OPEN_HELL	0X0000000a /* open, hell difficulty */
+#define CLIENT_GAMETYPE_DIABLO2_OPEN_HARDCORE_NORMAL	0X0000000c /* open, hardcore, normal difficulty */
+#define CLIENT_GAMETYPE_DIABLO2_OPEN_HARDCORE_NIGHTMARE	0X0000000d /* open, hardcore, nightmare difficulty */
+#define CLIENT_GAMETYPE_DIABLO2_OPEN_HARDCORE_HELL	0X0000000f /* open, hardcore, hell difficulty */
 
 	/******************************************************/
 
