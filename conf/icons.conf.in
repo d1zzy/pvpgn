@@ -40,7 +40,6 @@ master_commandgroups = 678
 #----------------------------------------------------------------------------#
 
 [W3XP]
-username = "BNET\acct\username"
 solo_level = "Record\W3XP\solo\level"
 solo_xp = "Record\W3XP\solo\xp"
 solo_wins = "Record\W3XP\solo\wins"
@@ -53,6 +52,7 @@ ffa_level = "Record\W3XP\ffa\level"
 ffa_xp = "Record\W3XP\ffa\xp"
 ffa_wins = "Record\W3XP\ffa\wins"
 ffa_losses = "Record\W3XP\ffa\losses"
+username = "BNET\acct\username"
 
 [icons]
 0	Beginner	KBKB
@@ -86,7 +86,6 @@ diablo		DRTL
 #----------------------------------------------------------------------------#
 
 [SEXP]
-username = "BNET\acct\username"
 ladder_rating = "Record\SEXP\1\rating"
 ladder_wins = "Record\SEXP\1\wins"
 ladder_losses = "Record\SEXP\1\losses"
@@ -95,6 +94,7 @@ normal_rating = "Record\SEXP\0\rating"
 normal_wins = "Record\SEXP\0\wins"
 normal_losses = "Record\SEXP\0\losses"
 normal_disconnects = "Record\SEXP\0\disconnects"
+username = "BNET\acct\username"
 
 [icons]
 1000	n00b		NOOB 
@@ -131,7 +131,6 @@ diablo		DRTL
 #----------------------------------------------------------------------------#
 
 [W2BN]
-username = "BNET\acct\username"
 ironman_rating = "Record\W2BN\3\rating"
 ironman_wins = "Record\W2BN\3\wins"
 ironman_losses = "Record\W2BN\3\losses"
@@ -144,6 +143,7 @@ normal_rating = "Record\W2BN\0\rating"
 normal_wins = "Record\W2BN\0\wins"
 normal_losses = "Record\W2BN\0\losses"
 normal_disconnects = "Record\W2BN\0\disconnects"
+username = "BNET\acct\username"
 
 [icons]
 1000	n00b		NOOB 
@@ -180,21 +180,20 @@ diablo		DRTL
 #----------------------------------------------------------------------------#
 
 [DRTL]
-username = "BNET\acct\username"
-level = "Record\DRTL\0\level"
 class = "Record\DRTL\0\class"
+level = "Record\DRTL\0\level"
 dexterity = "Record\DRTL\0\dexterity"
 magic = "Record\DRTL\0\magic"
 vitality = "Record\DRTL\0\vitality"
 strength = "Record\DRTL\0\strength"
 gold = "Record\DRTL\0\gold"
 diablo_kills = "Record\DRTL\0\diablo kills"
+username = "BNET\acct\username"
 
 [icons]
 0	warrior		DRTL
 1	rogue		DRTL
 2	sorcerer	DRTL
-3	unknown		DRTL
 [/icons]
 
 [stats]
