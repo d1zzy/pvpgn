@@ -1038,7 +1038,7 @@ namespace pvpgn
 			t_elem *		curr;
 			t_elem *		curr_icon;
 			t_iconset_info *		iconset;
-			t_icon_info *		icon;
+			t_icon_info *		icon = NULL;
 
 			if (!clienttag)
 				return NULL;

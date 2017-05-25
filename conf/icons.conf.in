@@ -40,19 +40,19 @@ master_commandgroups = 678
 #----------------------------------------------------------------------------#
 
 [W3XP]
-solo_level = "Record\W3XP\solo_level"
-solo_xp = "Record\W3XP\solo_xp"
-solo_wins = "Record\W3XP\solo_wins"
-solo_losses = "Record\W3XP\solo_losses"
-team_level = "Record\W3XP\team_level"
-team_xp = "Record\W3XP\team_xp"
-team_wins = "Record\W3XP\team_wins"
-team_losses = "Record\W3XP\team_losses"
-ffa_level = "Record\W3XP\ffa_level"
-ffa_xp = "Record\W3XP\ffa_xp"
-ffa_wins = "Record\W3XP\ffa_wins"
-ffa_losses = "Record\W3XP\ffa_losses"
 username = "BNET\acct\username"
+solo_level = "Record\W3XP\solo\level"
+solo_xp = "Record\W3XP\solo\xp"
+solo_wins = "Record\W3XP\solo\wins"
+solo_losses = "Record\W3XP\solo\losses"
+team_level = "Record\W3XP\team\level"
+team_xp = "Record\W3XP\team\xp"
+team_wins = "Record\W3XP\team\wins"
+team_losses = "Record\W3XP\team\losses"
+ffa_level = "Record\W3XP\ffa\level"
+ffa_xp = "Record\W3XP\ffa\xp"
+ffa_wins = "Record\W3XP\ffa\wins"
+ffa_losses = "Record\W3XP\ffa\losses"
 
 [icons]
 0	Beginner	KBKB
@@ -82,19 +82,19 @@ diablo		DRTL
 ##############################################################################
 # Starcraft icon set                                                         #
 # Use Bni Icon Builder to edit icons.bni                                     #
-#  https://github.com/HarpyWar/bni-icon-builder                              #
+#  https://github.com/pvpgn/bni-icon-builder                                 #
 #----------------------------------------------------------------------------#
 
 [SEXP]
-rating1 = "Record\SEXP\1_rating"
-wins1 = "Record\SEXP\1_wins"
-losses1 = "Record\SEXP\1_losses"
-disconnects1 = "Record\SEXP\1_disconnects"
-rating0 = "Record\SEXP\0_rating"
-wins0 = "Record\SEXP\0_wins"
-losses0 = "Record\SEXP\0_losses"
-disconnects0 = "Record\SEXP\0_disconnects"
 username = "BNET\acct\username"
+ladder_rating = "Record\SEXP\1\rating"
+ladder_wins = "Record\SEXP\1\wins"
+ladder_losses = "Record\SEXP\1\losses"
+ladder_disconnects = "Record\SEXP\1\disconnects"
+normal_rating = "Record\SEXP\0\rating"
+normal_wins = "Record\SEXP\0\wins"
+normal_losses = "Record\SEXP\0\losses"
+normal_disconnects = "Record\SEXP\0\disconnects"
 
 [icons]
 1000	n00b		NOOB 
@@ -113,12 +113,98 @@ username = "BNET\acct\username"
 
 [stats]
 {{username}}'s record:
-Ladder games: [{{rating1->rank}}] {{rating1}} pts ({{wins1}}/{{losses1}}/{{disconnects1}})
-Normal games: [{{rating0->rank}}] {{rating0}} pts ({{wins0}}/{{losses0}}/{{disconnects0}})
+Ladder games: [{{ladder_rating->rank}}] {{ladder_rating}} pts ({{ladder_wins}}/{{ladder_losses}}/{{ladder_disconnects}})
+Normal games: [{{normal_rating->rank}}] {{normal_rating}} pts ({{normal_wins}}/{{normal_losses}}/{{normal_disconnects}})
 [/stats]
 
 [iconstash]
 demon		EYES
 warcraft	WAR3
 diablo		DRTL
+[/iconstash]
+
+
+##############################################################################
+# Warcraft II icon set                                                       #
+# Use Bni Icon Builder to edit icons.bni                                     #
+#  https://github.com/pvpgn/bni-icon-builder                                 #
+#----------------------------------------------------------------------------#
+
+[W2BN]
+username = "BNET\acct\username"
+ironman_rating = "Record\W2BN\3\rating"
+ironman_wins = "Record\W2BN\3\wins"
+ironman_losses = "Record\W2BN\3\losses"
+ironman_disconnects = "Record\W2BN\3\disconnects"
+ladder_rating = "Record\W2BN\1\rating"
+ladder_wins = "Record\W2BN\1\wins"
+ladder_losses = "Record\W2BN\1\losses"
+ladder_disconnects = "Record\W2BN\1\disconnects"
+normal_rating = "Record\W2BN\0\rating"
+normal_wins = "Record\W2BN\0\wins"
+normal_losses = "Record\W2BN\0\losses"
+normal_disconnects = "Record\W2BN\0\disconnects"
+
+[icons]
+1000	n00b		NOOB 
+1250	Chobo+		CHO1
+1500	Chobo++		CHO2
+1750	Chobo+++	CHO3
+2000	Hasu+		HAS1
+2300	Hasu++		HAS2
+2650	Hasu+++		HAS3
+3000	Gosu+		GOS1
+3300	Gosu++		GOS2
+3650	Gosu+++		GOS3
+4000	Mega Gosu	GOSU
+5500	Father		MEGA
+[/icons]
+
+[stats]
+{{username}}'s record:
+Ladder games: [{{ladder_rating->rank}}] {{ladder_rating}} pts ({{ladder_wins}}/{{ladder_losses}}/{{ladder_disconnects}})
+Normal games: [{{normal_rating->rank}}] {{normal_rating}} pts ({{normal_wins}}/{{normal_losses}}/{{normal_disconnects}})
+IronMan games: [{{ironman_rating->rank}}] {{ironman_rating}} pts ({{ironman_wins}}/{{ironman_losses}}/{{ironman_disconnects}})
+[/stats]
+
+[iconstash]
+demon		EYES
+diablo		DRTL
+[/iconstash]
+
+
+##############################################################################
+# Diablo: Retail icon set                                                    #
+# Use Bni Icon Builder to edit icons.bni                                     #
+#  https://github.com/pvpgn/bni-icon-builder                                 #
+#----------------------------------------------------------------------------#
+
+[DRTL]
+username = "BNET\acct\username"
+level = "Record\DRTL\0\level"
+class = "Record\DRTL\0\class"
+dexterity = "Record\DRTL\0\dexterity"
+magic = "Record\DRTL\0\magic"
+vitality = "Record\DRTL\0\vitality"
+strength = "Record\DRTL\0\strength"
+gold = "Record\DRTL\0\gold"
+diablo_kills = "Record\DRTL\0\diablo kills"
+
+[icons]
+0	warrior		DRTL
+1	rogue		DRTL
+2	sorcerer	DRTL
+3	unknown		DRTL
+[/icons]
+
+[stats]
+{{username}}'s record:
+level: {{level}}
+class: {{class->rank}}
+stats: {{strength}} str / {{magic}} mag / {{dexterity}} dex / {{vitality}} vit / {{gold}} gold
+Diablo kills: {{diablo_kills}}
+[/stats]
+
+[iconstash]
+demon		EYES
 [/iconstash]
