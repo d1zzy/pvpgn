@@ -566,7 +566,7 @@ namespace pvpgn
 		{
 			int  index;
 			index = SendMessageW(gui.hwndUsers, LB_GETCURSEL, 0, 0);
-			SendMessageW(gui.hwndUsers, LB_GETTEXT, index, reinterpret_cast<LPARAM>(selected_item));
+			SendMessageA(gui.hwndUsers, LB_GETTEXT, index, reinterpret_cast<LPARAM>(selected_item));
 			DialogBoxW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDD_KICKUSER), hwnd, static_cast<DLGPROC>(KickDlgProc));
 			SendMessageW(gui.hwndUsers, LB_SETCURSEL, -1, 0);
 		}
@@ -711,24 +711,14 @@ namespace pvpgn
 				{
 				case IDOK:
 				{
-					int len = GetWindowTextLengthW(GetDlgItem(hwnd, IDC_EDIT1));
+					int len = GetWindowTextLengthA(GetDlgItem(hwnd, IDC_EDIT1));
 
 					if (len > 0)
 					{
-						std::wstring buff(len, 0);
-						GetDlgItemTextW(hwnd, IDC_EDIT1, &buff[0], buff.size());
+						std::string buff(len, '\0');
+						GetDlgItemTextA(hwnd, IDC_EDIT1, &buff[0], buff.capacity());
 
-						auto utf8_encode = [](const std::wstring& wstr)
-						{
-							if (wstr.empty())
-								return std::string();
-							int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), nullptr, 0, nullptr, nullptr);
-							std::string strTo(size_needed, 0);
-							WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), &strTo[0], size_needed, nullptr, nullptr);
-							return strTo;
-						};
-
-						t_message* const message = message_create(message_type_error, nullptr, utf8_encode(buff).c_str());
+						t_message* const message = message_create(message_type_error, nullptr, buff.c_str());
 						if (message)
 						{
 							message_send_all(message);
