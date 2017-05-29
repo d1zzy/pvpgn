@@ -884,7 +884,7 @@ namespace pvpgn
 
 		static int account_unload_friends(t_account * account)
 		{
-			if (friendlist_unload(account->friends) < 0)
+			if (account->friends != nullptr && friendlist_unload(account->friends) < 0)
 				return -1;
 			FLAG_CLEAR(&account->flags, ACCOUNT_FLAG_FLOADED);
 			return 0;
