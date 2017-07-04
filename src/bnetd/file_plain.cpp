@@ -75,21 +75,20 @@ namespace pvpgn
 				if (attr_get_val(attr))
 					val = escape_chars(attr_get_val(attr), std::strlen(attr_get_val(attr)));
 				else {
-					// (HarpyWar) NULL value is not error (unlike NULL key), so just update it to empty string
-					eventlog(eventlog_level_debug, __FUNCTION__, "attribute with NULL val in list key=\"{}\"", attr->key);
-					val = "";
+					eventlog(eventlog_level_debug, __FUNCTION__, "attribute with NULL val in list key=\"{}\"", key ? key : "NULL");
+					val = NULL;
 				}
 
 				if (key && val) {
 					if (std::strncmp("BNET\\CharacterDefault\\", key, 20) == 0) {
-						eventlog(eventlog_level_debug, __FUNCTION__, "skipping attribute key=\"{}\"", attr->key);
+						eventlog(eventlog_level_debug, __FUNCTION__, "skipping attribute key=\"{}\"", key);
 					}
 					else {
-						eventlog(eventlog_level_debug, __FUNCTION__, "saving attribute key=\"{}\" val=\"{}\"", attr->key, attr->val);
+						eventlog(eventlog_level_debug, __FUNCTION__, "saving attribute key=\"{}\" val=\"{}\"", key, val);
 						std::fprintf(accountfile, "\"%s\"=\"%s\"\n", key, val);
 					}
 				}
-				else eventlog(eventlog_level_error, __FUNCTION__, "could not save attribute key=\"{}\"", attr->key);
+				else eventlog(eventlog_level_debug, __FUNCTION__, "could not save attribute key=\"{}\"", key ? key : "NULL");
 
 				if (key) xfree((void *)key); /* avoid warning */
 				if (val) xfree((void *)val); /* avoid warning */
