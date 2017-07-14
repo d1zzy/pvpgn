@@ -12,16 +12,15 @@ The configuration file consists of a single array named ````ads```` which can co
 ### File Formats
 | Client     | Banner Format |
 |------------|---------------|
-| StarCraft  | PCX, SMK      |
-| Diablo 2   | ?             |
-| WarCraft 2 | PCX           |
-| WarCraft 3 | SMK, MNG, PNG |
+| StarCraft, Warcraft 2, Diablo  | PCX, SMK      |
+| Diablo 2   | SMK             |
+| WarCraft 3 | MNG, PNG |
 
 ### Banner Dimensions
 - The dimensions for ad banners are **468 x 60** pixels
 
 ### How To Create SMK Files
-1. Download the [Old Smacker Tools](http://files.campaigncreations.org/resources/sc/programs/RADTools.zip)(this only works on Windows XP)
+1. Download the [Old Smacker Tools](http://files.campaigncreations.org/resources/sc/programs/RADTools.zip)
 2. Run *smackerw.exe* and then click on the *Smack (compress) a graphics file.*
 3. On the left side, navigate to the folder where your ad banner is stored and select it.
 4. Under *Options*, click on the *Palette* tab. Check *Total palette colors to use:*, set it to *64* and check *Starting palette index to use:*, set it to *32*.

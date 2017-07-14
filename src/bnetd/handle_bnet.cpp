@@ -3249,8 +3249,13 @@ namespace pvpgn
 			{
 				return 0;
 			}
-
+		
 			t_packet* const rpacket = packet_create(packet_class_bnet);
+			if (!rpacket)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "Could not create a packet");
+				return -1;
+			}
 			packet_set_size(rpacket, sizeof(t_server_adreply));
 			packet_set_type(rpacket, SERVER_ADREPLY);
 			bn_int_set(&rpacket->u.server_adreply.adid, ad->get_id());
