@@ -127,7 +127,7 @@ namespace pvpgn
 							throw std::runtime_error("Unknown language (" + ad["lang"].get<std::string>() + ")");
 					}
 
-					this->m_banners.push_back(AdBanner(m_banners.size(), extensiontag, ad["filename"].get<std::string>(),
+					this->m_banners.push_back(AdBanner(m_banners.size()+1, extensiontag, ad["filename"].get<std::string>(),
 						ad["url"].get<std::string>(), ctag, ltag));
 				}
 				catch (const std::runtime_error& e)
@@ -199,7 +199,7 @@ namespace pvpgn
 					return nullptr;
 				}
 
-				AdBanner* ad;
+				const AdBanner* ad;
 				unsigned int idx = 0;
 				if (client_tag == CLIENTTAG_WAR3XP_UINT || client_tag == CLIENTTAG_WARCRAFT3_UINT)
 				{
@@ -227,15 +227,14 @@ namespace pvpgn
 						}
 					}
 				}
-				ad = &this->m_banners.at(candidates.at(idx));
+				ad = this->find(client_tag, client_lang, candidates.at(idx));
 
 				/*
 				char lang[5] = {};
-				eventlog(eventlog_level_trace, __FUNCTION__, "Pick ad id=0x{:08} candidates={} prev_id=0x{:08} filename=\"{}\" link=\"{}\" client=\"{}\" lang=\"{}\"",
-					ad->get_id(), candidates.size(), prev_ad_id, ad->get_filename(), ad->get_url(), client_tag ? clienttag_uint_to_str(client_tag) : "NULL",
+				eventlog(eventlog_level_trace, __FUNCTION__, "Pick ad idx={} candidates={} id=0x{:08} prev_id=0x{:08} filename=\"{}\" link=\"{}\" client=\"{}\" lang=\"{}\"",
+					idx, candidates.size(), ad->get_id(), prev_ad_id, ad->get_filename(), ad->get_url(), client_tag ? clienttag_uint_to_str(client_tag) : "NULL",
 					client_lang ? tag_uint_to_str(lang, client_lang) : "NULL");
 				*/
-
 				return ad;
 			}
 			}
@@ -280,6 +279,7 @@ namespace pvpgn
 				&& this->m_url.empty();
 		}
 
+		/* id starts from 1 */
 		std::size_t AdBanner::get_id() const noexcept
 		{
 			return this->m_id;
