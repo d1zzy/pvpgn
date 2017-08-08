@@ -22,21 +22,22 @@ PvPGN is a free and open source cross-platform server software that supports Bat
 By default, tracking is enabled and is only used for the purpose of sending informational data (e.g. server description, homepage, uptime, amount of users) to tracking servers. To disable tracking, set ````track = 0```` in ````conf/bnetd.conf````.
 
 ## Supported Clients
-- **WarCraft 2: Battle.net Edition**: 2.00, 2.01, 2.02a, 2.02b
-- **WarCraft 3: Reign of Chaos**\*: 1.00, 1.01, 1.01b, 1.02, 1.02a, 1.03a, 1.04a, 1.04b, 1.04c, 1.05a, 1.06a, 1.07, 1.10a, 1.11a, 1.12a, 1.13a, 1.13b, 1.14a, 1.14b, 1.15a, 1.16a, 1.17a, 1.18a, 1.19a, 1.19b, 1.20a, 1.20b, 1.20c, 1.20d, 1.20e, 1.21a, 1.21b, 1.22a, 1.23a, 1.24a, 1.24b, 1.24c, 1.24d, 1.24e, 1.25b, 1.26a, 1.27a, 1.27b, 1.28, 1.28.1, 1.28.2, 1.28.4, 1.28.5
-- **WarCraft 3: The Frozen Throne**\*: 1.07a, 1.10a, 1.11a, 1.12a, 1.13a, 1.13b, 1.14a, 1.14b, 1.15a, 1.16a, 1.17a, 1.18a, 1.19a, 1.19b, 1.20a, 1.20b, 1.20c, 1.20d, 1.20e, 1.21a, 1.21b, 1.22a, 1.23a, 1.24a, 1.24b, 1.24c, 1.24d, 1.24e, 1.25b, 1.26a, 1.27a, 1.27b, 1.28, 1.28.1, 1.28.2, 1.28.4, 1.28.5
-- **StarCraft**: 1.03, 1.04, 1.05, 1.06, 1.07, 1.08, 1.08b, 1.09, 1.09b, 1.10, 1.11, 1.11b, 1.12, 1.12b, 1.13, 1.13b, 1.13c, 1.13d, 1.13e, 1.13f, 1.14, 1.15, 1.15.1, 1.15.2, 1.15.3, 1.16, 1.16.1
-- **StarCraft: Brood War**: 1.04, 1.05, 1.06, 1.07, 1.08, 1.08b, 1.09, 1.09b, 1.10, 1.11, 1.11b, 1.12, 1.12b, 1.13, 1.13b, 1.13c, 1.13d, 1.13e, 1.13f, 1.14, 1.15, 1.15.1, 1.15.2, 1.15.3, 1.16, 1.16.1
-- **Diablo**: 1.08, 1.09, 1.09b
-- **Diablo 2**: 1.00, 1.01, 1.03, 1.04b, 1.04c, 1.05, 1.05b, 1.06, 1.06b, 1.08, 1.09, 1.09b, 1.09d, 1.10, 1.11, 1.11b, 1.12a, 1.13c, 1.14a, 1.14b, 1.14c, 1.14d
-- **Diablo 2: Lord of Destruction**: 1.07, 1.08, 1.09, 1.09b, 1.09d, 1.10, 1.11, 1.11b, 1.12a, 1.13c, 1.14a, 1.14b, 1.14c, 1.14d
-- **Command & Conquer**: 1.04a
-- **Command & Conquer: Red Alert**: 2.00, 3.03
+- **WarCraft 2: Battle.net Edition**: 2.02a, 2.02b
+- **WarCraft 3: Reign of Chaos**\*: 1.13a, 1.13b, 1.14a, 1.14b, 1.15a, 1.16a, 1.17a, 1.18a, 1.19a, 1.19b, 1.20a, 1.20b, 1.20c, 1.20d, 1.20e, 1.21a, 1.21b, 1.22a, 1.23a, 1.24a, 1.24b, 1.24c, 1.24d, 1.24e, 1.25b, 1.26a, 1.27a, 1.27b, 1.28, 1.28.1, 1.28.2, 1.28.4, 1.28.5
+- **WarCraft 3: The Frozen Throne**\*: 1.13a, 1.13b, 1.14a, 1.14b, 1.15a, 1.16a, 1.17a, 1.18a, 1.19a, 1.19b, 1.20a, 1.20b, 1.20c, 1.20d, 1.20e, 1.21a, 1.21b, 1.22a, 1.23a, 1.24a, 1.24b, 1.24c, 1.24d, 1.24e, 1.25b, 1.26a, 1.27a, 1.27b, 1.28, 1.28.1, 1.28.2, 1.28.4, 1.28.5
+- **StarCraft**: 1.08, 1.08b, 1.09, 1.09b, 1.10, 1.11, 1.11b, 1.12, 1.12b, 1.13, 1.13b, 1.13c, 1.13d, 1.13e, 1.13f, 1.14, 1.15, 1.15.1, 1.15.2, 1.15.3, 1.16, 1.16.1
+- **StarCraft: Brood War**: 1.08, 1.08b, 1.09, 1.09b, 1.10, 1.11, 1.11b, 1.12, 1.12b, 1.13, 1.13b, 1.13c, 1.13d, 1.13e, 1.13f, 1.14, 1.15, 1.15.1, 1.15.2, 1.15.3, 1.16, 1.16.1
+- **Diablo**: 1.09, 1.09b
+- **Diablo 2**: 1.10, 1.11, 1.11b, 1.12a, 1.13c, 1.14a, 1.14b, 1.14c, 1.14d
+- **Diablo 2: Lord of Destruction**: 1.10, 1.11, 1.11b, 1.12a, 1.13c, 1.14a, 1.14b, 1.14c, 1.14d
+- **Westwood Chat Client**: 4.221
+- **Command & Conquer**: Win95 1.04a (using Westwood Chat)
+- **Command & Conquer: Red Alert**: Win95 2.00 (using Westwood Chat), Win95 3.03
 - **Command & Conquer: Red Alert 2**: 1.006
 - **Command & Conquer: Tiberian Sun**: 2.03 ST-10
-- **Command & Conquer: Tiberian Sun Firestorm**: ?
+- **Command & Conquer: Tiberian Sun Firestorm**: 2.03 ST-10
 - **Command & Conquer: Yuri's Revenge**: 1.001
-- **Command & Conquer: Renegade**: ?
+- **Command & Conquer: Renegade**: 1.037
 - **Nox**: 1.02b
 - **Nox Quest**: 1.02b
 - **Dune 2000**: 1.06
