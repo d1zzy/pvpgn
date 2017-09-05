@@ -1015,7 +1015,6 @@ namespace pvpgn
 			/* clear queue */
 			players[queue] = 0;
 			xfree(pt2);
-			anongameinfo_destroy(info);
 
 			return 0;
 		}
