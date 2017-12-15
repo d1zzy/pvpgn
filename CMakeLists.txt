@@ -25,32 +25,27 @@ option(WITH_ODBC "include ODBC user accounts support" OFF)
 include(ConfigureChecks.cmake)
 
 
-if (CMAKE_COMPILER_IS_GNUCXX)
-    # Minimum G++ version: 5.1
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.1)
-        message(FATAL_ERROR "G++ 5.1 or higher required")
-    endif()
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	# using Clang
 
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pedantic -Wno-variadic-macros")
-  
-	# Pass CXX flags to flags.
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSEQAN_CXX_FLAGS_=\"${CMAKE_CXX_FLAGS}\"")
-endif ()
+	set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -pedantic -stdlib=libc++")
 
-if (MSVC)
-	# cl.exe version
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	# using G++
+
+	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.1)
+		message(FATAL_ERROR "G++ 5.1 or higher required")
+	endif()
+
+	set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -pedantic -Wno-variadic-macros" )
+
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+	# using Visual Studio
+
 	if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.0)
 		message(FATAL_ERROR "Visual Studio 2015 or higher required")
 	endif()
-	
-	add_definitions(-DUNICODE -D_UNICODE)
-endif ()
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-       set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pedantic -stdlib=libc++")
-  
-       # Pass CXX flags to flags.
-       set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DSEQAN_CXX_FLAGS_=\"${CMAKE_CXX_FLAGS}\"")
 endif()
 
 subdirs(src conf man files)
