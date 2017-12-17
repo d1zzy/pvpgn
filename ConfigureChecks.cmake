@@ -211,7 +211,13 @@ check_mkdir_args(MKDIR_TAKES_ONE_ARG)
 
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-# new VS.Net deprecates with warnings most of ISO C functions without this
-if(MSVC)
-    add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
-endif(MSVC)
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+	# using Visual Studio
+
+	add_definitions(
+		-D_CRT_SECURE_NO_DEPRECATE
+		-D_CRT_NONSTDC_NO_DEPRECATE
+		-DUNICODE
+		-D_UNICODE
+	)
+endif()
