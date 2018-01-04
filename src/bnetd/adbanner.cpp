@@ -66,7 +66,7 @@ namespace pvpgn
 			json j;
 			try
 			{
-				j << file_stream;
+				file_stream >> j;
 			}
 			catch (const std::invalid_argument& e)
 			{
