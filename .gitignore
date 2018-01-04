@@ -3,8 +3,8 @@
 ################################################################################
 
 /zlib
-/conf
 /cmake/Modules
 /build
 /lua5.1
 /.vs
+/CMakeSettings.json
