@@ -1415,9 +1415,11 @@ namespace pvpgn
 
 					if (do_restart == restart_mode_all || do_restart == restart_mode_versioncheck)
 					{
-						versioncheck_unload();
-						if (versioncheck_load(prefs_get_versioncheck_file()) < 0)
+						unload_versioncheck_conf();
+						if (!load_versioncheck_conf(prefs_get_versioncheck_file()))
+						{
 							eventlog(eventlog_level_error, __FUNCTION__, "could not load versioncheck list");
+						}
 					}
 
 					if (do_restart == restart_mode_all || do_restart == restart_mode_ipbans)

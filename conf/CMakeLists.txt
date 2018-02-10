@@ -4,7 +4,7 @@ set(OUTPUT_CONFS ad.json anongame_infos.conf address_translation.conf
   bnissue.txt bnmaps.conf bnxpcalc.conf
   bnxplevel.conf channel.conf command_groups.conf realm.conf 
   sql_DB_layout.conf supportfile.conf topics.conf 
-  tournament.conf versioncheck.conf icons.conf)
+  tournament.conf versioncheck.json icons.conf)
 foreach(CONF ${OUTPUT_CONFS})
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${CONF}.in ${CMAKE_CURRENT_BINARY_DIR}/${CONF} @ONLY)
 endforeach(CONF)
@@ -20,7 +20,7 @@ if(WITH_BNETD)
   bnetd_default_user.plain bnissue.txt bnmaps.conf  
   bnxpcalc.conf bnxplevel.conf channel.conf command_groups.conf  
   realm.conf sql_DB_layout.conf supportfile.conf topics.conf 
-  tournament.conf versioncheck.conf icons.conf)
+  tournament.conf versioncheck.json icons.conf)
 
   # special treatment for non .in files
   install(FILES bnetd_default_user.cdb DESTINATION ${SYSCONFDIR})

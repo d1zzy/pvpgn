@@ -85,7 +85,7 @@ mpqfile     = "${SYSCONFDIR}/autoupdate.conf"
 logfile     = "${LOCALSTATEDIR}/bnetd.log"
 realmfile   = "${SYSCONFDIR}/realm.conf"
 maildir     = "${LOCALSTATEDIR}/bnmail"
-versioncheck_file = "${SYSCONFDIR}/versioncheck.conf"
+versioncheck_file = "${SYSCONFDIR}/versioncheck.json"
 mapsfile    = "${SYSCONFDIR}/bnmaps.conf"
 xplevelfile = "${SYSCONFDIR}/bnxplevel.conf"
 xpcalcfile  = "${SYSCONFDIR}/bnxpcalc.conf"
@@ -232,18 +232,10 @@ allow_bad_version = true
 # is a good idea.
 allow_unknown_version = true
 
-# This defines how the exeinfo field in the versioncheck file is being
-# checked. You can choose between no match at all [none] (default), 
-# exact match [exact], exact case-sensitive match [exactcase], dumb wildcard 
-# match [wildcard], and parsed value comparison [parse]. 
-# NOTE: [parse] needs the mktime() function and might therefore not work on 
-# every system. 
-version_exeinfo_match = none
-
-# If you have choosen [parse] above, this is the tolerance with which
-# the time can differ. The value must be given in seconds. If it's 0 this 
-# check is disabled.
-version_exeinfo_maxdiff = 0
+# Globally enable or disable versioncheck exeinfo matching
+# If set to false, a client can pass any exeinfo string to pvpgn
+# and will be allowed to connect.
+version_exeinfo_match = true
 
 #                                                                            #
 ##############################################################################
@@ -448,7 +440,7 @@ max_friends = 20
 # Set track=0 to disable tracking.  Any other number will set number
 # of seconds between sending tracking packets. This is ON by default.
 #track = 0
-track = 60
+track = 0
 
 # Tracking server(s)
 # Use a comma delimited list of hostnames with optional UDP port numbers

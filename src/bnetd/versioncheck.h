@@ -18,84 +18,78 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#ifndef INCLUDED_VERSIONCHECK_TYPES
-#define INCLUDED_VERSIONCHECK_TYPES
+#ifndef PVPGN_BNETD_VERSIONCHECK_H
+#define PVPGN_BNETD_VERSIONCHECK_H
 
+#include <cstdint>
 #include <ctime>
+#include <string>
 
 #include "common/tag.h"
 
-namespace pvpgn
-{
-
-	namespace bnetd
-	{
-
-#ifdef VERSIONCHECK_INTERNAL_ACCESS
-		typedef struct
-		{
-			char const * exe;
-			std::time_t time;
-			int		 size;
-		} t_parsed_exeinfo;
-#endif
-
-#ifdef VERSIONCHECK_INTERNAL_ACCESS
-		typedef struct
-		{
-			char const *       eqn;
-			char const *       mpqfile;
-			t_tag              archtag;
-			t_tag              clienttag;
-			char const *       versiontag;
-			t_parsed_exeinfo * parsed_exeinfo;
-			unsigned long      versionid;
-			unsigned long      gameversion;
-			unsigned long      checksum;
-		} t_versioninfo;
-#endif
-
-		typedef struct s_versioncheck
-#ifdef VERSIONCHECK_INTERNAL_ACCESS
-		{
-			char const * eqn;
-			char const * mpqfile;
-			char const * versiontag;
-		}
-#endif
-		t_versioncheck;
-
-	}
-
-}
-
-#endif
-
-#ifndef JUST_NEED_TYPES
-#ifndef INCLUDED_VERSIONCHECK_PROTOS
-#define INCLUDED_VERSIONCHECK_PROTOS
 
 namespace pvpgn
 {
 
 	namespace bnetd
 	{
+		class VersionCheck;
 
-		extern t_versioncheck * versioncheck_create(t_tag archtag, t_tag clienttag);
-		extern int versioncheck_destroy(t_versioncheck * vc);
-		extern char const * versioncheck_get_mpqfile(t_versioncheck const * vc);
-		extern char const * versioncheck_get_eqn(t_versioncheck const * vc);
-		extern int versioncheck_validate(t_versioncheck * vc, t_tag archtag, t_tag clienttag, char const * exeinfo, unsigned long versionid, unsigned long gameversion, unsigned long checksum);
+		struct file_metadata
+		{
+			std::time_t timestamp;
+			std::uint64_t file_size;
+			std::string filename;
+		};
 
-		extern int versioncheck_load(char const * filename);
-		extern int versioncheck_unload(void);
+		bool load_versioncheck_conf(const std::string& filename);
+		void unload_versioncheck_conf();
 
-		extern char const * versioncheck_get_versiontag(t_versioncheck const * vc);
-		extern int versioncheck_set_versiontag(t_versioncheck * vc, char const * versiontag);
+		const VersionCheck& select_versioncheck_entry(t_tag architecture, t_tag client, std::uint32_t version_id);
 
-	}
+		class VersionCheck
+		{
+		public:
+			bool validate_checkrevision_data(std::uint32_t game_version, std::uint32_t checksum, const std::string& unparsed_file_metadata) const;
 
-}
+			std::string get_equation() const noexcept;
+			std::string get_checkrevision_filename() const noexcept;
+			std::string get_version_tag() const noexcept;
 
-#endif
-#endif
+			~VersionCheck() = default;
+		private:
+			/*******************************************************************************/
+			// Friend functions
+			/*******************************************************************************/
+			friend bool load_versioncheck_conf(const std::string& filename);
+			friend const VersionCheck& select_versioncheck_entry(t_tag architecture, t_tag client, std::uint32_t version_id);
+
+
+			/*******************************************************************************/
+			// Constructors
+			/*******************************************************************************/
+			VersionCheck(std::uint32_t version_id, std::uint32_t game_version, std::uint32_t checksum, t_tag architecture,
+				t_tag client, const struct file_metadata& exe_metadata, const std::string& equation,
+				const std::string& checkrevision_filename, const std::string& version_tag);
+			VersionCheck(const std::string& checkrevision_filename, const std::string& equation, const std::string& version_tag);
+			
+
+			/*******************************************************************************/
+			// Member variables
+			/*******************************************************************************/
+			const std::uint32_t			m_version_id; // AKA "Version Byte"
+			const std::uint32_t			m_game_version;
+			const std::uint32_t			m_checksum;
+			const t_tag					m_architecture;
+			const t_tag					m_client;
+			const struct file_metadata	m_metadata;
+			const std::string			m_equation;
+			const std::string			m_checkrevision_filename;
+			const std::string			m_version_tag;
+		};
+
+	} // namespace bnetd
+
+} // namespace pvpgn
+
+#endif //PVPGN_BNETD_VERSIONCHECK_H
