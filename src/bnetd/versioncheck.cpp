@@ -196,8 +196,8 @@ namespace pvpgn
 			for (const auto& entry : vc_entries)
 			{
 				if (entry.m_architecture == architecture
-					|| entry.m_client == client
-					|| entry.m_version_id == version_id)
+					&& entry.m_client == client
+					&& entry.m_version_id == version_id)
 				{
 					return entry;
 				}
