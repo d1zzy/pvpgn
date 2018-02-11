@@ -24,6 +24,7 @@
 
 #include <cctype>
 #include <cerrno>
+#include <climits>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -59,7 +60,7 @@ namespace pvpgn
 	namespace bnetd
 	{
 
-		std::forward_list<VersionCheck> vc_entries = {};
+		std::forward_list<VersionCheck> vc_entries = std::forward_list<VersionCheck>();
 
 		bool versioncheck_conf_is_loaded = false;
 
