@@ -1,3 +1,6 @@
+#ifndef INCLUDED_PVPGN_HASH_TUPLE_H
+#define INCLUDED_PVPGN_HASH_TUPLE_H
+
 #include <cstddef>
 #include <functional>
 #include <tuple>
@@ -15,6 +18,15 @@ namespace pvpgn
 				return std::hash<TT>()(tt);
 			}
 		};
+
+		namespace
+		{
+			template <class T>
+			inline void hash_combine(std::size_t& seed, T const& v)
+			{
+				seed ^= hash_tuple::hash<T>()(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+			}
+		}
 
 		namespace
 		{
@@ -39,15 +51,6 @@ namespace pvpgn
 			};
 		}
 
-		namespace
-		{
-			template <class T>
-			inline void hash_combine(std::size_t& seed, T const& v)
-			{
-				seed ^= hash_tuple::hash<T>()(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-			}
-		}
-
 		template <typename ... TT>
 		struct hash<std::tuple<TT...>>
 		{
@@ -60,3 +63,5 @@ namespace pvpgn
 		};
 	}
 }
+
+#endif
