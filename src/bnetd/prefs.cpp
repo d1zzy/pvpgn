@@ -118,7 +118,6 @@ namespace pvpgn
 			char const * maildir;
 			char const * log_notice;
 			unsigned int savebyname;
-			unsigned int skip_versioncheck;
 			unsigned int allow_bad_version;
 			unsigned int allow_unknown_version;
 			char const * versioncheck_file;
@@ -494,10 +493,6 @@ namespace pvpgn
 		static const char *conf_get_savebyname(void);
 		static int conf_setdef_savebyname(void);
 
-		static int conf_set_skip_versioncheck(const char *valstr);
-		static const char *conf_get_skip_versioncheck(void);
-		static int conf_setdef_skip_versioncheck(void);
-
 		static int conf_set_allow_bad_version(const char *valstr);
 		static const char *conf_get_allow_bad_version(void);
 		static int conf_setdef_allow_bad_version(void);
@@ -529,14 +524,6 @@ namespace pvpgn
 		static int conf_set_ipban_check_int(const char *valstr);
 		static const char *conf_get_ipban_check_int(void);
 		static int conf_setdef_ipban_check_int(void);
-
-		static int conf_set_version_exeinfo_match(const char *valstr);
-		static const char *conf_get_version_exeinfo_match(void);
-		static int conf_setdef_version_exeinfo_match(void);
-
-		static int conf_set_version_exeinfo_maxdiff(const char *valstr);
-		static const char *conf_get_version_exeinfo_maxdiff(void);
-		static int conf_setdef_version_exeinfo_maxdiff(void);
 
 		static int conf_set_max_concurrent_logins(const char *valstr);
 		static const char *conf_get_max_concurrent_logins(void);
@@ -816,7 +803,6 @@ namespace pvpgn
 			{ "maildir", conf_set_maildir, conf_get_maildir, conf_setdef_maildir },
 			{ "log_notice", conf_set_log_notice, conf_get_log_notice, conf_setdef_log_notice },
 			{ "savebyname", conf_set_savebyname, conf_get_savebyname, conf_setdef_savebyname },
-			{ "skip_versioncheck", conf_set_skip_versioncheck, conf_get_skip_versioncheck, conf_setdef_skip_versioncheck },
 			{ "allow_bad_version", conf_set_allow_bad_version, conf_get_allow_bad_version, conf_setdef_allow_bad_version },
 			{ "allow_unknown_version", conf_set_allow_unknown_version, conf_get_allow_unknown_version, conf_setdef_allow_unknown_version },
 			{ "versioncheck_file", conf_set_versioncheck_file, conf_get_versioncheck_file, conf_setdef_versioncheck_file },
@@ -825,8 +811,6 @@ namespace pvpgn
 			{ "hashtable_size", conf_set_hashtable_size, conf_get_hashtable_size, conf_setdef_hashtable_size },
 			{ "telnetaddrs", conf_set_telnetaddrs, conf_get_telnetaddrs, conf_setdef_telnetaddrs },
 			{ "ipban_check_int", conf_set_ipban_check_int, conf_get_ipban_check_int, conf_setdef_ipban_check_int },
-			{ "version_exeinfo_match", conf_set_version_exeinfo_match, conf_get_version_exeinfo_match, conf_setdef_version_exeinfo_match },
-			{ "version_exeinfo_maxdiff", conf_set_version_exeinfo_maxdiff, conf_get_version_exeinfo_maxdiff, conf_setdef_version_exeinfo_maxdiff },
 			{ "max_concurrent_logins", conf_set_max_concurrent_logins, conf_get_max_concurrent_logins, conf_setdef_max_concurrent_logins },
 			{ "mapsfile", conf_set_mapsfile, conf_get_mapsfile, conf_setdef_mapsfile },
 			{ "xplevelfile", conf_set_xplevelfile, conf_get_xplevelfile, conf_setdef_xplevelfile },
@@ -2564,27 +2548,6 @@ namespace pvpgn
 		}
 
 
-		extern unsigned int prefs_get_skip_versioncheck(void)
-		{
-			return prefs_runtime_config.skip_versioncheck;
-		}
-
-		static int conf_set_skip_versioncheck(const char *valstr)
-		{
-			return conf_set_bool(&prefs_runtime_config.skip_versioncheck, valstr, 0);
-		}
-
-		static int conf_setdef_skip_versioncheck(void)
-		{
-			return conf_set_bool(&prefs_runtime_config.skip_versioncheck, NULL, 0);
-		}
-
-		static const char* conf_get_skip_versioncheck(void)
-		{
-			return conf_get_bool(prefs_runtime_config.skip_versioncheck);
-		}
-
-
 		extern unsigned int prefs_get_allow_bad_version(void)
 		{
 			return prefs_runtime_config.allow_bad_version;
@@ -2750,48 +2713,6 @@ namespace pvpgn
 		static const char* conf_get_ipban_check_int(void)
 		{
 			return conf_get_int(prefs_runtime_config.ipban_check_int);
-		}
-
-
-		extern char const * prefs_get_version_exeinfo_match(void)
-		{
-			return prefs_runtime_config.version_exeinfo_match;
-		}
-
-		static int conf_set_version_exeinfo_match(const char *valstr)
-		{
-			return conf_set_str(&prefs_runtime_config.version_exeinfo_match, valstr, NULL);
-		}
-
-		static int conf_setdef_version_exeinfo_match(void)
-		{
-			return conf_set_str(&prefs_runtime_config.version_exeinfo_match, NULL, BNETD_EXEINFO_MATCH);
-		}
-
-		static const char* conf_get_version_exeinfo_match(void)
-		{
-			return prefs_runtime_config.version_exeinfo_match;
-		}
-
-
-		extern unsigned int prefs_get_version_exeinfo_maxdiff(void)
-		{
-			return prefs_runtime_config.version_exeinfo_maxdiff;
-		}
-
-		static int conf_set_version_exeinfo_maxdiff(const char *valstr)
-		{
-			return conf_set_int(&prefs_runtime_config.version_exeinfo_maxdiff, valstr, 0);
-		}
-
-		static int conf_setdef_version_exeinfo_maxdiff(void)
-		{
-			return conf_set_int(&prefs_runtime_config.version_exeinfo_maxdiff, NULL, PVPGN_VERSION_TIMEDIV);
-		}
-
-		static const char* conf_get_version_exeinfo_maxdiff(void)
-		{
-			return conf_get_int(prefs_runtime_config.version_exeinfo_maxdiff);
 		}
 
 

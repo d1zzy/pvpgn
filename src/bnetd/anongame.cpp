@@ -535,7 +535,7 @@ namespace pvpgn
 			md = (t_matchdata*)xmalloc(sizeof(t_matchdata));
 			md->c = c;
 			md->map_prefs = map_prefs;
-			md->versiontag = conn_get_versioncheck(c)->get_version_tag().c_str();
+			md->versiontag = conn_get_versioncheck(c) ? conn_get_versioncheck(c)->get_version_tag().c_str() : nullptr;
 
 			list_append_data(matchlists[queue][level], md);
 
@@ -829,6 +829,7 @@ namespace pvpgn
 					LIST_TRAVERSE(matchlists[queue][level + delta], curr) {
 						md = (t_matchdata*)elem_get_data(curr);
 						if (md->versiontag 
+							&& conn_get_versioncheck(c) 
 							&& !std::strcmp(md->versiontag, conn_get_versioncheck(c)->get_version_tag().c_str()) 
 							&& (cur_prefs & md->map_prefs))
 						{

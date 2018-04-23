@@ -213,11 +213,8 @@ namespace pvpgn
 				config.update("star_iconfile", prefs_get_star_iconfile());
 				config.update("tosfile", prefs_get_tosfile());
 				config.update("allowed_clients", prefs_get_allowed_clients());
-				config.update("skip_versioncheck", prefs_get_skip_versioncheck());
 				config.update("allow_bad_version", prefs_get_allow_bad_version());
 				config.update("allow_unknown_version", prefs_get_allow_unknown_version());
-				config.update("version_exeinfo_match", prefs_get_version_exeinfo_match());
-				config.update("version_exeinfo_maxdiff", prefs_get_version_exeinfo_maxdiff());
 				config.update("usersync", prefs_get_user_sync_timer());
 				config.update("userflush", prefs_get_user_flush_timer());
 				config.update("userflush_connected", prefs_get_user_flush_connected());

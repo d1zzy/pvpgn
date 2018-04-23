@@ -383,7 +383,7 @@ namespace pvpgn
 		extern int conn_set_lastsender(t_connection * c, char const * sender);
 		extern char const * conn_get_lastsender(t_connection const * c);
 		const VersionCheck *conn_get_versioncheck(t_connection *c);
-		bool conn_set_versioncheck(t_connection *c, const VersionCheck& versioncheck);
+		bool conn_set_versioncheck(t_connection *c, const VersionCheck* versioncheck);
 		extern int conn_get_echoback(t_connection * c);
 		extern void conn_set_echoback(t_connection * c, int echoback);
 		extern int conn_set_ircline(t_connection * c, char const * line);

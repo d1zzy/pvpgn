@@ -3208,7 +3208,7 @@ namespace pvpgn
 		}
 
 
-		bool conn_set_versioncheck(t_connection *c, const VersionCheck& versioncheck)
+		bool conn_set_versioncheck(t_connection *c, const VersionCheck* versioncheck)
 		{
 			if (!c)
 			{
@@ -3216,7 +3216,7 @@ namespace pvpgn
 				return false;
 			}
 
-			c->protocol.client.versioncheck = &versioncheck;
+			c->protocol.client.versioncheck = versioncheck;
 
 			return true;
 		}
