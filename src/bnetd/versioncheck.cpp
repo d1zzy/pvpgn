@@ -188,7 +188,7 @@ namespace pvpgn
 
 		std::tuple<std::string, std::string> select_checkrevision(t_tag architecture, t_tag client, std::uint32_t version_id)
 		{
-			static const std::tuple<std::string, std::string> default_checkrevision = { "ver-IX86-1.mpq", "A=42 B=42 C=42 4 A=A^S B=B^B C=C^C A=A^S" };
+			static const std::tuple<std::string, std::string> default_checkrevision { "ver-IX86-1.mpq", "A=42 B=42 C=42 4 A=A^S B=B^B C=C^C A=A^S" };
 
 			auto key = cr_entries.find(std::make_tuple(architecture, client, version_id));
 			if (key != cr_entries.end())
