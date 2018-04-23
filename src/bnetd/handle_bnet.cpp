@@ -1013,7 +1013,8 @@ namespace pvpgn
 					conn_set_state(c, conn_state_untrusted);
 
 					bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_BADVERSION);
-					packet_append_string(rpacket, '\0\0');
+					packet_append_string(rpacket, "");
+					packet_append_string(rpacket, ""); // undocumented extra null terminator
 
 					conn_push_outqueue(c, rpacket);
 					
