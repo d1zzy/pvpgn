@@ -19,7 +19,6 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 #include "common/setup_before.h"
-#define VERSIONCHECK_INTERNAL_ACCESS
 #include "versioncheck.h"
 
 #include <cctype>
