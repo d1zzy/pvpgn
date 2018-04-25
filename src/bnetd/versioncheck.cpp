@@ -180,6 +180,8 @@ namespace pvpgn
 			{
 				vc_entries.clear();
 
+				cr_entries.clear();
+
 				versioncheck_conf_is_loaded = false;
 
 				eventlog(eventlog_level_info, __FUNCTION__, "Successfully unloaded all version check entries");
