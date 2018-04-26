@@ -23,13 +23,13 @@
 
 #include <cctype>
 #include <cerrno>
+#include <chrono>
 #include <climits>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <forward_list>
 #include <fstream>
 #include <iomanip>
 #include <regex>
@@ -63,8 +63,7 @@ namespace pvpgn
 
 	namespace bnetd
 	{
-
-		std::forward_list<VersionCheck> vc_entries;
+		std::unordered_map<std::tuple<std::uint32_t, std::uint32_t, t_tag, t_tag>, VersionCheck, hash_tuple::hash<std::tuple<std::uint32_t, std::uint32_t, t_tag, t_tag>>> vc_entries;
 		std::unordered_map<std::tuple<t_tag, t_tag, std::uint32_t>, std::tuple<std::string, std::string>, hash_tuple::hash<std::tuple<t_tag, t_tag, std::uint32_t>>> cr_entries;
 
 		bool versioncheck_conf_is_loaded = false;
@@ -79,6 +78,8 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "Could not load {}, a versioncheck configuration file is already loaded", filename);
 				return false;
 			}
+
+			auto t0 = std::chrono::steady_clock::now();
 
 			std::ifstream file_stream(filename, std::ios::in);
 			if (!file_stream.is_open())
@@ -98,8 +99,8 @@ namespace pvpgn
 				return false;
 			}
 
-			
-			int entry_success_count = 0;
+			vc_entries.reserve(185);
+
 			for (auto jclient : jconf.items())
 			{
 				t_tag client = tag_str_to_uint(jclient.key().c_str());
@@ -140,6 +141,7 @@ namespace pvpgn
 							std::forward_as_tuple(architecture, client, version_id), 
 							std::forward_as_tuple(checkrevision_filename, checkrevision_equation)
 						);
+
 						for (auto jentry : jversion_id.value()["entries"])
 						{
 							try
@@ -150,11 +152,10 @@ namespace pvpgn
 									jentry["hash"].get<std::string>(), 
 									architecture,
 									client,
-									jentry["versionTag"].get<std::string>());
+									jentry["versionTag"].get<std::string>()
+								);
 								
-								vc_entries.push_front(entry);
-
-								entry_success_count += 1;
+								vc_entries.insert({ std::make_tuple(entry.m_version_id, entry.m_game_version, entry.m_architecture, entry.m_client), entry });
 							}
 							catch (const std::exception& e)
 							{
@@ -166,7 +167,9 @@ namespace pvpgn
 				}
 			}
 
-			eventlog(eventlog_level_info, __FUNCTION__, "Successfully loaded {} versioncheck entries", entry_success_count);
+			auto t1 = std::chrono::steady_clock::now();
+
+			eventlog(eventlog_level_info, __FUNCTION__, "Successfully loaded {} versioncheck entries in {} microseconds", vc_entries.size(), std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count());
 
 			versioncheck_conf_is_loaded = true;
 
@@ -206,29 +209,19 @@ namespace pvpgn
 		const VersionCheck* select_versioncheck(t_tag architecture, t_tag client, std::uint32_t version_id,
 			std::uint32_t checkrevision_version, std::uint32_t checkrevision_checksum)
 		{
-			for (const auto& versioncheck : vc_entries)
+			auto it = vc_entries.find(std::make_tuple(version_id, checkrevision_version, architecture, client));
+			if (it == vc_entries.end())
 			{
-				if (versioncheck.m_architecture != architecture
-					|| versioncheck.m_client != client
-					|| versioncheck.m_version_id != version_id
-					|| versioncheck.m_game_version != checkrevision_version)
-				{
-					continue;
-				}
-
-				if (versioncheck.m_checksum != 0
-					&& !prefs_get_allow_bad_version())
-				{
-					if (versioncheck.m_checksum != checkrevision_checksum)
-					{
-						continue;
-					}
-				}
-
-				return &versioncheck;
+				return nullptr;
 			}
 
-			return nullptr;
+			if (it->second.m_checksum != checkrevision_checksum
+				&& !prefs_get_allow_bad_version())
+			{
+				return nullptr;
+			}
+
+			return &(it->second);
 		}
 
 		VersionCheck::VersionCheck(const std::string& title, std::uint32_t version_id, const std::string& game_version,
