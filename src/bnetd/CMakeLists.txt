@@ -12,8 +12,8 @@ set(BNETD_SOURCES
 	attrlayer.h autoupdate.cpp autoupdate.h channel_conv.cpp channel_conv.h 
 	channel.cpp channel.h character.cpp character.h clan.cpp clan.h 
 	cmdline.cpp cmdline.h command.cpp command_groups.cpp command_groups.h 
-	command.h connection.cpp connection.h file_cdb.cpp file_cdb.h file.cpp 
-	file.h file_plain.cpp file_plain.h friends.cpp friends.h game_conv.cpp 
+	command.h connection.cpp connection.h file.cpp file.h file_plain.cpp 
+	file_plain.h friends.cpp friends.h game_conv.cpp 
 	game_conv.h game.cpp game.h handle_anongame.cpp handle_anongame.h 
 	handle_apireg.cpp handle_apireg.h handle_bnet.cpp handle_bnet.h 
 	handle_bot.cpp handle_bot.h handle_d2cs.cpp handle_d2cs.h 
@@ -53,6 +53,6 @@ else(WITH_WIN32_GUI)
   add_executable(bnetd ${BNETD_SOURCES} ${BNETD_CONSOLE_RESOURCES})
 endif(WITH_WIN32_GUI)
 
-  target_link_libraries(bnetd common compat win32 tinycdb ${NETWORK_LIBRARIES}
+  target_link_libraries(bnetd common compat win32 ${NETWORK_LIBRARIES}
     ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES} ${LUA_LIBRARIES})
   install(TARGETS bnetd DESTINATION ${SBINDIR})

@@ -5,8 +5,7 @@ include_directories(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src)
 # when referenced by short names
 link_directories(${CMAKE_BINARY_DIR}/src/common 
 	${CMAKE_BINARY_DIR}/src/compat
-	${CMAKE_BINARY_DIR}/src/win32
-	${CMAKE_BINARY_DIR}/src/tinycdb)
+	${CMAKE_BINARY_DIR}/src/win32)
 
 #this is needed to be compatible with existent code
 add_definitions("-DHAVE_CONFIG_H")
@@ -32,15 +31,12 @@ endif(SQLITE3_FOUND)
 if(PGSQL_FOUND)
     add_definitions("-DWITH_SQL_PGSQL")
 endif(PGSQL_FOUND)
-if(ODBC_FOUND)
-    add_definitions("-DWITH_SQL_ODBC")
-endif(ODBC_FOUND)
 
 if (WITH_WIN32_GUI)
     add_definitions("-DWIN32_GUI")
 endif (WITH_WIN32_GUI)
 
-subdirs(compat common win32 tinycdb bntrackd client bniutils bnpass)
+subdirs(compat common win32 bntrackd client bniutils bnpass)
 
 if(WITH_BNETD)
     add_subdirectory(bnetd)
