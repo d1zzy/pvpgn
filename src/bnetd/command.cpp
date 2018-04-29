@@ -4627,7 +4627,7 @@ namespace pvpgn
 
 
 			// disallow get/set value for password hash and username (hash can be cracked easily, account name should be permanent)
-			if (strcasecmp(key, "bnet\\acct\\passhash1") == 0 || strcasecmp(key, "bnet\\acct\\username") == 0 || strcasecmp(key, "bnet\\username") == 0)
+			if (strcasecmp(key, "bnet\\acct\\passhash1") == 0 || strcasecmp(key, "bnet\\acct\\username") == 0 || strcasecmp(key, "bnet\\acct\\verifier") == 0 || strcasecmp(key, "bnet\\acct\\salt") == 0 || strcasecmp(key, "bnet\\username") == 0)
 			{
 				message_send_text(c, message_type_info, c, localize(c, "Access denied due to security reasons."));
 				return -1;

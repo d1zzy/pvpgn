@@ -85,7 +85,7 @@ mpqfile     = "${SYSCONFDIR}/autoupdate.conf"
 logfile     = "${LOCALSTATEDIR}/bnetd.log"
 realmfile   = "${SYSCONFDIR}/realm.conf"
 maildir     = "${LOCALSTATEDIR}/bnmail"
-versioncheck_file = "${SYSCONFDIR}/versioncheck.conf"
+versioncheck_file = "${SYSCONFDIR}/versioncheck.json"
 mapsfile    = "${SYSCONFDIR}/bnmaps.conf"
 xplevelfile = "${SYSCONFDIR}/bnxplevel.conf"
 xpcalcfile  = "${SYSCONFDIR}/bnxpcalc.conf"
@@ -209,19 +209,6 @@ star_iconfile = "icons_STAR.bni"
 # Example: allowed_clients = war3,w3xp
 allowed_clients = all
 
-# If this option is enabled, the verification step is skipped if possible.
-# This only works with clients < 109.  It is useful because you no longer
-# need any of the IX86AUTH?.MPQ and PMACAUTH?.MPQ files.  Note that it will
-# also skip over all the autoupdate checks effectively disabling it.
-#
-# If you disable this you must have one or more of the MPQ files.  Otherwise
-# clients will hang when they first connect because they are attempting to
-# download them.  The versioncheck can only be skipped for clients older
-# than 109.  Starting with version 109 the clients will always do version
-# checking since they do not function properly if the server does not
-# request it.
-skip_versioncheck = true
-
 # If you enable the version checks but want to allow clients that don't pass
 # the checksum test then enable this.
 allow_bad_version = true
@@ -231,19 +218,6 @@ allow_bad_version = true
 # you have a very complete file or are very paranoid about cheaters this
 # is a good idea.
 allow_unknown_version = true
-
-# This defines how the exeinfo field in the versioncheck file is being
-# checked. You can choose between no match at all [none] (default), 
-# exact match [exact], exact case-sensitive match [exactcase], dumb wildcard 
-# match [wildcard], and parsed value comparison [parse]. 
-# NOTE: [parse] needs the mktime() function and might therefore not work on 
-# every system. 
-version_exeinfo_match = none
-
-# If you have choosen [parse] above, this is the tolerance with which
-# the time can differ. The value must be given in seconds. If it's 0 this 
-# check is disabled.
-version_exeinfo_maxdiff = 0
 
 #                                                                            #
 ##############################################################################
@@ -448,7 +422,7 @@ max_friends = 20
 # Set track=0 to disable tracking.  Any other number will set number
 # of seconds between sending tracking packets. This is ON by default.
 #track = 0
-track = 60
+track = 0
 
 # Tracking server(s)
 # Use a comma delimited list of hostnames with optional UDP port numbers

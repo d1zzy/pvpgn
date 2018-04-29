@@ -380,8 +380,12 @@ int pre_server_startup(void)
 
 	if (autoupdate_load(prefs_get_mpqfile()) < 0)
 		eventlog(eventlog_level_error, __FUNCTION__, "could not load autoupdate list");
-	if (versioncheck_load(prefs_get_versioncheck_file()) < 0)
+
+	if (!load_versioncheck_conf(prefs_get_versioncheck_file()))
+	{
 		eventlog(eventlog_level_error, __FUNCTION__, "could not load versioncheck list");
+	}
+
 	if (news_load(prefs_get_newsfile()) < 0)
 		eventlog(eventlog_level_error, __FUNCTION__, "could not load news list");
 	watchlist.reset(new WatchComponent());
@@ -449,7 +453,7 @@ void post_server_shutdown(int status)
 		attrlayer_cleanup();
 		watchlist.reset();
 		news_unload();
-		versioncheck_unload();
+		unload_versioncheck_conf();
 		autoupdate_unload();
 		ipbanlist_save(prefs_get_ipbanfile());
 		ipbanlist_destroy();

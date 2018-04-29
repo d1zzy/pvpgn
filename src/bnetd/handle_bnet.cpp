@@ -29,7 +29,9 @@
 #include <cstdint>
 #include <cstring>
 #include <fstream>
+#include <limits>
 #include <sstream>
+#include <tuple>
 
 #include "compat/strcasecmp.h"
 #include "compat/strncasecmp.h"
@@ -570,15 +572,12 @@ namespace pvpgn
 					packet_del_ref(rpacket);
 				}
 
-				if ((rpacket = packet_create(packet_class_bnet))) {
-					t_versioncheck *vc;
-
-					eventlog(eventlog_level_debug, __FUNCTION__, "[{}] selecting version check", conn_get_socket(c));
-					vc = versioncheck_create(conn_get_archtag(c), conn_get_clienttag(c));
-					conn_set_versioncheck(c, vc);
+				if ((rpacket = packet_create(packet_class_bnet)))
+				{
 					packet_set_size(rpacket, sizeof(t_server_authreq_109));
 					packet_set_type(rpacket, SERVER_AUTHREQ_109);
 
+					// Logon type
 					if ((conn_get_clienttag(c) == CLIENTTAG_WARCRAFT3_UINT))
 						bn_int_set(&rpacket->u.server_authreq_109.logontype, SERVER_AUTHREQ_109_LOGONTYPE_W3);
 					else if ((conn_get_clienttag(c) == CLIENTTAG_WAR3XP_UINT))
@@ -586,18 +585,29 @@ namespace pvpgn
 					else
 						bn_int_set(&rpacket->u.server_authreq_109.logontype, SERVER_AUTHREQ_109_LOGONTYPE);
 
+
+					// Session
 					bn_int_set(&rpacket->u.server_authreq_109.sessionkey, conn_get_sessionkey(c));
 					bn_int_set(&rpacket->u.server_authreq_109.sessionnum, conn_get_sessionnum(c));
-					file_to_mod_time(c, versioncheck_get_mpqfile(vc), &rpacket->u.server_authreq_109.timestamp);
-					packet_append_string(rpacket, versioncheck_get_mpqfile(vc));
-					packet_append_string(rpacket, versioncheck_get_eqn(vc));
-					eventlog(eventlog_level_debug, __FUNCTION__, "[{}] selected \"{}\" \"{}\"", conn_get_socket(c), versioncheck_get_mpqfile(vc), versioncheck_get_eqn(vc));
+
+
+					// CheckRevision
+					std::tuple<std::string, std::string> checkrevision = select_checkrevision(bn_int_get(packet->u.client_countryinfo_109.archtag), bn_int_get(packet->u.client_countryinfo_109.clienttag), bn_int_get(packet->u.client_countryinfo_109.versionid));
+					file_to_mod_time(c, std::get<0>(checkrevision).c_str(), &rpacket->u.server_authreq_109.timestamp); // Checkrevision file timestamp
+					packet_append_string(rpacket, std::get<0>(checkrevision).c_str()); // CheckRevision filename
+					packet_append_string(rpacket, std::get<1>(checkrevision).c_str()); // CheckRevision equation
+					eventlog(eventlog_level_debug, __FUNCTION__, "[{}] selected \"{}\" \"{}\"", conn_get_socket(c), std::get<0>(checkrevision), std::get<1>(checkrevision));
+					
+
+					// WarCraft 3 Server Signature
 					if ((conn_get_clienttag(c) == CLIENTTAG_WARCRAFT3_UINT)
-						|| (conn_get_clienttag(c) == CLIENTTAG_WAR3XP_UINT)) {
+						|| (conn_get_clienttag(c) == CLIENTTAG_WAR3XP_UINT))
+					{
 						char padding[128];
 						std::memset(padding, 0, 128);
 						packet_append_data(rpacket, padding, 128);
 					}
+
 					conn_push_outqueue(c, rpacket);
 					packet_del_ref(rpacket);
 				}
@@ -633,35 +643,22 @@ namespace pvpgn
 			conn_set_archtag(c, bn_int_get(packet->u.client_progident.archtag));
 			conn_set_clienttag(c, bn_int_get(packet->u.client_progident.clienttag));
 
-			if (prefs_get_skip_versioncheck()) {
-				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] attempting to skip version check by sending early authreply", conn_get_socket(c));
-				/* skip over SERVER_AUTHREQ1 and CLIENT_AUTHREQ1 */
-				if ((rpacket = packet_create(packet_class_bnet))) {
-					packet_set_size(rpacket, sizeof(t_server_authreply1));
-					packet_set_type(rpacket, SERVER_AUTHREPLY1);
-					bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_OK);
-					packet_append_string(rpacket, "");
-					packet_append_string(rpacket, "");	/* FIXME: what's the second string for? */
-					conn_push_outqueue(c, rpacket);
-					packet_del_ref(rpacket);
-				}
-			}
-			else {
-				t_versioncheck *vc;
+			if ((rpacket = packet_create(packet_class_bnet)))
+			{
+				packet_set_size(rpacket, sizeof(t_server_authreq1));
+				packet_set_type(rpacket, SERVER_AUTHREQ1);
 
-				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] selecting version check", conn_get_socket(c));
-				vc = versioncheck_create(conn_get_archtag(c), conn_get_clienttag(c));
-				conn_set_versioncheck(c, vc);
-				if ((rpacket = packet_create(packet_class_bnet))) {
-					packet_set_size(rpacket, sizeof(t_server_authreq1));
-					packet_set_type(rpacket, SERVER_AUTHREQ1);
-					file_to_mod_time(c, versioncheck_get_mpqfile(vc), &rpacket->u.server_authreq1.timestamp);
-					packet_append_string(rpacket, versioncheck_get_mpqfile(vc));
-					packet_append_string(rpacket, versioncheck_get_eqn(vc));
-					eventlog(eventlog_level_debug, __FUNCTION__, "[{}] selected \"{}\" \"{}\"", conn_get_socket(c), versioncheck_get_mpqfile(vc), versioncheck_get_eqn(vc));
-					conn_push_outqueue(c, rpacket);
-					packet_del_ref(rpacket);
-				}
+
+				// CheckRevision
+				std::tuple<std::string, std::string> checkrevision = select_checkrevision(bn_int_get(packet->u.client_progident.archtag), bn_int_get(packet->u.client_progident.clienttag), bn_int_get(packet->u.client_progident.versionid));
+				file_to_mod_time(c, std::get<0>(checkrevision).c_str(), &rpacket->u.server_authreq_109.timestamp); // Checkrevision file timestamp
+				packet_append_string(rpacket, std::get<0>(checkrevision).c_str()); // CheckRevision filename
+				packet_append_string(rpacket, std::get<1>(checkrevision).c_str()); // CheckRevision equation
+				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] selected \"{}\" \"{}\"", conn_get_socket(c), std::get<0>(checkrevision), std::get<1>(checkrevision));
+					
+
+				conn_push_outqueue(c, rpacket);
+				packet_del_ref(rpacket);
 			}
 
 			return 0;
@@ -1000,102 +997,126 @@ namespace pvpgn
 
 		static int _client_authreq1(t_connection * c, t_packet const *const packet)
 		{
-			t_packet *rpacket;
-
-			if (packet_get_size(packet) < sizeof(t_client_authreq1)) {
+			if (packet_get_size(packet) < sizeof(t_client_authreq1))
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ1 packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_authreq1), packet_get_size(packet));
 				return -1;
 			}
 
+			auto send_failed_packet = [](t_connection *c)
 			{
-				char verstr[16];
-				char const *exeinfo;
-				char const *versiontag;
-				int failed;
-
-				failed = 0;
-				if (bn_int_get(packet->u.client_authreq1.archtag) != conn_get_archtag(c))
-					failed = 1;
-				if (bn_int_get(packet->u.client_authreq1.clienttag) != conn_get_clienttag(c))
-					failed = 1;
-
-				if (!(exeinfo = packet_get_str_const(packet, sizeof(t_client_authreq1), MAX_EXEINFO_STR))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ1 (missing or too long exeinfo)", conn_get_socket(c));
-					exeinfo = "badexe";
-					failed = 1;
-				}
-				conn_set_versionid(c, bn_int_get(packet->u.client_authreq1.versionid));
-				conn_set_checksum(c, bn_int_get(packet->u.client_authreq1.checksum));
-				conn_set_gameversion(c, bn_int_get(packet->u.client_authreq1.gameversion));
-				std::strcpy(verstr, vernum_to_verstr(bn_int_get(packet->u.client_authreq1.gameversion)));
-				conn_set_clientver(c, verstr);
-				conn_set_clientexe(c, exeinfo);
-
-				eventlog(eventlog_level_info, __FUNCTION__, "[{}] CLIENT_AUTHREQ1 archtag=0x{:08x} clienttag=0x{:08x} verstr={} exeinfo=\"{}\" versionid=0x{:08x} gameversion=0x{:08x} checksum=0x{:08x}", conn_get_socket(c), bn_int_get(packet->u.client_authreq1.archtag), bn_int_get(packet->u.client_authreq1.clienttag), verstr, exeinfo, conn_get_versionid(c), conn_get_gameversion(c), conn_get_checksum(c));
-
-
-				if ((rpacket = packet_create(packet_class_bnet))) {
+				t_packet *rpacket = packet_create(packet_class_bnet);
+				if (rpacket)
+				{
 					packet_set_size(rpacket, sizeof(t_server_authreply1));
 					packet_set_type(rpacket, SERVER_AUTHREPLY1);
+					conn_set_state(c, conn_state_untrusted);
 
+					bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_BADVERSION);
+					packet_append_string(rpacket, "");
+					packet_append_string(rpacket, ""); // undocumented extra null terminator
 
-					if (!conn_get_versioncheck(c) && prefs_get_skip_versioncheck())
-						eventlog(eventlog_level_info, __FUNCTION__, "[{}] skip versioncheck enabled and client did not request validation", conn_get_socket(c));
-					else
-						switch (versioncheck_validate(conn_get_versioncheck(c), conn_get_archtag(c), conn_get_clienttag(c), exeinfo, conn_get_versionid(c), conn_get_gameversion(c), conn_get_checksum(c))) {
-						case -1:	/* failed test... client has been modified */
-							if (!prefs_get_allow_bad_version()) {
-								eventlog(eventlog_level_info, __FUNCTION__, "[{}] client failed test (marking untrusted)", conn_get_socket(c));
-								failed = 1;
-							}
-							else
-								eventlog(eventlog_level_info, __FUNCTION__, "[{}] client failed test, allowing anyway", conn_get_socket(c));
-							break;
-						case 0:	/* not listed in table... can't tell if client has been modified */
-							if (!prefs_get_allow_unknown_version()) {
-								eventlog(eventlog_level_info, __FUNCTION__, "[{}] unable to test client (marking untrusted)", conn_get_socket(c));
-								failed = 1;
-							}
-							else
-								eventlog(eventlog_level_info, __FUNCTION__, "[{}] unable to test client, allowing anyway", conn_get_socket(c));
-							break;
-							/* 1 == test passed... client seems to be ok */
-					}
-
-					versiontag = versioncheck_get_versiontag(conn_get_versioncheck(c));
-
-					eventlog(eventlog_level_info, __FUNCTION__, "[{}] client matches versiontag \"{}\"", conn_get_socket(c), versiontag);
-
-					if (failed) {
-						conn_set_state(c, conn_state_untrusted);
-						bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_BADVERSION);
-						packet_append_string(rpacket, "");
-					}
-					else {
-						char *mpqfilename;
-
-						mpqfilename = autoupdate_check(conn_get_archtag(c), conn_get_clienttag(c), conn_get_gamelang(c), versiontag, NULL);
-
-						/* Only handle updates when there is an update file available. */
-						if (mpqfilename != NULL) {
-							eventlog(eventlog_level_info, __FUNCTION__, "[{}] an upgrade for version {} is available \"{}\"", conn_get_socket(c), versioncheck_get_versiontag(conn_get_versioncheck(c)), mpqfilename);
-							bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_UPDATE);
-							packet_append_string(rpacket, mpqfilename);
-						}
-						else {
-							eventlog(eventlog_level_info, __FUNCTION__, "[{}] no upgrade for {} is available", conn_get_socket(c), versioncheck_get_versiontag(conn_get_versioncheck(c)));
-							bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_OK);
-							packet_append_string(rpacket, "");
-						}
-
-						if (mpqfilename)
-							xfree((void *)mpqfilename);
-					}
-
-					packet_append_string(rpacket, "");	/* FIXME: what's the second string for? */
 					conn_push_outqueue(c, rpacket);
+					
 					packet_del_ref(rpacket);
 				}
+			};
+
+			// The following if statements are sanity checks
+			// The client should have already sent this information in a previous packet and is resending it again in this packet
+			if (bn_int_get(packet->u.client_authreq1.archtag) != conn_get_archtag(c))
+			{
+				send_failed_packet(c);
+				return 0;
+			}
+
+			if (bn_int_get(packet->u.client_authreq1.clienttag) != conn_get_clienttag(c))
+			{
+				send_failed_packet(c);
+				return 0;
+			}
+
+			if (bn_int_get(packet->u.client_authreq1.versionid) != conn_get_versionid(c))
+			{
+				send_failed_packet(c);
+				return 0;
+			}
+
+
+			const char *exeinfo = packet_get_str_const(packet, sizeof(t_client_authreq1), MAX_EXEINFO_STR);
+			if (exeinfo)
+			{
+				conn_set_clientexe(c, exeinfo);
+			}
+			else
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ1 (missing or too long exeinfo)", conn_get_socket(c));
+				send_failed_packet(c);
+				return 0;
+			}
+
+			std::string version_string = vernum_to_verstr(bn_int_get(packet->u.client_authreq1.gameversion));
+			conn_set_clientver(c, version_string.c_str());
+			eventlog(eventlog_level_info, __FUNCTION__, "[{}] CLIENT_AUTHREQ1 archtag=0x{:08x} clienttag=0x{:08x} verstr={} exeinfo=\"{}\" versionid=0x{:08x} gameversion=0x{:08x} checksum=0x{:08x}", conn_get_socket(c), bn_int_get(packet->u.client_authreq1.archtag), bn_int_get(packet->u.client_authreq1.clienttag), version_string, exeinfo, conn_get_versionid(c), conn_get_gameversion(c), conn_get_checksum(c));
+
+			conn_set_versionid(c, bn_int_get(packet->u.client_authreq1.versionid));
+			conn_set_checksum(c, bn_int_get(packet->u.client_authreq1.checksum));
+			conn_set_gameversion(c, bn_int_get(packet->u.client_authreq1.gameversion));
+
+			
+			const VersionCheck* vc = select_versioncheck(conn_get_archtag(c), conn_get_clienttag(c), conn_get_versionid(c), conn_get_gameversion(c), conn_get_checksum(c));
+			conn_set_versioncheck(c, vc);
+			if (vc)
+			{
+				eventlog(eventlog_level_info, __FUNCTION__, "[{}] client matches versiontag \"{}\"", conn_get_socket(c), conn_get_versioncheck(c)->get_version_tag());
+			}
+			else
+			{
+				if (prefs_get_allow_unknown_version())
+				{
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] skipping versioncheck because allow_unknown_version is true", conn_get_socket(c));
+				}
+				else
+				{
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] client failed versioncheck", conn_get_socket(c));
+					send_failed_packet(c);
+					return 0;
+				}
+			}
+
+
+			t_packet *rpacket = packet_create(packet_class_bnet);
+			if (rpacket)
+			{
+				packet_set_size(rpacket, sizeof(t_server_authreply1));
+				packet_set_type(rpacket, SERVER_AUTHREPLY1);
+
+				char *mpqfilename = nullptr;
+				if (vc)
+				{
+					mpqfilename = autoupdate_check(conn_get_archtag(c), conn_get_clienttag(c), conn_get_gamelang(c), vc->get_version_tag().c_str(), nullptr);
+				}
+
+				// Only handle updates when there is an update file available.
+				if (mpqfilename)
+				{
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] an upgrade for version {} is available \"{}\"", conn_get_socket(c), conn_get_versioncheck(c)->get_version_tag(), mpqfilename);
+					bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_UPDATE);
+					packet_append_string(rpacket, mpqfilename);
+					xfree(static_cast<void *>(mpqfilename));
+				}
+				else
+				{
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] no upgrade is available", conn_get_socket(c));
+				}
+
+				bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_OK);
+				packet_append_string(rpacket, "");
+				packet_append_string(rpacket, ""); // FIXME: what's the second string for?
+
+				conn_push_outqueue(c, rpacket);
+
+				packet_del_ref(rpacket);
 			}
 
 			return 0;
@@ -1103,108 +1124,117 @@ namespace pvpgn
 
 		static int _client_authreq109(t_connection * c, t_packet const *const packet)
 		{
-			t_packet *rpacket;
-
-			if (packet_get_size(packet) < sizeof(t_client_authreq_109)) {
+			if (packet_get_size(packet) < sizeof(t_client_authreq_109))
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ_109 packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_authreq_109), packet_get_size(packet));
 				return 0;
 			}
 
+			auto send_failed_packet = [](t_connection *c)
 			{
-				char verstr[16];
-				char const *exeinfo;
-				char const *versiontag;
-				int failed;
-				char const *owner;
-				unsigned int count;
-				unsigned int pos;
-
-				failed = 0;
-				count = bn_int_get(packet->u.client_authreq_109.cdkey_number);
-				pos = sizeof(t_client_authreq_109)+(count * sizeof(t_cdkey_info));
-
-				if (!(exeinfo = packet_get_str_const(packet, pos, MAX_EXEINFO_STR))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ_109 (missing or too long exeinfo)", conn_get_socket(c));
-					exeinfo = "badexe";
-					failed = 1;
-				}
-				conn_set_clientexe(c, exeinfo);
-				pos += std::strlen(exeinfo) + 1;
-
-				if (!(owner = packet_get_str_const(packet, pos, MAX_OWNER_STR))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ_109 (missing or too long owner)", conn_get_socket(c));
-					owner = "";		/* maybe owner was missing, use empty string */
-				}
-				conn_set_owner(c, owner);
-
-				conn_set_checksum(c, bn_int_get(packet->u.client_authreq_109.checksum));
-				conn_set_gameversion(c, bn_int_get(packet->u.client_authreq_109.gameversion));
-				std::strcpy(verstr, vernum_to_verstr(bn_int_get(packet->u.client_authreq_109.gameversion)));
-				conn_set_clientver(c, verstr);
-				conn_set_clientexe(c, exeinfo);
-
-				eventlog(eventlog_level_info, __FUNCTION__, "[{}] CLIENT_AUTHREQ_109 ticks=0x{:08x}, verstr={} exeinfo=\"{}\" versionid=0x{:08x} gameversion=0x{:08x} checksum=0x{:08x}", conn_get_socket(c), bn_int_get(packet->u.client_authreq_109.ticks), verstr, exeinfo, conn_get_versionid(c), conn_get_gameversion(c), conn_get_checksum(c));
-
-				if ((rpacket = packet_create(packet_class_bnet))) {
+				t_packet *rpacket = packet_create(packet_class_bnet);
+				if (rpacket)
+				{
 					packet_set_size(rpacket, sizeof(t_server_authreply_109));
 					packet_set_type(rpacket, SERVER_AUTHREPLY_109);
+					conn_set_state(c, conn_state_untrusted);
 
-
-					if (!conn_get_versioncheck(c) && prefs_get_skip_versioncheck())
-						eventlog(eventlog_level_info, __FUNCTION__, "[{}] skip versioncheck enabled and client did not request validation", conn_get_socket(c));
-					else
-						switch (versioncheck_validate(conn_get_versioncheck(c), conn_get_archtag(c), conn_get_clienttag(c), exeinfo, conn_get_versionid(c), conn_get_gameversion(c), conn_get_checksum(c))) {
-						case -1:	/* failed test... client has been modified */
-							if (!prefs_get_allow_bad_version()) {
-								eventlog(eventlog_level_info, __FUNCTION__, "[{}] client failed test (closing connection)", conn_get_socket(c));
-								failed = 1;
-							}
-							else
-								eventlog(eventlog_level_info, __FUNCTION__, "[{}] client failed test, allowing anyway", conn_get_socket(c));
-							break;
-						case 0:	/* not listed in table... can't tell if client has been modified */
-							if (!prefs_get_allow_unknown_version()) {
-								eventlog(eventlog_level_info, __FUNCTION__, "[{}] unable to test client (closing connection)", conn_get_socket(c));
-								failed = 1;
-							}
-							else
-								eventlog(eventlog_level_info, __FUNCTION__, "[{}] unable to test client, allowing anyway", conn_get_socket(c));
-							break;
-							/* 1 == test passed... client seems to be ok */
-					}
-
-					versiontag = versioncheck_get_versiontag(conn_get_versioncheck(c));
-
-					eventlog(eventlog_level_info, __FUNCTION__, "[{}] client matches versiontag \"{}\"", conn_get_socket(c), versiontag);
-
-					if (failed) {
-						conn_set_state(c, conn_state_untrusted);
-						bn_int_set(&rpacket->u.server_authreply_109.message, SERVER_AUTHREPLY_109_MESSAGE_BADVERSION);
-						packet_append_string(rpacket, "");
-					}
-					else {
-						char *mpqfilename;
-
-						mpqfilename = autoupdate_check(conn_get_archtag(c), conn_get_clienttag(c), conn_get_gamelang(c), versiontag, NULL);
-
-						/* Only handle updates when there is an update file available. */
-						if (mpqfilename != NULL) {
-							eventlog(eventlog_level_info, __FUNCTION__, "[{}] an upgrade for {} is available \"{}\"", conn_get_socket(c), versiontag, mpqfilename);
-							bn_int_set(&rpacket->u.server_authreply_109.message, SERVER_AUTHREPLY_109_MESSAGE_UPDATE);
-							packet_append_string(rpacket, mpqfilename);
-						}
-						else {
-							eventlog(eventlog_level_info, __FUNCTION__, "[{}] no upgrade for {} is available", conn_get_socket(c), versiontag);
-							bn_int_set(&rpacket->u.server_authreply_109.message, SERVER_AUTHREPLY_109_MESSAGE_OK);
-							packet_append_string(rpacket, "");
-						}
-						if (mpqfilename)
-							xfree((void *)mpqfilename);
-					}
+					bn_int_set(&rpacket->u.server_authreply_109.message, SERVER_AUTHREPLY_109_MESSAGE_BADVERSION);
+					packet_append_string(rpacket, '\0');
 
 					conn_push_outqueue(c, rpacket);
+
 					packet_del_ref(rpacket);
 				}
+			};
+
+
+			std::uint32_t count = bn_int_get(packet->u.client_authreq_109.cdkey_number);
+			std::size_t position = sizeof(t_client_authreq_109) + (count * sizeof(t_cdkey_info));
+
+			const char *const exeinfo = packet_get_str_const(packet, position, MAX_EXEINFO_STR);
+			if (exeinfo)
+			{
+				conn_set_clientexe(c, exeinfo);
+			}
+			else
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ_109 (missing or too long exeinfo)", conn_get_socket(c));
+				send_failed_packet(c);
+				return 0;
+			}
+
+			position += std::strlen(exeinfo) + 1;
+
+			const char *const owner = packet_get_str_const(packet, position, MAX_OWNER_STR);
+			if (owner)
+			{
+				conn_set_owner(c, owner);
+			}
+			else
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ_109 (missing or too long owner)", conn_get_socket(c));
+				conn_set_owner(c, "");
+			}
+
+			conn_set_checksum(c, bn_int_get(packet->u.client_authreq_109.checksum));
+			conn_set_gameversion(c, bn_int_get(packet->u.client_authreq_109.gameversion));
+			std::string version = vernum_to_verstr(bn_int_get(packet->u.client_authreq_109.gameversion));
+			conn_set_clientver(c, version.c_str());
+
+			eventlog(eventlog_level_info, __FUNCTION__, "[{}] CLIENT_AUTHREQ_109 ticks=0x{:08x}, verstr={} exeinfo=\"{}\" versionid=0x{:08x} gameversion=0x{:08x} checksum=0x{:08x}", conn_get_socket(c), bn_int_get(packet->u.client_authreq_109.ticks), version, exeinfo, conn_get_versionid(c), conn_get_gameversion(c), conn_get_checksum(c));
+
+			t_packet *rpacket;
+			if ((rpacket = packet_create(packet_class_bnet)))
+			{
+				packet_set_size(rpacket, sizeof(t_server_authreply_109));
+				packet_set_type(rpacket, SERVER_AUTHREPLY_109);
+
+
+				const VersionCheck* vc = select_versioncheck(conn_get_archtag(c), conn_get_clienttag(c), conn_get_versionid(c), conn_get_gameversion(c), conn_get_checksum(c));
+				conn_set_versioncheck(c, vc);
+				if (vc)
+				{
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] client matches versiontag \"{}\"", conn_get_socket(c), conn_get_versioncheck(c)->get_version_tag());
+				}
+				else
+				{
+					if (prefs_get_allow_unknown_version())
+					{
+						eventlog(eventlog_level_info, __FUNCTION__, "[{}] skipping versioncheck because allow_unknown_version is true", conn_get_socket(c));
+					}
+					else
+					{
+						eventlog(eventlog_level_info, __FUNCTION__, "[{}] client failed versioncheck", conn_get_socket(c));
+						send_failed_packet(c);
+						return 0;
+					}
+				}
+
+
+				char *mpqfilename = autoupdate_check(conn_get_archtag(c), conn_get_clienttag(c), conn_get_gamelang(c), conn_get_versioncheck(c)->get_version_tag().c_str(), NULL);
+				if (vc)
+				{
+					// Only handle updates when there is an update file available.
+					if (mpqfilename)
+					{
+						eventlog(eventlog_level_info, __FUNCTION__, "[{}] an upgrade for {} is available \"{}\"", conn_get_socket(c), conn_get_versioncheck(c)->get_version_tag(), mpqfilename);
+						bn_int_set(&rpacket->u.server_authreply_109.message, SERVER_AUTHREPLY_109_MESSAGE_UPDATE);
+						packet_append_string(rpacket, mpqfilename);
+
+						xfree(static_cast<void *>(mpqfilename));
+					}
+				}
+				else
+				{
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] no upgrade is available", conn_get_socket(c));
+				}
+
+				bn_int_set(&rpacket->u.server_authreply_109.message, SERVER_AUTHREPLY_109_MESSAGE_OK);
+				packet_append_string(rpacket, "");
+
+				conn_push_outqueue(c, rpacket);
+				packet_del_ref(rpacket);
 			}
 
 			return 0;
@@ -2427,97 +2457,163 @@ namespace pvpgn
 
 		static int _client_atfriendscreen(t_connection * c, t_packet const *const packet)
 		{
-			char const *myusername;
-			char const *fname;
-			t_connection *dest_c;
-			unsigned char f_cnt = 0;
-			t_account *account;
-			t_packet *rpacket;
-			char const *vt;
-			char const *nvt;
-			t_friend *fr;
-			t_list *flist;
-			t_elem *curr;
-			t_channel *mychannel, *chan;
-			int publicchan = 1;
+			eventlog(eventlog_level_debug, __FUNCTION__, "[{}] got CLIENT_ARRANGEDTEAM_FRIENDSCREEN packet", conn_get_socket(c));
 
-			eventlog(eventlog_level_info, __FUNCTION__, "[{}] got CLIENT_ARRANGEDTEAM_FRIENDSCREEN packet", conn_get_socket(c));
-
-			myusername = conn_get_username(c);
-			eventlog(eventlog_level_trace, "handle_bnet", "[{}] AT - Got Username %s", conn_get_socket(c), myusername);
-
-			if (!(rpacket = packet_create(packet_class_bnet))) {
-				eventlog(eventlog_level_error, "handle_bnet", "[{}] AT - can't create friendscreen server packet", conn_get_socket(c));
+			const char *my_username = conn_get_username(c);
+			if (!my_username)
+			{
 				return -1;
 			}
 
+			t_channel *my_channel = conn_get_channel(c);
+			int my_channel_is_public = 1;
+			if (my_channel)
+			{
+				my_channel_is_public = channel_get_flags(my_channel) & channel_flags_public;
+			}
+
+
+			t_packet *rpacket = packet_create(packet_class_bnet);
+			if (!rpacket)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] could not create friendscreen server packet", conn_get_socket(c));
+				return -1;
+			}
 			packet_set_size(rpacket, sizeof(t_server_arrangedteam_friendscreen));
 			packet_set_type(rpacket, SERVER_ARRANGEDTEAM_FRIENDSCREEN);
 
 
-			mychannel = conn_get_channel(c);
-			if ((mychannel))
-				publicchan = channel_get_flags(mychannel) & channel_flags_public;
+			std::uint8_t available_players = 0;
 
-			vt = versioncheck_get_versiontag(conn_get_versioncheck(c));
-			flist = account_get_friends(conn_get_account(c));
-			LIST_TRAVERSE(flist, curr) {
-				if (!(fr = (t_friend*)elem_get_data(curr))) {
+			// begin search for mutual and available friends
+			t_list *my_friend_list = account_get_friends(conn_get_account(c));
+			t_elem *entry;
+			LIST_TRAVERSE(my_friend_list, entry)
+			{
+				t_friend *_friend = static_cast<t_friend *>(elem_get_data(entry));
+				if (!_friend)
+				{
 					eventlog(eventlog_level_error, __FUNCTION__, "found NULL entry in list");
 					continue;
 				}
 
-				account = friend_get_account(fr);
-				if (!(dest_c = connlist_find_connection_by_account(account)))
-					continue;		// if user is offline, then continue to next friend
-				nvt = versioncheck_get_versiontag(conn_get_versioncheck(dest_c));
-				if (vt && nvt && std::strcmp(vt, nvt))
-					continue;		/* friend is using another game/version */
+				if (available_players == std::numeric_limits<decltype(available_players)>::max())
+				{
+					eventlog(eventlog_level_info, __FUNCTION__, "Reached maximum amount of available players to send in packet");
+					break;
+				}
 
-				if (friend_get_mutual(fr)) {
-					if (conn_get_dndstr(dest_c))
-						continue;	// user is dnd
-					if (conn_get_awaystr(dest_c))
-						continue;	// user is away
-					if (conn_get_game(dest_c))
-						continue;	// user is some game
-					if (!(chan = conn_get_channel(dest_c)))
+				// skip non-mutual friends
+				if (friend_get_mutual(_friend) == FRIEND_NOTMUTUAL)
+				{
+					continue;
+				}
+
+				t_account *friend_account = friend_get_account(_friend);
+				t_connection *friend_connection = connlist_find_connection_by_account(friend_account);
+				// if user is offline, then continue to next friend
+				if (!friend_connection)
+				{
+					continue;
+				}
+
+				const std::string my_version_tag = conn_get_versioncheck(c) ? conn_get_versioncheck(c)->get_version_tag() : "";
+				const std::string friend_version_tag = conn_get_versioncheck(friend_connection) ? conn_get_versioncheck(friend_connection)->get_version_tag() : "";
+				// friend is using another game or is on a different version
+				if (my_version_tag != friend_version_tag)
+				{
+					continue;
+				}
+
+				// friend has Do Not Disturb mode enabled
+				if (conn_get_dndstr(friend_connection))
+				{
+					continue;
+				}
+
+				// friend is away
+				if (conn_get_awaystr(friend_connection))
+				{
+					continue;
+				}
+
+				// friend is not in a channel
+				t_channel *friend_channel = conn_get_channel(friend_connection);
+				if (!friend_channel)
+				{
+					continue;
+				}
+
+				// // don't list YET if in same private channel
+				if (!my_channel_is_public && (friend_channel == my_channel))
+				{
+					continue;
+				}
+
+				const char *friend_name = account_get_name(friend_account);
+				eventlog(eventlog_level_trace, __FUNCTION__, "Friend {} is available for an AT Game.", friend_name);
+				available_players += 1;
+				packet_append_string(rpacket, friend_name);
+			}
+
+
+			// now list matching users in same private chan
+			if (!my_channel_is_public)
+			{
+				for (t_connection *user_connection = channel_get_first(my_channel); user_connection; user_connection = channel_get_next())
+				{
+					if (available_players == std::numeric_limits<decltype(available_players)>::max())
+					{
+						eventlog(eventlog_level_info, __FUNCTION__, "Reached maximum amount of available players to send in packet");
+						break;
+					}
+
+					// skip self
+					if (user_connection == c)
+					{
 						continue;
-					if (!publicchan && (chan == mychannel))
-						continue;	// don't list YET if in same private channel
+					}
 
-					fname = account_get_name(account);
-					eventlog(eventlog_level_trace, "handle_bnet", "AT - Friend: {} is available for a AT Game.", fname);
-					f_cnt++;
-					packet_append_string(rpacket, fname);
+					const std::string my_version_tag = conn_get_versioncheck(c) ? conn_get_versioncheck(c)->get_version_tag() : "";
+					const std::string user_version_tag = conn_get_versioncheck(user_connection) ? conn_get_versioncheck(user_connection)->get_version_tag() : "";
+					// user is using another game or is on a different version
+					if (my_version_tag != user_version_tag)
+					{
+						continue;
+					}
+
+					// user is dnd
+					if (conn_get_dndstr(user_connection))
+					{
+						continue;
+					}
+
+					// user is away
+					if (conn_get_awaystr(user_connection))
+					{
+						continue;
+					}
+					
+					const char *username = account_get_name(conn_get_account(user_connection));
+					if (!username)
+					{
+						continue;
+					}
+
+					eventlog(eventlog_level_trace, __FUNCTION__, "user {} in private channel {} is available for an AT Game.", username, channel_get_name(my_channel));
+					available_players += 1;
+					packet_append_string(rpacket, username);
 				}
 			}
 
-			if (!publicchan) {		// now list matching users in same private chan
-				for (dest_c = channel_get_first(mychannel); dest_c; dest_c = channel_get_next()) {
-					if (dest_c == c)
-						continue;	// don'tlist yourself
-					nvt = versioncheck_get_versiontag(conn_get_versioncheck(dest_c));
-					if (vt && nvt && std::strcmp(vt, nvt))
-						continue;	/* user is using another game/version */
-					if (conn_get_dndstr(dest_c))
-						continue;	// user is dnd
-					if (conn_get_awaystr(dest_c))
-						continue;	// user is away
-					if (!(conn_get_account(dest_c)))
-						continue;
-					fname = account_get_name(conn_get_account(dest_c));
-					eventlog(eventlog_level_trace, "handle_bnet", "AT - user in private channel: {} is available for a AT Game.", fname);
-					f_cnt++;
-					packet_append_string(rpacket, fname);
-				}
+			if (available_players == 0)
+			{
+				eventlog(eventlog_level_info, __FUNCTION__, "No available players");
 			}
 
-			if (!f_cnt)
-				eventlog(eventlog_level_info, "handle_bnet", "AT - no friends available for AT game.");
-			bn_byte_set(&rpacket->u.server_arrangedteam_friendscreen.f_count, f_cnt);
+			bn_byte_set(&rpacket->u.server_arrangedteam_friendscreen.f_count, available_players);
+
 			conn_push_outqueue(c, rpacket);
-
 			packet_del_ref(rpacket);
 
 			return 0;
@@ -3653,12 +3749,12 @@ namespace pvpgn
 			}
 			if (conn_get_versioncheck(cbdata->c) &&
 				conn_get_versioncheck(game_get_owner(game)) &&
-				versioncheck_get_versiontag(conn_get_versioncheck(cbdata->c)) &&
-				versioncheck_get_versiontag(conn_get_versioncheck(game_get_owner(game))) &&
-				std::strcmp(versioncheck_get_versiontag(conn_get_versioncheck(cbdata->c)), versioncheck_get_versiontag(conn_get_versioncheck(game_get_owner(game)))) != 0) {
+				conn_get_versioncheck(cbdata->c)->get_version_tag() != conn_get_versioncheck(game_get_owner(game))->get_version_tag())
+			{
 				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] not listing because game is wrong versiontag", conn_get_socket(cbdata->c));
 				return 0;
 			}
+
 			bn_short_set(&glgame.gametype, gtype_to_bngtype(game_get_type(game)));
 			bn_short_set(&glgame.unknown1, SERVER_GAMELISTREPLY_GAME_UNKNOWN1);
 			bn_short_set(&glgame.unknown3, SERVER_GAMELISTREPLY_GAME_UNKNOWN3);
@@ -4716,33 +4812,23 @@ namespace pvpgn
 
 		static int _client_changeclient(t_connection * c, t_packet const *const packet)
 		{
-			t_versioncheck *vc;
-
-			if (packet_get_size(packet) < sizeof(t_client_changeclient)) {
+			if (packet_get_size(packet) < sizeof(t_client_changeclient))
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad CLIENT_CHANGECLIENT packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_changeclient), packet_get_size(packet));
 				return -1;
 			}
 
-			if (tag_check_in_list(bn_int_get(packet->u.client_changeclient.clienttag), prefs_get_allowed_clients())) {
+			if (conn_get_clienttag(c) != CLIENTTAG_WAR3XP_UINT
+				|| bn_int_get(packet->u.client_changeclient.clienttag) != CLIENTTAG_WARCRAFT3_UINT)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] invalid attempt to change client from {X} to {X}", conn_get_socket(c), conn_get_clienttag(c), bn_int_get(packet->u.client_changeclient.clienttag));
 				conn_set_state(c, conn_state_destroy);
-				return 0;
+				return -1;
 			}
 
 			conn_set_clienttag(c, bn_int_get(packet->u.client_changeclient.clienttag));
 
-			vc = conn_get_versioncheck(c);
-			versioncheck_set_versiontag(vc, clienttag_uint_to_str(conn_get_clienttag(c)));
-
-			if (vc && versioncheck_get_versiontag(vc)) {
-				switch (versioncheck_validate(vc, conn_get_archtag(c), conn_get_clienttag(c), conn_get_clientexe(c), conn_get_versionid(c), conn_get_gameversion(c), conn_get_checksum(c))) {
-				case -1:		/* failed test... client has been modified */
-				case 0:		/* not listed in table... can't tell if client has been modified */
-					eventlog(eventlog_level_error, __FUNCTION__, "[{}] error revalidating, allowing anyway", conn_get_socket(c));
-					break;
-				}
-
-				eventlog(eventlog_level_info, __FUNCTION__, "[{}] client versiontag set to \"{}\"", conn_get_socket(c), versioncheck_get_versiontag(vc));
-			}
+			eventlog(eventlog_level_info, __FUNCTION__, "[{}] changed client to {X}", conn_get_socket(c), bn_int_get(packet->u.client_changeclient.clienttag));
 
 			return 0;
 		}

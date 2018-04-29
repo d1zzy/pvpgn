@@ -113,7 +113,6 @@ namespace pvpgn
 		extern char const * prefs_get_maildir(void);
 		extern char const * prefs_get_log_notice(void);
 		extern unsigned int prefs_get_savebyname(void);
-		extern unsigned int prefs_get_skip_versioncheck(void);
 		extern unsigned int prefs_get_allow_bad_version(void);
 		extern unsigned int prefs_get_allow_unknown_version(void);
 		extern char const * prefs_get_versioncheck_file(void);
@@ -122,8 +121,6 @@ namespace pvpgn
 		extern unsigned int prefs_get_hashtable_size(void);
 		extern char const * prefs_get_telnet_addrs(void);
 		extern unsigned int prefs_get_ipban_check_int(void);
-		extern char const * prefs_get_version_exeinfo_match(void);
-		extern unsigned int prefs_get_version_exeinfo_maxdiff(void);
 
 		extern unsigned int prefs_get_max_concurrent_logins(void);
 

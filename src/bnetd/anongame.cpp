@@ -72,7 +72,6 @@ namespace pvpgn
 
 		/**********************************************************************************/
 		static t_connection *_connlist_find_connection_by_uid(int uid);
-		static char const *_conn_get_versiontag(t_connection * c);
 
 		static int _anongame_gametype_to_queue(int type, int gametype);
 		static int _anongame_level_by_queue(t_connection * c, int queue);
@@ -93,11 +92,6 @@ namespace pvpgn
 		static t_connection *_connlist_find_connection_by_uid(int uid)
 		{
 			return connlist_find_connection_by_account(accountlist_find_account_by_uid(uid));
-		}
-
-		static char const *_conn_get_versiontag(t_connection * c)
-		{
-			return versioncheck_get_versiontag(conn_get_versioncheck(c));
 		}
 
 		/**********/
@@ -541,7 +535,7 @@ namespace pvpgn
 			md = (t_matchdata*)xmalloc(sizeof(t_matchdata));
 			md->c = c;
 			md->map_prefs = map_prefs;
-			md->versiontag = _conn_get_versiontag(c);
+			md->versiontag = conn_get_versioncheck(c) ? conn_get_versioncheck(c)->get_version_tag().c_str() : nullptr;
 
 			list_append_data(matchlists[queue][level], md);
 
@@ -834,7 +828,11 @@ namespace pvpgn
 
 					LIST_TRAVERSE(matchlists[queue][level + delta], curr) {
 						md = (t_matchdata*)elem_get_data(curr);
-						if (md->versiontag && _conn_get_versiontag(c) && !std::strcmp(md->versiontag, _conn_get_versiontag(c)) && (cur_prefs & md->map_prefs)) {
+						if (md->versiontag 
+							&& conn_get_versioncheck(c) 
+							&& !std::strcmp(md->versiontag, conn_get_versioncheck(c)->get_version_tag().c_str()) 
+							&& (cur_prefs & md->map_prefs))
+						{
 							/* set maxlevel and minlevel to keep all players within 6 levels */
 							maxlevel = (level + delta + diff < maxlevel) ? level + delta + diff : maxlevel;
 							minlevel = (level + delta - diff > minlevel) ? level + delta - diff : minlevel;

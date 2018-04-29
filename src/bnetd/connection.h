@@ -150,7 +150,7 @@ namespace pvpgn
 					char const *		clientexe;
 					char const *		owner;
 					char const *		cdkey;
-					t_versioncheck *		versioncheck; /* equation and MPQ file used to validate game checksum */
+					const VersionCheck *versioncheck;
 				} client; /* client program specific data */
 				struct {
 					t_queue *		outqueue;  /* packets waiting to be sent */
@@ -382,8 +382,8 @@ namespace pvpgn
 		extern int conn_quota_exceeded(t_connection * c, char const * message);
 		extern int conn_set_lastsender(t_connection * c, char const * sender);
 		extern char const * conn_get_lastsender(t_connection const * c);
-		extern t_versioncheck * conn_get_versioncheck(t_connection * c);
-		extern int conn_set_versioncheck(t_connection * c, t_versioncheck * versioncheck);
+		const VersionCheck *conn_get_versioncheck(t_connection *c);
+		bool conn_set_versioncheck(t_connection *c, const VersionCheck* versioncheck);
 		extern int conn_get_echoback(t_connection * c);
 		extern void conn_set_echoback(t_connection * c, int echoback);
 		extern int conn_set_ircline(t_connection * c, char const * line);

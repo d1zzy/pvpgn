@@ -402,7 +402,7 @@ namespace pvpgn
 			temp->protocol.client.clientexe = NULL;
 			temp->protocol.client.owner = NULL;
 			temp->protocol.client.cdkey = NULL;
-			temp->protocol.client.versioncheck = NULL;
+			temp->protocol.client.versioncheck = nullptr;
 			temp->protocol.account = NULL;
 			temp->protocol.chat.channel = NULL;
 			temp->protocol.chat.last_message = now;
@@ -616,9 +616,6 @@ namespace pvpgn
 
 			if (c->protocol.account)
 				watchlist->dispatch(c->protocol.account, NULL, c->protocol.client.clienttag, Watch::ET_logout);
-
-			if (c->protocol.client.versioncheck)
-				versioncheck_destroy((t_versioncheck*)c->protocol.client.versioncheck); /* avoid warning */
 
 			if (c->protocol.chat.lastsender)
 				xfree((void *)c->protocol.chat.lastsender); /* avoid warning */
@@ -3199,34 +3196,29 @@ namespace pvpgn
 		}
 
 
-		extern t_versioncheck * conn_get_versioncheck(t_connection * c)
+		const VersionCheck *conn_get_versioncheck(t_connection *c)
 		{
 			if (!c)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection");
-				return NULL;
+				return nullptr;
 			}
 
 			return c->protocol.client.versioncheck;
 		}
 
 
-		extern int conn_set_versioncheck(t_connection * c, t_versioncheck * versioncheck)
+		bool conn_set_versioncheck(t_connection *c, const VersionCheck* versioncheck)
 		{
 			if (!c)
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection");
-				return -1;
-			}
-			if (!versioncheck)
-			{
-				eventlog(eventlog_level_error, __FUNCTION__, "got NULL versioncheck");
-				return -1;
+				return false;
 			}
 
 			c->protocol.client.versioncheck = versioncheck;
 
-			return 0;
+			return true;
 		}
 
 		extern int conn_get_echoback(t_connection * c)

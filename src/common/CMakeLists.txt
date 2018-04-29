@@ -10,7 +10,7 @@ set(COMMON_SOURCES
 	fdwatch_poll.h fdwatch_select.cpp fdwatch_select.h fdwbackend.cpp 
 	fdwbackend.h field_sizes.h file_protocol.h flags.h 
 	give_up_root_privileges.cpp give_up_root_privileges.h hashtable.cpp 
-	hashtable.h hexdump.cpp hexdump.h init_protocol.h introtate.h 
+	hashtable.h hash_tuple.hpp hexdump.cpp hexdump.h init_protocol.h introtate.h 
 	irc_protocol.h list.cpp list.h lstr.h make_unique.hpp network.cpp network.h 
 	packet.cpp packet.h proginfo.cpp proginfo.h queue.cpp queue.h rcm.cpp rcm.h 
 	rlimit.cpp rlimit.h scoped_array.h scoped_ptr.h setup_after.h 

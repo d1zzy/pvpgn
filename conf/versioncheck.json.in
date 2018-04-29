@@ -1,0 +1,1855 @@
+{
+    "WAR3": {
+        "IX86": {
+            "0x1c": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=1239576727 C=1604096186 B=4198521212 4 A=A+S B=B-C C=C^A A=A+B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.28.2.",
+                        "version": "1.28.2.227",
+                        "hash": "0x2dc96bf5",
+                        "fileMetadata": "War3.exe 05/20/17 13:25:29 558568",
+                        "versionTag": "WAR3_1282"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.28.1.",
+                        "version": "1.28.1.197",
+                        "hash": "0x1fbde0fd",
+                        "fileMetadata": "War3.exe 04/17/17 12:06:57 536040",
+                        "versionTag": "WAR3_1281"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.28",
+                        "version": "1.28.0.37",
+                        "hash": "0xe00c3096",
+                        "fileMetadata": "War3.exe 04/17/17 12:06:57 536040",
+                        "versionTag": "WAR3_128"
+                    }
+                ]
+            },
+            "0x1b": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "B=454282227 C=2370009462 A=2264812340 4 A=A^S B=B-C C=C-A A=A+B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.27b",
+                        "version": "1.27.1.173",
+                        "hash": "0x4026b5b0",
+                        "fileMetadata": "War3.exe 12/09/16 06:05:09 515048",
+                        "versionTag": "WAR3_127B"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.27a",
+                        "version": "1.27.0.16",
+                        "hash": "0x960947fd",
+                        "fileMetadata": "War3.exe 08/05/16 03:15:27 514536",
+                        "versionTag": "WAR3_127A"
+                    }
+                ]
+            },
+            "0x1a": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.26a",
+                        "version": "1.26.0.1",
+                        "hash": "0xf2e7cec2",
+                        "fileMetadata": "war3.exe 03/18/11 20:03:55 471040",
+                        "versionTag": "WAR3_126A"
+                    }
+                ]
+            },
+            "0x19": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.25b",
+                        "version": "1.25.1.253",
+                        "hash": "0x41a8664c",
+                        "fileMetadata": "war3.exe 02/12/11 03:32:48 471040",
+                        "versionTag": "W3XP_125B"
+                    }
+                ]
+            },
+            "0x18": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.24e",
+                        "version": "1.24.4.243",
+                        "hash": "0xde4443c5",
+                        "fileMetadata": "war3.exe 02/26/10 20:41:08 471040",
+                        "versionTag": "W3XP_124E"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.24d",
+                        "version": "1.24.3.240",
+                        "hash": "0x2a7b4a96",
+                        "fileMetadata": "war3.exe 01/13/10 00:35:02 471040",
+                        "versionTag": "WAR3_124D"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.24c",
+                        "version": "1.24.2.234",
+                        "hash": "0x307c4598",
+                        "fileMetadata": "war3.exe 10/21/09 19:14:23 471040",
+                        "versionTag": "WAR3_124C"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.24b",
+                        "version": "1.24.1.230",
+                        "hash": "0xcaa59e30",
+                        "fileMetadata": "war3.exe 08/07/09 19:20:53 471040",
+                        "versionTag": "WAR3_124B"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.24a",
+                        "version": "1.24.0.228",
+                        "hash": "0xf3c22f0b",
+                        "fileMetadata": "war3.exe 07/23/09 20:15:12 471040",
+                        "versionTag": "WAR3_124A"
+                    }
+                ]
+            },
+            "0x17": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.23a",
+                        "version": "1.23.0.208",
+                        "hash": "0xfad9bc05",
+                        "fileMetadata": "war3.exe 03/12/09 23:23:40 471040",
+                        "versionTag": "WAR3_123A"
+                    }
+                ]
+            },
+            "0x16": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.22a",
+                        "version": "1.22.0.184",
+                        "hash": "0x909998db",
+                        "fileMetadata": "war3.exe 06/27/08 00:01:35 471040",
+                        "versionTag": "WAR3_122A"
+                    }
+                ]
+            },
+            "0x15": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.21b",
+                        "version": "1.21.1.156",
+                        "hash": "0x1b735294",
+                        "fileMetadata": "war3.exe 07/19/07 18:41:12 409660",
+                        "versionTag": "WAR3_121B"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.21a",
+                        "version": "1.21.0.119",
+                        "hash": "0xab35b5f1",
+                        "fileMetadata": "war3.exe 12/28/06 20:35:21 1572307",
+                        "versionTag": "WAR3_121A"
+                    }
+                ]
+            },
+            "0x14": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.20e",
+                        "version": "1.20.4.186",
+                        "hash": "0x8771b225",
+                        "fileMetadata": "war3.exe 06/13/06 06:13:05 1572307",
+                        "versionTag": "WAR3_120E"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.20d",
+                        "version": "1.20.3.182",
+                        "hash": "0xbbd3e672",
+                        "fileMetadata": "War3.exe 04/06/06 00:19:58 1572307",
+                        "versionTag": "WAR3_120D"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.20c",
+                        "version": "1.20.2.177",
+                        "hash": "0x97c8e59b",
+                        "fileMetadata": "War3.exe 01/05/06 02:50:54 1572307",
+                        "versionTag": "WAR3_120C"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.20b",
+                        "version": "1.0.20.168",
+                        "hash": "0x57e714c1",
+                        "fileMetadata": "War3.exe 12/07/05 23:59:26 1572307",
+                        "versionTag": "WAR3_120B"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.20a",
+                        "version": "1.0.20.160",
+                        "hash": "0xdfe00da5",
+                        "fileMetadata": "War3.exe 09/23/05 03:16:24 1572307",
+                        "versionTag": "WAR3_120A"
+                    }
+                ]
+            },
+            "0x13": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.19b",
+                        "version": "1.0.19.158",
+                        "hash": "0x9c73744d",
+                        "fileMetadata": "war3.exe 09/20/05 04:03:24 1572307",
+                        "versionTag": "WAR3_119B"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.19a",
+                        "version": "1.0.19.153",
+                        "hash": "0x892fa500",
+                        "fileMetadata": "war3.exe 09/07/05 18:58:53 1572307",
+                        "versionTag": "WAR3_119A"
+                    }
+                ]
+            },
+            "0x12": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.18a",
+                        "version": "1.0.18.142",
+                        "hash": "0x087fb830",
+                        "fileMetadata": "war3.exe 02/18/05 04:38:43 1572307",
+                        "versionTag": "WAR3_118A"
+                    }
+                ]
+            },
+            "0x11": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.17a",
+                        "version": "1.0.17.100",
+                        "hash": "0xd1d89b0e",
+                        "fileMetadata": "war3.exe 09/15/04 22:42:18 1568211",
+                        "versionTag": "WAR3_117A"
+                    }
+                ]
+            },
+            "0x10": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.16a",
+                        "version": "1.0.16.38",
+                        "hash": "0xcc882269",
+                        "fileMetadata": "War3.exe 06/28/04 23:37:02 1568211",
+                        "versionTag": "WAR3_116A"
+                    }
+                ]
+            },
+            "0x0f": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.15a",
+                        "version": "1.0.15.156",
+                        "hash": "0x39b3974b",
+                        "fileMetadata": "war3.exe 05/04/04 01:18:12 1568211",
+                        "versionTag": "WAR3_115A"
+                    }
+                ]
+            },
+            "0x0e": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.14b",
+                        "version": "1.0.14.152",
+                        "hash": "0x36fd6e73",
+                        "fileMetadata": "War3.exe 01/09/04 06:11:44 1568211",
+                        "versionTag": "WAR3_114B"
+                    },
+                    {
+                        "title": "Warcraft III - ROC 1.14a",
+                        "version": "1.0.14.151",
+                        "hash": "0xa842edef",
+                        "fileMetadata": "War3.exe 01/06/04 03:44:50 1568211",
+                        "versionTag": "WAR3_114A"
+                    }
+                ]
+            },
+            "0x0d": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.13b",
+                        "version": "1.0.13.149",
+                        "hash": "0x0bb5600d",
+                        "fileMetadata": "War3.exe 12/18/03 00:53:06 1568211",
+                        "versionTag": "WAR3_113B"
+                    }
+                ]
+            },
+            "0x0c": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - ROC 1.12a",
+                        "version": "1.0.12.148",
+                        "hash": "0xa9c022bd",
+                        "fileMetadata": "war3.exe 07/22/03 22:43:15 1568211",
+                        "versionTag": "WAR3_112A"
+                    }
+                ]
+            },
+            "0x0a": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - RoC 1.10a",
+                        "version": "1.0.10.146",
+                        "hash": "0x75d1c16f",
+                        "fileMetadata": "war3.exe 06/17/03 16:37:46 1568211",
+                        "versionTag": "WAR3_110A"
+                    }
+                ]
+            },
+            "0x07": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - RoC 1.07 (Used for TFT 1.07a in RoC Mode)",
+                        "version": "1.0.7.142",
+                        "hash": "0xde80b55b",
+                        "fileMetadata": "NULL",
+                        "versionTag": "WAR3_107A"
+                    }
+                ]
+            },
+            "0x06": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "WarCraft III - RoC 1.06a",
+                        "version": "1.0.6.0",
+                        "hash": "0x302dca19",
+                        "fileMetadata": "war3.exe 05/23/03 19:50:08 1461715",
+                        "versionTag": "WAR3_106A"
+                    }
+                ]
+            },
+            "0x05": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "WarCraft III - RoC 1.05a",
+                        "version": "1.0.5.0",
+                        "hash": "0xbe284ba9",
+                        "fileMetadata": "war3.exe 01/30/03 03:08:10 1170899",
+                        "versionTag": "WAR3_105A"
+                    }
+                ]
+            },
+            "0x04": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "WarCraft III - RoC 1.04c",
+                        "version": "1.0.4.1",
+                        "hash": "0x3f06d9fa",
+                        "fileMetadata": "war3.exe 01/16/03 02:44:48 1166807",
+                        "versionTag": "WAR3_104C"
+                    },
+                    {
+                        "title": "WarCraft III - RoC 1.04b",
+                        "version": "1.0.3.0",
+                        "hash": "0x56f4cc37",
+                        "fileMetadata": "war3.exe 10/31/02 17:29:22 1068499",
+                        "versionTag": "WAR3_104B"
+                    }
+                ]
+            },
+            "0x03": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - RoC 1.03a",
+                        "version": "1.0.3.0",
+                        "hash": "0xae4ac7fa",
+                        "fileMetadata": "war3.exe 10/08/02 20:54:49 713495",
+                        "versionTag": "WAR3_103A"
+                    }
+                ]
+            },
+            "0x02": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - RoC 1.02a",
+                        "version": "1.0.1.0",
+                        "hash": "0xa67d9a0e",
+                        "fileMetadata": "war3.exe 09/06/02 02:41:02 713495",
+                        "versionTag": "WAR3_102A"
+                    }
+                ]
+            },
+            "0x01": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - RoC 1.01b",
+                        "version": "1.0.1.1",
+                        "hash": "0x062ef7dc",
+                        "fileMetadata": "war3.exe 07/10/02 18:59:10 713495",
+                        "versionTag": "WAR3_101B"
+                    },
+                    {
+                        "title": "Warcraft III - RoC 1.01",
+                        "version": "1.0.1.0",
+                        "hash": "0x62c2e1a2",
+                        "fileMetadata": "war3.exe 06/28/02 18:41:18 713495",
+                        "versionTag": "WAR3_101"
+                    }
+                ]
+            },
+            "0x00": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - RoC 1.00",
+                        "version": "1.0.0.0",
+                        "hash": "0xf891f129",
+                        "fileMetadata": "NULL",
+                        "versionTag": "WAR3_100"
+                    }
+                ]
+            }
+        }
+    },
+    "W3XP": {
+        "IX86": {
+            "0x1c": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=1239576727 C=1604096186 B=4198521212 4 A=A+S B=B-C C=C^A A=A+B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.28.5.",
+                        "version": "1.28.5.0",
+                        "hash": "0x60743fc9",
+                        "fileMetadata": "Warcraft III.exe 07/07/17 20:15:59 562152",
+                        "versionTag": "W3XP_1285"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.28.4.",
+                        "version": "1.28.4.184",
+                        "hash": "0xce7bb7ee",
+                        "fileMetadata": "Warcraft III.exe 06/21/17 16:24:03 561128",
+                        "versionTag": "W3XP_1284"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.28.2.",
+                        "version": "1.28.2.227",
+                        "hash": "0x2dc96bf5",
+                        "fileMetadata": "War3.exe 05/20/17 13:25:29 558568",
+                        "versionTag": "W3XP_1282"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.28.1.",
+                        "version": "1.28.1.197",
+                        "hash": "0x1fbde0fd",
+                        "fileMetadata": "War3.exe 04/28/17 19:10:24 558568",
+                        "versionTag": "W3XP_1281"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.28.",
+                        "version": "1.28.0.37",
+                        "hash": "0xe00c3096",
+                        "fileMetadata": "War3.exe 04/17/17 12:06:57 536040",
+                        "versionTag": "W3XP_128"
+                    }
+                ]
+            },
+            "0x1b": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "B=454282227 C=2370009462 A=2264812340 4 A=A^S B=B-C C=C-A A=A+B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.27b",
+                        "version": "1.27.1.173",
+                        "hash": "0x4026b5b0",
+                        "fileMetadata": "War3.exe 12/09/16 06:05:09 515048",
+                        "versionTag": "W3XP_127B"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.27a",
+                        "version": "1.27.0.16",
+                        "hash": "0x960947fd",
+                        "fileMetadata": "War3.exe 08/05/16 03:15:27 514536",
+                        "versionTag": "W3XP_127A"
+                    }
+                ]
+            },
+            "0x1a": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.26a",
+                        "version": "1.26.0.1",
+                        "hash": "0xf2e7cec2",
+                        "fileMetadata": "war3.exe 03/18/11 20:03:55 471040",
+                        "versionTag": "W3XP_126A"
+                    }
+                ]
+            },
+            "0x19": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.25b",
+                        "version": "1.25.1.253",
+                        "hash": "0x41a8664c",
+                        "fileMetadata": "war3.exe 02/12/11 03:32:48 471040",
+                        "versionTag": "W3XP_125B"
+                    }
+                ]
+            },
+            "0x18": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.24e",
+                        "version": "1.24.4.243",
+                        "hash": "0xde4443c5",
+                        "fileMetadata": "war3.exe 02/26/10 20:41:08 471040",
+                        "versionTag": "W3XP_124E"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.24d",
+                        "version": "1.24.3.240",
+                        "hash": "0x2a7b4a96",
+                        "fileMetadata": "war3.exe 01/13/10 00:35:02 471040",
+                        "versionTag": "W3XP_124D"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.24c",
+                        "version": "1.24.2.234",
+                        "hash": "0x307c4598",
+                        "fileMetadata": "war3.exe 10/21/09 19:14:23 471040",
+                        "versionTag": "W3XP_124C"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.24b",
+                        "version": "1.24.1.230",
+                        "hash": "0xcaa59e30",
+                        "fileMetadata": "war3.exe 08/07/09 19:20:53 471040",
+                        "versionTag": "W3XP_124B"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.24a",
+                        "version": "1.24.0.228",
+                        "hash": "0xf3c22f0b",
+                        "fileMetadata": "war3.exe 07/23/09 20:15:12 471040",
+                        "versionTag": "W3XP_124A"
+                    }
+                ]
+            },
+            "0x17": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.23a",
+                        "version": "1.23.0.208",
+                        "hash": "0xfad9bc05",
+                        "fileMetadata": "war3.exe 03/12/09 23:23:40 471040",
+                        "versionTag": "W3XP_123A"
+                    }
+                ]
+            },
+            "0x16": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.22a",
+                        "version": "1.22.0.184",
+                        "hash": "0x909998db",
+                        "fileMetadata": "war3.exe 06/27/08 00:01:35 471040",
+                        "versionTag": "W3XP_122A"
+                    }
+                ]
+            },
+            "0x15": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.21b",
+                        "version": "1.21.1.156",
+                        "hash": "0x1b735294",
+                        "fileMetadata": "war3.exe 07/19/07 18:41:12 409660",
+                        "versionTag": "W3XP_121B"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.21a",
+                        "version": "1.21.0.119",
+                        "hash": "0xab35b5f1",
+                        "fileMetadata": "war3.exe 12/28/06 20:35:21 1572307",
+                        "versionTag": "W3XP_121A"
+                    }
+                ]
+            },
+            "0x14": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.20e",
+                        "version": "1.20.4.186",
+                        "hash": "0x8771b225",
+                        "fileMetadata": "war3.exe 06/13/06 06:13:05 1572307",
+                        "versionTag": "W3XP_120E"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.20d",
+                        "version": "1.20.3.182",
+                        "hash": "0xbbd3e672",
+                        "fileMetadata": "War3.exe 04/06/06 00:19:58 1572307",
+                        "versionTag": "W3XP_120D"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.20c",
+                        "version": "1.20.2.177",
+                        "hash": "0x97c8e59b",
+                        "fileMetadata": "War3.exe 01/05/06 02:50:54 1572307",
+                        "versionTag": "W3XP_120C"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.20b",
+                        "version": "1.0.20.168",
+                        "hash": "0x57e714c1",
+                        "fileMetadata": "War3.exe 12/07/05 23:59:26 1572307",
+                        "versionTag": "W3XP_120B"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.20a",
+                        "version": "1.0.20.160",
+                        "hash": "0xdfe00da5",
+                        "fileMetadata": "War3.exe 09/23/05 03:16:24 1572307",
+                        "versionTag": "W3XP_120A"
+                    }
+                ]
+            },
+            "0x13": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.19b",
+                        "version": "1.0.19.158",
+                        "hash": "0x9c73744d",
+                        "fileMetadata": "war3.exe 09/20/05 04:03:24 1572307",
+                        "versionTag": "W3XP_119B"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.19a",
+                        "version": "1.0.19.153",
+                        "hash": "0x892fa500",
+                        "fileMetadata": "war3.exe 09/07/05 18:58:53 1572307",
+                        "versionTag": "W3XP_119A"
+                    }
+                ]
+            },
+            "0x12": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.18a",
+                        "version": "1.0.18.142",
+                        "hash": "0x087fb830",
+                        "fileMetadata": "war3.exe 02/18/05 04:38:43 1572307",
+                        "versionTag": "W3XP_118A"
+                    }
+                ]
+            },
+            "0x11": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.17a",
+                        "version": "1.0.17.100",
+                        "hash": "0xd1d89b0e",
+                        "fileMetadata": "war3.exe 09/15/04 22:42:18 1568211",
+                        "versionTag": "W3XP_117A"
+                    }
+                ]
+            },
+            "0x10": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.16a",
+                        "version": "1.0.16.38",
+                        "hash": "0xcc882269",
+                        "fileMetadata": "War3.exe 06/28/04 23:37:02 1568211",
+                        "versionTag": "W3XP_116A"
+                    }
+                ]
+            },
+            "0x0f": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.15a",
+                        "version": "1.0.15.156",
+                        "hash": "0x39b3974b",
+                        "fileMetadata": "war3.exe 05/04/04 01:18:12 1568211",
+                        "versionTag": "W3XP_115A"
+                    }
+                ]
+            },
+            "0x0e": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.14b",
+                        "version": "1.0.14.152",
+                        "hash": "0x36fd6e73",
+                        "fileMetadata": "War3.exe 01/09/04 06:11:44 1568211",
+                        "versionTag": "W3XP_114B"
+                    },
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.14a",
+                        "version": "1.0.14.151",
+                        "hash": "0xa842edef",
+                        "fileMetadata": "War3.exe 01/06/04 03:44:50 1568211",
+                        "versionTag": "W3XP_114A"
+                    }
+                ]
+            },
+            "0x0d": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.13b",
+                        "version": "1.0.13.149",
+                        "hash": "0x0bb5600d",
+                        "fileMetadata": "War3.exe 12/18/03 00:53:06 1568211",
+                        "versionTag": "W3XP_113B"
+                    }
+                ]
+            },
+            "0x0c": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.12a",
+                        "version": "1.0.12.148",
+                        "hash": "0xa9c022bd",
+                        "fileMetadata": "war3.exe 07/22/03 22:43:15 1568211",
+                        "versionTag": "W3XP_112A"
+                    }
+                ]
+            },
+            "0x0b": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.11a",
+                        "version": "1.0.11.147",
+                        "hash": "0x5fce4f04",
+                        "fileMetadata": "war3.exe 07/01/03 18:22:52 1568211",
+                        "versionTag": "W3XP_111A"
+                    }
+                ]
+            },
+            "0x0a": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.10a",
+                        "version": "1.0.10.146",
+                        "hash": "0x75d1c16f",
+                        "fileMetadata": "war3.exe 06/17/03 16:37:46 1568211",
+                        "versionTag": "W3XP_110A"
+                    }
+                ]
+            },
+            "0x07": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft III - TFT (Expansion) 1.07a",
+                        "version": "1.0.7.142",
+                        "hash": "0xde80b55b",
+                        "fileMetadata": "NULL",
+                        "versionTag": "W3XP_107A"
+                    }
+                ]
+            }
+        }
+    },
+    "W2BN": {
+        "IX86": {
+            "0x4f": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Warcraft II BNE 2.02b",
+                        "version": "2.0.2.1",
+                        "hash": "0xff0d4c4a",
+                        "fileMetadata": "Warcraft II BNE.exe 05/21/01 21:52:22 712704",
+                        "versionTag": "W2BN_202B"
+                    },
+                    {
+                        "title": "Warcraft II BNE 2.02a",
+                        "version": "2.0.2.0",
+                        "hash": "0xb52bad87",
+                        "fileMetadata": "Warcraft II BNE.exe 05/15/01 20:53:19 712704",
+                        "versionTag": "W2BN_202A"
+                    }
+                ]
+            },
+            "0x4b": {
+                "checkRevisionFile": "IX86ver4.mpq",
+                "equation": "A=2383634235 B=711286254 C=3710735432 4 A=A+S B=B^C C=C+A A=A^B",
+                "entries": [
+                    {
+                        "title": "Warcraft II BNE v2.01",
+                        "version": "2.0.0.154",
+                        "hash": "0x0",
+                        "fileMetadata": "Warcraft II BNE.exe ??/??/?? ??:??:?? 704512",
+                        "versionTag": "W2BN_201"
+                    }
+                ]
+            }
+        }
+    },
+    "STAR": {
+        "IX86": {
+            "0xd3": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.16.1 - (Starcraft mode)",
+                        "version": "1.16.1.1",
+                        "hash": "0x0a85372d",
+                        "fileMetadata": "StarCraft.exe 01/09/09 22:57:43 1220608",
+                        "versionTag": "STAR_1161"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.16.1",
+                        "version": "1.16.1.0",
+                        "hash": "0x02623d85",
+                        "fileMetadata": "StarCraft.exe 01/08/09 05:23:44 1220608",
+                        "versionTag": "STAR_1161"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.16 - (Starcraft mode)",
+                        "version": "1.16.0.1",
+                        "hash": "0xd206c475",
+                        "fileMetadata": "StarCraft.exe 11/06/08 01:10:59 1220608",
+                        "versionTag": "STAR_116"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.16",
+                        "version": "1.16.0.0",
+                        "hash": "0xcab35ce0",
+                        "fileMetadata": "StarCraft.exe 11/06/08 01:14:14 1220608",
+                        "versionTag": "STAR_116"
+                    }
+                ]
+            },
+            "0xd1": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.15.3 - (Starcraft mode)",
+                        "version": "1.15.3.1",
+                        "hash": "0x2abff892",
+                        "fileMetadata": "StarCraft.exe 07/25/08 23:34:58 1220608",
+                        "versionTag": "STAR_1153"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.15.2 - (Starcraft mode)",
+                        "version": "1.15.2.1",
+                        "hash": "0x8fbdf18d",
+                        "fileMetadata": "StarCraft.exe 01/10/08 20:23:42 1220608",
+                        "versionTag": "STAR_1152"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.15.1 - (Starcraft mode)",
+                        "version": "1.15.1.0",
+                        "hash": "0x99e92077",
+                        "fileMetadata": "starcraft.exe 07/19/07 02:30:05 1220608",
+                        "versionTag": "STAR_1151"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.15 - (Starcraft mode)",
+                        "version": "1.15.0.1",
+                        "hash": "0x1eec4ebc",
+                        "fileMetadata": "starcraft.exe 05/08/07 19:13:26 1220608",
+                        "versionTag": "STAR_115"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.15.3",
+                        "version": "1.15.3.0",
+                        "hash": "0xc9fc7927",
+                        "fileMetadata": "StarCraft.exe 07/25/08 23:36:39 1220608",
+                        "versionTag": "STAR_1153"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.15.2",
+                        "version": "1.15.2.0",
+                        "hash": "0x91c0f907",
+                        "fileMetadata": "StarCraft.exe 01/08/08 23:45:36 1220608",
+                        "versionTag": "STAR_1152"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.15",
+                        "version": "1.15.0.0",
+                        "hash": "0xd892b992",
+                        "fileMetadata": "starcraft.exe 05/08/07 19:14:08 1220608",
+                        "versionTag": "STAR_115"
+                    }
+                ]
+            },
+            "0xcf": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.14 - (Starcraft mode)",
+                        "version": "1.14.0.1",
+                        "hash": "0xf5280a9e",
+                        "fileMetadata": "starcraft.exe 05/10/06 00:13:58 1216512",
+                        "versionTag": "STAR_114"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.14",
+                        "version": "1.14.0.0",
+                        "hash": "0x1f109657",
+                        "fileMetadata": "starcraft.exe 05/19/06 00:05:06 1216512",
+                        "versionTag": "STAR_114"
+                    }
+                ]
+            },
+            "0xcd": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13f - (Starcraft mode)",
+                        "version": "1.1.3.11",
+                        "hash": "0x5c5e4509",
+                        "fileMetadata": "starcraft.exe 01/13/06 05:42:48 1146939",
+                        "versionTag": "STAR_113F"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13e - (Starcraft mode)",
+                        "version": "1.1.3.9",
+                        "hash": "0xdee278b8",
+                        "fileMetadata": "starcraft.exe 09/07/05 19:06:42 1093632",
+                        "versionTag": "STAR_113E"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13d - (Starcraft mode)",
+                        "version": "1.1.3.7",
+                        "hash": "0x5b3cbe07",
+                        "fileMetadata": "starcraft.exe 08/25/05 22:23:54 1093632",
+                        "versionTag": "SEXP_113D_STAR"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13c - (Starcraft mode)",
+                        "version": "1.1.3.5",
+                        "hash": "0xbd7aca6e",
+                        "fileMetadata": "starcraft.exe 08/18/05 23:42:08 1093632",
+                        "versionTag": "SEXP_113C_STAR"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13b - (Starcraft mode)",
+                        "version": "1.1.3.3",
+                        "hash": "0x02cfab16",
+                        "fileMetadata": "starcraft.exe 08/10/05 22:19:41 1093632",
+                        "versionTag": "SEXP_113B_STAR"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13 - (Starcraft mode)",
+                        "version": "1.1.3.1",
+                        "hash": "0x02bb0696",
+                        "fileMetadata": "starcraft.exe 06/24/05 17:19:30 1093632",
+                        "versionTag": "SEXP_113_STAR"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.13f",
+                        "version": "1.1.3.10",
+                        "hash": "0x0e3d3732",
+                        "fileMetadata": "starcraft.exe 01/13/06 05:46:36 1146939",
+                        "versionTag": "STAR_113F"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.13e",
+                        "version": "1.1.3.8",
+                        "hash": "0xa21f8b5c",
+                        "fileMetadata": "starcraft.exe 09/07/05 19:31:20 1093632",
+                        "versionTag": "STAR_113E"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.13d",
+                        "version": "1.1.3.6",
+                        "hash": "0xdef3af2b",
+                        "fileMetadata": "starcraft.exe 08/25/05 22:36:16 1093632",
+                        "versionTag": "STAR_113D"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.13c",
+                        "version": "1.1.3.4",
+                        "hash": "0xe888a7ce",
+                        "fileMetadata": "starcraft.exe 08/18/05 23:52:34 1093632",
+                        "versionTag": "STAR_113C"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.13b",
+                        "version": "1.1.3.2",
+                        "hash": "0x934ce3ac",
+                        "fileMetadata": "starcraft.exe 08/10/05 22:24:39 1093632",
+                        "versionTag": "STAR_113B"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.13",
+                        "version": "1.1.3.0",
+                        "hash": "0x3462622c",
+                        "fileMetadata": "starcraft.exe 06/24/05 17:26:11 1093632",
+                        "versionTag": "STAR_113"
+                    }
+                ]
+            },
+            "0xcb": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.12b - (Starcraft mode)",
+                        "version": "1.1.2.3",
+                        "hash": "0x0eea30bc",
+                        "fileMetadata": "starcraft.exe 02/10/05 02:14:10 1093632",
+                        "versionTag": "SEXP_112B_STAR"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.12 - (Starcraft mode)",
+                        "version": "1.1.2.1",
+                        "hash": "0x796786fe",
+                        "fileMetadata": "starcraft.exe 02/10/05 05:36:14 1093632",
+                        "versionTag": "SEXP_112_STAR"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.12b",
+                        "version": "1.1.2.2",
+                        "hash": "0x90abd67f",
+                        "fileMetadata": "starcraft.exe 02/18/05 02:18:55 1093632",
+                        "versionTag": "STAR_112B"
+                    },
+                    {
+                        "title": "Starcraft (Standalone) 1.12",
+                        "version": "1.1.2.0",
+                        "hash": "0x2132ae0b",
+                        "fileMetadata": "starcraft.exe 02/10/05 05:37:38 1093632",
+                        "versionTag": "STAR_112"
+                    }
+                ]
+            },
+            "0xc9": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.11b - (Starcraft mode)",
+                        "version": "1.1.1.3",
+                        "hash": "0xd1ef9ca4",
+                        "fileMetadata": "starcraft.exe 05/26/04 00:46:00 1048576",
+                        "versionTag": "SEXP_111B_STAR"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.11 - (Starcraft mode)",
+                        "version": "1.1.1.1",
+                        "hash": "0x706c67e6",
+                        "fileMetadata": "starcraft.exe 04/27/04 05:12:02 1048576",
+                        "versionTag": "SEXP_111_STAR"
+                    },
+                    {
+                        "title": "Starcraft 1.11b",
+                        "version": "1.1.1.2",
+                        "hash": "0x7e9ce2f1",
+                        "fileMetadata": "starcraft.exe 05/26/04 01:25:14 1048576",
+                        "versionTag": "STAR_111B"
+                    }
+                ]
+            },
+            "0xc7": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.10 - (Starcraft mode)",
+                        "version": "1.1.0.1",
+                        "hash": "0xe20a2ca1",
+                        "fileMetadata": "starcraft.exe 03/28/03 04:21:58 1064960",
+                        "versionTag": "SEXP_110_STAR"
+                    },
+                    {
+                        "title": "Starcraft 1.10",
+                        "version": "1.1.0.0",
+                        "hash": "0x8515bf6a",
+                        "fileMetadata": "starcraft.exe 03/27/03 04:30:39 1064960",
+                        "versionTag": "STAR_110"
+                    }
+                ]
+            },
+            "0xc5": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.09 - (StarCraft mode)",
+                        "version": "1.0.9.1",
+                        "hash": "0x9333e69f",
+                        "fileMetadata": "starcraft.exe 02/05/02 07:17:26 1083392",
+                        "versionTag": "SEXP_109_STAR"
+                    },
+                    {
+                        "title": "Starcraft 1.09b",
+                        "version": "1.0.9.2",
+                        "hash": "0x96d28df0",
+                        "fileMetadata": "starcraft.exe 02/21/02 21:48:41 1083392",
+                        "versionTag": "STAR_109B"
+                    },
+                    {
+                        "title": "Starcraft 1.09",
+                        "version": "1.0.9.0",
+                        "hash": "0x251098be",
+                        "fileMetadata": "starcraft.exe 02/05/02 07:37:20 1083392",
+                        "versionTag": "STAR_109"
+                    }
+                ]
+            },
+            "0xc3": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.08b - (StarCraft mode)",
+                        "version": "1.0.8.11",
+                        "hash": "0x95b346ec",
+                        "fileMetadata": "starcraft.exe 05/19/01 02:28:22 1082880",
+                        "versionTag": "SEXP_108B_STAR"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.08 - (StarCraft mode)",
+                        "version": "1.0.8.1",
+                        "hash": "0x5063884e",
+                        "fileMetadata": "starcraft.exe 05/17/01 03:51:08 1082880",
+                        "versionTag": "SEXP_108_STAR"
+                    },
+                    {
+                        "title": "Starcraft 1.08b",
+                        "version": "1.0.8.10",
+                        "hash": "0x7859c173",
+                        "fileMetadata": "starcraft.exe 05/19/01 02:01:50 1082880",
+                        "versionTag": "STAR_108B"
+                    },
+                    {
+                        "title": "Starcraft 1.08",
+                        "version": "1.0.8.0",
+                        "hash": "0x7b58b906",
+                        "fileMetadata": "starcraft.exe 05/17/01 04:12:40 1082880",
+                        "versionTag": "STAR_108"
+                    }
+                ]
+            },
+            "0xc1": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.07 - (StarCraft mode)",
+                        "version": "1.0.7.1",
+                        "hash": "0xacf13dce",
+                        "fileMetadata": "starcraft.exe 10/30/99 03:54:30 1043456",
+                        "versionTag": "SEXP_107_STAR"
+                    },
+                    {
+                        "title": "Starcraft 1.07",
+                        "version": "1.0.7.0",
+                        "hash": "0x79126108",
+                        "fileMetadata": "starcraft.exe 10/30/99 02:20:12 1043456",
+                        "versionTag": "STAR_107"
+                    }
+                ]
+            },
+            "0xbd": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.06 - (StarCraft mode)",
+                        "version": "1.0.6.1",
+                        "hash": "0x1acce912",
+                        "fileMetadata": "starcraft.exe 09/28/99 19:41:34 1042432",
+                        "versionTag": "SEXP_106_STAR"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.05 - (StarCraft mode)",
+                        "version": "1.0.5.1",
+                        "hash": "0x9a2d64e6",
+                        "fileMetadata": "starcraft.exe 03/08/99 22:37:32 1042432",
+                        "versionTag": "SEXP_105_STAR"
+                    },
+                    {
+                        "title": "Starcraft 1.06",
+                        "version": "1.0.6.0",
+                        "hash": "0xfea28485",
+                        "fileMetadata": "starcraft.exe 09/25/99 22:40:10 1042432",
+                        "versionTag": "STAR_106"
+                    },
+                    {
+                        "title": "Starcraft 1.05",
+                        "version": "1.0.5.0",
+                        "hash": "0xc243123c",
+                        "fileMetadata": "starcraft.exe 03/08/99 22:41:50 1042432",
+                        "versionTag": "STAR_105"
+                    }
+                ]
+            },
+            "0xbb": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.04 - (StarCraft mode)",
+                        "version": "1.0.4.1",
+                        "hash": "0xfd581427",
+                        "fileMetadata": "NULL",
+                        "versionTag": "SEXP_104_STAR"
+                    },
+                    {
+                        "title": "# Starcraft 1.04",
+                        "version": "1.0.4.0",
+                        "hash": "0x2779bdc8",
+                        "fileMetadata": "starcraft.exe 12/16/98 22:24:18 1041408",
+                        "versionTag": "STAR_104"
+                    }
+                ]
+            },
+            "0xa9": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft 1.03",
+                        "version": "1.0.3.0",
+                        "hash": "0x1309eaad",
+                        "fileMetadata": "starcraft.exe 10/09/98 23:18:22 987648",
+                        "versionTag": "STAR_103"
+                    }
+                ]
+            }
+        }
+    },
+    "SEXP": {
+        "IX86": {
+            "0xd3": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.16.1 - (Broodwar mode)",
+                        "version": "1.16.1.1",
+                        "hash": "0x0a85372d",
+                        "fileMetadata": "StarCraft.exe 01/09/09 22:57:43 1220608",
+                        "versionTag": "SEXP_1161"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.16 - (Broodwar mode)",
+                        "version": "1.16.0.1",
+                        "hash": "0xd206c475",
+                        "fileMetadata": "StarCraft.exe 11/06/08 01:10:59 1220608",
+                        "versionTag": "SEXP_116"
+                    }
+                ]
+            },
+            "0xd1": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.15.3 - (Broodwar mode)",
+                        "version": "1.15.3.1",
+                        "hash": "0x2abff892",
+                        "fileMetadata": "StarCraft.exe 07/25/08 23:34:58 1220608",
+                        "versionTag": "SEXP_1153"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.15.2 - (Broodwar mode)",
+                        "version": "1.15.2.1",
+                        "hash": "0x8fbdf18d",
+                        "fileMetadata": "StarCraft.exe 01/10/08 20:23:42 1220608",
+                        "versionTag": "SEXP_1152"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.15.1 - (Broodwar mode)",
+                        "version": "1.15.1.0",
+                        "hash": "0x99e92077",
+                        "fileMetadata": "starcraft.exe 07/19/07 02:30:05 1220608",
+                        "versionTag": "SEXP_1151"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.15 - (Broodwar mode)",
+                        "version": "1.15.0.1",
+                        "hash": "0x1eec4ebc",
+                        "fileMetadata": "starcraft.exe 05/08/07 19:13:26 1220608",
+                        "versionTag": "SEXP_115"
+                    }
+                ]
+            },
+            "0xcf": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft Broodwar (Expansion) 1.14 - (Broodwar mode)",
+                        "version": "1.14.0.1",
+                        "hash": "0xf5280a9e",
+                        "fileMetadata": "starcraft.exe 05/10/06 00:13:58 1216512",
+                        "versionTag": "SEXP_114"
+                    }
+                ]
+            },
+            "0xcd": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13f - (Broodwar mode)",
+                        "version": "1.1.3.11",
+                        "hash": "0x5c5e4509",
+                        "fileMetadata": "starcraft.exe 01/13/06 05:42:48 1146939",
+                        "versionTag": "SEXP_113F"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13e - (Broodwar mode)",
+                        "version": "1.1.3.9",
+                        "hash": "0xdee278b8",
+                        "fileMetadata": "starcraft.exe 09/07/05 19:06:42 1093632",
+                        "versionTag": "SEXP_113E"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13d - (Broodwar mode)",
+                        "version": "1.1.3.7",
+                        "hash": "0x5b3cbe07",
+                        "fileMetadata": "starcraft.exe 08/25/05 22:23:54 1093632",
+                        "versionTag": "SEXP_113D"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13c - (Broodwar mode)",
+                        "version": "1.1.3.5",
+                        "hash": "0xbd7aca6e",
+                        "fileMetadata": "starcraft.exe 08/18/05 23:42:08 1093632",
+                        "versionTag": "SEXP_113C"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13b - (Broodwar mode)",
+                        "version": "1.1.3.3",
+                        "hash": "0x02cfab16",
+                        "fileMetadata": "starcraft.exe 08/10/05 22:19:41 1093632",
+                        "versionTag": "SEXP_113B"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.13 - (Broodwar mode)",
+                        "version": "1.1.3.1",
+                        "hash": "0x02bb0696",
+                        "fileMetadata": "starcraft.exe 06/24/05 17:19:30 1093632",
+                        "versionTag": "SEXP_113"
+                    }
+                ]
+            },
+            "0xcb": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.12b - (Broodwar mode)",
+                        "version": "1.1.2.3",
+                        "hash": "0x0eea30bc",
+                        "fileMetadata": "starcraft.exe 02/18/05 02:14:10 1093632",
+                        "versionTag": "SEXP_112B"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.12 - (Broodwar mode)",
+                        "version": "1.1.2.1",
+                        "hash": "0x796786fe",
+                        "fileMetadata": "starcraft.exe 02/10/05 05:36:14 1093632",
+                        "versionTag": "SEXP_112"
+                    }
+                ]
+            },
+            "0xc9": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.11b - (Broodwar mode)",
+                        "version": "1.1.1.3",
+                        "hash": "0xd1ef9ca4",
+                        "fileMetadata": "starcraft.exe 05/26/04 00:46:00 1048576",
+                        "versionTag": "SEXP_111B"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.11 - (Broodwar mode)",
+                        "version": "1.1.1.1",
+                        "hash": "0x706c67e6",
+                        "fileMetadata": "starcraft.exe 04/27/04 05:12:02 1048576",
+                        "versionTag": "SEXP_111"
+                    }
+                ]
+            },
+            "0xc7": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.10 - (Broodwar mode)",
+                        "version": "1.1.0.1",
+                        "hash": "0xe20a2ca1",
+                        "fileMetadata": "starcraft.exe 03/28/03 04:21:58 1064960",
+                        "versionTag": "SEXP_110"
+                    }
+                ]
+            },
+            "0xc5": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.09b - (Broodwar mode)",
+                        "version": "1.0.9.3",
+                        "hash": "0xf76df1ed",
+                        "fileMetadata": "starcraft.exe 02/21/02 20:54:04 1083392",
+                        "versionTag": "SEXP_109B"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.09 - (Broodwar mode)",
+                        "version": "1.0.9.1",
+                        "hash": "0x9333e69f",
+                        "fileMetadata": "starcraft.exe 02/05/02 07:17:26 1083392",
+                        "versionTag": "SEXP_109"
+                    }
+                ]
+            },
+            "0xc3": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.08b - (Broodwar mode)",
+                        "version": "1.0.8.11",
+                        "hash": "0x95b346ec",
+                        "fileMetadata": "starcraft.exe 05/19/01 02:28:22 1082880",
+                        "versionTag": "SEXP_108B"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.08 - (Broodwar mode)",
+                        "version": "1.0.8.1",
+                        "hash": "0x5063884e",
+                        "fileMetadata": "starcraft.exe 05/17/01 03:51:08 1082880",
+                        "versionTag": "SEXP_108"
+                    }
+                ]
+            },
+            "0xc1": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.07 - (Broodwar mode)",
+                        "version": "1.0.7.1",
+                        "hash": "0xacf13dce",
+                        "fileMetadata": "starcraft.exe 10/30/99 03:54:30 1043456",
+                        "versionTag": "SEXP_107"
+                    }
+                ]
+            },
+            "0xbd": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.06 - (Broodwar mode)",
+                        "version": "1.0.6.1",
+                        "hash": "0x1acce912",
+                        "fileMetadata": "starcraft.exe 09/28/99 19:41:34 1042432",
+                        "versionTag": "SEXP_106"
+                    },
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.05 - (Broodwar mode)",
+                        "version": "1.0.5.1",
+                        "hash": "0x9a2d64e6",
+                        "fileMetadata": "starcraft.exe 03/08/99 22:37:32 1042432",
+                        "versionTag": "SEXP_105"
+                    }
+                ]
+            },
+            "0xbb": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+                    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.04 - (Broodwar mode)",
+                        "version": "1.0.4.1",
+                        "hash": "0xfd581427",
+                        "fileMetadata": "NULL",
+                        "versionTag": "SEXP_104"
+                    }
+                ]
+            }
+        }
+    },
+    "DRTL": {
+        "IX86": {
+            "0x2a": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo 109b",
+                        "version": "1.0.9.2",
+                        "hash": "0x23135c73",
+                        "fileMetadata": "Diablo.exe 05/18/01 23:10:57 757760",
+                        "versionTag": "DRTL_109B"
+                    },
+                    {
+                        "title": "Diablo 109",
+                        "version": "1.0.9.1",
+                        "hash": "0x0dcb0513",
+                        "fileMetadata": "Diablo.exe 05/12/01 00:53:17 757760",
+                        "versionTag": "DRTL_109"
+                    }
+                ]
+            },
+            "0x28": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo 108",
+                        "version": "1.0.8.1",
+                        "hash": "0x09eb1213",
+                        "fileMetadata": "Diablo.exe 05/24/00 01:16:01 764928",
+                        "versionTag": "DRTL_108"
+                    }
+                ]
+            }
+        }
+    },
+    "D2XP": {
+        "IX86": {
+            "0x0e": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II - LoD (Expansion) 1.14d",
+                        "version": "1.14.3.0",
+                        "hash": "0x43f51a83",
+                        "fileMetadata": "Game.exe 05/31/16 19:02:24 3618792",
+                        "versionTag": "D2XP_114D"
+                    },
+                    {
+                        "title": "Diablo II - LoD (Expansion) 1.14c",
+                        "version": "1.14.2.0",
+                        "hash": "0x6123b0f2",
+                        "fileMetadata": "Game.exe 05/06/16 18:15:44 3586024",
+                        "versionTag": "D2XP_114C"
+                    },
+                    {
+                        "title": "Diablo II - LoD (Expansion) 1.14b",
+                        "version": "1.14.1.0",
+                        "hash": "0x1373c295",
+                        "fileMetadata": "Game.exe 03/31/16 01:09:01 3590120",
+                        "versionTag": "D2XP_114B"
+                    },
+                    {
+                        "title": "Diablo II - LoD (Expansion) 1.14a",
+                        "version": "1.14.0.0",
+                        "hash": "0xbcb5b3bb",
+                        "fileMetadata": "Game.exe 02/29/16 17:34:46 3590120",
+                        "versionTag": "D2XP_114A"
+                    }
+                ]
+            },
+            "0x0d": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II - LoD (Expansion) 1.13c",
+                        "version": "1.0.13.0",
+                        "hash": "0x7686beca",
+                        "fileMetadata": "Game.exe 03/09/10 04:10:51 61440",
+                        "versionTag": "D2XP_113C"
+                    }
+                ]
+            },
+            "0x09": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II - LoD (Expansion) 1.09b",
+                        "version": "1.0.9.0",
+                        "hash": "0x1436c138",
+                        "fileMetadata": "Game.exe 08/31/01 22:40:56 428163",
+                        "versionTag": "D2XP_109B"
+                    }
+                ]
+            },
+            "0x08": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II - LoD (Expansion) 1.08",
+                        "version": "1.0.8.0",
+                        "hash": "0x3a8664ff",
+                        "fileMetadata": "Game.exe 06/19/01 02:24:32 428163",
+                        "versionTag": "D2XP_108"
+                    }
+                ]
+            },
+            "0x07": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II - LoD (Expansion) 1.07",
+                        "version": "1.0.7.0",
+                        "hash": "0x4f3079e6",
+                        "fileMetadata": "Game.exe 01/23/02 06:39:26 424067",
+                        "versionTag": "D2XP_107"
+                    }
+                ]
+            }
+        }
+    },
+    "D2DV": {
+        "IX86": {
+            "0x0e": {
+                "checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II 1.14d",
+                        "version": "1.14.3.0",
+                        "hash": "0x6b6a21b5",
+                        "fileMetadata": "Game.exe 05/31/16 19:02:32 3614696",
+                        "versionTag": "D2DV_114D"
+                    },
+                    {
+                        "title": "Diablo II 1.14c",
+                        "version": "1.14.2.0",
+                        "hash": "0x7d54f650",
+                        "fileMetadata": "Game.exe 05/06/16 18:15:49 3581928",
+                        "versionTag": "D2DV_114C"
+                    },
+                    {
+                        "title": "Diablo II 1.14b",
+                        "version": "1.14.1.0",
+                        "hash": "0x77f3db54",
+                        "fileMetadata": "Game.exe 06/13/16 02:02:21 3586024",
+                        "versionTag": "D2DV_114B"
+                    },
+                    {
+                        "title": "Diablo II 1.14a",
+                        "version": "1.14.0.0",
+                        "hash": "0xd9e9368a",
+                        "fileMetadata": "Game.exe 02/29/16 17:34:50 3586024",
+                        "versionTag": "D2DV_114A"
+                    }
+                ]
+            },
+            "0x0d": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II 1.13c",
+                        "version": "1.0.13.0",
+                        "hash": "0xfc04b9f6",
+                        "fileMetadata": "Game.exe 03/09/10 04:11:00 57344",
+                        "versionTag": "D2DV_113C"
+                    }
+                ]
+            },
+            "0x09": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II 1.09b",
+                        "version": "1.0.9.0",
+                        "hash": "0xb9cb2cb1",
+                        "fileMetadata": "Game.exe 08/31/01 22:40:35 424067",
+                        "versionTag": "D2DV_109B"
+                    }
+                ]
+            },
+            "0x08": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II 1.08",
+                        "version": "1.0.8.0",
+                        "hash": "0x9e488d3d",
+                        "fileMetadata": "Game.exe 06/19/01 02:24:04 424067",
+                        "versionTag": "D2DV_108"
+                    }
+                ]
+            },
+            "0x06": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II 1.06b",
+                        "version": "1.0.6.0",
+                        "hash": "0xb2fb38b7",
+                        "fileMetadata": "Game.exe 05/16/01 18:55:11 419971",
+                        "versionTag": "D2DV_106B"
+                    }
+                ]
+            },
+            "0x05": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II 1.05b",
+                        "version": "1.0.5.1",
+                        "hash": "0x36869f98",
+                        "fileMetadata": "Game.exe 02/01/01 21:21:16 399491",
+                        "versionTag": "D2DV_105B"
+                    },
+                    {
+                        "title": "Diablo II 1.05",
+                        "version": "1.0.5.0",
+                        "hash": "0xd6dec09b",
+                        "fileMetadata": "Game.exe 01/27/01 01:16:00 399491",
+                        "versionTag": "D2DV_105"
+                    }
+                ]
+            },
+            "0x04": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II 1.04c",
+                        "version": "1.0.4.2",
+                        "hash": "0xc6d40aaf",
+                        "fileMetadata": "Game.exe 12/23/00 18:28:04 387107",
+                        "versionTag": "D2DV_104B"
+                    },
+                    {
+                        "title": "Diablo II 1.04b",
+                        "version": "1.0.4.1",
+                        "hash": "0x3882960e",
+                        "fileMetadata": "Game.exe 12/22/00 18:08:34 403587",
+                        "versionTag": "D2DV_104B"
+                    }
+                ]
+            },
+            "0x03": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II 1.03",
+                        "version": "1.0.3.0",
+                        "hash": "0x0120ed90",
+                        "fileMetadata": "Game.exe 08/01/00 00:34:00 346243",
+                        "versionTag": "D2DV_103"
+                    }
+                ]
+            },
+            "0x01": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II 1.01",
+                        "version": "1.0.0.1",
+                        "hash": "0x5aef7e66",
+                        "fileMetadata": "Game.exe 06/26/00 22:31:00 346243",
+                        "versionTag": "D2DV_101"
+                    }
+                ]
+            },
+            "0x00": {
+                "checkRevisionFile": "IX86ver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+                    {
+                        "title": "Diablo II 1.00 (installation)",
+                        "version": "1.0.0.1",
+                        "hash": "0xac5e46cb",
+                        "fileMetadata": "Game.exe 01/01/97 02:05:09 309379",
+                        "versionTag": "D2DV_100"
+                    }
+                ]
+            }
+        }
+    }
+}
