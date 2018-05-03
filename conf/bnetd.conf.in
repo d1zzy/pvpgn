@@ -419,7 +419,7 @@ max_friends = 20
 # Set track=0 to disable tracking.  Any other number will set number
 # of seconds between sending tracking packets. This is ON by default.
 #track = 0
-track = 0
+track = 60
 
 # Tracking server(s)
 # Use a comma delimited list of hostnames with optional UDP port numbers
