@@ -1141,7 +1141,7 @@ namespace pvpgn
 					conn_set_state(c, conn_state_untrusted);
 
 					bn_int_set(&rpacket->u.server_authreply_109.message, SERVER_AUTHREPLY_109_MESSAGE_BADVERSION);
-					packet_append_string(rpacket, '\0');
+					packet_append_string(rpacket, "");
 
 					conn_push_outqueue(c, rpacket);
 
