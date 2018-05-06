@@ -1103,6 +1103,7 @@ namespace pvpgn
 					eventlog(eventlog_level_info, __FUNCTION__, "[{}] an upgrade for version {} is available \"{}\"", conn_get_socket(c), conn_get_versioncheck(c)->get_version_tag(), mpqfilename);
 					bn_int_set(&rpacket->u.server_authreply1.message, SERVER_AUTHREPLY1_MESSAGE_UPDATE);
 					packet_append_string(rpacket, mpqfilename);
+					
 					xfree(static_cast<void *>(mpqfilename));
 				}
 				else
@@ -1212,18 +1213,20 @@ namespace pvpgn
 				}
 
 
-				char *mpqfilename = autoupdate_check(conn_get_archtag(c), conn_get_clienttag(c), conn_get_gamelang(c), conn_get_versioncheck(c)->get_version_tag().c_str(), NULL);
+				char *mpqfilename = nullptr;
 				if (vc)
 				{
-					// Only handle updates when there is an update file available.
-					if (mpqfilename)
-					{
-						eventlog(eventlog_level_info, __FUNCTION__, "[{}] an upgrade for {} is available \"{}\"", conn_get_socket(c), conn_get_versioncheck(c)->get_version_tag(), mpqfilename);
-						bn_int_set(&rpacket->u.server_authreply_109.message, SERVER_AUTHREPLY_109_MESSAGE_UPDATE);
-						packet_append_string(rpacket, mpqfilename);
+					mpqfilename = autoupdate_check(conn_get_archtag(c), conn_get_clienttag(c), conn_get_gamelang(c), conn_get_versioncheck(c)->get_version_tag().c_str(), NULL);
+				}
 
-						xfree(static_cast<void *>(mpqfilename));
-					}
+				// Only handle updates when there is an update file available.
+				if (mpqfilename)
+				{
+					eventlog(eventlog_level_info, __FUNCTION__, "[{}] an upgrade for {} is available \"{}\"", conn_get_socket(c), conn_get_versioncheck(c)->get_version_tag(), mpqfilename);
+					bn_int_set(&rpacket->u.server_authreply_109.message, SERVER_AUTHREPLY_109_MESSAGE_UPDATE);
+					packet_append_string(rpacket, mpqfilename);
+
+					xfree(static_cast<void *>(mpqfilename));
 				}
 				else
 				{
@@ -1234,6 +1237,7 @@ namespace pvpgn
 				packet_append_string(rpacket, "");
 
 				conn_push_outqueue(c, rpacket);
+
 				packet_del_ref(rpacket);
 			}
 
