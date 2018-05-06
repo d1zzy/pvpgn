@@ -44,7 +44,6 @@
 #include "team.h"
 #include "account.h"
 #include "file_plain.h"
-#include "file_cdb.h"
 #include "prefs.h"
 #include "clan.h"
 #undef CLAN_INTERNAL_ACCESS
@@ -168,11 +167,9 @@ namespace pvpgn
 
 			if (!strcasecmp(driver, "plain"))
 				file = &file_plain;
-			else if (!strcasecmp(driver, "cdb"))
-				file = &file_cdb;
 			else
 			{
-				eventlog(eventlog_level_error, __FUNCTION__, "unknown mode '{}' must be either plain or cdb", driver);
+				eventlog(eventlog_level_error, __FUNCTION__, "unknown mode '{}', mode must be plain", driver);
 				xfree((void *)copy);
 				return -1;
 			}

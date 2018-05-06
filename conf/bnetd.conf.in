@@ -34,8 +34,6 @@
 # Syntax:                                                                    #
 # * for plain file driver:                                                   #
 #  storage_path = file:mode=plain;dir=<path_to_user_files>;clan=<path_to_clan_files>;default=/path/to/default/account #
-# * for cdb file driver:                                                     #
-#  storage_path = file:mode=cdb;dir=<path_to_cdb_files>;clan=<path_to_clan_files>;default=/path/to/default/account   #
 # * for sql driver:                                                          #
 #  storage_path = sql:variable=value;...;default=0 (0 is the default uid)    #
 #                                                                            #
@@ -52,7 +50,6 @@
 #                                                                            #
 # Examples:                                                                  #
 # storage_path = "file:mode=plain;dir=${LOCALSTATEDIR}/users;clan=${LOCALSTATEDIR}/clans;team=${LOCALSTATEDIR}/teams;default=${SYSCONFDIR}/bnetd_default_user.plain"
-# storage_path = "file:mode=cdb;dir=${LOCALSTATEDIR}/userscdb;clan=${LOCALSTATEDIR}/clans;team=${LOCALSTATEDIR}/teams;default=${SYSCONFDIR}/bnetd_default_user.cdb"
 # storage_path = "sql:mode=mysql;host=127.0.0.1;name=PVPGN;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn_"
 # storage_path = "sql:mode=pgsql;host=127.0.0.1;name=pvpgn;user=pvpgn;pass=pvpgnrocks;default=0;prefix=pvpgn_"
 # storage_path = "sql:mode=sqlite3;name=${LOCALSTATEDIR}/users.db;default=0;prefix=pvpgn_"

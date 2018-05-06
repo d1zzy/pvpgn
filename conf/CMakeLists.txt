@@ -21,9 +21,6 @@ if(WITH_BNETD)
   bnxpcalc.conf bnxplevel.conf channel.conf command_groups.conf  
   realm.conf sql_DB_layout.conf supportfile.conf topics.conf 
   tournament.conf versioncheck.json icons.conf)
-
-  # special treatment for non .in files
-  install(FILES bnetd_default_user.cdb DESTINATION ${SYSCONFDIR})
 endif(WITH_BNETD)
 
 if(WITH_D2CS)
