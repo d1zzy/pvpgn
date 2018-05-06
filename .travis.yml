@@ -8,6 +8,12 @@ compiler: gcc
 branches:
   only:
     - master
+    - coverity_scan
+    
+env:
+  global:
+    # COVERITY_SCAN_TOKEN
+    - secure: "U50+BcF3DczR+srgLGoMJ53+IRU+tlg/eW0XfNL3dxCp0FzZqMaM7FpENEaiqIOc/YQ2/x40aAufcHBbevY8qeWms36YtryRlQ7t8kWhFNmGNH6qalwROQWaWd3BcyZds3JIEq3qdbZTsCZ5S0up3v5BAsBjRSThlom9/o4jnWA="
 
 addons:
   apt:
@@ -23,15 +29,28 @@ addons:
       - liblua5.1-0-dev
       - cmake
 
+  coverity_scan:
+    project:
+      name: pvpgn/pvpgn-server
+      version: 1.99.7.1.1
+      description: Player vs Player Gaming Network (PvPGN)
+
+    build_command_prepend: mkdir build && cd build && cmake -D WITH_MYSQL=true -D WITH_LUA=true ../
+    build_command: make
+    branch_pattern: coverity_scan
+
 before_install:
   - export CXX="g++-5" CC="gcc-5"
   
 before_script:
   - mkdir build
   - cd build
+  - cmake -D WITH_MYSQL=true -D WITH_LUA=true ../
 
 script:
-  - cmake -D WITH_MYSQL=true -D WITH_LUA=true ../
-  - make
+  - if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then
+      make;
+    fi
+after_script:
   - sudo make install
   - sudo make uninstall
