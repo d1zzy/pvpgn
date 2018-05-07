@@ -88,6 +88,7 @@
 #include "handle_apireg.h"
 #include "i18n.h"
 #include "userlog.h"
+#include "win32/windump.h"
 #include "common/setup_after.h"
 
 #ifdef WITH_LUA
@@ -530,6 +531,11 @@ extern int app_main(int argc, char ** argv)
 extern int main(int argc, char ** argv)
 #endif
 {
+	#ifdef WIN32
+	// create a dump file whenever the gateway crashes
+    SetUnhandledExceptionFilter(unhandled_handler);
+	#endif
+	
 	try {
 		int a;
 		char *pidfile;
