@@ -48,6 +48,24 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 
 endif()
 
+# DEBUG compiler flags:
+#	/Zi create debugging information PDB file
+#	/Od disable optimizations
+# 	/Oy- do not suppress frame pointers (recommended for debugging)
+#	/MTd use statically linked, thread-safe, debug CRT libs (Magic Builder set this flag when build)
+#
+# RELEASE compiler flags:
+#	/MT use statically linked, thread-safe CRT libs (Magic Builder set this flag when build)
+# 	/GS- no Buffer Security Check
+#
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /Od /Oy-")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+
+# Explaining of linker flags and why enable pdb with debug info for Release build is on:
+#  https://www.wintellect.com/correctly-creating-native-c-release-build-pdbs
+set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+
+
 subdirs(src conf man files)
 if(WITH_LUA)
     add_subdirectory(lua)
