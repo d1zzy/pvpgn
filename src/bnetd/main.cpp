@@ -88,7 +88,9 @@
 #include "handle_apireg.h"
 #include "i18n.h"
 #include "userlog.h"
+#ifdef WIN32
 #include "win32/windump.h"
+#endif
 #include "common/setup_after.h"
 
 #ifdef WITH_LUA

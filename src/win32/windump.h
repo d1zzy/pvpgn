@@ -16,13 +16,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #ifdef WIN32
+#include "windows.h""
 
-namespace pvpgn
-{
-	namespace bnetd
-	{
-		LONG WINAPI unhandled_handler(struct _EXCEPTION_POINTERS* e);
-	}
-}
+LONG WINAPI unhandled_handler(struct _EXCEPTION_POINTERS* e);
 
 #endif

@@ -37,6 +37,9 @@
 #ifdef WIN32_GUI
 # include "win32/winmain.h"
 #endif
+#ifdef WIN32
+# include "win32/windump.h"
+#endif
 
 #include "compat/stdfileno.h"
 #include "compat/pgetpid.h"
@@ -252,6 +255,11 @@ extern int main(int argc, char ** argv)
 #endif
 {
 	int pid;
+
+#ifdef WIN32
+	// create a dump file whenever the gateway crashes
+	SetUnhandledExceptionFilter(unhandled_handler);
+#endif
 
 	eventlog_set(stderr);
 	if (!((pid = config_init(argc, argv)) == 0)) {
