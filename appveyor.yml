@@ -47,7 +47,7 @@ before_build:
   # read version string from version.h to %PVPGN_VERSION% and append commit string inside that file
   - cmd: module\tools\pvpgn_version.bat %APPVEYOR_REPO_COMMIT_SHORT%
   - cmd: set COMPLETE_BUILD_VERSION=pvpgn-%APPVEYOR_REPO_BRANCH%-%PVPGN_VERSION%-%APPVEYOR_REPO_COMMIT_SHORT%
-  - ps: $env:PVPGN_ZIP=$env:COMPLETE_BUILD_VERSION + "_" + $env:DB + $(If ($env:CONFIGURATION -eq "Release") {"_" + ($env:CONFIGURATION).ToLower()} Else {""}) + ".zip"
+  - ps: $env:PVPGN_ZIP=$env:COMPLETE_BUILD_VERSION + "_" + $env:DB + $(If ($env:CONFIGURATION -ne "Release") {"_" + ($env:CONFIGURATION).ToLower()} Else {""}) + ".zip"
   - ps: $env:PVPGN_PDB_ZIP=$env:COMPLETE_BUILD_VERSION + "_" + $env:DB + $(If ($env:CONFIGURATION -ne "Release") {"_" + ($env:CONFIGURATION).ToLower()} Else {".pdb"}) + ".zip"
 
 build_script:
