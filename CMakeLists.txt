@@ -63,7 +63,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
 
 # Explaining of linker flags and why enable pdb with debug info for Release build is on:
 #  https://www.wintellect.com/correctly-creating-native-c-release-build-pdbs
-set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASEz} /DEBUG /OPT:REF /OPT:ICF")
 
 
 subdirs(src conf man files)
