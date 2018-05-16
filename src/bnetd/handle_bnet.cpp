@@ -2193,6 +2193,7 @@ namespace pvpgn
 					   I vote for deleting this "if" */
 					if (!(client_password_proof = (const char*)packet_get_data_const(packet, offsetof(t_client_logonproofreq, client_password_proof), 20))) {
 						eventlog(eventlog_level_error, __FUNCTION__, "[{}] (W3) got bad LOGONPROOFREQ packet (missing hash)", conn_get_socket(c));
+						packet_del_ref(rpacket);
 						return -1;
 					}
 
@@ -2235,6 +2236,7 @@ namespace pvpgn
 						{
 							// feature to break login from Lua
 							conn_set_state(c, conn_state_destroy);
+							packet_del_ref(rpacket);
 							return -1;
 						}
 #endif
