@@ -2094,6 +2094,7 @@ namespace pvpgn
 
 					if (!(client_password_proof = (const char*)packet_get_data_const(packet, offsetof(t_client_passchangeproofreq, client_password_proof), 20))) {
 						eventlog(eventlog_level_error, __FUNCTION__, "[{}] (W3) got bad PASSCHANGEPROOFREQ packet (missing hash)", conn_get_socket(c));
+						packet_del_ref(rpacket);
 						return -1;
 					}
 
