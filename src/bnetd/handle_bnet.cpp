@@ -1207,6 +1207,7 @@ namespace pvpgn
 					else
 					{
 						eventlog(eventlog_level_info, __FUNCTION__, "[{}] client failed versioncheck", conn_get_socket(c));
+						packet_del_ref(rpacket);
 						send_failed_packet(c);
 						return 0;
 					}
