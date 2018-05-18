@@ -2936,32 +2936,63 @@ namespace pvpgn
 
 		static int _glist_cb(t_game *game, void *data)
 		{
-			struct glist_cb_struct *cbdata = (struct glist_cb_struct*)data;
+			auto cbdata = reinterpret_cast<struct glist_cb_struct*>(data);
 
-			if ((!cbdata->tag || !prefs_get_hide_pass_games() || game_get_flag(game) != game_flag_private) &&
-				(!cbdata->tag || game_get_clienttag(game) == cbdata->tag) &&
-				(cbdata->diff == game_difficulty_none || game_get_difficulty(game) == cbdata->diff) &&
-				(cbdata->lobby == false || (game_get_status(game) != game_status_started && game_get_status(game) != game_status_done)))
+			// when cbdata->tag != 0, user is requesting games of the same client tag
+			// return early when the game's client tag does not match the user's client tag
+			if (cbdata->tag != 0 && cbdata->tag != game_get_clienttag(game))
 			{
-				std::snprintf(msgtemp0, sizeof(msgtemp0), " %-16.16s %1.1s %-8.8s %-21.21s %5u ",
-					game_get_name(game),
-					game_get_flag(game) != game_flag_private ? "n" : "y",
-					game_status_get_str(game_get_status(game)),
-					game_type_get_str(game_get_type(game)),
-					game_get_ref(game));
-
-				if (!cbdata->tag)
-				{
-
-					std::strcat(msgtemp0, clienttag_uint_to_str(game_get_clienttag(game)));
-					std::strcat(msgtemp0, " ");
-				}
-
-				if ((!prefs_get_hide_addr()) || (account_get_command_groups(conn_get_account(cbdata->c)) & command_get_group("/admin-addr"))) /* default to false */
-					std::strcat(msgtemp0, addr_num_to_addr_str(game_get_addr(game), game_get_port(game)));
-
-				message_send_text(cbdata->c, message_type_info, cbdata->c, msgtemp0);
+				return 0;
 			}
+
+			// when cbdata->lobby == true, only display list of all games in the lobby
+			// return early if game has started or is already finished
+			if (cbdata->lobby == true && (game_get_status(game) == game_status_started || game_get_status(game) == game_status_done))
+			{
+				return 0;
+			}
+
+			// when cbdata->diff != game_difficulty_none, user is requesting a specific game difficulty
+			// return early if user is requesting a specific game difficulty that does not match the game's difficulty
+			if (cbdata->diff != game_difficulty_none && cbdata->diff != game_get_difficulty(game))
+			{
+				return 0;
+			}
+
+			unsigned int pref = prefs_get_hide_pass_games();
+			if (pref && game_get_flag(game) == game_flag_private)
+			{
+				// return early if hide_pass_games is true and the game is private
+				if (cbdata->tag != 0)
+				{
+					return 0;
+				}
+				// if user used /games all and is not an admin, return early
+				else if (cbdata->tag == 0 && account_get_auth_admin(conn_get_account(cbdata->c), nullptr) != 1)
+				{
+					return 0;
+				}
+			}
+			
+
+			std::snprintf(msgtemp0, sizeof(msgtemp0), " %-16.16s %1.1s %-8.8s %-21.21s %5u ",
+				game_get_name(game),
+				game_get_flag(game) != game_flag_private ? "n" : "y",
+				game_status_get_str(game_get_status(game)),
+				game_type_get_str(game_get_type(game)),
+				game_get_ref(game));
+
+			if (!cbdata->tag)
+			{
+
+				std::strcat(msgtemp0, clienttag_uint_to_str(game_get_clienttag(game)));
+				std::strcat(msgtemp0, " ");
+			}
+
+			if ((!prefs_get_hide_addr()) || (account_get_command_groups(conn_get_account(cbdata->c)) & command_get_group("/admin-addr"))) /* default to false */
+				std::strcat(msgtemp0, addr_num_to_addr_str(game_get_addr(game), game_get_port(game)));
+
+			message_send_text(cbdata->c, message_type_info, cbdata->c, msgtemp0);
 
 			return 0;
 		}
