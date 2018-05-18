@@ -642,6 +642,7 @@ namespace pvpgn
 
 			conn_set_archtag(c, bn_int_get(packet->u.client_progident.archtag));
 			conn_set_clienttag(c, bn_int_get(packet->u.client_progident.clienttag));
+			conn_set_versionid(c, bn_int_get(packet->u.client_progident.versionid));
 
 			if ((rpacket = packet_create(packet_class_bnet)))
 			{
@@ -651,7 +652,7 @@ namespace pvpgn
 
 				// CheckRevision
 				std::tuple<std::string, std::string> checkrevision = select_checkrevision(bn_int_get(packet->u.client_progident.archtag), bn_int_get(packet->u.client_progident.clienttag), bn_int_get(packet->u.client_progident.versionid));
-				file_to_mod_time(c, std::get<0>(checkrevision).c_str(), &rpacket->u.server_authreq_109.timestamp); // Checkrevision file timestamp
+				file_to_mod_time(c, std::get<0>(checkrevision).c_str(), &rpacket->u.server_authreq1.timestamp); // Checkrevision file timestamp
 				packet_append_string(rpacket, std::get<0>(checkrevision).c_str()); // CheckRevision filename
 				packet_append_string(rpacket, std::get<1>(checkrevision).c_str()); // CheckRevision equation
 				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] selected \"{}\" \"{}\"", conn_get_socket(c), std::get<0>(checkrevision), std::get<1>(checkrevision));
@@ -997,6 +998,8 @@ namespace pvpgn
 
 		static int _client_authreq1(t_connection * c, t_packet const *const packet)
 		{
+			eventlog(eventlog_level_trace, __FUNCTION__, "[{}] received AUTHREQ1(0x07) packet", conn_get_socket(c));
+
 			if (packet_get_size(packet) < sizeof(t_client_authreq1))
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ1 packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_authreq1), packet_get_size(packet));
@@ -1026,20 +1029,23 @@ namespace pvpgn
 			// The client should have already sent this information in a previous packet and is resending it again in this packet
 			if (bn_int_get(packet->u.client_authreq1.archtag) != conn_get_archtag(c))
 			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ1 (mismatch architecture)", conn_get_socket(c));
 				send_failed_packet(c);
-				return 0;
+				return -1;
 			}
 
 			if (bn_int_get(packet->u.client_authreq1.clienttag) != conn_get_clienttag(c))
 			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ1 (mismatch client tag)", conn_get_socket(c));
 				send_failed_packet(c);
-				return 0;
+				return -1;
 			}
 
 			if (bn_int_get(packet->u.client_authreq1.versionid) != conn_get_versionid(c))
 			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ1 (mismatch version ID)", conn_get_socket(c));
 				send_failed_packet(c);
-				return 0;
+				return -1;
 			}
 
 

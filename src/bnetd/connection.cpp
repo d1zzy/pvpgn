@@ -451,7 +451,7 @@ namespace pvpgn
 
 			list_prepend_data(conn_head, temp);
 
-			eventlog(eventlog_level_info, __FUNCTION__, "[{}][{}] sessionkey=0x{:08} sessionnum=0x{:08}", temp->socket.tcp_sock, temp->socket.udp_sock, temp->protocol.sessionkey, temp->protocol.sessionnum);
+			eventlog(eventlog_level_debug, __FUNCTION__, "[{}][{}] sessionkey=0x{:08} sessionnum=0x{:08}", temp->socket.tcp_sock, temp->socket.udp_sock, temp->protocol.sessionkey, temp->protocol.sessionnum);
 
 			return temp;
 		}
