@@ -284,6 +284,7 @@ namespace pvpgn
 				if (!entry)
 				{
 					eventlog(eventlog_level_error, __FUNCTION__, "ipbanlist contains NULL item");
+					xfree(whole);
 					return -1;
 				}
 				counter++;
@@ -338,51 +339,70 @@ namespace pvpgn
 
 				case ipban_type_netmask:
 				{
-										   unsigned long	lip1;
-										   unsigned long	lip2;
-										   unsigned long	netmask;
+					unsigned long	lip1;
+					unsigned long	lip2;
+					unsigned long	netmask;
 
-										   if (!(lip1 = ipban_str_to_ulong(ipaddr)))
-											   return -1;
-										   if (!(lip2 = ipban_str_to_ulong(entry->info1)))
-											   return -1;
-										   if (!(netmask = ipban_str_to_ulong(entry->info2)))
-											   return -1;
+					if (!(lip1 = ipban_str_to_ulong(ipaddr)))
+					{
+						xfree(whole);
+						return -1;
+					}
 
-										   lip1 = lip1 & netmask;
-										   lip2 = lip2 & netmask;
-										   if (lip1 == lip2)
-										   {
-											   eventlog(eventlog_level_debug, __FUNCTION__, "address {} matched netmask {}/{}", ipaddr, entry->info1, entry->info2);
-											   xfree(whole);
-											   return counter;
-										   }
-										   eventlog(eventlog_level_debug, __FUNCTION__, "address {} does not match netmask {}/{}", ipaddr, entry->info1, entry->info2);
-										   continue;
+					if (!(lip2 = ipban_str_to_ulong(entry->info1)))
+					{
+						xfree(whole);
+						return -1;
+					}
+
+					if (!(netmask = ipban_str_to_ulong(entry->info2)))
+					{
+						xfree(whole);
+						return -1;
+					}
+
+					lip1 = lip1 & netmask;
+					lip2 = lip2 & netmask;
+					if (lip1 == lip2)
+					{
+						eventlog(eventlog_level_debug, __FUNCTION__, "address {} matched netmask {}/{}", ipaddr, entry->info1, entry->info2);
+						xfree(whole);
+						return counter;
+					}
+					eventlog(eventlog_level_debug, __FUNCTION__, "address {} does not match netmask {}/{}", ipaddr, entry->info1, entry->info2);
+					continue;
 				}
 
 				case ipban_type_prefix:
 				{
-										  unsigned long	lip1;
-										  unsigned long	lip2;
-										  int		prefix;
+					unsigned long	lip1;
+					unsigned long	lip2;
+					int		prefix;
 
-										  if (!(lip1 = ipban_str_to_ulong(ipaddr)))
-											  return -1;
-										  if (!(lip2 = ipban_str_to_ulong(entry->info1)))
-											  return -1;
-										  prefix = std::atoi(entry->info2);
+					if (!(lip1 = ipban_str_to_ulong(ipaddr)))
+					{
+						xfree(whole);
+						return -1;
+					}
 
-										  lip1 = lip1 >> (32 - prefix);
-										  lip2 = lip2 >> (32 - prefix);
-										  if (lip1 == lip2)
-										  {
-											  eventlog(eventlog_level_debug, __FUNCTION__, "address {} matched prefix {}/{}", ipaddr, entry->info1, entry->info2);
-											  xfree(whole);
-											  return counter;
-										  }
-										  eventlog(eventlog_level_debug, __FUNCTION__, "address {} does not match prefix {}/{}", ipaddr, entry->info1, entry->info2);
-										  continue;
+					if (!(lip2 = ipban_str_to_ulong(entry->info1)))
+					{
+						xfree(whole);
+						return -1;
+					}
+
+					prefix = std::atoi(entry->info2);
+
+					lip1 = lip1 >> (32 - prefix);
+					lip2 = lip2 >> (32 - prefix);
+					if (lip1 == lip2)
+					{
+						eventlog(eventlog_level_debug, __FUNCTION__, "address {} matched prefix {}/{}", ipaddr, entry->info1, entry->info2);
+						xfree(whole);
+						return counter;
+					}
+					eventlog(eventlog_level_debug, __FUNCTION__, "address {} does not match prefix {}/{}", ipaddr, entry->info1, entry->info2);
+					continue;
 				}
 				default:  /* unknown type */
 					eventlog(eventlog_level_warn, __FUNCTION__, "found bad ban type {}", (int)entry->type);
