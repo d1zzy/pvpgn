@@ -1221,8 +1221,6 @@ namespace pvpgn
 
 		extern void conn_set_archtag(t_connection * c, t_tag archtag)
 		{
-			char archtag_str[5];
-
 			if (!c) {
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL connection");
 				return;
@@ -1232,9 +1230,7 @@ namespace pvpgn
 				return;
 			}
 			if (c->protocol.client.archtag != archtag)
-				eventlog(eventlog_level_info, __FUNCTION__, "[{}] setting client arch to \"{}\"", conn_get_socket(c), tag_uint_to_str(archtag_str, archtag));
-
-			c->protocol.client.archtag = archtag;
+				c->protocol.client.archtag = archtag;
 		}
 
 
@@ -1320,8 +1316,8 @@ namespace pvpgn
 				eventlog(eventlog_level_error, __FUNCTION__, "got UNKNOWN clienttag \"{}\"", tag_uint_to_str(clienttag_str, clienttag));
 				return;
 			}
-			if (c->protocol.client.clienttag != clienttag) {
-				eventlog(eventlog_level_info, __FUNCTION__, "[{}] setting client type to \"{}\"", conn_get_socket(c), tag_uint_to_str(clienttag_str, clienttag));
+			if (c->protocol.client.clienttag != clienttag)
+			{
 				c->protocol.client.clienttag = clienttag;
 				if (c->protocol.chat.channel)
 					channel_update_userflags(c);
