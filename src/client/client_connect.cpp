@@ -322,31 +322,31 @@ namespace pvpgn
 
 				return -1;
 			}
-			packet_set_size(packet, sizeof(t_client_countryinfo_109));
-			packet_set_type(packet, CLIENT_COUNTRYINFO_109);
-			bn_int_set(&packet->u.client_countryinfo_109.protocol, CLIENT_COUNTRYINFO_109_PROTOCOL);
-			bn_int_tag_set(&packet->u.client_countryinfo_109.archtag, archtag);
-			bn_int_tag_set(&packet->u.client_countryinfo_109.clienttag, clienttag);
+			packet_set_size(packet, sizeof(t_client_auth_info));
+			packet_set_type(packet, CLIENT_AUTH_INFO);
+			bn_int_set(&packet->u.client_auth_info.protocol, CLIENT_AUTH_INFO_PROTOCOL);
+			bn_int_tag_set(&packet->u.client_auth_info.archtag, archtag);
+			bn_int_tag_set(&packet->u.client_auth_info.clienttag, clienttag);
 			//AARON
 
-			bn_int_set(&packet->u.client_countryinfo_109.versionid, versionid);
-			bn_int_tag_set(&packet->u.client_countryinfo_109.gamelang, gamelang);
-			bn_int_set(&packet->u.client_countryinfo_109.localip, CLIENT_COUNTRYINFO_109_LOCALIP);
+			bn_int_set(&packet->u.client_auth_info.versionid, versionid);
+			bn_int_tag_set(&packet->u.client_auth_info.gamelang, gamelang);
+			bn_int_set(&packet->u.client_auth_info.localip, CLIENT_AUTH_INFO_LOCALIP);
 			{
 				int bias;
 
 				bias = local_tzbias();
 
-				bn_int_set(&packet->u.client_countryinfo_109.bias, (unsigned int)bias); /* rely on 2's complement */
+				bn_int_set(&packet->u.client_auth_info.bias, (unsigned int)bias); /* rely on 2's complement */
 				dprintf("my tzbias = %d (0x%08hx)\n", bias, (unsigned int)bias);
 			}
 			/* FIXME: determine from locale */
-			bn_int_set(&packet->u.client_countryinfo_109.lcid, CLIENT_COUNTRYINFO_109_LANGID_USENGLISH);
-			bn_int_set(&packet->u.client_countryinfo_109.langid, CLIENT_COUNTRYINFO_109_LANGID_USENGLISH);
-			packet_append_string(packet, CLIENT_COUNTRYINFO_109_LANGSTR_USENGLISH);
+			bn_int_set(&packet->u.client_auth_info.lcid, CLIENT_AUTH_INFO_LANGID_USENGLISH);
+			bn_int_set(&packet->u.client_auth_info.langid, CLIENT_AUTH_INFO_LANGID_USENGLISH);
+			packet_append_string(packet, CLIENT_AUTH_INFO_LANGSTR_USENGLISH);
 			/* FIXME: determine from locale+timezone... from domain name... nothing really would
 			   work.  Maybe add some command-line options */
-			packet_append_string(packet, CLIENT_COUNTRYINFO_109_COUNTRYNAME_USA);
+			packet_append_string(packet, CLIENT_AUTH_INFO_COUNTRYNAME_USA);
 			client_blocksend_packet(sd, packet);
 			packet_del_ref(packet);
 

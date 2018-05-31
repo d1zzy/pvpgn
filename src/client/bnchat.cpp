@@ -730,7 +730,7 @@ extern int main(int argc, char * argv[])
 
 	/* default values */
 	user.archtag = ARCHTAG_WINX86;
-	user.gamelang = CLIENT_COUNTRYINFO_109_GAMELANG;
+	user.gamelang = CLIENT_AUTH_INFO_GAMELANG;
 	user.ignoreversion = 0;
 
 	read_commandline(argc, argv, &servname, &servport, &user.clienttag, &user.archtag, &changepass,

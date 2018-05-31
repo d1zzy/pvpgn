@@ -333,8 +333,8 @@ namespace pvpgn
 					return "CLIENT_COMPINFO2";
 				case CLIENT_COUNTRYINFO1:
 					return "CLIENT_COUNTRYINFO1";
-				case CLIENT_COUNTRYINFO_109:
-					return "CLIENT_COUNTRYINFO_109";
+				case CLIENT_AUTH_INFO:
+					return "CLIENT_AUTH_INFO";
 				case CLIENT_CREATEACCTREQ1:
 					return "CLIENT_CREATEACCTREQ1";
 				case CLIENT_UNKNOWN_2B:
