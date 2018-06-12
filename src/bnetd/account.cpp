@@ -24,6 +24,7 @@
 #include <cstddef>
 #include <cassert>
 #include <cctype>
+#include <chrono>
 
 #include "compat/strdup.h"
 #include "compat/strcasecmp.h"
@@ -373,33 +374,39 @@ namespace pvpgn
 
 		extern int accountlist_load_all(int flag)
 		{
-			unsigned int count;
-			int starttime = std::time(NULL);
-			static int loaded = 0; /* all accounts already loaded ? */
-			int res;
+			static bool loaded = false; // all accounts already loaded ?
 
-			if (loaded) return 0;
-
-			count = 0;
-			res = 0;
-
-			force_account_add = 1; /* disable the protection */
-			switch (attrgroup_read_accounts(flag, _cb_read_accounts, &count))
+			if (loaded)
 			{
-			case -1:
-				eventlog(eventlog_level_error, __FUNCTION__, "got error reading users");
-				res = -1;
-				break;
-			case 0:
-				loaded = 1;
-				eventlog(eventlog_level_info, __FUNCTION__, "loaded {} user accounts in {} seconds", count, std::time(nullptr) - starttime);
-				break;
-			default:
-				break;
+				return 0;
 			}
-			force_account_add = 0; /* enable the protection */
 
-			return res;
+			auto t0 = std::chrono::steady_clock::now();
+
+			unsigned int count = 0;
+			force_account_add = 1; // disable the protection
+			int ret = attrgroup_read_accounts(flag, _cb_read_accounts, &count);
+			force_account_add = 0; // enable the protection
+
+			auto t1 = std::chrono::steady_clock::now();
+
+			if (ret == 0)
+			{
+				loaded = true;
+				eventlog(eventlog_level_info, __FUNCTION__, "Successfully loaded {} user accounts in {} milliseconds", count, std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count());
+
+				return 0;
+			}
+			else if (ret == -1)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "got error reading user accounts");
+
+				return -1;
+			}
+			else
+			{
+				return 0;
+			}
 		}
 
 		extern int accountlist_create(void)
