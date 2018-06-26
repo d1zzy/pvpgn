@@ -868,6 +868,19 @@
     },
     "STAR": {
         "IX86": {
+			"0xd6": {
+				"checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+					{
+                        "title": "StarCraft 1.18.0",
+                        "version": "1.18.0.65",
+                        "hash": "0x7ab2ce34",
+                        "fileMetadata": "StarCraft.exe 10/20/17 01:12:49 8568296",
+                        "versionTag": "STAR_1180"
+                    }
+				]
+			},
 			"0xd5": {
 				"checkRevisionFile": "ver-IX86-1.mpq",
                 "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
@@ -1320,6 +1333,19 @@
     },
     "SEXP": {
         "IX86": {
+			"0xd6": {
+				"checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+					{
+                        "title": "StarCraft: Brood War 1.18.0",
+                        "version": "1.18.0.65",
+                        "hash": "0x7ab2ce34",
+                        "fileMetadata": "StarCraft.exe 10/20/17 01:12:49 8568296",
+                        "versionTag": "SEXP_1180"
+                    }
+				]
+			},
 			"0xd5": {
 				"checkRevisionFile": "ver-IX86-1.mpq",
                 "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
