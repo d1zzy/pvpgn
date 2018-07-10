@@ -868,6 +868,39 @@
     },
     "STAR": {
         "IX86": {
+			"0xd6": {
+				"checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+					{
+                        "title": "StarCraft 1.18.0",
+                        "version": "1.18.0.65",
+                        "hash": "0x7ab2ce34",
+                        "fileMetadata": "StarCraft.exe 10/20/17 01:12:49 8568296",
+                        "versionTag": "STAR_1180"
+                    }
+				]
+			},
+			"0xd5": {
+				"checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+					{
+                        "title": "StarCraft: Brood War 1.17.0 - (StarCraft mode)",
+                        "version": "1.17.0.1",
+                        "hash": "0xcb82b07c",
+                        "fileMetadata": "StarCraft.exe 07/11/16 15:59:46 1243112",
+                        "versionTag": "STAR_1170"
+                    },
+					{
+                        "title": "StarCraft 1.17.0",
+                        "version": "1.17.0.0",
+                        "hash": "0xa5e7b4cc",
+                        "fileMetadata": "StarCraft.exe 07/11/16 15:59:51 1243112",
+                        "versionTag": "STAR_1170"
+                    }
+				]
+			},
             "0xd3": {
                 "checkRevisionFile": "ver-IX86-1.mpq",
                 "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
@@ -1300,6 +1333,32 @@
     },
     "SEXP": {
         "IX86": {
+			"0xd6": {
+				"checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+					{
+                        "title": "StarCraft: Brood War 1.18.0",
+                        "version": "1.18.0.65",
+                        "hash": "0x7ab2ce34",
+                        "fileMetadata": "StarCraft.exe 10/20/17 01:12:49 8568296",
+                        "versionTag": "SEXP_1180"
+                    }
+				]
+			},
+			"0xd5": {
+				"checkRevisionFile": "ver-IX86-1.mpq",
+                "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",
+                "entries": [
+					{
+							"title": "StarCraft: Brood War 1.17.0 - (Brood War mode)",
+							"version": "1.17.0.1",
+							"hash": "0xcb82b07c",
+							"fileMetadata": "StarCraft.exe 07/11/16 15:59:46 1243112",
+							"versionTag": "SEXP_1170"
+					}
+				]
+			},
             "0xd3": {
                 "checkRevisionFile": "ver-IX86-1.mpq",
                 "equation": "A=2521522835 B=3428392135 C=218673704 4 A=A^S B=B-C C=C+A A=A-B",

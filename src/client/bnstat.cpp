@@ -399,7 +399,7 @@ extern int main(int argc, char * argv[])
 		}
 	}
 
-	if ((sd = client_connect(argv[0], servname, servport, cdowner, cdkey, clienttag, ignoreversion, &saddr, &sessionkey, &sessionnum, ARCHTAG_WINX86, CLIENT_COUNTRYINFO_109_GAMELANG)) < 0)
+	if ((sd = client_connect(argv[0], servname, servport, cdowner, cdkey, clienttag, ignoreversion, &saddr, &sessionkey, &sessionnum, ARCHTAG_WINX86, CLIENT_AUTH_INFO_GAMELANG)) < 0)
 	{
 		std::fprintf(stderr, "%s: fatal error during handshake\n", argv[0]);
 		if (changed_in)

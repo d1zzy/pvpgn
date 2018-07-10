@@ -162,7 +162,7 @@ namespace pvpgn
 			t_server_fileinforeply      server_fileinforeply;
 			t_client_statsupdate        client_statsupdate;
 			t_client_countryinfo1       client_countryinfo1;
-			t_client_countryinfo_109    client_countryinfo_109;
+			t_client_auth_info		    client_auth_info;
 			t_client_unknown_2b         client_unknown_2b;
 			t_client_compinfo1          client_compinfo1;
 			t_client_compinfo2          client_compinfo2;

@@ -98,7 +98,7 @@ namespace pvpgn
 		static int _client_compinfo1(t_connection * c, t_packet const *const packet);
 		static int _client_compinfo2(t_connection * c, t_packet const *const packet);
 		static int _client_countryinfo1(t_connection * c, t_packet const *const packet);
-		static int _client_countryinfo109(t_connection * c, t_packet const *const packet);
+		static int _client_auth_info(t_connection * c, t_packet const *const packet);
 		static int _client_unknown2b(t_connection * c, t_packet const *const packet);
 		static int _client_progident(t_connection * c, t_packet const *const packet);
 		static int _client_createaccountw3(t_connection * c, t_packet const *const packet);
@@ -185,7 +185,7 @@ namespace pvpgn
 			{ CLIENT_COMPINFO1, _client_compinfo1 },
 			{ CLIENT_COMPINFO2, _client_compinfo2 },
 			{ CLIENT_COUNTRYINFO1, _client_countryinfo1 },
-			{ CLIENT_COUNTRYINFO_109, _client_countryinfo109 },
+			{ CLIENT_AUTH_INFO, _client_auth_info },
 			{ CLIENT_UNKNOWN_2B, _client_unknown2b },
 			{ CLIENT_PROGIDENT, _client_progident },
 			{ CLIENT_CLOSEGAME, NULL },
@@ -513,12 +513,12 @@ namespace pvpgn
 			return 0;
 		}
 
-		static int _client_countryinfo109(t_connection * c, t_packet const *const packet)
+		static int _client_auth_info(t_connection * c, t_packet const *const packet)
 		{
 			t_packet *rpacket;
 
-			if (packet_get_size(packet) < sizeof(t_client_countryinfo_109)) {
-				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad COUNTRYINFO_109 packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_countryinfo_109), packet_get_size(packet));
+			if (packet_get_size(packet) < sizeof(t_client_auth_info)) {
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTH_INFO packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_auth_info), packet_get_size(packet));
 				return -1;
 			}
 
@@ -530,37 +530,44 @@ namespace pvpgn
 				char clienttag_str[5];
 				char gamelang_str[5];
 
-				if (!(langstr = packet_get_str_const(packet, sizeof(t_client_countryinfo_109), MAX_LANG_STR))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad COUNTRYINFO_109 packet (missing or too long langstr)", conn_get_socket(c));
+				if (!(langstr = packet_get_str_const(packet, sizeof(t_client_auth_info), MAX_LANG_STR))) {
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTH_INFO packet (missing or too long langstr)", conn_get_socket(c));
 					return -1;
 				}
 
-				if (!(countryname = packet_get_str_const(packet, sizeof(t_client_countryinfo_109)+std::strlen(langstr) + 1, MAX_COUNTRYNAME_STR))) {
-					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad COUNTRYINFO_109 packet (missing or too long countryname)", conn_get_socket(c));
+				if (!(countryname = packet_get_str_const(packet, sizeof(t_client_auth_info)+std::strlen(langstr) + 1, MAX_COUNTRYNAME_STR))) {
+					eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTH_INFO packet (missing or too long countryname)", conn_get_socket(c));
 					return -1;
 				}
 
 				/* check if it's an allowed client type */
-				if (tag_check_in_list(bn_int_get(packet->u.client_countryinfo_109.clienttag), prefs_get_allowed_clients())) {
+				if (tag_check_in_list(bn_int_get(packet->u.client_auth_info.clienttag), prefs_get_allowed_clients())) {
 					conn_set_state(c, conn_state_destroy);
 					return 0;
 				}
+				
+				tzbias = bn_int_get(packet->u.client_auth_info.bias);
 
-				tzbias = bn_int_get(packet->u.client_countryinfo_109.bias);
-
-				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] COUNTRYINFO_109 packet tzbias=0x{:04x} lcid={} langid={} arch=\"{}\" client=\"{}\" versionid=0x{:08x} gamelang=\"{}\"", 
-					conn_get_socket(c), tzbias, bn_int_get(packet->u.client_countryinfo_109.lcid), bn_int_get(packet->u.client_countryinfo_109.langid), 
-					tag_uint_to_str(archtag_str, bn_int_get(packet->u.client_countryinfo_109.archtag)), tag_uint_to_str(clienttag_str, bn_int_get(packet->u.client_countryinfo_109.clienttag)), 
-					bn_int_get(packet->u.client_countryinfo_109.versionid), tag_uint_to_str(gamelang_str, bn_int_get(packet->u.client_countryinfo_109.gamelang)));
-
-				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] COUNTRYINFO_109 packet from \"{}\" \"{}\"", conn_get_socket(c), countryname, langstr);
+				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] AUTH_INFO packet {{ protocol={:#02x}, platform={}, product={}, versionid={:#02x}, language={}, localip={:#04x}, tzbias={:04x}, locale={}, language={}, country={}.{} }}",
+					conn_get_socket(c),
+					bn_int_get(packet->u.client_auth_info.protocol),
+					tag_uint_to_str(archtag_str, bn_int_get(packet->u.client_auth_info.archtag)),
+					tag_uint_to_str(clienttag_str, bn_int_get(packet->u.client_auth_info.clienttag)),
+					bn_int_get(packet->u.client_auth_info.versionid),
+					tag_uint_to_str(gamelang_str, bn_int_get(packet->u.client_auth_info.gamelang)),
+					bn_int_get(packet->u.client_auth_info.localip),
+					tzbias,
+					bn_int_get(packet->u.client_auth_info.lcid),
+					bn_int_get(packet->u.client_auth_info.langid),
+					langstr,
+					countryname);
 
 				conn_set_country(c, langstr);	/* FIXME: This isn't right.  We want USA not ENU (English-US) */
 				conn_set_tzbias(c, uint32_to_int(tzbias));
-				conn_set_versionid(c, bn_int_get(packet->u.client_countryinfo_109.versionid));
-				conn_set_archtag(c, bn_int_get(packet->u.client_countryinfo_109.archtag));
-				conn_set_clienttag(c, bn_int_get(packet->u.client_countryinfo_109.clienttag));
-				conn_set_gamelang(c, bn_int_get(packet->u.client_countryinfo_109.gamelang));
+				conn_set_versionid(c, bn_int_get(packet->u.client_auth_info.versionid));
+				conn_set_archtag(c, bn_int_get(packet->u.client_auth_info.archtag));
+				conn_set_clienttag(c, bn_int_get(packet->u.client_auth_info.clienttag));
+				conn_set_gamelang(c, bn_int_get(packet->u.client_auth_info.gamelang));
 
 				/* First, send an ECHO_REQ */
 
@@ -592,7 +599,7 @@ namespace pvpgn
 
 
 					// CheckRevision
-					std::tuple<std::string, std::string> checkrevision = select_checkrevision(bn_int_get(packet->u.client_countryinfo_109.archtag), bn_int_get(packet->u.client_countryinfo_109.clienttag), bn_int_get(packet->u.client_countryinfo_109.versionid));
+					std::tuple<std::string, std::string> checkrevision = select_checkrevision(bn_int_get(packet->u.client_auth_info.archtag), bn_int_get(packet->u.client_auth_info.clienttag), bn_int_get(packet->u.client_auth_info.versionid));
 					file_to_mod_time(c, std::get<0>(checkrevision).c_str(), &rpacket->u.server_authreq_109.timestamp); // Checkrevision file timestamp
 					packet_append_string(rpacket, std::get<0>(checkrevision).c_str()); // CheckRevision filename
 					packet_append_string(rpacket, std::get<1>(checkrevision).c_str()); // CheckRevision equation
@@ -642,6 +649,7 @@ namespace pvpgn
 
 			conn_set_archtag(c, bn_int_get(packet->u.client_progident.archtag));
 			conn_set_clienttag(c, bn_int_get(packet->u.client_progident.clienttag));
+			conn_set_versionid(c, bn_int_get(packet->u.client_progident.versionid));
 
 			if ((rpacket = packet_create(packet_class_bnet)))
 			{
@@ -651,7 +659,7 @@ namespace pvpgn
 
 				// CheckRevision
 				std::tuple<std::string, std::string> checkrevision = select_checkrevision(bn_int_get(packet->u.client_progident.archtag), bn_int_get(packet->u.client_progident.clienttag), bn_int_get(packet->u.client_progident.versionid));
-				file_to_mod_time(c, std::get<0>(checkrevision).c_str(), &rpacket->u.server_authreq_109.timestamp); // Checkrevision file timestamp
+				file_to_mod_time(c, std::get<0>(checkrevision).c_str(), &rpacket->u.server_authreq1.timestamp); // Checkrevision file timestamp
 				packet_append_string(rpacket, std::get<0>(checkrevision).c_str()); // CheckRevision filename
 				packet_append_string(rpacket, std::get<1>(checkrevision).c_str()); // CheckRevision equation
 				eventlog(eventlog_level_debug, __FUNCTION__, "[{}] selected \"{}\" \"{}\"", conn_get_socket(c), std::get<0>(checkrevision), std::get<1>(checkrevision));
@@ -997,6 +1005,8 @@ namespace pvpgn
 
 		static int _client_authreq1(t_connection * c, t_packet const *const packet)
 		{
+			eventlog(eventlog_level_trace, __FUNCTION__, "[{}] received AUTHREQ1(0x07) packet", conn_get_socket(c));
+
 			if (packet_get_size(packet) < sizeof(t_client_authreq1))
 			{
 				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ1 packet (expected {} bytes, got {})", conn_get_socket(c), sizeof(t_client_authreq1), packet_get_size(packet));
@@ -1026,20 +1036,23 @@ namespace pvpgn
 			// The client should have already sent this information in a previous packet and is resending it again in this packet
 			if (bn_int_get(packet->u.client_authreq1.archtag) != conn_get_archtag(c))
 			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ1 (mismatch architecture)", conn_get_socket(c));
 				send_failed_packet(c);
-				return 0;
+				return -1;
 			}
 
 			if (bn_int_get(packet->u.client_authreq1.clienttag) != conn_get_clienttag(c))
 			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ1 (mismatch client tag)", conn_get_socket(c));
 				send_failed_packet(c);
-				return 0;
+				return -1;
 			}
 
 			if (bn_int_get(packet->u.client_authreq1.versionid) != conn_get_versionid(c))
 			{
+				eventlog(eventlog_level_error, __FUNCTION__, "[{}] got bad AUTHREQ1 (mismatch version ID)", conn_get_socket(c));
 				send_failed_packet(c);
-				return 0;
+				return -1;
 			}
 
 
@@ -1207,6 +1220,7 @@ namespace pvpgn
 					else
 					{
 						eventlog(eventlog_level_info, __FUNCTION__, "[{}] client failed versioncheck", conn_get_socket(c));
+						packet_del_ref(rpacket);
 						send_failed_packet(c);
 						return 0;
 					}
@@ -2094,6 +2108,7 @@ namespace pvpgn
 
 					if (!(client_password_proof = (const char*)packet_get_data_const(packet, offsetof(t_client_passchangeproofreq, client_password_proof), 20))) {
 						eventlog(eventlog_level_error, __FUNCTION__, "[{}] (W3) got bad PASSCHANGEPROOFREQ packet (missing hash)", conn_get_socket(c));
+						packet_del_ref(rpacket);
 						return -1;
 					}
 
@@ -2193,6 +2208,7 @@ namespace pvpgn
 					   I vote for deleting this "if" */
 					if (!(client_password_proof = (const char*)packet_get_data_const(packet, offsetof(t_client_logonproofreq, client_password_proof), 20))) {
 						eventlog(eventlog_level_error, __FUNCTION__, "[{}] (W3) got bad LOGONPROOFREQ packet (missing hash)", conn_get_socket(c));
+						packet_del_ref(rpacket);
 						return -1;
 					}
 
@@ -2235,6 +2251,7 @@ namespace pvpgn
 						{
 							// feature to break login from Lua
 							conn_set_state(c, conn_state_destroy);
+							packet_del_ref(rpacket);
 							return -1;
 						}
 #endif

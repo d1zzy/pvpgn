@@ -593,7 +593,7 @@ namespace pvpgn
 	  6C 65 27 73 20 52 65 70   75 62 6C 69 63 20 6F 66    le's Republic of
 	  20 43 68 69 6E 61 00                                  China.
 	  */
-#define CLIENT_COUNTRYINFO_109 0x50ff
+#define CLIENT_AUTH_INFO 0x50ff
 	typedef struct
 	{
 		t_bnet_header h;
@@ -608,7 +608,7 @@ namespace pvpgn
 		bn_int        langid;    /* Win32 LangID */
 		/* langstr */
 		/* countryname */
-	} PACKED_ATTR() t_client_countryinfo_109;
+	} PACKED_ATTR() t_client_auth_info;
 	/******************************************************/
 
 

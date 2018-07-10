@@ -943,6 +943,12 @@ namespace pvpgn
 			if (game_get_type(game) != game_type_ladder && prefs_get_report_all_games() != 1)
 			{
 				eventlog(eventlog_level_debug, __FUNCTION__, "not reporting normal games");
+
+				if (ladder_info)
+				{
+					xfree(ladder_info);
+				}
+
 				return 0;
 			}
 
