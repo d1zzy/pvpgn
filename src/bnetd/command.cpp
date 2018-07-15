@@ -555,10 +555,9 @@ namespace pvpgn
 #ifdef WITH_LUA
 			// feature to ignore flood protection
 			result = lua_handle_command(c, text, luaevent_command_before);
-
+#endif
 			if (result == -1)
 				return result;
-#endif
 
 			if (result == 0)
 			if ((text[0] != '\0') && (conn_quota_exceeded(c, text)))
