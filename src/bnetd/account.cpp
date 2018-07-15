@@ -81,7 +81,7 @@ namespace pvpgn
 		static unsigned int account_hash(char const *username)
 		{
 			register unsigned int h;
-			register unsigned int len = std::strlen(username);
+			register std::size_t len = std::strlen(username);
 
 			int c;
 			for (h = 5381; len > 0; --len, ++username) {
