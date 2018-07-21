@@ -21,15 +21,24 @@
 
 #ifdef WIN32_GUI 
 
+#include <cstdarg>
+#include <cwchar>
+#include <string>
+#include <utility>
+
+#include <fmt/format.h>
+
 #include "common/eventlog.h"
-#include <common/format.h>
 
 namespace pvpgn
 {
-	//template <typename... Args>
-	//void gui_lvprintf(t_eventlog_level l, const char* format, const Args& ... args);
-	void gui_lvprintf(t_eventlog_level l, const char* format, fmt::ArgList args);
-	FMT_VARIADIC(void, gui_lvprintf, t_eventlog_level, const char*);
+	extern void guiAddText(t_eventlog_level level, const char *str);
+
+	template <typename... Args>
+	void gui_lvprintf(t_eventlog_level level, fmt::string_view format_str, const Args& ... args)
+	{
+		guiAddText(level, fmt::format(format_str, args...).c_str());
+	}
 }
 #endif
 

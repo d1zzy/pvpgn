@@ -53,6 +53,9 @@ else(WITH_WIN32_GUI)
   add_executable(bnetd ${BNETD_SOURCES} ${BNETD_CONSOLE_RESOURCES})
 endif(WITH_WIN32_GUI)
 
-  target_link_libraries(bnetd common compat win32 ${NETWORK_LIBRARIES}
+target_include_directories(bnetd PUBLIC ${CMAKE_SOURCE_DIR}/fmt)
+
+target_link_libraries(bnetd PUBLIC fmt common compat win32 ${NETWORK_LIBRARIES}
     ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES} ${LUA_LIBRARIES})
+
   install(TARGETS bnetd DESTINATION ${SBINDIR})

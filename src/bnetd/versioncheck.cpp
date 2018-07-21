@@ -38,18 +38,17 @@
 #include <tuple>
 #include <unordered_map>
 
-#include "common/eventlog.h"
+#include <fmt/format.h>
+#include "json/json.hpp"
 
+#include "common/eventlog.h"
 #include "common/field_sizes.h"
-#include "common/format.h"
 #include "common/hash_tuple.hpp"
 #include "common/proginfo.h"
 #include "compat/strcasecmp.h"
+#include "common/tag.h"
 #include "common/token.h"
 #include "common/util.h"
-
-
-#include "json/json.hpp"
 
 #include "prefs.h"
 #include "common/setup_after.h"

@@ -19,8 +19,8 @@ set(COMMON_SOURCES
 	version.h wolhash.cpp wolhash.h xalloc.cpp xalloc.h xstr.cpp xstr.h 
 	xstring.cpp xstring.h gui_printf.h gui_printf.cpp 
 	bigint.cpp bigint.h bnetsrp3.cpp bnetsrp3.h peerchat.cpp peerchat.h
-    wol_gameres_protocol.h
-	format.cc format.h pugiconfig.h pugixml.cpp pugixml.h)
+    wol_gameres_protocol.h pugiconfig.h pugixml.cpp pugixml.h)
 add_library(common
   ${COMMON_SOURCES}
 )
+target_link_libraries(common fmt)

@@ -42,7 +42,7 @@ namespace pvpgn
 #define JUST_NEED_TYPES
 # include <string>
 # include "connection.h"
-# include "common/format.h"
+#include <fmt/format.h>
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
@@ -67,8 +67,38 @@ namespace pvpgn
 		extern int tag_check_gamelang_real(t_tag gamelang);
 
 
-		extern std::string _localize(t_connection * c, const char * func, const char *fmt, const fmt::ArgList &args);
-		FMT_VARIADIC(std::string, _localize, t_connection *, const char *, const char *)
+		template <typename... Args>
+		std::string _localize(t_connection * c, const char * func, fmt::string_view format_str, const Args& ... args)
+		{
+			const char *format = fmt;
+			std::string output(fmt);
+			t_gamelang lang;
+
+			if (!c) {
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad connection");
+				return format;
+			}
+			try
+			{
+				if (lang = conn_get_gamelang_localized(c))
+					if (!(format = _find_string(fmt, lang)))
+						format = fmt; // if not found use original
+
+				output = fmt::format(format, args);
+
+				char tmp[MAX_MESSAGE_LEN];
+				std::snprintf(tmp, sizeof tmp, "%s", output.c_str());
+
+				i18n_convert(c, tmp);
+				output = tmp;
+			}
+			catch (const std::exception& e)
+			{
+				WARN2("Can't format translation string \"{}\" ({})", fmt, e.what());
+			}
+
+			return output;
+		}
 
 		#define localize(c, ...) _localize(c, __FUNCTION__, __VA_ARGS__)
 	}

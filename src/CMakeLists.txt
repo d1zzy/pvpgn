@@ -37,6 +37,7 @@ if (WITH_WIN32_GUI)
 endif (WITH_WIN32_GUI)
 
 subdirs(compat common win32 bntrackd client bniutils bnpass)
+include_directories(${CMAKE_SOURCE_DIR}/lib)
 
 if(WITH_BNETD)
     add_subdirectory(bnetd)

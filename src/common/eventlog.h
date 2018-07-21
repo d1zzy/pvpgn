@@ -47,7 +47,17 @@ namespace pvpgn
 #define INCLUDED_EVENTLOG_PROTOS
 
 #include <cstdio>
-#include <common/format.h>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+#include <string>
+#include <utility>
+
+#ifdef WIN32_GUI
+# include "common/gui_printf.h"
+#endif
+
+#include <fmt/format.h>
 
 namespace pvpgn
 {
@@ -63,10 +73,104 @@ namespace pvpgn
 	extern char const * eventlog_get_levelname_str(t_eventlog_level level);
 	extern void eventlog_hexdump_data(void const * data, unsigned int len);
 
-	void eventlog(t_eventlog_level level, const char* module, const char* format, fmt::ArgList args);
-	FMT_VARIADIC(void, eventlog, t_eventlog_level, const char*, const char*)
-	//template <typename... Args>
-	// extern void eventlog2(t_eventlog_level level, const char* module, const char* format, const Args& ... args);
+	extern std::FILE *eventstrm;
+	extern unsigned currlevel;
+	extern int eventlog_debugmode;
+
+	template <typename... Args>
+	void eventlog(t_eventlog_level level, const char* module, fmt::string_view format_str, const Args& ... args)
+	{
+		if (!(level & currlevel))
+		{
+			return;
+		}
+
+		if (!eventstrm)
+		{
+			return;
+		}
+
+		std::time_t now = std::time(nullptr);
+		std::tm* tmnow = std::localtime(&now);
+		std::string time;
+		if (!tmnow)
+		{
+			time = "?";
+		}
+		else
+		{
+			std::stringstream temp;
+			temp << std::put_time(tmnow, EVENT_TIME_FORMAT);
+			time = fmt::format("{}", temp.str());
+		}
+
+		if (!module)
+		{
+			fmt::print(eventstrm, "{} [error] eventlog: got NULL module\n", time);
+#ifdef WIN32_GUI
+			if (eventlog_level_gui & currlevel)
+				gui_lvprintf(eventlog_level_error, "{} [error] eventlog: got NULL module\n", time);
+#endif
+			std::fflush(eventstrm);
+			return;
+		}
+
+		if (format_str.size() == 0)
+		{
+			fmt::print(eventstrm, "{} [error] eventlog: got NULL fmt\n", time);
+#ifdef WIN32_GUI
+			if (eventlog_level_gui&currlevel)
+				gui_lvprintf(eventlog_level_error, "{} [error] eventlog: got NULL fmt\n", time);
+#endif
+			std::fflush(eventstrm);
+			return;
+		}
+
+		/****************************************************************/
+
+		try
+		{
+			fmt::print(eventstrm, "{} [{}] {}: ", time, eventlog_get_levelname_str(level), module);
+#ifdef WIN32_GUI
+			if (eventlog_level_gui&currlevel)
+			{
+				gui_lvprintf(level, "{} [{}] {}: ", time, eventlog_get_levelname_str(level), module);
+			}
+#endif
+
+			fmt::print(eventstrm, format_str, args...);
+#ifdef WIN32_GUI
+			if (eventlog_level_gui & currlevel)
+			{
+				gui_lvprintf(level, format_str.data(), args...);
+			}
+#endif
+
+			fmt::print(eventstrm, "\n");
+#ifdef WIN32_GUI
+			if (eventlog_level_gui & currlevel)
+			{
+				gui_lvprintf(level, "\n");
+			}
+#endif
+
+			if (eventlog_debugmode)
+			{
+				fmt::print("{} [{}] {}: {}\n", time, eventlog_get_levelname_str(level), module, fmt::format(format_str, args...));
+				std::fflush(stdout);
+			}
+		}
+		catch (const fmt::format_error& e)
+		{
+			fmt::print(eventstrm, "Failed to format string ({})\n", e.what());
+#ifdef WIN32_GUI
+			if (eventlog_level_gui & currlevel)
+				gui_lvprintf(eventlog_level_error, "Failed to format string ({})\n", e.what());
+#endif
+		}
+
+		std::fflush(eventstrm);
+	}
 
 	extern void eventlog_step(char const * filename, t_eventlog_level level, char const * module, char const * fmt, ...) PRINTF_ATTR(4, 5);
 
