@@ -22,16 +22,8 @@
 #ifndef INCLUDED_SETUP_BEFORE_H
 #define INCLUDED_SETUP_BEFORE_H
 
-/* get autoconf defines */
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#else
-# ifdef WIN32
-#  include "win32/configwin.h"
-# else
-#  error "No config.h but not building on WIN32, how to configure the system?"
-# endif
-#endif
+#include "config.h"
+
 
 /* This file contains compile-time configuration parameters including
  * debugging options, default configuration values, and format strings.

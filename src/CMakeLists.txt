@@ -7,9 +7,6 @@ link_directories(${CMAKE_BINARY_DIR}/src/common
 	${CMAKE_BINARY_DIR}/src/compat
 	${CMAKE_BINARY_DIR}/src/win32)
 
-#this is needed to be compatible with existent code
-add_definitions("-DHAVE_CONFIG_H")
-
 if(LUA_FOUND)
     add_definitions("-DWITH_LUA")
 endif(LUA_FOUND)
