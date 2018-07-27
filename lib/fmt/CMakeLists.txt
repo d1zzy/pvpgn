@@ -11,4 +11,10 @@ set(FMT_SOURCES ${FMT_SOURCES}
 	${CMAKE_CURRENT_SOURCE_DIR}/time.h
 )
 
-add_library(fmt STATIC ${FMT_SOURCES})
+add_library(fmt ${FMT_SOURCES})
+
+target_include_directories(fmt
+    PUBLIC 
+        $<INSTALL_INTERFACE:lib>    
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib>
+)

@@ -70,6 +70,7 @@ endif()
 
 add_subdirectory(conf)
 add_subdirectory(files)
+add_subdirectory(lib/fmt)
 add_subdirectory(man)
 add_subdirectory(src)
 if(WITH_LUA)

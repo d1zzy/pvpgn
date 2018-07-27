@@ -20,7 +20,15 @@ set(COMMON_SOURCES
 	xstring.cpp xstring.h gui_printf.h gui_printf.cpp 
 	bigint.cpp bigint.h bnetsrp3.cpp bnetsrp3.h peerchat.cpp peerchat.h
     wol_gameres_protocol.h pugiconfig.h pugixml.cpp pugixml.h)
-add_library(common
-  ${COMMON_SOURCES}
+
+add_library(common ${COMMON_SOURCES})
+
+target_include_directories(common
+    PUBLIC 
+        $<INSTALL_INTERFACE:lib>    
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib>
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
 )
-target_link_libraries(common fmt)
+
+target_link_libraries(common PUBLIC fmt)

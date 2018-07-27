@@ -53,9 +53,14 @@ else(WITH_WIN32_GUI)
   add_executable(bnetd ${BNETD_SOURCES} ${BNETD_CONSOLE_RESOURCES})
 endif(WITH_WIN32_GUI)
 
-target_include_directories(bnetd PUBLIC ${CMAKE_SOURCE_DIR}/fmt)
+target_include_directories(bnetd
+    PUBLIC 
+        $<INSTALL_INTERFACE:lib>    
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/lib>
+    PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+)
 
-target_link_libraries(bnetd PUBLIC fmt common compat win32 ${NETWORK_LIBRARIES}
-    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES} ${LUA_LIBRARIES})
+target_link_libraries(bnetd common compat fmt win32 ${NETWORK_LIBRARIES} ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES} ${LUA_LIBRARIES})
 
-  install(TARGETS bnetd DESTINATION ${SBINDIR})
+install(TARGETS bnetd DESTINATION ${SBINDIR})

@@ -18,6 +18,10 @@
 #ifndef INCLUDED_LOCALIZATION_TYPES
 #define INCLUDED_LOCALIZATION_TYPES
 
+#include <vector>
+
+#include "common/tag.h"
+
 namespace pvpgn
 {
 	namespace bnetd
@@ -42,6 +46,7 @@ namespace pvpgn
 #define JUST_NEED_TYPES
 # include <string>
 # include "connection.h"
+
 #include <fmt/format.h>
 #undef JUST_NEED_TYPES
 
@@ -52,6 +57,8 @@ namespace pvpgn
 	{
 		extern int i18n_load(void);
 		extern int i18n_reload(void);
+
+		const char * _find_string(char const * text, t_gamelang gamelang);
 
 		extern std::string i18n_filename(const char * filename, t_tag gamelang);
 		extern t_language language_find_by_country(const char * code, bool &found);
@@ -70,21 +77,26 @@ namespace pvpgn
 		template <typename... Args>
 		std::string _localize(t_connection * c, const char * func, fmt::string_view format_str, const Args& ... args)
 		{
-			const char *format = fmt;
-			std::string output(fmt);
-			t_gamelang lang;
-
-			if (!c) {
+			if (!c)
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "got bad connection");
-				return format;
+				return fmt::to_string(format_str);
 			}
+
+			std::string output;
 			try
 			{
+				t_gamelang lang;
+				const char *format = fmt::to_string(format_str).c_str();
 				if (lang = conn_get_gamelang_localized(c))
-					if (!(format = _find_string(fmt, lang)))
-						format = fmt; // if not found use original
+				{
+					if (!(format = _find_string(fmt::to_string(format_str).c_str(), lang)))
+					{
+						format = fmt::to_string(format_str).c_str(); // if not found use original
+					}
+				}
 
-				output = fmt::format(format, args);
+				output = fmt::format(format, args...);
 
 				char tmp[MAX_MESSAGE_LEN];
 				std::snprintf(tmp, sizeof tmp, "%s", output.c_str());
@@ -94,7 +106,7 @@ namespace pvpgn
 			}
 			catch (const std::exception& e)
 			{
-				WARN2("Can't format translation string \"{}\" ({})", fmt, e.what());
+				WARN2("Can't format translation string \"{}\" ({})", format_str, e.what());
 			}
 
 			return output;
