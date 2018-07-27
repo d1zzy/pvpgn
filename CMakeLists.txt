@@ -8,6 +8,9 @@ cmake_minimum_required(VERSION 3.1.0)
 set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 
 project(pvpgn CXX)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(WITH_BNETD "compile the bnetd target" ON)
 option(WITH_D2CS "compile the d2cs target" ON)
@@ -28,7 +31,7 @@ include(ConfigureChecks.cmake)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	# using Clang
 
-	set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -march=native -mtune=native -pedantic -stdlib=libc++")
+	set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O3 -march=native -mtune=native -pedantic -stdlib=libc++")
 
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	# using G++
@@ -37,7 +40,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 		message(FATAL_ERROR "G++ 5.1 or higher required")
 	endif()
 
-	set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -march=native -mtune=native -pedantic -Wno-variadic-macros" )
+	set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O3 -march=native -mtune=native -pedantic -Wno-variadic-macros" )
 
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	# using Visual Studio
