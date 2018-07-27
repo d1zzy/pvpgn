@@ -10,14 +10,6 @@ link_directories(${CMAKE_BINARY_DIR}/src/common
 #this is needed to be compatible with existent code
 add_definitions("-DHAVE_CONFIG_H")
 
-if(WITH_FLAG_WALL)
-    add_definitions("-Wall")
-endif(WITH_FLAG_WALL)
-
-if(WITH_FLAG_ANSIPEDANTIC)
-    add_definitions("-pedantic -ansi")
-endif(WITH_FLAG_ANSIPEDANTIC)
-
 if(LUA_FOUND)
     add_definitions("-DWITH_LUA")
 endif(LUA_FOUND)
