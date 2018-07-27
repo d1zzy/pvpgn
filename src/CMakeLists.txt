@@ -1,15 +1,5 @@
-#first setup the includes and link paths
-include_directories(${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/src)
+include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR})
 
-# the following line makes sure all targets will lookup local libraries
-# when referenced by short names
-link_directories(${CMAKE_BINARY_DIR}/src/common 
-	${CMAKE_BINARY_DIR}/src/compat
-	${CMAKE_BINARY_DIR}/src/win32)
-
-if(LUA_FOUND)
-    add_definitions("-DWITH_LUA")
-endif(LUA_FOUND)
 
 if(MYSQL_FOUND)
     add_definitions("-DWITH_SQL_MYSQL")
@@ -21,11 +11,26 @@ if(PGSQL_FOUND)
     add_definitions("-DWITH_SQL_PGSQL")
 endif(PGSQL_FOUND)
 
+
+if(LUA_FOUND)
+    add_definitions("-DWITH_LUA")
+endif(LUA_FOUND)
+
+
+
 if (WITH_WIN32_GUI)
     add_definitions("-DWIN32_GUI")
 endif (WITH_WIN32_GUI)
 
-subdirs(compat common win32 bntrackd client bniutils bnpass)
+
+add_subdirectory(bniutils)
+add_subdirectory(bnpass)
+add_subdirectory(bntrackd)
+add_subdirectory(client)
+add_subdirectory(common)
+add_subdirectory(compat)
+add_subdirectory(win32)
+
 
 if(WITH_BNETD)
     add_subdirectory(bnetd)
@@ -38,6 +43,7 @@ endif(WITH_D2CS)
 if(WITH_D2DBS)
     add_subdirectory(d2dbs)
 endif(WITH_D2DBS)
+
 
 if(CMAKE_TESTING_ENABLED)
     add_subdirectory(test)
