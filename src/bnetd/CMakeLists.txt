@@ -43,12 +43,14 @@ set(BNETD_GUI_RESOURCES
   ../win32/resource.h ../win32/resource.rc)
 
 if(WITH_WIN32_GUI)
-  add_executable(bnetd WIN32 ${BNETD_SOURCES} ${BNETD_GUI_RESOURCES})
-else(WITH_WIN32_GUI)  
-  add_executable(bnetd ${BNETD_SOURCES} ${BNETD_CONSOLE_RESOURCES})
+  set(PVPGN_BIN_NAME "PvPGN")
+  add_executable(${PVPGN_BIN_NAME} WIN32 ${BNETD_SOURCES} ${BNETD_GUI_RESOURCES})
+else(WITH_WIN32_GUI)
+  set(PVPGN_BIN_NAME "PvPGNConsole")
+  add_executable(${PVPGN_BIN_NAME} ${BNETD_SOURCES} ${BNETD_CONSOLE_RESOURCES})
 endif(WITH_WIN32_GUI)
 
-target_include_directories(bnetd
+target_include_directories(${PVPGN_BIN_NAME}
     PRIVATE
 		${ZLIB_INCLUDE_DIRS}
 		${LUA_INCLUDE_DIR}
@@ -58,6 +60,6 @@ target_include_directories(bnetd
 		${ODBC_INCLUDE_DIR}
 )
 
-target_link_libraries(bnetd PRIVATE common compat fmt win32 ${NETWORK_LIBRARIES} ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES} ${LUA_LIBRARIES})
+target_link_libraries(${PVPGN_BIN_NAME} PRIVATE common compat fmt win32 ${NETWORK_LIBRARIES} ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES} ${LUA_LIBRARIES})
 
-install(TARGETS bnetd DESTINATION ${SBINDIR})
+install(TARGETS ${PVPGN_BIN_NAME} DESTINATION ${SBINDIR})

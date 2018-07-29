@@ -6,10 +6,12 @@ set(D2DBS_SOURCES
 	../win32/d2dbs_resource.rc)
 
 if(WITH_WIN32_GUI)
-  add_executable(d2dbs WIN32 ${D2DBS_SOURCES})
+  set(D2DBS_BIN_NAME "D2DBS")
+  add_executable(${D2DBS_BIN_NAME} WIN32 ${D2DBS_SOURCES})
 else(WITH_WIN32_GUI)
-  add_executable(d2dbs ${D2DBS_SOURCES})
+  set(D2DBS_BIN_NAME "D2DBSConsole")
+  add_executable(${D2DBS_BIN_NAME} ${D2DBS_SOURCES})
 endif(WITH_WIN32_GUI)
 
-target_link_libraries(d2dbs PRIVATE common compat fmt win32 ${NETWORK_LIBRARIES})
-install(TARGETS d2dbs DESTINATION ${SBINDIR})
+target_link_libraries(${D2DBS_BIN_NAME} PRIVATE common compat fmt win32 ${NETWORK_LIBRARIES})
+install(TARGETS ${D2DBS_BIN_NAME} DESTINATION ${SBINDIR})

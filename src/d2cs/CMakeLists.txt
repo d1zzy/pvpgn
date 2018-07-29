@@ -10,10 +10,12 @@ set(D2CS_SOURCES
 	../win32/d2cs_resource.h ../win32/d2cs_resource.rc)
 
 if(WITH_WIN32_GUI)
-  add_executable(d2cs WIN32 ${D2CS_SOURCES})
+  set(D2CS_BIN_NAME "D2CS")
+  add_executable(${D2CS_BIN_NAME} WIN32 ${D2CS_SOURCES})
 else(WITH_WIN32_GUI)
-  add_executable(d2cs ${D2CS_SOURCES})
+  set(D2CS_BIN_NAME "D2CSConsole")
+  add_executable(${D2CS_BIN_NAME} ${D2CS_SOURCES})
 endif(WITH_WIN32_GUI)
 
-target_link_libraries(d2cs PRIVATE common compat fmt win32 ${NETWORK_LIBRARIES})
-install(TARGETS d2cs DESTINATION ${SBINDIR})
+target_link_libraries(${D2CS_BIN_NAME} PRIVATE common compat fmt win32 ${NETWORK_LIBRARIES})
+install(TARGETS ${D2CS_BIN_NAME} DESTINATION ${SBINDIR})
