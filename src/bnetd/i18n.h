@@ -18,9 +18,14 @@
 #ifndef INCLUDED_LOCALIZATION_TYPES
 #define INCLUDED_LOCALIZATION_TYPES
 
+#include <string>
 #include <vector>
 
+#include "common/eventlog.h"
+#include "common/field_sizes.h"
 #include "common/tag.h"
+
+#include <fmt/format.h>
 
 namespace pvpgn
 {
@@ -44,14 +49,9 @@ namespace pvpgn
 #define INCLUDED_LOCALIZATION_PROTOS
 
 #define JUST_NEED_TYPES
-# include <string>
-
-#include "common/eventlog.h"
-#include "common/field_sizes.h"
 
 #include "connection.h"
 
-#include <fmt/format.h>
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
