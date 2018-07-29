@@ -31,6 +31,9 @@ before_script:
   - cd build
   - cmake -D WITH_MYSQL=true -D WITH_LUA=true ../
 
+script:
+  - make
+
 after_script:
   - sudo make install
   - sudo make uninstall
