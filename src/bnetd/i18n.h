@@ -45,7 +45,11 @@ namespace pvpgn
 
 #define JUST_NEED_TYPES
 # include <string>
-# include "connection.h"
+
+#include "common/eventlog.h"
+#include "common/field_sizes.h"
+
+#include "connection.h"
 
 #include <fmt/format.h>
 #undef JUST_NEED_TYPES
