@@ -106,7 +106,7 @@ message(STATUS "Checking optional POSIX/required SUS headers")
 check_include_file_cxx(sys/timeb.h HAVE_SYS_TIMEB_H)
 
 message(STATUS "Checking FreeBSD-based headers")
-check_include_files("sys/types.h;sys/event.h" HAVE_SYS_EVENT_H)
+check_include_file_cxx(sys/event.h HAVE_SYS_EVENT_H)
 check_include_file_cxx(sys/param.h HAVE_SYS_PARAM_H)
 
 message(STATUS "Checking BSD headers")
