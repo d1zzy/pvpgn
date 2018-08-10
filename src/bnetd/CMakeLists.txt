@@ -61,3 +61,4 @@ target_include_directories(bnetd
 target_link_libraries(bnetd PRIVATE common compat fmt win32 ${NETWORK_LIBRARIES} ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES} ${LUA_LIBRARIES})
 
 install(TARGETS bnetd DESTINATION ${SBINDIR})
+install(FILES $<TARGET_PDB_FILE:bnetd> DESTINATION ${SBINDIR} OPTIONAL)

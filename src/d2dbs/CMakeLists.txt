@@ -13,3 +13,4 @@ endif(WITH_WIN32_GUI)
 
 target_link_libraries(d2dbs PRIVATE common compat fmt win32 ${NETWORK_LIBRARIES})
 install(TARGETS d2dbs DESTINATION ${SBINDIR})
+install(FILES $<TARGET_PDB_FILE:d2dbs> DESTINATION ${SBINDIR} OPTIONAL)
