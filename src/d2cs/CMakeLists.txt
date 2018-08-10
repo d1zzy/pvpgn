@@ -17,4 +17,6 @@ endif(WITH_WIN32_GUI)
 
 target_link_libraries(d2cs PRIVATE common compat fmt win32 ${NETWORK_LIBRARIES})
 install(TARGETS d2cs DESTINATION ${SBINDIR})
-install(FILES $<TARGET_PDB_FILE:d2cs> DESTINATION ${SBINDIR} OPTIONAL)
+if(WIN32 AND MSVC)
+    install(FILES $<TARGET_PDB_FILE:d2cs> DESTINATION ${SBINDIR} OPTIONAL)
+endif()
