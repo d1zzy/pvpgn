@@ -89,6 +89,6 @@ test:
 #      artifacts configuration    #
 #---------------------------------#
 artifacts:
-  - path: %(programfiles(x86))\pvpgn
+  - path: $(programfiles(x86))\pvpgn
     name: pvpgn-pro-$(APPVEYOR_REPO_BRANCH)-$(APPVEYOR_BUILD_VERSION)-$(APPVEYOR_REPO_COMMIT:~0,7)-$(DB)
     type: zip
