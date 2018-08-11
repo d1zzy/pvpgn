@@ -53,6 +53,7 @@ install:
   - vcpkg install zlib
   - vcpkg install lua
 
+cache: c:\tools\vcpkg\installed\
 
 #---------------------------------#
 #       build configuration       #
