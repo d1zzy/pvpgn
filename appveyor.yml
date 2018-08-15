@@ -47,7 +47,7 @@ matrix:
 
 install:
   - git -C C:\tools\vcpkg pull
-  - vcpkg install libmysql
+  - vcpkg install libmariadb
   - vcpkg install libpq
   - vcpkg install sqlite3
   - vcpkg install zlib
