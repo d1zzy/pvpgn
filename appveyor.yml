@@ -63,6 +63,7 @@ platform: x86
 configuration: RelWithDebInfo
 
 before_build:
+  - cmd: mkdir c:\projects\pvpgn-server\build
   - cmd: cd c:\projects\pvpgn-server\build
 
 build_script:
