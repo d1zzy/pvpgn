@@ -407,7 +407,7 @@ track = 60
 # Tracking server(s)
 # Use a comma delimited list of hostnames with optional UDP port numbers
 # after colons. (port 6114 is the default for the newer tracking protocol)
-trackaddrs = "track.pvpgn.org,bntrack.darkwings.org,bnet.mivabe.nl,track.eurobattle.net"
+trackaddrs = "track.pvpgn.pro,track.pvpgn.org,bntrack.darkwings.org,bnet.mivabe.nl,track.eurobattle.net"
 
 # Change these to match your system, for example:
 location = "unknown"
