@@ -79,7 +79,7 @@ make
 make install
 ```
 
-#### Ubuntu 16.04
+#### Ubuntu 16.04, 18.04
 ```
 sudo apt-get -y install build-essential git cmake zlib1g-dev
 git clone https://github.com/pvpgn/pvpgn-server.git
@@ -102,7 +102,7 @@ cd pvpgn-server && cmake -G "Unix Makefiles" -H./ -B./build
 cd build && make
 ```
 
-#### Debian 8
+#### Debian 8 with clang compiler
 ```
 sudo apt-get -y install build-essential zlib1g-dev clang libc++-dev git
 wget https://cmake.org/files/v3.7/cmake-3.7.1-Linux-x86_64.tar.gz
