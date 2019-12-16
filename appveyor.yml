@@ -47,7 +47,6 @@ matrix:
   fast_finish: true
 
 install:
-  - git -C C:\tools\vcpkg pull
   - vcpkg install libmariadb
   - vcpkg install libpq
   - vcpkg install sqlite3
