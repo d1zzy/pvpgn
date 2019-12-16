@@ -59,7 +59,7 @@ cache: c:\tools\vcpkg\installed\
 #---------------------------------#
 #       build configuration       #
 #---------------------------------#
-platform: x86
+platform: Win32
 
 configuration: RelWithDebInfo
 
