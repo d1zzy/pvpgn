@@ -97,9 +97,9 @@ namespace pvpgn
 		static void	guiOnAnnounce(HWND);
 		static void	guiOnUserStatusChange(HWND);
 
-		BOOL CALLBACK	AboutDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
+		INT_PTR AboutDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 		INT_PTR AnnDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
-		BOOL CALLBACK	KickDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
+		INT_PTR KickDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam);
 
 #define MODE_HDIVIDE    1
 #define MODE_VDIVIDE    1
@@ -564,13 +564,13 @@ namespace pvpgn
 			int  index;
 			index = SendMessageW(gui.hwndUsers, LB_GETCURSEL, 0, 0);
 			SendMessageA(gui.hwndUsers, LB_GETTEXT, index, reinterpret_cast<LPARAM>(selected_item));
-			DialogBoxW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDD_KICKUSER), hwnd, static_cast<DLGPROC>(KickDlgProc));
+			DialogBoxW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDD_KICKUSER), hwnd, reinterpret_cast<DLGPROC>(KickDlgProc));
 			SendMessageW(gui.hwndUsers, LB_SETCURSEL, -1, 0);
 		}
 
 		static void guiOnAbout(HWND hwnd)
 		{
-			DialogBoxW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDD_ABOUT), hwnd, static_cast<DLGPROC>(AboutDlgProc));
+			DialogBoxW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDD_ABOUT), hwnd, reinterpret_cast<DLGPROC>(AboutDlgProc));
 		}
 
 		static void guiOnServerConfig()
@@ -675,7 +675,7 @@ namespace pvpgn
 			Shell_NotifyIconW(NIM_DELETE, &dta);
 		}
 
-		BOOL CALLBACK AboutDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+		INT_PTR AboutDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 		{
 			switch (Message)
 			{
@@ -741,7 +741,7 @@ namespace pvpgn
 			return TRUE;
 		}
 
-		BOOL CALLBACK KickDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
+		INT_PTR KickDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
 		{
 			switch (Message)
 			{
