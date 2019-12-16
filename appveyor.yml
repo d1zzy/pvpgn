@@ -71,12 +71,12 @@ build_script:
   - cmd: cmake -A Win32 -D CMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -D CMAKE_SYSTEM_VERSION=10.0 -D WITH_LUA=true -D WITH_MYSQL=%WITH_MYSQL_VAL% -D WITH_ODBC=%WITH_ODBC_VAL% -D WITH_PGSQL=%WITH_PGSQL_VAL% -D WITH_SQLITE3=%WITH_SQLITE3_VAL% -D WITH_WIN32_GUI=true ..
   - cmd: msbuild ALL_BUILD.vcxproj /property:Configuration=RelWithDebInfo /maxcpucount /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - cmd: msbuild INSTALL.vcxproj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - cmd: rename %programfiles(x86)%\pvpgn\bnetd.exe %programfiles(x86)%\pvpgn\bnetd-gui.exe
-  - cmd: rename %programfiles(x86)%\pvpgn\bnetd.pdb %programfiles(x86)%\pvpgn\bnetd-gui.pdb
-  - cmd: rename %programfiles(x86)%\pvpgn\d2cs.exe  %programfiles(x86)%\pvpgn\d2cs-gui.exe
-  - cmd: rename %programfiles(x86)%\pvpgn\d2cs.pdb  %programfiles(x86)%\pvpgn\d2cs-gui.pdb
-  - cmd: rename %programfiles(x86)%\pvpgn\d2dbs.exe %programfiles(x86)%\pvpgn\d2dbs-gui.exe
-  - cmd: rename %programfiles(x86)%\pvpgn\d2dbs.pdb %programfiles(x86)%\pvpgn\d2dbs-gui.pdb
+  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\bnetd.exe" -NewName "${Env:Programfiles(x86)}\pvpgn\bnetd-gui.exe"
+  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\bnetd.pdb" -NewName "${Env:Programfiles(x86)}\pvpgn\bnetd-gui.pdb"
+  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\d2cs.exe" -NewName "${Env:Programfiles(x86)}\pvpgn\d2cs-gui.exe"
+  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\d2cs.pdb" -NewName "${Env:Programfiles(x86)}\pvpgn\d2cs-gui.pdb"
+  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\d2dbs.exe" -NewName "${Env:Programfiles(x86)}\pvpgn\d2dbs-gui.exe"
+  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\d2dbs.pdb" -NewName "${Env:Programfiles(x86)}\pvpgn\d2dbs-gui.pdb"
   - cmd: cmake -A Win32 -D CMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -D CMAKE_SYSTEM_VERSION=10.0 -D WITH_LUA=true -D WITH_MYSQL=%WITH_MYSQL_VAL% -D WITH_ODBC=%WITH_ODBC_VAL% -D WITH_PGSQL=%WITH_PGSQL_VAL% -D WITH_SQLITE3=%WITH_SQLITE3_VAL% -D WITH_WIN32_GUI=false ..
   - cmd: msbuild ALL_BUILD.vcxproj /property:Configuration=RelWithDebInfo /maxcpucount /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - cmd: msbuild INSTALL.vcxproj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
