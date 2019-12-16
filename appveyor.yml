@@ -51,7 +51,7 @@ install:
   - vcpkg install libpq
   - vcpkg install sqlite3
   - vcpkg install zlib
-  - vcpkg install lua
+  - choco install lua
 
 cache: c:\tools\vcpkg\installed\
 
