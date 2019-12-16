@@ -81,18 +81,7 @@ build_script:
   - cmd: msbuild ALL_BUILD.vcxproj /property:Configuration=RelWithDebInfo /maxcpucount /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - cmd: msbuild INSTALL.vcxproj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-#---------------------------------#
-#       tests configuration       #
-#---------------------------------#
-test:
-  assemblies:
-    - '%programfiles(x86)%\pvpgn\bnetd.exe'
-    - '%programfiles(x86)%\pvpgn\bnetd-gui.exe'
-
-#---------------------------------#
-#      artifacts configuration    #
-#---------------------------------#
-artifacts:
-  - path: $(programfiles(x86))\pvpgn
-    name: pvpgn-pro-$(APPVEYOR_REPO_BRANCH)-$(APPVEYOR_BUILD_VERSION)-$(APPVEYOR_REPO_COMMIT:~0,7)-$(DB)
-    type: zip
+after_build:
+  - ps: New-Item -Path "${env:APPVEYOR_BUILD_FOLDER}" -Name "artifacts" -ItemType "directory"
+  - ps: Compress-Archive -Path "${Env:Programfiles(x86)}\pvpgn\*" -DestinationPath "${env:APPVEYOR_BUILD_FOLDER}\artifacts\pvpgn-pro-${env:APPVEYOR_REPO_BRANCH}-${env:APPVEYOR_BUILD_VERSION}-${env:DB}.zip"
+  - ps: Get-ChildItem .\artifacts\*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
