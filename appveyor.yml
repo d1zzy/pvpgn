@@ -84,4 +84,4 @@ build_script:
 after_build:
   - ps: New-Item -Path "${env:APPVEYOR_BUILD_FOLDER}" -Name "artifacts" -ItemType "directory"
   - ps: Compress-Archive -Path "${Env:Programfiles(x86)}\pvpgn\*" -DestinationPath "${env:APPVEYOR_BUILD_FOLDER}\artifacts\pvpgn-pro-${env:APPVEYOR_REPO_BRANCH}-${env:APPVEYOR_BUILD_VERSION}-${env:DB}.zip"
-  - ps: Get-ChildItem .\artifacts\*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+  - ps: Get-ChildItem "${env:APPVEYOR_BUILD_FOLDER}\artifacts\*.zip" | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
