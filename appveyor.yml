@@ -14,6 +14,7 @@ branches:
 image: Visual Studio 2017
 
 environment:
+  LUA_DIR: C:\Program Files (x86)\Lua\5.1
   matrix:
     - DB: plain
       WITH_MYSQL_VAL: false
