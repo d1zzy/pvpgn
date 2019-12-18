@@ -48,7 +48,7 @@ matrix:
   fast_finish: true
 
 install:
-  - vcpkg install libmariadb
+  - vcpkg install libmysql
   - vcpkg install libpq
   - vcpkg install sqlite3
   - vcpkg install zlib
@@ -62,9 +62,6 @@ cache: c:\tools\vcpkg\installed\
 platform: Win32
 
 configuration: RelWithDebInfo
-
-init:
-  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 before_build:
   - ps: New-Item -Path "$env:APPVEYOR_BUILD_FOLDER" -Name "build" -ItemType "directory"
@@ -88,6 +85,3 @@ after_build:
   - ps: New-Item -Path "${env:APPVEYOR_BUILD_FOLDER}" -Name "artifacts" -ItemType "directory"
   - ps: Compress-Archive -Path "${Env:Programfiles(x86)}\pvpgn\*" -DestinationPath "${env:APPVEYOR_BUILD_FOLDER}\artifacts\pvpgn-pro-${env:APPVEYOR_REPO_BRANCH}-${env:APPVEYOR_BUILD_VERSION}-${env:DB}.zip"
   - ps: Get-ChildItem "${env:APPVEYOR_BUILD_FOLDER}\artifacts\*.zip" | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
-
-on_finish:
-  - ps: Start-Sleep -s 1200
