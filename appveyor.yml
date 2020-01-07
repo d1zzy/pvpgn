@@ -54,7 +54,7 @@ install:
   - vcpkg install zlib
   - choco install lua
 
-cache: c:\tools\vcpkg\installed\
+#cache: c:\tools\vcpkg\installed\
 
 #---------------------------------#
 #       build configuration       #
