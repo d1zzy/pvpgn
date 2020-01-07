@@ -49,8 +49,6 @@ matrix:
   fast_finish: true
 
 install:
-  - vcpkg install libmysql
-  - vcpkg install libpq
   - vcpkg install sqlite3
   - vcpkg install zlib
   - choco install lua
