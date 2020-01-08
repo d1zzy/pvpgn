@@ -61,7 +61,7 @@ cache: c:\tools\vcpkg\installed\
 init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
-platform: Win32
+platform: x64
 
 configuration: RelWithDebInfo
 
