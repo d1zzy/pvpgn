@@ -49,8 +49,8 @@ matrix:
   fast_finish: true
 
 install:
-  - vcpkg install sqlite3
-  - vcpkg install zlib
+  - vcpkg install sqlite3 --triplet x64-windows
+  - vcpkg install zlib --triplet x64-windows
   - choco install lua
 
 #cache: c:\tools\vcpkg\installed\
