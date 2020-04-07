@@ -864,6 +864,21 @@
                     }
                 ]
             }
+        },
+        "PMAC": {
+            "0x4f": {
+                "checkRevisionFile": "PMACver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+		    {
+                        "title": "Warcraft II BNE 2.02",
+			"version": "2.0.2.1",
+			"hash": "0xaed93b05",
+			"fileMetadata": "Warcraft II BNE 05/21/101 15:44:14 931587",
+			"versionTag": "W2BN_202"
+		    }
+		]
+            }
         }
     },
     "STAR": {
@@ -1329,6 +1344,21 @@
                     }
                 ]
             }
+        },
+        "PMAC": {
+            "0xd1": {
+                "checkRevisionFile": "PMACver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+		    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.15 - (Starcraft mode)",
+			"version": "1.15.0.1",
+			"hash": "0xeb5f82bd",
+			"fileMetadata": "Starcraft 07/16/107 18:00:00 1606200",
+			"versionTag": "STAR_115"
+		    }
+		]
+            }
         }
     },
     "SEXP": {
@@ -1613,6 +1643,21 @@
                     }
                 ]
             }
+        },
+        "PMAC": {
+            "0xd1": {
+                "checkRevisionFile": "PMACver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+		    {
+                        "title": "Starcraft - Broodwar (Expansion) 1.15 - (Broodwar mode)",
+			"version": "1.15.0.1",
+			"hash": "0xeb5f82bd",
+			"fileMetadata": "Starcraft 07/16/107 18:00:00 1606200",
+			"versionTag": "SEXP_115"
+		    }
+		]
+            }
         }
     },
     "DRTL": {
@@ -1650,6 +1695,34 @@
                     }
                 ]
             }
+        },
+        "PMAC": {
+            "0x2a": {
+                "checkRevisionFile": "PMACver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+		    {
+			"title": "Diablo 109",
+			"version": "1.0.9.2",
+			"hash": "0x2b079060",
+			"fileMetadata": "Diablo 05/12/101 15:42:00 1160990",
+			"versionTag": "DRTL_109"
+		    }
+		]
+            },
+            "0x28": {
+                "checkRevisionFile": "PMACver1.mpq",
+                "equation": "A=3845581634 B=880823580 C=1363937103 4 A=A-S B=B-C C=C-A A=A-B",
+                "entries": [
+	            {
+			"title": "Diablo 108",
+			"version": "1.0.8.0",
+			"hash": "0x82f94d6a",
+			"fileMetadata": "Diablo 06/13/100 12:00:00 1113966",
+			"versionTag": "DRTL_108"
+		    }
+		]
+            }	
         }
     },
     "D2XP": {
