@@ -854,57 +854,74 @@ static int on_client_charlistreq(t_connection * c, t_packet * packet)
 		packet_set_type(rpacket,D2CS_CLIENT_CHARLISTREPLY);
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.u1,0);
 		n=0;
-		try {
-			Directory dir(path);
-			while ((charname=dir.read())) {
-				charinfo = (t_d2charinfo_file*)xmalloc(sizeof(t_d2charinfo_file));
-				if (d2charinfo_load(account,charname,charinfo)<0) {
-					eventlog(eventlog_level_error,__FUNCTION__,"error loading charinfo for {}(*{})",charname,account);
-					xfree((void *)charinfo);
-					continue;
+		bool retry = true;
+		while (retry)
+		{
+			try {
+				Directory dir(path);
+				while ((charname = dir.read())) {
+					charinfo = (t_d2charinfo_file*)xmalloc(sizeof(t_d2charinfo_file));
+					if (d2charinfo_load(account, charname, charinfo) < 0) {
+						eventlog(eventlog_level_error, __FUNCTION__, "error loading charinfo for {}(*{})", charname, account);
+						xfree((void*)charinfo);
+						continue;
+					}
+					eventlog(eventlog_level_debug, __FUNCTION__, "adding char {} (*{})", charname, account);
+					d2charlist_add_char(&charlist_head, charinfo, 0);
+					n++;
+					if (n >= maxchar) break;
 				}
-				eventlog(eventlog_level_debug,__FUNCTION__,"adding char {} (*{})", charname, account);
-				d2charlist_add_char(&charlist_head,charinfo,0);
-				n++;
-				if (n>=maxchar) break;
-			}
-			if (prefs_allow_newchar() && (n<maxchar)) {
-				bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar,maxchar);
-			} else {
-				bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar,0);
-			}
-			if (!std::strcmp(charlist_sort_order, "ASC"))
-			{
-			    t_elist * curr, * safe;
-			    t_d2charlist * ccharlist;
+				if (prefs_allow_newchar() && (n < maxchar)) {
+					bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar, maxchar);
+				}
+				else {
+					bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar, 0);
+				}
+				if (!std::strcmp(charlist_sort_order, "ASC"))
+				{
+					t_elist* curr, * safe;
+					t_d2charlist* ccharlist;
 
-			    elist_for_each_safe(curr,&charlist_head,safe)
-			    {
-				ccharlist = elist_entry(curr,t_d2charlist,list);
-				packet_append_string(rpacket,(char*)ccharlist->charinfo->header.charname);
-				packet_append_string(rpacket,(char *)&ccharlist->charinfo->portrait);
-				xfree((void *)ccharlist->charinfo);
-				xfree((void *)ccharlist);
-			    }
-			}
-			else
-			{
-			    t_elist * curr, * safe;
-			    t_d2charlist * ccharlist;
+					elist_for_each_safe(curr, &charlist_head, safe)
+					{
+						ccharlist = elist_entry(curr, t_d2charlist, list);
+						packet_append_string(rpacket, (char*)ccharlist->charinfo->header.charname);
+						packet_append_string(rpacket, (char*)&ccharlist->charinfo->portrait);
+						xfree((void*)ccharlist->charinfo);
+						xfree((void*)ccharlist);
+					}
+				}
+				else
+				{
+					t_elist* curr, * safe;
+					t_d2charlist* ccharlist;
 
-			    elist_for_each_safe_rev(curr,&charlist_head,safe)
-			    {
-				ccharlist = elist_entry(curr,t_d2charlist,list);
-				packet_append_string(rpacket,(char*)ccharlist->charinfo->header.charname);
-				packet_append_string(rpacket,(char *)&ccharlist->charinfo->portrait);
-				xfree((void *)ccharlist->charinfo);
-				xfree((void *)ccharlist);
+					elist_for_each_safe_rev(curr, &charlist_head, safe)
+					{
+						ccharlist = elist_entry(curr, t_d2charlist, list);
+						packet_append_string(rpacket, (char*)ccharlist->charinfo->header.charname);
+						packet_append_string(rpacket, (char*)&ccharlist->charinfo->portrait);
+						xfree((void*)ccharlist->charinfo);
+						xfree((void*)ccharlist);
 
-			    }
+					}
+				}
+
+				retry = false;
 			}
-		} catch(const Directory::OpenError&) {
-			INFO1("(*{}) charinfo directory do not exist, building it",account);
-			p_mkdir(path,S_IRWXU);
+			catch (const Directory::OpenError&) {
+				ERROR1("(*{}) charinfo directory do not exist, building it", account);
+				if (p_mkdir(path, S_IRWXU) == 0)
+				{
+					INFO1("Successfully created charinfo directory ({})", path);
+				}
+				else
+				{
+					ERROR2("Failed to create charinfo directory ({}), errno = {}", path, errno);
+					retry = false;
+					bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar, 0);
+				}
+			}
 		}
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar,n);
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar2,n);
@@ -953,70 +970,87 @@ static int on_client_charlistreq_110(t_connection * c, t_packet * packet)
 		packet_set_type(rpacket,D2CS_CLIENT_CHARLISTREPLY_110);
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply_110.u1,0);
 		n=0;
-		try {
-			Directory dir(path);
+		bool retry = true;
+		while (retry)
+		{
+			try {
+				Directory dir(path);
 
-			exp_time = prefs_get_char_expire_time();
-			while ((charname=dir.read())) {
-				charinfo = (t_d2charinfo_file*)xmalloc(sizeof(t_d2charinfo_file));
-				if (d2charinfo_load(account,charname,charinfo)<0) {
-					eventlog(eventlog_level_error,__FUNCTION__,"error loading charinfo for {}(*{})",charname,account);
-					xfree(charinfo);
-					continue;
+				exp_time = prefs_get_char_expire_time();
+				while ((charname = dir.read())) {
+					charinfo = (t_d2charinfo_file*)xmalloc(sizeof(t_d2charinfo_file));
+					if (d2charinfo_load(account, charname, charinfo) < 0) {
+						eventlog(eventlog_level_error, __FUNCTION__, "error loading charinfo for {}(*{})", charname, account);
+						xfree(charinfo);
+						continue;
+					}
+					if (exp_time) {
+						curr_exp_time = bn_int_get(charinfo->header.last_time) + exp_time;
+					}
+					else {
+						curr_exp_time = 0x7FFFFFFF;
+					}
+					eventlog(eventlog_level_debug, __FUNCTION__, "adding char {} (*{})", charname, account);
+					d2charlist_add_char(&charlist_head, charinfo, curr_exp_time);
+					n++;
+					if (n >= maxchar) break;
 				}
-				if (exp_time) {
-					curr_exp_time = bn_int_get(charinfo->header.last_time)+exp_time;
-				} else {
-					curr_exp_time = 0x7FFFFFFF;
+				if (n >= maxchar)
+					maxchar = 0;
+
+				if (!std::strcmp(charlist_sort_order, "ASC"))
+				{
+					t_elist* curr, * safe;
+					t_d2charlist* ccharlist;
+
+					elist_for_each_safe(curr, &charlist_head, safe)
+					{
+						bn_int bn_exp_time;
+
+						ccharlist = elist_entry(curr, t_d2charlist, list);
+						bn_int_set(&bn_exp_time, ccharlist->expiration_time);
+						packet_append_data(rpacket, bn_exp_time, sizeof(bn_exp_time));
+						packet_append_string(rpacket, (char*)ccharlist->charinfo->header.charname);
+						packet_append_string(rpacket, (char*)&ccharlist->charinfo->portrait);
+						xfree((void*)ccharlist->charinfo);
+						xfree((void*)ccharlist);
+					}
 				}
-				eventlog(eventlog_level_debug,__FUNCTION__,"adding char {} (*{})", charname, account);
-				d2charlist_add_char(&charlist_head,charinfo,curr_exp_time);
-				n++;
-				if (n>=maxchar) break;
+				else
+				{
+					t_elist* curr, * safe;
+					t_d2charlist* ccharlist;
+
+					elist_for_each_safe_rev(curr, &charlist_head, safe)
+					{
+						bn_int bn_exp_time;
+
+						ccharlist = elist_entry(curr, t_d2charlist, list);
+						bn_int_set(&bn_exp_time, ccharlist->expiration_time);
+						packet_append_data(rpacket, bn_exp_time, sizeof(bn_exp_time));
+						packet_append_string(rpacket, (char*)ccharlist->charinfo->header.charname);
+						packet_append_string(rpacket, (char*)&ccharlist->charinfo->portrait);
+						xfree((void*)ccharlist->charinfo);
+						xfree((void*)ccharlist);
+					}
+				}
+
+				retry = false;
 			}
-			if (n>=maxchar)
-				maxchar = 0;
-
-			if (!std::strcmp(charlist_sort_order, "ASC"))
-			{
-			    t_elist * curr, *safe;
-			    t_d2charlist * ccharlist;
-
-			    elist_for_each_safe(curr,&charlist_head,safe)
-			    {
-			    	bn_int bn_exp_time;
-
-				ccharlist = elist_entry(curr,t_d2charlist,list);
-				bn_int_set(&bn_exp_time,ccharlist->expiration_time);
-				packet_append_data(rpacket,bn_exp_time,sizeof(bn_exp_time));
-				packet_append_string(rpacket,(char*)ccharlist->charinfo->header.charname);
-				packet_append_string(rpacket,(char *)&ccharlist->charinfo->portrait);
-				xfree((void *)ccharlist->charinfo);
-				xfree((void *)ccharlist);
-			    }
+			catch (const Directory::OpenError&) {
+				ERROR1("(*{}) charinfo directory do not exist, building it", account);
+				if (p_mkdir(path, S_IRWXU) == 0)
+				{
+					INFO1("Successfully created charinfo directory ({})", path);
+				}
+				else
+				{
+					ERROR2("Failed to create charinfo directory ({}), errno = {}", path, errno);
+					retry = false;
+				}
 			}
-			else
-			{
-			    t_elist * curr, *safe;
-			    t_d2charlist * ccharlist;
-
-			    elist_for_each_safe_rev(curr,&charlist_head,safe)
-			    {
-			    	bn_int bn_exp_time;
-
-				ccharlist = elist_entry(curr,t_d2charlist,list);
-				bn_int_set(&bn_exp_time,ccharlist->expiration_time);
-				packet_append_data(rpacket,bn_exp_time,sizeof(bn_exp_time));
-				packet_append_string(rpacket,(char*)ccharlist->charinfo->header.charname);
-				packet_append_string(rpacket,(char *)&ccharlist->charinfo->portrait);
-				xfree((void *)ccharlist->charinfo);
-				xfree((void *)ccharlist);
-			    }
-			}
-		} catch (const Directory::OpenError&) {
-			INFO1("(*{}) charinfo directory do not exist, building it",account);
-			p_mkdir(path,S_IRWXU);
 		}
+
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar,n);
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.currchar2,n);
 		bn_short_set(&rpacket->u.d2cs_client_charlistreply.maxchar,maxchar);
