@@ -1,89 +1,84 @@
-#---------------------------------#
-#      general configuration      #
-#---------------------------------#
-version: 1.99.7.2.1.{build}
-
 branches:
   only:
     - master
     - develop
 
-#---------------------------------#
-#    environment configuration    #
-#---------------------------------#
 image: Visual Studio 2019
 
-environment:
-  APPVEYOR_SAVE_CACHE_ON_ERROR: true
-  LUA_DIR: C:\Program Files (x86)\Lua\5.1
-  CMAKE_GENERATOR: Visual Studio 16 2019
-  matrix:
-    - DB: plain
-      WITH_MYSQL_VAL: false
-      WITH_ODBC_VAL: false
-      WITH_PGSQL_VAL: false
-      WITH_SQLITE3_VA: false
-    - DB: mysql
-      WITH_MYSQL_VAL: true
-      WITH_ODBC_VAL: false
-      WITH_PGSQL_VAL: false
-      WITH_SQLITE3_VA: false
-    - DB: odbc
-      WITH_MYSQL_VAL: false
-      WITH_ODBC_VAL: true
-      WITH_PGSQL_VAL: false
-      WITH_SQLITE3_VA: false
-    - DB: pgsql
-      WITH_MYSQL_VAL: false
-      WITH_ODBC_VAL: false
-      WITH_PGSQL_VAL: true
-      WITH_SQLITE3_VA: false
-    - DB: sqlite
-      WITH_MYSQL_VAL: false
-      WITH_ODBC_VAL: false
-      WITH_PGSQL_VAL: false
-      WITH_SQLITE3_VA: true
+platform:
+  - x86
 
+environment:
+  matrix:
+    - db: plain
+      db_id: 1
+    - db: mysql
+      db_id: 2
+    - db: pgsql
+      db_id: 3
+    - db: sqlite
+      db_id: 4
+    - db: odbc
+      db_id: 5
+
+configuration:
+# - Debug
+  - Release
 
 matrix:
   fast_finish: true
 
+  
+clone_folder: c:\pvpgn
+
 install:
-  - vcpkg install sqlite3 --triplet x64-windows
-  - vcpkg install zlib --triplet x64-windows
-  - choco install lua
-
-#cache: c:\tools\vcpkg\installed\
-
-#---------------------------------#
-#       build configuration       #
-#---------------------------------#
-init:
-  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-
-platform: x64
-
-configuration: RelWithDebInfo
+  - cmd: cd c:\
+  - cmd: appveyor DownloadFile https://github.com/HarpyWar/pvpgn-magic-builder/archive/master.zip
+  - cmd: 7z.exe x master.zip >nul
+  - cmd: ren pvpgn-magic-builder-master builder
+  - cmd: mkdir c:\builder\source\
+  - cmd: xcopy /E /R /K /Y /Q "c:\pvpgn" "c:\builder\source\"
+  - cmd: cd c:\builder\
+  - cmd: mkdir bin
+  - cmd: mkdir pdb
 
 before_build:
-  - ps: New-Item -Path "$env:APPVEYOR_BUILD_FOLDER" -Name "build" -ItemType "directory"
-  - ps: Set-Location -Path "$env:APPVEYOR_BUILD_FOLDER\build"
+  - cmd: set APPVEYOR_REPO_COMMIT_SHORT=%APPVEYOR_REPO_COMMIT:~0,7%
+  # read version string from version.h to %PVPGN_VERSION% and append commit string inside that file
+  - cmd: module\tools\pvpgn_version.bat %APPVEYOR_REPO_COMMIT_SHORT%
+  - cmd: set COMPLETE_BUILD_VERSION=pvpgn-%APPVEYOR_REPO_BRANCH%-%PVPGN_VERSION%-%APPVEYOR_REPO_COMMIT_SHORT%
+  - ps: $env:PVPGN_ZIP=$env:COMPLETE_BUILD_VERSION + "_" + $env:DB + $(If ($env:CONFIGURATION -ne "Release") {"_" + ($env:CONFIGURATION).ToLower()} Else {""}) + ".zip"
+  - ps: $env:PVPGN_PDB_ZIP=$env:COMPLETE_BUILD_VERSION + "_" + $env:DB + $(If ($env:CONFIGURATION -ne "Release") {"_" + ($env:CONFIGURATION).ToLower()} Else {".pdb"}) + ".zip"
 
 build_script:
-  - cmd: cmake -A x64 -D CMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -D CMAKE_SYSTEM_VERSION=10.0 -D WITH_LUA=true -D WITH_MYSQL=%WITH_MYSQL_VAL% -D WITH_ODBC=%WITH_ODBC_VAL% -D WITH_PGSQL=%WITH_PGSQL_VAL% -D WITH_SQLITE3=%WITH_SQLITE3_VAL% -D WITH_WIN32_GUI=true ..
-  - cmd: msbuild ALL_BUILD.vcxproj /property:Configuration=RelWithDebInfo /maxcpucount /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - cmd: msbuild INSTALL.vcxproj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\bnetd.exe" -NewName "${Env:Programfiles(x86)}\pvpgn\bnetd-gui.exe"
-  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\bnetd.pdb" -NewName "${Env:Programfiles(x86)}\pvpgn\bnetd-gui.pdb"
-  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\d2cs.exe" -NewName "${Env:Programfiles(x86)}\pvpgn\d2cs-gui.exe"
-  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\d2cs.pdb" -NewName "${Env:Programfiles(x86)}\pvpgn\d2cs-gui.pdb"
-  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\d2dbs.exe" -NewName "${Env:Programfiles(x86)}\pvpgn\d2dbs-gui.exe"
-  - ps: Rename-Item -Path "${Env:Programfiles(x86)}\pvpgn\d2dbs.pdb" -NewName "${Env:Programfiles(x86)}\pvpgn\d2dbs-gui.pdb"
-  - cmd: cmake -A x64 -D CMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake -D CMAKE_SYSTEM_VERSION=10.0 -D WITH_LUA=true -D WITH_MYSQL=%WITH_MYSQL_VAL% -D WITH_ODBC=%WITH_ODBC_VAL% -D WITH_PGSQL=%WITH_PGSQL_VAL% -D WITH_SQLITE3=%WITH_SQLITE3_VAL% -D WITH_WIN32_GUI=false ..
-  - cmd: msbuild ALL_BUILD.vcxproj /property:Configuration=RelWithDebInfo /maxcpucount /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-  - cmd: msbuild INSTALL.vcxproj /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
-after_build:
-  - ps: New-Item -Path "${env:APPVEYOR_BUILD_FOLDER}" -Name "artifacts" -ItemType "directory"
-  - ps: Compress-Archive -Path "${Env:Programfiles(x86)}\pvpgn\*" -DestinationPath "${env:APPVEYOR_BUILD_FOLDER}\artifacts\pvpgn-pro-${env:APPVEYOR_REPO_BRANCH}-${env:APPVEYOR_BUILD_VERSION}-${env:DB}.zip"
-  - ps: Get-ChildItem "${env:APPVEYOR_BUILD_FOLDER}\artifacts\*.zip" | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+  # build gui and console for each storage type
+  # build_pvpgn.bat params:
+  #  1. automatic build flag
+  #  2. visual studio version
+  #  3. console or gui
+  #  4. storage type
+  #  5. with or without lua
+  #  6. Release or Debug
+
+  # gui
+  - cmd: build_pvpgn.bat auto auto 2 %DB_ID% y %CONFIGURATION%
+  - cmd: move /Y %CONFIGURATION%\*.pdb pdb\ # move pdb files
+  - cmd: copy /Y %CONFIGURATION%\* bin\ # backup binary files
+  # console
+  - cmd: build_pvpgn.bat auto auto 1 %DB_ID% y %CONFIGURATION%
+  - cmd: move /Y %CONFIGURATION%\*.pdb pdb\ # move pdb files
+  - cmd: move /Y bin\* %CONFIGURATION% # move back binaries after build console version
+  # create zip artifacts
+  - cmd: 7z.exe a %PVPGN_ZIP% .\%CONFIGURATION%\*
+  - cmd: 7z.exe a %PVPGN_PDB_ZIP% .\pdb\*
+
+deploy_script:
+  - ps: |
+      Push-AppveyorArtifact $env:PVPGN_ZIP
+      Push-AppveyorArtifact $env:PVPGN_PDB_ZIP
+
+# check the latest build executable for exists
+test:
+  assemblies:
+    - '**\src\bnetd\%CONFIGURATION%\bnetd.exe'
