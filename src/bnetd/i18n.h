@@ -18,6 +18,15 @@
 #ifndef INCLUDED_LOCALIZATION_TYPES
 #define INCLUDED_LOCALIZATION_TYPES
 
+#include <string>
+#include <vector>
+
+#include "common/eventlog.h"
+#include "common/field_sizes.h"
+#include "common/tag.h"
+
+#include <fmt/format.h>
+
 namespace pvpgn
 {
 	namespace bnetd
@@ -40,9 +49,9 @@ namespace pvpgn
 #define INCLUDED_LOCALIZATION_PROTOS
 
 #define JUST_NEED_TYPES
-# include <string>
-# include "connection.h"
-# include "common/format.h"
+
+#include "connection.h"
+
 #undef JUST_NEED_TYPES
 
 namespace pvpgn
@@ -52,6 +61,8 @@ namespace pvpgn
 	{
 		extern int i18n_load(void);
 		extern int i18n_reload(void);
+
+		const char * _find_string(char const * text, t_gamelang gamelang);
 
 		extern std::string i18n_filename(const char * filename, t_tag gamelang);
 		extern t_language language_find_by_country(const char * code, bool &found);
@@ -67,8 +78,43 @@ namespace pvpgn
 		extern int tag_check_gamelang_real(t_tag gamelang);
 
 
-		extern std::string _localize(t_connection * c, const char * func, const char *fmt, const fmt::ArgList &args);
-		FMT_VARIADIC(std::string, _localize, t_connection *, const char *, const char *)
+		template <typename... Args>
+		std::string _localize(t_connection * c, const char * func, fmt::string_view format_str, const Args& ... args)
+		{
+			if (!c)
+			{
+				eventlog(eventlog_level_error, __FUNCTION__, "got bad connection");
+				return fmt::to_string(format_str);
+			}
+
+			std::string output;
+			try
+			{
+				t_gamelang lang;
+				const char *format = fmt::to_string(format_str).c_str();
+				if (lang = conn_get_gamelang_localized(c))
+				{
+					if (!(format = _find_string(fmt::to_string(format_str).c_str(), lang)))
+					{
+						format = fmt::to_string(format_str).c_str(); // if not found use original
+					}
+				}
+
+				output = fmt::format(format, args...);
+
+				char tmp[MAX_MESSAGE_LEN];
+				std::snprintf(tmp, sizeof tmp, "%s", output.c_str());
+
+				i18n_convert(c, tmp);
+				output = tmp;
+			}
+			catch (const std::exception& e)
+			{
+				WARN2("Can't format translation string \"{}\" ({})", format_str, e.what());
+			}
+
+			return output;
+		}
 
 		#define localize(c, ...) _localize(c, __FUNCTION__, __VA_ARGS__)
 	}

@@ -81,7 +81,7 @@ namespace pvpgn
 		static unsigned int account_hash(char const *username)
 		{
 			register unsigned int h;
-			register unsigned int len = std::strlen(username);
+			register std::size_t len = std::strlen(username);
 
 			int c;
 			for (h = 5381; len > 0; --len, ++username) {
@@ -711,16 +711,15 @@ namespace pvpgn
 
 		extern int account_check_name(char const * name)
 		{
-			unsigned int  i;
-			char ch;
-
-			if (!name) {
+			if (!name)
+			{
 				eventlog(eventlog_level_error, __FUNCTION__, "got NULL name");
 				return -1;
 			}
 
-			size_t namelen = std::strlen(name);
-			for (i = 0; i < namelen; i++)
+			char ch;
+			std::size_t i;
+			for (i = 0; i < std::strlen(name); i++)
 			{
 				/* These are the Battle.net rules but they are too strict.
 				 * We want to allow any characters that wouldn't cause
@@ -734,8 +733,12 @@ namespace pvpgn
 				if (std::strchr(prefs_get_account_allowed_symbols(), ch)) continue;
 				return -1;
 			}
+
 			if (i < MIN_USERNAME_LEN || i >= MAX_USERNAME_LEN)
+			{
 				return -1;
+			}
+
 			return 0;
 		}
 

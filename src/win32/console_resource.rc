@@ -1,6 +1,7 @@
 #include "console_resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
+
 #ifndef __BORLANDC__
 #ifdef __AFXRES_H__
 #include "afxres.h"

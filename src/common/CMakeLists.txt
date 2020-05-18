@@ -11,7 +11,7 @@ set(COMMON_SOURCES
 	fdwbackend.h field_sizes.h file_protocol.h flags.h 
 	give_up_root_privileges.cpp give_up_root_privileges.h hashtable.cpp 
 	hashtable.h hash_tuple.hpp hexdump.cpp hexdump.h init_protocol.h introtate.h 
-	irc_protocol.h list.cpp list.h lstr.h make_unique.hpp network.cpp network.h 
+	irc_protocol.h list.cpp list.h lstr.h network.cpp network.h 
 	packet.cpp packet.h proginfo.cpp proginfo.h queue.cpp queue.h rcm.cpp rcm.h 
 	rlimit.cpp rlimit.h scoped_array.h scoped_ptr.h setup_after.h 
 	setup_before.h systemerror.cpp systemerror.h tag.cpp tag.h token.cpp 
@@ -19,8 +19,8 @@ set(COMMON_SOURCES
 	version.h wolhash.cpp wolhash.h xalloc.cpp xalloc.h xstr.cpp xstr.h 
 	xstring.cpp xstring.h gui_printf.h gui_printf.cpp 
 	bigint.cpp bigint.h bnetsrp3.cpp bnetsrp3.h peerchat.cpp peerchat.h
-    wol_gameres_protocol.h
-	format.cc format.h pugiconfig.h pugixml.cpp pugixml.h)
-add_library(common
-  ${COMMON_SOURCES}
-)
+    wol_gameres_protocol.h pugiconfig.h pugixml.cpp pugixml.h)
+
+add_library(common STATIC ${COMMON_SOURCES})
+
+target_link_libraries(common PRIVATE fmt)

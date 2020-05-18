@@ -1,8 +1,3 @@
-# add aditional includes corresponding to the additional libraries bellow
-include_directories(${ZLIB_INCLUDE_DIR} ${MYSQL_INCLUDE_DIR} ${LUA_INCLUDE_DIR}
-  ${SQLITE3_INCLUDE_DIR} ${PGSQL_INCLUDE_DIR} ${ODBC_INCLUDE_DIR}
-)
-
 set(BNETD_SOURCES
 	account.cpp account.h account_wrap.cpp account_wrap.h adbanner.cpp
 	adbanner.h alias_command.cpp alias_command.h anongame.cpp
@@ -53,6 +48,19 @@ else(WITH_WIN32_GUI)
   add_executable(bnetd ${BNETD_SOURCES} ${BNETD_CONSOLE_RESOURCES})
 endif(WITH_WIN32_GUI)
 
-  target_link_libraries(bnetd common compat win32 ${NETWORK_LIBRARIES}
-    ${ZLIB_LIBRARIES} ${MYSQL_LIBRARIES} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES} ${LUA_LIBRARIES})
-  install(TARGETS bnetd DESTINATION ${SBINDIR})
+target_include_directories(bnetd
+    PRIVATE
+		${ZLIB_INCLUDE_DIRS}
+		${LUA_INCLUDE_DIR}
+		${MYSQL_INCLUDE_DIR}
+		${SQLITE3_INCLUDE_DIR}
+		${PGSQL_INCLUDE_DIR}
+		${ODBC_INCLUDE_DIR}
+)
+
+target_link_libraries(bnetd PRIVATE common compat fmt win32 ${NETWORK_LIBRARIES} ZLIB::ZLIB ${MYSQL_CLIENT_LIBS} ${SQLITE3_LIBRARIES} ${PGSQL_LIBRARIES} ${ODBC_LIBRARIES} ${LUA_LIBRARIES})
+
+install(TARGETS bnetd DESTINATION ${SBINDIR})
+if(WIN32 AND MSVC)
+    install(FILES $<TARGET_PDB_FILE:bnetd> DESTINATION ${SBINDIR} OPTIONAL)
+endif()

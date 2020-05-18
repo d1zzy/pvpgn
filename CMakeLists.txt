@@ -8,6 +8,9 @@ cmake_minimum_required(VERSION 3.1.0)
 set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 
 project(pvpgn CXX)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(WITH_BNETD "compile the bnetd target" ON)
 option(WITH_D2CS "compile the d2cs target" ON)
@@ -22,13 +25,15 @@ option(WITH_MYSQL "include MySQL user accounts support" OFF)
 option(WITH_SQLITE3 "include SQLite3 user accounts support" OFF)
 option(WITH_PGSQL "include PostgreSQL user accounts support" OFF)
 option(WITH_ODBC "include ODBC user accounts support" OFF)
+
+
 include(ConfigureChecks.cmake)
 
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	# using Clang
 
-	set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -march=native -mtune=native -pedantic -stdlib=libc++")
+	set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O3 -march=native -mtune=native -pedantic -stdlib=libc++")
 
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	# using G++
@@ -37,7 +42,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 		message(FATAL_ERROR "G++ 5.1 or higher required")
 	endif()
 
-	set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -march=native -mtune=native -pedantic -Wno-variadic-macros" )
+	set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -O3 -march=native -mtune=native -pedantic -Wno-variadic-macros" )
 
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	# using Visual Studio
@@ -46,6 +51,12 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 		message(FATAL_ERROR "Visual Studio 2015 or higher required")
 	endif()
 
+	add_definitions(
+		-D_CRT_SECURE_NO_DEPRECATE
+		-D_CRT_NONSTDC_NO_DEPRECATE
+		-DUNICODE
+		-D_UNICODE
+	)
 	
 	# DEBUG compiler flags:
 	#	/Zi create debugging information PDB file
@@ -65,12 +76,16 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
 endif()
 
-subdirs(src conf man files)
+add_subdirectory(conf)
+add_subdirectory(files)
+add_subdirectory(lib/fmt)
+add_subdirectory(man)
+add_subdirectory(src)
 if(WITH_LUA)
     add_subdirectory(lua)
 endif(WITH_LUA)
 
-ENABLE_TESTING()
+enable_testing()
 
 # uninstall target
 configure_file(

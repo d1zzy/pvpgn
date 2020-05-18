@@ -27,8 +27,10 @@
 #include <windows.h>
 #include <richedit.h>
 
+#include <fmt/format.h>
+
 #include "common/eventlog.h"
-#include <common/format.h>
+
 #include "common/setup_after.h"
 
 namespace pvpgn
@@ -36,43 +38,11 @@ namespace pvpgn
 
 	HWND ghwndConsole;
 
-	static void guiAddText(const char *str, COLORREF clr)
-	{
-		int text_length = SendMessageW(ghwndConsole, WM_GETTEXTLENGTH, 0, 0);
-
-		if (text_length > 30000)
-		{
-			CHARRANGE ds = {};
-			ds.cpMin = 0;
-			ds.cpMax = text_length - 30000;
-			SendMessageW(ghwndConsole, EM_EXSETSEL, 0, (LPARAM)&ds);
-			SendMessageW(ghwndConsole, EM_REPLACESEL, FALSE, 0);
-		}
-
-		CHARRANGE cr = {};
-		cr.cpMin = text_length;
-		cr.cpMax = text_length;
-		SendMessageW(ghwndConsole, EM_EXSETSEL, 0, (LPARAM)&cr);
-
-		CHARFORMATW fmt = {};
-		fmt.cbSize = sizeof(CHARFORMATW);
-		fmt.dwMask = CFM_COLOR | CFM_FACE | CFM_SIZE | CFM_BOLD | CFM_ITALIC | CFM_STRIKEOUT | CFM_UNDERLINE;
-		fmt.yHeight = 160;
-		fmt.dwEffects = 0;
-		fmt.crTextColor = clr;
-		std::swprintf(fmt.szFaceName, sizeof fmt.szFaceName / sizeof *fmt.szFaceName, L"%ls", L"Courier New");
-
-		SendMessageW(ghwndConsole, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&fmt);
-		SendMessageA(ghwndConsole, EM_REPLACESEL, FALSE, (LPARAM)str);
-	}
-
-	//template <typename... Args>
-	//void gui_lvprintf(t_eventlog_level l, const char* format, const Args& ... args)
-	void gui_lvprintf(t_eventlog_level l, const char* format, fmt::ArgList args)
+	extern void guiAddText(t_eventlog_level level, const char *str)
 	{
 		COLORREF clr;
 
-		switch (l)
+		switch (level)
 		{
 		case eventlog_level_none:
 			clr = RGB(0, 0, 0);
@@ -99,7 +69,32 @@ namespace pvpgn
 			clr = RGB(0, 0, 0);
 		}
 
-		guiAddText(fmt::format(format, args).c_str(), clr);
+		int text_length = SendMessageW(ghwndConsole, WM_GETTEXTLENGTH, 0, 0);
+
+		if (text_length > 30000)
+		{
+			CHARRANGE ds = {};
+			ds.cpMin = 0;
+			ds.cpMax = text_length - 30000;
+			SendMessageW(ghwndConsole, EM_EXSETSEL, 0, (LPARAM)&ds);
+			SendMessageW(ghwndConsole, EM_REPLACESEL, FALSE, 0);
+		}
+
+		CHARRANGE cr = {};
+		cr.cpMin = text_length;
+		cr.cpMax = text_length;
+		SendMessageW(ghwndConsole, EM_EXSETSEL, 0, (LPARAM)&cr);
+
+		CHARFORMATW fmt = {};
+		fmt.cbSize = sizeof(CHARFORMATW);
+		fmt.dwMask = CFM_COLOR | CFM_FACE | CFM_SIZE | CFM_BOLD | CFM_ITALIC | CFM_STRIKEOUT | CFM_UNDERLINE;
+		fmt.yHeight = 160;
+		fmt.dwEffects = 0;
+		fmt.crTextColor = clr;
+		std::swprintf(fmt.szFaceName, sizeof fmt.szFaceName / sizeof *fmt.szFaceName, L"%ls", L"Courier New");
+
+		SendMessageW(ghwndConsole, EM_SETCHARFORMAT, SCF_SELECTION, (LPARAM)&fmt);
+		SendMessageA(ghwndConsole, EM_REPLACESEL, FALSE, (LPARAM)str);
 	}
 }
 #endif

@@ -1,10 +1,4 @@
-# put in this file everything that needs to be setup depending
-# on the target architecture
-
-# our own modules
-set(CMAKE_MODULE_PATH
-  ${CMAKE_SOURCE_DIR}/cmake/Modules
-)
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 # include used modules
 include(DefineInstallationPaths)
@@ -13,7 +7,6 @@ include(CheckFunctionExists)
 include(CheckSymbolExists)
 include(CheckLibraryExists)
 include(CheckCXXCompilerFlag)
-include(CheckCXXSourceCompiles)
 include(CheckMkdirArgs)
 include(CheckIncludeFiles)
 
@@ -35,13 +28,10 @@ else(WIN32)
 	set(D2DBS_DEFAULT_CONF_FILE "${SYSCONFDIR}/d2dbs.conf")
 endif(WIN32)
 
-enable_language(C)
 # library checks
-find_package(ZLIB REQUIRED)
-check_library_exists(nsl gethostbyname "" HAVE_LIBNSL)
-check_library_exists(socket socket "" HAVE_LIBSOCKET)
-check_library_exists(resolv inet_aton "" HAVE_LIBRESOLV)
-check_library_exists(bind __inet_aton "" HAVE_LIBBIND)
+if(WITH_BNETD)
+	find_package(ZLIB REQUIRED)
+endif(WITH_BNETD)
 
 if(WITH_LUA)
     find_package(Lua REQUIRED)
@@ -61,8 +51,12 @@ if(WITH_PGSQL)
     find_package(PostgreSQL REQUIRED)
 endif(WITH_PGSQL)
 
-# if any of nsl or socket exists we need to make sure the following tests
-# use them otherwise some functions may not be found
+
+check_library_exists(nsl gethostbyname "" HAVE_LIBNSL)
+check_library_exists(socket socket "" HAVE_LIBSOCKET)
+check_library_exists(resolv inet_aton "" HAVE_LIBRESOLV)
+check_library_exists(bind __inet_aton "" HAVE_LIBBIND)
+
 if(HAVE_LIBNSL)
 	SET(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} nsl)
 	SET(NETWORK_LIBRARIES ${NETWORK_LIBRARIES} nsl)
@@ -81,7 +75,6 @@ if(HAVE_LIBBIND)
 	SET(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} bind)
 	SET(NETWORK_LIBRARIES ${NETWORK_LIBRARIES} bind)
 endif(HAVE_LIBBIND)
-
 # for win32 unconditionally add network library linking to "ws2_32"
 if(WIN32)
 	SET(NETWORK_LIBRARIES ${NETWORK_LIBRARIES} ws2_32)
@@ -113,7 +106,7 @@ message(STATUS "Checking optional POSIX/required SUS headers")
 check_include_file_cxx(sys/timeb.h HAVE_SYS_TIMEB_H)
 
 message(STATUS "Checking FreeBSD-based headers")
-check_include_files("sys/types.h;sys/event.h" HAVE_SYS_EVENT_H)
+check_include_file_cxx(sys/event.h HAVE_SYS_EVENT_H)
 check_include_file_cxx(sys/param.h HAVE_SYS_PARAM_H)
 
 message(STATUS "Checking BSD headers")
@@ -174,17 +167,7 @@ check_function_exists(uname HAVE_UNAME)
 check_function_exists(wait HAVE_WAIT)
 check_function_exists(waitpid HAVE_WAITPID)
 
-CHECK_CXX_SOURCE_COMPILES(
-"
-#include <memory>
-int main() {
-	auto foo = std::make_unique<int>(1);
-	return 0;
-}
-" HAVE_MAKE_UNIQUE)
 
-
-# winsock2.h and ws2_32 should provide these
 if(HAVE_WINSOCK2_H)
 	set(HAVE_GETHOSTNAME ON)
 	set(HAVE_SELECT ON)
@@ -210,14 +193,3 @@ endif(HAVE_WINSOCK2_H)
 check_mkdir_args(MKDIR_TAKES_ONE_ARG)
 
 configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-	# using Visual Studio
-
-	add_definitions(
-		-D_CRT_SECURE_NO_DEPRECATE
-		-D_CRT_NONSTDC_NO_DEPRECATE
-		-DUNICODE
-		-D_UNICODE
-	)
-endif()

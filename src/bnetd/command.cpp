@@ -553,19 +553,26 @@ namespace pvpgn
 			t_command_table_row const *p;
 
 #ifdef WITH_LUA
-			// feature to ignore flood protection
-			result = lua_handle_command(c, text, luaevent_command_before);
-#endif
+				// feature to ignore flood protection
+				result = lua_handle_command(c, text, luaevent_command_before);
+
 			if (result == -1)
 				return result;
+#endif
 
+#ifdef WITH_LUA
 			if (result == 0)
-			if ((text[0] != '\0') && (conn_quota_exceeded(c, text)))
 			{
-				msgtemp = localize(c, "You are sending commands to {} too quickly and risk being disconnected for flooding. Please slow down.", prefs_get_servername());
-				message_send_text(c, message_type_error, c, msgtemp);
-				return 0;
-			}
+#endif
+				if ((text[0] != '\0') && (conn_quota_exceeded(c, text)))
+				{
+					msgtemp = localize(c, "You are sending commands to {} too quickly and risk being disconnected for flooding. Please slow down.", prefs_get_servername());
+					message_send_text(c, message_type_error, c, msgtemp);
+					return 0;
+				}
+#ifdef WITH_LUA
+		}
+#endif
 
 #ifdef WITH_LUA
 			result = lua_handle_command(c, text, luaevent_command);
