@@ -4,7 +4,6 @@ arch: amd64
 
 language: cpp
 compiler:
-  - clang
   - gcc
   
 branches:
