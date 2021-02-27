@@ -121,7 +121,6 @@ git clone https://github.com/pvpgn/pvpgn-server.git
 cd pvpgn-server
 CC=/opt/rh/devtoolset-4/root/usr/bin/gcc CXX=/opt/rh/devtoolset-4/root/usr/bin/g++ cmake -G "Unix Makefiles" -H./ -B./build
 cd build && make
-make install
 ```
 
 #### Fedora 25
@@ -144,18 +143,10 @@ cd build && make
 
 Full instructions: [Русский](http://harpywar.com/?a=articles&b=2&c=1&d=74) | [English](http://harpywar.com/?a=articles&b=2&c=1&d=74&lang=en)
 
-<<<<<<< HEAD
 ## Hosting on LAN or VPS with private IP address
 Some VPS providers do not assign your server a direct public IP. If that is the case or you host at home behind NAT you need to setup the route translation in `address_translation.conf`. The public address is pushed as the route server address to game clients when seeking games. Failure to push the correct address to game clients results in players not being able to match and join games (long game search and error).
 
 If your network interface is directly bound to public IP, PvPGN can figure it out on it's own and this step is not necessary.
-=======
-
-#### Run
-```
-/usr/local/sbin/bnetd
-```
->>>>>>> Update README.md
 
 ## License
 
