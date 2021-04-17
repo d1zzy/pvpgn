@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<root xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <meta>
+    <language tag="jpJA">Japanese</language>
+    <countries>
+      <country>JPN</country>
+    </countries>
+  </meta>
+</root>

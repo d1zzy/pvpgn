@@ -1,0 +1,9 @@
+{
+	"ads":
+	[
+		{"filename": "ad000001.png", "url": "http://pvpgn.pro", "client": "W3XP", "lang": "NULL"},
+		{"filename": "ad000002.mng", "url": "http://pvpgn.pro", "client": "W3XP", "lang": "NULL"},
+		{"filename": "ad000001.smk", "url": "http://pvpgn.pro", "client": "NULL", "lang": "NULL"},
+		{"filename": "ad000002.smk", "url": "http://pvpgn.pro", "client": "NULL", "lang": "NULL"}
+	]
+}

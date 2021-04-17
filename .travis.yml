@@ -1,0 +1,32 @@
+os: linux
+dist: focal
+arch: amd64
+
+language: cpp
+compiler:
+  - gcc
+  
+branches:
+  only:
+    - master
+    - develop
+
+addons:
+  apt:
+    packages:
+      - zlib1g-dev
+      - build-essential
+      - libmysqlclient-dev
+      - liblua5.1-0-dev
+  
+before_script:
+  - mkdir build
+  - cd build
+  - cmake -D WITH_MYSQL=true -D WITH_LUA=true ../
+
+script:
+  - make
+
+after_script:
+  - sudo make install
+  - sudo make uninstall
